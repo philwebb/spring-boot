@@ -91,7 +91,7 @@ class ShowTests {
 		Authentication authentication = mock(Authentication.class);
 		given(securityContext.getPrincipal()).willReturn(authentication);
 		given(authentication.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
 		assertThat(Show.WHEN_AUTHORIZED.isShown(securityContext, Collections.singleton("admin"))).isFalse();
 	}
 
@@ -101,7 +101,7 @@ class ShowTests {
 		Authentication authentication = mock(Authentication.class);
 		given(securityContext.getPrincipal()).willReturn(authentication);
 		given(authentication.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
 		assertThat(Show.WHEN_AUTHORIZED.isShown(securityContext, Collections.singleton("admin"))).isTrue();
 	}
 

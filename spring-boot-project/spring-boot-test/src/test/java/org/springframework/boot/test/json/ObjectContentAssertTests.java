@@ -49,7 +49,7 @@ class ObjectContentAssertTests {
 	@Test
 	void isEqualToWhenObjectsAreDifferentShouldFail() {
 		assertThatExceptionOfType(AssertionError.class)
-				.isThrownBy(() -> assertThat(forObject(SOURCE)).isEqualTo(DIFFERENT));
+			.isThrownBy(() -> assertThat(forObject(SOURCE)).isEqualTo(DIFFERENT));
 	}
 
 	@Test

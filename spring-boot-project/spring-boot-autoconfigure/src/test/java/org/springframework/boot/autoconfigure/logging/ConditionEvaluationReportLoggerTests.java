@@ -52,8 +52,8 @@ class ConditionEvaluationReportLoggerTests {
 	@Test
 	void supportsOnlyInfoAndDebugLogLevels() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConditionEvaluationReportLogger(LogLevel.TRACE, () -> null))
-				.withMessageContaining("LogLevel must be INFO or DEBUG");
+			.isThrownBy(() -> new ConditionEvaluationReportLogger(LogLevel.TRACE, () -> null))
+			.withMessageContaining("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class ConditionEvaluationReportLoggerTests {
 
 	private void withDebugLogging(Runnable runnable) {
 		Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory())
-				.getLogger(ConditionEvaluationReportLogger.class);
+			.getLogger(ConditionEvaluationReportLogger.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

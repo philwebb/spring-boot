@@ -148,7 +148,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ClusterClientOptions.Builder builder = ClusterClientOptions.builder();
 			Refresh refreshProperties = getProperties().getLettuce().getCluster().getRefresh();
 			Builder refreshBuilder = ClusterTopologyRefreshOptions.builder()
-					.dynamicRefreshSources(refreshProperties.isDynamicRefreshSources());
+				.dynamicRefreshSources(refreshProperties.isDynamicRefreshSources());
 			if (refreshProperties.getPeriod() != null) {
 				refreshBuilder.enablePeriodicRefresh(refreshProperties.getPeriod());
 			}

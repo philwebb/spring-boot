@@ -121,10 +121,10 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		int errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
 		return Flux.just(getData(errorStatus).toArray(new String[] {}))
-				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
-				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-						? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
-				.next();
+			.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
+			.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
+					? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
+			.next();
 	}
 
 	private List<String> getData(int errorStatus) {
@@ -145,8 +145,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromValue(error));
+		return ServerResponse.status(getHttpStatus(error))
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(BodyInserters.fromValue(error));
 	}
 
 	protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {

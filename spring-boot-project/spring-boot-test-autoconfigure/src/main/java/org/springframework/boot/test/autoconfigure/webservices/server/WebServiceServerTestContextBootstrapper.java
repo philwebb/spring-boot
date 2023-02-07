@@ -39,8 +39,10 @@ class WebServiceServerTestContextBootstrapper extends SpringBootTestContextBoots
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(WebServiceServerTest.class)
-				.getValue("properties", String[].class).orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+			.get(WebServiceServerTest.class)
+			.getValue("properties", String[].class)
+			.orElse(null);
 	}
 
 }

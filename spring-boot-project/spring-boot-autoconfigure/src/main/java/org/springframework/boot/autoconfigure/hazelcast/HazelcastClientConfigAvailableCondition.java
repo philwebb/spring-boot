@@ -49,7 +49,7 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 			ConditionOutcome configValidationOutcome = HazelcastClientValidation.clientConfigOutcome(context,
 					HAZELCAST_CONFIG_PROPERTY, startConditionMessage());
 			return (configValidationOutcome != null) ? configValidationOutcome : ConditionOutcome
-					.match(startConditionMessage().foundExactly("property " + HAZELCAST_CONFIG_PROPERTY));
+				.match(startConditionMessage().foundExactly("property " + HAZELCAST_CONFIG_PROPERTY));
 		}
 		return getResourceOutcome(context, metadata);
 	}

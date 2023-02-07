@@ -42,7 +42,7 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withConnectTimeoutReturnsInstanceWithUpdatedConnectionTimeout() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-				.withConnectTimeout(ONE_SECOND);
+			.withConnectTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.bufferRequestBody()).isNull();
@@ -51,7 +51,7 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withReadTimeoutReturnsInstanceWithUpdatedReadTimeout() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-				.withReadTimeout(ONE_SECOND);
+			.withReadTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.bufferRequestBody()).isNull();
@@ -60,7 +60,7 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withBufferRequestBodyReturnsInstanceWithUpdatedBufferRequestBody() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-				.withBufferRequestBody(true);
+			.withBufferRequestBody(true);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.bufferRequestBody()).isTrue();

@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebServicesAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
 
 	@Test
 	void defaultConfiguration() {
@@ -51,20 +51,22 @@ class WebServicesAutoConfigurationTests {
 	@Test
 	void customPathMustBeginWithASlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class).rootCause()
-						.hasMessageContaining("Path must start with '/'"));
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(BeanCreationException.class)
+				.rootCause()
+				.hasMessageContaining("Path must start with '/'"));
 	}
 
 	@Test
 	void customPath() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid")
-				.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
+			.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
 	void customPathWithTrailingSlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid/")
-				.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
+			.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
@@ -78,10 +80,11 @@ class WebServicesAutoConfigurationTests {
 	@Test
 	void customInitParameters() {
 		this.contextRunner
-				.withPropertyValues("spring.webservices.servlet.init.key1=value1",
-						"spring.webservices.servlet.init.key2=value2")
-				.run((context) -> assertThat(getServletRegistrationBean(context).getInitParameters())
-						.containsEntry("key1", "value1").containsEntry("key2", "value2"));
+			.withPropertyValues("spring.webservices.servlet.init.key1=value1",
+					"spring.webservices.servlet.init.key2=value2")
+			.run((context) -> assertThat(getServletRegistrationBean(context).getInitParameters())
+				.containsEntry("key1", "value1")
+				.containsEntry("key2", "value2"));
 	}
 
 	@Test

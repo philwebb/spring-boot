@@ -48,25 +48,25 @@ class ZipkinAutoConfigurationIntegrationTests {
 	@Test
 	void zipkinsUseOfRestTemplateDoesNotCauseACycle() {
 		configure(new WebApplicationContextRunner())
-				.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
 	void zipkinsUseOfWebClientDoesNotCauseACycle() {
 		configure(new ReactiveWebApplicationContextRunner())
-				.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> AbstractApplicationContextRunner<SELF, C, A> configure(
 			AbstractApplicationContextRunner<SELF, ?, ?> runner) {
 		return runner
-				.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class,
-						ObservationAutoConfiguration.class, BraveAutoConfiguration.class, ZipkinAutoConfiguration.class,
-						HttpClientObservationsAutoConfiguration.class, MetricsAutoConfiguration.class,
-						SimpleMetricsExportAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class));
+			.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class,
+					ObservationAutoConfiguration.class, BraveAutoConfiguration.class, ZipkinAutoConfiguration.class,
+					HttpClientObservationsAutoConfiguration.class, MetricsAutoConfiguration.class,
+					SimpleMetricsExportAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class));
 	}
 
 }

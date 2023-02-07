@@ -69,7 +69,7 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 				try {
 					if (!this.latch.await(5, TimeUnit.SECONDS)) {
 						JmsHealthIndicator.this.logger
-								.warn("Connection failed to start within 5 seconds and will be closed.");
+							.warn("Connection failed to start within 5 seconds and will be closed.");
 						closeConnection();
 					}
 				}

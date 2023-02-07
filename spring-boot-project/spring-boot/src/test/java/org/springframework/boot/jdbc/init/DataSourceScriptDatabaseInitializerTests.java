@@ -44,13 +44,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class DataSourceScriptDatabaseInitializerTests
 		extends AbstractScriptDatabaseInitializerTests<DataSourceScriptDatabaseInitializer> {
 
-	private final HikariDataSource embeddedDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
-			.url("jdbc:h2:mem:" + UUID.randomUUID()).build();
+	private final HikariDataSource embeddedDataSource = DataSourceBuilder.create()
+		.type(HikariDataSource.class)
+		.url("jdbc:h2:mem:" + UUID.randomUUID())
+		.build();
 
-	private final HikariDataSource standaloneDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
-			.url("jdbc:h2:file:" + new BuildOutput(DataSourceScriptDatabaseInitializerTests.class).getRootLocation()
-					.getAbsolutePath() + "/" + UUID.randomUUID())
-			.build();
+	private final HikariDataSource standaloneDataSource = DataSourceBuilder.create()
+		.type(HikariDataSource.class)
+		.url("jdbc:h2:file:"
+				+ new BuildOutput(DataSourceScriptDatabaseInitializerTests.class).getRootLocation().getAbsolutePath()
+				+ "/" + UUID.randomUUID())
+		.build();
 
 	@AfterEach
 	void closeDataSource() {

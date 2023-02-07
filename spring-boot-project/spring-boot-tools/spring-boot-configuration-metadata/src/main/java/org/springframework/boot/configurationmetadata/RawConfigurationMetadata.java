@@ -52,9 +52,10 @@ class RawConfigurationMetadata {
 			return null;
 		}
 		return this.sources.stream()
-				.filter((candidate) -> item.getSourceType().equals(candidate.getType())
-						&& item.getId().startsWith(candidate.getGroupId()))
-				.max(Comparator.comparingInt((candidate) -> candidate.getGroupId().length())).orElse(null);
+			.filter((candidate) -> item.getSourceType().equals(candidate.getType())
+					&& item.getId().startsWith(candidate.getGroupId()))
+			.max(Comparator.comparingInt((candidate) -> candidate.getGroupId().length()))
+			.orElse(null);
 	}
 
 	List<ConfigurationMetadataItem> getItems() {

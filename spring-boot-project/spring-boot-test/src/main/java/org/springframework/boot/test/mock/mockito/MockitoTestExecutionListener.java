@@ -108,7 +108,7 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 		parser.parse(testContext.getTestClass());
 		if (!parser.getDefinitions().isEmpty()) {
 			MockitoPostProcessor postProcessor = testContext.getApplicationContext()
-					.getBean(MockitoPostProcessor.class);
+				.getBean(MockitoPostProcessor.class);
 			for (Definition definition : parser.getDefinitions()) {
 				Field field = parser.getField(definition);
 				if (field != null) {

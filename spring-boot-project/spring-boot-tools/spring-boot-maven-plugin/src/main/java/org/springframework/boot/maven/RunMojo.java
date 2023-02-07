@@ -63,9 +63,10 @@ public class RunMojo extends AbstractRunMojo {
 	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
-		processExecutor.withRunProcessCustomizer(
-				(runProcess) -> Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess))))
-				.run(workingDirectory, args, environmentVariables);
+		processExecutor
+			.withRunProcessCustomizer(
+					(runProcess) -> Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess))))
+			.run(workingDirectory, args, environmentVariables);
 	}
 
 	private static final class RunProcessKiller implements Runnable {

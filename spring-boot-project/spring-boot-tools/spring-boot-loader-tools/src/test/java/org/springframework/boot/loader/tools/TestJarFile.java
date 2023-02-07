@@ -59,7 +59,7 @@ public class TestJarFile {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
 		InputStream inputStream = getClass()
-				.getResourceAsStream("/" + classToCopy.getName().replace('.', '/') + ".class");
+			.getResourceAsStream("/" + classToCopy.getName().replace('.', '/') + ".class");
 		copyToFile(inputStream, file);
 		if (time != null) {
 			file.setLastModified(time);

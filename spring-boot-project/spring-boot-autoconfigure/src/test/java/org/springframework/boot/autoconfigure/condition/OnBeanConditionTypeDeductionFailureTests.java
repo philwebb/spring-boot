@@ -42,14 +42,14 @@ class OnBeanConditionTypeDeductionFailureTests {
 	@Test
 	void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
-				.satisfies((ex) -> {
-					Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
-					assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
-							+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
-					assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
+			.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
+			.satisfies((ex) -> {
+				Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
+				assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
+						+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
+				assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
 
-				});
+			});
 	}
 
 	private Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {

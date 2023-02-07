@@ -38,23 +38,23 @@ class JsonContentTests {
 	@Test
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new JsonContent<ExampleObject>(null, TYPE, JSON, Configuration.defaultConfiguration()))
-				.withMessageContaining("ResourceLoadClass must not be null");
+			.isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON, Configuration.defaultConfiguration()))
+			.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	void createWhenJsonIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new JsonContent<ExampleObject>(getClass(), TYPE, null, Configuration.defaultConfiguration()))
-				.withMessageContaining("JSON must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new JsonContent<ExampleObject>(getClass(), TYPE, null, Configuration.defaultConfiguration()))
+			.withMessageContaining("JSON must not be null");
 	}
 
 	@Test
 	void createWhenConfigurationIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, JSON, null))
-				.withMessageContaining("Configuration must not be null");
+			.isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, JSON, null))
+			.withMessageContaining("Configuration must not be null");
 	}
 
 	@Test

@@ -34,7 +34,7 @@ class AssertableReactiveWebApplicationContextTests {
 	@Test
 	void getShouldReturnProxy() {
 		AssertableReactiveWebApplicationContext context = AssertableReactiveWebApplicationContext
-				.get(() -> mock(ConfigurableReactiveWebApplicationContext.class));
+			.get(() -> mock(ConfigurableReactiveWebApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableReactiveWebApplicationContext.class);
 	}
 

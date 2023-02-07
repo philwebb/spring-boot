@@ -112,7 +112,7 @@ public class EntityScanPackages {
 		Assert.notNull(packageNames, "PackageNames must not be null");
 		if (registry.containsBeanDefinition(BEAN)) {
 			EntityScanPackagesBeanDefinition beanDefinition = (EntityScanPackagesBeanDefinition) registry
-					.getBeanDefinition(BEAN);
+				.getBeanDefinition(BEAN);
 			beanDefinition.addPackageNames(packageNames);
 		}
 		else {
@@ -139,7 +139,7 @@ public class EntityScanPackages {
 
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
-					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
+				.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			Set<String> packagesToScan = new LinkedHashSet<>();
 			for (String basePackage : attributes.getStringArray("basePackages")) {
 				String[] tokenized = StringUtils.tokenizeToStringArray(

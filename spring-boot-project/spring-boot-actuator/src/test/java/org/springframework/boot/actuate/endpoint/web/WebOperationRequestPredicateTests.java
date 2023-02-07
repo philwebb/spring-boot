@@ -68,7 +68,7 @@ class WebOperationRequestPredicateTests {
 	@Test
 	void predicatesWithMultiplePathVariablesInTheSamePlaceAreEqual() {
 		assertThat(predicateWithPath("/path/{foo1}/more/{bar1}"))
-				.isEqualTo(predicateWithPath("/path/{foo2}/more/{bar2}"));
+			.isEqualTo(predicateWithPath("/path/{foo2}/more/{bar2}"));
 	}
 
 	@Test

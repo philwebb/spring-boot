@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TestDatabaseAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	void replaceWithNoDataSourceAvailable() {
@@ -65,8 +65,8 @@ class TestDatabaseAutoConfigurationTests {
 	@Test
 	void whenUsingAotGeneratedArtifactsEmbeddedDataSourceFactoryBeanIsNotDefined() {
 		this.contextRunner.withUserConfiguration(ExistingDataSourceConfiguration.class)
-				.withSystemProperties("spring.aot.enabled=true")
-				.run((context) -> assertThat(context).doesNotHaveBean(EmbeddedDataSourceFactoryBean.class));
+			.withSystemProperties("spring.aot.enabled=true")
+			.run((context) -> assertThat(context).doesNotHaveBean(EmbeddedDataSourceFactoryBean.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -58,7 +58,7 @@ class PropertySourcesDeducer {
 	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
 		// Take care not to cause early instantiation of all FactoryBeans
 		Map<String, PropertySourcesPlaceholderConfigurer> beans = this.applicationContext
-				.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false, false);
+			.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false, false);
 		if (beans.size() == 1) {
 			return beans.values().iterator().next();
 		}

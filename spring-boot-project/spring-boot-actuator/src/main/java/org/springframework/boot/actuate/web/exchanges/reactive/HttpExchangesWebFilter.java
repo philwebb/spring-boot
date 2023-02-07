@@ -73,7 +73,7 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 		Mono<?> principal = exchange.getPrincipal().cast(Object.class).defaultIfEmpty(NONE);
 		Mono<Object> session = exchange.getSession().cast(Object.class).defaultIfEmpty(NONE);
 		return Mono.zip(PrincipalAndSession::new, principal, session)
-				.flatMap((principalAndSession) -> filter(exchange, chain, principalAndSession));
+			.flatMap((principalAndSession) -> filter(exchange, chain, principalAndSession));
 	}
 
 	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain,

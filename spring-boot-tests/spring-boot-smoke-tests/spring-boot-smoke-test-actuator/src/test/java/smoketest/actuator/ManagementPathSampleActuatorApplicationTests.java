@@ -44,7 +44,7 @@ class ManagementPathSampleActuatorApplicationTests {
 	@Test
 	void testHealth() {
 		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-				.getForEntity("/admin/health", String.class);
+			.getForEntity("/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

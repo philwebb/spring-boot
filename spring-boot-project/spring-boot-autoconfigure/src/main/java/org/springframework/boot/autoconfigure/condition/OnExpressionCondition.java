@@ -38,7 +38,7 @@ class OnExpressionCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
-				.get("value");
+			.get("value");
 		expression = wrapIfNecessary(expression);
 		ConditionMessage.Builder messageBuilder = ConditionMessage.forCondition(ConditionalOnExpression.class,
 				"(" + expression + ")");

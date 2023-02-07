@@ -45,7 +45,7 @@ class JarUrlProtocolHandler implements BeforeEachCallback, AfterEachCallback {
 	@SuppressWarnings("unchecked")
 	public void afterEach(ExtensionContext context) throws Exception {
 		Map<File, JarFile> rootFileCache = ((SoftReference<Map<File, JarFile>>) ReflectionTestUtils
-				.getField(Handler.class, "rootFileCache")).get();
+			.getField(Handler.class, "rootFileCache")).get();
 		if (rootFileCache != null) {
 			for (JarFile rootJarFile : rootFileCache.values()) {
 				rootJarFile.close();

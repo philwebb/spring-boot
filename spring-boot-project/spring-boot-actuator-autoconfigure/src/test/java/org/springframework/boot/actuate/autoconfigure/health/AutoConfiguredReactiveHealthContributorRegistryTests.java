@@ -37,10 +37,10 @@ class AutoConfiguredReactiveHealthContributorRegistryTests {
 	@Test
 	void createWhenContributorsClashesWithGroupNameThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> new AutoConfiguredReactiveHealthContributorRegistry(
-						Collections.singletonMap("boot", mock(ReactiveHealthContributor.class)),
-						Arrays.asList("spring", "boot")))
-				.withMessage("ReactiveHealthContributor with name \"boot\" clashes with group");
+			.isThrownBy(() -> new AutoConfiguredReactiveHealthContributorRegistry(
+					Collections.singletonMap("boot", mock(ReactiveHealthContributor.class)),
+					Arrays.asList("spring", "boot")))
+			.withMessage("ReactiveHealthContributor with name \"boot\" clashes with group");
 	}
 
 	@Test
@@ -48,8 +48,8 @@ class AutoConfiguredReactiveHealthContributorRegistryTests {
 		ReactiveHealthContributorRegistry registry = new AutoConfiguredReactiveHealthContributorRegistry(
 				Collections.emptyMap(), Arrays.asList("spring", "boot"));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> registry.registerContributor("spring", mock(ReactiveHealthContributor.class)))
-				.withMessage("ReactiveHealthContributor with name \"spring\" clashes with group");
+			.isThrownBy(() -> registry.registerContributor("spring", mock(ReactiveHealthContributor.class)))
+			.withMessage("ReactiveHealthContributor with name \"spring\" clashes with group");
 	}
 
 }

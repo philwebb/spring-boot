@@ -41,7 +41,7 @@ class IntegrationDataSourceScriptDatabaseInitializerTests {
 		DatabaseInitializationSettings settings = IntegrationDataSourceScriptDatabaseInitializer.getSettings(dataSource,
 				properties.getJdbc());
 		assertThat(settings.getSchemaLocations())
-				.containsOnly("classpath:org/springframework/integration/jdbc/schema-test.sql");
+			.containsOnly("classpath:org/springframework/integration/jdbc/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();
 	}
 

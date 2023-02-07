@@ -48,16 +48,16 @@ class RequestPredicateFactoryTests {
 	void getRequestPredicateWhenHasMoreThanOneMatchAllThrowsException() {
 		DiscoveredOperationMethod operationMethod = getDiscoveredOperationMethod(MoreThanOneMatchAll.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.factory.getRequestPredicate(this.rootPath, operationMethod))
-				.withMessage("@Selector annotation with Match.ALL_REMAINING must be unique");
+			.isThrownBy(() -> this.factory.getRequestPredicate(this.rootPath, operationMethod))
+			.withMessage("@Selector annotation with Match.ALL_REMAINING must be unique");
 	}
 
 	@Test
 	void getRequestPredicateWhenMatchAllIsNotLastParameterThrowsException() {
 		DiscoveredOperationMethod operationMethod = getDiscoveredOperationMethod(MatchAllIsNotLastParameter.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.factory.getRequestPredicate(this.rootPath, operationMethod))
-				.withMessage("@Selector annotation with Match.ALL_REMAINING must be the last parameter");
+			.isThrownBy(() -> this.factory.getRequestPredicate(this.rootPath, operationMethod))
+			.withMessage("@Selector annotation with Match.ALL_REMAINING must be the last parameter");
 	}
 
 	@Test

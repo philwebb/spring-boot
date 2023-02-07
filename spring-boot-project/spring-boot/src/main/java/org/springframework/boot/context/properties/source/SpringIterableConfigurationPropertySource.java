@@ -69,7 +69,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	private BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck(
 			PropertyMapper[] mappers) {
 		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck = mappers[0]
-				.getAncestorOfCheck();
+			.getAncestorOfCheck();
 		for (int i = 1; i < mappers.length; i++) {
 			ancestorOfCheck = ancestorOfCheck.or(mappers[i].getAncestorOfCheck());
 		}
@@ -147,7 +147,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		ConfigurationPropertyName[] configurationPropertyNames = this.configurationPropertyNames;
 		if (configurationPropertyNames == null) {
 			configurationPropertyNames = getMappings()
-					.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
+				.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 			this.configurationPropertyNames = configurationPropertyNames;
 		}
 		return configurationPropertyNames;

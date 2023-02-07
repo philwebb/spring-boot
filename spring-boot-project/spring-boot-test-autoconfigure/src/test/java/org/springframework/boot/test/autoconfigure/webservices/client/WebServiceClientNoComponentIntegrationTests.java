@@ -50,14 +50,14 @@ class WebServiceClientNoComponentIntegrationTests {
 	@Test
 	void exampleClientIsNotInjected() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleWebServiceClient.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleWebServiceClient.class));
 	}
 
 	@Test
 	void manuallyCreateBean() {
 		ExampleWebServiceClient client = new ExampleWebServiceClient(this.webServiceTemplateBuilder);
 		this.server.expect(payload(new StringSource("<request/>")))
-				.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
+			.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
 		assertThat(client.test()).extracting(Response::getStatus).isEqualTo(200);
 	}
 

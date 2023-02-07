@@ -58,7 +58,7 @@ class LogbackConfigurator {
 		Assert.hasLength(conversionWord, "Conversion word must not be empty");
 		Assert.notNull(converterClass, "Converter class must not be null");
 		Map<String, String> registry = (Map<String, String>) this.context
-				.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
+			.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
 		if (registry == null) {
 			registry = new HashMap<>();
 			this.context.putObject(CoreConstants.PATTERN_RULE_REGISTRY, registry);

@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OnWsdlLocationsConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestConfig.class);
+		.withUserConfiguration(TestConfig.class);
 
 	@Test
 	void wsdlLocationsNotDefined() {
@@ -44,13 +44,13 @@ class OnWsdlLocationsConditionTests {
 	@Test
 	void wsdlLocationsDefinedAsCommaSeparated() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	void wsdlLocationsDefinedAsList() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

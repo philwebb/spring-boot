@@ -40,18 +40,36 @@ class CachesEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void allCaches(WebTestClient client) {
-		client.get().uri("/actuator/caches").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("cacheManagers.one.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.one.caches.b.target").isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.c.target").isEqualTo(ConcurrentHashMap.class.getName());
+		client.get()
+			.uri("/actuator/caches")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("cacheManagers.one.caches.a.target")
+			.isEqualTo(ConcurrentHashMap.class.getName())
+			.jsonPath("cacheManagers.one.caches.b.target")
+			.isEqualTo(ConcurrentHashMap.class.getName())
+			.jsonPath("cacheManagers.two.caches.a.target")
+			.isEqualTo(ConcurrentHashMap.class.getName())
+			.jsonPath("cacheManagers.two.caches.c.target")
+			.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@WebEndpointTest
 	void namedCache(WebTestClient client) {
-		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk().expectBody().jsonPath("name")
-				.isEqualTo("b").jsonPath("cacheManager").isEqualTo("one").jsonPath("target")
-				.isEqualTo(ConcurrentHashMap.class.getName());
+		client.get()
+			.uri("/actuator/caches/b")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("name")
+			.isEqualTo("b")
+			.jsonPath("cacheManager")
+			.isEqualTo("one")
+			.jsonPath("target")
+			.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@WebEndpointTest

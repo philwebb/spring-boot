@@ -40,13 +40,13 @@ class StandardConfigDataResourceTests {
 	@Test
 	void createWhenReferenceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(null, this.resource))
-				.withMessage("Reference must not be null");
+			.withMessage("Reference must not be null");
 	}
 
 	@Test
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(this.reference, null))
-				.withMessage("Resource must not be null");
+			.withMessage("Resource must not be null");
 	}
 
 	@Test

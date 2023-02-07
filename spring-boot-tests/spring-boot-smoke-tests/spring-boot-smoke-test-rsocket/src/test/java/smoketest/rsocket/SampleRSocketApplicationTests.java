@@ -50,13 +50,14 @@ class SampleRSocketApplicationTests {
 	@Test
 	void rSocketEndpoint() {
 		RSocketRequester requester = this.builder
-				.rsocketStrategies((builder) -> builder.encoder(new SimpleAuthenticationEncoder()))
-				.setupMetadata(new UsernamePasswordMetadata("user", "password"),
-						MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
-				.tcp("localhost", this.port);
+			.rsocketStrategies((builder) -> builder.encoder(new SimpleAuthenticationEncoder()))
+			.setupMetadata(new UsernamePasswordMetadata("user", "password"),
+					MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
+			.tcp("localhost", this.port);
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
-		StepVerifier.create(result).assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
-				.verifyComplete();
+		StepVerifier.create(result)
+			.assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
+			.verifyComplete();
 	}
 
 }

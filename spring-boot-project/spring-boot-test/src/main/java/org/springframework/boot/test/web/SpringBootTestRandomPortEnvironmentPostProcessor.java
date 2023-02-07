@@ -44,7 +44,7 @@ class SpringBootTestRandomPortEnvironmentPostProcessor implements EnvironmentPos
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		MapPropertySource source = (MapPropertySource) environment.getPropertySources()
-				.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
+			.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 		if (source == null || isTestServerPortFixed(source, environment) || isTestManagementPortConfigured(source)) {
 			return;
 		}
@@ -70,10 +70,14 @@ class SpringBootTestRandomPortEnvironmentPostProcessor implements EnvironmentPos
 	}
 
 	private Integer getPropertyAsInteger(ConfigurableEnvironment environment, String property, Integer defaultValue) {
-		return environment.getPropertySources().stream().filter(
-				(source) -> !source.getName().equals(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME))
-				.map((source) -> getPropertyAsInteger(source, property, environment)).filter(Objects::nonNull)
-				.findFirst().orElse(defaultValue);
+		return environment.getPropertySources()
+			.stream()
+			.filter((source) -> !source.getName()
+				.equals(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME))
+			.map((source) -> getPropertyAsInteger(source, property, environment))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(defaultValue);
 	}
 
 	private Integer getPropertyAsInteger(PropertySource<?> source, String property,

@@ -42,8 +42,8 @@ class CompositeMeterRegistryAutoConfigurationTests {
 	private static final String COMPOSITE_NAME = "compositeMeterRegistry";
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfig.class)
-			.withConfiguration(AutoConfigurations.of(CompositeMeterRegistryAutoConfiguration.class));
+		.withUserConfiguration(BaseConfig.class)
+		.withConfiguration(AutoConfigurations.of(CompositeMeterRegistryAutoConfiguration.class));
 
 	@Test
 	void registerWhenHasNoMeterRegistryShouldRegisterEmptyNoOpComposite() {
@@ -66,8 +66,8 @@ class CompositeMeterRegistryAutoConfigurationTests {
 	@Test
 	void registerWhenHasMultipleMeterRegistriesShouldAddPrimaryComposite() {
 		this.contextRunner.withUserConfiguration(MultipleMeterRegistriesConfig.class).run((context) -> {
-			assertThat(context.getBeansOfType(MeterRegistry.class)).hasSize(3).containsKeys("meterRegistryOne",
-					"meterRegistryTwo", COMPOSITE_NAME);
+			assertThat(context.getBeansOfType(MeterRegistry.class)).hasSize(3)
+				.containsKeys("meterRegistryOne", "meterRegistryTwo", COMPOSITE_NAME);
 			MeterRegistry primary = context.getBean(MeterRegistry.class);
 			assertThat(primary).isInstanceOf(CompositeMeterRegistry.class);
 			assertThat(((CompositeMeterRegistry) primary).getRegistries()).hasSize(2);
@@ -78,8 +78,8 @@ class CompositeMeterRegistryAutoConfigurationTests {
 	@Test
 	void registerWhenHasMultipleRegistriesAndOneIsPrimaryShouldDoNothing() {
 		this.contextRunner.withUserConfiguration(MultipleMeterRegistriesWithOnePrimaryConfig.class).run((context) -> {
-			assertThat(context.getBeansOfType(MeterRegistry.class)).hasSize(2).containsKeys("meterRegistryOne",
-					"meterRegistryTwo");
+			assertThat(context.getBeansOfType(MeterRegistry.class)).hasSize(2)
+				.containsKeys("meterRegistryOne", "meterRegistryTwo");
 			MeterRegistry primary = context.getBean(MeterRegistry.class);
 			assertThat(primary).isInstanceOf(TestMeterRegistry.class);
 		});

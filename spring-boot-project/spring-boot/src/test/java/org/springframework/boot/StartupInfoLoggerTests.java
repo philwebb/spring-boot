@@ -60,9 +60,9 @@ class StartupInfoLoggerTests {
 			ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 			then(this.log).should().info(captor.capture());
 			assertThat(captor.getValue().toString())
-					.contains("Starting AOT-processed " + getClass().getSimpleName() + " using Java "
-							+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
-							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
+				.contains("Starting AOT-processed " + getClass().getSimpleName() + " using Java "
+						+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
+						+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
 
 		}
 		finally {

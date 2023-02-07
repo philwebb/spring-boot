@@ -35,14 +35,14 @@ class ConfigurationPropertyStateTests {
 	@Test
 	void searchWhenIterableIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
-				.withMessageContaining("Source must not be null");
+			.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	void searchWhenPredicateIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
-				.withMessageContaining("Predicate must not be null");
+			.isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
+			.withMessageContaining("Predicate must not be null");
 	}
 
 	@Test

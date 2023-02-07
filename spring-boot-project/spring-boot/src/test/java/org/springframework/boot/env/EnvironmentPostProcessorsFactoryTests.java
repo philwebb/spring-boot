@@ -51,7 +51,7 @@ class EnvironmentPostProcessorsFactoryTests {
 	@Test
 	void ofClassesReturnsFactory() {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
-				.of(TestEnvironmentPostProcessor.class);
+			.of(TestEnvironmentPostProcessor.class);
 		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
 				this.bootstrapContext);
 		assertThat(processors).hasSize(1);
@@ -61,7 +61,7 @@ class EnvironmentPostProcessorsFactoryTests {
 	@Test
 	void ofClassNamesReturnsFactory() {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
-				.of(TestEnvironmentPostProcessor.class.getName());
+			.of(TestEnvironmentPostProcessor.class.getName());
 		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
 				this.bootstrapContext);
 		assertThat(processors).hasSize(1);

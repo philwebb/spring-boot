@@ -60,10 +60,9 @@ class ChildManagementContextInitializerAotTests {
 	void aotContributedInitializerStartsManagementContext(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-								ServletWebServerFactoryAutoConfiguration.class,
-								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								EndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").prepare((context) -> {
 			TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
 			ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(
@@ -74,11 +73,11 @@ class ChildManagementContextInitializerAotTests {
 				ServletWebServerApplicationContext freshApplicationContext = new ServletWebServerApplicationContext();
 				TestPropertyValues.of("server.port=0", "management.server.port=0").applyTo(freshApplicationContext);
 				ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
-						.getInstance(ApplicationContextInitializer.class, className.toString());
+					.getInstance(ApplicationContextInitializer.class, className.toString());
 				initializer.initialize(freshApplicationContext);
 				assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 0));
 				TestPropertyValues.of(AotDetector.AOT_ENABLED + "=true")
-						.applyToSystemProperties(freshApplicationContext::refresh);
+					.applyToSystemProperties(freshApplicationContext::refresh);
 				assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2));
 			});
 		});

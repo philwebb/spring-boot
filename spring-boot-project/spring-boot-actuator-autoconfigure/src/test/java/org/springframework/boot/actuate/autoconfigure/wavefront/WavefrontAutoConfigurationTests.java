@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WavefrontAutoConfigurationTests {
 
 	ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WavefrontAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WavefrontAutoConfiguration.class));
 
 	@Test
 	void wavefrontApplicationTagsWhenHasUserBeanBacksOff() {

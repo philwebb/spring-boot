@@ -70,7 +70,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 		String name = DependsOnDatabaseInitializationPostProcessor.class.getName();
 		if (!registry.containsBeanDefinition(name)) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.rootBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class);
+				.rootBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class);
 			registry.registerBeanDefinition(name, builder.getBeanDefinition());
 		}
 	}
@@ -108,7 +108,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 				for (String initializerBeanName : initializerBeanNamesBatch) {
 					BeanDefinition beanDefinition = getBeanDefinition(initializerBeanName, beanFactory);
 					beanDefinition
-							.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanNamesBatch));
+						.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanNamesBatch));
 				}
 				previousInitializerBeanNamesBatch = initializerBeanNamesBatch;
 			}
@@ -156,8 +156,8 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 
 		private <T> List<T> getDetectors(ConfigurableListableBeanFactory beanFactory, Class<T> type) {
 			ArgumentResolver argumentResolver = ArgumentResolver.of(Environment.class, this.environment);
-			return SpringFactoriesLoader.forDefaultResourceLocation(beanFactory.getBeanClassLoader()).load(type,
-					argumentResolver);
+			return SpringFactoriesLoader.forDefaultResourceLocation(beanFactory.getBeanClassLoader())
+				.load(type, argumentResolver);
 		}
 
 		private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {

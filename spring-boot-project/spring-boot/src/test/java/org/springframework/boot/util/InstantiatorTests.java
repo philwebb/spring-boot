@@ -83,7 +83,8 @@ class InstantiatorTests {
 	@Test
 	void instantiateTypesCreatesInstance() {
 		WithDefaultConstructor instance = createInstantiator(WithDefaultConstructor.class)
-				.instantiateTypes(Collections.singleton(WithDefaultConstructor.class)).get(0);
+			.instantiateTypes(Collections.singleton(WithDefaultConstructor.class))
+			.get(0);
 		assertThat(instance).isInstanceOf(WithDefaultConstructor.class);
 	}
 
@@ -99,25 +100,26 @@ class InstantiatorTests {
 
 		};
 		WithDefaultConstructor instance = createInstantiator(WithDefaultConstructor.class)
-				.instantiate(classLoader, Collections.singleton(WithDefaultConstructorSubclass.class.getName())).get(0);
+			.instantiate(classLoader, Collections.singleton(WithDefaultConstructorSubclass.class.getName()))
+			.get(0);
 		assertThat(instance.getClass().getClassLoader()).isSameAs(classLoader);
 	}
 
 	@Test
 	void createWhenWrongTypeThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> createInstantiator(WithDefaultConstructor.class)
-						.instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
-				.withMessageContaining("Unable to instantiate");
+			.isThrownBy(() -> createInstantiator(WithDefaultConstructor.class)
+				.instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
+			.withMessageContaining("Unable to instantiate");
 	}
 
 	@Test
 	void createWithFailureHandlerInvokesFailureHandler() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> new Instantiator<>(WithDefaultConstructor.class, (availableParameters) -> {
-				}, new CustomFailureHandler())
-						.instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
-				.withMessageContaining("custom failure handler message");
+			.isThrownBy(() -> new Instantiator<>(WithDefaultConstructor.class, (availableParameters) -> {
+			}, new CustomFailureHandler())
+				.instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
+			.withMessageContaining("custom failure handler message");
 	}
 
 	private <T> T createInstance(Class<T> type) {

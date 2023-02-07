@@ -43,7 +43,7 @@ class DataMongoTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private ExampleService service;

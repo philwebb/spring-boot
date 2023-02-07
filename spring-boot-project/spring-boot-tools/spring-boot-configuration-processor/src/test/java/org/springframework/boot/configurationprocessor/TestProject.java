@@ -84,8 +84,8 @@ public class TestProject {
 	 */
 	public void delete(Class<?> type) {
 		SourceFile[] newSources = this.sources.stream()
-				.filter((sourceFile) -> !sourceFile.getPath().equals(SourceFile.forTestClass(type).getPath()))
-				.toArray(SourceFile[]::new);
+			.filter((sourceFile) -> !sourceFile.getPath().equals(SourceFile.forTestClass(type).getPath()))
+			.toArray(SourceFile[]::new);
 		this.sources = SourceFiles.of(newSources);
 	}
 

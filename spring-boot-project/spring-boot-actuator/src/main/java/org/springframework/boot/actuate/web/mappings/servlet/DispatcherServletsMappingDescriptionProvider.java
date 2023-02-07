@@ -192,8 +192,8 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		public List<DispatcherServletMappingDescription> describe(Iterable handlerMapping) {
 			List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
 			for (Object delegate : handlerMapping) {
-				descriptions.addAll(
-						DispatcherServletsMappingDescriptionProvider.describe(delegate, this.descriptionProviders));
+				descriptions
+					.addAll(DispatcherServletsMappingDescriptionProvider.describe(delegate, this.descriptionProviders));
 			}
 			return descriptions;
 		}

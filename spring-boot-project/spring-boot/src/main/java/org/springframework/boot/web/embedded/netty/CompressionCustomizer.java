@@ -89,7 +89,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		return (request, response) -> {
 			HttpHeaders headers = request.requestHeaders();
 			return Arrays.stream(excludedUserAgents)
-					.noneMatch((candidate) -> headers.contains(HttpHeaderNames.USER_AGENT, candidate, true));
+				.noneMatch((candidate) -> headers.contains(HttpHeaderNames.USER_AGENT, candidate, true));
 		};
 	}
 

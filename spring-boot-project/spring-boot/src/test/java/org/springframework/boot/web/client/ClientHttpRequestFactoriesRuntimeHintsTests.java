@@ -57,14 +57,14 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection
-				.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
-						.accepts(hints);
+			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+			.accepts(hints);
 		assertThat(
 				reflection.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-						.accepts(hints);
+			.accepts(hints);
 		assertThat(reflection
-				.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
-						.accepts(hints);
+			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
+			.accepts(hints);
 	}
 
 	@Test
@@ -73,9 +73,9 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection.onMethod(method(OkHttp3ClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
-				.accepts(hints);
+			.accepts(hints);
 		assertThat(reflection.onMethod(method(OkHttp3ClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-				.accepts(hints);
+			.accepts(hints);
 		assertThat(hints.reflection().getTypeHint(OkHttp3ClientHttpRequestFactory.class).methods()).hasSize(2);
 	}
 
@@ -85,12 +85,12 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
-				.accepts(hints);
+			.accepts(hints);
 		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-				.accepts(hints);
+			.accepts(hints);
 		assertThat(reflection
-				.onMethod(method(SimpleClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
-						.accepts(hints);
+			.onMethod(method(SimpleClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
+			.accepts(hints);
 	}
 
 	private static Method method(Class<?> target, String name, Class<?>... parameterTypes) {

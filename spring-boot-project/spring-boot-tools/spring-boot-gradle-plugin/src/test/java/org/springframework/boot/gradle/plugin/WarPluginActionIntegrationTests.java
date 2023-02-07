@@ -46,13 +46,13 @@ class WarPluginActionIntegrationTests {
 	@TestTemplate
 	void noBootWarTaskWithoutWarPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar").getOutput())
-				.contains("bootWar exists = false");
+			.contains("bootWar exists = false");
 	}
 
 	@TestTemplate
 	void applyingWarPluginCreatesBootWarTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootWar", "-PapplyWarPlugin").getOutput())
-				.contains("bootWar exists = true");
+			.contains("bootWar exists = true");
 	}
 
 	@TestTemplate

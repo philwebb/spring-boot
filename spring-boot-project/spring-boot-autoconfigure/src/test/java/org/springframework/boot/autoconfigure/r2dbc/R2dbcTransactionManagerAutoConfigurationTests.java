@@ -58,17 +58,17 @@ class R2dbcTransactionManagerAutoConfigurationTests {
 	@Test
 	void singleTransactionManager() {
 		this.contextRunner.withUserConfiguration(SingleConnectionFactoryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(TransactionalOperator.class)
-						.hasSingleBean(ReactiveTransactionManager.class));
+			.run((context) -> assertThat(context).hasSingleBean(TransactionalOperator.class)
+				.hasSingleBean(ReactiveTransactionManager.class));
 	}
 
 	@Test
 	void transactionManagerEnabled() {
 		this.contextRunner.withUserConfiguration(SingleConnectionFactoryConfiguration.class, BaseConfiguration.class)
-				.run((context) -> {
-					TransactionalService bean = context.getBean(TransactionalService.class);
-					bean.isTransactionActive().as(StepVerifier::create).expectNext(true).verifyComplete();
-				});
+			.run((context) -> {
+				TransactionalService bean = context.getBean(TransactionalService.class);
+				bean.isTransactionActive().as(StepVerifier::create).expectNext(true).verifyComplete();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -110,7 +110,7 @@ class R2dbcTransactionManagerAutoConfigurationTests {
 		@Override
 		public Mono<Boolean> isTransactionActive() {
 			return TransactionSynchronizationManager.forCurrentTransaction()
-					.map(TransactionSynchronizationManager::isActualTransactionActive);
+				.map(TransactionSynchronizationManager::isActualTransactionActive);
 		}
 
 	}

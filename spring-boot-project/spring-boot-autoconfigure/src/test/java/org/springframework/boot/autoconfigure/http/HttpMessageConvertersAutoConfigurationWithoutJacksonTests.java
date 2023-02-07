@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HttpMessageConvertersAutoConfigurationWithoutJacksonTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationWorksWithSpringHateoasButWithoutJackson() {

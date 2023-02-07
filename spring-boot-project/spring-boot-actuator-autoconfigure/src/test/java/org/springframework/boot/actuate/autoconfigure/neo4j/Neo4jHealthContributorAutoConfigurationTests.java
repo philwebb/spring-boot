@@ -46,44 +46,46 @@ import static org.mockito.Mockito.mock;
 class Neo4jHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-					Neo4jHealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+				Neo4jHealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateHealthIndicator() {
-		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(Neo4jReactiveHealthIndicator.class).doesNotHaveBean(Neo4jHealthIndicator.class));
+		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(Neo4jReactiveHealthIndicator.class)
+				.doesNotHaveBean(Neo4jHealthIndicator.class));
 	}
 
 	@Test
 	void runWithoutReactorShouldCreateHealthIndicator() {
 		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(Flux.class)).run((context) -> assertThat(context)
-						.hasSingleBean(Neo4jHealthIndicator.class).doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
+			.withClassLoader(new FilteredClassLoader(Flux.class))
+			.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class)
+				.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
-				.withPropertyValues("management.health.neo4j.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
-						.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
+			.withPropertyValues("management.health.neo4j.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
+				.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Test
 	void defaultIndicatorCanBeReplaced() {
 		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class, CustomIndicatorConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasBean("neo4jHealthIndicator");
-					Health health = context.getBean("neo4jHealthIndicator", HealthIndicator.class).health();
-					assertThat(health.getDetails()).containsOnly(entry("test", true));
-				});
+			.run((context) -> {
+				assertThat(context).hasBean("neo4jHealthIndicator");
+				Health health = context.getBean("neo4jHealthIndicator", HealthIndicator.class).health();
+				assertThat(health.getDetails()).containsOnly(entry("test", true));
+			});
 	}
 
 	@Test
 	void shouldRequireDriverBean() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
-				.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
+			.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -46,12 +46,16 @@ public class DeployedPlugin implements Plugin<Project> {
 		MavenPublication mavenPublication = publishing.getPublications().create("maven", MavenPublication.class);
 		project.afterEvaluate((evaluated) -> project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
 			if (((Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME)).isEnabled()) {
-				project.getComponents().matching((component) -> component.getName().equals("java"))
-						.all(mavenPublication::from);
+				project.getComponents()
+					.matching((component) -> component.getName().equals("java"))
+					.all(mavenPublication::from);
 			}
 		}));
-		project.getPlugins().withType(JavaPlatformPlugin.class).all((javaPlugin) -> project.getComponents()
-				.matching((component) -> component.getName().equals("javaPlatform")).all(mavenPublication::from));
+		project.getPlugins()
+			.withType(JavaPlatformPlugin.class)
+			.all((javaPlugin) -> project.getComponents()
+				.matching((component) -> component.getName().equals("javaPlatform"))
+				.all(mavenPublication::from));
 	}
 
 }

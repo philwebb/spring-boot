@@ -69,7 +69,8 @@ class DefaultErrorViewIntegrationTests {
 	@Test
 	void testErrorForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("<html>");
 		assertThat(content).contains("999");
@@ -78,11 +79,13 @@ class DefaultErrorViewIntegrationTests {
 	@Test
 	void testErrorWithHtmlEscape() throws Exception {
 		MvcResult response = this.mockMvc
-				.perform(get("/error")
+			.perform(
+					get("/error")
 						.requestAttr("jakarta.servlet.error.exception",
 								new RuntimeException("<script>alert('Hello World')</script>"))
 						.accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("&lt;script&gt;");
 		assertThat(content).contains("Hello World");
@@ -92,9 +95,11 @@ class DefaultErrorViewIntegrationTests {
 	@Test
 	void testErrorWithSpelEscape() throws Exception {
 		String spel = "${T(" + getClass().getName() + ").injectCall()}";
-		MvcResult response = this.mockMvc.perform(get("/error")
-				.requestAttr("jakarta.servlet.error.exception", new RuntimeException(spel)).accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+		MvcResult response = this.mockMvc
+			.perform(get("/error").requestAttr("jakarta.servlet.error.exception", new RuntimeException(spel))
+				.accept(MediaType.TEXT_HTML))
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).doesNotContain("injection");
 	}

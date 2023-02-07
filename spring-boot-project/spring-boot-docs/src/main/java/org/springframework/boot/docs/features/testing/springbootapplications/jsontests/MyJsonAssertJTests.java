@@ -36,7 +36,7 @@ class MyJsonAssertJTests {
 	void someTest() throws Exception {
 		SomeObject value = new SomeObject(0.152f);
 		assertThat(this.json.write(value)).extractingJsonPathNumberValue("@.test.numberValue")
-				.satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
+			.satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
 	}
 	// end::code[]
 

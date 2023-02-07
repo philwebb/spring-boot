@@ -94,7 +94,7 @@ class LenientStringToEnumConverterFactoryTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverterFactory(new LenientStringToEnumConverterFactory()));
+			.with((service) -> service.addConverterFactory(new LenientStringToEnumConverterFactory()));
 	}
 
 	enum TestEnum {

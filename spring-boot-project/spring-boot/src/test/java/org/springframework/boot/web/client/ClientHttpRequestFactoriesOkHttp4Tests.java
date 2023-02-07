@@ -45,13 +45,13 @@ class ClientHttpRequestFactoriesOkHttp4Tests
 	@Test
 	void okHttp4IsBeingUsed() {
 		assertThat(new File(OkHttpClient.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName())
-				.startsWith("okhttp-4.");
+			.startsWith("okhttp-4.");
 	}
 
 	@Test
 	void getFailsWhenBufferRequestBodyIsEnabled() {
 		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
 	}
 
 	@Override

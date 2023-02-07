@@ -34,7 +34,7 @@ class AliasedIterableConfigurationPropertySourceTests extends AliasedConfigurati
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");
 		IterableConfigurationPropertySource aliased = source
-				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
+			.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
 		assertThat(aliased.stream()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.bar1"), ConfigurationPropertyName.of("foo.baz"));
 	}

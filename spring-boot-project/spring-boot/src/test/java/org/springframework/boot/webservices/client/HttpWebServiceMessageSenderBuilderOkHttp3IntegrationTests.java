@@ -50,7 +50,8 @@ class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 	@Test
 	void buildWithCustomTimeouts() {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(2)).build();
+			.setReadTimeout(Duration.ofSeconds(2))
+			.build();
 		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(messageSender);
 		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory, "client");
 		assertThat(client).isNotNull();

@@ -67,15 +67,15 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

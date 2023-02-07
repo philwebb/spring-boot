@@ -54,7 +54,7 @@ class DisabledOnOsCondition implements ExecutionCondition {
 			}
 		}
 		return ConditionEvaluationResult
-				.enabled(String.format("Enabled on OS = %s, architecture = %s", os, architecture));
+			.enabled(String.format("Enabled on OS = %s, architecture = %s", os, architecture));
 	}
 
 }

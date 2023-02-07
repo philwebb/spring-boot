@@ -54,7 +54,7 @@ class JooqTestIntegrationTests {
 	@Test
 	void testDSLContext() {
 		assertThat(this.dsl.selectCount().from("INFORMATION_SCHEMA.TABLES").fetchOne(0, Integer.class))
-				.isGreaterThan(0);
+			.isGreaterThan(0);
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class JooqTestIntegrationTests {
 	@Test
 	void didNotInjectExampleComponent() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test

@@ -68,9 +68,11 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 					this.path.getAbsolutePath(), diskFreeInBytes, this.threshold));
 			builder.down();
 		}
-		builder.withDetail("total", this.path.getTotalSpace()).withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.threshold.toBytes()).withDetail("path", this.path.getAbsolutePath())
-				.withDetail("exists", this.path.exists());
+		builder.withDetail("total", this.path.getTotalSpace())
+			.withDetail("free", diskFreeInBytes)
+			.withDetail("threshold", this.threshold.toBytes())
+			.withDetail("path", this.path.getAbsolutePath())
+			.withDetail("exists", this.path.exists());
 	}
 
 }

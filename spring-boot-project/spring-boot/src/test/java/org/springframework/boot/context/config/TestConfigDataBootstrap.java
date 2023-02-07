@@ -47,8 +47,8 @@ class TestConfigDataBootstrap {
 
 		@Override
 		public List<Resource> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
-			context.getBootstrapContext().registerIfAbsent(ResolverHelper.class,
-					InstanceSupplier.from(() -> new ResolverHelper(location)));
+			context.getBootstrapContext()
+				.registerIfAbsent(ResolverHelper.class, InstanceSupplier.from(() -> new ResolverHelper(location)));
 			ResolverHelper helper = context.getBootstrapContext().get(ResolverHelper.class);
 			return Collections.singletonList(new Resource(helper));
 		}
@@ -59,8 +59,9 @@ class TestConfigDataBootstrap {
 
 		@Override
 		public ConfigData load(ConfigDataLoaderContext context, Resource location) throws IOException {
-			context.getBootstrapContext().registerIfAbsent(LoaderHelper.class,
-					(bootstrapContext) -> new LoaderHelper(location, () -> bootstrapContext.get(Binder.class)));
+			context.getBootstrapContext()
+				.registerIfAbsent(LoaderHelper.class,
+						(bootstrapContext) -> new LoaderHelper(location, () -> bootstrapContext.get(Binder.class)));
 			LoaderHelper helper = context.getBootstrapContext().get(LoaderHelper.class);
 			context.getBootstrapContext().addCloseListener(helper);
 			return new ConfigData(

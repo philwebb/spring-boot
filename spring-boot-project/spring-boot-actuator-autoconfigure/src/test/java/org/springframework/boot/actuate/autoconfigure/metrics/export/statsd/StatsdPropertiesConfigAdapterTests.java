@@ -71,7 +71,7 @@ class StatsdPropertiesConfigAdapterTests {
 		StatsdProperties properties = new StatsdProperties();
 		properties.setMaxPacketLength(1234);
 		assertThat(new StatsdPropertiesConfigAdapter(properties).maxPacketLength())
-				.isEqualTo(properties.getMaxPacketLength());
+			.isEqualTo(properties.getMaxPacketLength());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class StatsdPropertiesConfigAdapterTests {
 		StatsdProperties properties = new StatsdProperties();
 		properties.setPollingFrequency(Duration.ofSeconds(1));
 		assertThat(new StatsdPropertiesConfigAdapter(properties).pollingFrequency())
-				.isEqualTo(properties.getPollingFrequency());
+			.isEqualTo(properties.getPollingFrequency());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class StatsdPropertiesConfigAdapterTests {
 		StatsdProperties properties = new StatsdProperties();
 		properties.setPublishUnchangedMeters(false);
 		assertThat(new StatsdPropertiesConfigAdapter(properties).publishUnchangedMeters())
-				.isEqualTo(properties.isPublishUnchangedMeters());
+			.isEqualTo(properties.isPublishUnchangedMeters());
 	}
 
 	@Test

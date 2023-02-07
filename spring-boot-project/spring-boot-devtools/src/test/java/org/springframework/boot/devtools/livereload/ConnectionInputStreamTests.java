@@ -68,7 +68,7 @@ class ConnectionInputStreamTests {
 		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
 		assertThatIOException().isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
-				.withMessageContaining("End of stream");
+			.withMessageContaining("End of stream");
 	}
 
 	static class LimitedInputStream extends FilterInputStream {

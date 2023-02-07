@@ -124,7 +124,7 @@ public class UpgradeBom extends DefaultTask {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
 				new MultithreadedLibraryUpdateResolver(new MavenMetadataVersionResolver(this.repositoryUrls),
 						this.bom.getUpgrade().getPolicy(), this.threads))
-								.resolveUpgrades(matchingLibraries(this.libraries), this.bom.getLibraries());
+			.resolveUpgrades(matchingLibraries(this.libraries), this.bom.getLibraries());
 		Path buildFile = getProject().getBuildFile().toPath();
 		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
 		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
@@ -146,12 +146,14 @@ public class UpgradeBom extends DefaultTask {
 				if (existingUpgradeIssue != null) {
 					existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
 				}
-				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath()).start()
-						.waitFor() != 0) {
+				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath())
+					.start()
+					.waitFor() != 0) {
 					throw new IllegalStateException("git add failed");
 				}
-				if (new ProcessBuilder().command("git", "commit", "-m", title + "\n\nCloses gh-" + issueNumber).start()
-						.waitFor() != 0) {
+				if (new ProcessBuilder().command("git", "commit", "-m", title + "\n\nCloses gh-" + issueNumber)
+					.start()
+					.waitFor() != 0) {
 					throw new IllegalStateException("git commit failed");
 				}
 			}
@@ -169,8 +171,10 @@ public class UpgradeBom extends DefaultTask {
 			return this.bom.getLibraries();
 		}
 		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
-		List<Library> matchingLibraries = this.bom.getLibraries().stream()
-				.filter((library) -> libraryPredicate.test(library.getName())).toList();
+		List<Library> matchingLibraries = this.bom.getLibraries()
+			.stream()
+			.filter((library) -> libraryPredicate.test(library.getName()))
+			.toList();
 		if (matchingLibraries.isEmpty()) {
 			throw new InvalidUserDataException("No libraries matched '" + pattern + "'");
 		}
@@ -180,8 +184,9 @@ public class UpgradeBom extends DefaultTask {
 	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
 		String toMatch = "Upgrade to " + upgrade.getLibrary().getName();
 		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
-			if (existingUpgradeIssue.getTitle().substring(0, existingUpgradeIssue.getTitle().lastIndexOf(' '))
-					.equals(toMatch)) {
+			if (existingUpgradeIssue.getTitle()
+				.substring(0, existingUpgradeIssue.getTitle().lastIndexOf(' '))
+				.equals(toMatch)) {
 				return existingUpgradeIssue;
 			}
 		}
@@ -207,7 +212,8 @@ public class UpgradeBom extends DefaultTask {
 		}
 		List<Milestone> milestones = repository.getMilestones();
 		Optional<Milestone> matchingMilestone = milestones.stream()
-				.filter((milestone) -> milestone.getName().equals(this.milestone)).findFirst();
+			.filter((milestone) -> milestone.getName().equals(this.milestone))
+			.findFirst();
 		if (!matchingMilestone.isPresent()) {
 			throw new InvalidUserDataException("Unknown milestone: " + this.milestone);
 		}

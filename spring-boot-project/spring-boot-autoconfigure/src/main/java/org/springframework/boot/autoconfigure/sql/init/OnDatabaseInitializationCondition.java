@@ -61,7 +61,7 @@ public class OnDatabaseInitializationCondition extends SpringBootCondition {
 		boolean match = match(mode);
 		String messagePrefix = (propertyName != null) ? propertyName : "default value";
 		return new ConditionOutcome(match, ConditionMessage.forCondition(this.name + "Database Initialization")
-				.because(messagePrefix + " is " + mode));
+			.because(messagePrefix + " is " + mode));
 	}
 
 	private boolean match(DatabaseInitializationMode mode) {

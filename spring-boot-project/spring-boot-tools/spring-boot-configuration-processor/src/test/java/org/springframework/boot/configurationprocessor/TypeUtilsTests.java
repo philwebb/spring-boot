@@ -44,7 +44,7 @@ class TypeUtilsTests {
 	void resolveTypeDescriptorOnConcreteClass() {
 		process(SimpleGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
-					.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
+				.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
 			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
@@ -58,7 +58,7 @@ class TypeUtilsTests {
 	void resolveTypeDescriptorOnIntermediateClass() {
 		process(AbstractIntermediateGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
-					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
+				.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
 			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
@@ -71,7 +71,7 @@ class TypeUtilsTests {
 	void resolveTypeDescriptorWithOnlyGenerics() {
 		process(AbstractGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
-					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));
+				.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
 
@@ -80,8 +80,9 @@ class TypeUtilsTests {
 
 	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) {
 		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(consumer, TypeUtils::new);
-		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor)
-				.withSources(SourceFile.forTestClass(target));
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(SourceFile.forTestClass(target));
 		compiler.compile((compiled) -> {
 		});
 	}

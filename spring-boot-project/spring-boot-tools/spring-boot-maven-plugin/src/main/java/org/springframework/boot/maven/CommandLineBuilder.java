@@ -57,8 +57,10 @@ final class CommandLineBuilder {
 
 	CommandLineBuilder withSystemProperties(Map<String, String> systemProperties) {
 		if (systemProperties != null) {
-			systemProperties.entrySet().stream().map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-					.forEach(this.options::add);
+			systemProperties.entrySet()
+				.stream()
+				.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
+				.forEach(this.options::add);
 		}
 		return this;
 	}

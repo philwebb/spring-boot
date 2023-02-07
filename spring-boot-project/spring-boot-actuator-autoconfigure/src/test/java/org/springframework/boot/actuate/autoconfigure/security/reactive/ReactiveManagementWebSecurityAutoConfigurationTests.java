@@ -66,12 +66,12 @@ import static org.mockito.Mockito.mock;
 class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-					WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
-					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class,
-					ReactiveManagementWebSecurityAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+				HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+				WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class,
+				ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
 	void permitAllForHealth() {
@@ -105,9 +105,9 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	@Test
 	void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
-				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveManagementWebSecurityAutoConfiguration.class));
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ReactiveManagementWebSecurityAutoConfiguration.class));
 	}
 
 	@Test

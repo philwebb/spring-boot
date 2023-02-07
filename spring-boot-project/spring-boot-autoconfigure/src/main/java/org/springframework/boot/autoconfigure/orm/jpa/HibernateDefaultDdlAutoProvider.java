@@ -52,8 +52,10 @@ class HibernateDefaultDdlAutoProvider implements SchemaManagementProvider {
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
 		return StreamSupport.stream(this.providers.spliterator(), false)
-				.map((provider) -> provider.getSchemaManagement(dataSource)).filter(SchemaManagement.MANAGED::equals)
-				.findFirst().orElse(SchemaManagement.UNMANAGED);
+			.map((provider) -> provider.getSchemaManagement(dataSource))
+			.filter(SchemaManagement.MANAGED::equals)
+			.findFirst()
+			.orElse(SchemaManagement.UNMANAGED);
 	}
 
 }

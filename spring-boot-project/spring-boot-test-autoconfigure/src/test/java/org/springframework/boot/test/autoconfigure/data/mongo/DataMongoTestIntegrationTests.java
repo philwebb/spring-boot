@@ -45,7 +45,7 @@ class DataMongoTestIntegrationTests {
 
 	@Container
 	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -68,7 +68,7 @@ class DataMongoTestIntegrationTests {
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 	@DynamicPropertySource

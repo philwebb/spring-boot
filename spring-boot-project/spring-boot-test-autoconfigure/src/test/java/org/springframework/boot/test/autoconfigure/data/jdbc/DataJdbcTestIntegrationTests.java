@@ -70,7 +70,7 @@ class DataJdbcTestIntegrationTests {
 	@Test
 	void didNotInjectExampleComponent() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test

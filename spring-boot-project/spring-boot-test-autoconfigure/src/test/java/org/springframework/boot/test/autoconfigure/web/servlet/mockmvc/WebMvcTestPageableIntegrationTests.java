@@ -41,8 +41,9 @@ class WebMvcTestPageableIntegrationTests {
 
 	@Test
 	void shouldSupportPageable() throws Exception {
-		this.mvc.perform(get("/paged").param("page", "2").param("size", "42")).andExpect(status().isOk())
-				.andExpect(content().string("2:42"));
+		this.mvc.perform(get("/paged").param("page", "2").param("size", "42"))
+			.andExpect(status().isOk())
+			.andExpect(content().string("2:42"));
 	}
 
 }

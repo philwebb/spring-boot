@@ -199,7 +199,7 @@ class ConfigDataPropertiesTests {
 		Binder binder = new Binder(source);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		assertThat(properties.getImports().get(1).getOrigin())
-				.hasToString("\"spring.config.import\" from property source \"source\"");
+			.hasToString("\"spring.config.import\" from property source \"source\"");
 	}
 
 	@Test
@@ -211,7 +211,7 @@ class ConfigDataPropertiesTests {
 		Binder binder = new Binder(source);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		assertThat(properties.getImports().get(1).getOrigin())
-				.hasToString("\"spring.config.import[1]\" from property source \"source\"");
+			.hasToString("\"spring.config.import[1]\" from property source \"source\"");
 	}
 
 	private Profiles createTestProfiles() {

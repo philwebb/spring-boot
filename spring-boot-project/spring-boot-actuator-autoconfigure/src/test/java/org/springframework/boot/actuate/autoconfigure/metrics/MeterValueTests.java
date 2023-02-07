@@ -84,9 +84,11 @@ class MeterValueTests {
 		MockEnvironment environment = new MockEnvironment();
 		TestPropertyValues.of("duration=10ms", "number=20.42").applyTo(environment);
 		assertThat(Binder.get(environment).bind("duration", Bindable.of(MeterValue.class)).get().getValue(Type.TIMER))
-				.isEqualTo(10000000);
-		assertThat(Binder.get(environment).bind("number", Bindable.of(MeterValue.class)).get()
-				.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(20.42);
+			.isEqualTo(10000000);
+		assertThat(Binder.get(environment)
+			.bind("number", Bindable.of(MeterValue.class))
+			.get()
+			.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(20.42);
 	}
 
 }

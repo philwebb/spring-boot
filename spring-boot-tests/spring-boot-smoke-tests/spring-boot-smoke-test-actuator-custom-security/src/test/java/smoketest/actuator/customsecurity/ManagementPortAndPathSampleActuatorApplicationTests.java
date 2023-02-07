@@ -53,7 +53,7 @@ class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSample
 	@Test
 	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}

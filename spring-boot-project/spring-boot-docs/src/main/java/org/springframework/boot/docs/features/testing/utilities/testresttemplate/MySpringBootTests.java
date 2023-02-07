@@ -49,7 +49,7 @@ class MySpringBootTests {
 		@Bean
 		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(1))
-					.setReadTimeout(Duration.ofSeconds(1));
+				.setReadTimeout(Duration.ofSeconds(1));
 		}
 
 	}

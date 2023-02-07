@@ -51,19 +51,21 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 	@Test
 	void prometheusOpenmetrics() throws Exception {
 		this.mockMvc.perform(get("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
-				.andExpect(status().isOk())
-				.andExpect(header().string("Content-Type", "application/openmetrics-text;version=1.0.0;charset=utf-8"))
-				.andDo(document("prometheus/openmetrics"));
+			.andExpect(status().isOk())
+			.andExpect(header().string("Content-Type", "application/openmetrics-text;version=1.0.0;charset=utf-8"))
+			.andDo(document("prometheus/openmetrics"));
 	}
 
 	@Test
 	void filteredPrometheus() throws Exception {
 		this.mockMvc
-				.perform(get("/actuator/prometheus").param("includedNames",
-						"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
-				.andExpect(status().isOk())
-				.andDo(document("prometheus/names", queryParameters(parameterWithName("includedNames")
-						.description("Restricts the samples to those that match the names. Optional.").optional())));
+			.perform(get("/actuator/prometheus").param("includedNames",
+					"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
+			.andExpect(status().isOk())
+			.andDo(document("prometheus/names",
+					queryParameters(parameterWithName("includedNames")
+						.description("Restricts the samples to those that match the names. Optional.")
+						.optional())));
 	}
 
 	@Configuration(proxyBeanMethods = false)

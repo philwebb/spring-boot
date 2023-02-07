@@ -43,10 +43,17 @@ class PrometheusScrapeEndpointIntegrationTests {
 	void scrapeHasContentTypeText004ByDefault(WebTestClient client) {
 		String expectedContentType = TextFormat.CONTENT_TYPE_004;
 		assertThat(TextFormat.chooseContentType(null)).isEqualTo(expectedContentType);
-		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.parseMediaType(expectedContentType)).expectBody(String.class)
-				.value((body) -> assertThat(body).contains("counter1_total").contains("counter2_total")
-						.contains("counter3_total"));
+		client.get()
+			.uri("/actuator/prometheus")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.parseMediaType(expectedContentType))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.contains("counter3_total"));
 	}
 
 	@WebEndpointTest
@@ -54,34 +61,64 @@ class PrometheusScrapeEndpointIntegrationTests {
 		String expectedContentType = TextFormat.CONTENT_TYPE_004;
 		String accept = "*/*;q=0.8";
 		assertThat(TextFormat.chooseContentType(accept)).isEqualTo(expectedContentType);
-		client.get().uri("/actuator/prometheus").accept(MediaType.parseMediaType(accept)).exchange().expectStatus()
-				.isOk().expectHeader().contentType(MediaType.parseMediaType(expectedContentType))
-				.expectBody(String.class).value((body) -> assertThat(body).contains("counter1_total")
-						.contains("counter2_total").contains("counter3_total"));
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(MediaType.parseMediaType(accept))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.parseMediaType(expectedContentType))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.contains("counter3_total"));
 	}
 
 	@WebEndpointTest
 	void scrapeCanProduceOpenMetrics100(WebTestClient client) {
 		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
-		client.get().uri("/actuator/prometheus").accept(openMetrics).exchange().expectStatus().isOk().expectHeader()
-				.contentType(openMetrics).expectBody(String.class).value((body) -> assertThat(body)
-						.contains("counter1_total").contains("counter2_total").contains("counter3_total"));
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(openMetrics)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(openMetrics)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.contains("counter3_total"));
 	}
 
 	@WebEndpointTest
 	void scrapePrefersToProduceOpenMetrics100(WebTestClient client) {
 		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
 		MediaType textPlain = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004);
-		client.get().uri("/actuator/prometheus").accept(openMetrics, textPlain).exchange().expectStatus().isOk()
-				.expectHeader().contentType(openMetrics);
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(openMetrics, textPlain)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(openMetrics);
 	}
 
 	@WebEndpointTest
 	void scrapeWithIncludedNames(WebTestClient client) {
-		client.get().uri("/actuator/prometheus?includedNames=counter1_total,counter2_total").exchange().expectStatus()
-				.isOk().expectHeader().contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004))
-				.expectBody(String.class).value((body) -> assertThat(body).contains("counter1_total")
-						.contains("counter2_total").doesNotContain("counter3_total"));
+		client.get()
+			.uri("/actuator/prometheus?includedNames=counter1_total,counter2_total")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004))
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("counter1_total")
+				.contains("counter2_total")
+				.doesNotContain("counter3_total"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -368,9 +368,11 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.tomcat.getHost().findChildren()).filter(TomcatEmbeddedContext.class::isInstance)
-				.map(TomcatEmbeddedContext.class::cast).map(TomcatEmbeddedContext::getPath)
-				.collect(Collectors.joining(" "));
+		return Arrays.stream(this.tomcat.getHost().findChildren())
+			.filter(TomcatEmbeddedContext.class::isInstance)
+			.map(TomcatEmbeddedContext.class::cast)
+			.map(TomcatEmbeddedContext::getPath)
+			.collect(Collectors.joining(" "));
 	}
 
 	/**

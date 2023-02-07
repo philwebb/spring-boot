@@ -59,14 +59,14 @@ class UserVehicleServiceTests {
 	@Test
 	void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.service.getVehicleDetails(null))
-				.withMessage("Username must not be null");
+			.withMessage("Username must not be null");
 	}
 
 	@Test
 	void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		assertThatExceptionOfType(UserNameNotFoundException.class)
-				.isThrownBy(() -> this.service.getVehicleDetails("sboot"));
+			.isThrownBy(() -> this.service.getVehicleDetails("sboot"));
 	}
 
 	@Test

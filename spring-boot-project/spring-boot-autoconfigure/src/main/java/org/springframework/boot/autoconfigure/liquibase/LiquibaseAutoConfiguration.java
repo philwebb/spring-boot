@@ -135,7 +135,7 @@ public class LiquibaseAutoConfiguration {
 			}
 			if (properties.getUser() != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
-						.type(SimpleDriverDataSource.class);
+					.type(SimpleDriverDataSource.class);
 				applyCommonBuilderProperties(properties, builder);
 				return builder.build();
 			}

@@ -47,7 +47,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
 		BuildResult build = this.gradleBuild.build("resolveResolvableCopyOfUnresolvableConfiguration");
 		assertThat(build.task(":resolveResolvableCopyOfUnresolvableConfiguration").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate

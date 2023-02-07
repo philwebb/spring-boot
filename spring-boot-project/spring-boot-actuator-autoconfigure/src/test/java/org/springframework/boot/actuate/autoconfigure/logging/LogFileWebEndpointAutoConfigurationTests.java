@@ -43,66 +43,68 @@ import static org.assertj.core.api.Assertions.contentOf;
 class LogFileWebEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
 
 	@Test
 	void runWithOnlyExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void runWhenLoggingFileIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.name:test.log")
-				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void runWhenLoggingFileIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
-				.withPropertyValues("logging.file.name:test.log", "management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+			.withPropertyValues("logging.file.name:test.log", "management.endpoints.web.exposure.include=logfile")
+			.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void runWhenLoggingPathIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.path:test/logs")
-				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void runWhenLoggingPathIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
-				.withPropertyValues("logging.file.path:test/logs", "management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+			.withPropertyValues("logging.file.path:test/logs", "management.endpoints.web.exposure.include=logfile")
+			.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void logFileWebEndpointIsAutoConfiguredWhenExternalFileIsSet() {
 		this.contextRunner
-				.withPropertyValues("management.endpoint.logfile.external-file:external.log",
-						"management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
+			.withPropertyValues("management.endpoint.logfile.external-file:external.log",
+					"management.endpoints.web.exposure.include=logfile")
+			.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void logFileWebEndpointCanBeDisabled() {
 		this.contextRunner.withPropertyValues("logging.file.name:test.log", "management.endpoint.logfile.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
 	}
 
 	@Test
 	void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp) throws IOException {
 		File file = new File(temp.toFile(), "logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
-		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile",
-				"management.endpoint.logfile.external-file:" + file.getAbsolutePath()).run((context) -> {
-					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
-					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
-					Resource resource = endpoint.logFile();
-					assertThat(resource).isNotNull();
-					assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
-				});
+		this.contextRunner
+			.withPropertyValues("management.endpoints.web.exposure.include=logfile",
+					"management.endpoint.logfile.external-file:" + file.getAbsolutePath())
+			.run((context) -> {
+				assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
+				LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
+				Resource resource = endpoint.logFile();
+				assertThat(resource).isNotNull();
+				assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
+			});
 	}
 
 }

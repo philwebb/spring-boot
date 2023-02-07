@@ -130,8 +130,12 @@ public abstract class JpaBaseConfiguration {
 			PersistenceManagedTypes persistenceManagedTypes) {
 		Map<String, Object> vendorProperties = getVendorProperties();
 		customizeVendorProperties(vendorProperties);
-		return factoryBuilder.dataSource(this.dataSource).managedTypes(persistenceManagedTypes)
-				.properties(vendorProperties).mappingResources(getMappingResources()).jta(isJta()).build();
+		return factoryBuilder.dataSource(this.dataSource)
+			.managedTypes(persistenceManagedTypes)
+			.properties(vendorProperties)
+			.mappingResources(getMappingResources())
+			.jta(isJta())
+			.build();
 	}
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();

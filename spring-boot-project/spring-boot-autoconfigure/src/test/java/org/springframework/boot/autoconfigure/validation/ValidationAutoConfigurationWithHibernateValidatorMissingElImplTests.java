@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
 
 	@Test
 	void missingElDependencyIsTolerated() {

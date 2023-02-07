@@ -30,11 +30,13 @@ class GraphQlIntegrationTests {
 	@Test
 	void shouldGreetWithSpecificName(@Autowired HttpGraphQlTester graphQlTester) {
 		HttpGraphQlTester authenticatedTester = graphQlTester.mutate()
-				.webTestClient(
-						(client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))
-				.build();
-		authenticatedTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Alice!");
+			.webTestClient((client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))
+			.build();
+		authenticatedTester.document("{ greeting(name: \"Alice\") } ")
+			.execute()
+			.path("greeting")
+			.entity(String.class)
+			.isEqualTo("Hello, Alice!");
 	}
 
 }

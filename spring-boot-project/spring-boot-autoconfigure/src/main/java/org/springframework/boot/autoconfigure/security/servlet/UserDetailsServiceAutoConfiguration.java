@@ -75,9 +75,10 @@ public class UserDetailsServiceAutoConfiguration {
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();
-		return new InMemoryUserDetailsManager(
-				User.withUsername(user.getName()).password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-						.roles(StringUtils.toStringArray(roles)).build());
+		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
+			.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
+			.roles(StringUtils.toStringArray(roles))
+			.build());
 	}
 
 	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {

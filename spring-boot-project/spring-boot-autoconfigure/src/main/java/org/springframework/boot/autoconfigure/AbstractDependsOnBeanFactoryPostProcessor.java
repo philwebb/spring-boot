@@ -79,8 +79,8 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
 		this.dependsOn = (beanFactory) -> Arrays.stream(dependencyTypes)
-				.flatMap((dependencyType) -> getBeanNames(beanFactory, dependencyType).stream())
-				.collect(Collectors.toSet());
+			.flatMap((dependencyType) -> getBeanNames(beanFactory, dependencyType).stream())
+			.collect(Collectors.toSet());
 	}
 
 	/**

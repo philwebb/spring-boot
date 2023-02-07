@@ -40,8 +40,12 @@ class SampleWebFluxApplicationActuatorIsolatedObjectMapperFalseTests {
 
 	@Test
 	void linksEndpointShouldBeAvailable() {
-		this.webClient.get().uri("/actuator/startup").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-				.is5xxServerError();
+		this.webClient.get()
+			.uri("/actuator/startup")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.is5xxServerError();
 	}
 
 }

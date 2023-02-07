@@ -47,13 +47,13 @@ class IndexedLayersTests {
 	@Test
 	void createWhenIndexFileIsEmptyThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new IndexedLayers(" \n "))
-				.withMessage("Empty layer index file loaded");
+			.withMessage("Empty layer index file loaded");
 	}
 
 	@Test
 	void createWhenIndexFileIsMalformedThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new IndexedLayers("test"))
-				.withMessage("Layer index file is malformed");
+			.withMessage("Layer index file is malformed");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class IndexedLayersTests {
 	void getLayerWhenMatchesNameForMissingLayerThrowsException() throws Exception {
 		IndexedLayers layers = new IndexedLayers(getIndex());
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(mockEntry("file.jar")))
-				.withMessage("No layer defined in index for file " + "'file.jar'");
+			.withMessage("No layer defined in index for file " + "'file.jar'");
 	}
 
 	@Test

@@ -91,7 +91,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
 		return new Binder(ConfigurationPropertySources.from(propertySource)).bind("", STRING_OBJECT_MAP)
-				.orElseGet(LinkedHashMap::new);
+			.orElseGet(LinkedHashMap::new);
 	}
 
 	/**

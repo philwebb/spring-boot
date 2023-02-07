@@ -57,8 +57,9 @@ class RedisCacheConfiguration {
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ObjectProvider<RedisCacheManagerBuilderCustomizer> redisCacheManagerBuilderCustomizers,
 			RedisConnectionFactory redisConnectionFactory, ResourceLoader resourceLoader) {
-		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(
-				determineConfiguration(cacheProperties, redisCacheConfiguration, resourceLoader.getClassLoader()));
+		RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory)
+			.cacheDefaults(
+					determineConfiguration(cacheProperties, redisCacheConfiguration, resourceLoader.getClassLoader()));
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -81,9 +82,9 @@ class RedisCacheConfiguration {
 			CacheProperties cacheProperties, ClassLoader classLoader) {
 		Redis redisProperties = cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
-				.defaultCacheConfig();
-		config = config.serializeValuesWith(
-				SerializationPair.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
+			.defaultCacheConfig();
+		config = config
+			.serializeValuesWith(SerializationPair.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
 		if (redisProperties.getTimeToLive() != null) {
 			config = config.entryTtl(redisProperties.getTimeToLive());
 		}

@@ -47,14 +47,14 @@ class DataSourceUnwrapperTests {
 	void unwrapWithTarget() {
 		DataSource dataSource = new HikariDataSource();
 		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
 	void unwrapWithWrongTarget() {
 		DataSource dataSource = new HikariDataSource();
 		assertThat(DataSourceUnwrapper.unwrap(dataSource, SmartDataSource.class, SingleConnectionDataSource.class))
-				.isNull();
+			.isNull();
 	}
 
 	@Test
@@ -62,7 +62,7 @@ class DataSourceUnwrapperTests {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInDelegate(wrapInDelegate(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
@@ -70,7 +70,7 @@ class DataSourceUnwrapperTests {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class DataSourceUnwrapperTests {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInDelegate(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ class DataSourceUnwrapperTests {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInDelegate(wrapInDelegate(wrapInProxy(wrapInDelegate(dataSource)))));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class DataSourceUnwrapperTests {
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
 		DataSource actual = wrapInDelegate(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, PoolConfiguration.class, DataSourceProxy.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test

@@ -42,7 +42,7 @@ class ValidationFailureAnalyzerTests {
 	@Test
 	void analyzesMissingRequiredConfiguration() {
 		FailureAnalysis analysis = new ValidationFailureAnalyzer()
-				.analyze(createFailure(MissingAccountIdAndApiKeyConfiguration.class));
+			.analyze(createFailure(MissingAccountIdAndApiKeyConfiguration.class));
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getCause().getMessage()).contains("management.newrelic.metrics.export.apiKey was 'null'");
 		assertThat(analysis.getDescription()).isEqualTo(String.format("Invalid Micrometer configuration detected:%n%n"

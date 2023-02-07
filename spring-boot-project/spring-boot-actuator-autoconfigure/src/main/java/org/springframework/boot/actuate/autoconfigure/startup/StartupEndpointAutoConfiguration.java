@@ -62,8 +62,8 @@ public class StartupEndpointAutoConfiguration {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ApplicationStartup");
 			ApplicationStartup applicationStartup = context.getBeanFactory().getApplicationStartup();
 			if (applicationStartup instanceof BufferingApplicationStartup) {
-				return ConditionOutcome.match(
-						message.because("configured applicationStartup is of type BufferingApplicationStartup."));
+				return ConditionOutcome
+					.match(message.because("configured applicationStartup is of type BufferingApplicationStartup."));
 			}
 			return ConditionOutcome.noMatch(message.because("configured applicationStartup is of type "
 					+ applicationStartup.getClass() + ", expected BufferingApplicationStartup."));

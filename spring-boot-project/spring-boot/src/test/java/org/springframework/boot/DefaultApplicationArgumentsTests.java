@@ -37,7 +37,7 @@ class DefaultApplicationArgumentsTests {
 	@Test
 	void argumentsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultApplicationArguments((String[]) null))
-				.withMessageContaining("Args must not be null");
+			.withMessageContaining("Args must not be null");
 	}
 
 	@Test

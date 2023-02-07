@@ -39,7 +39,7 @@ class CityRepositoryTests {
 
 	@Container
 	static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(DockerImageNames.postgresql())
-			.withDatabaseName("test_liquibase");
+		.withDatabaseName("test_liquibase");
 
 	@DynamicPropertySource
 	static void postgresqlProperties(DynamicPropertyRegistry registry) {
@@ -59,7 +59,8 @@ class CityRepositoryTests {
 	@Test
 	void databaseHasBeenInitialized() {
 		StepVerifier.create(this.repository.findByState("DC").filter((city) -> city.getName().equals("Washington")))
-				.consumeNextWith((city) -> assertThat(city.getId()).isNotNull()).verifyComplete();
+			.consumeNextWith((city) -> assertThat(city.getId()).isNotNull())
+			.verifyComplete();
 	}
 
 	private static String r2dbcUrl() {

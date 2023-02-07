@@ -40,8 +40,13 @@ class WebFluxTestConverterIntegrationTests {
 	@Test
 	void shouldFindConverter() {
 		UUID id = UUID.randomUUID();
-		this.webClient.get().uri("/two/" + id).exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo(id + "two");
+		this.webClient.get()
+			.uri("/two/" + id)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo(id + "two");
 	}
 
 }

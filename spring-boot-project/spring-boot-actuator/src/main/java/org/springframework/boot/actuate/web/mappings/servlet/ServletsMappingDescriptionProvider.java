@@ -44,8 +44,12 @@ public class ServletsMappingDescriptionProvider implements MappingDescriptionPro
 	@Override
 	public List<ServletRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
-			return webApplicationContext.getServletContext().getServletRegistrations().values().stream()
-					.map(ServletRegistrationMappingDescription::new).toList();
+			return webApplicationContext.getServletContext()
+				.getServletRegistrations()
+				.values()
+				.stream()
+				.map(ServletRegistrationMappingDescription::new)
+				.toList();
 		}
 		return Collections.emptyList();
 	}

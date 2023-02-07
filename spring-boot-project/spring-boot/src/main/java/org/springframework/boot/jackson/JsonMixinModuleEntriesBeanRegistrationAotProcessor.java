@@ -47,7 +47,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (registeredBean.getBeanClass().equals(JsonMixinModuleEntries.class)) {
 			return BeanRegistrationAotContribution
-					.withCustomCodeFragments((codeFragments) -> new AotContribution(codeFragments, registeredBean));
+				.withCustomCodeFragments((codeFragments) -> new AotContribution(codeFragments, registeredBean));
 		}
 		return null;
 	}
@@ -69,7 +69,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 				BeanRegistrationCode beanRegistrationCode, Executable constructorOrFactoryMethod,
 				boolean allowDirectSupplierShortcut) {
 			JsonMixinModuleEntries entries = this.registeredBean.getBeanFactory()
-					.getBean(this.registeredBean.getBeanName(), JsonMixinModuleEntries.class);
+				.getBean(this.registeredBean.getBeanName(), JsonMixinModuleEntries.class);
 			contributeHints(generationContext.getRuntimeHints(), entries);
 			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {
 				Class<?> beanType = JsonMixinModuleEntries.class;

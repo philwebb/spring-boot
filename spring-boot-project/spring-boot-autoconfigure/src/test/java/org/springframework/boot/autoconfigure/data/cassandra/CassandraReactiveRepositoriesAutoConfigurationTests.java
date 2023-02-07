@@ -81,15 +81,15 @@ class CassandraReactiveRepositoriesAutoConfigurationTests {
 	@Test
 	void enablingImperativeRepositoriesDisablesReactiveRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.repositories.type=imperative")
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
+			.withPropertyValues("spring.data.cassandra.repositories.type=imperative")
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
 	void enablingNoRepositoriesDisablesReactiveRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
+			.withPropertyValues("spring.data.cassandra.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	private ManagedTypes getManagedTypes(ApplicationContext context) {

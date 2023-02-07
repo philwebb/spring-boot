@@ -123,7 +123,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()
 					: RetryInterceptorBuilder.stateful();
 			RetryTemplate retryTemplate = new RetryTemplateFactory(this.retryTemplateCustomizers)
-					.createRetryTemplate(retryConfig, RabbitRetryTemplateCustomizer.Target.LISTENER);
+				.createRetryTemplate(retryConfig, RabbitRetryTemplateCustomizer.Target.LISTENER);
 			builder.retryOperations(retryTemplate);
 			MessageRecoverer recoverer = (this.messageRecoverer != null) ? this.messageRecoverer
 					: new RejectAndDontRequeueRecoverer();

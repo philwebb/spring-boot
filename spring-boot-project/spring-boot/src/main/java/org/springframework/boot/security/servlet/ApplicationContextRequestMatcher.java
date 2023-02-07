@@ -55,7 +55,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	@Override
 	public final boolean matches(HttpServletRequest request) {
 		WebApplicationContext webApplicationContext = WebApplicationContextUtils
-				.getRequiredWebApplicationContext(request.getServletContext());
+			.getRequiredWebApplicationContext(request.getServletContext());
 		if (ignoreApplicationContext(webApplicationContext)) {
 			return false;
 		}

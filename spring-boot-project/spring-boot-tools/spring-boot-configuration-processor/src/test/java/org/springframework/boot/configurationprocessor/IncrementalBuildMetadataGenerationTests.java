@@ -41,14 +41,14 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		project.addSourceCode(BarProperties.class, BarProperties.class.getResourceAsStream("BarProperties.snippet"));
 		metadata = project.compile();
 		assertThat(metadata).has(Metadata.withProperty("bar.extra"));
@@ -79,19 +79,19 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("bar.counter").fromSource(RenamedBarProperties.class));
 		project.delete(BarProperties.class);
 		project.add(RenamedBarProperties.class);
 		metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
+			.has(Metadata.withProperty("foo.counter").fromSource(FooProperties.class).withDefaultValue(0));
 		assertThat(metadata)
-				.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
+			.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		assertThat(metadata)
-				.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
+			.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
 	}
 
 	@Test

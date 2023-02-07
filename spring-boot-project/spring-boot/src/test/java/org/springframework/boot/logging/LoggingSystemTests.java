@@ -52,13 +52,13 @@ class LoggingSystemTests {
 	@Test
 	void getLoggerConfigurationIsUnsupported() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
+			.isThrownBy(() -> new StubLoggingSystem().getLoggerConfiguration("test-logger-name"));
 	}
 
 	@Test
 	void listLoggerConfigurationsIsUnsupported() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(() -> new StubLoggingSystem().getLoggerConfigurations());
+			.isThrownBy(() -> new StubLoggingSystem().getLoggerConfigurations());
 	}
 
 	private static final class StubLoggingSystem extends LoggingSystem {

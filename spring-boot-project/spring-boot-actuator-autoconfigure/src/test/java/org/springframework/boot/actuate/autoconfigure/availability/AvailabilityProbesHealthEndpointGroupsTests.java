@@ -52,7 +52,7 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 	@Test
 	void createWhenGroupsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AvailabilityProbesHealthEndpointGroups(null, false))
-				.withMessage("Groups must not be null");
+			.withMessage("Groups must not be null");
 	}
 
 	@Test

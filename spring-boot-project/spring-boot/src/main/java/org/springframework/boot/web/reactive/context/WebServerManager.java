@@ -54,7 +54,7 @@ class WebServerManager {
 		this.handler.initializeHandler();
 		this.webServer.start();
 		this.applicationContext
-				.publishEvent(new ReactiveWebServerInitializedEvent(this.webServer, this.applicationContext));
+			.publishEvent(new ReactiveWebServerInitializedEvent(this.webServer, this.applicationContext));
 	}
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {

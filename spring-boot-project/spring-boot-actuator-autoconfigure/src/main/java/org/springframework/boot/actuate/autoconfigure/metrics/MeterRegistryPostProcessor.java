@@ -108,8 +108,8 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	private void applyCustomizers(MeterRegistry meterRegistry) {
 		List<MeterRegistryCustomizer<?>> customizers = this.customizers.orderedStream().toList();
 		LambdaSafe.callbacks(MeterRegistryCustomizer.class, customizers, meterRegistry)
-				.withLogger(MeterRegistryPostProcessor.class)
-				.invoke((customizer) -> customizer.customize(meterRegistry));
+			.withLogger(MeterRegistryPostProcessor.class)
+			.invoke((customizer) -> customizer.customize(meterRegistry));
 	}
 
 	private void applyFilters(MeterRegistry meterRegistry) {

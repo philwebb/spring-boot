@@ -75,7 +75,8 @@ public class DevToolsR2dbcAutoConfiguration {
 		public void destroy() throws Exception {
 			if (shouldShutdown()) {
 				Mono.usingWhen(this.connectionFactory.create(), this::executeShutdown, this::closeConnection,
-						this::closeConnection, this::closeConnection).block();
+						this::closeConnection, this::closeConnection)
+					.block();
 				this.eventPublisher.publishEvent(new R2dbcDatabaseShutdownEvent(this.connectionFactory));
 			}
 		}
@@ -128,7 +129,7 @@ public class DevToolsR2dbcAutoConfiguration {
 		private boolean isAutoConfigured(AnnotatedBeanDefinition beanDefinition) {
 			MethodMetadata methodMetadata = beanDefinition.getFactoryMethodMetadata();
 			return methodMetadata != null && methodMetadata.getDeclaringClassName()
-					.startsWith(R2dbcAutoConfiguration.class.getPackage().getName());
+				.startsWith(R2dbcAutoConfiguration.class.getPackage().getName());
 		}
 
 	}

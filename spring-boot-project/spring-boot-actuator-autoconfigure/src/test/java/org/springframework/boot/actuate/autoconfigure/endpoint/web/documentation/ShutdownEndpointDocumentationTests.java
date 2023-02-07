@@ -40,9 +40,10 @@ class ShutdownEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 
 	@Test
 	void shutdown() throws Exception {
-		this.mockMvc.perform(post("/actuator/shutdown")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("shutdown", responseFields(
-						fieldWithPath("message").description("Message describing the result of the request."))));
+		this.mockMvc.perform(post("/actuator/shutdown"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("shutdown", responseFields(
+					fieldWithPath("message").description("Message describing the result of the request."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

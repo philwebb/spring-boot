@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 class MockMvcAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MockMvcAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MockMvcAutoConfiguration.class));
 
 	@Test
 	void registersDispatcherServletFromMockMvc() {
@@ -62,7 +62,7 @@ class MockMvcAutoConfigurationTests {
 	@Test
 	void shouldNotRegisterWebTestClientIfWebFluxMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(WebClient.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(WebTestClient.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(WebTestClient.class));
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class MockMvcAutoConfigurationTests {
 			assertThat(context).hasSingleBean(WebTestClient.class);
 			assertThat(context).hasBean("myWebTestClientCustomizer");
 			then(context.getBean("myWebTestClientCustomizer", WebTestClientBuilderCustomizer.class)).should()
-					.customize(any(WebTestClient.Builder.class));
+				.customize(any(WebTestClient.Builder.class));
 		});
 	}
 

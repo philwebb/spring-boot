@@ -46,18 +46,21 @@ class GraphQlReactiveQuerydslAutoConfigurationTests {
 	private static final Mono<Book> bookPublisher = Mono.just(new Book("42", "Test title", 42, "Test Author"));
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(GraphQlAutoConfiguration.class,
-					GraphQlReactiveQuerydslAutoConfiguration.class))
-			.withUserConfiguration(MockRepositoryConfig.class)
-			.withPropertyValues("spring.main.web-application-type=reactive");
+		.withConfiguration(
+				AutoConfigurations.of(GraphQlAutoConfiguration.class, GraphQlReactiveQuerydslAutoConfiguration.class))
+		.withUserConfiguration(MockRepositoryConfig.class)
+		.withPropertyValues("spring.main.web-application-type=reactive");
 
 	@Test
 	void shouldRegisterDataFetcherForQueryDslRepositories() {
 		this.contextRunner.run((context) -> {
 			ExecutionGraphQlService graphQlService = context.getBean(ExecutionGraphQlService.class);
 			GraphQlTester graphQlTester = ExecutionGraphQlServiceTester.create(graphQlService);
-			graphQlTester.document("{ bookById(id: 1) {name}}").execute().path("bookById.name").entity(String.class)
-					.isEqualTo("Test title");
+			graphQlTester.document("{ bookById(id: 1) {name}}")
+				.execute()
+				.path("bookById.name")
+				.entity(String.class)
+				.isEqualTo("Test title");
 		});
 	}
 

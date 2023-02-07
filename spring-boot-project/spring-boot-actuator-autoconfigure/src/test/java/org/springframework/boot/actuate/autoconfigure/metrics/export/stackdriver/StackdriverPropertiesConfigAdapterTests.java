@@ -52,7 +52,7 @@ class StackdriverPropertiesConfigAdapterTests {
 		StackdriverProperties properties = new StackdriverProperties();
 		properties.setResourceLabels(labels);
 		assertThat(new StackdriverPropertiesConfigAdapter(properties).resourceLabels())
-				.containsExactlyInAnyOrderEntriesOf(labels);
+			.containsExactlyInAnyOrderEntriesOf(labels);
 	}
 
 	@Test

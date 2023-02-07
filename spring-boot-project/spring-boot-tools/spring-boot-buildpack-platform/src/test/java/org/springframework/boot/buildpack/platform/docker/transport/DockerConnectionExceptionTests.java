@@ -35,20 +35,20 @@ class DockerConnectionExceptionTests {
 	@Test
 	void createWhenHostIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DockerConnectionException(null, null))
-				.withMessage("Host must not be null");
+			.withMessage("Host must not be null");
 	}
 
 	@Test
 	void createWhenCauseIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DockerConnectionException(HOST, null))
-				.withMessage("Cause must not be null");
+			.withMessage("Cause must not be null");
 	}
 
 	@Test
 	void createWithIOException() {
 		DockerConnectionException exception = new DockerConnectionException(HOST, new IOException("error"));
 		assertThat(exception.getMessage())
-				.contains("Connection to the Docker daemon at 'docker://localhost/' failed with error \"error\"");
+			.contains("Connection to the Docker daemon at 'docker://localhost/' failed with error \"error\"");
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class DockerConnectionExceptionTests {
 		DockerConnectionException exception = new DockerConnectionException(HOST,
 				new IOException(new com.sun.jna.LastErrorException("root cause")));
 		assertThat(exception.getMessage())
-				.contains("Connection to the Docker daemon at 'docker://localhost/' failed with error \"root cause\"");
+			.contains("Connection to the Docker daemon at 'docker://localhost/' failed with error \"root cause\"");
 	}
 
 }

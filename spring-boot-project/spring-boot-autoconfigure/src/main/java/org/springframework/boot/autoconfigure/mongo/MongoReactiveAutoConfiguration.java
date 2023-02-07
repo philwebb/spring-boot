@@ -107,8 +107,8 @@ public class MongoReactiveAutoConfiguration {
 			if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
 				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 				this.eventLoopGroup = eventLoopGroup;
-				builder.streamFactoryFactory(
-						NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
+				builder
+					.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
 			}
 		}
 

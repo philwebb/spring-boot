@@ -63,7 +63,7 @@ public abstract class AbstractDiscoveredOperation implements Operation {
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this).append("operationMethod", this.operationMethod)
-				.append("invoker", this.invoker);
+			.append("invoker", this.invoker);
 		appendFields(creator);
 		return creator.toString();
 	}

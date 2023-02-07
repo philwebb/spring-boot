@@ -487,7 +487,7 @@ public class WebServiceTemplateBuilder {
 		}
 		else if (!CollectionUtils.isEmpty(this.messageSenders.getMessageSenders())) {
 			webServiceTemplate
-					.setMessageSenders(this.messageSenders.getMessageSenders().toArray(new WebServiceMessageSender[0]));
+				.setMessageSenders(this.messageSenders.getMessageSenders().toArray(new WebServiceMessageSender[0]));
 		}
 	}
 

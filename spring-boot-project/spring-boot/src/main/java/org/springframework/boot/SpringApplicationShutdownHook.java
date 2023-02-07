@@ -207,7 +207,7 @@ class SpringApplicationShutdownHook implements Runnable {
 				ApplicationContext applicationContext = event.getApplicationContext();
 				SpringApplicationShutdownHook.this.contexts.remove(applicationContext);
 				SpringApplicationShutdownHook.this.closedContexts
-						.add((ConfigurableApplicationContext) applicationContext);
+					.add((ConfigurableApplicationContext) applicationContext);
 			}
 		}
 

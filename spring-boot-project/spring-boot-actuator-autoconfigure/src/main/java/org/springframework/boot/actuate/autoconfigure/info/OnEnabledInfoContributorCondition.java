@@ -39,7 +39,7 @@ class OnEnabledInfoContributorCondition extends OnEndpointElementCondition {
 		InfoContributorFallback fallback = annotationAttributes.getEnum("fallback");
 		if (fallback == InfoContributorFallback.DISABLE) {
 			return new ConditionOutcome(false, ConditionMessage.forCondition(ConditionalOnEnabledInfoContributor.class)
-					.because("management.info." + annotationAttributes.getString("value") + ".enabled is not true"));
+				.because("management.info." + annotationAttributes.getString("value") + ".enabled is not true"));
 		}
 		return super.getDefaultOutcome(context, annotationAttributes);
 	}

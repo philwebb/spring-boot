@@ -36,10 +36,10 @@ class MustacheAutoConfigurationWithoutWebMvcTests {
 	@Test
 	void registerBeansForServletAppWithoutMvc() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(MustacheAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Mustache.Compiler.class);
-					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Mustache.Compiler.class);
+				assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+			});
 	}
 
 }

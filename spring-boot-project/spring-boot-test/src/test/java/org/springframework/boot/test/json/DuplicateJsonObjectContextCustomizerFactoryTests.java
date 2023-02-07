@@ -44,8 +44,8 @@ class DuplicateJsonObjectContextCustomizerFactoryTests {
 
 	@Test
 	void warningForMultipleVersions() {
-		new DuplicateJsonObjectContextCustomizerFactory().createContextCustomizer(null, null).customizeContext(null,
-				null);
+		new DuplicateJsonObjectContextCustomizerFactory().createContextCustomizer(null, null)
+			.customizeContext(null, null);
 		assertThat(this.output).contains("Found multiple occurrences of org.json.JSONObject on the class path:");
 	}
 

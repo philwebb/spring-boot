@@ -35,7 +35,7 @@ class Cache2kCacheMeterBinderProviderTests {
 	@Test
 	void cache2kCacheProvider() {
 		SpringCache2kCacheManager cacheManager = new SpringCache2kCacheManager()
-				.addCaches((builder) -> builder.name("test"));
+			.addCaches((builder) -> builder.name("test"));
 		MeterBinder meterBinder = new Cache2kCacheMeterBinderProvider().getMeterBinder(cacheManager.getCache("test"),
 				Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(Cache2kCacheMetrics.class);

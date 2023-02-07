@@ -85,10 +85,10 @@ class WebClientAutoConfigurationTests {
 	@Test
 	void shouldNotCreateClientBuilderIfAlreadyPresent() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class, CustomWebClientBuilderConfig.class)
-				.run((context) -> {
-					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
-					assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
-				});
+			.run((context) -> {
+				WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+				assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

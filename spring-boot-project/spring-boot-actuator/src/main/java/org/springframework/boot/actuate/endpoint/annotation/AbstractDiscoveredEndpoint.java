@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends AbstractExposableEndpoint<O>
+public abstract class AbstractDiscoveredEndpoint<O extends Operation>extends AbstractExposableEndpoint<O>
 		implements DiscoveredEndpoint<O> {
 
 	private final EndpointDiscoverer<?, ?> discoverer;
@@ -70,7 +70,7 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends Ab
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this).append("discoverer", this.discoverer.getClass().getName())
-				.append("endpointBean", this.endpointBean.getClass().getName());
+			.append("endpointBean", this.endpointBean.getClass().getName());
 		appendFields(creator);
 		return creator.toString();
 	}

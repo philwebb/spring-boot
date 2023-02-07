@@ -59,8 +59,8 @@ public class LoggersEndpointAutoConfiguration {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Logging System");
 			String loggingSystem = System.getProperty(LoggingSystem.SYSTEM_PROPERTY);
 			if (LoggingSystem.NONE.equals(loggingSystem)) {
-				return ConditionOutcome.noMatch(
-						message.because("system property " + LoggingSystem.SYSTEM_PROPERTY + " is set to none"));
+				return ConditionOutcome
+					.noMatch(message.because("system property " + LoggingSystem.SYSTEM_PROPERTY + " is set to none"));
 			}
 			return ConditionOutcome.match(message.because("enabled"));
 		}

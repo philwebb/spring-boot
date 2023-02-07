@@ -43,32 +43,34 @@ import static org.mockito.Mockito.mock;
 class MicrometerTracingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(DefaultTracingObservationHandler.class);
-					assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
-					assertThat(context).hasSingleBean(PropagatingSenderTracingObservationHandler.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DefaultTracingObservationHandler.class);
+				assertThat(context).hasSingleBean(PropagatingReceiverTracingObservationHandler.class);
+				assertThat(context).hasSingleBean(PropagatingSenderTracingObservationHandler.class);
+			});
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	void shouldSupplyBeansInCorrectOrder() {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
-				.run((context) -> {
-					List<TracingObservationHandler> tracingObservationHandlers = context
-							.getBeanProvider(TracingObservationHandler.class).orderedStream().toList();
-					assertThat(tracingObservationHandlers).hasSize(3);
-					assertThat(tracingObservationHandlers.get(0))
-							.isInstanceOf(PropagatingReceiverTracingObservationHandler.class);
-					assertThat(tracingObservationHandlers.get(1))
-							.isInstanceOf(PropagatingSenderTracingObservationHandler.class);
-					assertThat(tracingObservationHandlers.get(2)).isInstanceOf(DefaultTracingObservationHandler.class);
-				});
+			.run((context) -> {
+				List<TracingObservationHandler> tracingObservationHandlers = context
+					.getBeanProvider(TracingObservationHandler.class)
+					.orderedStream()
+					.toList();
+				assertThat(tracingObservationHandlers).hasSize(3);
+				assertThat(tracingObservationHandlers.get(0))
+					.isInstanceOf(PropagatingReceiverTracingObservationHandler.class);
+				assertThat(tracingObservationHandlers.get(1))
+					.isInstanceOf(PropagatingSenderTracingObservationHandler.class);
+				assertThat(tracingObservationHandlers.get(2)).isInstanceOf(DefaultTracingObservationHandler.class);
+			});
 	}
 
 	@Test
@@ -112,11 +114,12 @@ class MicrometerTracingAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
-				.withPropertyValues("management.tracing.enabled=false").run((context) -> {
-					assertThat(context).doesNotHaveBean(DefaultTracingObservationHandler.class);
-					assertThat(context).doesNotHaveBean(PropagatingReceiverTracingObservationHandler.class);
-					assertThat(context).doesNotHaveBean(PropagatingSenderTracingObservationHandler.class);
-				});
+			.withPropertyValues("management.tracing.enabled=false")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(DefaultTracingObservationHandler.class);
+				assertThat(context).doesNotHaveBean(PropagatingReceiverTracingObservationHandler.class);
+				assertThat(context).doesNotHaveBean(PropagatingSenderTracingObservationHandler.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

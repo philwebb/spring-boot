@@ -132,8 +132,11 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private void assertNoUnboundChildren(ConfigurationPropertySource source,
 			MultiValueMap<String, ConfigurationPropertyName> children) {
 		if (!children.isEmpty()) {
-			throw new UnboundConfigurationPropertiesException(children.values().stream().flatMap(List::stream)
-					.map(source::getConfigurationProperty).collect(Collectors.toCollection(TreeSet::new)));
+			throw new UnboundConfigurationPropertiesException(children.values()
+				.stream()
+				.flatMap(List::stream)
+				.map(source::getConfigurationProperty)
+				.collect(Collectors.toCollection(TreeSet::new)));
 		}
 	}
 

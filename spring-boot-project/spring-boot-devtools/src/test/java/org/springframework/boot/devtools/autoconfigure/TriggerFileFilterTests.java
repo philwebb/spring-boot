@@ -37,7 +37,7 @@ class TriggerFileFilterTests {
 	@Test
 	void nameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TriggerFileFilter(null))
-				.withMessageContaining("Name must not be null");
+			.withMessageContaining("Name must not be null");
 	}
 
 	@Test

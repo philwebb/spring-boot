@@ -30,14 +30,19 @@ class ProjectControllerTests {
 
 	@Test
 	void shouldFindSpringGraphQl() {
-		this.graphQlTester.document("{ project(slug: \"spring-graphql\") { name } }").execute().path("project.name")
-				.entity(String.class).isEqualTo("Spring GraphQL");
+		this.graphQlTester.document("{ project(slug: \"spring-graphql\") { name } }")
+			.execute()
+			.path("project.name")
+			.entity(String.class)
+			.isEqualTo("Spring GraphQL");
 	}
 
 	@Test
 	void shouldNotFindUnknownProject() {
-		this.graphQlTester.document("{ project(slug: \"spring-unknown\") { name } }").execute().path("project.name")
-				.pathDoesNotExist();
+		this.graphQlTester.document("{ project(slug: \"spring-unknown\") { name } }")
+			.execute()
+			.path("project.name")
+			.pathDoesNotExist();
 	}
 
 }

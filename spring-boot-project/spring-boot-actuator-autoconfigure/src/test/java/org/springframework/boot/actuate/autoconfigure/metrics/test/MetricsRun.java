@@ -102,8 +102,8 @@ public final class MetricsRun {
 					() -> "Unknown export auto-configuration " + configuration.getName());
 		}
 		return (T) contextRunner.withPropertyValues("management.metrics.use-global-registry=false")
-				.withConfiguration(AUTO_CONFIGURATIONS)
-				.withConfiguration(AutoConfigurations.of(exportAutoConfigurations));
+			.withConfiguration(AUTO_CONFIGURATIONS)
+			.withConfiguration(AutoConfigurations.of(exportAutoConfigurations));
 	}
 
 }

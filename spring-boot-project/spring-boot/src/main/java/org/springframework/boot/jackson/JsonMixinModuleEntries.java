@@ -87,7 +87,8 @@ public final class JsonMixinModuleEntries {
 
 	private static void registerMixinClass(Builder builder, Class<?> mixinClass) {
 		MergedAnnotation<JsonMixin> annotation = MergedAnnotations
-				.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(JsonMixin.class);
+			.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
+			.get(JsonMixin.class);
 		for (Class<?> targetType : annotation.getClassArray("type")) {
 			builder.and(targetType, mixinClass);
 		}

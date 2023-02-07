@@ -44,7 +44,7 @@ class OracleUcpDataSourcePoolMetadataTests
 		PoolDataSource dataSource = createDataSource(0, 4);
 		dataSource.setSQLForValidateConnection("SELECT NULL FROM DUAL");
 		assertThat(new OracleUcpDataSourcePoolMetadata(dataSource).getValidationQuery())
-				.isEqualTo("SELECT NULL FROM DUAL");
+			.isEqualTo("SELECT NULL FROM DUAL");
 	}
 
 	@Override

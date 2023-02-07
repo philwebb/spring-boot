@@ -46,9 +46,9 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 				+ " is annotated with @" + ConstructorBinding.class.getSimpleName()
 				+ " but it is defined as a regular bean which caused dependency injection to fail.");
 		assertThat(analysis.getAction())
-				.isEqualTo("Update your configuration so that " + ConstructorBoundProperties.class.getSimpleName()
-						+ " is defined via @" + ConfigurationPropertiesScan.class.getSimpleName() + " or @"
-						+ EnableConfigurationProperties.class.getSimpleName() + ".");
+			.isEqualTo("Update your configuration so that " + ConstructorBoundProperties.class.getSimpleName()
+					+ " is defined via @" + ConfigurationPropertiesScan.class.getSimpleName() + " or @"
+					+ EnableConfigurationProperties.class.getSimpleName() + ".");
 	}
 
 	@Test

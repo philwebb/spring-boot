@@ -95,8 +95,10 @@ final class DispatcherServletHandlerMappings {
 		}
 
 		private Optional<Context> findContext() {
-			return Stream.of(this.webServer.getTomcat().getHost().findChildren()).filter(Context.class::isInstance)
-					.map(Context.class::cast).findFirst();
+			return Stream.of(this.webServer.getTomcat().getHost().findChildren())
+				.filter(Context.class::isInstance)
+				.map(Context.class::cast)
+				.findFirst();
 		}
 
 		private void initializeServlet(Context context, String name) {

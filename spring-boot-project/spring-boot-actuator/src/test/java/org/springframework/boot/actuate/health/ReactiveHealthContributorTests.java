@@ -35,7 +35,7 @@ class ReactiveHealthContributorTests {
 	@Test
 	void adaptWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ReactiveHealthContributor.adapt(null))
-				.withMessage("HealthContributor must not be null");
+			.withMessage("HealthContributor must not be null");
 	}
 
 	@Test
@@ -50,7 +50,7 @@ class ReactiveHealthContributorTests {
 	void adaptWhenCompositeHealthContributorReturnsCompositeHealthContributorReactiveAdapter() {
 		HealthIndicator indicator = () -> Health.outOfService().build();
 		CompositeHealthContributor contributor = CompositeHealthContributor
-				.fromMap(Collections.singletonMap("a", indicator));
+			.fromMap(Collections.singletonMap("a", indicator));
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(contributor);
 		assertThat(adapted).isInstanceOf(CompositeHealthContributorReactiveAdapter.class);
 		ReactiveHealthContributor contained = ((CompositeReactiveHealthContributor) adapted).getContributor("a");
@@ -60,8 +60,8 @@ class ReactiveHealthContributorTests {
 	@Test
 	void adaptWhenUnknownThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ReactiveHealthContributor.adapt(mock(HealthContributor.class)))
-				.withMessage("Unknown HealthContributor type");
+			.isThrownBy(() -> ReactiveHealthContributor.adapt(mock(HealthContributor.class)))
+			.withMessage("Unknown HealthContributor type");
 	}
 
 }

@@ -55,8 +55,8 @@ class SampleServletApplicationTests {
 
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword()).getForEntity("/",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", getPassword())
+			.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}

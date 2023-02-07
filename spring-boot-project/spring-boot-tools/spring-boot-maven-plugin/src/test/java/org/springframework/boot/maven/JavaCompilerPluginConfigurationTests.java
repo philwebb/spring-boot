@@ -93,7 +93,7 @@ class JavaCompilerPluginConfigurationTests {
 
 	private Xpp3Dom buildConfigurationDom(String... properties) throws IOException, XmlPullParserException {
 		return Xpp3DomBuilder
-				.build(new StringReader("<configuration>" + Arrays.toString(properties) + "</configuration>"));
+			.build(new StringReader("<configuration>" + Arrays.toString(properties) + "</configuration>"));
 	}
 
 }

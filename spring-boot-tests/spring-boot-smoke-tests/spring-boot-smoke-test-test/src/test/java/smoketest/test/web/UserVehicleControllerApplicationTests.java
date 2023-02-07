@@ -57,8 +57,9 @@ class UserVehicleControllerApplicationTests {
 	@Test
 	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk())
-				.andExpect(content().string("Honda Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
+			.andExpect(status().isOk())
+			.andExpect(content().string("Honda Civic"));
 	}
 
 	@Test

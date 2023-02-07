@@ -38,13 +38,13 @@ class SharedObjectMapperTests {
 		assertThat(mapper).isNotNull();
 		assertThat(mapper.getRegisteredModuleIds()).contains(new ParameterNamesModule().getTypeId());
 		assertThat(SerializationFeature.INDENT_OUTPUT
-				.enabledIn(mapper.getSerializationConfig().getSerializationFeatures())).isTrue();
+			.enabledIn(mapper.getSerializationConfig().getSerializationFeatures())).isTrue();
 		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-				.enabledIn(mapper.getDeserializationConfig().getDeserializationFeatures())).isFalse();
+			.enabledIn(mapper.getDeserializationConfig().getDeserializationFeatures())).isFalse();
 		assertThat(mapper.getSerializationConfig().getPropertyNamingStrategy())
-				.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+			.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 		assertThat(mapper.getDeserializationConfig().getPropertyNamingStrategy())
-				.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+			.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 	}
 
 }

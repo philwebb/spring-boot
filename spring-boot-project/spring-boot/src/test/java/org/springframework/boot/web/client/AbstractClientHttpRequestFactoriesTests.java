@@ -42,7 +42,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	@Test
 	void getReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS);
+			.get(ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(this.requestFactoryType);
 	}
 
@@ -64,7 +64,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	@SuppressWarnings("unchecked")
 	void getReturnsRequestFactoryWithConfiguredConnectTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
 		assertThat(connectTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(60).toMillis());
 	}
 
@@ -72,7 +72,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	@SuppressWarnings("unchecked")
 	void getReturnsRequestFactoryWithConfiguredReadTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(120)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(120)));
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
 

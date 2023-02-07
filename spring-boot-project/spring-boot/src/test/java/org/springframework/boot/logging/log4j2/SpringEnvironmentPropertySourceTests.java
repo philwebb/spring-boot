@@ -49,7 +49,7 @@ class SpringEnvironmentPropertySourceTests {
 	@Test
 	void createWhenEnvironmentIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpringEnvironmentPropertySource(null))
-				.withMessage("Environment must not be null");
+			.withMessage("Environment must not be null");
 	}
 
 	@Test

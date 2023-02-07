@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JsonbAutoConfigurationWithNoProviderTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
 
 	@Test
 	void jsonbBacksOffWhenThereIsNoProvider() {

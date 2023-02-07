@@ -92,8 +92,10 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	OpenTelemetry openTelemetry(SdkTracerProvider sdkTracerProvider, ContextPropagators contextPropagators) {
-		return OpenTelemetrySdk.builder().setTracerProvider(sdkTracerProvider).setPropagators(contextPropagators)
-				.build();
+		return OpenTelemetrySdk.builder()
+			.setTracerProvider(sdkTracerProvider)
+			.setPropagators(contextPropagators)
+			.build();
 	}
 
 	@Bean
@@ -101,8 +103,9 @@ public class OpenTelemetryAutoConfiguration {
 	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<SpanProcessor> spanProcessors,
 			Sampler sampler) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		SdkTracerProviderBuilder builder = SdkTracerProvider.builder().setSampler(sampler)
-				.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
+		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
+			.setSampler(sampler)
+			.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
 		spanProcessors.orderedStream().forEach(builder::addSpanProcessor);
 		return builder.build();
 	}
@@ -124,9 +127,11 @@ public class OpenTelemetryAutoConfiguration {
 	SpanProcessor otelSpanProcessor(ObjectProvider<SpanExporter> spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters) {
-		return BatchSpanProcessor.builder(new CompositeSpanExporter(spanExporters.orderedStream().toList(),
-				spanExportingPredicates.orderedStream().toList(), spanReporters.orderedStream().toList(),
-				spanFilters.orderedStream().toList())).build();
+		return BatchSpanProcessor
+			.builder(new CompositeSpanExporter(spanExporters.orderedStream().toList(),
+					spanExportingPredicates.orderedStream().toList(), spanReporters.orderedStream().toList(),
+					spanFilters.orderedStream().toList()))
+			.build();
 	}
 
 	@Bean

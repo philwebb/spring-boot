@@ -49,21 +49,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CloudFoundryHealthEndpointWebExtensionTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withPropertyValues("VCAP_APPLICATION={}")
-			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
-					JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-					HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-					ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class))
-			.withUserConfiguration(TestHealthIndicator.class);
+		.withPropertyValues("VCAP_APPLICATION={}")
+		.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+				HealthEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class))
+		.withUserConfiguration(TestHealthIndicator.class);
 
 	@Test
 	void healthComponentsAlwaysPresent() {
 		this.contextRunner.run((context) -> {
 			CloudFoundryHealthEndpointWebExtension extension = context
-					.getBean(CloudFoundryHealthEndpointWebExtension.class);
+				.getBean(CloudFoundryHealthEndpointWebExtension.class);
 			HealthComponent body = extension.health(ApiVersion.V3).getBody();
 			HealthComponent health = ((CompositeHealth) body).getComponents().entrySet().iterator().next().getValue();
 			assertThat(((Health) health).getDetails()).containsEntry("spring", "boot");

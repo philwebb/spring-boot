@@ -37,14 +37,16 @@ class DependencyManagementPluginActionIntegrationTests {
 
 	@TestTemplate
 	void noDependencyManagementIsAppliedByDefault() {
-		assertThat(this.gradleBuild.build("doesNotHaveDependencyManagement").task(":doesNotHaveDependencyManagement")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("doesNotHaveDependencyManagement")
+			.task(":doesNotHaveDependencyManagement")
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void bomIsImportedWhenDependencyManagementPluginIsApplied() {
 		assertThat(this.gradleBuild.build("hasDependencyManagement", "-PapplyDependencyManagementPlugin")
-				.task(":hasDependencyManagement").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+			.task(":hasDependencyManagement")
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 }

@@ -42,14 +42,24 @@ class CorsSampleActuatorApplicationTests {
 
 	@Test
 	void preflightRequestToEndpointShouldReturnOk() {
-		this.webClient.options().uri("/actuator/env").header("Origin", "http://localhost:8080")
-				.header("Access-Control-Request-Method", "GET").exchange().expectStatus().isOk();
+		this.webClient.options()
+			.uri("/actuator/env")
+			.header("Origin", "http://localhost:8080")
+			.header("Access-Control-Request-Method", "GET")
+			.exchange()
+			.expectStatus()
+			.isOk();
 	}
 
 	@Test
 	void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() {
-		this.webClient.options().uri("/actuator/env").header("Origin", "http://localhost:9095")
-				.header("Access-Control-Request-Method", "GET").exchange().expectStatus().isForbidden();
+		this.webClient.options()
+			.uri("/actuator/env")
+			.header("Origin", "http://localhost:9095")
+			.header("Access-Control-Request-Method", "GET")
+			.exchange()
+			.expectStatus()
+			.isForbidden();
 	}
 
 }

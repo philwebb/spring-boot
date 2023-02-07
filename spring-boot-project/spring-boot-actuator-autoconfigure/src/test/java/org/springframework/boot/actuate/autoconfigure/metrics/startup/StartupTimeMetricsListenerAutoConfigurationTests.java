@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 class StartupTimeMetricsListenerAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(StartupTimeMetricsListenerAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(StartupTimeMetricsListenerAutoConfiguration.class));
 
 	@Test
 	void startupTimeMetricsAreRecorded() {
@@ -65,25 +65,27 @@ class StartupTimeMetricsListenerAutoConfigurationTests {
 
 	@Test
 	void startupTimeMetricsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.application.started.time:false",
-				"management.metrics.enable.application.ready.time:false").run((context) -> {
-					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
-					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
-							context.getSourceApplicationContext(), Duration.ofMillis(3000)));
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("application.started.time").timeGauge()).isNull();
-					assertThat(registry.find("application.ready.time").timeGauge()).isNull();
-				});
+		this.contextRunner
+			.withPropertyValues("management.metrics.enable.application.started.time:false",
+					"management.metrics.enable.application.ready.time:false")
+			.run((context) -> {
+				context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+						context.getSourceApplicationContext(), Duration.ofMillis(2500)));
+				context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+						context.getSourceApplicationContext(), Duration.ofMillis(3000)));
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("application.started.time").timeGauge()).isNull();
+				assertThat(registry.find("application.ready.time").timeGauge()).isNull();
+			});
 	}
 
 	@Test
 	void customStartupTimeMetricsAreRespected() {
 		this.contextRunner
-				.withBean("customStartupTimeMetrics", StartupTimeMetricsListener.class,
-						() -> mock(StartupTimeMetricsListener.class))
-				.run((context) -> assertThat(context).hasSingleBean(StartupTimeMetricsListener.class)
-						.hasBean("customStartupTimeMetrics"));
+			.withBean("customStartupTimeMetrics", StartupTimeMetricsListener.class,
+					() -> mock(StartupTimeMetricsListener.class))
+			.run((context) -> assertThat(context).hasSingleBean(StartupTimeMetricsListener.class)
+				.hasBean("customStartupTimeMetrics"));
 	}
 
 }

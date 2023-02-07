@@ -101,7 +101,9 @@ class JerseyWebEndpointManagementContextConfiguration {
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		ExposableWebEndpoint health = webEndpoints.stream()
-				.filter((endpoint) -> endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID)).findFirst().get();
+			.filter((endpoint) -> endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID))
+			.findFirst()
+			.get();
 		return new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(health, healthEndpointGroups);
 	}
 
@@ -195,8 +197,10 @@ class JerseyWebEndpointManagementContextConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.MANAGEMENT, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-					.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
-					.stream().filter(Objects::nonNull).toList();
+				.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
+				.stream()
+				.filter(Objects::nonNull)
+				.toList();
 			register(endpointResources, config);
 		}
 

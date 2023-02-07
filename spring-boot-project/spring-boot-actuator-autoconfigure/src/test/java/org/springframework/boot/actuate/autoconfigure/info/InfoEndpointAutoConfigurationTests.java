@@ -32,12 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InfoEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=info")
-				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class InfoEndpointAutoConfigurationTests {
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.info.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));
 	}
 
 }

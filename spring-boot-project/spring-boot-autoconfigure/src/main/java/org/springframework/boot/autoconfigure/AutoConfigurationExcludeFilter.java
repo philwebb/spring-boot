@@ -56,7 +56,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 
 	private boolean isAutoConfiguration(MetadataReader metadataReader) {
 		boolean annotatedWithAutoConfiguration = metadataReader.getAnnotationMetadata()
-				.isAnnotated(AutoConfiguration.class.getName());
+			.isAnnotated(AutoConfiguration.class.getName());
 		return annotatedWithAutoConfiguration
 				|| getAutoConfigurations().contains(metadataReader.getClassMetadata().getClassName());
 	}
@@ -64,7 +64,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 	protected List<String> getAutoConfigurations() {
 		if (this.autoConfigurations == null) {
 			this.autoConfigurations = ImportCandidates.load(AutoConfiguration.class, this.beanClassLoader)
-					.getCandidates();
+				.getCandidates();
 		}
 		return this.autoConfigurations;
 	}

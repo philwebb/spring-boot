@@ -59,7 +59,8 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 		File standardOut = new File(this.outputDirectory, name + ".out");
 		File standardError = new File(this.outputDirectory, name + ".err");
 		Process process = new ProcessBuilder(StringUtils.toStringArray(command)).redirectError(standardError)
-				.redirectOutput(standardOut).start();
+			.redirectOutput(standardOut)
+			.start();
 		return new LaunchedJvm(process, standardOut, standardError);
 	}
 

@@ -40,27 +40,27 @@ class AutoConfigurationImportSelectorIntegrationTests {
 	@Test
 	void singleSelectorWithNoImports() {
 		this.contextRunner.withUserConfiguration(NoConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context)).isEmpty());
+			.run((context) -> assertThat(getImportedConfigBeans(context)).isEmpty());
 	}
 
 	@Test
 	void singleSelector() {
 		this.contextRunner.withUserConfiguration(SingleConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigC"));
+			.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigC"));
 	}
 
 	@Test
 	void multipleSelectorsShouldMergeAndSortCorrectly() {
 		this.contextRunner.withUserConfiguration(Config.class, AnotherConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
-						"ConfigC", "ConfigD"));
+			.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
+					"ConfigC", "ConfigD"));
 	}
 
 	@Test
 	void multipleSelectorsWithRedundantImportsShouldMergeAndSortCorrectly() {
 		this.contextRunner.withUserConfiguration(SingleConfig.class, Config.class, AnotherConfig.class)
-				.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
-						"ConfigC", "ConfigD"));
+			.run((context) -> assertThat(getImportedConfigBeans(context)).containsExactly("ConfigA", "ConfigB",
+					"ConfigC", "ConfigD"));
 	}
 
 	private List<String> getImportedConfigBeans(AssertableApplicationContext context) {

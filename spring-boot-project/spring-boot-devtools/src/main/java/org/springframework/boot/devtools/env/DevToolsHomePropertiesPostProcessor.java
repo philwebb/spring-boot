@@ -134,7 +134,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 
 	private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
 		return Arrays.stream(loader.getFileExtensions())
-				.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
+			.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 	}
 
 	protected File getHomeDirectory() {

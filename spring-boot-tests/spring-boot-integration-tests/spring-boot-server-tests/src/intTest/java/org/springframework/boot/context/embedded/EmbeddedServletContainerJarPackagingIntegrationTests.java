@@ -68,7 +68,7 @@ class EmbeddedServletContainerJarPackagingIntegrationTests {
 	@TestTemplate
 	void applicationClassesAreNotAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest
-				.getForEntity("/BOOT-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
+			.getForEntity("/BOOT-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

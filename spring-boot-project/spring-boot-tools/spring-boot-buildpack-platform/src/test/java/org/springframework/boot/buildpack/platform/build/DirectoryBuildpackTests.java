@@ -90,9 +90,9 @@ class DirectoryBuildpackTests {
 		Files.createDirectories(this.buildpackDir.toPath());
 		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
-				.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
-				.withMessageContaining(this.buildpackDir.getAbsolutePath());
+			.isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
+			.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
+			.withMessageContaining(this.buildpackDir.getAbsolutePath());
 	}
 
 	@Test
@@ -133,13 +133,14 @@ class DirectoryBuildpackTests {
 				entries.add(entry);
 				entry = tar.getNextTarEntry();
 			}
-			assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(tuple("/cnb/", 0755),
-					tuple("/cnb/buildpacks/", 0755), tuple("/cnb/buildpacks/example_buildpack1/", 0755),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/", 0755),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml", 0644),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/", 0755),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/detect", 0744),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/build", 0744));
+			assertThat(entries).extracting("name", "mode")
+				.containsExactlyInAnyOrder(tuple("/cnb/", 0755), tuple("/cnb/buildpacks/", 0755),
+						tuple("/cnb/buildpacks/example_buildpack1/", 0755),
+						tuple("/cnb/buildpacks/example_buildpack1/0.0.1/", 0755),
+						tuple("/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml", 0644),
+						tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/", 0755),
+						tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/detect", 0744),
+						tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/build", 0744));
 		}
 	}
 

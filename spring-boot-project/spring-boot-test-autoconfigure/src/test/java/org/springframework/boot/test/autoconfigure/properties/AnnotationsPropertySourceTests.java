@@ -42,7 +42,7 @@ class AnnotationsPropertySourceTests {
 	@Test
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AnnotationsPropertySource(null))
-				.withMessageContaining("Property source must not be null");
+			.withMessageContaining("Property source must not be null");
 	}
 
 	@Test

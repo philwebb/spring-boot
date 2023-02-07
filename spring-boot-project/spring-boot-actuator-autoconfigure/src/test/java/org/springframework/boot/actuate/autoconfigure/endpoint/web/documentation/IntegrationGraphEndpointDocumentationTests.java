@@ -39,14 +39,16 @@ class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocument
 
 	@Test
 	void graph() throws Exception {
-		this.mockMvc.perform(get("/actuator/integrationgraph")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("integrationgraph/graph"));
+		this.mockMvc.perform(get("/actuator/integrationgraph"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("integrationgraph/graph"));
 	}
 
 	@Test
 	void rebuild() throws Exception {
-		this.mockMvc.perform(post("/actuator/integrationgraph")).andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
+		this.mockMvc.perform(post("/actuator/integrationgraph"))
+			.andExpect(status().isNoContent())
+			.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

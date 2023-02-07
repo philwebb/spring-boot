@@ -330,8 +330,9 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
 		assertThat(((HttpResponse) response).getCode()).isEqualTo(200);
-		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull().extracting(Header::getValue)
-				.isEqualTo("close");
+		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull()
+			.extracting(Header::getValue)
+			.isEqualTo("close");
 		this.webServer.stop();
 	}
 
@@ -432,7 +433,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 			threadPool.setMinThreads(2);
 		});
 		assertThatExceptionOfType(WebServerException.class).isThrownBy(factory.getWebServer()::start)
-				.withCauseInstanceOf(IllegalStateException.class);
+			.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test

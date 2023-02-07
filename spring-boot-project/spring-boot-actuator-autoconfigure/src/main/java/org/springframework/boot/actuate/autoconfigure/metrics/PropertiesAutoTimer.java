@@ -42,7 +42,7 @@ public class PropertiesAutoTimer implements AutoTimer {
 	@Override
 	public void apply(Builder builder) {
 		builder.publishPercentileHistogram(this.properties.isPercentilesHistogram())
-				.publishPercentiles(this.properties.getPercentiles());
+			.publishPercentiles(this.properties.getPercentiles());
 	}
 
 	@Override

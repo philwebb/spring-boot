@@ -41,7 +41,7 @@ class ConfigDataLocationNotFoundExceptionTests {
 	@Test
 	void createWhenLocationIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigDataLocationNotFoundException(null))
-				.withMessage("Location must not be null");
+			.withMessage("Location must not be null");
 	}
 
 	@Test

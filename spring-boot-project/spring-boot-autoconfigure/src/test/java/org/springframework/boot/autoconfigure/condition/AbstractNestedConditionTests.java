@@ -37,7 +37,7 @@ class AbstractNestedConditionTests {
 	@Test
 	void validPhase() {
 		this.contextRunner.withUserConfiguration(ValidConfig.class)
-				.run((context) -> assertThat(context).hasBean("myBean"));
+			.run((context) -> assertThat(context).hasBean("myBean"));
 	}
 
 	@Test
@@ -45,9 +45,9 @@ class AbstractNestedConditionTests {
 		this.contextRunner.withUserConfiguration(InvalidConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
-					.hasMessageContaining("Nested condition " + InvalidNestedCondition.class.getName()
-							+ " uses a configuration phase that is inappropriate for class "
-							+ OnBeanCondition.class.getName());
+				.hasMessageContaining("Nested condition " + InvalidNestedCondition.class.getName()
+						+ " uses a configuration phase that is inappropriate for class "
+						+ OnBeanCondition.class.getName());
 		});
 	}
 
@@ -56,9 +56,9 @@ class AbstractNestedConditionTests {
 		this.contextRunner.withUserConfiguration(DoubleNestedConfig.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure().getCause()).isInstanceOf(IllegalStateException.class)
-					.hasMessageContaining("Nested condition " + DoubleNestedCondition.class.getName()
-							+ " uses a configuration phase that is inappropriate for class "
-							+ ValidNestedCondition.class.getName());
+				.hasMessageContaining("Nested condition " + DoubleNestedCondition.class.getName()
+						+ " uses a configuration phase that is inappropriate for class "
+						+ ValidNestedCondition.class.getName());
 		});
 	}
 

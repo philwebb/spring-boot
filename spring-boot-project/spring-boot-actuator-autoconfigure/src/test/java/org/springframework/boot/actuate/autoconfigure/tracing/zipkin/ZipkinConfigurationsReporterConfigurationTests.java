@@ -41,12 +41,12 @@ import static org.mockito.Mockito.mock;
 class ZipkinConfigurationsReporterConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, ReporterConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, ReporterConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Reporter.class));
+			.run((context) -> assertThat(context).hasSingleBean(Reporter.class));
 	}
 
 	@Test

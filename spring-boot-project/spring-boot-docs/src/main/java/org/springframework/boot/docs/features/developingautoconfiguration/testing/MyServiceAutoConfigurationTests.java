@@ -30,7 +30,7 @@ class MyServiceAutoConfigurationTests {
 
 	// tag::runner[]
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MyServiceAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MyServiceAutoConfiguration.class));
 
 	// end::runner[]
 
@@ -48,7 +48,7 @@ class MyServiceAutoConfigurationTests {
 	@Test
 	void serviceIsIgnoredIfLibraryIsNotPresent() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(MyService.class))
-				.run((context) -> assertThat(context).doesNotHaveBean("myService"));
+			.run((context) -> assertThat(context).doesNotHaveBean("myService"));
 	}
 	// end::test-classloader[]
 

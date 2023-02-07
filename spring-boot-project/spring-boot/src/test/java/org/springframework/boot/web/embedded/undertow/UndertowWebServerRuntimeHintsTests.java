@@ -43,12 +43,12 @@ class UndertowWebServerRuntimeHintsTests {
 		assertThat(reflectionOnField("io.undertow.Undertow$ListenerConfig", "type")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.Undertow$ListenerConfig", "port")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.protocols.ssl.UndertowAcceptingSslChannel", "ssl"))
-				.accepts(runtimeHints);
+			.accepts(runtimeHints);
 	}
 
 	private FieldHintPredicate reflectionOnField(String className, String fieldName) throws ClassNotFoundException {
 		return RuntimeHintsPredicates.reflection()
-				.onField(ReflectionUtils.findField(Class.forName(className), fieldName));
+			.onField(ReflectionUtils.findField(Class.forName(className), fieldName));
 	}
 
 }

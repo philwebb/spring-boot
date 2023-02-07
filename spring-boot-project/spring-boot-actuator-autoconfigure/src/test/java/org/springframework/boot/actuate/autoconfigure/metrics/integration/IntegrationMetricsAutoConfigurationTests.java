@@ -36,9 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IntegrationMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class,
-					IntegrationGraphEndpointAutoConfiguration.class, IntegrationMetricsAutoConfiguration.class))
-			.with(MetricsRun.simple()).withPropertyValues("management.metrics.tags.someTag=someValue");
+		.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class,
+				IntegrationGraphEndpointAutoConfiguration.class, IntegrationMetricsAutoConfiguration.class))
+		.with(MetricsRun.simple())
+		.withPropertyValues("management.metrics.tags.someTag=someValue");
 
 	@Test
 	void integrationMetersAreInstrumented() {

@@ -77,7 +77,7 @@ class ArtemisConnectionFactoryConfiguration {
 
 		private ActiveMQConnectionFactory createConnectionFactory() {
 			return new ArtemisConnectionFactoryFactory(this.beanFactory, this.properties)
-					.createConnectionFactory(ActiveMQConnectionFactory.class);
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
 	}
@@ -90,9 +90,9 @@ class ArtemisConnectionFactoryConfiguration {
 		@Bean(destroyMethod = "stop")
 		JmsPoolConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties) {
 			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(beanFactory, properties)
-					.createConnectionFactory(ActiveMQConnectionFactory.class);
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
-					.createPooledConnectionFactory(connectionFactory);
+				.createPooledConnectionFactory(connectionFactory);
 		}
 
 	}

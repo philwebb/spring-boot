@@ -117,7 +117,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();
 		assertThat(getEntryNames(getTask().getArchiveFile().get().getAsFile()))
-				.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+			.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	void classpathIndexPointsToWebInfLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
-					.isEqualTo("WEB-INF/classpath.idx");
+				.isEqualTo("WEB-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
 					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
 					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/fourth-library.jar\"",
@@ -148,7 +148,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	void javaVersionIsWrittenToManifest() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))
-					.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
+				.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
 		}
 	}
 

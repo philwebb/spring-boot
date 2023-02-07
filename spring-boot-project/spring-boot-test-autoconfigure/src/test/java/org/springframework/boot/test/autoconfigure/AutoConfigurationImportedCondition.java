@@ -40,7 +40,7 @@ public final class AutoConfigurationImportedCondition extends Condition<Applicat
 	@Override
 	public boolean matches(ApplicationContext context) {
 		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get((ConfigurableListableBeanFactory) context.getAutowireCapableBeanFactory());
+			.get((ConfigurableListableBeanFactory) context.getAutowireCapableBeanFactory());
 		return report.getConditionAndOutcomesBySource().containsKey(this.autoConfigurationClass.getName());
 	}
 

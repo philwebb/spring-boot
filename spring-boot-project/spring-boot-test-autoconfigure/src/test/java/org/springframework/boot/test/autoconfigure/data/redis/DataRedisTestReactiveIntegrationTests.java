@@ -60,17 +60,19 @@ class DataRedisTestReactiveIntegrationTests {
 	@Test
 	void testRepository() {
 		String id = UUID.randomUUID().toString();
-		StepVerifier.create(this.operations.opsForValue().set(id, "Hello World")).expectNext(Boolean.TRUE)
-				.verifyComplete();
+		StepVerifier.create(this.operations.opsForValue().set(id, "Hello World"))
+			.expectNext(Boolean.TRUE)
+			.verifyComplete();
 		StepVerifier.create(this.operations.opsForValue().get(id)).expectNext("Hello World").verifyComplete();
-		StepVerifier.create(this.operations.execute((action) -> action.serverCommands().flushDb())).expectNext("OK")
-				.verifyComplete();
+		StepVerifier.create(this.operations.execute((action) -> action.serverCommands().flushDb()))
+			.expectNext("OK")
+			.verifyComplete();
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

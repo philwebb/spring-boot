@@ -31,7 +31,7 @@ class StaticPortProviderTests {
 	@Test
 	void portMustBePositive() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StaticPortProvider(0))
-				.withMessageContaining("Port must be positive");
+			.withMessageContaining("Port must be positive");
 	}
 
 	@Test

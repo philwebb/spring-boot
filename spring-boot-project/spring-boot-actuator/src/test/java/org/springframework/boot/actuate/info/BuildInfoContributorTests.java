@@ -37,9 +37,10 @@ class BuildInfoContributorTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new BuildInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(BuildProperties.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(BuildProperties.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+			.accepts(runtimeHints);
 	}
 
 }

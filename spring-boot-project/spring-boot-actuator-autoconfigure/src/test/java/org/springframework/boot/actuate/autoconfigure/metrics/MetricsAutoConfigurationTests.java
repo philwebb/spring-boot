@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 class MetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguresAClock() {
@@ -54,7 +54,7 @@ class MetricsAutoConfigurationTests {
 	@Test
 	void allowsACustomClockToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomClockConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasBean("customClock"));
+			.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasBean("customClock"));
 	}
 
 	@SuppressWarnings("unchecked")

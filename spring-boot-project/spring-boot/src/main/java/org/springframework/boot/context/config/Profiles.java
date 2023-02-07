@@ -57,10 +57,10 @@ public class Profiles implements Iterable<String> {
 	public static final String INCLUDE_PROFILES_PROPERTY_NAME = "spring.profiles.include";
 
 	static final ConfigurationPropertyName INCLUDE_PROFILES = ConfigurationPropertyName
-			.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
+		.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
 
 	private static final Bindable<MultiValueMap<String, String>> STRING_STRINGS_MAP = Bindable
-			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
+		.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
 
 	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 

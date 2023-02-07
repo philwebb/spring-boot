@@ -38,9 +38,8 @@ class WebServiceServerIntegrationTests {
 	@Test
 	void payloadRootMethod() {
 		this.mock
-				.sendRequest(
-						RequestCreators.withPayload(new StringSource("<request><message>Hello</message></request>")))
-				.andExpect(ResponseMatchers.payload(new StringSource("<response><code>42</code></response>")));
+			.sendRequest(RequestCreators.withPayload(new StringSource("<request><message>Hello</message></request>")))
+			.andExpect(ResponseMatchers.payload(new StringSource("<response><code>42</code></response>")));
 	}
 
 }

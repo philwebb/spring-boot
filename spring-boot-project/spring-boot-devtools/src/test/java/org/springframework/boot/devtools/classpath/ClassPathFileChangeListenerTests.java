@@ -63,15 +63,15 @@ class ClassPathFileChangeListenerTests {
 	@Test
 	void eventPublisherMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
-				.withMessageContaining("EventPublisher must not be null");
+			.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
+			.withMessageContaining("EventPublisher must not be null");
 	}
 
 	@Test
 	void restartStrategyMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
-				.withMessageContaining("RestartStrategy must not be null");
+			.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
+			.withMessageContaining("RestartStrategy must not be null");
 	}
 
 	@Test

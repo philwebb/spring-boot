@@ -35,7 +35,7 @@ public class SpringBootPropertySource implements PropertySource {
 	private static final String PREFIX = "log4j.";
 
 	private final Map<String, String> properties = Collections
-			.singletonMap(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, "false");
+		.singletonMap(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, "false");
 
 	@Override
 	public void forEach(BiConsumer<String, String> action) {

@@ -85,7 +85,7 @@ class WebFluxTestAutoConfigurationIntegrationTests {
 	@Test
 	void oAuth2ResourceServerAutoConfigurationWasImported() {
 		assertThat(this.applicationContext)
-				.has(importedAutoConfiguration(ReactiveOAuth2ResourceServerAutoConfiguration.class));
+			.has(importedAutoConfiguration(ReactiveOAuth2ResourceServerAutoConfiguration.class));
 	}
 
 }

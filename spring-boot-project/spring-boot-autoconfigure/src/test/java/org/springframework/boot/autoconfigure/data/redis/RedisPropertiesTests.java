@@ -34,9 +34,9 @@ class RedisPropertiesTests {
 	void lettuceDefaultsAreConsistent() {
 		Lettuce lettuce = new RedisProperties().getLettuce();
 		ClusterTopologyRefreshOptions defaultClusterTopologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
-				.build();
+			.build();
 		assertThat(lettuce.getCluster().getRefresh().isDynamicRefreshSources())
-				.isEqualTo(defaultClusterTopologyRefreshOptions.useDynamicRefreshSources());
+			.isEqualTo(defaultClusterTopologyRefreshOptions.useDynamicRefreshSources());
 	}
 
 }

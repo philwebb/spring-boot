@@ -54,8 +54,8 @@ class BeanDefinitionOverrideFailureAnalyzerTests {
 		});
 		String description = analysis.getDescription();
 		assertThat(description)
-				.isEqualTo("The bean 'testBean' could not be registered. A bean with that name has already"
-						+ " been defined and overriding is disabled.");
+			.isEqualTo("The bean 'testBean' could not be registered. A bean with that name has already"
+					+ " been defined and overriding is disabled.");
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {

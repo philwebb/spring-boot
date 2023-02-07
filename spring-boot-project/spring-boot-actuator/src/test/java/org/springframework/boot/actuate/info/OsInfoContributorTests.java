@@ -47,9 +47,10 @@ class OsInfoContributorTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new OsInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(OsInfo.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(OsInfo.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+			.accepts(runtimeHints);
 	}
 
 }

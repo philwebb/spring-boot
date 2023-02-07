@@ -206,7 +206,7 @@ class AutoConfigurationSorter {
 						AutoConfigureOrder.DEFAULT_ORDER);
 			}
 			Map<String, Object> attributes = getAnnotationMetadata()
-					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
+				.getAnnotationAttributes(AutoConfigureOrder.class.getName());
 			return (attributes != null) ? (Integer) attributes.get("value") : AutoConfigureOrder.DEFAULT_ORDER;
 		}
 

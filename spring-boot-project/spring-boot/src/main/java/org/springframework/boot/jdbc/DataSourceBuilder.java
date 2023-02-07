@@ -345,7 +345,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		@SuppressWarnings("unchecked")
 		MappedDataSourceProperties() {
 			this.dataSourceType = (Class<T>) ResolvableType.forClass(MappedDataSourceProperties.class, getClass())
-					.resolveGeneric();
+				.resolveGeneric();
 		}
 
 		@Override

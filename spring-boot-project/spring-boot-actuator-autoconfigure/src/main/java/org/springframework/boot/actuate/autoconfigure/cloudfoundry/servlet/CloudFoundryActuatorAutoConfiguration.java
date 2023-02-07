@@ -100,9 +100,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
 			ObjectProvider<InfoContributor> infoContributors) {
 		List<InfoContributor> contributors = infoContributors.orderedStream()
-				.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
-						? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
-				.toList();
+			.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
+					? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
+			.toList();
 		return new CloudFoundryInfoEndpointWebExtension(new InfoEndpoint(contributors));
 	}
 
@@ -147,8 +147,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
-		corsConfiguration.setAllowedHeaders(
-				Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
+		corsConfiguration
+			.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
 		return corsConfiguration;
 	}
 

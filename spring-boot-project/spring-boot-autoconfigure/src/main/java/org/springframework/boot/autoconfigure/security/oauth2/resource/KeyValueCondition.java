@@ -37,7 +37,7 @@ public class KeyValueCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Public Key Value Condition");
 		Environment environment = context.getEnvironment();
 		String publicKeyLocation = environment
-				.getProperty("spring.security.oauth2.resourceserver.jwt.public-key-location");
+			.getProperty("spring.security.oauth2.resourceserver.jwt.public-key-location");
 		if (!StringUtils.hasText(publicKeyLocation)) {
 			return ConditionOutcome.noMatch(message.didNotFind("public-key-location property").atAll());
 		}

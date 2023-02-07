@@ -118,9 +118,10 @@ class StartupTimeMetricsListenerTests {
 	private void assertMetricExistsWithCustomTagsAndValue(String metricName, Tags expectedCustomTags,
 			Long expectedValueInMillis) {
 		assertThat(this.registry.find(metricName)
-				.tags(Tags.concat(expectedCustomTags, "main.application.class", TestMainApplication.class.getName()))
-				.timeGauge()).isNotNull().extracting((m) -> m.value(TimeUnit.MILLISECONDS))
-						.isEqualTo(expectedValueInMillis.doubleValue());
+			.tags(Tags.concat(expectedCustomTags, "main.application.class", TestMainApplication.class.getName()))
+			.timeGauge()).isNotNull()
+			.extracting((m) -> m.value(TimeUnit.MILLISECONDS))
+			.isEqualTo(expectedValueInMillis.doubleValue());
 	}
 
 	static class TestMainApplication {

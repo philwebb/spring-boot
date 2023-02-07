@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApplicationAvailabilityAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class));
 
 	@Test
 	void providerIsPresent() {

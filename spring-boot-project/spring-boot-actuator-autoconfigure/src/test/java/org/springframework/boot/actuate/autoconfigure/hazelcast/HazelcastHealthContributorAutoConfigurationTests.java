@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HazelcastHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class,
-					HazelcastHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class,
+				HazelcastHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
@@ -45,7 +45,7 @@ class HazelcastHealthContributorAutoConfigurationTests {
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.hazelcast.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HazelcastHealthIndicator.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(HazelcastHealthIndicator.class));
 	}
 
 }

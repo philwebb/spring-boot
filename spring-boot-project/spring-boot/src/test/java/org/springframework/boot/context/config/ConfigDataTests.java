@@ -44,13 +44,13 @@ class ConfigDataTests {
 	@Test
 	void createWhenPropertySourcesIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigData(null))
-				.withMessage("PropertySources must not be null");
+			.withMessage("PropertySources must not be null");
 	}
 
 	@Test
 	void createWhenOptionsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigData(Collections.emptyList(), (Option[]) null))
-				.withMessage("Options must not be null");
+			.withMessage("Options must not be null");
 	}
 
 	@Test

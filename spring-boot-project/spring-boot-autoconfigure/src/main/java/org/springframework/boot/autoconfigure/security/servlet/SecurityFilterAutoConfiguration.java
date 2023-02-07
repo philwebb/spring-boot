@@ -69,9 +69,11 @@ public class SecurityFilterAutoConfiguration {
 		if (securityProperties.getFilter().getDispatcherTypes() == null) {
 			return null;
 		}
-		return securityProperties.getFilter().getDispatcherTypes().stream()
-				.map((type) -> DispatcherType.valueOf(type.name()))
-				.collect(Collectors.toCollection(() -> EnumSet.noneOf(DispatcherType.class)));
+		return securityProperties.getFilter()
+			.getDispatcherTypes()
+			.stream()
+			.map((type) -> DispatcherType.valueOf(type.name()))
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(DispatcherType.class)));
 	}
 
 }

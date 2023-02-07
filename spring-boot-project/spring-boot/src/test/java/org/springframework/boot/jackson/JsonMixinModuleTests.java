@@ -58,7 +58,7 @@ class JsonMixinModuleTests {
 	@SuppressWarnings("removal")
 	void createWhenContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new JsonMixinModule(null, Collections.emptyList()))
-				.withMessageContaining("Context must not be null");
+			.withMessageContaining("Context must not be null");
 	}
 
 	@Test

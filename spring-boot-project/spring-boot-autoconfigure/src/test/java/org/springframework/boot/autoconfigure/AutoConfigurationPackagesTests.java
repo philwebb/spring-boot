@@ -42,14 +42,14 @@ class AutoConfigurationPackagesTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				ConfigWithAutoConfigurationPackage.class);
 		assertThat(AutoConfigurationPackages.get(context.getBeanFactory()))
-				.containsExactly(getClass().getPackage().getName());
+			.containsExactly(getClass().getPackage().getName());
 	}
 
 	@Test
 	void getWithoutSet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(EmptyConfig.class);
 		assertThatIllegalStateException().isThrownBy(() -> AutoConfigurationPackages.get(context.getBeanFactory()))
-				.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
+			.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
 	}
 
 	@Test

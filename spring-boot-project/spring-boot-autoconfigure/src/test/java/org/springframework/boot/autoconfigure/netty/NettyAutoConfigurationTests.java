@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NettyAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(NettyAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(NettyAutoConfiguration.class));
 
 	@Test
 	void leakDetectionShouldBeConfigured() {

@@ -30,7 +30,9 @@ class GraphQlTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		return MergedAnnotations.from(testClass, MergedAnnotations.SearchStrategy.INHERITED_ANNOTATIONS)
-				.get(GraphQlTest.class).getValue("properties", String[].class).orElse(null);
+			.get(GraphQlTest.class)
+			.getValue("properties", String[].class)
+			.orElse(null);
 	}
 
 }

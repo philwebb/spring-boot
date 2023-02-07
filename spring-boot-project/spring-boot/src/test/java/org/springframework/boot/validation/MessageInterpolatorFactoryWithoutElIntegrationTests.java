@@ -42,8 +42,8 @@ class MessageInterpolatorFactoryWithoutElIntegrationTests {
 	void defaultMessageInterpolatorShouldFail() {
 		// Sanity test
 		assertThatExceptionOfType(ValidationException.class)
-				.isThrownBy(Validation.byDefaultProvider().configure()::getDefaultMessageInterpolator)
-				.withMessageContaining("jakarta.el.ExpressionFactory");
+			.isThrownBy(Validation.byDefaultProvider().configure()::getDefaultMessageInterpolator)
+			.withMessageContaining("jakarta.el.ExpressionFactory");
 	}
 
 	@Test
@@ -60,7 +60,7 @@ class MessageInterpolatorFactoryWithoutElIntegrationTests {
 		assertThat(interpolator).isInstanceOf(MessageSourceMessageInterpolator.class);
 		assertThat(interpolator).hasFieldOrPropertyWithValue("messageSource", messageSource);
 		assertThat(ReflectionTestUtils.getField(interpolator, "messageInterpolator"))
-				.isInstanceOf(ParameterMessageInterpolator.class);
+			.isInstanceOf(ParameterMessageInterpolator.class);
 	}
 
 }

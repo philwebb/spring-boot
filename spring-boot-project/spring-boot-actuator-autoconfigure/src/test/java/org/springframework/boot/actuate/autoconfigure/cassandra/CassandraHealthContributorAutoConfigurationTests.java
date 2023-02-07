@@ -38,35 +38,35 @@ import static org.mockito.Mockito.mock;
 class CassandraHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CassandraHealthContributorAutoConfiguration.class,
-					HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CassandraHealthContributorAutoConfiguration.class,
+				HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runWithoutCqlSessionOrCassandraOperationsShouldNotCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("cassandraHealthContributor")
-				.doesNotHaveBean(CassandraDriverHealthIndicator.class));
+			.doesNotHaveBean(CassandraDriverHealthIndicator.class));
 	}
 
 	@Test
 	void runWithCqlSessionOnlyShouldCreateDriverIndicator() {
 		this.contextRunner.withBean(CqlSession.class, () -> mock(CqlSession.class))
-				.run((context) -> assertThat(context).hasSingleBean(CassandraDriverHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(CassandraDriverHealthIndicator.class));
 	}
 
 	@Test
 	void runWithCqlSessionAndSpringDataAbsentShouldCreateDriverIndicator() {
 		this.contextRunner.withBean(CqlSession.class, () -> mock(CqlSession.class))
-				.withClassLoader(new FilteredClassLoader("org.springframework.data"))
-				.run((context) -> assertThat(context).hasSingleBean(CassandraDriverHealthIndicator.class));
+			.withClassLoader(new FilteredClassLoader("org.springframework.data"))
+			.run((context) -> assertThat(context).hasSingleBean(CassandraDriverHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withBean(CqlSession.class, () -> mock(CqlSession.class))
-				.withBean(CassandraOperations.class, () -> mock(CassandraOperations.class))
-				.withPropertyValues("management.health.cassandra.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean("cassandraHealthContributor")
-						.doesNotHaveBean(CassandraDriverHealthIndicator.class));
+			.withBean(CassandraOperations.class, () -> mock(CassandraOperations.class))
+			.withPropertyValues("management.health.cassandra.enabled:false")
+			.run((context) -> assertThat(context).doesNotHaveBean("cassandraHealthContributor")
+				.doesNotHaveBean(CassandraDriverHealthIndicator.class));
 	}
 
 }

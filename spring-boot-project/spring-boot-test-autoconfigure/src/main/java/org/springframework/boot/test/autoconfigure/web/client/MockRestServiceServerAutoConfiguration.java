@@ -64,7 +64,7 @@ public class MockRestServiceServerAutoConfiguration {
 	private MockRestServiceServer createDeferredMockRestServiceServer(MockServerRestTemplateCustomizer customizer)
 			throws Exception {
 		Constructor<MockRestServiceServer> constructor = MockRestServiceServer.class
-				.getDeclaredConstructor(RequestExpectationManager.class);
+			.getDeclaredConstructor(RequestExpectationManager.class);
 		constructor.setAccessible(true);
 		return constructor.newInstance(new DeferredRequestExpectationManager(customizer));
 	}

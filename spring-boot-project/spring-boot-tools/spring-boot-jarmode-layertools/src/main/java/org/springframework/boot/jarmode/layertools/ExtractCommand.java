@@ -99,7 +99,7 @@ class ExtractCommand extends Command {
 		}
 		try {
 			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
-					.setTimes(entry.getLastModifiedTime(), entry.getLastAccessTime(), entry.getCreationTime());
+				.setTimes(entry.getLastModifiedTime(), entry.getLastAccessTime(), entry.getCreationTime());
 		}
 		catch (IOException ex) {
 			// File system does not support setting time attributes. Continue.

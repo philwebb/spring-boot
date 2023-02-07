@@ -41,9 +41,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JerseyWebEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class,
-					JerseyWebEndpointManagementContextConfiguration.class))
-			.withBean(WebEndpointsSupplier.class, () -> Collections::emptyList);
+		.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class,
+				JerseyWebEndpointManagementContextConfiguration.class))
+		.withBean(WebEndpointsSupplier.class, () -> Collections::emptyList);
 
 	@Test
 	void jerseyWebEndpointsResourcesRegistrarForEndpointsIsAutoConfigured() {
@@ -53,15 +53,15 @@ class JerseyWebEndpointManagementContextConfigurationTests {
 	@Test
 	void autoConfigurationIsConditionalOnServletWebApplication() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
 		contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
 	void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.runner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 }

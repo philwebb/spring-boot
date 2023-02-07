@@ -50,7 +50,7 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void applyingNativeImagePluginAppliesAotPlugin() {
 		assertThat(this.gradleBuild.build("aotPluginApplied").getOutput())
-				.contains("org.springframework.boot.aot applied = true");
+			.contains("org.springframework.boot.aot applied = true");
 	}
 
 	@TestTemplate

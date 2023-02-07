@@ -62,8 +62,9 @@ public abstract class AllNestedConditions extends AbstractNestedCondition {
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 		boolean match = hasSameSize(memberOutcomes.getMatches(), memberOutcomes.getAll());
 		List<ConditionMessage> messages = new ArrayList<>();
-		messages.add(ConditionMessage.forCondition("AllNestedConditions").because(
-				memberOutcomes.getMatches().size() + " matched " + memberOutcomes.getNonMatches().size() + " did not"));
+		messages.add(ConditionMessage.forCondition("AllNestedConditions")
+			.because(memberOutcomes.getMatches().size() + " matched " + memberOutcomes.getNonMatches().size()
+					+ " did not"));
 		for (ConditionOutcome outcome : memberOutcomes.getAll()) {
 			messages.add(outcome.getConditionMessage());
 		}

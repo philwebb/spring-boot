@@ -44,8 +44,8 @@ class ConditionEvaluationReportLoggingProcessorTests {
 	@Test
 	void logsDebugOnProcessAheadOfTime(CapturedOutput output) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		ConditionEvaluationReport.get(beanFactory).recordConditionEvaluation("test", mock(Condition.class),
-				ConditionOutcome.match());
+		ConditionEvaluationReport.get(beanFactory)
+			.recordConditionEvaluation("test", mock(Condition.class), ConditionOutcome.match());
 		ConditionEvaluationReportLoggingProcessor processor = new ConditionEvaluationReportLoggingProcessor();
 		processor.processAheadOfTime(beanFactory);
 		assertThat(output).doesNotContain("CONDITIONS EVALUATION REPORT");
@@ -55,7 +55,7 @@ class ConditionEvaluationReportLoggingProcessorTests {
 
 	private void withDebugLogging(Runnable runnable) {
 		Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory())
-				.getLogger(ConditionEvaluationReportLogger.class);
+			.getLogger(ConditionEvaluationReportLogger.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

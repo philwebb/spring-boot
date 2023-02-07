@@ -61,7 +61,7 @@ class WebServletHandler extends ServletComponentHandler {
 
 	private MultipartConfigElement determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
-				.getAnnotationAttributes(MultipartConfig.class.getName());
+			.getAnnotationAttributes(MultipartConfig.class.getName());
 		if (attributes == null) {
 			return null;
 		}

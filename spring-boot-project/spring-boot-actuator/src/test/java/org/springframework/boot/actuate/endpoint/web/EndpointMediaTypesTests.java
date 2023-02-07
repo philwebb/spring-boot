@@ -47,13 +47,13 @@ class EndpointMediaTypesTests {
 	@Test
 	void createWhenProducedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
-				.withMessageContaining("Produced must not be null");
+			.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
 	void createWhenConsumedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
-				.withMessageContaining("Consumed must not be null");
+			.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test

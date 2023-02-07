@@ -46,7 +46,7 @@ class MustacheStandaloneIntegrationTests {
 	@Test
 	void directCompilation() {
 		assertThat(this.compiler.compile("Hello: {{world}}").execute(Collections.singletonMap("world", "World")))
-				.isEqualTo("Hello: World");
+			.isEqualTo("Hello: World");
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -96,9 +96,9 @@ class BuildpackResolversTests extends AbstractJsonTests {
 	void resolveAllWithInvalidLocatorThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("unknown-buildpack@0.0.1");
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> BuildpackResolvers.resolveAll(this.resolverContext, Collections.singleton(reference)))
-				.withMessageContaining("Invalid buildpack reference")
-				.withMessageContaining("'unknown-buildpack@0.0.1'");
+			.isThrownBy(() -> BuildpackResolvers.resolveAll(this.resolverContext, Collections.singleton(reference)))
+			.withMessageContaining("Invalid buildpack reference")
+			.withMessageContaining("'unknown-buildpack@0.0.1'");
 	}
 
 }

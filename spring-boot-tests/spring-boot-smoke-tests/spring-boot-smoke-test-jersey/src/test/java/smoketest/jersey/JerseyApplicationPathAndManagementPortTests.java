@@ -50,7 +50,7 @@ class JerseyApplicationPathAndManagementPortTests {
 	@Test
 	void applicationPathShouldNotAffectActuators() {
 		ResponseEntity<String> entity = this.testRestTemplate
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

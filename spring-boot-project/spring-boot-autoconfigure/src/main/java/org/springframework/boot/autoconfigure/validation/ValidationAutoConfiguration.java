@@ -59,7 +59,7 @@ public class ValidationAutoConfiguration {
 			ObjectProvider<ValidationConfigurationCustomizer> customizers) {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
 		factoryBean.setConfigurationInitializer((configuration) -> customizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(configuration)));
+			.forEach((customizer) -> customizer.customize(configuration)));
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;

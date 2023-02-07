@@ -39,7 +39,7 @@ class RestClientTestWithConfigurationPropertiesIntegrationTests {
 	@Test
 	void configurationPropertiesCanBeAddedAsComponent() {
 		assertThat(this.applicationContext.getBeansOfType(ExampleProperties.class).keySet())
-				.containsOnly("example-org.springframework.boot.test.autoconfigure.web.client.ExampleProperties");
+			.containsOnly("example-org.springframework.boot.test.autoconfigure.web.client.ExampleProperties");
 		assertThat(this.applicationContext.getBean(ExampleProperties.class).getName()).isEqualTo("Hello");
 	}
 

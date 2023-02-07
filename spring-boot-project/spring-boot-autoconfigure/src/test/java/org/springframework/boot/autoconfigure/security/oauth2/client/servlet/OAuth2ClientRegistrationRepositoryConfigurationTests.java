@@ -38,20 +38,20 @@ class OAuth2ClientRegistrationRepositoryConfigurationTests {
 	@Test
 	void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {
 		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ClientRegistrationRepository.class));
 	}
 
 	@Test
 	void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
 		this.contextRunner.withUserConfiguration(OAuth2ClientRegistrationRepositoryConfiguration.class)
-				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
-						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
-				.run((context) -> {
-					ClientRegistrationRepository repository = context.getBean(ClientRegistrationRepository.class);
-					ClientRegistration registration = repository.findByRegistrationId("foo");
-					assertThat(registration).isNotNull();
-					assertThat(registration.getClientSecret()).isEqualTo("secret");
-				});
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.run((context) -> {
+				ClientRegistrationRepository repository = context.getBean(ClientRegistrationRepository.class);
+				ClientRegistration registration = repository.findByRegistrationId("foo");
+				assertThat(registration).isNotNull();
+				assertThat(registration.getClientSecret()).isEqualTo("secret");
+			});
 	}
 
 }

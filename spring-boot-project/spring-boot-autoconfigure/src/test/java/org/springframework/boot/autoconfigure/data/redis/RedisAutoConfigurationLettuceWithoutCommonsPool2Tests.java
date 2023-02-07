@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RedisAutoConfigurationLettuceWithoutCommonsPool2Tests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
 
 	@Test
 	void poolWithoutCommonsPool2IsDisabledByDefault() {

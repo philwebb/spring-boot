@@ -67,7 +67,7 @@ class NumberToPeriodConverterTests {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			PeriodUnit unitAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), PeriodUnit.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), PeriodUnit.class, null);
 			given(targetType.getAnnotation(PeriodUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) Period.class);

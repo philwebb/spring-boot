@@ -300,9 +300,9 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		else {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
 					: "main artifact";
-			getLog().info(
-					String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
-							artifactId, source.getFile()));
+			getLog()
+				.info(String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
+						artifactId, source.getFile()));
 			getLog().info("The original artifact has been renamed to " + original);
 			source.setFile(target);
 		}

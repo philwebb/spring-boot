@@ -62,7 +62,7 @@ class BuildPropertiesTests {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new BuildProperties.BuildPropertiesRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.resource().forResource("META-INF/build-info.properties"))
-				.accepts(runtimeHints);
+			.accepts(runtimeHints);
 	}
 
 	private static Properties createProperties(String group, String artifact, String version, String buildTime) {

@@ -61,7 +61,7 @@ class NumberToDataSizeConverterTests {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			DataSizeUnit unitAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DataSizeUnit.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DataSizeUnit.class, null);
 			given(targetType.getAnnotation(DataSizeUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) DataSize.class);

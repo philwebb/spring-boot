@@ -96,8 +96,10 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	@Override
 	protected JsonContent<T> getJsonContent(String json) {
-		Configuration configuration = Configuration.builder().jsonProvider(new JacksonJsonProvider(this.objectMapper))
-				.mappingProvider(new JacksonMappingProvider(this.objectMapper)).build();
+		Configuration configuration = Configuration.builder()
+			.jsonProvider(new JacksonJsonProvider(this.objectMapper))
+			.mappingProvider(new JacksonMappingProvider(this.objectMapper))
+			.build();
 		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
 	}
 

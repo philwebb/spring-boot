@@ -33,7 +33,7 @@ class BindValidationExceptionTests {
 	@Test
 	void createWhenValidationErrorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BindValidationException(null))
-				.withMessageContaining("ValidationErrors must not be null");
+			.withMessageContaining("ValidationErrors must not be null");
 	}
 
 	@Test

@@ -57,8 +57,8 @@ class CachingOperationInvokerTests {
 	@Test
 	void createInstanceWithTtlSetToZero() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
-				.withMessageContaining("TimeToLive");
+			.isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
+			.withMessageContaining("TimeToLive");
 	}
 
 	@Test

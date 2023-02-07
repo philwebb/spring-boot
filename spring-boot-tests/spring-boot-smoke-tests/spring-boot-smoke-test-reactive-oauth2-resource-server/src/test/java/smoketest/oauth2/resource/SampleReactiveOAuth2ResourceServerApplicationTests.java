@@ -58,14 +58,25 @@ class SampleReactiveOAuth2ResourceServerApplicationTests {
 
 	@Test
 	void getWhenValidTokenShouldBeOk() {
-		this.webTestClient.get().uri("/").headers((headers) -> headers.setBearerAuth(VALID_TOKEN)).exchange()
-				.expectStatus().isOk().expectBody(String.class).isEqualTo("Hello, subject!");
+		this.webTestClient.get()
+			.uri("/")
+			.headers((headers) -> headers.setBearerAuth(VALID_TOKEN))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("Hello, subject!");
 	}
 
 	@Test
 	void getWhenNoTokenShouldBeUnauthorized() {
-		this.webTestClient.get().uri("/").exchange().expectStatus().isUnauthorized().expectHeader()
-				.valueEquals(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
+		this.webTestClient.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isUnauthorized()
+			.expectHeader()
+			.valueEquals(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
 	}
 
 	private static MockResponse mockResponse() {
@@ -87,7 +98,8 @@ class SampleReactiveOAuth2ResourceServerApplicationTests {
 				+ "8CJ453lo4gcBm1efURN3LIVc1V9NQY_ESBKVdwqYyoJPEanURLVGRd6cQKn6YrCbbIRHjqAyqOE-z3KmgDJnPriljfR5XhSGyM9eq"
 				+ "D9Xpy6zu_MAeMJJfSArp857zLPk-Wf5VP9STAcjyfdBIybMKnwBYr2qHMT675hQ\"}]}";
 		return new MockResponse().setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.setResponseCode(200).setBody(body);
+			.setResponseCode(200)
+			.setBody(body);
 	}
 
 }

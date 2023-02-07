@@ -51,8 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CouchbaseDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class,
-					CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class));
 
 	@Test
 	void disabledIfCouchbaseIsNotConfigured() {
@@ -76,16 +76,16 @@ class CouchbaseDataAutoConfigurationTests {
 	@Test
 	void typeKeyDefault() {
 		this.contextRunner.withUserConfiguration(CouchbaseMockConfiguration.class)
-				.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
-						.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY));
+			.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
+				.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY));
 	}
 
 	@Test
 	void typeKeyCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(CouchbaseMockConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.type-key=_custom")
-				.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
-						.isEqualTo("_custom"));
+			.withPropertyValues("spring.data.couchbase.type-key=_custom")
+			.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
+				.isEqualTo("_custom"));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class CouchbaseDataAutoConfigurationTests {
 			CouchbaseTemplate template = context.getBean(CouchbaseTemplate.class);
 			assertThat(
 					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
-							.isTrue();
+				.isTrue();
 		});
 	}
 

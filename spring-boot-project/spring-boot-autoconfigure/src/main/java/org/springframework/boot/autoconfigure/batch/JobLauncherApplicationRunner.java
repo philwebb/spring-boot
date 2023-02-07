@@ -210,7 +210,8 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 			return jobParameters;
 		}
 		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobExplorer)
-				.getNextJobParameters(job).toJobParameters();
+			.getNextJobParameters(job)
+			.toJobParameters();
 		return merge(nextParameters, jobParameters);
 	}
 

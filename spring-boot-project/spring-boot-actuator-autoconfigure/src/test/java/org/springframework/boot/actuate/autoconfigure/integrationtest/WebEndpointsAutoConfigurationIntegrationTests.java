@@ -59,19 +59,19 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	@Test
 	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
 		return new WebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class)).withPropertyValues(
-						"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
+			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
+			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
 		return new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class)).withPropertyValues(
-						"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
+			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
+			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,

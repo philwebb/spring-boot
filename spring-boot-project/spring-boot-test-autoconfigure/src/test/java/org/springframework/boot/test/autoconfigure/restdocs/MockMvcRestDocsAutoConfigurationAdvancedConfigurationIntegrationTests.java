@@ -69,7 +69,8 @@ class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Test
 	void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/")).andDo(this.documentationHandler
+		this.mvc.perform(get("/"))
+			.andDo(this.documentationHandler
 				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
@@ -94,7 +95,7 @@ class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 		@Bean
 		RestDocsMockMvcConfigurationCustomizer defaultSnippetsCustomizer() {
 			return (configurer) -> configurer.snippets()
-					.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
+				.withAdditionalDefaults(responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}

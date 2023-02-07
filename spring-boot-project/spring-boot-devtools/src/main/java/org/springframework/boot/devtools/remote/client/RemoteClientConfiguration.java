@@ -95,7 +95,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 		Proxy proxy = this.properties.getRemote().getProxy();
 		if (proxy.getHost() != null && proxy.getPort() != null) {
 			requestFactory
-					.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+				.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(proxy.getHost(), proxy.getPort())));
 		}
 		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}

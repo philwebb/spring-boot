@@ -78,8 +78,9 @@ public abstract class BootBuildImage extends DefaultTask {
 	public BootBuildImage() {
 		this.projectName = getProject().getName();
 		Project project = getProject();
-		Property<String> projectVersion = project.getObjects().property(String.class)
-				.convention(project.provider(() -> project.getVersion().toString()));
+		Property<String> projectVersion = project.getObjects()
+			.property(String.class)
+			.convention(project.provider(() -> project.getVersion().toString()));
 		getImageName().convention(project.provider(() -> {
 			ImageName imageName = ImageName.of(this.projectName);
 			if ("unspecified".equals(projectVersion.get())) {

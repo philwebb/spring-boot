@@ -44,30 +44,33 @@ class AvailabilityStateHealthIndicatorTests {
 	@Test
 	void createWhenApplicationAvailabilityIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AvailabilityStateHealthIndicator(null, LivenessState.class, (statusMappings) -> {
-				})).withMessage("ApplicationAvailability must not be null");
+			.isThrownBy(() -> new AvailabilityStateHealthIndicator(null, LivenessState.class, (statusMappings) -> {
+			}))
+			.withMessage("ApplicationAvailability must not be null");
 	}
 
 	@Test
 	void createWhenStateTypeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, null, (statusMappings) -> {
-				})).withMessage("StateType must not be null");
+				}))
+			.withMessage("StateType must not be null");
 	}
 
 	@Test
 	void createWhenStatusMappingIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, LivenessState.class, null))
-				.withMessage("StatusMappings must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, LivenessState.class, null))
+			.withMessage("StatusMappings must not be null");
 	}
 
 	@Test
 	void createWhenStatusMappingDoesNotCoverAllEnumsThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AvailabilityStateHealthIndicator(this.applicationAvailability,
-						LivenessState.class, (statusMappings) -> statusMappings.add(LivenessState.CORRECT, Status.UP)))
-				.withMessage("StatusMappings does not include BROKEN");
+			.isThrownBy(() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, LivenessState.class,
+					(statusMappings) -> statusMappings.add(LivenessState.CORRECT, Status.UP)))
+			.withMessage("StatusMappings does not include BROKEN");
 	}
 
 	@Test

@@ -45,8 +45,10 @@ class RetryTemplateFactory {
 		map.from(properties::getMaxAttempts).to(policy::setMaxAttempts);
 		template.setRetryPolicy(policy);
 		ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-		map.from(properties::getInitialInterval).whenNonNull().as(Duration::toMillis)
-				.to(backOffPolicy::setInitialInterval);
+		map.from(properties::getInitialInterval)
+			.whenNonNull()
+			.as(Duration::toMillis)
+			.to(backOffPolicy::setInitialInterval);
 		map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
 		map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis).to(backOffPolicy::setMaxInterval);
 		template.setBackOffPolicy(backOffPolicy);

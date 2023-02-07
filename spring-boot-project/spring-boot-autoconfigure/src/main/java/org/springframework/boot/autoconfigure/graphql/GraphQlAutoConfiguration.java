@@ -87,9 +87,10 @@ public class GraphQlAutoConfiguration {
 		Resource[] schemaResources = resolveSchemaResources(resourcePatternResolver, schemaLocations,
 				properties.getSchema().getFileExtensions());
 		GraphQlSource.SchemaResourceBuilder builder = GraphQlSource.schemaResourceBuilder()
-				.schemaResources(schemaResources).exceptionResolvers(exceptionResolvers.orderedStream().toList())
-				.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
-				.instrumentation(instrumentations.orderedStream().toList());
+			.schemaResources(schemaResources)
+			.exceptionResolvers(exceptionResolvers.orderedStream().toList())
+			.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
+			.instrumentation(instrumentations.orderedStream().toList());
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}
@@ -143,7 +144,7 @@ public class GraphQlAutoConfiguration {
 	public AnnotatedControllerConfigurer annotatedControllerConfigurer() {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
 		controllerConfigurer
-				.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
+			.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
 		return controllerConfigurer;
 	}
 

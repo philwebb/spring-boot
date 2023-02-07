@@ -66,16 +66,16 @@ class SslConfigurationValidatorTests {
 	@Test
 	void validateKeyAliasWhenAliasNotFoundShouldThrowException() {
 		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
 	}
 
 	@Test
 	void validateKeyAliasWhenKeyStoreThrowsExceptionOnContains() throws KeyStoreException {
 		KeyStore uninitializedKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(uninitializedKeyStore, "alias"))
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage("Could not determine if keystore contains alias 'alias'");
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessage("Could not determine if keystore contains alias 'alias'");
 	}
 
 }

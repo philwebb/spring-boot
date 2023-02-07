@@ -229,7 +229,7 @@ public abstract class Packager {
 			if (zipEntry != null) {
 				try (InputStream inputStream = sourceJar.getInputStream(zipEntry)) {
 					ReachabilityMetadataProperties properties = ReachabilityMetadataProperties
-							.fromInputStream(inputStream);
+						.fromInputStream(inputStream);
 					if (properties.isOverridden()) {
 						excludes.add(entry.getKey());
 					}

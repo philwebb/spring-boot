@@ -48,7 +48,7 @@ class SessionsEndpointTests {
 	@Test
 	void sessionsForUsername() {
 		given(this.repository.findByPrincipalName("user"))
-				.willReturn(Collections.singletonMap(session.getId(), session));
+			.willReturn(Collections.singletonMap(session.getId(), session));
 		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());

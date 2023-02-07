@@ -67,31 +67,31 @@ class AdditionalHealthEndpointPathTests {
 	@Test
 	void fromPathWithMultipleSegmentsShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:/my-path/my-sub-path"));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:/my-path/my-sub-path"));
 	}
 
 	@Test
 	void fromPathWithMultipleSegmentsNotStartingWithSlashShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:my-path/my-sub-path"));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:my-path/my-sub-path"));
 	}
 
 	@Test
 	void pathsWithTheSameNamespaceAndValueAreEqual() {
 		assertThat(AdditionalHealthEndpointPath.from("server:/my-path"))
-				.isEqualTo(AdditionalHealthEndpointPath.from("server:/my-path"));
+			.isEqualTo(AdditionalHealthEndpointPath.from("server:/my-path"));
 	}
 
 	@Test
 	void pathsWithTheDifferentNamespaceAndSameValueAreNotEqual() {
 		assertThat(AdditionalHealthEndpointPath.from("server:/my-path"))
-				.isNotEqualTo((AdditionalHealthEndpointPath.from("management:/my-path")));
+			.isNotEqualTo((AdditionalHealthEndpointPath.from("management:/my-path")));
 	}
 
 	@Test
 	void pathsWithTheSameNamespaceAndValuesWithNoSlashAreEqual() {
 		assertThat(AdditionalHealthEndpointPath.from("server:/my-path"))
-				.isEqualTo((AdditionalHealthEndpointPath.from("server:my-path")));
+			.isEqualTo((AdditionalHealthEndpointPath.from("server:my-path")));
 	}
 
 	@Test
@@ -102,13 +102,13 @@ class AdditionalHealthEndpointPathTests {
 	@Test
 	void ofWithNullPathShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, null));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, null));
 	}
 
 	@Test
 	void ofWithMultipleSegmentValueShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, "/my-path/my-subpath"));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, "/my-path/my-subpath"));
 	}
 
 	@Test

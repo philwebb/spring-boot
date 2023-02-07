@@ -34,7 +34,8 @@ class NoTestRestTemplateBeanChecker implements ImportSelector, BeanFactoryAware 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) beanFactory,
-				TestRestTemplate.class)).isEmpty();
+				TestRestTemplate.class))
+			.isEmpty();
 	}
 
 	@Override

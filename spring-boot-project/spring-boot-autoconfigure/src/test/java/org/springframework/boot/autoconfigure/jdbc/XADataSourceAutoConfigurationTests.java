@@ -67,15 +67,15 @@ class XADataSourceAutoConfigurationTests {
 	@Test
 	void createNonEmbeddedFromXAProperties() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
-				.withUserConfiguration(FromProperties.class)
-				.withClassLoader(new FilteredClassLoader("org.h2.Driver", "org.hsqldb.jdbcDriver"))
-				.withPropertyValues("spring.datasource.xa.data-source-class-name:com.ibm.db2.jcc.DB2XADataSource",
-						"spring.datasource.xa.properties.user:test", "spring.datasource.xa.properties.password:secret")
-				.run((context) -> {
-					MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
-					XADataSource xaDataSource = wrapper.getXaDataSource();
-					assertThat(xaDataSource).isInstanceOf(DB2XADataSource.class);
-				});
+			.withUserConfiguration(FromProperties.class)
+			.withClassLoader(new FilteredClassLoader("org.h2.Driver", "org.hsqldb.jdbcDriver"))
+			.withPropertyValues("spring.datasource.xa.data-source-class-name:com.ibm.db2.jcc.DB2XADataSource",
+					"spring.datasource.xa.properties.user:test", "spring.datasource.xa.properties.password:secret")
+			.run((context) -> {
+				MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
+				XADataSource xaDataSource = wrapper.getXaDataSource();
+				assertThat(xaDataSource).isInstanceOf(DB2XADataSource.class);
+			});
 	}
 
 	@Test

@@ -38,13 +38,13 @@ class NamedContributorTests {
 	@Test
 	void ofWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NamedContributor.of(null, "two"))
-				.withMessage("Name must not be null");
+			.withMessage("Name must not be null");
 	}
 
 	@Test
 	void ofWhenContributorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NamedContributor.of("one", null))
-				.withMessage("Contributor must not be null");
+			.withMessage("Contributor must not be null");
 
 	}
 

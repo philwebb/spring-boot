@@ -57,7 +57,7 @@ class RestTemplateBuilderClientHttpRequestInitializer implements ClientHttpReque
 		}
 		this.defaultHeaders.forEach(headers::putIfAbsent);
 		LambdaSafe.callbacks(RestTemplateRequestCustomizer.class, this.requestCustomizers, request)
-				.invoke((customizer) -> customizer.customize(request));
+			.invoke((customizer) -> customizer.customize(request));
 	}
 
 }

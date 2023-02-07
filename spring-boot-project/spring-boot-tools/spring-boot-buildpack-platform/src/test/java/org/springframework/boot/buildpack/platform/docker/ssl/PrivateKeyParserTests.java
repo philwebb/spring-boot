@@ -87,7 +87,7 @@ class PrivateKeyParserTests {
 	void parseWithNonKeyFileWillThrowException() throws IOException {
 		Path path = this.fileWriter.writeFile("text.pem", "plain text");
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
-				.withMessageContaining(path.toString());
+			.withMessageContaining(path.toString());
 		Files.delete(path);
 	}
 
@@ -95,7 +95,7 @@ class PrivateKeyParserTests {
 	void parseWithInvalidPathWillThrowException() throws URISyntaxException {
 		Path path = Paths.get(new URI("file:///bad/path/key.pem"));
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
-				.withMessageContaining(path.toString());
+			.withMessageContaining(path.toString());
 	}
 
 	@Nested

@@ -44,7 +44,7 @@ class FilteredClassLoaderTests {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class.getPackage().getName())) {
 			assertThatExceptionOfType(ClassNotFoundException.class)
-					.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
+				.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
 		}
 	}
 
@@ -52,7 +52,7 @@ class FilteredClassLoaderTests {
 	void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(FilteredClassLoaderTests.class)) {
 			assertThatExceptionOfType(ClassNotFoundException.class)
-					.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
+				.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
 		}
 	}
 
@@ -117,7 +117,7 @@ class FilteredClassLoaderTests {
 		Class<FilteredClassLoaderTests> hiddenClass = FilteredClassLoaderTests.class;
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClass)) {
 			assertThatIllegalArgumentException()
-					.isThrownBy(() -> classLoader.publicDefineClass(hiddenClass.getName(), new byte[] {}, null));
+				.isThrownBy(() -> classLoader.publicDefineClass(hiddenClass.getName(), new byte[] {}, null));
 		}
 	}
 

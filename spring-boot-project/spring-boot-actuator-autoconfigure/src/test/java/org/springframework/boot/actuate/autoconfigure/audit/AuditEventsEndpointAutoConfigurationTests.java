@@ -42,14 +42,14 @@ class AuditEventsEndpointAutoConfigurationTests {
 	@Test
 	void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
-				.run((context) -> assertThat(context).hasSingleBean(AuditEventsEndpoint.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
+			.run((context) -> assertThat(context).hasSingleBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
 	void endpointBacksOffWhenRepositoryNotAvailable() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
-				.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
@@ -60,9 +60,9 @@ class AuditEventsEndpointAutoConfigurationTests {
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpoint() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withPropertyValues("management.endpoint.auditevents.enabled:false")
-				.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
+			.withPropertyValues("management.endpoint.auditevents.enabled:false")
+			.withPropertyValues("management.endpoints.web.exposure.include=*")
+			.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

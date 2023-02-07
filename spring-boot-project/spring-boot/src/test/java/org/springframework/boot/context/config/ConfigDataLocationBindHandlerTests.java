@@ -126,13 +126,13 @@ class ConfigDataLocationBindHandlerTests {
 		ValueObject bound = binder.bind("test", VALUE_OBJECT, this.handler).get();
 		assertThat(bound.getLocation(0)).hasToString("a");
 		assertThat(bound.getLocation(0).getOrigin())
-				.hasToString("\"test.locations[0]\" from property source \"source\"");
+			.hasToString("\"test.locations[0]\" from property source \"source\"");
 		assertThat(bound.getLocation(1)).hasToString("b");
 		assertThat(bound.getLocation(1).getOrigin())
-				.hasToString("\"test.locations[1]\" from property source \"source\"");
+			.hasToString("\"test.locations[1]\" from property source \"source\"");
 		assertThat(bound.getLocation(2)).hasToString("c");
 		assertThat(bound.getLocation(2).getOrigin())
-				.hasToString("\"test.locations[2]\" from property source \"source\"");
+			.hasToString("\"test.locations[2]\" from property source \"source\"");
 	}
 
 	static class ValueObject {

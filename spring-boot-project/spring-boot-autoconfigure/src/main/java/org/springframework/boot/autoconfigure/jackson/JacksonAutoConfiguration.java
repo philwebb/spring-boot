@@ -361,8 +361,9 @@ public class JacksonAutoConfiguration {
 		}
 
 		private void registerPropertyNamingStrategyHints(ReflectionHints hints, Class<?> type) {
-			Stream.of(type.getDeclaredFields()).filter(this::isPropertyNamingStrategyField)
-					.forEach(hints::registerField);
+			Stream.of(type.getDeclaredFields())
+				.filter(this::isPropertyNamingStrategyField)
+				.forEach(hints::registerField);
 		}
 
 		private boolean isPropertyNamingStrategyField(Field candidate) {

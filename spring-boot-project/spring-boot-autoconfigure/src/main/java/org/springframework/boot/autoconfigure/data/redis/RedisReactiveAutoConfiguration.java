@@ -51,8 +51,12 @@ public class RedisReactiveAutoConfiguration {
 		JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer(
 				resourceLoader.getClassLoader());
 		RedisSerializationContext<Object, Object> serializationContext = RedisSerializationContext
-				.newSerializationContext().key(jdkSerializer).value(jdkSerializer).hashKey(jdkSerializer)
-				.hashValue(jdkSerializer).build();
+			.newSerializationContext()
+			.key(jdkSerializer)
+			.value(jdkSerializer)
+			.hashKey(jdkSerializer)
+			.hashValue(jdkSerializer)
+			.build();
 		return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, serializationContext);
 	}
 

@@ -61,8 +61,8 @@ import org.springframework.web.util.pattern.PathPattern;
 public class DispatcherHandlersMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders = Arrays
-			.asList(new RequestMappingInfoHandlerMappingDescriptionProvider(),
-					new UrlHandlerMappingDescriptionProvider(), new RouterFunctionMappingDescriptionProvider());
+		.asList(new RequestMappingInfoHandlerMappingDescriptionProvider(), new UrlHandlerMappingDescriptionProvider(),
+				new RouterFunctionMappingDescriptionProvider());
 
 	@Override
 	public String getMappingName() {
@@ -73,7 +73,7 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 	public Map<String, List<DispatcherHandlerMappingDescription>> describeMappings(ApplicationContext context) {
 		Map<String, List<DispatcherHandlerMappingDescription>> mappings = new HashMap<>();
 		context.getBeansOfType(DispatcherHandler.class)
-				.forEach((name, handler) -> mappings.put(name, describeMappings(handler)));
+			.forEach((name, handler) -> mappings.put(name, describeMappings(handler)));
 		return mappings;
 	}
 

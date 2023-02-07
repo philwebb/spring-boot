@@ -45,8 +45,10 @@ class IndexedLayers implements Layers {
 	private final Map<String, List<String>> layers = new LinkedHashMap<>();
 
 	IndexedLayers(String indexFile) {
-		String[] lines = Arrays.stream(indexFile.split("\n")).map((line) -> line.replace("\r", ""))
-				.filter(StringUtils::hasText).toArray(String[]::new);
+		String[] lines = Arrays.stream(indexFile.split("\n"))
+			.map((line) -> line.replace("\r", ""))
+			.filter(StringUtils::hasText)
+			.toArray(String[]::new);
 		List<String> contents = null;
 		for (String line : lines) {
 			if (line.startsWith("- ")) {

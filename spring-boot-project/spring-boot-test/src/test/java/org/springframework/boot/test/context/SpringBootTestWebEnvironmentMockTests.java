@@ -62,7 +62,7 @@ class SpringBootTestWebEnvironmentMockTests {
 	@Test
 	void validateWebApplicationContextIsSet() {
 		WebApplicationContext fromServletContext = WebApplicationContextUtils
-				.getWebApplicationContext(this.servletContext);
+			.getWebApplicationContext(this.servletContext);
 		assertThat(fromServletContext).isSameAs(this.context);
 	}
 

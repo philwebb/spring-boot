@@ -37,7 +37,7 @@ class ObjectContentTests {
 	@Test
 	void createWhenObjectIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
-				.withMessageContaining("Object must not be null");
+			.withMessageContaining("Object must not be null");
 	}
 
 	@Test

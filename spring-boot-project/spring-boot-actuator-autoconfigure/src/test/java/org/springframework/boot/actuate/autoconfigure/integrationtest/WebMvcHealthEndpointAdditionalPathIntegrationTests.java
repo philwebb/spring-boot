@@ -44,14 +44,14 @@ class WebMvcHealthEndpointAdditionalPathIntegrationTests extends
 
 	WebMvcHealthEndpointAdditionalPathIntegrationTests() {
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
-						HttpMessageConvertersAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class, WebMvcAutoConfiguration.class,
-						ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-						HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
-				.withInitializer(new ServerPortInfoApplicationContextInitializer())
-				.withPropertyValues("server.port=0"));
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("server.port=0"));
 	}
 
 }

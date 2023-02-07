@@ -64,13 +64,13 @@ class HttpRestartServerTests {
 	@Test
 	void sourceDirectoryUrlFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceDirectoryUrlFilter) null))
-				.withMessageContaining("SourceDirectoryUrlFilter must not be null");
+			.withMessageContaining("SourceDirectoryUrlFilter must not be null");
 	}
 
 	@Test
 	void restartServerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((RestartServer) null))
-				.withMessageContaining("RestartServer must not be null");
+			.withMessageContaining("RestartServer must not be null");
 	}
 
 	@Test

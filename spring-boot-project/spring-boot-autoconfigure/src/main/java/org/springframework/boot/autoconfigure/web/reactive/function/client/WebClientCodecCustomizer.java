@@ -39,7 +39,7 @@ public class WebClientCodecCustomizer implements WebClientCustomizer {
 	@Override
 	public void customize(WebClient.Builder webClientBuilder) {
 		webClientBuilder
-				.codecs((codecs) -> this.codecCustomizers.forEach((customizer) -> customizer.customize(codecs)));
+			.codecs((codecs) -> this.codecCustomizers.forEach((customizer) -> customizer.customize(codecs)));
 	}
 
 }

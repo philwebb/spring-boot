@@ -88,7 +88,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 
 	private void verifyPrefixed(SecurityContext securityContext, boolean showUnsanitized) {
 		given(this.delegate.getConfigurationProperties("test", showUnsanitized))
-				.willReturn(new ConfigurationPropertiesDescriptor(Collections.emptyMap()));
+			.willReturn(new ConfigurationPropertiesDescriptor(Collections.emptyMap()));
 		this.webExtension.configurationPropertiesWithPrefix(securityContext, "test");
 		then(this.delegate).should().getConfigurationProperties("test", showUnsanitized);
 	}

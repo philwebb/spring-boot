@@ -150,7 +150,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 				this.generatedClasses };
 		URL[] classPath = getClassPath(directories);
 		if (!includeJUnitPlatformLauncher || this.project.getArtifactMap()
-				.containsKey(JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID)) {
+			.containsKey(JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID)) {
 			return classPath;
 		}
 		return addJUnitPlatformLauncher(classPath);

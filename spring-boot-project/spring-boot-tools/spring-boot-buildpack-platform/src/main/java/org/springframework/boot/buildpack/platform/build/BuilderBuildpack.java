@@ -62,7 +62,7 @@ class BuilderBuildpack implements Buildpack {
 	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		boolean unambiguous = reference.hasPrefix(PREFIX);
 		BuilderReference builderReference = BuilderReference
-				.of(unambiguous ? reference.getSubReference(PREFIX) : reference.toString());
+			.of(unambiguous ? reference.getSubReference(PREFIX) : reference.toString());
 		BuildpackMetadata buildpackMetadata = findBuildpackMetadata(context, builderReference);
 		if (unambiguous) {
 			Assert.isTrue(buildpackMetadata != null, () -> "Buildpack '" + reference + "' not found in builder");

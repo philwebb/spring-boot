@@ -42,7 +42,7 @@ class DiscovererEndpointFilterTests {
 	@Test
 	void createWhenDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestDiscovererEndpointFilter(null))
-				.withMessageContaining("Discoverer must not be null");
+			.withMessageContaining("Discoverer must not be null");
 	}
 
 	@Test

@@ -44,20 +44,20 @@ import static org.mockito.Mockito.mock;
 class JerseySameManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
 
 	@Test
 	void autoConfigurationIsConditionalOnServletWebApplication() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
 		contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
 	void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class JerseySameManagementContextConfigurationTests {
 			assertThat(context).hasSingleBean(ResourceConfig.class);
 			ResourceConfig config = context.getBean(ResourceConfig.class);
 			ManagementContextResourceConfigCustomizer customizer = context
-					.getBean(ManagementContextResourceConfigCustomizer.class);
+				.getBean(ManagementContextResourceConfigCustomizer.class);
 			then(customizer).should().customize(config);
 		});
 	}

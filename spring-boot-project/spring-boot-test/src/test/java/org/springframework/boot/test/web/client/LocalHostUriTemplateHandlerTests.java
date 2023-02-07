@@ -43,21 +43,21 @@ class LocalHostUriTemplateHandlerTests {
 	@Test
 	void createWhenEnvironmentIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostUriTemplateHandler(null))
-				.withMessageContaining("Environment must not be null");
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWhenSchemeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), null))
-				.withMessageContaining("Scheme must not be null");
+			.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), null))
+			.withMessageContaining("Scheme must not be null");
 	}
 
 	@Test
 	void createWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null))
-				.withMessageContaining("Handler must not be null");
+			.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null))
+			.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

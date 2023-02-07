@@ -70,7 +70,7 @@ public class MessageSourceAutoConfiguration {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(properties.getBasename())) {
 			messageSource.setBasenames(StringUtils
-					.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(properties.getBasename())));
+				.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(properties.getBasename())));
 		}
 		if (properties.getEncoding() != null) {
 			messageSource.setDefaultEncoding(properties.getEncoding().name());
@@ -116,7 +116,7 @@ public class MessageSourceAutoConfiguration {
 			String target = name.replace('.', '/');
 			try {
 				return new PathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + target + ".properties");
+					.getResources("classpath*:" + target + ".properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;

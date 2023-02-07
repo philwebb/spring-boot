@@ -59,7 +59,7 @@ class YamlPropertySourceLoaderTests {
 		}
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader.load("resource", resource)
-				.get(0);
+			.get(0);
 		assertThat(source).isNotNull();
 		assertThat(source.getPropertyNames()).isEqualTo(StringUtils.toStringArray(expected));
 	}

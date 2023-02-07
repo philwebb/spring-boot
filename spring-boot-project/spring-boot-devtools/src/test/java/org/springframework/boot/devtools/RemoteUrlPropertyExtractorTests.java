@@ -39,7 +39,8 @@ class RemoteUrlPropertyExtractorTests {
 	@AfterEach
 	void preventRunFailuresFromPollutingLoggerContext() {
 		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class)).getLoggerContext()
-				.getTurboFilterList().clear();
+			.getTurboFilterList()
+			.clear();
 	}
 
 	@Test
@@ -50,14 +51,14 @@ class RemoteUrlPropertyExtractorTests {
 	@Test
 	void malformedUrl() {
 		assertThatIllegalStateException().isThrownBy(() -> doTest("::://wibble"))
-				.withMessageContaining("Malformed URL '::://wibble'");
+			.withMessageContaining("Malformed URL '::://wibble'");
 
 	}
 
 	@Test
 	void multipleUrls() {
 		assertThatIllegalStateException().isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
-				.withMessageContaining("Multiple URLs specified");
+			.withMessageContaining("Multiple URLs specified");
 	}
 
 	@Test

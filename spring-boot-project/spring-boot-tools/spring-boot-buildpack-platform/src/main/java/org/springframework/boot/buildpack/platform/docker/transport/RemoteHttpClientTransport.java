@@ -68,7 +68,8 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		HttpClientBuilder builder = HttpClients.custom();
 		if (host.isSecure()) {
 			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-					.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory)).build();
+				.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory))
+				.build();
 			builder.setConnectionManager(connectionManager);
 		}
 		String scheme = host.isSecure() ? "https" : "http";

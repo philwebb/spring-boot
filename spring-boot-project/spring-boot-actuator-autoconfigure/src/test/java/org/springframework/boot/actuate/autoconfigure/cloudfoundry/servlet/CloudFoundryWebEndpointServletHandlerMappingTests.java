@@ -39,7 +39,7 @@ class CloudFoundryWebEndpointServletHandlerMappingTests {
 		new CloudFoundryWebEndpointServletHandlerMappingRuntimeHints().registerHints(runtimeHints,
 				getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(CloudFoundryLinksHandler.class, "links"))
-				.accepts(runtimeHints);
+			.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}
 

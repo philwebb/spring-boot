@@ -39,8 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CouchbaseRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class,
-					CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
+				CouchbaseRepositoriesAutoConfiguration.class));
 
 	@Test
 	void couchbaseNotAvailable() {
@@ -50,27 +50,27 @@ class CouchbaseRepositoriesAutoConfigurationTests {
 	@Test
 	void defaultRepository() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
 	}
 
 	@Test
 	void reactiveRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.repositories.type=reactive")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.withPropertyValues("spring.data.couchbase.repositories.type=reactive")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
 	void disabledRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.withPropertyValues("spring.data.couchbase.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
 	void noRepositoryAvailable() {
 		this.contextRunner.withUserConfiguration(NoRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

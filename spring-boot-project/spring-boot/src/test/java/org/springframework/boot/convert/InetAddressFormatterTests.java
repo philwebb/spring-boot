@@ -58,7 +58,7 @@ class InetAddressFormatterTests {
 		String missingDomain = "ireallydontexist.example.com";
 		assumingThat(!isResolvable("ireallydontexist.example.com"),
 				() -> assertThatExceptionOfType(ConversionFailedException.class)
-						.isThrownBy(() -> conversionService.convert(missingDomain, InetAddress.class)));
+					.isThrownBy(() -> conversionService.convert(missingDomain, InetAddress.class)));
 	}
 
 	private boolean isResolvable(String host) {

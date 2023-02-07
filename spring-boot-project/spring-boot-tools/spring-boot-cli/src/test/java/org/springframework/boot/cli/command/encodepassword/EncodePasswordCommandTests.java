@@ -63,7 +63,7 @@ class EncodePasswordCommandTests {
 		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).startsWith("{bcrypt}");
 		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder().matches("boot", this.message.getValue()))
-				.isTrue();
+			.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -84,7 +84,7 @@ class EncodePasswordCommandTests {
 		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
 		assertThat(Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8().matches("boot", this.message.getValue()))
-				.isTrue();
+			.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 

@@ -59,7 +59,7 @@ class SpringProfileModelHandler extends ModelHandlerBase {
 			return false;
 		}
 		String[] profileNames = StringUtils
-				.trimArrayElements(StringUtils.commaDelimitedListToStringArray(model.getName()));
+			.trimArrayElements(StringUtils.commaDelimitedListToStringArray(model.getName()));
 		if (profileNames.length == 0) {
 			return false;
 		}

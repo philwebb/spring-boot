@@ -59,11 +59,11 @@ class WebFilterHandlerTests {
 		AnnotatedBeanDefinition definition = createBeanDefinition(DefaultConfigurationFilter.class);
 		this.handler.handle(definition, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry
-				.getBeanDefinition(DefaultConfigurationFilter.class.getName());
+			.getBeanDefinition(DefaultConfigurationFilter.class.getName());
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(false);
 		assertThat((EnumSet<DispatcherType>) propertyValues.get("dispatcherTypes"))
-				.containsExactly(DispatcherType.REQUEST);
+			.containsExactly(DispatcherType.REQUEST);
 		assertThat(((Map<String, String>) propertyValues.get("initParameters"))).isEmpty();
 		assertThat((String[]) propertyValues.get("servletNames")).isEmpty();
 		assertThat((String[]) propertyValues.get("urlPatterns")).isEmpty();
@@ -102,7 +102,7 @@ class WebFilterHandlerTests {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(InitParametersFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
-				.containsEntry("b", "bravo");
+			.containsEntry("b", "bravo");
 	}
 
 	@Test
@@ -129,8 +129,8 @@ class WebFilterHandlerTests {
 	@Test
 	void urlPatternsDeclaredTwice() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
-				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
+			.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
+			.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
 	private AnnotatedBeanDefinition createBeanDefinition(Class<?> filterClass) throws IOException {

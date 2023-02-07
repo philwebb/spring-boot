@@ -46,7 +46,7 @@ class DebugAgentEnvironmentPostProcessorTests {
 		InstrumentedFluxProvider fluxProvider = new InstrumentedFluxProvider();
 		Flux<Integer> flux = fluxProvider.newFluxJust();
 		assertThat(Scannable.from(flux).stepName())
-				.startsWith("Flux.just ⇢ at org.springframework.boot.reactor.InstrumentedFluxProvider.newFluxJust");
+			.startsWith("Flux.just ⇢ at org.springframework.boot.reactor.InstrumentedFluxProvider.newFluxJust");
 	}
 
 }

@@ -61,13 +61,13 @@ class RootUriTemplateHandlerTests {
 	@Test
 	void createWithNullRootUriShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler((String) null))
-				.withMessageContaining("RootUri must not be null");
+			.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	void createWithNullHandlerShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
-				.withMessageContaining("Handler must not be null");
+			.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-					MongoHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				MongoHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
@@ -46,7 +46,7 @@ class MongoHealthContributorAutoConfigurationTests {
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(MongoHealthIndicator.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(MongoHealthIndicator.class));
 	}
 
 }

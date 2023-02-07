@@ -37,14 +37,14 @@ class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 	@Test
 	void initFieldsWhenTestIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
-				.withMessageContaining("TestInstance must not be null");
+			.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
-				.withMessageContaining("Marshaller must not be null");
+			.isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
+			.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test

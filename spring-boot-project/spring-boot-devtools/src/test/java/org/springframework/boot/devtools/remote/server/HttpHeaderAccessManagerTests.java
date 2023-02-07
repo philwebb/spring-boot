@@ -54,25 +54,25 @@ class HttpHeaderAccessManagerTests {
 	@Test
 	void headerNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
-				.withMessageContaining("HeaderName must not be empty");
+			.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	void headerNameMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
-				.withMessageContaining("HeaderName must not be empty");
+			.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	void expectedSecretMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
-				.withMessageContaining("ExpectedSecret must not be empty");
+			.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test
 	void expectedSecretMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
-				.withMessageContaining("ExpectedSecret must not be empty");
+			.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test

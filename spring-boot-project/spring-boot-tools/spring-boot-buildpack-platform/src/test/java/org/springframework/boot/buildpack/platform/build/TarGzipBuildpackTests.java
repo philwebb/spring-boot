@@ -73,8 +73,8 @@ class TarGzipBuildpackTests {
 		Path compressedArchive = this.testTarGzip.createEmptyArchive();
 		BuildpackReference reference = BuildpackReference.of(compressedArchive.toString());
 		assertThatIllegalArgumentException().isThrownBy(() -> TarGzipBuildpack.resolve(this.resolverContext, reference))
-				.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
-				.withMessageContaining(compressedArchive.toString());
+			.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
+			.withMessageContaining(compressedArchive.toString());
 	}
 
 	@Test

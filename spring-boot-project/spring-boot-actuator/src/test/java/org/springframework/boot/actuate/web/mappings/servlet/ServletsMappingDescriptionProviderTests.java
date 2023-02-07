@@ -36,9 +36,10 @@ class ServletsMappingDescriptionProviderTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new ServletsMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(ServletRegistrationMappingDescription.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(ServletRegistrationMappingDescription.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+			.accepts(runtimeHints);
 	}
 
 }

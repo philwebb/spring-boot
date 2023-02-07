@@ -55,7 +55,7 @@ class CouchbaseCacheConfiguration {
 		CouchbaseCacheManagerBuilder builder = CouchbaseCacheManager.builder(clientFactory);
 		Couchbase couchbase = cacheProperties.getCouchbase();
 		org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration config = org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration
-				.defaultCacheConfig();
+			.defaultCacheConfig();
 		if (couchbase.getExpiration() != null) {
 			config = config.entryExpiry(couchbase.getExpiration());
 		}

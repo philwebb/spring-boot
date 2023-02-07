@@ -54,7 +54,7 @@ class ImportsContextCustomizerFactoryIntegrationTests {
 	@Test
 	void testItselfIsNotABean() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(getClass()));
+			.isThrownBy(() -> this.context.getBean(getClass()));
 	}
 
 	@Component

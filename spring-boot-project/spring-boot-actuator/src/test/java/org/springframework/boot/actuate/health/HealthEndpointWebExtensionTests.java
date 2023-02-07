@@ -56,7 +56,7 @@ class HealthEndpointWebExtensionTests extends
 		assertThat(this.registry).isEmpty();
 		WebEndpointResponse<HealthComponent> response = create(this.registry,
 				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap()))
-						.health(ApiVersion.LATEST, WebServerNamespace.SERVER, SecurityContext.NONE);
+			.health(ApiVersion.LATEST, WebServerNamespace.SERVER, SecurityContext.NONE);
 		assertThat(response.getStatus()).isEqualTo(200);
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);

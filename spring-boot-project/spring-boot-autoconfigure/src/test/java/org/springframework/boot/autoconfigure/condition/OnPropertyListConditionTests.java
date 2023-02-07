@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OnPropertyListConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestConfig.class);
+		.withUserConfiguration(TestConfig.class);
 
 	@Test
 	void propertyNotDefined() {
@@ -43,25 +43,25 @@ class OnPropertyListConditionTests {
 	@Test
 	void propertyDefinedAsCommaSeparated() {
 		this.contextRunner.withPropertyValues("spring.test.my-list=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	void propertyDefinedAsList() {
 		this.contextRunner.withPropertyValues("spring.test.my-list[0]=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	void propertyDefinedAsCommaSeparatedRelaxed() {
 		this.contextRunner.withPropertyValues("spring.test.myList=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	void propertyDefinedAsListRelaxed() {
 		this.contextRunner.withPropertyValues("spring.test.myList[0]=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

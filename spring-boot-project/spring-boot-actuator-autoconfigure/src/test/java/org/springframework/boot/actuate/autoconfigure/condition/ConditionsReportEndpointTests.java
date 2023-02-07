@@ -47,8 +47,10 @@ class ConditionsReportEndpointTests {
 	@Test
 	void invoke() {
 		new ApplicationContextRunner().withUserConfiguration(Config.class).run((context) -> {
-			ContextConditionsDescriptor report = context.getBean(ConditionsReportEndpoint.class).conditions()
-					.getContexts().get(context.getId());
+			ContextConditionsDescriptor report = context.getBean(ConditionsReportEndpoint.class)
+				.conditions()
+				.getContexts()
+				.get(context.getId());
 			assertThat(report.getPositiveMatches()).isEmpty();
 			assertThat(report.getNegativeMatches()).containsKey("a");
 			assertThat(report.getUnconditionalClasses()).contains("b");

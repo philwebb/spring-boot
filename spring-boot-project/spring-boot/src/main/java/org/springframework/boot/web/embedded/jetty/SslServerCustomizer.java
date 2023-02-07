@@ -121,7 +121,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 			// Jetty 10
 			try {
 				return SslConnectionFactory.class.getConstructor(SslContextFactory.Server.class, String.class)
-						.newInstance(sslContextFactory, protocol);
+					.newInstance(sslContextFactory, protocol);
 			}
 			catch (Exception ex2) {
 				throw new RuntimeException(ex2);

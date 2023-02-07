@@ -45,7 +45,7 @@ class SampleActuatorApplicationIsolatedObjectMapperFalseTests {
 	@Test
 	void resourceShouldBeAvailableOnMainPort() {
 		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", "password")
-				.getForEntity("/actuator/startup", String.class);
+			.getForEntity("/actuator/startup", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

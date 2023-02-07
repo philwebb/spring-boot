@@ -45,7 +45,7 @@ class SampleActuatorApplicationIsolatedObjectMapperTrueTests {
 	@Test
 	void resourceShouldBeAvailableOnMainPort() {
 		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", "password")
-				.getForEntity("/actuator/startup", String.class);
+			.getForEntity("/actuator/startup", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"timeline\":");
 	}

@@ -35,19 +35,21 @@ class ConditionalOnCloudPlatformTests {
 	@Test
 	void outcomeWhenCloudfoundryPlatformNotPresentShouldNotMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
+			.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
 	void outcomeWhenCloudfoundryPlatformPresentShouldMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformConfig.class)
-				.withPropertyValues("VCAP_APPLICATION:---").run((context) -> assertThat(context).hasBean("foo"));
+			.withPropertyValues("VCAP_APPLICATION:---")
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	void outcomeWhenCloudfoundryPlatformPresentAndMethodTargetShouldMatch() {
 		this.contextRunner.withUserConfiguration(CloudFoundryPlatformOnMethodConfig.class)
-				.withPropertyValues("VCAP_APPLICATION:---").run((context) -> assertThat(context).hasBean("foo"));
+			.withPropertyValues("VCAP_APPLICATION:---")
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -37,7 +37,7 @@ class OnlyDependencyManagementIntegrationTests {
 	@TestTemplate
 	void dependencyManagementCanBeConfiguredUsingCoordinatesConstant() {
 		assertThat(this.gradleBuild.build("dependencyManagement").getOutput())
-				.contains("org.springframework.boot:spring-boot-starter ");
+			.contains("org.springframework.boot:spring-boot-starter ");
 	}
 
 }

@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MockWebServiceClientAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MockWebServiceClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MockWebServiceClientAutoConfiguration.class));
 
 	@Test
 	void shouldRegisterMockWebServiceClient() {
@@ -45,7 +45,7 @@ class MockWebServiceClientAutoConfigurationTests {
 		FilteredClassLoader classLoader = new FilteredClassLoader(MockWebServiceClient.class);
 
 		this.contextRunner.withClassLoader(classLoader)
-				.run((context) -> assertThat(context).doesNotHaveBean(MockWebServiceClient.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(MockWebServiceClient.class));
 	}
 
 }

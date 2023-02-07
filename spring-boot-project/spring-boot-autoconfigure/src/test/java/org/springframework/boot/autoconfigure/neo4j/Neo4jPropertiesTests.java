@@ -52,9 +52,9 @@ class Neo4jPropertiesTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		assertThat(properties.getSecurity().isEncrypted()).isEqualTo(defaultConfig.encrypted());
 		assertThat(properties.getSecurity().getTrustStrategy().name())
-				.isEqualTo(defaultConfig.trustStrategy().strategy().name());
+			.isEqualTo(defaultConfig.trustStrategy().strategy().name());
 		assertThat(properties.getSecurity().isHostnameVerificationEnabled())
-				.isEqualTo(defaultConfig.trustStrategy().isHostnameVerificationEnabled());
+			.isEqualTo(defaultConfig.trustStrategy().isHostnameVerificationEnabled());
 	}
 
 	@Test

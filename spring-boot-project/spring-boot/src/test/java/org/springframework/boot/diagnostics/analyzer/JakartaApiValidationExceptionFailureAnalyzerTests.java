@@ -38,8 +38,8 @@ class JakartaApiValidationExceptionFailureAnalyzerTests {
 	@Test
 	void validatedPropertiesTest() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> new AnnotationConfigApplicationContext(TestConfiguration.class).close())
-				.satisfies((ex) -> assertThat(new ValidationExceptionFailureAnalyzer().analyze(ex)).isNotNull());
+			.isThrownBy(() -> new AnnotationConfigApplicationContext(TestConfiguration.class).close())
+			.satisfies((ex) -> assertThat(new ValidationExceptionFailureAnalyzer().analyze(ex)).isNotNull());
 	}
 
 	@Test

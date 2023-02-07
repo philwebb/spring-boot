@@ -74,25 +74,25 @@ class HttpHeaderInterceptorTests {
 	@Test
 	void constructorNullHeaderName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
-				.withMessageContaining("Name must not be empty");
+			.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	void constructorEmptyHeaderName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
-				.withMessageContaining("Name must not be empty");
+			.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	void constructorNullHeaderValue() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
-				.withMessageContaining("Value must not be empty");
+			.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
 	void constructorEmptyHeaderValue() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
-				.withMessageContaining("Value must not be empty");
+			.withMessageContaining("Value must not be empty");
 	}
 
 	@Test

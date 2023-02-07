@@ -34,8 +34,9 @@ public class TestListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		sce.getServletContext().addFilter("listenerAddedFilter", new ListenerAddedFilter())
-				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+		sce.getServletContext()
+			.addFilter("listenerAddedFilter", new ListenerAddedFilter())
+			.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 		sce.getServletContext().setAttribute("listenerAttribute", "alpha");
 	}
 

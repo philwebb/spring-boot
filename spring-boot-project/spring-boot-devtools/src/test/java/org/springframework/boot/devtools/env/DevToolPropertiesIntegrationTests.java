@@ -87,7 +87,7 @@ class DevToolPropertiesIntegrationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(MyBean.class));
+			.isThrownBy(() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test
@@ -109,10 +109,10 @@ class DevToolPropertiesIntegrationTests {
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		String includeStackTrace = environment.getProperty("server.error.include-stacktrace");
 		assertThat(includeStackTrace)
-				.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
+			.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
 		String includeMessage = environment.getProperty("server.error.include-message");
 		assertThat(includeMessage)
-				.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
+			.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
 	}
 
 	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)

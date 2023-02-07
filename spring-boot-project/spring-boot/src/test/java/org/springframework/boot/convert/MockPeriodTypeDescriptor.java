@@ -48,7 +48,7 @@ public final class MockPeriodTypeDescriptor {
 		}
 		if (style != null) {
 			PeriodFormat formatAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", style), PeriodFormat.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", style), PeriodFormat.class, null);
 			given(descriptor.getAnnotation(PeriodFormat.class)).willReturn(formatAnnotation);
 		}
 		given(descriptor.getType()).willReturn((Class) Period.class);

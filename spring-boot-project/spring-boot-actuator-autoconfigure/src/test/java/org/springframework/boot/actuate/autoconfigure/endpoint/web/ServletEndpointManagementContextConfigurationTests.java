@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ServletEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(TestConfig.class);
+		.withUserConfiguration(TestConfig.class);
 
 	@Test
 	void contextShouldContainServletEndpointRegistrar() {
@@ -70,7 +70,7 @@ class ServletEndpointManagementContextConfigurationTests {
 	@Test
 	void contextWhenNoServletBasedShouldNotContainServletEndpointRegistrar() {
 		new ApplicationContextRunner().withUserConfiguration(TestConfig.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointRegistrar.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointRegistrar.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

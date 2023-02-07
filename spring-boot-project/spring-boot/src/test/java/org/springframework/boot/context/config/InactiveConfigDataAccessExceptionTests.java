@@ -123,10 +123,10 @@ class InactiveConfigDataAccessExceptionTests {
 		given(contributor.getPropertySource()).willReturn((PropertySource) this.propertySource);
 		given(contributor.getResource()).willReturn(this.resource);
 		assertThatExceptionOfType(InactiveConfigDataAccessException.class)
-				.isThrownBy(() -> InactiveConfigDataAccessException.throwIfPropertyFound(contributor,
-						ConfigurationPropertyName.of("spring")))
-				.withMessage("Inactive property source 'mockProperties' imported from location 'test' "
-						+ "cannot contain property 'spring' [origin: \"spring\" from property source \"mockProperties\"]");
+			.isThrownBy(() -> InactiveConfigDataAccessException.throwIfPropertyFound(contributor,
+					ConfigurationPropertyName.of("spring")))
+			.withMessage("Inactive property source 'mockProperties' imported from location 'test' "
+					+ "cannot contain property 'spring' [origin: \"spring\" from property source \"mockProperties\"]");
 	}
 
 	private static class TestConfigDataResource extends ConfigDataResource {

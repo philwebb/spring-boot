@@ -122,7 +122,7 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		assertThat(this.context.isRunning()).isFalse();
 		// JMX cleanup
 		assertThatExceptionOfType(InstanceNotFoundException.class)
-				.isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
+			.isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
 	}
 
 	private Boolean isApplicationReady(ObjectName objectName) {

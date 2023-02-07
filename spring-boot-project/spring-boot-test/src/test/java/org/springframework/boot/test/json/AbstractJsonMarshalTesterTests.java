@@ -91,14 +91,14 @@ abstract class AbstractJsonMarshalTesterTests {
 	@Test
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
-				.withMessageContaining("ResourceLoadClass must not be null");
+			.isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
+			.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	void createWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> createTester(getClass(), null))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test

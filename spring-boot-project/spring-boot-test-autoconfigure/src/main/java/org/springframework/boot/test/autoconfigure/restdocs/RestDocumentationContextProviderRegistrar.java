@@ -37,9 +37,9 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
-				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
+			.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
-				.genericBeanDefinition(ManualRestDocumentation.class);
+			.genericBeanDefinition(ManualRestDocumentation.class);
 		String outputDir = (String) annotationAttributes.get("outputDir");
 		if (StringUtils.hasText(outputDir)) {
 			definitionBuilder.addConstructorArgValue(outputDir);

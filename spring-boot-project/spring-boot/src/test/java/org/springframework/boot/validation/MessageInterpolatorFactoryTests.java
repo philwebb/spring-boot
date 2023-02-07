@@ -47,7 +47,7 @@ class MessageInterpolatorFactoryTests {
 		assertThat(interpolator).isInstanceOf(MessageSourceMessageInterpolator.class);
 		assertThat(interpolator).hasFieldOrPropertyWithValue("messageSource", messageSource);
 		assertThat(ReflectionTestUtils.getField(interpolator, "messageInterpolator"))
-				.isInstanceOf(ResourceBundleMessageInterpolator.class);
+			.isInstanceOf(ResourceBundleMessageInterpolator.class);
 	}
 
 }

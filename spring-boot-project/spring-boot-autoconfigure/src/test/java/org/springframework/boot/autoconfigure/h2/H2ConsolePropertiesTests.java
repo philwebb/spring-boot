@@ -31,21 +31,21 @@ class H2ConsolePropertiesTests {
 	void pathMustNotBeEmpty() {
 		H2ConsoleProperties properties = new H2ConsoleProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> properties.setPath(""))
-				.withMessageContaining("Path must have length greater than 1");
+			.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	void pathMustHaveLengthGreaterThanOne() {
 		H2ConsoleProperties properties = new H2ConsoleProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> properties.setPath("/"))
-				.withMessageContaining("Path must have length greater than 1");
+			.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	void customPathMustBeginWithASlash() {
 		H2ConsoleProperties properties = new H2ConsoleProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> properties.setPath("custom"))
-				.withMessageContaining("Path must start with '/'");
+			.withMessageContaining("Path must start with '/'");
 	}
 
 }

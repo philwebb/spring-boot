@@ -35,7 +35,7 @@ class MapConfigurationPropertySourceTests {
 	@Test
 	void createWhenMapIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MapConfigurationPropertySource(null))
-				.withMessageContaining("Map must not be null");
+			.withMessageContaining("Map must not be null");
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class MapConfigurationPropertySourceTests {
 	void putAllWhenMapIsNullShouldThrowException() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		assertThatIllegalArgumentException().isThrownBy(() -> source.putAll(null))
-				.withMessageContaining("Map must not be null");
+			.withMessageContaining("Map must not be null");
 	}
 
 	@Test
@@ -87,8 +87,8 @@ class MapConfigurationPropertySourceTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.iterator()).toIterable().containsExactly(ConfigurationPropertyName.of("foo.bar"),
-				ConfigurationPropertyName.of("foo.baz"));
+		assertThat(source.iterator()).toIterable()
+			.containsExactly(ConfigurationPropertyName.of("foo.bar"), ConfigurationPropertyName.of("foo.baz"));
 	}
 
 	@Test

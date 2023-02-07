@@ -76,7 +76,7 @@ class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 		ResponseEntity<String> entity = rest.getForEntity("/resourcePaths", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(readLines(entity.getBody()))
-				.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
+			.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
 	}
 
 	private List<String> readLines(String input) {

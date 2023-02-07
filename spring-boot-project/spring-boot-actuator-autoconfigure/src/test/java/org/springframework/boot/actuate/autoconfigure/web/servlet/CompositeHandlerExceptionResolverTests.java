@@ -51,7 +51,7 @@ class CompositeHandlerExceptionResolverTests {
 	void resolverShouldDelegateToOtherResolversInContext() {
 		load(TestConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
-				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
+			.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
 		ModelAndView resolved = resolver.resolveException(this.request, this.response, null,
 				new HttpRequestMethodNotSupportedException("POST"));
 		assertThat(resolved.getViewName()).isEqualTo("test-view");
@@ -61,7 +61,7 @@ class CompositeHandlerExceptionResolverTests {
 	void resolverShouldAddDefaultResolverIfNonePresent() {
 		load(BaseConfiguration.class);
 		CompositeHandlerExceptionResolver resolver = (CompositeHandlerExceptionResolver) this.context
-				.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
+			.getBean(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME);
 		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("POST");
 		ModelAndView resolved = resolver.resolveException(this.request, this.response, null, exception);
 		assertThat(resolved).isNotNull();

@@ -90,8 +90,8 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(ControllerEndpointFilter.class,
-					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+			hints.reflection()
+				.registerType(ControllerEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

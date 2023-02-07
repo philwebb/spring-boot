@@ -69,7 +69,7 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
 		assertThat(new CommonsDbcp2DataSourcePoolMetadata(dataSource).getValidationQuery())
-				.isEqualTo("SELECT FROM FOO");
+			.isEqualTo("SELECT FROM FOO");
 	}
 
 	@Override

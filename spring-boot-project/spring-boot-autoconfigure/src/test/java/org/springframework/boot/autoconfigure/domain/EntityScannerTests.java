@@ -53,7 +53,7 @@ class EntityScannerTests {
 	@Test
 	void createWhenContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EntityScanner(null))
-				.withMessageContaining("Context must not be null");
+			.withMessageContaining("Context must not be null");
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class EntityScannerTests {
 	void scanShouldScanFromResolvedPlaceholderPackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan")
-				.applyTo(context);
+			.applyTo(context);
 		context.register(ScanPlaceholderConfig.class);
 		context.refresh();
 		EntityScanner scanner = new EntityScanner(context);
@@ -105,14 +105,14 @@ class EntityScannerTests {
 		ClassPathScanningCandidateComponentProvider candidateComponentProvider = mock(
 				ClassPathScanningCandidateComponentProvider.class);
 		given(candidateComponentProvider.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan"))
-				.willReturn(Collections.emptySet());
+			.willReturn(Collections.emptySet());
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		TestEntityScanner scanner = new TestEntityScanner(context, candidateComponentProvider);
 		scanner.scan(Entity.class);
 		ArgumentCaptor<AnnotationTypeFilter> annotationTypeFilter = ArgumentCaptor.forClass(AnnotationTypeFilter.class);
 		then(candidateComponentProvider).should().addIncludeFilter(annotationTypeFilter.capture());
 		then(candidateComponentProvider).should()
-				.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan");
+			.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan");
 		then(candidateComponentProvider).shouldHaveNoMoreInteractions();
 		assertThat(annotationTypeFilter.getValue().getAnnotationType()).isEqualTo(Entity.class);
 	}
@@ -120,9 +120,9 @@ class EntityScannerTests {
 	@Test
 	void scanShouldScanCommaSeparatedPackagesInPlaceholderPackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(
-				"com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan.a,org.springframework.boot.autoconfigure.domain.scan.b")
-				.applyTo(context);
+		TestPropertyValues
+			.of("com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan.a,org.springframework.boot.autoconfigure.domain.scan.b")
+			.applyTo(context);
 		context.register(ScanPlaceholderConfig.class);
 		context.refresh();
 		EntityScanner scanner = new EntityScanner(context);

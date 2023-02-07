@@ -61,33 +61,34 @@ import static org.mockito.Mockito.mock;
 class ObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withClassLoader(new FilteredClassLoader("io.micrometer.tracing"))
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
+		.withClassLoader(new FilteredClassLoader("io.micrometer.tracing"))
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingContextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withUserConfiguration(TracerConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
+		.with(MetricsRun.simple())
+		.withUserConfiguration(TracerConfiguration.class)
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	@Test
 	void beansShouldNotBeSuppliedWhenMicrometerObservationIsNotOnClassPath() {
 		this.tracingContextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.observation"))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(MeterRegistry.class);
-					assertThat(context).doesNotHaveBean(ObservationRegistry.class);
-					assertThat(context).doesNotHaveBean(ObservationHandler.class);
-					assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MeterRegistry.class);
+				assertThat(context).doesNotHaveBean(ObservationRegistry.class);
+				assertThat(context).doesNotHaveBean(ObservationHandler.class);
+				assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
+			});
 	}
 
 	@Test
 	void supplyObservationRegistryWhenMicrometerCoreAndTracingAreNotOnClassPath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.core", "io.micrometer.tracing"))
-				.run((context) -> {
-					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-					Observation.start("test-observation", observationRegistry).stop();
-					assertThat(context).doesNotHaveBean(ObservationHandler.class);
-					assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
-				});
+			.run((context) -> {
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("test-observation", observationRegistry).stop();
+				assertThat(context).doesNotHaveBean(ObservationHandler.class);
+				assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
+			});
 	}
 
 	@Test
@@ -130,14 +131,15 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void supplyMeterHandlerAndGroupingWhenMicrometerCoreAndTracingAreOnClassPathButThereIsNoTracer() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class)).run((context) -> {
-					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-					Observation.start("test-observation", observationRegistry).stop();
-					assertThat(context).hasSingleBean(ObservationHandler.class);
-					assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
-					assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
-					assertThat(context).hasBean("metricsAndTracingObservationHandlerGrouping");
-				});
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+			.run((context) -> {
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("test-observation", observationRegistry).stop();
+				assertThat(context).hasSingleBean(ObservationHandler.class);
+				assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
+				assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
+				assertThat(context).hasBean("metricsAndTracingObservationHandlerGrouping");
+			});
 	}
 
 	@Test
@@ -158,7 +160,7 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void allowsDefaultMeterObservationHandlerToBeDisabled() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(MeterRegistry.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(ObservationHandler.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ObservationHandler.class));
 	}
 
 	@Test
@@ -172,7 +174,7 @@ class ObservationAutoConfigurationTests {
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.get("observation1").timer().count()).isOne();
 			assertThatThrownBy(() -> meterRegistry.get("observation2").timer())
-					.isInstanceOf(MeterNotFoundException.class);
+				.isInstanceOf(MeterNotFoundException.class);
 		});
 	}
 
@@ -201,7 +203,7 @@ class ObservationAutoConfigurationTests {
 			// one
 			assertThat(handlers.get(1)).isInstanceOf(CustomMeterObservationHandler.class);
 			assertThat(((CustomMeterObservationHandler) handlers.get(1)).getName())
-					.isEqualTo("customMeterObservationHandler1");
+				.isEqualTo("customMeterObservationHandler1");
 			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 			assertThat(context).doesNotHaveBean(TracingAwareMeterObservationHandler.class);
 		});
@@ -210,16 +212,16 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void autoConfiguresObservationHandlerWithCustomContext() {
 		this.contextRunner.withUserConfiguration(ObservationHandlerWithCustomContextConfiguration.class)
-				.run((context) -> {
-					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-					List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
-					CustomContext customContext = new CustomContext();
-					Observation.start("test-observation", () -> customContext, observationRegistry).stop();
-					assertThat(handlers).hasSize(1);
-					assertThat(handlers.get(0)).isInstanceOf(ObservationHandlerWithCustomContext.class);
-					assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
-					assertThat(context).doesNotHaveBean(TracingAwareMeterObservationHandler.class);
-				});
+			.run((context) -> {
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
+				CustomContext customContext = new CustomContext();
+				Observation.start("test-observation", () -> customContext, observationRegistry).stop();
+				assertThat(handlers).hasSize(1);
+				assertThat(handlers.get(0)).isInstanceOf(ObservationHandlerWithCustomContext.class);
+				assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
+				assertThat(context).doesNotHaveBean(TracingAwareMeterObservationHandler.class);
+			});
 	}
 
 	@Test
@@ -251,13 +253,13 @@ class ObservationAutoConfigurationTests {
 			// one
 			assertThat(handlers.get(1)).isInstanceOf(CustomTracingObservationHandler.class);
 			assertThat(((CustomTracingObservationHandler) handlers.get(1)).getName())
-					.isEqualTo("customTracingHandler1");
+				.isEqualTo("customTracingHandler1");
 			// Multiple MeterObservationHandler are wrapped in
 			// FirstMatchingCompositeObservationHandler, which calls only the first
 			// one
 			assertThat(handlers.get(2)).isInstanceOf(CustomMeterObservationHandler.class);
 			assertThat(((CustomMeterObservationHandler) handlers.get(2)).getName())
-					.isEqualTo("customMeterObservationHandler1");
+				.isEqualTo("customMeterObservationHandler1");
 			assertThat(context).doesNotHaveBean(TracingAwareMeterObservationHandler.class);
 			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 		});

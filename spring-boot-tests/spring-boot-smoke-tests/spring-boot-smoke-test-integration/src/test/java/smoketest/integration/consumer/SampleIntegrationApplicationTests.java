@@ -77,8 +77,8 @@ class SampleIntegrationApplicationTests {
 	}
 
 	private void awaitOutputContaining(File outputDir, String requiredContents) {
-		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(() -> outputIn(outputDir),
-				containsString(requiredContents));
+		Awaitility.waitAtMost(Duration.ofSeconds(30))
+			.until(() -> outputIn(outputDir), containsString(requiredContents));
 	}
 
 	private String outputIn(File outputDir) throws IOException {
@@ -91,7 +91,7 @@ class SampleIntegrationApplicationTests {
 
 	private Resource[] findResources(File outputDir) throws IOException {
 		return ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader())
-				.getResources("file:" + outputDir.getAbsolutePath() + "/*.txt");
+			.getResources("file:" + outputDir.getAbsolutePath() + "/*.txt");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {

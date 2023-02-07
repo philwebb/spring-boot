@@ -53,14 +53,14 @@ abstract class DefaultContributorRegistryTests {
 	@Test
 	void createWhenContributorsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultContributorRegistry<>(null))
-				.withMessage("Contributors must not be null");
+			.withMessage("Contributors must not be null");
 	}
 
 	@Test
 	void createWhenNameFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DefaultContributorRegistry<>(Collections.emptyMap(), null))
-				.withMessage("NameFactory must not be null");
+			.isThrownBy(() -> new DefaultContributorRegistry<>(Collections.emptyMap(), null))
+			.withMessage("NameFactory must not be null");
 	}
 
 	@Test
@@ -80,13 +80,13 @@ abstract class DefaultContributorRegistryTests {
 	@Test
 	void registerContributorWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.registry.registerContributor(null, this.one))
-				.withMessage("Name must not be null");
+			.withMessage("Name must not be null");
 	}
 
 	@Test
 	void registerContributorWhenContributorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.registry.registerContributor("one", null))
-				.withMessage("Contributor must not be null");
+			.withMessage("Contributor must not be null");
 	}
 
 	@Test
@@ -102,7 +102,7 @@ abstract class DefaultContributorRegistryTests {
 	void registerContributorWhenNameAlreadyUsedThrowsException() {
 		this.registry.registerContributor("one", this.one);
 		assertThatIllegalStateException().isThrownBy(() -> this.registry.registerContributor("one", this.two))
-				.withMessageContaining("A contributor named \"one\" has already been registered");
+			.withMessageContaining("A contributor named \"one\" has already been registered");
 	}
 
 	@Test

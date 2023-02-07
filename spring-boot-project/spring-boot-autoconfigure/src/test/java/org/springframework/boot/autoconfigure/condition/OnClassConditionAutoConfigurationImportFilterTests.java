@@ -48,7 +48,7 @@ class OnClassConditionAutoConfigurationImportFilterTests {
 	@Test
 	void shouldBeRegistered() {
 		assertThat(SpringFactoriesLoader.loadFactories(AutoConfigurationImportFilter.class, null))
-				.hasAtLeastOneElementOfType(OnClassCondition.class);
+			.hasAtLeastOneElementOfType(OnClassCondition.class);
 	}
 
 	@Test

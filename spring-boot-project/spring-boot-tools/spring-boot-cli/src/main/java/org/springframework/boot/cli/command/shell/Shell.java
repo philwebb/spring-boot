@@ -114,7 +114,7 @@ public class Shell {
 		this.consoleReader.setBellEnabled(false);
 		this.consoleReader.setExpandEvents(false);
 		this.consoleReader
-				.addCompleter(new CommandCompleter(this.consoleReader, this.argumentDelimiter, this.commandRunner));
+			.addCompleter(new CommandCompleter(this.consoleReader, this.argumentDelimiter, this.commandRunner));
 		this.consoleReader.setCompletionHandler(new CandidateListCompletionHandler());
 	}
 

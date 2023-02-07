@@ -58,7 +58,7 @@ class CloudFoundryAuthorizationExceptionTests {
 	@Test
 	void statusCodeForUnsupportedSignatureAlgorithmReasonShouldBe401() {
 		assertThat(createException(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM).getStatusCode())
-				.isEqualTo(HttpStatus.UNAUTHORIZED);
+			.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class CloudFoundryAuthorizationExceptionTests {
 	@Test
 	void statusCodeForServiceUnavailableReasonShouldBe503() {
 		assertThat(createException(Reason.SERVICE_UNAVAILABLE).getStatusCode())
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+			.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	private CloudFoundryAuthorizationException createException(Reason reason) {

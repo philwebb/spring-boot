@@ -47,14 +47,14 @@ class ServletContextApplicationContextInitializerTests {
 	void applicationContextIsNotStoredInServletContextByDefault() {
 		new ServletContextApplicationContextInitializer(this.servletContext).initialize(this.applicationContext);
 		then(this.servletContext).should(never())
-				.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
+			.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
 	}
 
 	@Test
 	void applicationContextCanBeStoredInServletContext() {
 		new ServletContextApplicationContextInitializer(this.servletContext, true).initialize(this.applicationContext);
-		then(this.servletContext).should().setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.applicationContext);
+		then(this.servletContext).should()
+			.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
 	}
 
 }

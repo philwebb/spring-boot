@@ -60,14 +60,14 @@ public class Log4J2MetricsAutoConfiguration {
 			try {
 				if (Class.forName("org.apache.logging.log4j.core.LoggerContext").isInstance(loggerContext)) {
 					return ConditionOutcome
-							.match("LoggerContext was an instance of org.apache.logging.log4j.core.LoggerContext");
+						.match("LoggerContext was an instance of org.apache.logging.log4j.core.LoggerContext");
 				}
 			}
 			catch (Throwable ex) {
 				// Continue with no match
 			}
 			return ConditionOutcome
-					.noMatch("Logger context was not an instance of org.apache.logging.log4j.core.LoggerContext");
+				.noMatch("Logger context was not an instance of org.apache.logging.log4j.core.LoggerContext");
 		}
 
 	}

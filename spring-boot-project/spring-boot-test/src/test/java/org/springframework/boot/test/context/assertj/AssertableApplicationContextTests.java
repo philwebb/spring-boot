@@ -34,7 +34,7 @@ class AssertableApplicationContextTests {
 	@Test
 	void getShouldReturnProxy() {
 		AssertableApplicationContext context = AssertableApplicationContext
-				.get(() -> mock(ConfigurableApplicationContext.class));
+			.get(() -> mock(ConfigurableApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableApplicationContext.class);
 	}
 

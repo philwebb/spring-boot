@@ -36,8 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogbackMetricsAutoConfigurationWithLog4j2AndLogbackTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-					SimpleMetricsExportAutoConfiguration.class, LogbackMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+				SimpleMetricsExportAutoConfiguration.class, LogbackMetricsAutoConfiguration.class));
 
 	@Test
 	void doesNotConfigureLogbackMetrics() {

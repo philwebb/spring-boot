@@ -74,7 +74,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			ClassLoaderFiles classLoaderFiles) {
 		this.classLoaderFiles = classLoaderFiles;
 		this.patternResolverDelegate = getResourcePatternResolverFactory()
-				.getResourcePatternResolver(applicationContext, retrieveResourceLoader(applicationContext));
+			.getResourcePatternResolver(applicationContext, retrieveResourceLoader(applicationContext));
 	}
 
 	private ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {

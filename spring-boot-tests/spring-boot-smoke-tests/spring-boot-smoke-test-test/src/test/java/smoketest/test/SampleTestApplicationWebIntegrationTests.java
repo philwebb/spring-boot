@@ -59,7 +59,7 @@ class SampleTestApplicationWebIntegrationTests {
 	@Test
 	void test() {
 		assertThat(this.restTemplate.getForEntity("/{username}/vehicle", String.class, "sframework").getStatusCode())
-				.isEqualTo(HttpStatus.OK);
+			.isEqualTo(HttpStatus.OK);
 	}
 
 }

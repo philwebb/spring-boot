@@ -98,8 +98,8 @@ public class MongoMetricsAutoConfiguration {
 		MongoClientSettingsBuilderCustomizer mongoMetricsConnectionPoolListenerClientSettingsBuilderCustomizer(
 				MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener) {
 			return (clientSettingsBuilder) -> clientSettingsBuilder
-					.applyToConnectionPoolSettings((connectionPoolSettingsBuilder) -> connectionPoolSettingsBuilder
-							.addConnectionPoolListener(mongoMetricsConnectionPoolListener));
+				.applyToConnectionPoolSettings((connectionPoolSettingsBuilder) -> connectionPoolSettingsBuilder
+					.addConnectionPoolListener(mongoMetricsConnectionPoolListener));
 		}
 
 	}

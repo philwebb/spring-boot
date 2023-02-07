@@ -61,8 +61,9 @@ class WebMvcTestNestedIntegrationTests {
 
 		@Test
 		void shouldFindController2() throws Exception {
-			WebMvcTestNestedIntegrationTests.this.mvc.perform(get("/two")).andExpect(content().string("hellotwo"))
-					.andExpect(status().isOk());
+			WebMvcTestNestedIntegrationTests.this.mvc.perform(get("/two"))
+				.andExpect(content().string("hellotwo"))
+				.andExpect(status().isOk());
 		}
 
 	}

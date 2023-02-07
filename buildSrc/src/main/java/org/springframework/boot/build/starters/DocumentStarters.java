@@ -84,8 +84,10 @@ public class DocumentStarters extends DefaultTask {
 
 	@TaskAction
 	void documentStarters() {
-		Set<Starter> starters = this.starters.getFiles().stream().map(this::loadStarter)
-				.collect(Collectors.toCollection(TreeSet::new));
+		Set<Starter> starters = this.starters.getFiles()
+			.stream()
+			.map(this::loadStarter)
+			.collect(Collectors.toCollection(TreeSet::new));
 		writeTable("application-starters", starters.stream().filter(Starter::isApplication));
 		writeTable("production-starters", starters.stream().filter(Starter::isProduction));
 		writeTable("technical-starters", starters.stream().filter(Starter::isTechnical));

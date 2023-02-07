@@ -69,7 +69,7 @@ class SampleTomcatTwoConnectorsApplicationTests {
 		assertThat(this.ports.getHttpsPort()).isEqualTo(this.port);
 		assertThat(this.ports.getHttpPort()).isNotEqualTo(this.port);
 		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
+			.getForEntity("http://localhost:" + this.ports.getHttpPort() + "/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("hello");
 		ResponseEntity<String> httpsEntity = this.restTemplate.getForEntity("https://localhost:" + this.port + "/hello",

@@ -87,7 +87,7 @@ class RemappedErrorViewIntegrationTests {
 		// For manual testing
 		static void main(String[] args) {
 			new SpringApplicationBuilder(TestConfiguration.class).properties("spring.mvc.servlet.path:spring/*")
-					.run(args);
+				.run(args);
 		}
 
 	}

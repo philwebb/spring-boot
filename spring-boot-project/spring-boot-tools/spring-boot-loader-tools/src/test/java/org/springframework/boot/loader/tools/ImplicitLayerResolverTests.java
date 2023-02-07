@@ -63,26 +63,26 @@ class ImplicitLayerResolverTests {
 	@Test
 	void getLayerWhenLoaderClassReturnsLoaderLayer() {
 		assertThat(this.layers.getLayer("org/springframework/boot/loader/Launcher.class"))
-				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+			.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
 		assertThat(this.layers.getLayer("org/springframework/boot/loader/Utils.class"))
-				.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
+			.isEqualTo(StandardLayers.SPRING_BOOT_LOADER);
 	}
 
 	@Test
 	void getLayerWhenLibraryIsSnapshotReturnsSnapshotLayer() {
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.BUILD-SNAPSHOT.jar")))
-				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
+			.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0-SNAPSHOT.jar")))
-				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
+			.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.SNAPSHOT.jar")))
-				.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
+			.isEqualTo(StandardLayers.SNAPSHOT_DEPENDENCIES);
 	}
 
 	@Test
 	void getLayerWhenLibraryIsNotSnapshotReturnsDependenciesLayer() {
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0.jar"))).isEqualTo(StandardLayers.DEPENDENCIES);
 		assertThat(this.layers.getLayer(mockLibrary("spring-boot.2.0.0-classified.jar")))
-				.isEqualTo(StandardLayers.DEPENDENCIES);
+			.isEqualTo(StandardLayers.DEPENDENCIES);
 	}
 
 	private Library mockLibrary(String name) {

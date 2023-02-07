@@ -250,7 +250,7 @@ class CloudPlatformTests {
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		((MockEnvironment) environment).setProperty("spring.main.cloud-platform", "none");
 		assertThat(Stream.of(CloudPlatform.values()).filter((platform) -> platform.isActive(environment)))
-				.containsExactly(CloudPlatform.NONE);
+			.containsExactly(CloudPlatform.NONE);
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {

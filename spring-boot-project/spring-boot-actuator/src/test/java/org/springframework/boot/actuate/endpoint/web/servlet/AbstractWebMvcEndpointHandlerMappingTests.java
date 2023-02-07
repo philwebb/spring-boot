@@ -36,9 +36,10 @@ class AbstractWebMvcEndpointHandlerMappingTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new AbstractWebMvcEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(TypeReference.of(
-				"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping.OperationHandler")))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference
+				.of("org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping.OperationHandler")))
+			.accepts(runtimeHints);
 	}
 
 }

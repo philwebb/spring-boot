@@ -223,7 +223,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 			throwAssertionError(contextFailedToStartWhenExpecting("to get beans names with type:%n <%s>", type));
 		}
 		return Assertions.assertThat(getApplicationContext().getBeanNamesForType(type))
-				.as("Bean names of type <%s> from <%s>", type, getApplicationContext());
+			.as("Bean names of type <%s> from <%s>", type, getApplicationContext());
 	}
 
 	/**
@@ -359,8 +359,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"%nExpecting:%n <%s>%nto contain a bean of name:%n <%s> (%s)%nbut found:%n <%s> of type <%s>",
 					getApplicationContext(), name, type, bean, bean.getClass()));
 		}
-		return Assertions.assertThat((T) bean).as("Bean of name <%s> and type <%s> from <%s>", name, type,
-				getApplicationContext());
+		return Assertions.assertThat((T) bean)
+			.as("Bean of name <%s> and type <%s> from <%s>", name, type, getApplicationContext());
 	}
 
 	private Object findBean(String name) {
@@ -411,7 +411,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 			throwAssertionError(contextFailedToStartWhenExpecting("to get beans of type:%n <%s>", type));
 		}
 		return Assertions.assertThat(scope.getBeansOfType(getApplicationContext(), type))
-				.as("Beans of type <%s> from <%s>", type, getApplicationContext());
+			.as("Beans of type <%s> from <%s>", type, getApplicationContext());
 	}
 
 	/**
@@ -517,7 +517,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 
 	}
 
-	private static final class ContextFailedToStart<C extends ApplicationContext> extends BasicErrorMessageFactory {
+	private static final class ContextFailedToStart<C extends ApplicationContext>extends BasicErrorMessageFactory {
 
 		private ContextFailedToStart(C context, Throwable ex, String expectationFormat, Object... arguments) {
 			super("%nExpecting:%n <%s>%n" + expectationFormat + ":%nbut context failed to start:%n%s",

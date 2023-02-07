@@ -111,7 +111,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 	/**
 	 * {@link Mapping} for {@link AnsiElement} enums.
 	 */
-	private static class EnumMapping<E extends Enum<E> & AnsiElement> extends Mapping {
+	private static class EnumMapping<E extends Enum<E> & AnsiElement>extends Mapping {
 
 		private final Set<E> enums;
 

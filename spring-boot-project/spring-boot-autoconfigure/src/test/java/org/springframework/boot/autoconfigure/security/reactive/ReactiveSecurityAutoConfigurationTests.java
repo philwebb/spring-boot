@@ -43,26 +43,26 @@ class ReactiveSecurityAutoConfigurationTests {
 	@Test
 	void backsOffWhenWebFilterChainProxyBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
+			.withUserConfiguration(WebFilterChainProxyConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
 	}
 
 	@Test
 	void enablesWebFluxSecurity() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-						ReactiveUserDetailsServiceAutoConfiguration.class))
-				.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
+			.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+					ReactiveUserDetailsServiceAutoConfiguration.class))
+			.run((context) -> assertThat(context).getBean(WebFilterChainProxy.class).isNotNull());
 	}
 
 	@Test
 	void autoConfigurationIsConditionalOnClass() {
 		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(Flux.class, EnableWebFluxSecurity.class,
-						WebFilterChainProxy.class, WebFluxConfigurer.class))
-				.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-						ReactiveUserDetailsServiceAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(WebFilterChainProxy.class));
+			.withClassLoader(new FilteredClassLoader(Flux.class, EnableWebFluxSecurity.class, WebFilterChainProxy.class,
+					WebFluxConfigurer.class))
+			.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+					ReactiveUserDetailsServiceAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(WebFilterChainProxy.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

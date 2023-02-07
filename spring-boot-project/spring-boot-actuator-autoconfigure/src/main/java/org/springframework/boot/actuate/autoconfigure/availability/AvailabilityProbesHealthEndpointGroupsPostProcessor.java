@@ -36,7 +36,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpo
 
 	AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment) {
 		this.addAdditionalPaths = "true"
-				.equalsIgnoreCase(environment.getProperty("management.endpoint.health.probes.add-additional-paths"));
+			.equalsIgnoreCase(environment.getProperty("management.endpoint.health.probes.add-additional-paths"));
 	}
 
 	@Override

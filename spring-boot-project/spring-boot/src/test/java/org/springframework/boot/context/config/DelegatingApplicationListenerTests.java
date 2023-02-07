@@ -81,7 +81,7 @@ class DelegatingApplicationListenerTests {
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
-					.getApplicationContext();
+				.getApplicationContext();
 			applicationContext.getBeanFactory().registerSingleton("a", "a");
 		}
 
@@ -93,7 +93,7 @@ class DelegatingApplicationListenerTests {
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
-					.getApplicationContext();
+				.getApplicationContext();
 			assertThat(applicationContext.getBeanFactory().getSingleton("a")).isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}

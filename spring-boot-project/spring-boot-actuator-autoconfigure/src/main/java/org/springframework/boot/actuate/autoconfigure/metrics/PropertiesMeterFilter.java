@@ -84,24 +84,29 @@ public class PropertiesMeterFilter implements MeterFilter {
 	public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
 		Distribution distribution = this.properties.getDistribution();
 		return DistributionStatisticConfig.builder()
-				.percentilesHistogram(lookupWithFallbackToAll(distribution.getPercentilesHistogram(), id, null))
-				.percentiles(lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
-				.serviceLevelObjectives(
-						convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id, null)))
-				.minimumExpectedValue(
-						convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id, null)))
-				.maximumExpectedValue(
-						convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
-				.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
-				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null)).build().merge(config);
+			.percentilesHistogram(lookupWithFallbackToAll(distribution.getPercentilesHistogram(), id, null))
+			.percentiles(lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
+			.serviceLevelObjectives(
+					convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id, null)))
+			.minimumExpectedValue(
+					convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id, null)))
+			.maximumExpectedValue(
+					convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
+			.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
+			.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null))
+			.build()
+			.merge(config);
 	}
 
 	private double[] convertServiceLevelObjectives(Meter.Type meterType, ServiceLevelObjectiveBoundary[] slo) {
 		if (slo == null) {
 			return null;
 		}
-		double[] converted = Arrays.stream(slo).map((candidate) -> candidate.getValue(meterType))
-				.filter(Objects::nonNull).mapToDouble(Double::doubleValue).toArray();
+		double[] converted = Arrays.stream(slo)
+			.map((candidate) -> candidate.getValue(meterType))
+			.filter(Objects::nonNull)
+			.mapToDouble(Double::doubleValue)
+			.toArray();
 		return (converted.length != 0) ? converted : null;
 	}
 

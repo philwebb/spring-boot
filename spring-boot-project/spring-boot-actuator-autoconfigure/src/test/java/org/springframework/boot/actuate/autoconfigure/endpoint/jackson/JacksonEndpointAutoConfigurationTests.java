@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JacksonEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JacksonEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JacksonEndpointAutoConfiguration.class));
 
 	@Test
 	void endpointObjectMapperWhenNoProperty() {
@@ -51,13 +51,13 @@ class JacksonEndpointAutoConfigurationTests {
 	@Test
 	void endpointObjectMapperWhenPropertyTrue() {
 		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=true")
-				.run((context) -> assertThat(context).hasSingleBean(EndpointObjectMapper.class));
+			.run((context) -> assertThat(context).hasSingleBean(EndpointObjectMapper.class));
 	}
 
 	@Test
 	void endpointObjectMapperWhenPropertyFalse() {
 		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(EndpointObjectMapper.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(EndpointObjectMapper.class));
 	}
 
 	@Test

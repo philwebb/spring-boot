@@ -45,8 +45,14 @@ class SampleWebFluxApplicationActuatorIsolatedObjectMapperTrueTests {
 
 	@Test
 	void linksEndpointShouldBeAvailable() {
-		this.webClient.get().uri("/actuator/startup").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-				.isOk().expectBody().consumeWith(this::assertExpectedJson);
+		this.webClient.get()
+			.uri("/actuator/startup")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.consumeWith(this::assertExpectedJson);
 	}
 
 	private void assertExpectedJson(EntityExchangeResult<byte[]> result) {

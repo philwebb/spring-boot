@@ -120,7 +120,7 @@ public enum CloudPlatform {
 
 		private boolean isAutoDetected(ConfigurableEnvironment environment) {
 			PropertySource<?> environmentPropertySource = environment.getPropertySources()
-					.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+				.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 			if (environmentPropertySource != null) {
 				if (environmentPropertySource.containsProperty(KUBERNETES_SERVICE_HOST)
 						&& environmentPropertySource.containsProperty(KUBERNETES_SERVICE_PORT)) {

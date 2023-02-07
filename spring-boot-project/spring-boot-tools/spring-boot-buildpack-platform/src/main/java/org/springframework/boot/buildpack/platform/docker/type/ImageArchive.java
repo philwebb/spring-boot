@@ -56,10 +56,10 @@ import org.springframework.util.Assert;
 public class ImageArchive implements TarArchive {
 
 	private static final Instant WINDOWS_EPOCH_PLUS_SECOND = OffsetDateTime.of(1980, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC)
-			.toInstant();
+		.toInstant();
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME
-			.withZone(ZoneOffset.UTC);
+		.withZone(ZoneOffset.UTC);
 
 	private static final String EMPTY_LAYER_NAME_PREFIX = "blank_";
 

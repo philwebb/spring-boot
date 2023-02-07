@@ -76,7 +76,7 @@ class EventPublishingRunListenerTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		TestApplicationListener lateAddedApplicationListener = new TestApplicationListener();
 		ApplicationListener<ApplicationStartingEvent> listener = (event) -> event.getSpringApplication()
-				.addListeners(lateAddedApplicationListener);
+			.addListeners(lateAddedApplicationListener);
 		application.addListeners(listener);
 		EventPublishingRunListener runListener = new EventPublishingRunListener(application, null);
 		runListener.starting(bootstrapContext);

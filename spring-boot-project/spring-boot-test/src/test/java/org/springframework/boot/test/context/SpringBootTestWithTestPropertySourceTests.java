@@ -65,7 +65,7 @@ class SpringBootTestWithTestPropertySourceTests {
 	@Test
 	void propertyFromPropertySourcePropertiesOverridesPropertyFromPropertySourceLocations() {
 		assertThat(this.config.propertySourceInlinedOverridesPropertySourceLocation)
-				.isEqualTo("property-source-inlined");
+			.isEqualTo("property-source-inlined");
 	}
 
 	@Test

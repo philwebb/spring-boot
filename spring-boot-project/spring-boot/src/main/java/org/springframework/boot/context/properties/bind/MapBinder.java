@@ -54,7 +54,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		Map<Object, Object> map = CollectionFactory
-				.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
+			.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		boolean hasDescendants = hasDescendants(name);
 		for (ConfigurationPropertySource source : getContext().getSources()) {

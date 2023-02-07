@@ -95,18 +95,20 @@ public class IntegrationAutoConfiguration {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties.getChannel().isAutoCreate()).to(integrationProperties::setChannelsAutoCreate);
 		map.from(properties.getChannel().getMaxUnicastSubscribers())
-				.to(integrationProperties::setChannelsMaxUnicastSubscribers);
+			.to(integrationProperties::setChannelsMaxUnicastSubscribers);
 		map.from(properties.getChannel().getMaxBroadcastSubscribers())
-				.to(integrationProperties::setChannelsMaxBroadcastSubscribers);
+			.to(integrationProperties::setChannelsMaxBroadcastSubscribers);
 		map.from(properties.getError().isRequireSubscribers())
-				.to(integrationProperties::setErrorChannelRequireSubscribers);
+			.to(integrationProperties::setErrorChannelRequireSubscribers);
 		map.from(properties.getError().isIgnoreFailures()).to(integrationProperties::setErrorChannelIgnoreFailures);
 		map.from(properties.getEndpoint().isThrowExceptionOnLateReply())
-				.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
-		map.from(properties.getEndpoint().getReadOnlyHeaders()).as(StringUtils::toStringArray)
-				.to(integrationProperties::setReadOnlyHeaders);
-		map.from(properties.getEndpoint().getNoAutoStartup()).as(StringUtils::toStringArray)
-				.to(integrationProperties::setNoAutoStartupEndpoints);
+			.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
+		map.from(properties.getEndpoint().getReadOnlyHeaders())
+			.as(StringUtils::toStringArray)
+			.to(integrationProperties::setReadOnlyHeaders);
+		map.from(properties.getEndpoint().getNoAutoStartup())
+			.as(StringUtils::toStringArray)
+			.to(integrationProperties::setNoAutoStartupEndpoints);
 		return integrationProperties;
 	}
 

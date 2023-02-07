@@ -161,7 +161,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 		private void addComponentScanningPackages(Set<String> packages, AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
-					.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName(), true));
+				.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName(), true));
 			if (attributes != null) {
 				addPackages(packages, attributes.getStringArray("value"));
 				addPackages(packages, attributes.getStringArray("basePackages"));

@@ -34,8 +34,8 @@ final class SettingsCreator {
 
 	static DatabaseInitializationSettings createFrom(SqlInitializationProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(
-				scriptLocations(properties.getSchemaLocations(), "schema", properties.getPlatform()));
+		settings
+			.setSchemaLocations(scriptLocations(properties.getSchemaLocations(), "schema", properties.getPlatform()));
 		settings.setDataLocations(scriptLocations(properties.getDataLocations(), "data", properties.getPlatform()));
 		settings.setContinueOnError(properties.isContinueOnError());
 		settings.setSeparator(properties.getSeparator());

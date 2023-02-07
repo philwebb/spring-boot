@@ -185,8 +185,8 @@ class SslConnectorCustomizerTests {
 	@Test
 	void customizeWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		assertThatExceptionOfType(WebServerException.class)
-				.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null).customize(this.tomcat.getConnector()))
-				.withMessageContaining("Could not load key store 'null'");
+			.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null).customize(this.tomcat.getConnector()))
+			.withMessageContaining("Could not load key store 'null'");
 	}
 
 	@Test
@@ -198,7 +198,7 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyPassword("password");
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()))
-				.withMessageContaining("must be empty or null for PKCS11 key stores");
+			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
 
 	@Test

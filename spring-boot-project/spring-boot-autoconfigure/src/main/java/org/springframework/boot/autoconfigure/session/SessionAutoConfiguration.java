@@ -109,7 +109,7 @@ public class SessionAutoConfiguration {
 			@Bean
 			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
-						.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 			}
 
 		}

@@ -32,10 +32,16 @@ public class SecurityConfiguration {
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 		return new InMemoryUserDetailsManager(
-				User.withDefaultPasswordEncoder().username("user").password("password").authorities("ROLE_USER")
-						.build(),
-				User.withDefaultPasswordEncoder().username("admin").password("admin")
-						.authorities("ROLE_ACTUATOR", "ROLE_USER").build());
+				User.withDefaultPasswordEncoder()
+					.username("user")
+					.password("password")
+					.authorities("ROLE_USER")
+					.build(),
+				User.withDefaultPasswordEncoder()
+					.username("admin")
+					.password("admin")
+					.authorities("ROLE_ACTUATOR", "ROLE_USER")
+					.build());
 	}
 
 	@Bean
@@ -43,7 +49,7 @@ public class SecurityConfiguration {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
-					.hasRole("ACTUATOR");
+				.hasRole("ACTUATOR");
 			requests.requestMatchers("/**").hasRole("USER");
 		});
 		http.httpBasic();

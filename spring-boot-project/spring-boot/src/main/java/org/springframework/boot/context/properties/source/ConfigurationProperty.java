@@ -111,8 +111,10 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", this.name).append("value", this.value)
-				.append("origin", this.origin).toString();
+		return new ToStringCreator(this).append("name", this.name)
+			.append("value", this.value)
+			.append("origin", this.origin)
+			.toString();
 	}
 
 	@Override

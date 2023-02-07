@@ -39,13 +39,13 @@ class StringToFileConverterTests {
 	@ConversionServiceTest
 	void convertWhenSimpleFileReturnsFile(ConversionService conversionService) {
 		assertThat(convert(conversionService, this.temp.getAbsolutePath() + "/test"))
-				.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
+			.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
 	}
 
 	@ConversionServiceTest
 	void convertWhenFilePrefixedReturnsFile(ConversionService conversionService) {
 		assertThat(convert(conversionService, "file:" + this.temp.getAbsolutePath() + "/test").getAbsoluteFile())
-				.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
+			.isEqualTo(new File(this.temp, "test").getAbsoluteFile());
 	}
 
 	private File convert(ConversionService conversionService, String source) {
@@ -54,7 +54,7 @@ class StringToFileConverterTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((conversionService) -> conversionService.addConverter(new StringToFileConverter()));
+			.with((conversionService) -> conversionService.addConverter(new StringToFileConverter()));
 	}
 
 }

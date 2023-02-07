@@ -50,7 +50,7 @@ class PrivateKeyParserTests {
 	void parseWithNonKeyFileWillThrowException() {
 		String path = "classpath:test-banner.txt";
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse("file://" + path))
-				.withMessageContaining(path);
+			.withMessageContaining(path);
 	}
 
 	@Test

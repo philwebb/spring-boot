@@ -77,7 +77,7 @@ public final class SpringApplicationShutdownHookInstance implements AssertProvid
 		private AbstractBooleanAssert<?> assertThatIsApplicationContextRegistered(
 				ConfigurableApplicationContext context) {
 			return Assertions.assertThat(this.actual.isApplicationContextRegistered(context))
-					.as("ApplicationContext registered with shutdown hook");
+				.as("ApplicationContext registered with shutdown hook");
 		}
 
 	}

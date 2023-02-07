@@ -45,13 +45,13 @@ class InvocationContextTests {
 	@Test
 	void createWhenSecurityContextIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InvocationContext(null, this.arguments))
-				.withMessage("SecurityContext must not be null");
+			.withMessage("SecurityContext must not be null");
 	}
 
 	@Test
 	void createWhenArgumentsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InvocationContext(this.securityContext, null))
-				.withMessage("Arguments must not be null");
+			.withMessage("Arguments must not be null");
 	}
 
 	@Test

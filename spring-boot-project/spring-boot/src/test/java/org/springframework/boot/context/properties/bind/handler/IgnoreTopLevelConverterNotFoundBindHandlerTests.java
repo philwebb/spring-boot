@@ -54,8 +54,8 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 	@Test
 	void bindWhenHandlerNotPresentShouldFail() {
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)))
-				.withCauseInstanceOf(ConverterNotFoundException.class);
+			.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)))
+			.withCauseInstanceOf(ConverterNotFoundException.class);
 	}
 
 	@Test
@@ -69,9 +69,9 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 		source.put("example.foo", "1");
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
-						new IgnoreTopLevelConverterNotFoundBindHandler()))
-				.withCauseInstanceOf(IllegalStateException.class);
+			.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
+					new IgnoreTopLevelConverterNotFoundBindHandler()))
+			.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
@@ -80,9 +80,9 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 		source.put("example.map", "hello");
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
-						new IgnoreTopLevelConverterNotFoundBindHandler()))
-				.withCauseInstanceOf(ConverterNotFoundException.class);
+			.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
+					new IgnoreTopLevelConverterNotFoundBindHandler()))
+			.withCauseInstanceOf(ConverterNotFoundException.class);
 	}
 
 	static class Example {

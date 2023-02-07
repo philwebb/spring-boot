@@ -115,8 +115,8 @@ class ReflectionEnvironmentPostProcessorsFactoryTests {
 		ReflectionEnvironmentPostProcessorsFactory factory = new ReflectionEnvironmentPostProcessorsFactory(null,
 				BadEnvironmentPostProcessor.class.getName());
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.getEnvironmentPostProcessors(this.logFactory, this.bootstrapContext))
-				.withMessageContaining("Unable to instantiate");
+			.isThrownBy(() -> factory.getEnvironmentPostProcessors(this.logFactory, this.bootstrapContext))
+			.withMessageContaining("Unable to instantiate");
 	}
 
 	private EnvironmentPostProcessorsFactoryAssert assertThatFactory(EnvironmentPostProcessorsFactory factory) {

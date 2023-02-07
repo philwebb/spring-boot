@@ -121,7 +121,7 @@ class ChildManagementContextInitializer
 
 	protected final ConfigurableApplicationContext createManagementContext() {
 		ConfigurableApplicationContext managementContext = this.managementContextFactory
-				.createManagementContext(this.parentContext);
+			.createManagementContext(this.parentContext);
 		managementContext.setId(this.parentContext.getId() + ":management");
 		if (managementContext instanceof ConfigurableWebServerApplicationContext webServerApplicationContext) {
 			webServerApplicationContext.setServerNamespace("management");
@@ -162,9 +162,10 @@ class ChildManagementContextInitializer
 		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
 			GenerationContext managementGenerationContext = generationContext.withName("Management");
 			ClassName generatedInitializerClassName = new ApplicationContextAotGenerator()
-					.processAheadOfTime(this.managementContext, managementGenerationContext);
-			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethods().add("addManagementInitializer",
-					(method) -> method.addJavadoc("Use AOT management context initialization")
+				.processAheadOfTime(this.managementContext, managementGenerationContext);
+			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethods()
+				.add("addManagementInitializer",
+						(method) -> method.addJavadoc("Use AOT management context initialization")
 							.addModifiers(Modifier.PRIVATE, Modifier.STATIC)
 							.addParameter(RegisteredBean.class, "registeredBean")
 							.addParameter(ChildManagementContextInitializer.class, "instance")

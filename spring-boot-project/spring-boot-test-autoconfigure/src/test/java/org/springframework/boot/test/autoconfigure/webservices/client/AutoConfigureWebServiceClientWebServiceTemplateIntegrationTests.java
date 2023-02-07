@@ -49,7 +49,7 @@ class AutoConfigureWebServiceClientWebServiceTemplateIntegrationTests {
 	@Test
 	void webServiceTemplateTest() {
 		this.server.expect(payload(new StringSource("<request/>")))
-				.andRespond(withPayload(new StringSource("<response/>")));
+			.andRespond(withPayload(new StringSource("<response/>")));
 		this.webServiceTemplate.marshalSendAndReceive("https://example.com", new Request());
 	}
 

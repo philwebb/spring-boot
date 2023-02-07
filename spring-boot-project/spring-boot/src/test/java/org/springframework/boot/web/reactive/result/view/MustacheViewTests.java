@@ -52,9 +52,10 @@ class MustacheViewTests {
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, exchange)
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		StepVerifier.create(exchange.getResponse().getBodyAsString())
-				.assertNext((body) -> assertThat(body).isEqualToIgnoringWhitespace("Hello Spring")).verifyComplete();
+			.assertNext((body) -> assertThat(body).isEqualToIgnoringWhitespace("Hello Spring"))
+			.verifyComplete();
 	}
 
 }

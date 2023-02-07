@@ -71,7 +71,7 @@ final class ImageBuildpack implements Buildpack {
 
 	private boolean buildpackExistsInBuilder(BuildpackResolverContext context, List<LayerId> imageLayers) {
 		BuildpackLayerDetails buildpackLayerDetails = context.getBuildpackLayersMetadata()
-				.getBuildpack(this.coordinates.getId(), this.coordinates.getVersion());
+			.getBuildpack(this.coordinates.getId(), this.coordinates.getVersion());
 		String layerDiffId = (buildpackLayerDetails != null) ? buildpackLayerDetails.getLayerDiffId() : null;
 		return (layerDiffId != null) && imageLayers.stream().map(LayerId::toString).anyMatch(layerDiffId::equals);
 	}
@@ -98,7 +98,7 @@ final class ImageBuildpack implements Buildpack {
 		boolean unambiguous = reference.hasPrefix(PREFIX);
 		try {
 			ImageReference imageReference = ImageReference
-					.of((unambiguous) ? reference.getSubReference(PREFIX) : reference.toString());
+				.of((unambiguous) ? reference.getSubReference(PREFIX) : reference.toString());
 			return new ImageBuildpack(context, imageReference);
 		}
 		catch (IllegalArgumentException ex) {

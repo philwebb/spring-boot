@@ -168,14 +168,15 @@ class BuildInfoTests {
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
 		assertThatThrownBy(() -> task.getProperties().getAdditional().put("a", null))
-				.hasMessage("Cannot add an entry with a null value to a property of type Map.");
+			.hasMessage("Cannot add an entry with a null value to a property of type Map.");
 	}
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
 		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
-		((ProjectInternal) project).getServices().get(GradlePropertiesController.class)
-				.loadGradlePropertiesFrom(projectDir);
+		((ProjectInternal) project).getServices()
+			.get(GradlePropertiesController.class)
+			.loadGradlePropertiesFrom(projectDir);
 		return project;
 	}
 

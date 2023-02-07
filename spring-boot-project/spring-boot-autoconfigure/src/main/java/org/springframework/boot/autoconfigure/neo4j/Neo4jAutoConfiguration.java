@@ -84,8 +84,8 @@ public class Neo4jAutoConfiguration {
 		boolean hasKerberosTicket = StringUtils.hasText(kerberosTicket);
 
 		if (hasUsername && hasKerberosTicket) {
-			throw new IllegalStateException(String.format(
-					"Cannot specify both username ('%s') and kerberos ticket ('%s')", username, kerberosTicket));
+			throw new IllegalStateException(String
+				.format("Cannot specify both username ('%s') and kerberos ticket ('%s')", username, kerberosTicket));
 		}
 		if (hasUsername && hasPassword) {
 			return AuthTokens.basic(username, password, realm);

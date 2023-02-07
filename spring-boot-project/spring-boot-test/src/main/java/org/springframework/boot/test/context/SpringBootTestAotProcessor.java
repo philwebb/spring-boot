@@ -49,11 +49,17 @@ public class SpringBootTestAotProcessor extends TestAotProcessor {
 		int requiredArgs = 6;
 		Assert.isTrue(args.length >= requiredArgs,
 				() -> "Usage: %s <classpathRoots> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId>"
-						.formatted(TestAotProcessor.class.getName()));
-		Set<Path> classpathRoots = Arrays.stream(args[0].split(File.pathSeparator)).map(Paths::get)
-				.collect(Collectors.toSet());
-		Settings settings = Settings.builder().sourceOutput(Paths.get(args[1])).resourceOutput(Paths.get(args[2]))
-				.classOutput(Paths.get(args[3])).groupId(args[4]).artifactId(args[5]).build();
+					.formatted(TestAotProcessor.class.getName()));
+		Set<Path> classpathRoots = Arrays.stream(args[0].split(File.pathSeparator))
+			.map(Paths::get)
+			.collect(Collectors.toSet());
+		Settings settings = Settings.builder()
+			.sourceOutput(Paths.get(args[1]))
+			.resourceOutput(Paths.get(args[2]))
+			.classOutput(Paths.get(args[3]))
+			.groupId(args[4])
+			.artifactId(args[5])
+			.build();
 		new SpringBootTestAotProcessor(classpathRoots, settings).process();
 	}
 

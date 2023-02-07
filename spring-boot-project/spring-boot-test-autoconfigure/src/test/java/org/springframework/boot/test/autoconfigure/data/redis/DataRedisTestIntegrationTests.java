@@ -72,14 +72,14 @@ class DataRedisTestIntegrationTests {
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(savedEntity.getId()).isNotNull();
 		assertThat(this.operations.execute((RedisConnection connection) -> connection.keyCommands()
-				.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
+			.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
 		this.exampleRepository.deleteAll();
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

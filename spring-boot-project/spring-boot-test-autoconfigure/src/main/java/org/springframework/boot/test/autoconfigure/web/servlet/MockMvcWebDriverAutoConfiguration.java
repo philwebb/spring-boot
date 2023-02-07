@@ -53,7 +53,7 @@ public class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnBean(MockMvc.class)
 	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, Environment environment) {
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment, BrowserVersion.CHROME));
+			.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment, BrowserVersion.CHROME));
 	}
 
 	@Bean

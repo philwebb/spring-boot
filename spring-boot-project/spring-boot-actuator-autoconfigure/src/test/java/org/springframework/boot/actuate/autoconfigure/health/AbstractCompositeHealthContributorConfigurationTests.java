@@ -49,7 +49,7 @@ abstract class AbstractCompositeHealthContributorConfigurationTests<C, I extends
 	void createContributorWhenBeansIsEmptyThrowsException() {
 		Map<String, TestBean> beans = Collections.emptyMap();
 		assertThatIllegalArgumentException().isThrownBy(() -> newComposite().createContributor(beans))
-				.withMessage("Beans must not be empty");
+			.withMessage("Beans must not be empty");
 	}
 
 	@Test

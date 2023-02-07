@@ -90,7 +90,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	protected List<String> getExtensions(ClassLoader classLoader) {
 		List<String> extensions = new ArrayList<>();
 		List<PropertySourceLoader> propertySourceLoaders = getSpringFactoriesLoader(classLoader)
-				.load(PropertySourceLoader.class);
+			.load(PropertySourceLoader.class);
 		for (PropertySourceLoader propertySourceLoader : propertySourceLoaders) {
 			for (String fileExtension : propertySourceLoader.getFileExtensions()) {
 				String candidate = "." + fileExtension;

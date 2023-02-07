@@ -39,7 +39,7 @@ class SimpleHttpCodeStatusMapperTests {
 		assertThat(mapper.getStatusCode(Status.UP)).isEqualTo(WebEndpointResponse.STATUS_OK);
 		assertThat(mapper.getStatusCode(Status.DOWN)).isEqualTo(WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
 		assertThat(mapper.getStatusCode(Status.OUT_OF_SERVICE))
-				.isEqualTo(WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
+			.isEqualTo(WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
 	}
 
 	@Test

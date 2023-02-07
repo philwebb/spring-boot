@@ -114,8 +114,12 @@ public class MetricsEndpoint {
 
 	private Collection<Meter> findFirstMatchingMeters(CompositeMeterRegistry composite, String name,
 			Iterable<Tag> tags) {
-		return composite.getRegistries().stream().map((registry) -> findFirstMatchingMeters(registry, name, tags))
-				.filter((matching) -> !matching.isEmpty()).findFirst().orElse(Collections.emptyList());
+		return composite.getRegistries()
+			.stream()
+			.map((registry) -> findFirstMatchingMeters(registry, name, tags))
+			.filter((matching) -> !matching.isEmpty())
+			.findFirst()
+			.orElse(Collections.emptyList());
 	}
 
 	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
@@ -125,8 +129,9 @@ public class MetricsEndpoint {
 	}
 
 	private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
-		meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(), measurement.getValue(),
-				mergeFunction(measurement.getStatistic())));
+		meter.measure()
+			.forEach((measurement) -> samples.merge(measurement.getStatistic(), measurement.getValue(),
+					mergeFunction(measurement.getStatistic())));
 	}
 
 	private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {

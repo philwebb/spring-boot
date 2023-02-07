@@ -63,13 +63,13 @@ class DispatcherTests {
 	@Test
 	void accessManagerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
-				.withMessageContaining("AccessManager must not be null");
+			.withMessageContaining("AccessManager must not be null");
 	}
 
 	@Test
 	void mappersMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(this.accessManager, null))
-				.withMessageContaining("Mappers must not be null");
+			.withMessageContaining("Mappers must not be null");
 	}
 
 	@Test

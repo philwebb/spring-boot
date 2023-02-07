@@ -86,14 +86,14 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	private JarEntryCertification[] certifications;
 
 	private final Map<Integer, FileHeader> entriesCache = Collections
-			.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
+		.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
 
-				@Override
-				protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
-					return size() >= ENTRY_CACHE_SIZE;
-				}
+			@Override
+			protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
+				return size() >= ENTRY_CACHE_SIZE;
+			}
 
-			});
+		});
 
 	JarFileEntries(JarFile jarFile, JarEntryFilter filter) {
 		this.jarFile = jarFile;

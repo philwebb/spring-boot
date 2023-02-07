@@ -108,8 +108,9 @@ public class DocumentPluginGoals extends DefaultTask {
 				writer.println("== Required parameters");
 				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
-			List<Parameter> optionalParameters = parameters.stream().filter((parameter) -> !parameter.isRequired())
-					.toList();
+			List<Parameter> optionalParameters = parameters.stream()
+				.filter((parameter) -> !parameter.isRequired())
+				.toList();
 			if (!optionalParameters.isEmpty()) {
 				writer.println();
 				writer.println();

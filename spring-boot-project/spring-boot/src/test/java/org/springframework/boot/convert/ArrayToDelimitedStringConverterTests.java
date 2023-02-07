@@ -80,7 +80,7 @@ class ArrayToDelimitedStringConverterTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverter(new ArrayToDelimitedStringConverter(service)));
+			.with((service) -> service.addConverter(new ArrayToDelimitedStringConverter(service)));
 	}
 
 	static class Data {

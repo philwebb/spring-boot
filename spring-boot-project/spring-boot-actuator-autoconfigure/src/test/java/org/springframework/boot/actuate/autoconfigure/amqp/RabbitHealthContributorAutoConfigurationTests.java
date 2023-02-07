@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RabbitHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class,
-					RabbitHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class,
+				RabbitHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
@@ -45,7 +45,7 @@ class RabbitHealthContributorAutoConfigurationTests {
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.rabbit.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(RabbitHealthIndicator.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(RabbitHealthIndicator.class));
 	}
 
 }

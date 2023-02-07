@@ -121,8 +121,8 @@ class ElasticsearchReactiveHealthIndicatorTests {
 
 	private void setupMockResponse(int responseCode, String status) {
 		MockResponse mockResponse = new MockResponse().setBody(createJsonResult(status))
-				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.setHeader("X-Elastic-Product", "Elasticsearch");
+			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+			.setHeader("X-Elastic-Product", "Elasticsearch");
 		this.server.enqueue(mockResponse);
 	}
 

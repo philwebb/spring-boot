@@ -64,7 +64,7 @@ class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitiali
 			String initializerName = iterator.next();
 			BeanDefinition initializerDefinition = beanFactory.getBeanDefinition(initializerName);
 			if (JpaDatabaseInitializerDetector.class.getName()
-					.equals(initializerDefinition.getAttribute(DatabaseInitializerDetector.class.getName()))) {
+				.equals(initializerDefinition.getAttribute(DatabaseInitializerDetector.class.getName()))) {
 				iterator.remove();
 				jpaInitializers.add(initializerName);
 			}

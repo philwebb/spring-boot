@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ZipkinAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ZipkinAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ZipkinAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
@@ -47,7 +47,7 @@ class ZipkinAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfZipkinReporterIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter"))
-				.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class ZipkinAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

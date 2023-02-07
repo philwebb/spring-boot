@@ -71,7 +71,7 @@ public abstract class BuildInfo extends DefaultTask {
 					this.properties.getNameIfNotExcluded(), this.properties.getTimeIfNotExcluded(),
 					this.properties.getAdditionalIfNotExcluded());
 			new BuildPropertiesWriter(new File(getDestinationDir().get().getAsFile(), "build-info.properties"))
-					.writeBuildProperties(details);
+				.writeBuildProperties(details);
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);

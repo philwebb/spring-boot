@@ -112,8 +112,8 @@ class SharedMetadataReaderFactoryContextInitializer implements
 		private void register(BeanDefinitionRegistry registry) {
 			if (!registry.containsBeanDefinition(BEAN_NAME)) {
 				BeanDefinition definition = BeanDefinitionBuilder
-						.rootBeanDefinition(SharedMetadataReaderFactoryBean.class, SharedMetadataReaderFactoryBean::new)
-						.getBeanDefinition();
+					.rootBeanDefinition(SharedMetadataReaderFactoryBean.class, SharedMetadataReaderFactoryBean::new)
+					.getBeanDefinition();
 				registry.registerBeanDefinition(BEAN_NAME, definition);
 			}
 		}

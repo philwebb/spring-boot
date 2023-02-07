@@ -49,8 +49,9 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	protected Collection<Class<?>> sort(Collection<Class<?>> classes) {
 		List<String> names = classes.stream().map(Class::getName).toList();
 		List<String> sorted = SORTER.getInPriorityOrder(names);
-		return sorted.stream().map((className) -> ClassUtils.resolveClassName(className, null))
-				.collect(Collectors.toCollection(ArrayList::new));
+		return sorted.stream()
+			.map((className) -> ClassUtils.resolveClassName(className, null))
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override

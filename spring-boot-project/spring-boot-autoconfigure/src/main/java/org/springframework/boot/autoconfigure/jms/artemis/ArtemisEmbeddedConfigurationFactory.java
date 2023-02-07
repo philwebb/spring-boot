@@ -71,13 +71,14 @@ class ArtemisEmbeddedConfigurationFactory {
 		configuration.addAddressConfiguration(createAddressConfiguration("ExpiryQueue"));
 		configuration.addAddressSetting("#",
 				new AddressSettings().setDeadLetterAddress(SimpleString.toSimpleString("DLQ"))
-						.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
+					.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
 		return configuration;
 	}
 
 	private CoreAddressConfiguration createAddressConfiguration(String name) {
-		return new CoreAddressConfiguration().setName(name).addRoutingType(RoutingType.ANYCAST).addQueueConfiguration(
-				new QueueConfiguration(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
+		return new CoreAddressConfiguration().setName(name)
+			.addRoutingType(RoutingType.ANYCAST)
+			.addQueueConfiguration(new QueueConfiguration(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
 	}
 
 	private String getDataDir() {

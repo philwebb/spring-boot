@@ -43,7 +43,7 @@ class ClientHttpRequestFactoriesTests {
 	@Test
 	void getReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS);
+			.get(ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
@@ -64,7 +64,7 @@ class ClientHttpRequestFactoriesTests {
 	@Test
 	void getOfHttpComponentsFactoryReturnsHttpComponentsFactory() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(HttpComponentsClientHttpRequestFactory.class, ClientHttpRequestFactorySettings.DEFAULTS);
+			.get(HttpComponentsClientHttpRequestFactory.class, ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
@@ -88,7 +88,7 @@ class ClientHttpRequestFactoriesTests {
 				ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
 		assertThat(requestFactory).isInstanceOf(TestClientHttpRequestFactory.class);
 		assertThat(((TestClientHttpRequestFactory) requestFactory).connectTimeout)
-				.isEqualTo(Duration.ofSeconds(60).toMillis());
+			.isEqualTo(Duration.ofSeconds(60).toMillis());
 	}
 
 	@Test
@@ -97,7 +97,7 @@ class ClientHttpRequestFactoriesTests {
 				ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(90)));
 		assertThat(requestFactory).isInstanceOf(TestClientHttpRequestFactory.class);
 		assertThat(((TestClientHttpRequestFactory) requestFactory).readTimeout)
-				.isEqualTo(Duration.ofSeconds(90).toMillis());
+			.isEqualTo(Duration.ofSeconds(90).toMillis());
 	}
 
 	@Test
@@ -111,49 +111,49 @@ class ClientHttpRequestFactoriesTests {
 	@Test
 	void getOfUnconfigurableTypeWithConnectTimeoutThrows() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
-						ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60))))
-				.withMessageContaining("suitable setConnectTimeout method");
+			.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
+					ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60))))
+			.withMessageContaining("suitable setConnectTimeout method");
 	}
 
 	@Test
 	void getOfUnconfigurableTypeWithReadTimeoutThrows() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
-						ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(60))))
-				.withMessageContaining("suitable setReadTimeout method");
+			.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
+					ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(60))))
+			.withMessageContaining("suitable setReadTimeout method");
 	}
 
 	@Test
 	void getOfUnconfigurableTypeWithBodyBufferingThrows() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
-						ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)))
-				.withMessageContaining("suitable setBufferRequestBody method");
+			.isThrownBy(() -> ClientHttpRequestFactories.get(UnconfigurableClientHttpRequestFactory.class,
+					ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)))
+			.withMessageContaining("suitable setBufferRequestBody method");
 	}
 
 	@Test
 	void getOfTypeWithDeprecatedConnectTimeoutThrowsWithConnectTimeout() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
-						ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60))))
-				.withMessageContaining("setConnectTimeout method marked as deprecated");
+			.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
+					ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60))))
+			.withMessageContaining("setConnectTimeout method marked as deprecated");
 	}
 
 	@Test
 	void getOfTypeWithDeprecatedReadTimeoutThrowsWithReadTimeout() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
-						ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(60))))
-				.withMessageContaining("setReadTimeout method marked as deprecated");
+			.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
+					ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(60))))
+			.withMessageContaining("setReadTimeout method marked as deprecated");
 	}
 
 	@Test
 	void getOfTypeWithDeprecatedBufferRequestBodyThrowsWithBufferRequestBody() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
-						ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(false)))
-				.withMessageContaining("setBufferRequestBody method marked as deprecated");
+			.isThrownBy(() -> ClientHttpRequestFactories.get(DeprecatedMethodsClientHttpRequestFactory.class,
+					ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(false)))
+			.withMessageContaining("setBufferRequestBody method marked as deprecated");
 	}
 
 	@Test

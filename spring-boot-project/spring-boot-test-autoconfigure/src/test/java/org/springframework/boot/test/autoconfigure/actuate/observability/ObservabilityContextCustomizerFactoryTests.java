@@ -106,11 +106,12 @@ class ObservabilityContextCustomizerFactoryTests {
 		try (FilteredClassLoader filteredClassLoader = new FilteredClassLoader("io.micrometer.tracing")) {
 			ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 			new ApplicationContextRunner().withClassLoader(filteredClassLoader)
-					.withInitializer(applyCustomizer(customizer)).run((context) -> {
-						assertThat(context).doesNotHaveBean(Tracer.class);
-						assertThatMetricsAreDisabled(context);
-						assertThatTracingIsDisabled(context);
-					});
+				.withInitializer(applyCustomizer(customizer))
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(Tracer.class);
+					assertThatMetricsAreDisabled(context);
+					assertThatTracingIsDisabled(context);
+				});
 		}
 	}
 
@@ -118,18 +119,19 @@ class ObservabilityContextCustomizerFactoryTests {
 	void shouldBackOffOnCustomTracer() {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		new ApplicationContextRunner().withConfiguration(UserConfigurations.of(CustomTracer.class))
-				.withInitializer(applyCustomizer(customizer)).run((context) -> {
-					assertThat(context).hasSingleBean(Tracer.class);
-					assertThat(context).hasBean("customTracer");
-				});
+			.withInitializer(applyCustomizer(customizer))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Tracer.class);
+				assertThat(context).hasBean("customTracer");
+			});
 	}
 
 	@Test
 	void shouldNotRunIfAotIsEnabled() {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-				.withInitializer(applyCustomizer(customizer))
-				.run((context) -> assertThat(context).doesNotHaveBean(Tracer.class));
+			.withInitializer(applyCustomizer(customizer))
+			.run((context) -> assertThat(context).doesNotHaveBean(Tracer.class));
 	}
 
 	@Test
@@ -160,7 +162,7 @@ class ObservabilityContextCustomizerFactoryTests {
 
 	private void assertThatMetricsAreDisabled(ConfigurableApplicationContext context) {
 		assertThat(context.getEnvironment().getProperty("management.defaults.metrics.export.enabled"))
-				.isEqualTo("false");
+			.isEqualTo("false");
 		assertThat(context.getEnvironment().getProperty("management.simple.metrics.export.enabled")).isEqualTo("true");
 	}
 

@@ -50,13 +50,13 @@ class RestClientTestNoComponentIntegrationTests {
 	@Test
 	void exampleRestClientIsNotInjected() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleRestClient.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleRestClient.class));
 	}
 
 	@Test
 	void examplePropertiesIsNotInjected() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleProperties.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleProperties.class));
 	}
 
 	@Test

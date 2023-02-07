@@ -76,7 +76,7 @@ class WebMvcTestAutoConfigurationIntegrationTests {
 	void asyncTaskExecutorWithApplicationTaskExecutor() {
 		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class)).hasSize(1);
 		assertThat(this.applicationContext.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
-				.isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
+			.isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
 	}
 
 	@Test

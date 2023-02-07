@@ -122,13 +122,14 @@ class StringToDurationConverterTests {
 	@ConversionServiceTest
 	void convertWhenBadFormatShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert(conversionService, "10foo"))
-				.havingRootCause().withMessageContaining("'10foo' is not a valid duration");
+			.havingRootCause()
+			.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@ConversionServiceTest
 	void convertWhenStyleMismatchShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> convert(conversionService, "10s", null, DurationStyle.ISO8601));
+			.isThrownBy(() -> convert(conversionService, "10s", null, DurationStyle.ISO8601));
 	}
 
 	@ConversionServiceTest

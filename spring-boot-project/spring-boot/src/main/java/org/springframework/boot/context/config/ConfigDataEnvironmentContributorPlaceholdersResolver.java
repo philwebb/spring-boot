@@ -88,7 +88,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 			return contributor.isActive(this.activationContext);
 		}
 		return contributor.withBoundProperties(this.contributors, this.activationContext)
-				.isActive(this.activationContext);
+			.isActive(this.activationContext);
 	}
 
 }

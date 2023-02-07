@@ -35,30 +35,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AvailabilityHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class,
-					AvailabilityHealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class,
+				AvailabilityHealthContributorAutoConfiguration.class));
 
 	@Test
 	void probesWhenNotKubernetesAddsNoBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-				.doesNotHaveBean(LivenessStateHealthIndicator.class)
-				.doesNotHaveBean(ReadinessStateHealthIndicator.class));
+			.doesNotHaveBean(LivenessStateHealthIndicator.class)
+			.doesNotHaveBean(ReadinessStateHealthIndicator.class));
 	}
 
 	@Test
 	void livenessIndicatorWhenPropertyEnabledAddsBeans() {
 		this.contextRunner.withPropertyValues("management.health.livenessState.enabled=true")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-						.hasSingleBean(LivenessStateHealthIndicator.class)
-						.doesNotHaveBean(ReadinessStateHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
+				.hasSingleBean(LivenessStateHealthIndicator.class)
+				.doesNotHaveBean(ReadinessStateHealthIndicator.class));
 	}
 
 	@Test
 	void readinessIndicatorWhenPropertyEnabledAddsBeans() {
 		this.contextRunner.withPropertyValues("management.health.readinessState.enabled=true")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-						.hasSingleBean(ReadinessStateHealthIndicator.class)
-						.doesNotHaveBean(LivenessStateHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
+				.hasSingleBean(ReadinessStateHealthIndicator.class)
+				.doesNotHaveBean(LivenessStateHealthIndicator.class));
 	}
 
 }

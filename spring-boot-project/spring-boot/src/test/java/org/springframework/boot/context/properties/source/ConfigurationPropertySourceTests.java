@@ -36,7 +36,7 @@ class ConfigurationPropertySourceTests {
 		source.setProperty("spring", "boot");
 		ConfigurationPropertySource adapted = ConfigurationPropertySource.from(source);
 		assertThat(adapted.getConfigurationProperty(ConfigurationPropertyName.of("spring")).getValue())
-				.isEqualTo("boot");
+			.isEqualTo("boot");
 	}
 
 	@Test

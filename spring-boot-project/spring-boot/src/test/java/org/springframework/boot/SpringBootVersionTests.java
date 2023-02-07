@@ -36,7 +36,7 @@ class SpringBootVersionTests {
 	@Test
 	void getVersionShouldReturnVersionMatchingGradleProperties() throws IOException {
 		String expectedVersion = PropertiesLoaderUtils.loadProperties(new FileSystemResource(findGradleProperties()))
-				.getProperty("version");
+			.getProperty("version");
 		assertThat(SpringBootVersion.getVersion()).isEqualTo(expectedVersion);
 	}
 

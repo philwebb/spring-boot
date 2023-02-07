@@ -45,12 +45,11 @@ class NoDslContextBeanFailureAnalyzerTests {
 	@Test
 	void analysisWithR2dbcAutoConfiguration() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.run((context) -> {
-					NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
-							context.getBeanFactory());
-					assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class)))
-							.isNotNull();
-				});
+			.run((context) -> {
+				NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
+						context.getBeanFactory());
+				assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class))).isNotNull();
+			});
 	}
 
 }

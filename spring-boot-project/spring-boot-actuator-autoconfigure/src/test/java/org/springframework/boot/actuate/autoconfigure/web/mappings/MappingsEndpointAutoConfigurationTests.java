@@ -43,30 +43,31 @@ class MappingsEndpointAutoConfigurationTests {
 	@Test
 	void whenEndpointIsUnavailableThenEndpointAndDescriptionProvidersAreNotCreated() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MappingsEndpointAutoConfiguration.class,
-						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-						WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						WebMvcEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(MappingsEndpoint.class);
-					assertThat(context).doesNotHaveBean(MappingDescriptionProvider.class);
-				});
+			.withConfiguration(AutoConfigurations.of(MappingsEndpointAutoConfiguration.class,
+					JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+					WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					WebMvcEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(MappingsEndpoint.class);
+				assertThat(context).doesNotHaveBean(MappingDescriptionProvider.class);
+			});
 
 	}
 
 	@Test
 	void whenEndpointIsAvailableThenEndpointAndDescriptionProvidersAreCreated() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MappingsEndpointAutoConfiguration.class,
-						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-						WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						WebMvcEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class))
-				.withPropertyValues("management.endpoints.web.exposure.include=mappings").run((context) -> {
-					assertThat(context).hasSingleBean(MappingsEndpoint.class);
-					assertThat(context.getBeansOfType(MappingDescriptionProvider.class)).hasSize(3);
-				});
+			.withConfiguration(AutoConfigurations.of(MappingsEndpointAutoConfiguration.class,
+					JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+					WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					WebMvcEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=mappings")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MappingsEndpoint.class);
+				assertThat(context.getBeansOfType(MappingDescriptionProvider.class)).hasSize(3);
+			});
 
 	}
 

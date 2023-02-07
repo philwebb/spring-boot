@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LifecycleAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(LifecycleAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(LifecycleAutoConfiguration.class));
 
 	@Test
 	void lifecycleProcessorIsConfiguredWithDefaultTimeout() {
@@ -58,12 +58,13 @@ class LifecycleAutoConfigurationTests {
 	@Test
 	void lifecycleProcessorIsConfiguredWithCustomTimeoutInAChildContext() {
 		new ApplicationContextRunner().run((parent) -> {
-			this.contextRunner.withParent(parent).withPropertyValues("spring.lifecycle.timeout-per-shutdown-phase=15s")
-					.run((child) -> {
-						assertThat(child).hasBean(AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME);
-						Object processor = child.getBean(AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME);
-						assertThat(processor).extracting("timeoutPerShutdownPhase").isEqualTo(15000L);
-					});
+			this.contextRunner.withParent(parent)
+				.withPropertyValues("spring.lifecycle.timeout-per-shutdown-phase=15s")
+				.run((child) -> {
+					assertThat(child).hasBean(AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME);
+					Object processor = child.getBean(AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME);
+					assertThat(processor).extracting("timeoutPerShutdownPhase").isEqualTo(15000L);
+				});
 		});
 	}
 

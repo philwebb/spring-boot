@@ -278,7 +278,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private void addLocaleMappings(WebAppContext context) {
 		getLocaleCharsetMappings()
-				.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
+			.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
 	}
 
 	private File getTempDirectory() {

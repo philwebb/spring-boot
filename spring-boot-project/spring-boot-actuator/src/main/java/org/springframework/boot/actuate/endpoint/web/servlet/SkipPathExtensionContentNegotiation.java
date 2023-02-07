@@ -32,7 +32,7 @@ final class SkipPathExtensionContentNegotiation implements HandlerInterceptor {
 
 	@SuppressWarnings("deprecation")
 	private static final String SKIP_ATTRIBUTE = org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class
-			.getName() + ".SKIP";
+		.getName() + ".SKIP";
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)

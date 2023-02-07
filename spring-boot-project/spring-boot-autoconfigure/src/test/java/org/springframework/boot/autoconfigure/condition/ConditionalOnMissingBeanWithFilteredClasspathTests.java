@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConditionalOnMissingBeanWithFilteredClasspathTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(OnBeanTypeConfiguration.class);
+		.withUserConfiguration(OnBeanTypeConfiguration.class);
 
 	@Test
 	void testNameOnMissingBeanTypeWithMissingImport() {

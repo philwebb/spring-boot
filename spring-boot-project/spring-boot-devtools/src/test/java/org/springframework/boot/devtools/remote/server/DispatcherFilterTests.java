@@ -73,7 +73,7 @@ class DispatcherFilterTests {
 	@Test
 	void dispatcherMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DispatcherFilter(null))
-				.withMessageContaining("Dispatcher must not be null");
+			.withMessageContaining("Dispatcher must not be null");
 	}
 
 	@Test

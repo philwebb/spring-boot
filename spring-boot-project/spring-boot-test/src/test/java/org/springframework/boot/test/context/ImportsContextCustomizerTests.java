@@ -47,37 +47,37 @@ class ImportsContextCustomizerTests {
 	@Test
 	void importSelectorsCouldUseAnyAnnotations() {
 		assertThat(new ImportsContextCustomizer(FirstImportSelectorAnnotatedClass.class))
-				.isNotEqualTo(new ImportsContextCustomizer(SecondImportSelectorAnnotatedClass.class));
+			.isNotEqualTo(new ImportsContextCustomizer(SecondImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
 	void determinableImportSelector() {
 		assertThat(new ImportsContextCustomizer(FirstDeterminableImportSelectorAnnotatedClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondDeterminableImportSelectorAnnotatedClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondDeterminableImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
 	void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstKotlinAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
 	}
 
 	@Test
 	void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
 	}
 
 	@Test
 	void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
 	}
 
 	@Test
 	void customizersForTestClassesWithDifferentJUnitAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstJUnitAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondJUnitAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondJUnitAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)

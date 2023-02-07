@@ -45,7 +45,7 @@ class SpringBootPluginTests {
 		Project project = GradleProjectBuilder.builder().withProjectDir(this.temp).build();
 		project.getPlugins().apply(SpringBootPlugin.class);
 		Configuration bootArchives = project.getConfigurations()
-				.getByName(SpringBootPlugin.BOOT_ARCHIVES_CONFIGURATION_NAME);
+			.getByName(SpringBootPlugin.BOOT_ARCHIVES_CONFIGURATION_NAME);
 		assertThat(bootArchives.isCanBeResolved()).isFalse();
 	}
 

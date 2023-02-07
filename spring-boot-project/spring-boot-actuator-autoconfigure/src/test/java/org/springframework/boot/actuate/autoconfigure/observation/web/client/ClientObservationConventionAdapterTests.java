@@ -47,8 +47,8 @@ class ClientObservationConventionAdapterTests {
 			TEST_METRIC_NAME, new DefaultWebClientExchangeTagsProvider());
 
 	private final ClientRequest.Builder requestBuilder = ClientRequest
-			.create(HttpMethod.GET, URI.create("/resource/test"))
-			.attribute(WebClient.class.getName() + ".uriTemplate", "/resource/{name}");
+		.create(HttpMethod.GET, URI.create("/resource/test"))
+		.attribute(WebClient.class.getName() + ".uriTemplate", "/resource/{name}");
 
 	private final ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
 

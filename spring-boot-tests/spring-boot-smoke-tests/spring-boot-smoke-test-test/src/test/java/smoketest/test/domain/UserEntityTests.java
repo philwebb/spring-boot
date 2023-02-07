@@ -41,19 +41,19 @@ class UserEntityTests {
 	@Test
 	void createWhenUsernameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User(null, VIN))
-				.withMessage("Username must not be empty");
+			.withMessage("Username must not be empty");
 	}
 
 	@Test
 	void createWhenUsernameIsEmptyShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User("", VIN))
-				.withMessage("Username must not be empty");
+			.withMessage("Username must not be empty");
 	}
 
 	@Test
 	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User("sboot", null))
-				.withMessage("VIN must not be null");
+			.withMessage("VIN must not be null");
 	}
 
 	@Test

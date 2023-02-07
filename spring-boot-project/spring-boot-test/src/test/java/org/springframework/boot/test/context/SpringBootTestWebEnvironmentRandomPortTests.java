@@ -43,7 +43,7 @@ class SpringBootTestWebEnvironmentRandomPortTests extends AbstractSpringBootTest
 	@Test
 	void testRestTemplateShouldUseBuilder() {
 		assertThat(getRestTemplate().getRestTemplate().getMessageConverters())
-				.hasAtLeastOneElementOfType(MyConverter.class);
+			.hasAtLeastOneElementOfType(MyConverter.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)

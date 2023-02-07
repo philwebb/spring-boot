@@ -33,7 +33,7 @@ class DatadogPropertiesConfigAdapterTests {
 		properties.setUri("https://app.example.com/api/v1/series");
 		properties.setApiKey("my-key");
 		assertThat(new DatadogPropertiesConfigAdapter(properties).uri())
-				.isEqualTo("https://app.example.com/api/v1/series");
+			.isEqualTo("https://app.example.com/api/v1/series");
 	}
 
 }

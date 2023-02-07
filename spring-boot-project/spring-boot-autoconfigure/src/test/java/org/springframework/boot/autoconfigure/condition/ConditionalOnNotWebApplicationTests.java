@@ -42,20 +42,20 @@ class ConditionalOnNotWebApplicationTests {
 	@Test
 	void testNotWebApplicationWithServletContext() {
 		new WebApplicationContextRunner().withUserConfiguration(NotWebApplicationConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	void testNotWebApplicationWithReactiveContext() {
 		new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.withUserConfiguration(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	void testNotWebApplication() {
 		new ApplicationContextRunner().withUserConfiguration(NotWebApplicationConfiguration.class)
-				.run((context) -> assertThat(context).getBeans(String.class).containsExactly(entry("none", "none")));
+			.run((context) -> assertThat(context).getBeans(String.class).containsExactly(entry("none", "none")));
 	}
 
 	@Configuration(proxyBeanMethods = false)

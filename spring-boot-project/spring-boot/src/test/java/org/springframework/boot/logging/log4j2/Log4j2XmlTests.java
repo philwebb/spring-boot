@@ -102,8 +102,8 @@ class Log4j2XmlTests {
 
 	protected Configuration initializeConfiguration() {
 		LoggerContext context = new LoggerContext("test");
-		Configuration configuration = ConfigurationFactory.getInstance().getConfiguration(context,
-				configurationSource());
+		Configuration configuration = ConfigurationFactory.getInstance()
+			.getConfiguration(context, configurationSource());
 		configuration.initialize();
 		return configuration;
 	}

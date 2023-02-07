@@ -86,7 +86,7 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 	@Test
 	void recursion() {
 		assertThatThrownBy(() -> validate("recursion"))
-				.hasStackTraceContaining("Circular reference '{recursion -> middle -> recursion}'");
+			.hasStackTraceContaining("Circular reference '{recursion -> middle -> recursion}'");
 	}
 
 	@Test

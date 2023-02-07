@@ -101,9 +101,13 @@ public class BraveAutoConfiguration {
 			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
 			Factory propagationFactory, Sampler sampler) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		Builder builder = Tracing.newBuilder().currentTraceContext(currentTraceContext).traceId128Bit(true)
-				.supportsJoin(false).propagationFactory(propagationFactory).sampler(sampler)
-				.localServiceName(applicationName);
+		Builder builder = Tracing.newBuilder()
+			.currentTraceContext(currentTraceContext)
+			.traceId128Bit(true)
+			.supportsJoin(false)
+			.propagationFactory(propagationFactory)
+			.sampler(sampler)
+			.localServiceName(applicationName);
 		spanHandlers.forEach(builder::addSpanHandler);
 		for (TracingCustomizer tracingCustomizer : tracingCustomizers) {
 			tracingCustomizer.customize(builder);
@@ -234,7 +238,8 @@ public class BraveAutoConfiguration {
 				List<String> correlationFields = this.tracingProperties.getBaggage().getCorrelation().getFields();
 				for (String field : correlationFields) {
 					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field))
-							.flushOnUpdate().build());
+						.flushOnUpdate()
+						.build());
 				}
 			};
 		}

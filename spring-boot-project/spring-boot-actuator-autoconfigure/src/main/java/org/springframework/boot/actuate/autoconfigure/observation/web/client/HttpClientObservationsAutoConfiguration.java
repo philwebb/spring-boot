@@ -74,7 +74,7 @@ public class HttpClientObservationsAutoConfiguration {
 			String name = (observationName != null) ? observationName : metricName;
 			MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(
 					() -> "Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?"
-							.formatted(name));
+						.formatted(name));
 			return MeterFilter.maximumAllowableTags(name, "uri", clientProperties.getMaxUriTags(), denyFilter);
 		}
 

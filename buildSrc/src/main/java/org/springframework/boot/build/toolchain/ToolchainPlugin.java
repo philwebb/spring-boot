@@ -52,16 +52,18 @@ public class ToolchainPlugin implements Plugin<Project> {
 			disableToolchainTasks(project);
 		}
 		else {
-			JavaToolchainSpec toolchainSpec = project.getExtensions().getByType(JavaPluginExtension.class)
-					.getToolchain();
+			JavaToolchainSpec toolchainSpec = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getToolchain();
 			toolchainSpec.getLanguageVersion().set(toolchain.getJavaVersion());
 			configureTestToolchain(project, toolchain);
 		}
 	}
 
 	private boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
-		return toolchain.getMaximumCompatibleJavaVersion().map((version) -> version.canCompileOrRun(toolchainVersion))
-				.getOrElse(true);
+		return toolchain.getMaximumCompatibleJavaVersion()
+			.map((version) -> version.canCompileOrRun(toolchainVersion))
+			.getOrElse(true);
 	}
 
 	private void disableToolchainTasks(Project project) {

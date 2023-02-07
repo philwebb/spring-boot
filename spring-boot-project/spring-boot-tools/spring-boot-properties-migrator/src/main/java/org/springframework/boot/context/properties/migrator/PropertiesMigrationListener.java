@@ -77,7 +77,7 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 	private ConfigurationMetadataRepository loadRepository(ConfigurationMetadataRepositoryJsonBuilder builder)
 			throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver()
-				.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
+			.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
 		for (Resource resource : resources) {
 			try (InputStream inputStream = resource.getInputStream()) {
 				builder.withJsonResource(inputStream);

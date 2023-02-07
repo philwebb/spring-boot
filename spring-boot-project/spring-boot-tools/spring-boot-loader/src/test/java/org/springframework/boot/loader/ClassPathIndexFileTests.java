@@ -44,8 +44,8 @@ class ClassPathIndexFileTests {
 	@Test
 	void loadIfPossibleWhenRootIsNotFileReturnsNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("https://example.com/file"), "test.idx"))
-				.withMessage("URL does not reference a file");
+			.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("https://example.com/file"), "test.idx"))
+			.withMessage("URL does not reference a file");
 	}
 
 	@Test

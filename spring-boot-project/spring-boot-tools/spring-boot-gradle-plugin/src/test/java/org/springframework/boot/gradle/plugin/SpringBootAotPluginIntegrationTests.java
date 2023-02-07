@@ -42,25 +42,25 @@ class SpringBootAotPluginIntegrationTests {
 	@TestTemplate
 	void noProcessAotTaskWithoutAotPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processAot").getOutput())
-				.contains("processAot exists = false");
+			.contains("processAot exists = false");
 	}
 
 	@TestTemplate
 	void noProcessTestAotTaskWithoutAotPluginApplied() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processTestAot").getOutput())
-				.contains("processTestAot exists = false");
+			.contains("processTestAot exists = false");
 	}
 
 	@TestTemplate
 	void applyingAotPluginCreatesProcessAotTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processAot").getOutput())
-				.contains("processAot exists = true");
+			.contains("processAot exists = true");
 	}
 
 	@TestTemplate
 	void applyingAotPluginCreatesProcessTestAotTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=processTestAot").getOutput())
-				.contains("processTestAot exists = true");
+			.contains("processTestAot exists = true");
 	}
 
 	@TestTemplate
@@ -100,13 +100,13 @@ class SpringBootAotPluginIntegrationTests {
 		writeMainClass("org.springframework.boot", "SpringApplicationAotProcessor");
 		writeMainClass("com.example", "Main");
 		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void processTestAotIsSkippedWhenProjectHasNoTestSource() {
 		assertThat(this.gradleBuild.build("processTestAot").task(":processTestAot").getOutcome())
-				.isEqualTo(TaskOutcome.NO_SOURCE);
+			.isEqualTo(TaskOutcome.NO_SOURCE);
 	}
 
 	private void writeMainClass(String packageName, String className) throws IOException {

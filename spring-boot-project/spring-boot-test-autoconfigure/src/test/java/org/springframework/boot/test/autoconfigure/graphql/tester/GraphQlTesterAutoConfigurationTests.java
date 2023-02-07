@@ -36,8 +36,8 @@ import static org.mockito.Mockito.mock;
  */
 class GraphQlTesterAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(JacksonAutoConfiguration.class, GraphQlTesterAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, GraphQlTesterAutoConfiguration.class));
 
 	@Test
 	void shouldNotContributeTesterIfGraphQlServiceNotPresent() {
@@ -47,7 +47,7 @@ class GraphQlTesterAutoConfigurationTests {
 	@Test
 	void shouldContributeTester() {
 		this.contextRunner.withUserConfiguration(CustomGraphQlServiceConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed().hasSingleBean(GraphQlTester.class));
+			.run((context) -> assertThat(context).hasNotFailed().hasSingleBean(GraphQlTester.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

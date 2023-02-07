@@ -262,7 +262,7 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
 			Resource[] resources = resolver
-					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
+				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
 				String className = StringUtils.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));

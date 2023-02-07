@@ -35,16 +35,16 @@ class ReachabilityMetadataPropertiesTests {
 	void shouldReadFromInputStream() throws IOException {
 		String propertiesContent = "override=true\n";
 		ReachabilityMetadataProperties properties = ReachabilityMetadataProperties
-				.fromInputStream(new ByteArrayInputStream(propertiesContent.getBytes(StandardCharsets.UTF_8)));
+			.fromInputStream(new ByteArrayInputStream(propertiesContent.getBytes(StandardCharsets.UTF_8)));
 		assertThat(properties.isOverridden()).isTrue();
 	}
 
 	@Test
 	void shouldFormatLocation() {
 		String location = ReachabilityMetadataProperties
-				.getLocation(LibraryCoordinates.of("group-id", "artifact-id", "1.0.0"));
+			.getLocation(LibraryCoordinates.of("group-id", "artifact-id", "1.0.0"));
 		assertThat(location)
-				.isEqualTo("META-INF/native-image/group-id/artifact-id/1.0.0/reachability-metadata.properties");
+			.isEqualTo("META-INF/native-image/group-id/artifact-id/1.0.0/reachability-metadata.properties");
 	}
 
 }

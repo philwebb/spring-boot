@@ -31,8 +31,9 @@ public class ProcessedAnnotationsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(AptEclipsePlugin.class);
-		project.getExtensions().getByType(EclipseModel.class).synchronizationTasks("eclipseJdtApt", "eclipseJdt",
-				"eclipseFactorypath");
+		project.getExtensions()
+			.getByType(EclipseModel.class)
+			.synchronizationTasks("eclipseJdtApt", "eclipseJdt", "eclipseFactorypath");
 	}
 
 }

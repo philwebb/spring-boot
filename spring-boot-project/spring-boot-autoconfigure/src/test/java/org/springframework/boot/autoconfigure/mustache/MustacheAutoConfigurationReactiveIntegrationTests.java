@@ -56,15 +56,27 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	void testHomePage() {
-		String result = this.client.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
-				.returnResult().getResponseBody();
+		String result = this.client.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
 	@Test
 	void testPartialPage() {
-		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk().expectBody(String.class)
-				.returnResult().getResponseBody();
+		String result = this.client.get()
+			.uri("/partial")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
@@ -93,7 +105,7 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 		@Bean
 		MustacheViewResolver viewResolver() {
 			Mustache.Compiler compiler = Mustache.compiler()
-					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
+				.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");

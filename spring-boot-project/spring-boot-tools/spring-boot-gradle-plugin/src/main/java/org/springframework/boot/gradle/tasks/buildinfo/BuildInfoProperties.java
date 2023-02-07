@@ -56,7 +56,7 @@ public abstract class BuildInfoProperties implements Serializable {
 		getGroup().convention(project.provider(() -> project.getGroup().toString()));
 		getVersion().convention(project.provider(() -> project.getVersion().toString()));
 		getArtifact()
-				.convention(project.provider(() -> project.findProperty("archivesBaseName")).map(Object::toString));
+			.convention(project.provider(() -> project.findProperty("archivesBaseName")).map(Object::toString));
 		getName().convention(project.provider(project::getName));
 	}
 

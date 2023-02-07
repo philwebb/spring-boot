@@ -42,7 +42,7 @@ class ResourceProviderCustomizerBeanRegistrationAotProcessor implements BeanRegi
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (registeredBean.getBeanClass().equals(ResourceProviderCustomizer.class)) {
 			return BeanRegistrationAotContribution
-					.withCustomCodeFragments((codeFragments) -> new AotContribution(codeFragments, registeredBean));
+				.withCustomCodeFragments((codeFragments) -> new AotContribution(codeFragments, registeredBean));
 		}
 		return null;
 	}

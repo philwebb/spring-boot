@@ -132,16 +132,17 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 		jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
 		HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
 		// Prevent a race between Hikari's initialization and Derby shutdown
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(pool::getIdleConnections,
-				(idle) -> idle == dataSource.getMinimumIdle());
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(pool::getIdleConnections, (idle) -> idle == dataSource.getMinimumIdle());
 		context.close();
 		// Connect should fail as DB no longer exists
 		assertThatExceptionOfType(SQLException.class)
-				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
-				.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
+			.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:memory:test", new Properties()))
+			.satisfies((ex) -> assertThat(ex.getSQLState()).isEqualTo("XJ004"));
 		// Shut Derby down fully so that it closes its log file
 		assertThatExceptionOfType(SQLException.class)
-				.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:;shutdown=true", new Properties()));
+			.isThrownBy(() -> new EmbeddedDriver().connect("jdbc:derby:;shutdown=true", new Properties()));
 	}
 
 }

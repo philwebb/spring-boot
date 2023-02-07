@@ -36,19 +36,19 @@ import static org.mockito.Mockito.mock;
 class LoggersEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(LoggersEndpointAutoConfiguration.class))
-			.withUserConfiguration(LoggingConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(LoggersEndpointAutoConfiguration.class))
+		.withUserConfiguration(LoggingConfiguration.class);
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=loggers")
-				.run((context) -> assertThat(context).hasSingleBean(LoggersEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(LoggersEndpoint.class));
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.loggers.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(LoggersEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LoggersEndpoint.class));
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class LoggersEndpointAutoConfigurationTests {
 	@Test
 	void runWithNoneLoggingSystemShouldNotHaveEndpointBean() {
 		this.contextRunner.withSystemProperties("org.springframework.boot.logging.LoggingSystem=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(LoggersEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LoggersEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

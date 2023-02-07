@@ -46,7 +46,7 @@ class SpringBootTestWithContextConfigurationIntegrationTests {
 	void injectsOnlyConfig() {
 		assertThat(this.context.getBean(Config.class)).isNotNull();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(AdditionalConfig.class));
+			.isThrownBy(() -> this.context.getBean(AdditionalConfig.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -74,7 +74,7 @@ class DefaultErrorWebExceptionHandlerTests {
 				resourceProperties, errorProperties, context);
 		setupViewResolver(exceptionHandler);
 		ServerWebExchange exchange = MockServerWebExchange
-				.from(MockServerHttpRequest.get("/some-other-path").accept(MediaType.TEXT_HTML));
+			.from(MockServerHttpRequest.get("/some-other-path").accept(MediaType.TEXT_HTML));
 		exceptionHandler.handle(exchange, new RuntimeException()).block();
 	}
 
@@ -100,7 +100,7 @@ class DefaultErrorWebExceptionHandlerTests {
 				resourceProperties, errorProperties, context);
 		MediaType allWithQuality = new MediaType(MediaType.ALL.getType(), MediaType.ALL.getSubtype(), 0.9);
 		MockServerWebExchange exchange = MockServerWebExchange
-				.from(MockServerHttpRequest.get("/test").accept(allWithQuality));
+			.from(MockServerHttpRequest.get("/test").accept(allWithQuality));
 		List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
 		ServerRequest request = ServerRequest.create(exchange, readers);
 		assertThat(exceptionHandler.acceptsTextHtml().test(request)).isFalse();

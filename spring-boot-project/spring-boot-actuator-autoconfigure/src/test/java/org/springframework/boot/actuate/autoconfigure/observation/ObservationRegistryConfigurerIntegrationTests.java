@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ObservationRegistryConfigurerIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	@Test
 	void customizersAreCalledInOrder() {

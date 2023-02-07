@@ -38,8 +38,8 @@ class RSocketGraphQlClientAutoConfigurationTests {
 	private static final RSocketGraphQlClient.Builder<?> builderInstance = RSocketGraphQlClient.builder();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class,
-					RSocketRequesterAutoConfiguration.class, RSocketGraphQlClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class,
+				RSocketRequesterAutoConfiguration.class, RSocketGraphQlClientAutoConfiguration.class));
 
 	@Test
 	void shouldCreateBuilder() {

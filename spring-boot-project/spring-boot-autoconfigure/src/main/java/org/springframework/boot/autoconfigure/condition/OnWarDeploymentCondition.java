@@ -42,7 +42,7 @@ class OnWarDeploymentCondition extends SpringBootCondition {
 			}
 		}
 		return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnWarDeployment.class)
-				.because("the application is not deployed as a WAR file."));
+			.because("the application is not deployed as a WAR file."));
 	}
 
 }

@@ -152,7 +152,7 @@ public class OptionHandler {
 		@Override
 		public String format(Map<String, ? extends OptionDescriptor> options) {
 			Comparator<OptionDescriptor> comparator = Comparator
-					.comparing((optionDescriptor) -> optionDescriptor.options().iterator().next());
+				.comparing((optionDescriptor) -> optionDescriptor.options().iterator().next());
 			Set<OptionDescriptor> sorted = new TreeSet<>(comparator);
 			sorted.addAll(options.values());
 			for (OptionDescriptor descriptor : sorted) {

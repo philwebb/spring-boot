@@ -95,8 +95,10 @@ abstract class LenientObjectToEnumConverterFactory<T> implements ConverterFactor
 
 		private String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
-			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
-					.forEach((c) -> canonicalName.append((char) c));
+			name.chars()
+				.filter(Character::isLetterOrDigit)
+				.map(Character::toLowerCase)
+				.forEach((c) -> canonicalName.append((char) c));
 			return canonicalName.toString();
 		}
 

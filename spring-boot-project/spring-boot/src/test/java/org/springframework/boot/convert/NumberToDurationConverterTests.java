@@ -61,7 +61,7 @@ class NumberToDurationConverterTests {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			DurationUnit unitAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
 			given(targetType.getAnnotation(DurationUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) Duration.class);

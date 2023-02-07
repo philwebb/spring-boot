@@ -114,7 +114,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers, CacheProperties cacheProperties) {
 		Properties properties = new Properties();
 		cachePropertiesCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(cacheProperties, properties));
+			.forEach((customizer) -> customizer.customize(cacheProperties, properties));
 		return properties;
 	}
 

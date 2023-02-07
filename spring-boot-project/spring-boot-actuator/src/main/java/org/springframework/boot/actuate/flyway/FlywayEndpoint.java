@@ -58,7 +58,7 @@ public class FlywayEndpoint {
 		while (target != null) {
 			Map<String, FlywayDescriptor> flywayBeans = new HashMap<>();
 			target.getBeansOfType(Flyway.class)
-					.forEach((name, flyway) -> flywayBeans.put(name, new FlywayDescriptor(flyway.info().all())));
+				.forEach((name, flyway) -> flywayBeans.put(name, new FlywayDescriptor(flyway.info().all())));
 			ApplicationContext parent = target.getParent();
 			contextFlywayBeans.put(target.getId(),
 					new ContextFlywayBeansDescriptor(flywayBeans, (parent != null) ? parent.getId() : null));

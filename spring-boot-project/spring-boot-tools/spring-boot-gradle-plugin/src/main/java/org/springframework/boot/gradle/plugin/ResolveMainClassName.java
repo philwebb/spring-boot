@@ -130,8 +130,13 @@ public class ResolveMainClassName extends DefaultTask {
 		if (configuredMainClass != null) {
 			return configuredMainClass;
 		}
-		return getClasspath().filter(File::isDirectory).getFiles().stream().map(this::findMainClass)
-				.filter(Objects::nonNull).findFirst().orElse("");
+		return getClasspath().filter(File::isDirectory)
+			.getFiles()
+			.stream()
+			.map(this::findMainClass)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse("");
 	}
 
 	private String findMainClass(File file) {

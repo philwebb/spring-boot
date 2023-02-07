@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HeapDumpWebEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withPropertyValues("management.endpoints.web.exposure.include:*")
-			.withUserConfiguration(HeapDumpWebEndpointAutoConfiguration.class);
+		.withPropertyValues("management.endpoints.web.exposure.include:*")
+		.withUserConfiguration(HeapDumpWebEndpointAutoConfiguration.class);
 
 	@Test
 	void runShouldCreateIndicator() {
@@ -42,7 +42,7 @@ class HeapDumpWebEndpointAutoConfigurationTests {
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.endpoint.heapdump.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HeapDumpWebEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(HeapDumpWebEndpoint.class));
 	}
 
 }

@@ -53,7 +53,7 @@ public class RSocketSecurityAutoConfiguration {
 		@Bean
 		RSocketMessageHandlerCustomizer rSocketAuthenticationPrincipalMessageHandlerCustomizer() {
 			return (messageHandler) -> messageHandler.getArgumentResolverConfigurer()
-					.addCustomResolver(new AuthenticationPrincipalArgumentResolver());
+				.addCustomResolver(new AuthenticationPrincipalArgumentResolver());
 		}
 
 	}

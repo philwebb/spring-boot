@@ -103,7 +103,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String AUTO_CONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
 
 	private static final Set<String> SUPPORTED_OPTIONS = Collections
-			.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
+		.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
 
 	private MetadataStore metadataStore;
 
@@ -241,8 +241,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						this.metadataEnv.getTypeUtils().getQualifiedName(element.getEnclosingElement()),
 						element.toString());
 				if (this.metadataCollector.hasSimilarGroup(group)) {
-					this.processingEnv.getMessager().printMessage(Kind.ERROR,
-							"Duplicate @ConfigurationProperties definition for prefix '" + prefix + "'", element);
+					this.processingEnv.getMessager()
+						.printMessage(Kind.ERROR,
+								"Duplicate @ConfigurationProperties definition for prefix '" + prefix + "'", element);
 				}
 				else {
 					this.metadataCollector.add(group);
@@ -260,7 +261,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				this.metadataCollector.add(descriptor.resolveItemMetadata(prefix, this.metadataEnv));
 				if (descriptor.isNested(this.metadataEnv)) {
 					TypeElement nestedTypeElement = (TypeElement) this.metadataEnv.getTypeUtils()
-							.asElement(descriptor.getType());
+						.asElement(descriptor.getType());
 					String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, descriptor.getName());
 					processTypeElement(nestedPrefix, nestedTypeElement, source, seen);
 				}

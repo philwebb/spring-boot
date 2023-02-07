@@ -33,7 +33,7 @@ class EnversRevisionRepositoriesAutoConfigurationTests extends AbstractJpaReposi
 	@Test
 	void autoConfigurationShouldSucceedWithRevisionRepository() {
 		this.contextRunner.withUserConfiguration(RevisionRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CountryRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(CountryRepository.class));
 	}
 
 }

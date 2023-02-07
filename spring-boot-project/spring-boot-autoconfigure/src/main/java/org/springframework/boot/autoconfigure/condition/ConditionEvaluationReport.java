@@ -127,7 +127,7 @@ public final class ConditionEvaluationReport {
 		this.outcomes.forEach((candidateSource, sourceOutcomes) -> {
 			if (candidateSource.startsWith(prefix)) {
 				ConditionOutcome outcome = ConditionOutcome
-						.noMatch(ConditionMessage.forCondition("Ancestor " + source).because("did not match"));
+					.noMatch(ConditionMessage.forCondition("Ancestor " + source).because("did not match"));
 				sourceOutcomes.add(ANCESTOR_CONDITION, outcome);
 			}
 		});

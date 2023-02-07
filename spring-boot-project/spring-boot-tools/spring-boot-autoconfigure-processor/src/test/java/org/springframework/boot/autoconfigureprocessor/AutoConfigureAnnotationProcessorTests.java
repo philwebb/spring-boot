@@ -47,9 +47,9 @@ class AutoConfigureAnnotationProcessorTests {
 					"java.io.InputStream,org.springframework.boot.autoconfigureprocessor."
 							+ "TestClassConfiguration$Nested,org.springframework.foo");
 			assertThat(properties)
-					.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration");
+				.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration");
 			assertThat(properties)
-					.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
+				.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
 			assertThat(properties).containsEntry(
 					"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.ConditionalOnBean",
 					"java.io.OutputStream");
@@ -156,7 +156,7 @@ class AutoConfigureAnnotationProcessorTests {
 		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor).withSources(sourceFile);
 		compiler.compile((compiled) -> {
 			InputStream propertiesFile = compiled.getClassLoader()
-					.getResourceAsStream(AutoConfigureAnnotationProcessor.PROPERTIES_PATH);
+				.getResourceAsStream(AutoConfigureAnnotationProcessor.PROPERTIES_PATH);
 			consumer.accept(propertiesFile);
 		});
 	}

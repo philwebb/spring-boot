@@ -82,7 +82,7 @@ class CollectionToDelimitedStringConverterTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverter(new CollectionToDelimitedStringConverter(service)));
+			.with((service) -> service.addConverter(new CollectionToDelimitedStringConverter(service)));
 	}
 
 	static class Data {

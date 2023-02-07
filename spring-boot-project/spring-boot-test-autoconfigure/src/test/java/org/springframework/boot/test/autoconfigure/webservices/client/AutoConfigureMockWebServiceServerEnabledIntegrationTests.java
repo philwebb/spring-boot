@@ -41,7 +41,7 @@ class AutoConfigureMockWebServiceServerEnabledIntegrationTests {
 	@Test
 	void mockWebServiceServerShouldNotBeRegistered() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(MockWebServiceServer.class));
+			.isThrownBy(() -> this.applicationContext.getBean(MockWebServiceServer.class));
 	}
 
 }

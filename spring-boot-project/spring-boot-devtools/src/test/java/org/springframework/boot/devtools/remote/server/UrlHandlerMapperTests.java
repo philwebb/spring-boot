@@ -40,19 +40,19 @@ class UrlHandlerMapperTests {
 	@Test
 	void requestUriMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void requestUriMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("", this.handler))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void requestUrlMustStartWithSlash() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
-				.withMessageContaining("URL must start with '/'");
+			.withMessageContaining("URL must start with '/'");
 	}
 
 	@Test

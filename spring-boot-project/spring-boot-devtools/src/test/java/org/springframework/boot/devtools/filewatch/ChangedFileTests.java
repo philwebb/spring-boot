@@ -39,22 +39,23 @@ class ChangedFileTests {
 	@Test
 	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
-				.withMessageContaining("SourceDirectory must not be null");
+			.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
+			.withMessageContaining("SourceDirectory must not be null");
 	}
 
 	@Test
 	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
-				.withMessageContaining("File must not be null");
+			.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
+			.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	void typeMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "directory"), null))
-				.withMessageContaining("Type must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "directory"), null))
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test

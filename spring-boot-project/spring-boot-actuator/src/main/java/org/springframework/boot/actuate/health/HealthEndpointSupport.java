@@ -193,7 +193,7 @@ abstract class HealthEndpointSupport<C, T> {
 	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, HealthComponent> components,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
 		Status status = statusAggregator
-				.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
+			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
 		Map<String, HealthComponent> instances = showComponents ? components : null;
 		if (groupNames != null) {
 			return new SystemHealth(apiVersion, status, instances, groupNames);

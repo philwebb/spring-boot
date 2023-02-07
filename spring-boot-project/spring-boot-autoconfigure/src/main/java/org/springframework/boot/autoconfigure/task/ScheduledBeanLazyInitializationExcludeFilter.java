@@ -64,7 +64,7 @@ class ScheduledBeanLazyInitializationExcludeFilter implements LazyInitialization
 			Map<Method, Set<Scheduled>> annotatedMethods = MethodIntrospector.selectMethods(targetType,
 					(MethodIntrospector.MetadataLookup<Set<Scheduled>>) (method) -> {
 						Set<Scheduled> scheduledAnnotations = AnnotatedElementUtils
-								.getMergedRepeatableAnnotations(method, Scheduled.class, Schedules.class);
+							.getMergedRepeatableAnnotations(method, Scheduled.class, Schedules.class);
 						return (!scheduledAnnotations.isEmpty() ? scheduledAnnotations : null);
 					});
 			if (annotatedMethods.isEmpty()) {

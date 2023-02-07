@@ -87,7 +87,8 @@ class ApplicationTempTests {
 
 	private void assertDirectoryPermissions(Path path) throws IOException {
 		Set<PosixFilePermission> permissions = Files.getFileAttributeView(path, PosixFileAttributeView.class)
-				.readAttributes().permissions();
+			.readAttributes()
+			.permissions();
 		assertThat(permissions).containsExactlyInAnyOrder(PosixFilePermission.OWNER_READ,
 				PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
 	}

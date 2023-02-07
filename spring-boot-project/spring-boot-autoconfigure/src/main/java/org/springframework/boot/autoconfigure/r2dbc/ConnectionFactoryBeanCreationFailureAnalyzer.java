@@ -70,8 +70,10 @@ class ConnectionFactoryBeanCreationFailureAnalyzer
 		else {
 			action.append(String.format("\tReview the configuration of %s%n.", cause.getEmbeddedDatabaseConnection()));
 		}
-		action.append("\tIf you have database settings to be loaded from a particular "
-				+ "profile you may need to activate it").append(getActiveProfiles());
+		action
+			.append("\tIf you have database settings to be loaded from a particular "
+					+ "profile you may need to activate it")
+			.append(getActiveProfiles());
 		return action.toString();
 	}
 

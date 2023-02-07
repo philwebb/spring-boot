@@ -57,8 +57,8 @@ class SkipSslVerificationHttpRequestFactoryTests {
 		ResponseEntity<String> responseEntity = restTemplate.getForEntity(httpsUrl, String.class);
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThatExceptionOfType(ResourceAccessException.class)
-				.isThrownBy(() -> otherRestTemplate.getForEntity(httpsUrl, String.class))
-				.withCauseInstanceOf(SSLHandshakeException.class);
+			.isThrownBy(() -> otherRestTemplate.getForEntity(httpsUrl, String.class))
+			.withCauseInstanceOf(SSLHandshakeException.class);
 	}
 
 	private String getHttpsUrl() {

@@ -37,7 +37,8 @@ public class RSocketGraphQlClientExample {
 	public void rsocketOverTcp() {
 		// tag::request[]
 		Mono<Book> book = this.graphQlClient.document("{ bookById(id: \"book-1\"){ id name pageCount author } }")
-				.retrieve("bookById").toEntity(Book.class);
+			.retrieve("bookById")
+			.toEntity(Book.class);
 		// end::request[]
 		book.block(Duration.ofSeconds(5));
 	}

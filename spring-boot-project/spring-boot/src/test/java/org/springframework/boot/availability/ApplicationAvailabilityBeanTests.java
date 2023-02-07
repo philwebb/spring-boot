@@ -107,7 +107,7 @@ class ApplicationAvailabilityBeanTests {
 		assertThat(this.log.getLogged()).contains("Application availability state LivenessState changed to CORRECT");
 		AvailabilityChangeEvent.publish(this.context, LivenessState.BROKEN);
 		assertThat(this.log.getLogged())
-				.contains("Application availability state LivenessState changed from CORRECT to BROKEN");
+			.contains("Application availability state LivenessState changed from CORRECT to BROKEN");
 	}
 
 	@Test

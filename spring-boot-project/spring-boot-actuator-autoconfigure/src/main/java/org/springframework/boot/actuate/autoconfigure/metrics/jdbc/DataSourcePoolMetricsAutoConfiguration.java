@@ -95,7 +95,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 					Collection<DataSourcePoolMetadataProvider> metadataProviders, MeterRegistry registry) {
 				String dataSourceName = getDataSourceName(beanName);
 				new DataSourcePoolMetrics(dataSource, metadataProviders, dataSourceName, Collections.emptyList())
-						.bindTo(registry);
+					.bindTo(registry);
 			}
 
 			/**

@@ -82,8 +82,10 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedContextConfiguration) {
 			if (this.disableMetrics) {
-				TestPropertyValues.of("management.defaults.metrics.export.enabled=false",
-						"management.simple.metrics.export.enabled=true").applyTo(context);
+				TestPropertyValues
+					.of("management.defaults.metrics.export.enabled=false",
+							"management.simple.metrics.export.enabled=true")
+					.applyTo(context);
 			}
 			if (this.disableTracing) {
 				TestPropertyValues.of("management.tracing.enabled=false").applyTo(context);

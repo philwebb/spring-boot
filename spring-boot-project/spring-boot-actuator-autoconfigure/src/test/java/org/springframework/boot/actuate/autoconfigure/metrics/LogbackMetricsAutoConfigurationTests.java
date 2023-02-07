@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogbackMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguresLogbackMetrics() {
@@ -45,8 +45,8 @@ class LogbackMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomLogbackMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
+		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

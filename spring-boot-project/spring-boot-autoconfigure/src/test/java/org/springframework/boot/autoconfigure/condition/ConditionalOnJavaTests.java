@@ -49,20 +49,20 @@ class ConditionalOnJavaTests {
 	@EnabledOnJre(JRE.JAVA_17)
 	void doesNotMatchIfBetterVersionIsRequired() {
 		this.contextRunner.withUserConfiguration(Java18Required.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	@EnabledOnJre(JRE.JAVA_18)
 	void doesNotMatchIfLowerIsRequired() {
 		this.contextRunner.withUserConfiguration(OlderThan18Required.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	void matchesIfVersionIsInRange() {
 		this.contextRunner.withUserConfiguration(Java17Required.class)
-				.run((context) -> assertThat(context).hasSingleBean(String.class));
+			.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test

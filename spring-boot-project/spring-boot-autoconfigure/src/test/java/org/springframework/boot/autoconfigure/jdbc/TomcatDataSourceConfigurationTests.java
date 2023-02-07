@@ -66,11 +66,11 @@ class TomcatDataSourceConfigurationTests {
 	void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues
-				.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
-						PREFIX + "testOnReturn:true", PREFIX + "timeBetweenEvictionRunsMillis:10000",
-						PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
-						PREFIX + "jdbcInterceptors:SlowQueryReport", PREFIX + "validationInterval:9999")
-				.applyTo(this.context);
+			.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
+					PREFIX + "testOnReturn:true", PREFIX + "timeBetweenEvictionRunsMillis:10000",
+					PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
+					PREFIX + "jdbcInterceptors:SlowQueryReport", PREFIX + "validationInterval:9999")
+			.applyTo(this.context);
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertThat(ds.getUrl()).isEqualTo("jdbc:h2:mem:testdb");

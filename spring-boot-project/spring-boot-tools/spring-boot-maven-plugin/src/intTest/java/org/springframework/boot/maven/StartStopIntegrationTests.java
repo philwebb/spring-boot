@@ -34,14 +34,18 @@ class StartStopIntegrationTests {
 
 	@TestTemplate
 	void startStopWaitsForApplicationToBeReadyAndThenRequestsShutdown(MavenBuild mavenBuild) {
-		mavenBuild.project("start-stop").goals("verify").execute(
-				(project) -> assertThat(buildLog(project)).contains("isReady: true").contains("Shutdown requested"));
+		mavenBuild.project("start-stop")
+			.goals("verify")
+			.execute((project) -> assertThat(buildLog(project)).contains("isReady: true")
+				.contains("Shutdown requested"));
 	}
 
 	@TestTemplate
 	void whenSkipIsTrueStartAndStopAreSkipped(MavenBuild mavenBuild) {
-		mavenBuild.project("start-stop-skip").goals("verify").execute((project) -> assertThat(buildLog(project))
-				.doesNotContain("Ooops, I haz been run").doesNotContain("Stopping application"));
+		mavenBuild.project("start-stop-skip")
+			.goals("verify")
+			.execute((project) -> assertThat(buildLog(project)).doesNotContain("Ooops, I haz been run")
+				.doesNotContain("Stopping application"));
 	}
 
 	private String buildLog(File project) {

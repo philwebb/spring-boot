@@ -44,7 +44,7 @@ class ConfigurationsTests {
 	@Test
 	void createWhenClassesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations(null))
-				.withMessageContaining("Classes must not be null");
+			.withMessageContaining("Classes must not be null");
 	}
 
 	@Test

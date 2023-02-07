@@ -40,40 +40,44 @@ import static org.mockito.Mockito.mock;
 class SimpleMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(SimpleMeterRegistry.class).hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(SimpleMeterRegistry.class)
+				.hasSingleBean(Clock.class)
+				.hasSingleBean(SimpleConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.defaults.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
-						.doesNotHaveBean(SimpleConfig.class));
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
+				.doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.simple.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
-						.doesNotHaveBean(SimpleConfig.class));
+			.withPropertyValues("management.simple.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(SimpleMeterRegistry.class)
+				.doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Test
 	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class).hasBean("customConfig"));
+			.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
 	void backsOffEntirelyWithCustomMeterRegistry() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(MeterRegistry.class).hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(MeterRegistry.class)
+				.hasBean("customRegistry")
+				.doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

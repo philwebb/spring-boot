@@ -55,7 +55,7 @@ class PackagePrivateBeanBindingTests {
 		source.put("foo.bar", "999");
 		this.sources.add(source);
 		ExamplePackagePrivateBean bean = this.binder.bind(this.name, Bindable.of(ExamplePackagePrivateBean.class))
-				.get();
+			.get();
 		assertThat(bean.getBar()).isEqualTo(999);
 	}
 

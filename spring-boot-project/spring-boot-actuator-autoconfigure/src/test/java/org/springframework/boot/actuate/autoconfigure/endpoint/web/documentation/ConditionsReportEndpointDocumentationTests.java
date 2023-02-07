@@ -60,7 +60,8 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 	@BeforeEach
 	void setup(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-				.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris()).build();
+			.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris())
+			.build();
 	}
 
 	@Test
@@ -76,19 +77,22 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 				fieldWithPath(".*.notMatched.[].message").description("Details of why the condition was not matched."),
 				fieldWithPath(".*.matched").description("Conditions that were matched."),
 				fieldWithPath(".*.matched.[].condition").description("Name of the condition.")
-						.type(JsonFieldType.STRING).optional(),
+					.type(JsonFieldType.STRING)
+					.optional(),
 				fieldWithPath(".*.matched.[].message").description("Details of why the condition was matched.")
-						.type(JsonFieldType.STRING).optional());
+					.type(JsonFieldType.STRING)
+					.optional());
 		FieldDescriptor unconditionalClassesField = fieldWithPath("contexts.*.unconditionalClasses")
-				.description("Names of unconditional auto-configuration classes if any.");
-		this.mockMvc.perform(get("/actuator/conditions")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("conditions",
-						preprocessResponse(limit("contexts", getApplicationContext().getId(), "positiveMatches"),
-								limit("contexts", getApplicationContext().getId(), "negativeMatches")),
-						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id."))
-								.andWithPrefix("contexts.*.positiveMatches", positiveMatchFields)
-								.andWithPrefix("contexts.*.negativeMatches", negativeMatchFields)
-								.and(unconditionalClassesField, parentIdField())));
+			.description("Names of unconditional auto-configuration classes if any.");
+		this.mockMvc.perform(get("/actuator/conditions"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("conditions",
+					preprocessResponse(limit("contexts", getApplicationContext().getId(), "positiveMatches"),
+							limit("contexts", getApplicationContext().getId(), "negativeMatches")),
+					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id."))
+						.andWithPrefix("contexts.*.positiveMatches", positiveMatchFields)
+						.andWithPrefix("contexts.*.negativeMatches", negativeMatchFields)
+						.and(unconditionalClassesField, parentIdField())));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -98,9 +102,9 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 		@Bean
 		ConditionsReportEndpoint autoConfigurationReportEndpoint(ConfigurableApplicationContext context) {
 			ConditionEvaluationReport conditionEvaluationReport = ConditionEvaluationReport
-					.get(context.getBeanFactory());
+				.get(context.getBeanFactory());
 			conditionEvaluationReport
-					.recordEvaluationCandidates(Arrays.asList(PropertyPlaceholderAutoConfiguration.class.getName()));
+				.recordEvaluationCandidates(Arrays.asList(PropertyPlaceholderAutoConfiguration.class.getName()));
 			return new ConditionsReportEndpoint(context);
 		}
 

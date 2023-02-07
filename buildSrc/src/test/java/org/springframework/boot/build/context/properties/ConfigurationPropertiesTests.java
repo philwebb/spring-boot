@@ -33,7 +33,7 @@ class ConfigurationPropertiesTests {
 	@Test
 	void whenJsonHasAnIntegerDefaultValueThenItRemainsAnIntegerWhenRead() {
 		ConfigurationProperties properties = ConfigurationProperties
-				.fromFiles(Arrays.asList(new File("src/test/resources/spring-configuration-metadata.json")));
+			.fromFiles(Arrays.asList(new File("src/test/resources/spring-configuration-metadata.json")));
 		assertThat(properties.get("example.counter").getDefaultValue()).isEqualTo(0);
 	}
 

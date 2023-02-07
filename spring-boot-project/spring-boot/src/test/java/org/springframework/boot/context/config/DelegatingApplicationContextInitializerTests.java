@@ -69,7 +69,7 @@ class DelegatingApplicationContextInitializerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=missing.madeup.class");
 		assertThatExceptionOfType(ApplicationContextException.class)
-				.isThrownBy(() -> this.initializer.initialize(context));
+			.isThrownBy(() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -86,7 +86,7 @@ class DelegatingApplicationContextInitializerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
 		assertThatIllegalArgumentException().isThrownBy(() -> this.initializer.initialize(context))
-				.withMessageContaining("generic parameter");
+			.withMessageContaining("generic parameter");
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

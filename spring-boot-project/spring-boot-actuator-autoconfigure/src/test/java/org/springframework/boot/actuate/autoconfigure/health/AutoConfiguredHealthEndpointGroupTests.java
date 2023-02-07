@@ -131,7 +131,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "root", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showDetails(this.securityContext)).isTrue();
 	}
@@ -143,7 +143,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "rot", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showDetails(this.securityContext)).isFalse();
 	}
@@ -219,7 +219,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "root", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showComponents(this.securityContext)).isTrue();
 	}
@@ -231,7 +231,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "rot", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showComponents(this.securityContext)).isFalse();
 	}

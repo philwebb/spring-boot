@@ -46,8 +46,9 @@ class ConditionReportApplicationContextFailureProcessorTests {
 		ConfigurableApplicationContext applicationContext = application.run();
 		ConditionReportApplicationContextFailureProcessor processor = new ConditionReportApplicationContextFailureProcessor();
 		processor.processLoadFailure(applicationContext, new IllegalStateException());
-		assertThat(output).contains("CONDITIONS EVALUATION REPORT").contains("Positive matches")
-				.contains("Negative matches");
+		assertThat(output).contains("CONDITIONS EVALUATION REPORT")
+			.contains("Positive matches")
+			.contains("Negative matches");
 	}
 
 	@Configuration(proxyBeanMethods = false)

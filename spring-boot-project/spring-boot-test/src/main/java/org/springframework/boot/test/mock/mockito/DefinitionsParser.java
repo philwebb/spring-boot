@@ -67,10 +67,12 @@ class DefinitionsParser {
 
 	private void parseElement(AnnotatedElement element, Class<?> source) {
 		MergedAnnotations annotations = MergedAnnotations.from(element, SearchStrategy.SUPERCLASS);
-		annotations.stream(MockBean.class).map(MergedAnnotation::synthesize)
-				.forEach((annotation) -> parseMockBeanAnnotation(annotation, element, source));
-		annotations.stream(SpyBean.class).map(MergedAnnotation::synthesize)
-				.forEach((annotation) -> parseSpyBeanAnnotation(annotation, element, source));
+		annotations.stream(MockBean.class)
+			.map(MergedAnnotation::synthesize)
+			.forEach((annotation) -> parseMockBeanAnnotation(annotation, element, source));
+		annotations.stream(SpyBean.class)
+			.map(MergedAnnotation::synthesize)
+			.forEach((annotation) -> parseSpyBeanAnnotation(annotation, element, source));
 	}
 
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element, Class<?> source) {

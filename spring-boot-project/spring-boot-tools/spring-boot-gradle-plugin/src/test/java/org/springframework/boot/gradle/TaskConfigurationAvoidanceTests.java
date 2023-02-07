@@ -47,12 +47,14 @@ class TaskConfigurationAvoidanceTests {
 	@ArchTest
 	void noApisThatCauseEagerTaskConfigurationShouldBeCalled(JavaClasses classes) {
 		ProhibitedMethods prohibited = new ProhibitedMethods();
-		prohibited.on(TaskContainer.class).methodsNamed("create", "findByPath, getByPath").method("withType",
-				Class.class, Action.class);
+		prohibited.on(TaskContainer.class)
+			.methodsNamed("create", "findByPath, getByPath")
+			.method("withType", Class.class, Action.class);
 		prohibited.on(TaskCollection.class).methodsNamed("findByName", "getByName");
-		ArchRuleDefinition.noClasses().should()
-				.callMethodWhere(DescribedPredicate.describe("it would cause eager task configuration", prohibited))
-				.check(classes);
+		ArchRuleDefinition.noClasses()
+			.should()
+			.callMethodWhere(DescribedPredicate.describe("it would cause eager task configuration", prohibited))
+			.check(classes);
 	}
 
 	static class DoNotIncludeTests implements ImportOption {
@@ -99,7 +101,7 @@ class TaskConfigurationAvoidanceTests {
 
 			private ProhibitedConfigurer method(String name, Class<?>... parameterTypes) {
 				ProhibitedMethods.this.prohibited
-						.add(new ProhibitMethod(this.type, name, Arrays.asList(parameterTypes)));
+					.add(new ProhibitMethod(this.type, name, Arrays.asList(parameterTypes)));
 				return this;
 			}
 

@@ -59,8 +59,9 @@ public class SystemTestPlugin implements Plugin<Project> {
 		createTestTask(project, systemTestSourceSet);
 		project.getPlugins().withType(EclipsePlugin.class, (eclipsePlugin) -> {
 			EclipseModel eclipse = project.getExtensions().getByType(EclipseModel.class);
-			eclipse.classpath((classpath) -> classpath.getPlusConfigurations().add(
-					project.getConfigurations().getByName(systemTestSourceSet.getRuntimeClasspathConfigurationName())));
+			eclipse.classpath((classpath) -> classpath.getPlusConfigurations()
+				.add(project.getConfigurations()
+					.getByName(systemTestSourceSet.getRuntimeClasspathConfigurationName())));
 		});
 	}
 
@@ -69,9 +70,9 @@ public class SystemTestPlugin implements Plugin<Project> {
 		SourceSet systemTestSourceSet = sourceSets.create(SYSTEM_TEST_SOURCE_SET_NAME);
 		SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		systemTestSourceSet
-				.setCompileClasspath(systemTestSourceSet.getCompileClasspath().plus(mainSourceSet.getOutput()));
+			.setCompileClasspath(systemTestSourceSet.getCompileClasspath().plus(mainSourceSet.getOutput()));
 		systemTestSourceSet
-				.setRuntimeClasspath(systemTestSourceSet.getRuntimeClasspath().plus(mainSourceSet.getOutput()));
+			.setRuntimeClasspath(systemTestSourceSet.getRuntimeClasspath().plus(mainSourceSet.getOutput()));
 		return systemTestSourceSet;
 	}
 

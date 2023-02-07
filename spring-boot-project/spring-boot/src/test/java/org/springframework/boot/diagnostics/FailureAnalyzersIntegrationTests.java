@@ -40,8 +40,8 @@ class FailureAnalyzersIntegrationTests {
 
 	@Test
 	void analysisIsPerformed(CapturedOutput output) {
-		assertThatExceptionOfType(Exception.class).isThrownBy(
-				() -> new SpringApplicationBuilder(TestConfiguration.class).web(WebApplicationType.NONE).run());
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> new SpringApplicationBuilder(TestConfiguration.class).web(WebApplicationType.NONE).run());
 		assertThat(output).contains("APPLICATION FAILED TO START");
 	}
 

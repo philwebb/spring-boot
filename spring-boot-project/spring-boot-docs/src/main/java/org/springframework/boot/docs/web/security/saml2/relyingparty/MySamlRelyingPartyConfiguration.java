@@ -29,7 +29,7 @@ public class MySamlRelyingPartyConfiguration {
 		http.authorizeHttpRequests().anyRequest().authenticated();
 		http.saml2Login();
 		http.saml2Logout((saml2) -> saml2.logoutRequest((request) -> request.logoutUrl("/SLOService.saml2"))
-				.logoutResponse((response) -> response.logoutUrl("/SLOService.saml2")));
+			.logoutResponse((response) -> response.logoutUrl("/SLOService.saml2")));
 		return http.build();
 	}
 

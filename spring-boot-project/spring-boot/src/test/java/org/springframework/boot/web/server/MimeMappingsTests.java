@@ -50,7 +50,7 @@ class MimeMappingsTests {
 	@Test
 	void defaultsCannotBeModified() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(() -> MimeMappings.DEFAULT.add("foo", "foo/bar"));
+			.isThrownBy(() -> MimeMappings.DEFAULT.add("foo", "foo/bar"));
 	}
 
 	@Test
@@ -218,9 +218,9 @@ class MimeMappingsTests {
 	@Test
 	void mimeMappingsMatchesTomcatDefaults() throws IOException {
 		Properties ourDefaultMimeMappings = PropertiesLoaderUtils
-				.loadProperties(new ClassPathResource("mime-mappings.properties", getClass()));
+			.loadProperties(new ClassPathResource("mime-mappings.properties", getClass()));
 		Properties tomcatDefaultMimeMappings = PropertiesLoaderUtils
-				.loadProperties(new ClassPathResource("MimeTypeMappings.properties", Tomcat.class));
+			.loadProperties(new ClassPathResource("MimeTypeMappings.properties", Tomcat.class));
 		assertThat(ourDefaultMimeMappings).isEqualTo(tomcatDefaultMimeMappings);
 	}
 
@@ -229,7 +229,7 @@ class MimeMappingsTests {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new MimeMappingsRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.resource()
-				.forResource("org/springframework/boot/web/server/mime-mappings.properties")).accepts(runtimeHints);
+			.forResource("org/springframework/boot/web/server/mime-mappings.properties")).accepts(runtimeHints);
 	}
 
 }

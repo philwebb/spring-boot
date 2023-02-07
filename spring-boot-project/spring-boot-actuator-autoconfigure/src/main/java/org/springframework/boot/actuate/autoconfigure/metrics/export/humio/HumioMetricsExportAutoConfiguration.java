@@ -64,9 +64,11 @@ public class HumioMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HumioMeterRegistry humioMeterRegistry(HumioConfig humioConfig, Clock clock) {
-		return HumioMeterRegistry.builder(humioConfig).clock(clock).httpClient(
-				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
-				.build();
+		return HumioMeterRegistry.builder(humioConfig)
+			.clock(clock)
+			.httpClient(
+					new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
+			.build();
 
 	}
 

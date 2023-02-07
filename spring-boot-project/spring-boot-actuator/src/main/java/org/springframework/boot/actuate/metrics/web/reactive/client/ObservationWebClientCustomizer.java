@@ -50,7 +50,7 @@ public class ObservationWebClientCustomizer implements WebClientCustomizer {
 	@Override
 	public void customize(WebClient.Builder webClientBuilder) {
 		webClientBuilder.observationRegistry(this.observationRegistry)
-				.observationConvention(this.observationConvention);
+			.observationConvention(this.observationConvention);
 	}
 
 }

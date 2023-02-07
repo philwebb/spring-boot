@@ -34,19 +34,19 @@ import static org.mockito.Mockito.mock;
 class FlywayEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(FlywayEndpointAutoConfiguration.class))
-			.withBean(Flyway.class, () -> mock(Flyway.class));
+		.withConfiguration(AutoConfigurations.of(FlywayEndpointAutoConfiguration.class))
+		.withBean(Flyway.class, () -> mock(Flyway.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=flyway")
-				.run((context) -> assertThat(context).hasSingleBean(FlywayEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(FlywayEndpoint.class));
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.flyway.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(FlywayEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(FlywayEndpoint.class));
 	}
 
 	@Test

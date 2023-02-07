@@ -68,7 +68,7 @@ class CacheMetricsRegistrarConfiguration {
 
 	private void bindCacheManagerToRegistry(String beanName, CacheManager cacheManager) {
 		cacheManager.getCacheNames()
-				.forEach((cacheName) -> bindCacheToRegistry(beanName, cacheManager.getCache(cacheName)));
+			.forEach((cacheName) -> bindCacheToRegistry(beanName, cacheManager.getCache(cacheName)));
 	}
 
 	private void bindCacheToRegistry(String beanName, Cache cache) {

@@ -87,7 +87,7 @@ class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput())
-				.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
+			.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
 	}
 
 	@TestTemplate
@@ -111,8 +111,9 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("-Dcom.bar=baz").contains("-Dcom.foo=bar")
-				.contains("-XX:TieredStopAtLevel=1");
+		assertThat(result.getOutput()).contains("-Dcom.bar=baz")
+			.contains("-Dcom.foo=bar")
+			.contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate

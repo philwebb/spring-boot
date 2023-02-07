@@ -40,9 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MeterRegistryCustomizerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
-					PrometheusMetricsExportAutoConfiguration.class))
-			.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
+		.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
+				PrometheusMetricsExportAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
 
 	@Test
 	void commonTagsAreAppliedToAutoConfiguredBinders() {

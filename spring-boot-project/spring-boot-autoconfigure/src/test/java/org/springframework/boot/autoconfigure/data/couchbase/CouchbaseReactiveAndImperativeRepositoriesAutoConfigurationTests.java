@@ -47,9 +47,9 @@ class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@Test
 	void shouldCreateInstancesForReactiveAndImperativeRepositories() {
 		new ApplicationContextRunner()
-				.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
-						.hasSingleBean(ReactiveCityRepository.class));
+			.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
+				.hasSingleBean(ReactiveCityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

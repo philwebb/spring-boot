@@ -309,13 +309,15 @@ public abstract class LayeredSpec {
 
 		ContentSelector<Library> asLibrarySelector(Function<String, ContentFilter<Library>> filterFactory) {
 			Layer layer = new Layer(getIntoLayer());
-			List<ContentFilter<Library>> includeFilters = getIncludes().stream().map(filterFactory)
-					.collect(Collectors.toCollection(ArrayList::new));
+			List<ContentFilter<Library>> includeFilters = getIncludes().stream()
+				.map(filterFactory)
+				.collect(Collectors.toCollection(ArrayList::new));
 			if (this.includeProjectDependencies) {
 				includeFilters.add(Library::isLocal);
 			}
-			List<ContentFilter<Library>> excludeFilters = getExcludes().stream().map(filterFactory)
-					.collect(Collectors.toCollection(ArrayList::new));
+			List<ContentFilter<Library>> excludeFilters = getExcludes().stream()
+				.map(filterFactory)
+				.collect(Collectors.toCollection(ArrayList::new));
 			if (this.excludeProjectDependencies) {
 				excludeFilters.add(Library::isLocal);
 			}

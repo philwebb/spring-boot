@@ -108,7 +108,7 @@ class DynatracePropertiesConfigAdapterTests {
 		defaultDimensions.put("dim2", "value2");
 		properties.getV2().setDefaultDimensions(defaultDimensions);
 		assertThat(new DynatracePropertiesConfigAdapter(properties).defaultDimensions())
-				.containsExactlyEntriesOf(defaultDimensions);
+			.containsExactlyEntriesOf(defaultDimensions);
 	}
 
 	@Test

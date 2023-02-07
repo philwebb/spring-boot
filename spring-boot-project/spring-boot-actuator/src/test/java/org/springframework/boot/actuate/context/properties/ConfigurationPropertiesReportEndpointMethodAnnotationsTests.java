@@ -43,14 +43,14 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@Test
 	void testNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.withPropertyValues("other.name:foo", "first.name:bar");
+			.withPropertyValues("other.name:foo", "first.name:bar");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
-					.get(context.getId());
+				.get(context.getId());
 			ConfigurationPropertiesBeanDescriptor other = contextProperties.getBeans().get("other");
 			assertThat(other).isNotNull();
 			assertThat(other.getPrefix()).isEqualTo("other");
@@ -62,14 +62,15 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@Test
 	void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(OverriddenPrefix.class).withPropertyValues("other.name:foo");
+			.withUserConfiguration(OverriddenPrefix.class)
+			.withPropertyValues("other.name:foo");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
-					.get(context.getId());
+				.get(context.getId());
 			ConfigurationPropertiesBeanDescriptor bar = contextProperties.getBeans().get("bar");
 			assertThat(bar).isNotNull();
 			assertThat(bar.getPrefix()).isEqualTo("other");

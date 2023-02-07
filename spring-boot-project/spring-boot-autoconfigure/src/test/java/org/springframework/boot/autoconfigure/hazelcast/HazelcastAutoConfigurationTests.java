@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HazelcastAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	void defaultConfigFile() {

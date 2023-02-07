@@ -49,10 +49,10 @@ import static org.mockito.Mockito.mock;
 class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withClassLoader(new FilteredClassLoader(JdbcIndexedSessionRepository.class,
-					RedisIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
-			.withUserConfiguration(HazelcastConfiguration.class);
+		.withClassLoader(new FilteredClassLoader(JdbcIndexedSessionRepository.class,
+				RedisIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
+		.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
+		.withUserConfiguration(HazelcastConfiguration.class);
 
 	@Test
 	void defaultConfig() {
@@ -61,9 +61,10 @@ class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigur
 
 	@Test
 	void hazelcastTakesPrecedenceOverMongo() {
-		this.contextRunner.withClassLoader(
-				new FilteredClassLoader(RedisIndexedSessionRepository.class, JdbcIndexedSessionRepository.class))
-				.run(this::validateDefaultConfig);
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(RedisIndexedSessionRepository.class, JdbcIndexedSessionRepository.class))
+			.run(this::validateDefaultConfig);
 	}
 
 	@Test

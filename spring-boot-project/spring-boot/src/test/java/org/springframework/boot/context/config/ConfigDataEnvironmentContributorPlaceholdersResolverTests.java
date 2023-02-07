@@ -75,8 +75,8 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
 				contributors, null, null, true);
 		assertThatExceptionOfType(InactiveConfigDataAccessException.class)
-				.isThrownBy(() -> resolver.resolvePlaceholders("${test}"))
-				.satisfies(propertyNameAndOriginOf("test", "s3"));
+			.isThrownBy(() -> resolver.resolvePlaceholders("${test}"))
+			.satisfies(propertyNameAndOriginOf("test", "s3"));
 	}
 
 	@Test

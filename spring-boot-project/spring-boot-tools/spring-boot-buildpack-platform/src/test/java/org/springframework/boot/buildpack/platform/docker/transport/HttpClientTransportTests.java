@@ -259,10 +259,10 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("errors.json"));
 		given(this.response.getCode()).willReturn(404);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).hasSize(2);
-					assertThat(ex.getResponseMessage()).isNull();
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).hasSize(2);
+				assertThat(ex.getResponseMessage()).isNull();
+			});
 	}
 
 	@Test
@@ -270,10 +270,10 @@ class HttpClientTransportTests {
 		givenClientWillReturnResponse();
 		given(this.response.getCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).isNull();
-					assertThat(ex.getResponseMessage()).isNull();
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage()).isNull();
+			});
 	}
 
 	@Test
@@ -282,10 +282,10 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("message.json"));
 		given(this.response.getCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).isNull();
-					assertThat(ex.getResponseMessage().getMessage()).contains("test message");
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+			});
 	}
 
 	@Test
@@ -294,18 +294,18 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).isNull();
-					assertThat(ex.getResponseMessage()).isNull();
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage()).isNull();
+			});
 	}
 
 	@Test
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
 		given(this.client.execute(any(HttpHost.class), any(HttpUriRequest.class)))
-				.willThrow(new IOException("test IO exception"));
+			.willThrow(new IOException("test IO exception"));
 		assertThatExceptionOfType(DockerConnectionException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getMessage()).contains("test IO exception"));
+			.satisfies((ex) -> assertThat(ex.getMessage()).contains("test IO exception"));
 	}
 
 	private String writeToString(HttpEntity entity) throws IOException {

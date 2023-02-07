@@ -89,7 +89,7 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		}
 		StringBuilder builder = new StringBuilder();
 		this.properties.getStaticNames()
-				.forEach((name, value) -> builder.append(",").append(name).append("=").append(value));
+			.forEach((name, value) -> builder.append(",").append(name).append("=").append(value));
 		return builder.toString();
 	}
 

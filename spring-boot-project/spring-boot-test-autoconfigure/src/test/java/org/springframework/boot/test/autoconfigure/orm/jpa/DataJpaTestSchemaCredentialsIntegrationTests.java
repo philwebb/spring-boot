@@ -43,7 +43,8 @@ class DataJpaTestSchemaCredentialsIntegrationTests {
 		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).isEqualTo("H2");
 		assertThat(new JdbcTemplate(this.dataSource).queryForList("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES",
-				String.class)).contains("EXAMPLE");
+				String.class))
+			.contains("EXAMPLE");
 	}
 
 }

@@ -35,7 +35,7 @@ class ImmutableNameAnnotationPropertiesTests extends AbstractMetadataGenerationT
 	void immutableNameAnnotationProperties() {
 		ConfigurationMetadata metadata = compile(ImmutableNameAnnotationProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("named.import", String.class)
-				.fromSource(ImmutableNameAnnotationProperties.class));
+			.fromSource(ImmutableNameAnnotationProperties.class));
 	}
 
 }

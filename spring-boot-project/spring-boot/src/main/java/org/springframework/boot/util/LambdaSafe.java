@@ -299,8 +299,10 @@ public final class LambdaSafe {
 		public <R> Stream<R> invokeAnd(Function<C, R> invoker) {
 			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> invoke(callbackInstance,
 					() -> invoker.apply(callbackInstance));
-			return this.callbackInstances.stream().map(mapper).filter(InvocationResult::hasResult)
-					.map(InvocationResult::get);
+			return this.callbackInstances.stream()
+				.map(mapper)
+				.filter(InvocationResult::hasResult)
+				.map(InvocationResult::get);
 		}
 
 	}

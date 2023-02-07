@@ -58,7 +58,7 @@ class SpringApplicationAotProcessorTests {
 		SpringApplicationAotProcessor processor = new SpringApplicationAotProcessor(BrokenApplication.class,
 				settings(directory), new String[0]);
 		assertThatIllegalStateException().isThrownBy(processor::process)
-				.withMessageContaining("Does it run a SpringApplication?");
+			.withMessageContaining("Does it run a SpringApplication?");
 		assertThat(directory).isEmptyDirectory();
 	}
 
@@ -85,14 +85,18 @@ class SpringApplicationAotProcessorTests {
 	@Test
 	void invokeMainWithMissingArguments() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> SpringApplicationAotProcessor.main(new String[] { "Test" }))
-				.withMessageContaining("Usage:");
+			.isThrownBy(() -> SpringApplicationAotProcessor.main(new String[] { "Test" }))
+			.withMessageContaining("Usage:");
 	}
 
 	private Settings settings(Path directory) {
-		return Settings.builder().sourceOutput(directory.resolve("source"))
-				.resourceOutput(directory.resolve("resource")).classOutput(directory.resolve("class"))
-				.groupId("com.example").artifactId("example").build();
+		return Settings.builder()
+			.sourceOutput(directory.resolve("source"))
+			.resourceOutput(directory.resolve("resource"))
+			.classOutput(directory.resolve("class"))
+			.groupId("com.example")
+			.artifactId("example")
+			.build();
 
 	}
 

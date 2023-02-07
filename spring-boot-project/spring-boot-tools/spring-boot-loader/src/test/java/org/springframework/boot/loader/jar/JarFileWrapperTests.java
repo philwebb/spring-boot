@@ -148,7 +148,7 @@ class JarFileWrapperTests {
 		// of additional memory being used since cleanup only occurs when the
 		// finalizer thread runs. See gh-22991
 		assertThatExceptionOfType(NoSuchMethodException.class)
-				.isThrownBy(() -> JarFileWrapper.class.getDeclaredMethod("close"));
+			.isThrownBy(() -> JarFileWrapper.class.getDeclaredMethod("close"));
 	}
 
 	@Test

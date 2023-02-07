@@ -39,14 +39,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FlywayEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-			.withUserConfiguration(EmbeddedDataSourceConfiguration.class).withBean("endpoint", FlywayEndpoint.class);
+		.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+		.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+		.withBean("endpoint", FlywayEndpoint.class);
 
 	@Test
 	void flywayReportIsProduced() {
 		this.contextRunner.run((context) -> {
-			Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class).flywayBeans()
-					.getContexts().get(context.getId()).getFlywayBeans();
+			Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class)
+				.flywayBeans()
+				.getContexts()
+				.get(context.getId())
+				.getFlywayBeans();
 			assertThat(flywayBeans).hasSize(1);
 			assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
 		});
@@ -55,15 +59,19 @@ class FlywayEndpointTests {
 	@Test
 	void whenFlywayHasBeenBaselinedFlywayReportIsProduced() {
 		this.contextRunner.withPropertyValues("spring.flyway.baseline-version=2")
-				.withBean(FlywayMigrationStrategy.class, () -> (flyway) -> {
-					flyway.baseline();
-					flyway.migrate();
-				}).run((context) -> {
-					Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class).flywayBeans()
-							.getContexts().get(context.getId()).getFlywayBeans();
-					assertThat(flywayBeans).hasSize(1);
-					assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(4);
-				});
+			.withBean(FlywayMigrationStrategy.class, () -> (flyway) -> {
+				flyway.baseline();
+				flyway.migrate();
+			})
+			.run((context) -> {
+				Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class)
+					.flywayBeans()
+					.getContexts()
+					.get(context.getId())
+					.getFlywayBeans();
+				assertThat(flywayBeans).hasSize(1);
+				assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(4);
+			});
 	}
 
 }

@@ -57,8 +57,9 @@ public abstract class MongoClientFactorySupport<T> {
 	}
 
 	private MongoDriverInformation driverInformation() {
-		return MongoDriverInformation.builder(MongoDriverInformation.builder().build()).driverName("spring-boot")
-				.build();
+		return MongoDriverInformation.builder(MongoDriverInformation.builder().build())
+			.driverName("spring-boot")
+			.build();
 	}
 
 }

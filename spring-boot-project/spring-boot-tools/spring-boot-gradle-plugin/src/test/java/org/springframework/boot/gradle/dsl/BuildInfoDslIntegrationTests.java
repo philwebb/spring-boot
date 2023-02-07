@@ -44,7 +44,7 @@ class BuildInfoDslIntegrationTests {
 	@TestTemplate
 	void basicJar() {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
 		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", this.gradleBuild.getProjectDir().getName());
@@ -55,7 +55,7 @@ class BuildInfoDslIntegrationTests {
 	@TestTemplate
 	void jarWithCustomName() {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
 		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", "foo");
@@ -66,7 +66,7 @@ class BuildInfoDslIntegrationTests {
 	@TestTemplate
 	void basicWar() {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
 		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", this.gradleBuild.getProjectDir().getName());
@@ -77,7 +77,7 @@ class BuildInfoDslIntegrationTests {
 	@TestTemplate
 	void warWithCustomName() {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
 		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", "foo");
@@ -88,7 +88,7 @@ class BuildInfoDslIntegrationTests {
 	@TestTemplate
 	void additionalProperties() {
 		assertThat(this.gradleBuild.build("bootBuildInfo", "--stacktrace").task(":bootBuildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		Properties properties = buildInfoProperties();
 		assertThat(properties).containsEntry("build.name", this.gradleBuild.getProjectDir().getName());
 		assertThat(properties).containsEntry("build.artifact", this.gradleBuild.getProjectDir().getName());
@@ -101,7 +101,7 @@ class BuildInfoDslIntegrationTests {
 	@TestTemplate
 	void classesDependency() {
 		assertThat(this.gradleBuild.build("classes", "--stacktrace").task(":bootBuildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	private Properties buildInfoProperties() {

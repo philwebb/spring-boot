@@ -83,8 +83,9 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		Method method = operationMethod.getMethod();
 		ManagedOperationParameter[] managed = jmxAttributeSource.getManagedOperationParameters(method);
 		if (managed.length == 0) {
-			Stream<JmxOperationParameter> parameters = operationMethod.getParameters().stream()
-					.map(DiscoveredJmxOperationParameter::new);
+			Stream<JmxOperationParameter> parameters = operationMethod.getParameters()
+				.stream()
+				.map(DiscoveredJmxOperationParameter::new);
 			return parameters.toList();
 		}
 		return mergeParameters(operationMethod.getParameters(), managed);
@@ -121,8 +122,10 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 	@Override
 	protected void appendFields(ToStringCreator creator) {
-		creator.append("name", this.name).append("outputType", this.outputType).append("description", this.description)
-				.append("parameters", this.parameters);
+		creator.append("name", this.name)
+			.append("outputType", this.outputType)
+			.append("description", this.description)
+			.append("parameters", this.parameters);
 	}
 
 	/**

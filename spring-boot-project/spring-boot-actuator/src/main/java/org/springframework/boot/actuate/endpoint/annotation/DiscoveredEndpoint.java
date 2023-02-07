@@ -26,7 +26,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public interface DiscoveredEndpoint<O extends Operation> extends ExposableEndpoint<O> {
+public interface DiscoveredEndpoint<O extends Operation>extends ExposableEndpoint<O> {
 
 	/**
 	 * Return {@code true} if the endpoint was discovered by the specified discoverer.

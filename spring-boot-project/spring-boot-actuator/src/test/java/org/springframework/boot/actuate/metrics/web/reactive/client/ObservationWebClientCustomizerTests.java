@@ -49,8 +49,8 @@ class ObservationWebClientCustomizerTests {
 		this.customizer.customize(this.clientBuilder);
 		assertThat(this.clientBuilder).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
 		assertThat(this.clientBuilder).extracting("observationConvention")
-				.isInstanceOf(DefaultClientRequestObservationConvention.class)
-				.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
+			.isInstanceOf(DefaultClientRequestObservationConvention.class)
+			.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}
 
 }

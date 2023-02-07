@@ -44,7 +44,7 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 		DatabaseInitializationSettings settings = QuartzDataSourceScriptDatabaseInitializer.getSettings(dataSource,
 				properties);
 		assertThat(settings.getSchemaLocations())
-				.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
+			.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
 		then(dataSource).shouldHaveNoInteractions();
 	}
 

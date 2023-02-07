@@ -166,8 +166,8 @@ class ConfigDataLocationResolversTests {
 				this.binder, new DefaultResourceLoader(), springFactoriesLoader);
 		ConfigDataLocation location = ConfigDataLocation.of("Missing:test");
 		assertThatExceptionOfType(UnsupportedConfigDataLocationException.class)
-				.isThrownBy(() -> resolvers.resolve(this.context, location, null))
-				.satisfies((ex) -> assertThat(ex.getLocation()).isEqualTo(location));
+			.isThrownBy(() -> resolvers.resolve(this.context, location, null))
+			.satisfies((ex) -> assertThat(ex.getLocation()).isEqualTo(location));
 	}
 
 	@Test

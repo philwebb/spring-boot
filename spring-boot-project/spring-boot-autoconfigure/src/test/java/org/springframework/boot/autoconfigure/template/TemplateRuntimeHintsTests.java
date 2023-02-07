@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TemplateRuntimeHintsTests {
 
 	private static final Predicate<RuntimeHints> TEST_PREDICATE = RuntimeHintsPredicates.resource()
-			.forResource("templates/something/hello.html");
+		.forResource("templates/something/hello.html");
 
 	@Test
 	void templateRuntimeHintsIsRegistered() {

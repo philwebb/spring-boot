@@ -43,7 +43,7 @@ class AvailabilityChangeEventTests {
 	@Test
 	void createWhenStateIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AvailabilityChangeEvent<>(this.source, null))
-				.withMessage("Payload must not be null");
+			.withMessage("Payload must not be null");
 	}
 
 	@Test

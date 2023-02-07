@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class R2dbcDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class, R2dbcDataAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class, R2dbcDataAutoConfiguration.class));
 
 	@Test
 	void r2dbcEntityTemplateIsConfigured() {

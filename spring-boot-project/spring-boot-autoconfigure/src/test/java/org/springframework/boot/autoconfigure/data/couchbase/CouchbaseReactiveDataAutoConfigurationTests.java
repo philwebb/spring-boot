@@ -49,9 +49,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CouchbaseReactiveDataAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
-					CouchbaseDataAutoConfiguration.class, CouchbaseReactiveDataAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class, CouchbaseReactiveDataAutoConfiguration.class));
 
 	@Test
 	void disabledIfCouchbaseIsNotConfigured() {
@@ -78,7 +78,7 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 			ReactiveCouchbaseTemplate template = context.getBean(ReactiveCouchbaseTemplate.class);
 			assertThat(
 					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
-							.isTrue();
+				.isTrue();
 		});
 	}
 

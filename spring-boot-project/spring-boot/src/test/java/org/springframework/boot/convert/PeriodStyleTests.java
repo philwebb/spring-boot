@@ -36,7 +36,7 @@ class PeriodStyleTests {
 	@Test
 	void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.detectAndParse(null))
-				.withMessageContaining("Value must not be null");
+			.withMessageContaining("Value must not be null");
 	}
 
 	@Test
@@ -109,7 +109,7 @@ class PeriodStyleTests {
 	@Test
 	void detectAndParseWhenBadFormatShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.detectAndParse("10foo"))
-				.withMessageContaining("'10foo' is not a valid period");
+			.withMessageContaining("'10foo' is not a valid period");
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class PeriodStyleTests {
 	@Test
 	void detectWhenUnknownShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.detect("bad"))
-				.withMessageContaining("'bad' is not a valid period");
+			.withMessageContaining("'bad' is not a valid period");
 	}
 
 	@Test
@@ -168,7 +168,7 @@ class PeriodStyleTests {
 	@Test
 	void parseIso8601WhenSimpleShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.ISO8601.parse("10d"))
-				.withMessageContaining("'10d' is not a valid ISO-8601 period");
+			.withMessageContaining("'10d' is not a valid ISO-8601 period");
 	}
 
 	@Test
@@ -184,14 +184,15 @@ class PeriodStyleTests {
 
 	@Test
 	void parseSimpleWhenUnknownUnitShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("10x")).satisfies(
-				(ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Does not match simple period pattern"));
+		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("10x"))
+			.satisfies(
+					(ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Does not match simple period pattern"));
 	}
 
 	@Test
 	void parseSimpleWhenIso8601ShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("PT10H"))
-				.withMessageContaining("'PT10H' is not a valid simple period");
+			.withMessageContaining("'PT10H' is not a valid simple period");
 	}
 
 	@Test

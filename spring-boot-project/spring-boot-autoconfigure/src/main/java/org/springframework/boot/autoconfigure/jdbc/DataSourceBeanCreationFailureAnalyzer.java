@@ -66,14 +66,16 @@ class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<Data
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider the following:%n"));
 		if (EmbeddedDatabaseConnection.NONE == cause.getConnection()) {
-			action.append(String.format(
-					"\tIf you want an embedded database (H2, HSQL or Derby), please put it on the classpath.%n"));
+			action.append(String
+				.format("\tIf you want an embedded database (H2, HSQL or Derby), please put it on the classpath.%n"));
 		}
 		else {
 			action.append(String.format("\tReview the configuration of %s%n.", cause.getConnection()));
 		}
-		action.append("\tIf you have database settings to be loaded from a particular "
-				+ "profile you may need to activate it").append(getActiveProfiles());
+		action
+			.append("\tIf you have database settings to be loaded from a particular "
+					+ "profile you may need to activate it")
+			.append(getActiveProfiles());
 		return action.toString();
 	}
 

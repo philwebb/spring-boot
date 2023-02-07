@@ -83,7 +83,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	private static final String BEAN_NAME = MockitoPostProcessor.class.getName();
 
 	private static final String CONFIGURATION_CLASS_ATTRIBUTE = Conventions
-			.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "configurationClass");
+		.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "configurationClass");
 
 	private static final BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 

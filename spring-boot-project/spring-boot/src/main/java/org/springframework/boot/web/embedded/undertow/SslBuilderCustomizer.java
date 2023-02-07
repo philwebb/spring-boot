@@ -112,7 +112,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			SslConfigurationValidator.validateKeyAlias(keyStore, ssl.getKeyAlias());
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
-					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
 			if (keyPassword == null) {
 				keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword() : ssl.getKeyStorePassword();
@@ -150,7 +150,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		try {
 			KeyStore store = getTrustStore(ssl, sslStoreProvider);
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
-					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			trustManagerFactory.init(store);
 			return trustManagerFactory.getTrustManagers();
 		}

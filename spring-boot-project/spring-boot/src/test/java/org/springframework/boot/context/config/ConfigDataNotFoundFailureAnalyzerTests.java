@@ -40,7 +40,7 @@ class ConfigDataNotFoundFailureAnalyzerTests {
 		FailureAnalysis result = this.analyzer.analyze(exception);
 		assertThat(result.getDescription()).isEqualTo("Config data location 'test' does not exist");
 		assertThat(result.getAction())
-				.isEqualTo("Check that the value 'test' is correct, or prefix it with 'optional:'");
+			.isEqualTo("Check that the value 'test' is correct, or prefix it with 'optional:'");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class ConfigDataNotFoundFailureAnalyzerTests {
 		FailureAnalysis result = this.analyzer.analyze(exception);
 		assertThat(result.getDescription()).isEqualTo("Config data location 'test' does not exist");
 		assertThat(result.getAction())
-				.isEqualTo("Check that the value 'test' at origin is correct, or prefix it with 'optional:'");
+			.isEqualTo("Check that the value 'test' at origin is correct, or prefix it with 'optional:'");
 	}
 
 	@Test
@@ -76,12 +76,12 @@ class ConfigDataNotFoundFailureAnalyzerTests {
 		ConfigDataLocation location = ConfigDataLocation.of("test");
 		ConfigDataResource resource = new TestConfigDataResource("myresource");
 		ConfigDataResourceNotFoundException exception = new ConfigDataResourceNotFoundException(resource)
-				.withLocation(location);
+			.withLocation(location);
 		FailureAnalysis result = this.analyzer.analyze(exception);
 		assertThat(result.getDescription())
-				.isEqualTo("Config data resource 'myresource' via location 'test' does not exist");
+			.isEqualTo("Config data resource 'myresource' via location 'test' does not exist");
 		assertThat(result.getAction())
-				.isEqualTo("Check that the value 'test' is correct, or prefix it with 'optional:'");
+			.isEqualTo("Check that the value 'test' is correct, or prefix it with 'optional:'");
 	}
 
 	static class TestOrigin implements Origin {

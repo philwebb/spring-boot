@@ -44,7 +44,7 @@ public class SyncAppSource extends DefaultTask {
 		this.sourceDirectory = objects.directoryProperty();
 		this.destinationDirectory = objects.directoryProperty();
 		this.pluginVersion = objects.property(String.class)
-				.convention(getProject().provider(() -> getProject().getVersion().toString()));
+			.convention(getProject().provider(() -> getProject().getVersion().toString()));
 	}
 
 	@TaskAction

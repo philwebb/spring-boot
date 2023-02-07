@@ -85,7 +85,7 @@ class CassandraDataAutoConfigurationTests {
 		load();
 		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
 		assertThat(cassandraConverter.getCodecRegistry())
-				.isSameAs(this.context.getBean(CassandraMockConfiguration.class).codecRegistry);
+			.isSameAs(this.context.getBean(CassandraMockConfiguration.class).codecRegistry);
 	}
 
 	@Test

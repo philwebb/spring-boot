@@ -186,8 +186,10 @@ public class EmbeddedLdapAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			Builder message = ConditionMessage.forCondition("Embedded LDAP");
 			Environment environment = context.getEnvironment();
-			if (environment != null && !Binder.get(environment).bind("spring.ldap.embedded.base-dn", STRING_LIST)
-					.orElseGet(Collections::emptyList).isEmpty()) {
+			if (environment != null && !Binder.get(environment)
+				.bind("spring.ldap.embedded.base-dn", STRING_LIST)
+				.orElseGet(Collections::emptyList)
+				.isEmpty()) {
 				return ConditionOutcome.match(message.because("Found base-dn property"));
 			}
 			return ConditionOutcome.noMatch(message.because("No base-dn property found"));
@@ -220,8 +222,8 @@ public class EmbeddedLdapAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.resources().registerPatternIfPresent(classLoader, "schema.ldif",
-					(hint) -> hint.includes("schema.ldif"));
+			hints.resources()
+				.registerPatternIfPresent(classLoader, "schema.ldif", (hint) -> hint.includes("schema.ldif"));
 		}
 
 	}

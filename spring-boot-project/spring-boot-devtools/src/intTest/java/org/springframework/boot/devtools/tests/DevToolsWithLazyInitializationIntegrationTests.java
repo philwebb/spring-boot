@@ -40,7 +40,7 @@ class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsInt
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");

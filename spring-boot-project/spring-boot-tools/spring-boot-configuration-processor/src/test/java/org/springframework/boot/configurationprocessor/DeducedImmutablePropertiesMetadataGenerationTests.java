@@ -38,11 +38,14 @@ class DeducedImmutablePropertiesMetadataGenerationTests extends AbstractMetadata
 		ConfigurationMetadata metadata = compile(DeducedImmutableClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("test").fromSource(DeducedImmutableClassProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("test.nested", DeducedImmutableClassProperties.Nested.class)
-				.fromSource(DeducedImmutableClassProperties.class));
+			.fromSource(DeducedImmutableClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("test.nested.name", String.class)
-				.fromSource(DeducedImmutableClassProperties.Nested.class));
-		ItemMetadata nestedMetadata = metadata.getItems().stream()
-				.filter((item) -> item.getName().equals("test.nested")).findFirst().get();
+			.fromSource(DeducedImmutableClassProperties.Nested.class));
+		ItemMetadata nestedMetadata = metadata.getItems()
+			.stream()
+			.filter((item) -> item.getName().equals("test.nested"))
+			.findFirst()
+			.get();
 		assertThat(nestedMetadata.getDefaultValue()).isNull();
 	}
 

@@ -236,7 +236,7 @@ public class EntityManagerFactoryBuilder {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
 				entityManagerFactoryBean
-						.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
+					.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
 			}
 			if (this.persistenceUnit != null) {
 				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
@@ -268,8 +268,8 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
 			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
-				entityManagerFactoryBean.setPersistenceUnitPostProcessors(
-						EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+				entityManagerFactoryBean
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
 			}
 			return entityManagerFactoryBean;
 		}

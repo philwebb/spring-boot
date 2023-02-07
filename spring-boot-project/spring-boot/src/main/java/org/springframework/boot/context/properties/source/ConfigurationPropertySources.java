@@ -117,7 +117,7 @@ public final class ConfigurationPropertySources {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
 		MutablePropertySources sources = ((ConfigurableEnvironment) environment).getPropertySources();
 		ConfigurationPropertySourcesPropertySource attached = (ConfigurationPropertySourcesPropertySource) sources
-				.get(ATTACHED_PROPERTY_SOURCE_NAME);
+			.get(ATTACHED_PROPERTY_SOURCE_NAME);
 		if (attached == null) {
 			return from(sources);
 		}
@@ -153,8 +153,9 @@ public final class ConfigurationPropertySources {
 	}
 
 	private static Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
-		return sources.stream().flatMap(ConfigurationPropertySources::flatten)
-				.filter(ConfigurationPropertySources::isIncluded);
+		return sources.stream()
+			.flatMap(ConfigurationPropertySources::flatten)
+			.filter(ConfigurationPropertySources::isIncluded);
 	}
 
 	private static Stream<PropertySource<?>> flatten(PropertySource<?> source) {

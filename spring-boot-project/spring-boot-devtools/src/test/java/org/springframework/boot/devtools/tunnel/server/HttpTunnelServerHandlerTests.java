@@ -35,7 +35,7 @@ class HttpTunnelServerHandlerTests {
 	@Test
 	void serverMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelServerHandler(null))
-				.withMessageContaining("Server must not be null");
+			.withMessageContaining("Server must not be null");
 	}
 
 	@Test

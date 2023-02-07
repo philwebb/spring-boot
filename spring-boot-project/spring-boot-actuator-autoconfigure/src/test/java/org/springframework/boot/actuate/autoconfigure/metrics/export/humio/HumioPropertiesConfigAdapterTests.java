@@ -41,7 +41,7 @@ class HumioPropertiesConfigAdapterTests {
 		HumioProperties properties = new HumioProperties();
 		properties.setTags(Collections.singletonMap("name", "test"));
 		assertThat(new HumioPropertiesConfigAdapter(properties).tags())
-				.isEqualTo(Collections.singletonMap("name", "test"));
+			.isEqualTo(Collections.singletonMap("name", "test"));
 	}
 
 	@Test

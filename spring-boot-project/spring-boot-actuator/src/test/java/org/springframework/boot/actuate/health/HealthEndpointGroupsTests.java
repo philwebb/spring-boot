@@ -34,14 +34,14 @@ class HealthEndpointGroupsTests {
 	@Test
 	void ofWhenPrimaryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> HealthEndpointGroups.of(null, Collections.emptyMap()))
-				.withMessage("Primary must not be null");
+			.withMessage("Primary must not be null");
 	}
 
 	@Test
 	void ofWhenAdditionalIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> HealthEndpointGroups.of(mock(HealthEndpointGroup.class), null))
-				.withMessage("Additional must not be null");
+			.isThrownBy(() -> HealthEndpointGroups.of(mock(HealthEndpointGroup.class), null))
+			.withMessage("Additional must not be null");
 	}
 
 	@Test

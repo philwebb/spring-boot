@@ -199,8 +199,11 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.server.getHandlers()).map(this::findContextHandler).filter(Objects::nonNull)
-				.map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
+		return Arrays.stream(this.server.getHandlers())
+			.map(this::findContextHandler)
+			.filter(Objects::nonNull)
+			.map(ContextHandler::getContextPath)
+			.collect(Collectors.joining(" "));
 	}
 
 	private ContextHandler findContextHandler(Handler handler) {

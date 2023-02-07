@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 class WebTestClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebTestClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WebTestClientAutoConfiguration.class));
 
 	@Test
 	void shouldNotBeConfiguredWithoutWebHandler() {
@@ -72,10 +72,11 @@ class WebTestClientAutoConfigurationTests {
 	@Test
 	void shouldCustomizeTimeout() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("spring.test.webtestclient.timeout=15m").run((context) -> {
-					WebTestClient webTestClient = context.getBean(WebTestClient.class);
-					assertThat(webTestClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofMinutes(15));
-				});
+			.withPropertyValues("spring.test.webtestclient.timeout=15m")
+			.run((context) -> {
+				WebTestClient webTestClient = context.getBean(WebTestClient.class);
+				assertThat(webTestClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofMinutes(15));
+			});
 	}
 
 	@Test
@@ -97,17 +98,17 @@ class WebTestClientAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	void shouldNotApplySpringSecurityConfigurerWhenSpringSecurityNotOnClassPath() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(SecurityMockServerConfigurers.class);
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).withClassLoader(classLoader)
-				.run((context) -> {
-					WebTestClient webTestClient = context.getBean(WebTestClient.class);
-					WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils.getField(webTestClient,
-							"builder");
-					WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils
-							.getField(builder, "httpHandlerBuilder");
-					List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(httpHandlerBuilder,
-							"filters");
-					assertThat(filters).isEmpty();
-				});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withClassLoader(classLoader)
+			.run((context) -> {
+				WebTestClient webTestClient = context.getBean(WebTestClient.class);
+				WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils.getField(webTestClient,
+						"builder");
+				WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils.getField(builder,
+						"httpHandlerBuilder");
+				List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(httpHandlerBuilder, "filters");
+				assertThat(filters).isEmpty();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

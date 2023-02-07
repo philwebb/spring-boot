@@ -47,9 +47,9 @@ class HealthContributorNameFactoryTests {
 	@Test
 	void applyWhenNameContainsSuffixReturnsName() {
 		assertThat(HealthContributorNameFactory.INSTANCE.apply("testHealthIndicatorTest"))
-				.isEqualTo("testHealthIndicatorTest");
+			.isEqualTo("testHealthIndicatorTest");
 		assertThat(HealthContributorNameFactory.INSTANCE.apply("testHealthContributorTest"))
-				.isEqualTo("testHealthContributorTest");
+			.isEqualTo("testHealthContributorTest");
 	}
 
 }

@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
 public class CommandRunner implements Iterable<Command> {
 
 	private static final Set<CommandException.Option> NO_EXCEPTION_OPTIONS = EnumSet
-			.noneOf(CommandException.Option.class);
+		.noneOf(CommandException.Option.class);
 
 	private final String name;
 

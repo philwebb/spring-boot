@@ -100,8 +100,8 @@ public class MetadataStore {
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "",
-				ADDITIONAL_METADATA_PATH);
+		FileObject fileObject = this.environment.getFiler()
+			.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
 		InputStream inputStream = getMetadataStream(fileObject);
 		if (inputStream != null) {
 			return inputStream;
@@ -129,7 +129,7 @@ public class MetadataStore {
 			return standardLocation;
 		}
 		String locations = this.environment.getOptions()
-				.get(ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION);
+			.get(ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION);
 		if (locations != null) {
 			for (String location : locations.split(",")) {
 				File candidate = new File(location, ADDITIONAL_METADATA_PATH);

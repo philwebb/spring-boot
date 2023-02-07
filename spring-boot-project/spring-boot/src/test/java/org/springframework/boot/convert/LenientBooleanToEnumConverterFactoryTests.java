@@ -41,7 +41,7 @@ class LenientBooleanToEnumConverterFactoryTests {
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverterFactory(new LenientBooleanToEnumConverterFactory()));
+			.with((service) -> service.addConverterFactory(new LenientBooleanToEnumConverterFactory()));
 	}
 
 	enum TestOnOffEnum {

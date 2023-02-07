@@ -220,8 +220,11 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	}
 
 	private Iterator<ConfigurationPropertySource> getBinderSources(Predicate<ConfigDataEnvironmentContributor> filter) {
-		return this.root.stream().filter(this::hasConfigurationPropertySource).filter(filter)
-				.map(ConfigDataEnvironmentContributor::getConfigurationPropertySource).iterator();
+		return this.root.stream()
+			.filter(this::hasConfigurationPropertySource)
+			.filter(filter)
+			.map(ConfigDataEnvironmentContributor::getConfigurationPropertySource)
+			.iterator();
 	}
 
 	private boolean hasConfigurationPropertySource(ConfigDataEnvironmentContributor contributor) {

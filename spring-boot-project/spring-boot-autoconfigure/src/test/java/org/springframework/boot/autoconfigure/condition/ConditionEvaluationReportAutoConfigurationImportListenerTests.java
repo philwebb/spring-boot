@@ -53,9 +53,9 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	@Test
 	void shouldBeInSpringFactories() {
 		List<AutoConfigurationImportListener> factories = SpringFactoriesLoader
-				.loadFactories(AutoConfigurationImportListener.class, null);
+			.loadFactories(AutoConfigurationImportListener.class, null);
 		assertThat(factories)
-				.hasAtLeastOneElementOfType(ConditionEvaluationReportAutoConfigurationImportListener.class);
+			.hasAtLeastOneElementOfType(ConditionEvaluationReportAutoConfigurationImportListener.class);
 	}
 
 	@Test

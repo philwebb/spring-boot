@@ -46,8 +46,8 @@ class ObservationRestTemplateCustomizerTests {
 		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate).hasFieldOrPropertyWithValue("observationRegistry", this.observationRegistry);
 		assertThat(this.restTemplate).extracting("observationConvention")
-				.isInstanceOf(DefaultClientRequestObservationConvention.class)
-				.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
+			.isInstanceOf(DefaultClientRequestObservationConvention.class)
+			.hasFieldOrPropertyWithValue("name", TEST_METRIC_NAME);
 	}
 
 }

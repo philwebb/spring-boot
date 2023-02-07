@@ -36,21 +36,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Hibernate2ndLevelCacheIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
-					HibernateJpaAutoConfiguration.class))
-			.withUserConfiguration(TestConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class))
+		.withUserConfiguration(TestConfiguration.class);
 
 	@Test
 	void hibernate2ndLevelCacheWithJCacheAndHazelcast() {
 		String cachingProviderFqn = HazelcastServerCachingProvider.class.getName();
 		String configLocation = "classpath:hazelcast.xml";
 		this.contextRunner
-				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
-						"spring.cache.jcache.config=" + configLocation,
-						"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
-						"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
-						"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.jcache.config=" + configLocation,
+					"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
+					"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
+					"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Configuration(proxyBeanMethods = false)

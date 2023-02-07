@@ -47,7 +47,7 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 			return null;
 		}
 		AnnotationDescriptor<TypeExcludeFilters> descriptor = TestContextAnnotationUtils
-				.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
+			.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
 		Class<?>[] filterClasses = (descriptor != null) ? descriptor.getAnnotation().value() : NO_FILTERS;
 		if (ObjectUtils.isEmpty(filterClasses)) {
 			return null;

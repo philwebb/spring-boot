@@ -45,7 +45,7 @@ class KairosPropertiesConfigAdapterTests
 		KairosProperties properties = createProperties();
 		properties.setUri("https://kairos.example.com:8080/api/v1/datapoints");
 		assertThat(createConfigAdapter(properties).uri())
-				.isEqualTo("https://kairos.example.com:8080/api/v1/datapoints");
+			.isEqualTo("https://kairos.example.com:8080/api/v1/datapoints");
 	}
 
 	@Test

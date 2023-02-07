@@ -45,15 +45,19 @@ public abstract class PropertyDescriptorTests {
 	}
 
 	protected ExecutableElement getMethod(TypeElement element, String name) {
-		return ElementFilter.methodsIn(element.getEnclosedElements()).stream()
-				.filter((method) -> ((Element) method).getSimpleName().toString().equals(name)).findFirst()
-				.orElse(null);
+		return ElementFilter.methodsIn(element.getEnclosedElements())
+			.stream()
+			.filter((method) -> ((Element) method).getSimpleName().toString().equals(name))
+			.findFirst()
+			.orElse(null);
 	}
 
 	protected VariableElement getField(TypeElement element, String name) {
-		return ElementFilter.fieldsIn(element.getEnclosedElements()).stream()
-				.filter((method) -> ((Element) method).getSimpleName().toString().equals(name)).findFirst()
-				.orElse(null);
+		return ElementFilter.fieldsIn(element.getEnclosedElements())
+			.stream()
+			.filter((method) -> ((Element) method).getSimpleName().toString().equals(name))
+			.findFirst()
+			.orElse(null);
 	}
 
 	protected ItemMetadataAssert assertItemMetadata(MetadataGenerationEnvironment metadataEnv,
@@ -65,8 +69,9 @@ public abstract class PropertyDescriptorTests {
 			BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> consumer) {
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
 				consumer, new MetadataGenerationEnvironmentFactory());
-		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor)
-				.withSources(SourceFile.forTestClass(target));
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(SourceFile.forTestClass(target));
 		compiler.compile((compiled) -> {
 		});
 	}

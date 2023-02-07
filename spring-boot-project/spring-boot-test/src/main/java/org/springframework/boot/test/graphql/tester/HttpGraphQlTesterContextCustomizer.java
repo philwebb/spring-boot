@@ -210,7 +210,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 		private boolean isSslEnabled(ApplicationContext context) {
 			try {
 				AbstractConfigurableWebServerFactory webServerFactory = context
-						.getBean(AbstractConfigurableWebServerFactory.class);
+					.getBean(AbstractConfigurableWebServerFactory.class);
 				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
 			}
 			catch (NoSuchBeanDefinitionException ex) {

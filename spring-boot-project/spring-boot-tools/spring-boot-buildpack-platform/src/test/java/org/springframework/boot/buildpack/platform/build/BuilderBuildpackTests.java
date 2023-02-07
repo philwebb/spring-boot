@@ -52,7 +52,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:paketo-buildpacks/spring-boot@3.5.0");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack.getCoordinates())
-				.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
+			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
 	}
 
@@ -61,7 +61,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:paketo-buildpacks/spring-boot");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack.getCoordinates())
-				.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
+			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
 	}
 
@@ -70,7 +70,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("paketo-buildpacks/spring-boot@3.5.0");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack.getCoordinates())
-				.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
+			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
 	}
 
@@ -79,7 +79,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("paketo-buildpacks/spring-boot");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack.getCoordinates())
-				.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
+			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
 	}
 
@@ -87,16 +87,16 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	void resolveWhenFullyQualifiedBuildpackWithVersionNotInBuilderThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack1@1.2.3");
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderBuildpack.resolve(this.resolverContext, reference))
-				.withMessageContaining("'urn:cnb:builder:example/buildpack1@1.2.3'")
-				.withMessageContaining("not found in builder");
+			.withMessageContaining("'urn:cnb:builder:example/buildpack1@1.2.3'")
+			.withMessageContaining("not found in builder");
 	}
 
 	@Test
 	void resolveWhenFullyQualifiedBuildpackWithoutVersionNotInBuilderThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack1");
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderBuildpack.resolve(this.resolverContext, reference))
-				.withMessageContaining("'urn:cnb:builder:example/buildpack1'")
-				.withMessageContaining("not found in builder");
+			.withMessageContaining("'urn:cnb:builder:example/buildpack1'")
+			.withMessageContaining("not found in builder");
 	}
 
 	@Test

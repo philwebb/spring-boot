@@ -87,13 +87,13 @@ class StaticResourceRequestTests {
 	@Test
 	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
-				.withMessageContaining("Locations must not be null");
+			.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
 	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
-				.withMessageContaining("Locations must not be null");
+			.withMessageContaining("Locations must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {

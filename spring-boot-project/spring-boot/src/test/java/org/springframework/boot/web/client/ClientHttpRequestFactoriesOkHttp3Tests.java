@@ -47,13 +47,13 @@ class ClientHttpRequestFactoriesOkHttp3Tests
 	@Test
 	void okHttp3IsBeingUsed() {
 		assertThat(new File(OkHttpClient.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName())
-				.startsWith("okhttp-3.");
+			.startsWith("okhttp-3.");
 	}
 
 	@Test
 	void getFailsWhenBufferRequestBodyIsEnabled() {
 		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
 	}
 
 	@Override

@@ -53,7 +53,7 @@ class RabbitHealthIndicatorTests {
 	@Test
 	void createWhenRabbitTemplateIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RabbitHealthIndicator(null))
-				.withMessageContaining("RabbitTemplate must not be null");
+			.withMessageContaining("RabbitTemplate must not be null");
 	}
 
 	@Test

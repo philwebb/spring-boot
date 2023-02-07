@@ -37,7 +37,7 @@ class HttpTunnelPayloadForwarderTests {
 	@Test
 	void targetChannelMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayloadForwarder(null))
-				.withMessageContaining("TargetChannel must not be null");
+			.withMessageContaining("TargetChannel must not be null");
 	}
 
 	@Test

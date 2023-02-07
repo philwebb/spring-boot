@@ -189,8 +189,10 @@ public class DevToolsDataSourceAutoConfiguration {
 			BeanDefinition dataSourceDefinition = context.getRegistry().getBeanDefinition(dataSourceBeanNames[0]);
 			if (dataSourceDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition
 					&& annotatedBeanDefinition.getFactoryMethodMetadata() != null
-					&& annotatedBeanDefinition.getFactoryMethodMetadata().getDeclaringClassName().startsWith(
-							DataSourceAutoConfiguration.class.getPackage().getName() + ".DataSourceConfiguration$")) {
+					&& annotatedBeanDefinition.getFactoryMethodMetadata()
+						.getDeclaringClassName()
+						.startsWith(DataSourceAutoConfiguration.class.getPackage().getName()
+								+ ".DataSourceConfiguration$")) {
 				return ConditionOutcome.match(message.foundExactly("auto-configured DataSource"));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("an auto-configured DataSource").atAll());

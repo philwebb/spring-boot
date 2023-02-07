@@ -97,7 +97,7 @@ public class BuildProperties extends InfoProperties {
 		if (value != null) {
 			try {
 				String updatedValue = String
-						.valueOf(DateTimeFormatter.ISO_INSTANT.parse(value, Instant::from).toEpochMilli());
+					.valueOf(DateTimeFormatter.ISO_INSTANT.parse(value, Instant::from).toEpochMilli());
 				properties.setProperty(key, updatedValue);
 			}
 			catch (DateTimeException ex) {

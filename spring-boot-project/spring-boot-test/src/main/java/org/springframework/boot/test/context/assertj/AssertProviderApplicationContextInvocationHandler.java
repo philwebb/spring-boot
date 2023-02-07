@@ -96,9 +96,9 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 					+ this.startupFailure.getClass().getName() + "]";
 		}
 		ToStringCreator builder = new ToStringCreator(this.applicationContext)
-				.append("id", this.applicationContext.getId())
-				.append("applicationName", this.applicationContext.getApplicationName())
-				.append("beanDefinitionCount", this.applicationContext.getBeanDefinitionCount());
+			.append("id", this.applicationContext.getId())
+			.append("applicationName", this.applicationContext.getApplicationName())
+			.append("beanDefinitionCount", this.applicationContext.getBeanDefinitionCount());
 		return "Started application " + builder;
 	}
 

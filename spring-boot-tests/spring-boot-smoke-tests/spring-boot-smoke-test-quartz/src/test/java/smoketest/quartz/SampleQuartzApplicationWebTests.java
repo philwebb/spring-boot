@@ -87,7 +87,7 @@ class SampleQuartzApplicationWebTests {
 	@Test
 	void quartzTriggerDetailWhenNameDoesNotExistReturns404() {
 		ResponseEntity<String> response = this.restTemplate
-				.getForEntity("/actuator/quartz/triggers/samples/does-not-exist", String.class);
+			.getForEntity("/actuator/quartz/triggers/samples/does-not-exist", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StatsdMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(StatsdMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(StatsdMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -46,34 +46,39 @@ class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigMeterRegistryAndMetrics() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(StatsdMeterRegistry.class).hasSingleBean(StatsdConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
+				.hasSingleBean(StatsdConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withPropertyValues("management.defaults.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
-						.doesNotHaveBean(StatsdConfig.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
+				.doesNotHaveBean(StatsdConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withPropertyValues("management.statsd.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
-						.doesNotHaveBean(StatsdConfig.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(StatsdMeterRegistry.class)
+				.doesNotHaveBean(StatsdConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(StatsdMeterRegistry.class).hasSingleBean(StatsdConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
+				.hasSingleBean(StatsdConfig.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(StatsdMeterRegistry.class).hasBean("customRegistry").hasSingleBean(StatsdConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
+				.hasBean("customRegistry")
+				.hasSingleBean(StatsdConfig.class));
 	}
 
 	@Test

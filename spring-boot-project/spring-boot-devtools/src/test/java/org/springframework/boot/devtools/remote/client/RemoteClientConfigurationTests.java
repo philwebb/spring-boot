@@ -98,7 +98,7 @@ class RemoteClientConfigurationTests {
 	@Test
 	void failIfNoSecret() {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> configure("http://localhost", false))
-				.withMessageContaining("required to secure your connection");
+			.withMessageContaining("required to secure your connection");
 	}
 
 	@Test
@@ -115,14 +115,14 @@ class RemoteClientConfigurationTests {
 	void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
+			.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
 	void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
+			.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	private void configure(String... pairs) {

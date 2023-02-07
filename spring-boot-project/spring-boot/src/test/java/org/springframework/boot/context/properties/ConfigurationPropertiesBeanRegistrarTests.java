@@ -66,8 +66,8 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registerWhenNoAnnotationThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.registrar.register(NoAnnotationConfigurationProperties.class))
-				.withMessageContaining("No ConfigurationProperties annotation found");
+			.isThrownBy(() -> this.registrar.register(NoAnnotationConfigurationProperties.class))
+			.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
 	@Test

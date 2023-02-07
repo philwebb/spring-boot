@@ -164,7 +164,7 @@ class UndertowWebServerFactoryDelegate {
 		}
 		if (ssl != null && ssl.isEnabled()) {
 			new SslBuilderCustomizer(factory.getPort(), address, ssl, factory.getOrCreateSslStoreProvider())
-					.customize(builder);
+				.customize(builder);
 		}
 		else {
 			builder.addHttpListener(port, (address != null) ? address.getHostAddress() : "0.0.0.0");

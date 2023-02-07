@@ -59,7 +59,7 @@ public class SecurityConfiguration {
 			requests.requestMatchers("/actuator/beans").hasRole("BEANS");
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
-					.hasRole("ACTUATOR");
+				.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
 			requests.requestMatchers("/foo").permitAll();
 			requests.requestMatchers("/error").permitAll();

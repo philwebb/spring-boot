@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SessionAutoConfigurationWithoutSecurityTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredCookieSerializer() {

@@ -236,8 +236,8 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 		ValidationErrors getValidationErrors() {
 			Set<ConfigurationProperty> boundProperties = ValidationBindHandler.this.boundProperties.stream()
-					.filter((property) -> this.name.isAncestorOf(property.getName()))
-					.collect(Collectors.toCollection(LinkedHashSet::new));
+				.filter((property) -> this.name.isAncestorOf(property.getName()))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 			return new ValidationErrors(this.name, boundProperties, getAllErrors());
 		}
 

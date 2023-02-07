@@ -44,31 +44,29 @@ class IncludeExcludeEndpointFilterTests {
 	@Test
 	void createWhenEndpointTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(null, new MockEnvironment(), "foo"))
-				.withMessageContaining("EndpointType must not be null");
+			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(null, new MockEnvironment(), "foo"))
+			.withMessageContaining("EndpointType must not be null");
 	}
 
 	@Test
 	void createWhenEnvironmentIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, null, "foo"))
-				.withMessageContaining("Environment must not be null");
+			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, null, "foo"))
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWhenPrefixIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), null))
-				.withMessageContaining("Prefix must not be empty");
+			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), null))
+			.withMessageContaining("Prefix must not be empty");
 	}
 
 	@Test
 	void createWhenPrefixIsEmptyShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), ""))
-				.withMessageContaining("Prefix must not be empty");
+			.isThrownBy(() -> new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, new MockEnvironment(), ""))
+			.withMessageContaining("Prefix must not be empty");
 	}
 
 	@Test

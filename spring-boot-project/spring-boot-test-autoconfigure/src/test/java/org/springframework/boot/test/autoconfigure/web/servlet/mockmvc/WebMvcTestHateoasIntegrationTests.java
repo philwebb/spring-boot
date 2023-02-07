@@ -42,13 +42,13 @@ class WebMvcTestHateoasIntegrationTests {
 	@Test
 	void plainResponse() throws Exception {
 		this.mockMvc.perform(get("/hateoas/plain"))
-				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/json"));
+			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/json"));
 	}
 
 	@Test
 	void hateoasResponse() throws Exception {
 		this.mockMvc.perform(get("/hateoas/resource"))
-				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/hal+json"));
+			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/hal+json"));
 	}
 
 }

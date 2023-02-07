@@ -47,7 +47,7 @@ public final class MockDurationTypeDescriptor {
 		}
 		if (style != null) {
 			DurationFormat formatAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", style), DurationFormat.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", style), DurationFormat.class, null);
 			given(descriptor.getAnnotation(DurationFormat.class)).willReturn(formatAnnotation);
 		}
 		given(descriptor.getType()).willReturn((Class) Duration.class);

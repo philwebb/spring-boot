@@ -66,7 +66,7 @@ final class Regex implements CharSequence {
 	static final Pattern TAG = Regex.of("^[\\w][\\w.-]{0,127}").compile();
 
 	static final Pattern DIGEST = Regex.of("^[A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*[:][[A-Fa-f0-9]]{32,}")
-			.compile();
+		.compile();
 
 	private final String value;
 

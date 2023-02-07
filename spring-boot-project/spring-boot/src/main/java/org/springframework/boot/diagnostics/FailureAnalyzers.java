@@ -69,8 +69,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 		List<FailureAnalyzer> analyzers = springFactoriesLoader.load(FailureAnalyzer.class,
 				getArgumentResolver(context), FailureHandler.logging(logger));
 		List<FailureAnalyzer> awareAnalyzers = analyzers.stream()
-				.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
-				.toList();
+			.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
+			.toList();
 		if (!awareAnalyzers.isEmpty()) {
 			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(
 					awareAnalyzers.stream().map((analyzer) -> analyzer.getClass().getName()).toList());

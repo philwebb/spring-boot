@@ -657,8 +657,9 @@ public class RestTemplateBuilder {
 		if (this.basicAuthentication == null && this.defaultHeaders.isEmpty() && this.requestCustomizers.isEmpty()) {
 			return;
 		}
-		restTemplate.getClientHttpRequestInitializers().add(new RestTemplateBuilderClientHttpRequestInitializer(
-				this.basicAuthentication, this.defaultHeaders, this.requestCustomizers));
+		restTemplate.getClientHttpRequestInitializers()
+			.add(new RestTemplateBuilderClientHttpRequestInitializer(this.basicAuthentication, this.defaultHeaders,
+					this.requestCustomizers));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -53,8 +53,11 @@ final class WelcomePageRouterFunctionFactory {
 	}
 
 	private Resource getWelcomePage(ResourceLoader resourceLoader, String[] staticLocations) {
-		return Arrays.stream(staticLocations).map((location) -> getIndexHtml(resourceLoader, location))
-				.filter(this::isReadable).findFirst().orElse(null);
+		return Arrays.stream(staticLocations)
+			.map((location) -> getIndexHtml(resourceLoader, location))
+			.filter(this::isReadable)
+			.findFirst()
+			.orElse(null);
 	}
 
 	private Resource getIndexHtml(ResourceLoader resourceLoader, String location) {

@@ -35,7 +35,7 @@ class JpaRepositoriesAutoConfigurationTests extends AbstractJpaRepositoriesAutoC
 	@Test
 	void autoConfigurationShouldFailWithRevisionRepository() {
 		this.contextRunner.withUserConfiguration(RevisionRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class));
+			.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class));
 	}
 
 }

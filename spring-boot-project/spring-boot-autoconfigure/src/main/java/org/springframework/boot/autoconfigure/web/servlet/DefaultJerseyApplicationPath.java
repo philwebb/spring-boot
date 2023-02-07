@@ -54,7 +54,9 @@ public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 		}
 		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
 		return MergedAnnotations.from(this.config.getApplication().getClass(), SearchStrategy.TYPE_HIERARCHY)
-				.get(ApplicationPath.class).getValue(MergedAnnotation.VALUE, String.class).orElse("/*");
+			.get(ApplicationPath.class)
+			.getValue(MergedAnnotation.VALUE, String.class)
+			.orElse("/*");
 	}
 
 }

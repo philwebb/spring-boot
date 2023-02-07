@@ -57,7 +57,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 			return;
 		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils
-				.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
+			.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
 		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerTestRestTemplate(context);
 		}
@@ -150,7 +150,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		private boolean isSslEnabled(ApplicationContext context) {
 			try {
 				AbstractServletWebServerFactory webServerFactory = context
-						.getBean(AbstractServletWebServerFactory.class);
+					.getBean(AbstractServletWebServerFactory.class);
 				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
 			}
 			catch (NoSuchBeanDefinitionException ex) {

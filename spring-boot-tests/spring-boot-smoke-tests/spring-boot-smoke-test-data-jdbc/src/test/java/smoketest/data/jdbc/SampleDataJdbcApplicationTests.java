@@ -50,8 +50,9 @@ class SampleDataJdbcApplicationTests {
 
 	@Test
 	void testCustomers() throws Exception {
-		this.mvc.perform(get("/").param("name", "merEDith")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("Meredith")));
+		this.mvc.perform(get("/").param("name", "merEDith"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("Meredith")));
 	}
 
 }

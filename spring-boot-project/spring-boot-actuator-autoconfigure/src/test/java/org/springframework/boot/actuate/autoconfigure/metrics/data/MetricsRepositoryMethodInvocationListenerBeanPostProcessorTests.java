@@ -49,7 +49,7 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessorTests {
 		Object result = this.postProcessor.postProcessBeforeInitialization(bean, "name");
 		assertThat(result).isSameAs(bean);
 		ArgumentCaptor<RepositoryFactoryCustomizer> customizer = ArgumentCaptor
-				.forClass(RepositoryFactoryCustomizer.class);
+			.forClass(RepositoryFactoryCustomizer.class);
 		then(bean).should().addRepositoryFactoryCustomizer(customizer.capture());
 		RepositoryFactorySupport repositoryFactory = mock(RepositoryFactorySupport.class);
 		customizer.getValue().customize(repositoryFactory);

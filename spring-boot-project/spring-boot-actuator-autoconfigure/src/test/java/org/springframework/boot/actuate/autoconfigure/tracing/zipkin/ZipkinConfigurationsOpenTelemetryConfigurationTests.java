@@ -41,12 +41,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, OpenTelemetryConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, OpenTelemetryConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanExporter.class));
+			.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanExporter.class));
 	}
 
 	@Test
@@ -57,8 +57,8 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	@Test
 	void shouldNotSupplyZipkinSpanExporterIfNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.opentelemetry.exporter.zipkin"))
-				.withUserConfiguration(SenderConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
+			.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
 
 	}
 

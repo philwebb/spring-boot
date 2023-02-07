@@ -45,10 +45,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JpaWebAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-							JpaRepositoriesAutoConfiguration.class, SpringDataWebAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.generate-unique-name=true");
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
+				JpaRepositoriesAutoConfiguration.class, SpringDataWebAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
 	void springDataWebIsConfiguredWithJpaRepositories() {
@@ -57,7 +56,7 @@ class JpaWebAutoConfigurationTests {
 			assertThat(context).hasSingleBean(PageableHandlerMethodArgumentResolver.class);
 			assertThat(context).hasSingleBean(SortHandlerMethodArgumentResolver.class);
 			assertThat(context.getBean(FormattingConversionService.class).canConvert(String.class, Distance.class))
-					.isTrue();
+				.isTrue();
 		});
 	}
 

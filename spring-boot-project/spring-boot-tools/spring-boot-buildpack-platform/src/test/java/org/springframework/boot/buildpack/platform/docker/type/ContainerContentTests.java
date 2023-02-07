@@ -34,21 +34,21 @@ class ContainerContentTests {
 	@Test
 	void ofWhenArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(null))
-				.withMessage("Archive must not be null");
+			.withMessage("Archive must not be null");
 	}
 
 	@Test
 	void ofWhenDestinationPathIsNullThrowsException() {
 		TarArchive archive = mock(TarArchive.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(archive, null))
-				.withMessage("DestinationPath must not be empty");
+			.withMessage("DestinationPath must not be empty");
 	}
 
 	@Test
 	void ofWhenDestinationPathIsEmptyThrowsException() {
 		TarArchive archive = mock(TarArchive.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(archive, ""))
-				.withMessage("DestinationPath must not be empty");
+			.withMessage("DestinationPath must not be empty");
 	}
 
 	@Test

@@ -39,16 +39,17 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void createWhenLayerIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new IncludeExcludeContentSelector<>(null, Collections.emptyList(), Collections.emptyList()))
-				.withMessage("Layer must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new IncludeExcludeContentSelector<>(null, Collections.emptyList(), Collections.emptyList()))
+			.withMessage("Layer must not be null");
 	}
 
 	@Test
 	void createWhenFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new IncludeExcludeContentSelector<>(LAYER, null, null, null))
-				.withMessage("FilterFactory must not be null");
+			.isThrownBy(() -> new IncludeExcludeContentSelector<>(LAYER, null, null, null))
+			.withMessage("FilterFactory must not be null");
 	}
 
 	@Test

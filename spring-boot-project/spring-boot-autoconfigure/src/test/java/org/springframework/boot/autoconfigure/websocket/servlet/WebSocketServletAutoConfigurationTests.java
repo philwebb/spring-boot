@@ -51,7 +51,7 @@ class WebSocketServletAutoConfigurationTests {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				configuration)) {
 			Object serverContainer = context.getServletContext()
-					.getAttribute("jakarta.websocket.server.ServerContainer");
+				.getAttribute("jakarta.websocket.server.ServerContainer");
 			assertThat(serverContainer).isInstanceOf(ServerContainer.class);
 		}
 	}

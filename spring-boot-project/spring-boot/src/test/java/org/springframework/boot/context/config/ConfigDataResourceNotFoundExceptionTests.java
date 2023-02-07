@@ -63,7 +63,7 @@ class ConfigDataResourceNotFoundExceptionTests {
 	@Test
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigDataResourceNotFoundException(null))
-				.withMessage("Resource must not be null");
+			.withMessage("Resource must not be null");
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class ConfigDataResourceNotFoundExceptionTests {
 	@Test
 	void getLocationWhenHasLocationReturnsLocation() {
 		ConfigDataResourceNotFoundException exception = new ConfigDataResourceNotFoundException(this.resource)
-				.withLocation(this.location);
+			.withLocation(this.location);
 		assertThat(exception.getLocation()).isSameAs(this.location);
 	}
 
@@ -108,15 +108,15 @@ class ConfigDataResourceNotFoundExceptionTests {
 	@Test
 	void getReferenceDescriptionWhenHasLocationReturnsDescription() {
 		ConfigDataResourceNotFoundException exception = new ConfigDataResourceNotFoundException(this.resource)
-				.withLocation(this.location);
+			.withLocation(this.location);
 		assertThat(exception.getReferenceDescription())
-				.isEqualTo("resource 'mytestresource' via location 'optional:test'");
+			.isEqualTo("resource 'mytestresource' via location 'optional:test'");
 	}
 
 	@Test
 	void withLocationReturnsNewInstanceWithLocation() {
 		ConfigDataResourceNotFoundException exception = new ConfigDataResourceNotFoundException(this.resource)
-				.withLocation(this.location);
+			.withLocation(this.location);
 		assertThat(exception.getLocation()).isSameAs(this.location);
 	}
 
@@ -140,7 +140,7 @@ class ConfigDataResourceNotFoundExceptionTests {
 	@Test
 	void throwIfDoesNotExistWhenFileDoesNotExistThrowsException() {
 		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
-				.isThrownBy(() -> ConfigDataResourceNotFoundException.throwIfDoesNotExist(this.resource, this.missing));
+			.isThrownBy(() -> ConfigDataResourceNotFoundException.throwIfDoesNotExist(this.resource, this.missing));
 	}
 
 	@Test
@@ -151,8 +151,8 @@ class ConfigDataResourceNotFoundExceptionTests {
 	@Test
 	void throwIfDoesNotExistWhenResourceDoesNotExistThrowsException() {
 		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
-				.isThrownBy(() -> ConfigDataResourceNotFoundException.throwIfDoesNotExist(this.resource,
-						new FileSystemResource(this.missing)));
+			.isThrownBy(() -> ConfigDataResourceNotFoundException.throwIfDoesNotExist(this.resource,
+					new FileSystemResource(this.missing)));
 	}
 
 	static class TestConfigDataResource extends ConfigDataResource {

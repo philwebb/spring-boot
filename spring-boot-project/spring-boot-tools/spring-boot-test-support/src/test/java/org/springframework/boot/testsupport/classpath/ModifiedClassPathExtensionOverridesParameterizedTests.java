@@ -39,7 +39,7 @@ class ModifiedClassPathExtensionOverridesParameterizedTests {
 	@MethodSource("parameter")
 	void classesAreLoadedFromParameter(Class<?> type) {
 		assertThat(ApplicationContext.class.getProtectionDomain().getCodeSource().getLocation().toString())
-				.endsWith("spring-context-4.1.0.RELEASE.jar");
+			.endsWith("spring-context-4.1.0.RELEASE.jar");
 	}
 
 	static Class<?>[] parameter() {
@@ -51,7 +51,7 @@ class ModifiedClassPathExtensionOverridesParameterizedTests {
 	@MethodSource("arrayParameter")
 	void classesAreLoadedFromParameterInArray(Object[] types) {
 		assertThat(ApplicationContext.class.getProtectionDomain().getCodeSource().getLocation().toString())
-				.endsWith("spring-context-4.1.0.RELEASE.jar");
+			.endsWith("spring-context-4.1.0.RELEASE.jar");
 	}
 
 	static Stream<Arguments> arrayParameter() {

@@ -50,7 +50,7 @@ class LayoutsTests {
 	@Test
 	void unknownFile() {
 		assertThatIllegalStateException().isThrownBy(() -> Layouts.forFile(new File("test.txt")))
-				.withMessageContaining("Unable to deduce layout for 'test.txt'");
+			.withMessageContaining("Unable to deduce layout for 'test.txt'");
 	}
 
 	@Test

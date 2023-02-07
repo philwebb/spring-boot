@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmsHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
-					JmsHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class,
+				JmsHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
@@ -46,7 +46,7 @@ class JmsHealthContributorAutoConfigurationTests {
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.jms.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(LdapHealthIndicator.class));
 	}
 
 }

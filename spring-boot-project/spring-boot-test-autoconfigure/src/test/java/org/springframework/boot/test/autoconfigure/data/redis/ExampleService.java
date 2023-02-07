@@ -41,7 +41,7 @@ public class ExampleService {
 
 	public boolean hasRecord(PersonHash personHash) {
 		return this.operations.execute((RedisConnection connection) -> connection.keyCommands()
-				.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
+			.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
 	}
 
 }

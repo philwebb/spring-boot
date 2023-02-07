@@ -80,10 +80,11 @@ public class MustacheView extends AbstractUrlBasedView {
 		Resource resource = resolveResource();
 		if (resource == null) {
 			return Mono
-					.error(new IllegalStateException("Could not find Mustache template with URL [" + getUrl() + "]"));
+				.error(new IllegalStateException("Could not find Mustache template with URL [" + getUrl() + "]"));
 		}
-		DataBuffer dataBuffer = exchange.getResponse().bufferFactory()
-				.allocateBuffer(DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
+		DataBuffer dataBuffer = exchange.getResponse()
+			.bufferFactory()
+			.allocateBuffer(DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
 		try (Reader reader = getReader(resource)) {
 			Template template = this.compiler.compile(reader);
 			Charset charset = getCharset(contentType).orElseGet(this::getDefaultCharset);

@@ -44,7 +44,7 @@ class DataJpaTestAttributesIntegrationTests {
 	@Test
 	void bootstrapModeIsSet() {
 		assertThat(this.environment.getProperty("spring.data.jpa.repositories.bootstrap-mode"))
-				.isEqualTo(BootstrapMode.DEFERRED.name());
+			.isEqualTo(BootstrapMode.DEFERRED.name());
 	}
 
 }

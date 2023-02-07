@@ -83,14 +83,15 @@ class CommandTests {
 	void runWithUnknownOptionThrowsException() {
 		TestCommand command = new TestCommand("test", VERBOSE_FLAG, LOG_LEVEL_OPTION);
 		assertThatExceptionOfType(UnknownOptionException.class).isThrownBy(() -> run(command, "--invalid"))
-				.withMessage("--invalid");
+			.withMessage("--invalid");
 	}
 
 	@Test
 	void runWithOptionMissingRequiredValueThrowsException() {
 		TestCommand command = new TestCommand("test", VERBOSE_FLAG, LOG_LEVEL_OPTION);
 		assertThatExceptionOfType(MissingValueException.class)
-				.isThrownBy(() -> run(command, "--verbose", "--log-level")).withMessage("--log-level");
+			.isThrownBy(() -> run(command, "--verbose", "--log-level"))
+			.withMessage("--log-level");
 	}
 
 	@Test

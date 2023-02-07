@@ -36,7 +36,7 @@ class ForwardHeadersCustomizer implements JettyServerCustomizer {
 			for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 				if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
 					((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
-							.addCustomizer(customizer);
+						.addCustomizer(customizer);
 				}
 			}
 		}

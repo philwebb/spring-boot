@@ -37,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HazelcastHealthContributorAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HazelcastHealthContributorAutoConfiguration.class,
-					HazelcastAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HazelcastHealthContributorAutoConfiguration.class,
+				HazelcastAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void hazelcastUp() {
@@ -47,8 +47,9 @@ class HazelcastHealthContributorAutoConfigurationIntegrationTests {
 			HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
 			Health health = context.getBean(HazelcastHealthIndicator.class).health();
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", hazelcast.getName())
-					.containsEntry("uuid", hazelcast.getLocalEndpoint().getUuid().toString());
+			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid")
+				.containsEntry("name", hazelcast.getName())
+				.containsEntry("uuid", hazelcast.getLocalEndpoint().getUuid().toString());
 		});
 	}
 

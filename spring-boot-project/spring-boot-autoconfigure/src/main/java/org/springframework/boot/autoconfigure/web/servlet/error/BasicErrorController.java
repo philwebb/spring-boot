@@ -85,7 +85,7 @@ public class BasicErrorController extends AbstractErrorController {
 	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
 		Map<String, Object> model = Collections
-				.unmodifiableMap(getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
+			.unmodifiableMap(getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);

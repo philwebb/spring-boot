@@ -46,7 +46,7 @@ class ContainerConfigTests extends AbstractJsonTests {
 	void ofWhenUpdateIsNullThrowsException() {
 		ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerConfig.of(imageReference, null))
-				.withMessage("Update must not be null");
+			.withMessage("Update must not be null");
 	}
 
 	@Test

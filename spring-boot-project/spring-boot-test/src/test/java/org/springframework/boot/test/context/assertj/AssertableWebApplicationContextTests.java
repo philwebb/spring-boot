@@ -34,7 +34,7 @@ class AssertableWebApplicationContextTests {
 	@Test
 	void getShouldReturnProxy() {
 		AssertableWebApplicationContext context = AssertableWebApplicationContext
-				.get(() -> mock(ConfigurableWebApplicationContext.class));
+			.get(() -> mock(ConfigurableWebApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableWebApplicationContext.class);
 	}
 

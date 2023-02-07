@@ -46,7 +46,7 @@ class ZipFileTarArchiveTests {
 	@Test
 	void createWhenZipIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ZipFileTarArchive(null, Owner.ROOT))
-				.withMessage("Zip must not be null");
+			.withMessage("Zip must not be null");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class ZipFileTarArchiveTests {
 		File file = new File(this.tempDir, "test.zip");
 		writeTestZip(file);
 		assertThatIllegalArgumentException().isThrownBy(() -> new ZipFileTarArchive(file, null))
-				.withMessage("Owner must not be null");
+			.withMessage("Owner must not be null");
 	}
 
 	@Test

@@ -52,8 +52,10 @@ class SessionRepositoryFilterConfiguration {
 		if (servletProperties.getFilterDispatcherTypes() == null) {
 			return null;
 		}
-		return servletProperties.getFilterDispatcherTypes().stream().map((type) -> DispatcherType.valueOf(type.name()))
-				.collect(Collectors.toCollection(() -> EnumSet.noneOf(DispatcherType.class)));
+		return servletProperties.getFilterDispatcherTypes()
+			.stream()
+			.map((type) -> DispatcherType.valueOf(type.name()))
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(DispatcherType.class)));
 	}
 
 }

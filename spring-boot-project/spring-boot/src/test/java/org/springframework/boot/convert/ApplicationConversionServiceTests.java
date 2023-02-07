@@ -117,7 +117,7 @@ class ApplicationConversionServiceTests {
 	@Test
 	void sharedInstanceCannotBeModified() {
 		ApplicationConversionService instance = (ApplicationConversionService) ApplicationConversionService
-				.getSharedInstance();
+			.getSharedInstance();
 		assertUnmodifiableExceptionThrown(() -> instance.addPrinter(null));
 		assertUnmodifiableExceptionThrown(() -> instance.addParser(null));
 		assertUnmodifiableExceptionThrown(() -> instance.addFormatter(null));
@@ -133,7 +133,7 @@ class ApplicationConversionServiceTests {
 
 	private void assertUnmodifiableExceptionThrown(ThrowingCallable throwingCallable) {
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(throwingCallable)
-				.withMessage("This ApplicationConversionService cannot be modified");
+			.withMessage("This ApplicationConversionService cannot be modified");
 	}
 
 	static class ExampleGenericConverter implements GenericConverter {

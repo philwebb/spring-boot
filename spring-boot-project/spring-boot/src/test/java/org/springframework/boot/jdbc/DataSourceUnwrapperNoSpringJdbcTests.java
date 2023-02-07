@@ -42,7 +42,7 @@ class DataSourceUnwrapperNoSpringJdbcTests {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ class DataSourceUnwrapperNoSpringJdbcTests {
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, PoolConfiguration.class, DataSourceProxy.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	private DataSource wrapInProxy(DataSource dataSource) {

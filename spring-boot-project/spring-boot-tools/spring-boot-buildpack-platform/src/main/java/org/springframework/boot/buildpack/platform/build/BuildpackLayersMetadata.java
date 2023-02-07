@@ -118,8 +118,9 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 		private static Buildpacks fromJson(JsonNode node) {
 			Buildpacks buildpacks = new Buildpacks();
-			node.fields().forEachRemaining((field) -> buildpacks.addBuildpackVersions(field.getKey(),
-					BuildpackVersions.fromJson(field.getValue())));
+			node.fields()
+				.forEachRemaining((field) -> buildpacks.addBuildpackVersions(field.getKey(),
+						BuildpackVersions.fromJson(field.getValue())));
 			return buildpacks;
 		}
 
@@ -139,8 +140,9 @@ final class BuildpackLayersMetadata extends MappedObject {
 
 		private static BuildpackVersions fromJson(JsonNode node) {
 			BuildpackVersions versions = new BuildpackVersions();
-			node.fields().forEachRemaining((field) -> versions.addBuildpackVersion(field.getKey(),
-					BuildpackLayerDetails.fromJson(field.getValue())));
+			node.fields()
+				.forEachRemaining((field) -> versions.addBuildpackVersion(field.getKey(),
+						BuildpackLayerDetails.fromJson(field.getValue())));
 			return versions;
 		}
 

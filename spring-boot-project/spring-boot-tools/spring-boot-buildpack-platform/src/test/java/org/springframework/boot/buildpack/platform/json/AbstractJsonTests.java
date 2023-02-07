@@ -46,7 +46,7 @@ public abstract class AbstractJsonTests {
 
 	protected final String getContentAsString(String name) {
 		return new BufferedReader(new InputStreamReader(getContent(name), StandardCharsets.UTF_8)).lines()
-				.collect(Collectors.joining("\n"));
+			.collect(Collectors.joining("\n"));
 	}
 
 }
