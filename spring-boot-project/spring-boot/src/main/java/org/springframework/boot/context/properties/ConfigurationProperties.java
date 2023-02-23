@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Indexed;
 
@@ -82,5 +83,7 @@ public @interface ConfigurationProperties {
 	 * @return the flag value (default true)
 	 */
 	boolean ignoreUnknownFields() default true;
+
+	BindMethod bindMethod() default BindMethod.AUTO;
 
 }
