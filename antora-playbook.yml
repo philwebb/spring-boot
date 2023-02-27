@@ -1,14 +1,11 @@
 antora:
   extensions:
   - '@springio/antora-extensions/partial-build-extension'
-  - ./lib/antora/extensions/inject-collector-config.js
   - '@antora/collector-extension'
-  - ./lib/antora/extensions/version-fix.js
   - '@antora/atlas-extension'
   - '@opendevise/antora-release-line-extension'
   - '@springio/antora-extensions'
-  - require: ./lib/antora/extensions/publish-docsearch-config
-    template_path: ./.github/actions/docsearch-config.json.hbs
+  - require: '@springio/antora-extensions/publish-docsearch-config-extension'
 site:
   title: Spring Boot
   url: https://rwinch.github.io/spring-boot/
