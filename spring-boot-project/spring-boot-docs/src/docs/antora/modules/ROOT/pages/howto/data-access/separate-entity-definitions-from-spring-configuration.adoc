@@ -1,4 +1,4 @@
-[[howto.data-access.separate-entity-definitions-from-spring-configuration]]
+[[separate-entity-definitions-from-spring-configuration]]
 = Separate @Entity Definitions from Spring Configuration
 :page-section-summary-toc: 1
 

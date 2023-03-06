@@ -1,4 +1,4 @@
-[[actuator.process-monitoring]]
+[[process-monitoring]]
 = Process Monitoring
 
 In the `spring-boot` module, you can find two classes to create files that are often useful for process monitoring:
@@ -8,12 +8,12 @@ In the `spring-boot` module, you can find two classes to create files that are o
 
 By default, these writers are not activated, but you can enable them:
 
-* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.configuration[By Extending Configuration]
-* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.programmatically[Programmatically Enabling Process Monitoring]
+* xref:actuator/process-monitoring.adoc#process-monitoring.configuration[By Extending Configuration]
+* xref:actuator/process-monitoring.adoc#process-monitoring.programmatically[Programmatically Enabling Process Monitoring]
 
 
 
-[[actuator.process-monitoring.configuration]]
+[[process-monitoring.configuration]]
 == Extending Configuration
 In the `META-INF/spring.factories` file, you can activate the listener (or listeners) that writes a PID file:
 
@@ -26,7 +26,7 @@ In the `META-INF/spring.factories` file, you can activate the listener (or liste
 
 
 
-[[actuator.process-monitoring.programmatically]]
+[[process-monitoring.programmatically]]
 == Programmatically Enabling Process Monitoring
 You can also activate a listener by invoking the `SpringApplication.addListeners(...)` method and passing the appropriate `Writer` object.
 This method also lets you customize the file name and path in the `Writer` constructor.

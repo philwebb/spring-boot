@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.validation]]
+[[validation]]
 = @ConfigurationProperties Validation
 
 Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.

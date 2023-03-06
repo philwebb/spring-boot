@@ -1,4 +1,4 @@
-[[howto.batch]]
+[[batch]]
 = Batch Applications
 
 A number of questions often arise when people use Spring Batch from within a Spring Boot application.
@@ -6,7 +6,7 @@ This section addresses those questions.
 
 
 
-[[howto.batch.specifying-a-data-source]]
+[[batch.specifying-a-data-source]]
 == Specifying a Batch Data Source
 By default, batch applications require a `DataSource` to store job details.
 Spring Batch expects a single `DataSource` by default.
@@ -20,7 +20,7 @@ For more info about Spring Batch, see the {spring-batch}[Spring Batch project pa
 
 
 
-[[howto.batch.running-jobs-on-startup]]
+[[batch.running-jobs-on-startup]]
 == Running Spring Batch Jobs on Startup
 Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch` to your application's classpath.
 
@@ -33,7 +33,7 @@ See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[Ba
 
 
 
-[[howto.batch.running-from-the-command-line]]
+[[batch.running-from-the-command-line]]
 == Running From the Command Line
 Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see xref:features/external-config/command-line-args.adoc[accessing command line properties].
 This should not be used to pass arguments to batch jobs.
@@ -56,7 +56,7 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 
 
 
-[[howto.batch.storing-job-repository]]
+[[batch.storing-job-repository]]
 == Storing the Job Repository
 Spring Batch requires a data store for the `Job` repository.
 If you use Spring Boot, you must use an actual database.

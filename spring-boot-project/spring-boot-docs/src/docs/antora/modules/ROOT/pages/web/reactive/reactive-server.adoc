@@ -1,4 +1,4 @@
-[[web.reactive.reactive-server]]
+[[reactive-server]]
 = Embedded Reactive Server Support
 :page-section-summary-toc: 1
 

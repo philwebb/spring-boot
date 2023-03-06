@@ -1,4 +1,4 @@
-[[actuator.cloud-foundry]]
+[[cloud-foundry]]
 = Cloud Foundry Support
 
 Spring Boot's actuator module includes additional support that is activated when you deploy to a compatible Cloud Foundry instance.
@@ -12,7 +12,7 @@ To use the endpoint, you must pass a valid UAA token with the request.
 
 
 
-[[actuator.cloud-foundry.disable]]
+[[cloud-foundry.disable]]
 == Disabling Extended Cloud Foundry Actuator Support
 If you want to fully disable the `/cloudfoundryapplication` endpoints, you can add the following setting to your `application.properties` file:
 
@@ -25,7 +25,7 @@ If you want to fully disable the `/cloudfoundryapplication` endpoints, you can a
 
 
 
-[[actuator.cloud-foundry.ssl]]
+[[cloud-foundry.ssl]]
 == Cloud Foundry Self-signed Certificates
 By default, the security verification for `/cloudfoundryapplication` endpoints makes SSL calls to various Cloud Foundry services.
 If your Cloud Foundry UAA or Cloud Controller services use self-signed certificates, you need to set the following property:
@@ -39,7 +39,7 @@ If your Cloud Foundry UAA or Cloud Controller services use self-signed certifica
 
 
 
-[[actuator.cloud-foundry.custom-context-path]]
+[[cloud-foundry.custom-context-path]]
 == Custom Context Path
 If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints are not available at the root of the application.
 For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints are available at `/app/cloudfoundryapplication/*`.

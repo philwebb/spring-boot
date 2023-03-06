@@ -1,4 +1,4 @@
-[[container-images.efficient-images]]
+[[efficient-images]]
 = Efficient Container Images
 
 It is easily possible to package a Spring Boot fat jar as a docker image.
@@ -9,7 +9,7 @@ Since you probably recompile your code more often than you upgrade the version o
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
 
-[[container-images.efficient-images.unpacking]]
+[[efficient-images.unpacking]]
 == Unpacking the Executable JAR
 If you are running your application from a container, you can use an executable jar, but it is also often an advantage to explode it and run it in a different way.
 Certain PaaS implementations may also choose to unpack archives before they run.
@@ -38,7 +38,7 @@ The jar contains a `classpath.idx` file which is used by the `JarLauncher` when 
 
 
 
-[[container-images.efficient-images.layering]]
+[[efficient-images.layering]]
 == Layering Docker Images
 To make it easier to create optimized Docker images, Spring Boot supports adding a layer index file to the jar.
 It provides a list of layers and the parts of the jar that should be contained within them.

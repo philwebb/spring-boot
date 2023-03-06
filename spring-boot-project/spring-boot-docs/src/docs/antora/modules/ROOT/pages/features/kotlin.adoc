@@ -1,4 +1,4 @@
-[[features.kotlin]]
+[[kotlin]]
 = Kotlin Support
 
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing {kotlin-docs}java-interop.html[interoperability] with existing libraries written in Java.
@@ -12,7 +12,7 @@ Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Sl
 
 
 
-[[features.kotlin.requirements]]
+[[kotlin.requirements]]
 == Requirements
 Spring Boot requires at least Kotlin 1.7.x and manages a suitable Kotlin version through dependency management.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
@@ -28,7 +28,7 @@ TIP: These dependencies and plugins are provided by default if one bootstraps a 
 
 
 
-[[features.kotlin.null-safety]]
+[[kotlin.null-safety]]
 == Null-safety
 One of Kotlin's key features is {kotlin-docs}null-safety.html[null-safety].
 It deals with `null` values at compile time rather than deferring the problem to runtime and encountering a `NullPointerException`.
@@ -49,12 +49,12 @@ Also be aware that Spring Boot's own API is {github-issues}10712[not yet annotat
 
 
 
-[[features.kotlin.api]]
+[[kotlin.api]]
 == Kotlin API
 
 
 
-[[features.kotlin.api.run-application]]
+[[kotlin.api.run-application]]
 === runApplication
 Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
 
@@ -83,7 +83,7 @@ It also allows customization of the application as shown in the following exampl
 
 
 
-[[features.kotlin.api.extensions]]
+[[kotlin.api.extensions]]
 === Extensions
 Kotlin {kotlin-docs}extensions.html[extensions] provide the ability to extend existing classes with additional functionality.
 The Spring Boot Kotlin API makes use of these extensions to add new Kotlin specific conveniences to existing APIs.
@@ -93,7 +93,7 @@ Among other things, the extensions make it possible to take advantage of Kotlin 
 
 
 
-[[features.kotlin.dependency-management]]
+[[kotlin.dependency-management]]
 == Dependency management
 In order to avoid mixing different versions of Kotlin dependencies on the classpath, Spring Boot imports the Kotlin BOM.
 
@@ -107,7 +107,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 
 
-[[features.kotlin.configuration-properties]]
+[[kotlin.configuration-properties]]
 == @ConfigurationProperties
 `@ConfigurationProperties` when used in combination with xref:features/external-config/typesafe-configuration-properties/constructor-binding.adoc[constructor binding] supports classes with immutable `val` properties as shown in the following example:
 
@@ -131,7 +131,7 @@ Note that some features (such as detecting the default value or deprecated items
 
 
 
-[[features.kotlin.testing]]
+[[kotlin.testing]]
 == Testing
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
@@ -142,12 +142,12 @@ If you need the `MockK` equivalent of the Mockito specific xref:features/testing
 
 
 
-[[features.kotlin.resources]]
+[[kotlin.resources]]
 == Resources
 
 
 
-[[features.kotlin.resources.further-reading]]
+[[kotlin.resources.further-reading]]
 === Further reading
 * {kotlin-docs}[Kotlin language reference]
 * https://kotlinlang.slack.com/[Kotlin Slack] (with a dedicated #spring channel)
@@ -163,7 +163,7 @@ If you need the `MockK` equivalent of the Mockito specific xref:features/testing
 
 
 
-[[features.kotlin.resources.examples]]
+[[kotlin.resources.examples]]
 === Examples
 * https://github.com/sdeleuze/spring-boot-kotlin-demo[spring-boot-kotlin-demo]: regular Spring Boot + Spring Data JPA project
 * https://github.com/mixitconf/mixit[mixit]: Spring Boot 2 + WebFlux + Reactive Spring Data MongoDB

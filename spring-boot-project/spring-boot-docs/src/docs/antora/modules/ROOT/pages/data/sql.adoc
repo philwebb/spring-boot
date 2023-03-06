@@ -1,4 +1,4 @@
-[[data.sql]]
+[[sql]]
 = SQL Databases
 :page-section-summary-toc: 1
 

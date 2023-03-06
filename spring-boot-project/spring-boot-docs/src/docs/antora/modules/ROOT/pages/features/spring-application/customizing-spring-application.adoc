@@ -1,4 +1,4 @@
-[[features.spring-application.customizing-spring-application]]
+[[customizing-spring-application]]
 = Customizing SpringApplication
 :page-section-summary-toc: 1
 

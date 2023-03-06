@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.using-main]]
+[[using-main]]
 = Using the Test Configuration Main Method
 
 Typically the test configuration discovered by `@SpringBootTest` will be your main `@SpringBootApplication`.

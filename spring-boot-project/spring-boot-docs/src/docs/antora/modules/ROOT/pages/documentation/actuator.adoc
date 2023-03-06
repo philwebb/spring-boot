@@ -1,4 +1,4 @@
-[[documentation.actuator]]
+[[actuator]]
 = Moving to Production
 :page-section-summary-toc: 1
 

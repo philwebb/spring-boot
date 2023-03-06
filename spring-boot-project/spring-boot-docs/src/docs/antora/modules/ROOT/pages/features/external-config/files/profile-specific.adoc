@@ -1,4 +1,4 @@
-[[features.external-config.files.profile-specific]]
+[[profile-specific]]
 = Profile Specific Files
 
 As well as `application` property files, Spring Boot will also attempt to load profile-specific files using the naming convention `application-\{profile}`.
@@ -10,7 +10,7 @@ For example, if profiles `prod,live` are specified by the configprop:spring.prof
 
 [NOTE]
 ====
-The last-wins strategy applies at the xref:features/external-config/files.adoc#features.external-config.files.location-groups[location group] level.
+The last-wins strategy applies at the xref:features/external-config/files.adoc#files.location-groups[location group] level.
 A configprop:spring.config.location[] of `classpath:/cfg/,classpath:/ext/` will not have the same override rules as `classpath:/cfg/;classpath:/ext/`.
 
 For example, continuing our `prod,live` example above, we might have the following files:

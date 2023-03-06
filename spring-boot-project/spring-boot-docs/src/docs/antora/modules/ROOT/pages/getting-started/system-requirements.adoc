@@ -1,4 +1,4 @@
-[[getting-started.system-requirements]]
+[[system-requirements]]
 = System Requirements
 
 Spring Boot {spring-boot-version} requires https://www.java.com[Java 17] and is compatible up to and including Java 19.
@@ -18,7 +18,7 @@ Explicit build support is provided for the following build tools:
 
 
 
-[[getting-started.system-requirements.servlet-containers]]
+[[system-requirements.servlet-containers]]
 == Servlet Containers
 Spring Boot supports the following embedded servlet containers:
 
@@ -39,7 +39,7 @@ You can also deploy Spring Boot applications to any servlet 5.0+ compatible cont
 
 
 
-[[getting-started.system-requirements.graal]]
+[[system-requirements.graal]]
 == GraalVM Native Images
 Spring Boot applications can be xref:native-image/introducing-graalvm-native-images.adoc[converted into a Native Image] using GraalVM {graal-version} or above.
 

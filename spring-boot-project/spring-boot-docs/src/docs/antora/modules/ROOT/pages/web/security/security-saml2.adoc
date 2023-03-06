@@ -1,9 +1,9 @@
-[[web.security.saml2]]
+[[saml2]]
 = SAML 2.0
 
 
 
-[[web.security.saml2.relying-party]]
+[[saml2.relying-party]]
 == Relying Party
 If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
 This configuration makes use of the properties under `Saml2RelyingPartyProperties`.

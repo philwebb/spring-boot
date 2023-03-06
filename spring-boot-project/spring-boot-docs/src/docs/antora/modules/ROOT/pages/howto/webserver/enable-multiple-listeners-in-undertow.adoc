@@ -1,4 +1,4 @@
-[[howto.webserver.enable-multiple-listeners-in-undertow]]
+[[enable-multiple-listeners-in-undertow]]
 = Enable Multiple Listeners with Undertow
 :page-section-summary-toc: 1
 

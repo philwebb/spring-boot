@@ -1,4 +1,4 @@
-[[features.logging.log4j2-extensions]]
+[[log4j2-extensions]]
 = Log4j2 Extensions
 
 Spring Boot includes a number of extensions to Log4j2 that can help with advanced configuration.
@@ -12,7 +12,7 @@ You should make sure not to include the `org.apache.logging.log4j:log4j-spring-b
 
 
 
-[[features.logging.log4j2-extensions.profile-specific]]
+[[log4j2-extensions.profile-specific]]
 == Profile-specific Configuration
 The `<SpringProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<Configuration>` element.
@@ -39,7 +39,7 @@ The following listing shows three sample profiles:
 
 
 
-[[features.logging.log4j2-extensions.environment-properties-lookup]]
+[[log4j2-extensions.environment-properties-lookup]]
 == Environment Properties Lookup
 If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
 Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
@@ -57,7 +57,7 @@ NOTE: The lookup key should be specified in kebab case (such as `my.property-nam
 
 
 
-[[features.logging.log4j2-extensions.environment-property-source]]
+[[log4j2-extensions.environment-property-source]]
 == Log4j2 System Properties
 Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used to configure various items.
 For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.

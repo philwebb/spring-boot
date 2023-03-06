@@ -1,4 +1,4 @@
-[[howto.webserver.change-port]]
+[[change-port]]
 = Change the HTTP Port
 :page-section-summary-toc: 1
 
@@ -7,7 +7,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see "`xref:web/servlet/embedded-container.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
+For more details, see "`xref:web/servlet/embedded-container.adoc#embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
 
 
 

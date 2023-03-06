@@ -1,4 +1,4 @@
-[[howto.data-access.spring-data-repositories]]
+[[spring-data-repositories]]
 = Use Spring Data Repositories
 :page-section-summary-toc: 1
 

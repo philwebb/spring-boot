@@ -1,4 +1,4 @@
-[[build-tool-plugins.maven]]
+[[maven]]
 = Spring Boot Maven Plugin
 :page-section-summary-toc: 1
 

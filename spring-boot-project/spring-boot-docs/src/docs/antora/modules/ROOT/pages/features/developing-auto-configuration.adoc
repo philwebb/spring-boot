@@ -1,4 +1,4 @@
-[[features.developing-auto-configuration]]
+[[developing-auto-configuration]]
 = Creating Your Own Auto-configuration
 :page-section-summary-toc: 1
 

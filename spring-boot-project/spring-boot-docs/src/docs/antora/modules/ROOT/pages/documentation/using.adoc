@@ -1,11 +1,11 @@
-[[documentation.using]]
+[[using]]
 = Developing With Spring Boot
 :page-section-summary-toc: 1
 
 Ready to actually start using Spring Boot? xref:using.adoc[We have you covered]:
 
-* *Build systems:* xref:using/build-systems.adoc#using.build-systems.maven[Maven] | xref:using/build-systems.adoc#using.build-systems.gradle[Gradle] | xref:using/build-systems.adoc#using.build-systems.ant[Ant] | xref:using/build-systems.adoc#using.build-systems.starters[Starters]
+* *Build systems:* xref:using/build-systems.adoc#build-systems.maven[Maven] | xref:using/build-systems.adoc#build-systems.gradle[Gradle] | xref:using/build-systems.adoc#build-systems.ant[Ant] | xref:using/build-systems.adoc#build-systems.starters[Starters]
 * *Best practices:* xref:using/structuring-your-code.adoc[Code Structure] | xref:using/configuration-classes.adoc[@Configuration] | xref:using/auto-configuration.adoc[@EnableAutoConfiguration] | xref:using/spring-beans-and-dependency-injection.adoc[Beans and Dependency Injection]
-* *Running your code:* xref:using/running-your-application.adoc#using.running-your-application.from-an-ide[IDE] | xref:using/running-your-application.adoc#using.running-your-application.as-a-packaged-application[Packaged] | xref:using/running-your-application.adoc#using.running-your-application.with-the-maven-plugin[Maven] | xref:using/running-your-application.adoc#using.running-your-application.with-the-gradle-plugin[Gradle]
+* *Running your code:* xref:using/running-your-application.adoc#running-your-application.from-an-ide[IDE] | xref:using/running-your-application.adoc#running-your-application.as-a-packaged-application[Packaged] | xref:using/running-your-application.adoc#running-your-application.with-the-maven-plugin[Maven] | xref:using/running-your-application.adoc#running-your-application.with-the-gradle-plugin[Gradle]
 * *Packaging your app:* xref:using/packaging-for-production.adoc[Production jars]
 * *Spring Boot CLI:* xref:cli.adoc[Using the CLI]

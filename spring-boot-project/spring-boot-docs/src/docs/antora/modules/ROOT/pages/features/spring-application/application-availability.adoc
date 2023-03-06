@@ -1,4 +1,4 @@
-[[features.spring-application.application-availability]]
+[[application-availability]]
 = Application Availability
 
 When deployed on platforms, applications can provide information about their availability to the platform using infrastructure such as https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes Probes].
@@ -9,7 +9,7 @@ In addition, you can also obtain availability states by injecting the `Applicati
 
 
 
-[[features.spring-application.application-availability.liveness]]
+[[application-availability.liveness]]
 == Liveness State
 The "`Liveness`" state of an application tells whether its internal state allows it to work correctly, or recover by itself if it is currently failing.
 A broken "`Liveness`" state means that the application is in a state that it cannot recover from, and the infrastructure should restart the application.
@@ -23,7 +23,7 @@ An application is considered live as soon as the context has been refreshed, see
 
 
 
-[[features.spring-application.application-availability.readiness]]
+[[application-availability.readiness]]
 == Readiness State
 The "`Readiness`" state of an application tells whether the application is ready to handle traffic.
 A failing "`Readiness`" state tells the platform that it should not route traffic to the application for now.
@@ -35,7 +35,7 @@ TIP: Tasks expected to run during startup should be executed by `CommandLineRunn
 
 
 
-[[features.spring-application.application-availability.managing]]
+[[application-availability.managing]]
 == Managing the Application Availability State
 Application components can retrieve the current availability state at any time, by injecting the `ApplicationAvailability` interface and calling methods on it.
 More often, applications will want to listen to state updates or update the state of the application.
@@ -49,7 +49,7 @@ We can also update the state of the application, when the application breaks and
 include-code::./MyLocalCacheVerifier[]
 
 Spring Boot provides xref:actuator/endpoints/kubernetes-probes.adoc[Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints].
-You can get more guidance about xref:deployment/cloud.adoc#deployment.cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].
+You can get more guidance about xref:deployment/cloud.adoc#cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].
 
 
 

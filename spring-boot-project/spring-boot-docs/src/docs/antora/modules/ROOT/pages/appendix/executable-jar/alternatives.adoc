@@ -1,4 +1,4 @@
-[[appendix.executable-jar.alternatives]]
+[[alternatives]]
 = Alternative Single Jar Solutions
 :page-section-summary-toc: 1
 

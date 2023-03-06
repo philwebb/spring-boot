@@ -1,4 +1,4 @@
-[[howto.webserver.use-random-port]]
+[[use-random-port]]
 = Use a Random Unassigned HTTP Port
 :page-section-summary-toc: 1
 

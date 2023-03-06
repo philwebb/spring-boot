@@ -1,4 +1,4 @@
-[[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
+[[use-spring-data-jpa-and-mongo-repositories]]
 = Use Spring Data JPA and Mongo Repositories
 :page-section-summary-toc: 1
 

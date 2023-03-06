@@ -1,4 +1,4 @@
-[[howto.webserver.use-behind-a-proxy-server]]
+[[use-behind-a-proxy-server]]
 = Running Behind a Front-end Proxy Server
 
 If your application is running behind a proxy, a load-balancer or in the cloud, the request information (like the host, port, scheme...) might change along the way.
@@ -22,7 +22,7 @@ In all other instances, it defaults to `NONE`.
 
 
 
-[[howto.webserver.use-behind-a-proxy-server.tomcat]]
+[[use-behind-a-proxy-server.tomcat]]
 == Customize Tomcat's Proxy Configuration
 If you use Tomcat, you can additionally configure the names of the headers used to carry "`forwarded`" information, as shown in the following example:
 

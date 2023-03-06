@@ -1,4 +1,4 @@
-[[features.spring-application.fluent-builder-api]]
+[[fluent-builder-api]]
 = Fluent Builder API
 :page-section-summary-toc: 1
 

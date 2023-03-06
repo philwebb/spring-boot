@@ -1,4 +1,4 @@
-[[features.logging.logback-extensions]]
+[[logback-extensions]]
 = Logback Extensions
 
 Spring Boot includes a number of extensions to Logback that can help with advanced configuration.
@@ -18,7 +18,7 @@ If you attempt to do so, making changes to the configuration file results in an 
 
 
 
-[[features.logging.logback-extensions.profile-specific]]
+[[logback-extensions.profile-specific]]
 == Profile-specific Configuration
 The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<configuration>` element.
@@ -45,7 +45,7 @@ The following listing shows three sample profiles:
 
 
 
-[[features.logging.logback-extensions.environment-properties]]
+[[logback-extensions.environment-properties]]
 == Environment Properties
 The `<springProperty>` tag lets you expose properties from the Spring `Environment` for use within Logback.
 Doing so can be useful if you want to access values from your `application.properties` file in your Logback configuration.

@@ -1,11 +1,11 @@
-[[actuator.metrics.export]]
+[[export]]
 = Supported Monitoring Systems
 
 This section briefly describes each of the supported monitoring systems.
 
 
 
-[[actuator.metrics.export.appoptics]]
+[[export.appoptics]]
 == AppOptics
 By default, the AppOptics registry periodically pushes metrics to `https://api.appoptics.com/v1/measurements`.
 To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your API token must be provided:
@@ -21,7 +21,7 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 
 
 
-[[actuator.metrics.export.atlas]]
+[[export.atlas]]
 == Atlas
 By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
 You can provide the location of the https://github.com/Netflix/atlas[Atlas server]:
@@ -37,7 +37,7 @@ You can provide the location of the https://github.com/Netflix/atlas[Atlas serve
 
 
 
-[[actuator.metrics.export.datadog]]
+[[export.datadog]]
 == Datadog
 A Datadog registry periodically pushes metrics to https://www.datadoghq.com[datadoghq].
 To export metrics to {micrometer-registry-docs}/datadog[Datadog], you must provide your API key:
@@ -88,7 +88,7 @@ You can also change the interval at which metrics are sent to Datadog:
 
 
 
-[[actuator.metrics.export.dynatrace]]
+[[export.dynatrace]]
 == Dynatrace
 Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer].
 You can find the Dynatrace documentation on Micrometer metrics ingest {dynatrace-help}/how-to-use-dynatrace/metrics/metric-ingestion/ingestion-methods/micrometer[here].
@@ -100,13 +100,13 @@ Otherwise, `v2` is assumed.
 
 
 
-[[actuator.metrics.export.dynatrace.v2-api]]
+[[export.dynatrace.v2-api]]
 === v2 API
 You can use the v2 API in two ways.
 
 
 
-[[actuator.metrics.export.dynatrace.v2-api.auto-config]]
+[[export.dynatrace.v2-api.auto-config]]
 ==== Auto-configuration
 Dynatrace auto-configuration is available for hosts that are monitored by the OneAgent or by the Dynatrace Operator for Kubernetes.
 
@@ -119,7 +119,7 @@ This is the default behavior and requires no special setup beyond a dependency o
 
 
 
-[[actuator.metrics.export.dynatrace.v2-api.manual-config]]
+[[export.dynatrace.v2-api.manual-config]]
 ==== Manual configuration
 If no auto-configuration is available, the endpoint of the {dynatrace-help}/dynatrace-api/environment-api/metric-v2/post-ingest-metrics/[Metrics v2 API] and an API token are required.
 The {dynatrace-help}/dynatrace-api/basics/dynatrace-api-authentication/[API token] must have the "`Ingest metrics`" (`metrics.ingest`) permission set.
@@ -175,7 +175,7 @@ In this scenario, the automatically configured endpoint is used:
 
 
 
-[[actuator.metrics.export.dynatrace.v1-api]]
+[[export.dynatrace.v1-api]]
 === v1 API (Legacy)
 The Dynatrace v1 API metrics registry pushes metrics to the configured URI periodically by using the {dynatrace-help}/dynatrace-api/environment-api/metric-v1/[Timeseries v1 API].
 For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics are exported to the Timeseries v1 endpoint.
@@ -197,7 +197,7 @@ For the v1 API, you must specify the base environment URI without a path, as the
 
 
 
-[[actuator.metrics.export.dynatrace.version-independent-settings]]
+[[export.dynatrace.version-independent-settings]]
 === Version-independent Settings
 In addition to the API endpoint and token, you can also change the interval at which metrics are sent to Dynatrace.
 The default export interval is `60s`.
@@ -216,7 +216,7 @@ You can find more information on how to set up the Dynatrace exporter for Microm
 
 
 
-[[actuator.metrics.export.elastic]]
+[[export.elastic]]
 == Elastic
 By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
 You can provide the location of the Elastic server to use by using the following property:
@@ -230,7 +230,7 @@ You can provide the location of the Elastic server to use by using the following
 	        host: "https://elastic.example.com:8086"
 ----
 
-[[actuator.metrics.export.ganglia]]
+[[export.ganglia]]
 == Ganglia
 By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
 You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port, as the following example shows:
@@ -247,7 +247,7 @@ You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port
 
 
 
-[[actuator.metrics.export.graphite]]
+[[export.graphite]]
 == Graphite
 By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
 You can provide the https://graphiteapp.org[Graphite server] host and port, as the following example shows:
@@ -274,7 +274,7 @@ include-code::./MyGraphiteConfiguration[]
 
 
 
-[[actuator.metrics.export.humio]]
+[[export.humio]]
 == Humio
 By default, the Humio registry periodically pushes metrics to https://cloud.humio.com.
 To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], you must provide your API token:
@@ -303,7 +303,7 @@ You should also configure one or more tags to identify the data source to which 
 
 
 
-[[actuator.metrics.export.influx]]
+[[export.influx]]
 == Influx
 By default, metrics are exported to an {micrometer-registry-docs}/influx[Influx] v1 instance running on your local machine with the default configuration.
 To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
@@ -320,7 +320,7 @@ You can provide the location of the https://www.influxdata.com[Influx server] to
 
 
 
-[[actuator.metrics.export.jmx]]
+[[export.jmx]]
 == JMX
 Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX], primarily as a cheap and portable way to view metrics locally.
 By default, metrics are exported to the `metrics` JMX domain.
@@ -347,7 +347,7 @@ include-code::./MyJmxConfiguration[]
 
 
 
-[[actuator.metrics.export.kairos]]
+[[export.kairos]]
 == KairosDB
 By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
 You can provide the location of the https://kairosdb.github.io/[KairosDB server] to use by using:
@@ -363,7 +363,7 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 
 
 
-[[actuator.metrics.export.newrelic]]
+[[export.newrelic]]
 == New Relic
 A New Relic registry periodically pushes metrics to {micrometer-registry-docs}/new-relic[New Relic].
 To export metrics to https://newrelic.com[New Relic], you must provide your API key and account ID:
@@ -404,7 +404,7 @@ Finally, you can take full control by defining your own `NewRelicClientProvider`
 
 
 
-[[actuator.metrics.export.otlp]]
+[[export.otlp]]
 == OpenTelemetry
 By default, metrics are exported to {micrometer-registry-docs}/otlp[OpenTelemetry] running on your local machine.
 You can provide the location of the https://opentelemetry.io/[OpenTelemtry metric endpoint] to use by using:
@@ -420,7 +420,7 @@ You can provide the location of the https://opentelemetry.io/[OpenTelemtry metri
 
 
 
-[[actuator.metrics.export.prometheus]]
+[[export.prometheus]]
 == Prometheus
 {micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
 Spring Boot provides an actuator endpoint at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
@@ -462,7 +462,7 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 
 
 
-[[actuator.metrics.export.signalfx]]
+[[export.signalfx]]
 == SignalFx
 SignalFx registry periodically pushes metrics to {micrometer-registry-docs}/signalFx[SignalFx].
 To export metrics to https://www.signalfx.com[SignalFx], you must provide your access token:
@@ -489,7 +489,7 @@ You can also change the interval at which metrics are sent to SignalFx:
 
 
 
-[[actuator.metrics.export.simple]]
+[[export.simple]]
 == Simple
 Micrometer ships with a simple, in-memory backend that is automatically used as a fallback if no other registry is configured.
 This lets you see what metrics are collected in the xref:actuator/metrics/endpoint.adoc[metrics endpoint].
@@ -508,7 +508,7 @@ You can also disable it explicitly:
 
 
 
-[[actuator.metrics.export.stackdriver]]
+[[export.stackdriver]]
 == Stackdriver
 The Stackdriver registry periodically pushes metrics to https://cloud.google.com/stackdriver/[Stackdriver].
 To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], you must provide your Google Cloud project ID:
@@ -535,7 +535,7 @@ You can also change the interval at which metrics are sent to Stackdriver:
 
 
 
-[[actuator.metrics.export.statsd]]
+[[export.statsd]]
 == StatsD
 The StatsD registry eagerly pushes metrics over UDP to a StatsD agent.
 By default, metrics are exported to a {micrometer-registry-docs}/statsD[StatsD] agent running on your local machine.
@@ -565,7 +565,7 @@ You can also change the StatsD line protocol to use (it defaults to Datadog):
 
 
 
-[[actuator.metrics.export.wavefront]]
+[[export.wavefront]]
 == Wavefront
 The Wavefront registry periodically pushes metrics to {micrometer-registry-docs}/wavefront[Wavefront].
 If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, you must provide your API token:

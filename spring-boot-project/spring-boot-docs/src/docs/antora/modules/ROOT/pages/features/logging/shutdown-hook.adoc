@@ -1,4 +1,4 @@
-[[features.logging.shutdown-hook]]
+[[shutdown-hook]]
 = Using a Log Shutdown Hook
 :page-section-summary-toc: 1
 

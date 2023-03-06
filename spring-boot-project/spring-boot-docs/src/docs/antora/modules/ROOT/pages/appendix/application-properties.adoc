@@ -1,5 +1,5 @@
 [appendix]
-[[appendix.application-properties]]
+[[application-properties]]
 = Common Application Properties
 
 

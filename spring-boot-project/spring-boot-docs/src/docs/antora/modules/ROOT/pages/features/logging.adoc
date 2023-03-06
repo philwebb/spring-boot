@@ -1,4 +1,4 @@
-[[features.logging]]
+[[logging]]
 = Logging
 :page-section-summary-toc: 1
 

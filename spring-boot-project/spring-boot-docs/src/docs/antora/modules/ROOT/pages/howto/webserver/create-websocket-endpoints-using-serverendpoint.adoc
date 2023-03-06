@@ -1,4 +1,4 @@
-[[howto.webserver.create-websocket-endpoints-using-serverendpoint]]
+[[create-websocket-endpoints-using-serverendpoint]]
 = Create WebSocket Endpoints Using @ServerEndpoint
 :page-section-summary-toc: 1
 

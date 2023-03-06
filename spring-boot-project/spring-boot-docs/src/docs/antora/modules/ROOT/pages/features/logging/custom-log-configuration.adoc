@@ -1,4 +1,4 @@
-[[features.logging.custom-log-configuration]]
+[[custom-log-configuration]]
 = Custom Log Configuration
 
 The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring `Environment` property: configprop:logging.config[].

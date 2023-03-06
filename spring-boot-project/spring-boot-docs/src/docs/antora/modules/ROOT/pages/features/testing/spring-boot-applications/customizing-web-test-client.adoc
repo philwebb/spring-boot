@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.customizing-web-test-client]]
+[[customizing-web-test-client]]
 = Customizing WebTestClient
 :page-section-summary-toc: 1
 

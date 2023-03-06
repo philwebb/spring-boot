@@ -1,4 +1,4 @@
-[[upgrading.from-1x]]
+[[from-1x]]
 = Upgrading From 1.x
 :page-section-summary-toc: 1
 

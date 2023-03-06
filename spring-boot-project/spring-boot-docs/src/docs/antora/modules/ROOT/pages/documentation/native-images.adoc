@@ -1,11 +1,11 @@
-[[documentation.native-images]]
+[[native-images]]
 = GraalVM Native Images
 :page-section-summary-toc: 1
 
 Spring Boot applications can be converted into native executables using GraalVM.
 You can read more about our native image support here:
 
-* *GraalVM Native Images:* xref:native-image/introducing-graalvm-native-images.adoc[Introduction] | xref:native-image/introducing-graalvm-native-images.adoc#native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments[Key Differences with the JVM] | xref:native-image/introducing-graalvm-native-images.adoc#native-image.introducing-graalvm-native-images.understanding-aot-processing[Ahead-of-Time Processing]
-* *Getting Started:* xref:native-image/developing-your-first-application.adoc#native-image.developing-your-first-application.buildpacks[Buildpacks] | xref:native-image/developing-your-first-application.adoc#native-image.developing-your-first-application.native-build-tools[Native Build Tools]
-* *Testing:* xref:native-image/testing-native-applications.adoc#native-image.testing.with-the-jvm[JVM] | xref:native-image/testing-native-applications.adoc#native-image.testing.with-native-build-tools[Native Build Tools]
-* *Advanced Topics:* xref:native-image/advanced-topics.adoc#native-image.advanced.nested-configuration-properties[Nested Configuration Properties] | xref:native-image/advanced-topics.adoc#native-image.advanced.converting-executable-jars[Converting JARs] | xref:native-image/advanced-topics.adoc#native-image.advanced.known-limitations[Known Limitations]
+* *GraalVM Native Images:* xref:native-image/introducing-graalvm-native-images.adoc[Introduction] | xref:native-image/introducing-graalvm-native-images.adoc#introducing-graalvm-native-images.key-differences-with-jvm-deployments[Key Differences with the JVM] | xref:native-image/introducing-graalvm-native-images.adoc#introducing-graalvm-native-images.understanding-aot-processing[Ahead-of-Time Processing]
+* *Getting Started:* xref:native-image/developing-your-first-application.adoc#developing-your-first-application.buildpacks[Buildpacks] | xref:native-image/developing-your-first-application.adoc#developing-your-first-application.native-build-tools[Native Build Tools]
+* *Testing:* xref:native-image/testing-native-applications.adoc#testing.with-the-jvm[JVM] | xref:native-image/testing-native-applications.adoc#testing.with-native-build-tools[Native Build Tools]
+* *Advanced Topics:* xref:native-image/advanced-topics.adoc#advanced.nested-configuration-properties[Nested Configuration Properties] | xref:native-image/advanced-topics.adoc#advanced.converting-executable-jars[Converting JARs] | xref:native-image/advanced-topics.adoc#advanced.known-limitations[Known Limitations]

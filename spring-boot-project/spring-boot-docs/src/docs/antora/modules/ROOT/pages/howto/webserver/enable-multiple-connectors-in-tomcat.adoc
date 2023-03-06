@@ -1,4 +1,4 @@
-[[howto.webserver.enable-multiple-connectors-in-tomcat]]
+[[enable-multiple-connectors-in-tomcat]]
 = Enable Multiple Connectors with Tomcat
 :page-section-summary-toc: 1
 

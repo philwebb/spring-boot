@@ -1,4 +1,4 @@
-[[features.logging.file-output]]
+[[file-output]]
 = File Output
 
 By default, Spring Boot logs only to the console and does not write log files.

@@ -1,4 +1,4 @@
-[[data.nosql]]
+[[nosql]]
 = Working with NoSQL Technologies
 :page-section-summary-toc: 1
 

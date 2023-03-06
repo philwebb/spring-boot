@@ -1,4 +1,4 @@
-[[appendix.auto-configuration-classes.actuator]]
+[[actuator]]
 = spring-boot-actuator-autoconfigure
 :page-section-summary-toc: 1
 

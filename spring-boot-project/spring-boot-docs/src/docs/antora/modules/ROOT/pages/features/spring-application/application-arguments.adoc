@@ -1,4 +1,4 @@
-[[features.spring-application.application-arguments]]
+[[application-arguments]]
 = Accessing Application Arguments
 :page-section-summary-toc: 1
 

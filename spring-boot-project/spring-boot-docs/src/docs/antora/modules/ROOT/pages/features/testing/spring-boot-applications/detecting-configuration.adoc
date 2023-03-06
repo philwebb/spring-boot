@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.detecting-configuration]]
+[[detecting-configuration]]
 = Detecting Test Configuration
 
 If you are familiar with the Spring Test Framework, you may be used to using `@ContextConfiguration(classes=...)` in order to specify which Spring `@Configuration` to load.

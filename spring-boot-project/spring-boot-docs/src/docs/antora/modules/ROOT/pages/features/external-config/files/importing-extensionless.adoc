@@ -1,4 +1,4 @@
-[[features.external-config.files.importing-extensionless]]
+[[importing-extensionless]]
 = Importing Extensionless Files
 :page-section-summary-toc: 1
 

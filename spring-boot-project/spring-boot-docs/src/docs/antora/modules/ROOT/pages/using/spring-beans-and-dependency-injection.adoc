@@ -1,4 +1,4 @@
-[[using.spring-beans-and-dependency-injection]]
+[[spring-beans-and-dependency-injection]]
 = Spring Beans and Dependency Injection
 :page-section-summary-toc: 1
 

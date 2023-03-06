@@ -1,4 +1,4 @@
-[[build-tool-plugins.antlib]]
+[[antlib]]
 = Spring Boot AntLib Module
 
 The Spring Boot AntLib module provides basic Spring Boot support for Apache Ant.
@@ -21,20 +21,20 @@ You need to remember to start Ant using the `-lib` option, as shown in the follo
 	$ ant -lib <directory containing spring-boot-antlib-{spring-boot-version}.jar>
 ----
 
-TIP: The "`Using Spring Boot`" section includes a more complete example of xref:using/build-systems.adoc#using.build-systems.ant[using Apache Ant with `spring-boot-antlib`].
+TIP: The "`Using Spring Boot`" section includes a more complete example of xref:using/build-systems.adoc#build-systems.ant[using Apache Ant with `spring-boot-antlib`].
 
 
 
-[[build-tool-plugins.antlib.tasks]]
+[[antlib.tasks]]
 == Spring Boot Ant Tasks
 Once the `spring-boot-antlib` namespace has been declared, the following additional tasks are available:
 
-* xref:build-tool-plugins/antlib.adoc#build-tool-plugins.antlib.tasks.exejar[Using the "`exejar`" Task]
-* xref:build-tool-plugins/antlib.adoc#build-tool-plugins.antlib.findmainclass[Using the "`findmainclass`" Task]
+* xref:build-tool-plugins/antlib.adoc#antlib.tasks.exejar[Using the "`exejar`" Task]
+* xref:build-tool-plugins/antlib.adoc#antlib.findmainclass[Using the "`findmainclass`" Task]
 
 
 
-[[build-tool-plugins.antlib.tasks.exejar]]
+[[antlib.tasks.exejar]]
 === Using the "`exejar`" Task
 You can use the `exejar` task to create a Spring Boot executable jar.
 The following attributes are supported by the task:
@@ -71,7 +71,7 @@ The following nested elements can be used with the task:
 
 
 
-[[build-tool-plugins.antlib.tasks.examples]]
+[[antlib.tasks.examples]]
 === Examples
 This section shows two examples of Ant tasks.
 
@@ -101,7 +101,7 @@ This section shows two examples of Ant tasks.
 
 
 
-[[build-tool-plugins.antlib.findmainclass]]
+[[antlib.findmainclass]]
 == Using the "`findmainclass`" Task
 The `findmainclass` task is used internally by `exejar` to locate a class declaring a `main`.
 If necessary, you can also use this task directly in your build.
@@ -126,7 +126,7 @@ The following attributes are supported:
 
 
 
-[[build-tool-plugins.antlib.findmainclass.examples]]
+[[antlib.findmainclass.examples]]
 === Examples
 This section contains three examples of using `findmainclass`.
 

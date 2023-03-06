@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.third-party-configuration]]
+[[third-party-configuration]]
 = Third-party Configuration
 :page-section-summary-toc: 1
 

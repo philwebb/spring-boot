@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.tracing]]
+[[tracing]]
 = Using Tracing
 :page-section-summary-toc: 1
 

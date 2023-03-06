@@ -1,4 +1,4 @@
-[[data.nosql.neo4j]]
+[[neo4j]]
 = Neo4j
 
 https://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data model of nodes connected by first class relationships, which is better suited for connected big data than traditional RDBMS approaches.
@@ -6,7 +6,7 @@ Spring Boot offers several conveniences for working with Neo4j, including the `s
 
 
 
-[[data.nosql.neo4j.connecting]]
+[[neo4j.connecting]]
 == Connecting to a Neo4j Database
 To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Driver`.
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
@@ -33,7 +33,7 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 
 
 
-[[data.nosql.neo4j.repositories]]
+[[neo4j.repositories]]
 == Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
 For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}[reference documentation].

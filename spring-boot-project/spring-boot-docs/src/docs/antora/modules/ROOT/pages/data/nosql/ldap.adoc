@@ -1,4 +1,4 @@
-[[data.nosql.ldap]]
+[[ldap]]
 = LDAP
 
 https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an IP network.
@@ -9,7 +9,7 @@ There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the depend
 
 
 
-[[data.nosql.ldap.connecting]]
+[[ldap.connecting]]
 == Connecting to an LDAP Server
 To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
@@ -31,7 +31,7 @@ Make sure to flag your customized `ContextSource` as `@Primary` so that the auto
 
 
 
-[[data.nosql.ldap.repositories]]
+[[ldap.repositories]]
 == Spring Data LDAP Repositories
 Spring Data includes repository support for LDAP.
 For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
@@ -43,7 +43,7 @@ include-code::./MyBean[]
 
 
 
-[[data.nosql.ldap.embedded]]
+[[ldap.embedded]]
 == Embedded In-memory LDAP Server
 For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:

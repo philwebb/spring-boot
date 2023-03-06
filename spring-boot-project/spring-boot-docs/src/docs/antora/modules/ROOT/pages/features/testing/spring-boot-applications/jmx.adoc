@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.jmx]]
+[[jmx]]
 = Using JMX
 :page-section-summary-toc: 1
 

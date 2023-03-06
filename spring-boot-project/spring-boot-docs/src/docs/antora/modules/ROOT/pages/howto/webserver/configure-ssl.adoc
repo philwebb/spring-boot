@@ -1,4 +1,4 @@
-[[howto.webserver.configure-ssl]]
+[[configure-ssl]]
 = Configure SSL
 
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.

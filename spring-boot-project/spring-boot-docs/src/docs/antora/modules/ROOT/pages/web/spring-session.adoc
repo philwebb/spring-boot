@@ -1,4 +1,4 @@
-[[web.spring-session]]
+[[spring-session]]
 = Spring Session
 
 Spring Boot provides {spring-session}[Spring Session] auto-configuration for a wide range of data stores.

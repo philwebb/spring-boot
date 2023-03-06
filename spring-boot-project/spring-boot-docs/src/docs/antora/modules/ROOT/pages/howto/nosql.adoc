@@ -1,4 +1,4 @@
-[[howto.nosql]]
+[[nosql]]
 = NoSQL
 
 Spring Boot offers a number of starters that support NoSQL technologies.
@@ -6,7 +6,7 @@ This section answers questions that arise from using NoSQL with Spring Boot.
 
 
 
-[[howto.nosql.jedis-instead-of-lettuce]]
+[[nosql.jedis-instead-of-lettuce]]
 == Use Jedis Instead of Lettuce
 By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 You need to exclude that dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead.

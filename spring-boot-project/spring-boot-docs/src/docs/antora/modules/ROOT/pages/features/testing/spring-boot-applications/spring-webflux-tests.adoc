@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.spring-webflux-tests]]
+[[spring-webflux-tests]]
 = Auto-configured Spring WebFlux Tests
 
 To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.

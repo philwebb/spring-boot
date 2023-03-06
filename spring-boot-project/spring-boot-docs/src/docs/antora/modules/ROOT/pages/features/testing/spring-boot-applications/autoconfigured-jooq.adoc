@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-jooq]]
+[[autoconfigured-jooq]]
 = Auto-configured jOOQ Tests
 :page-section-summary-toc: 1
 

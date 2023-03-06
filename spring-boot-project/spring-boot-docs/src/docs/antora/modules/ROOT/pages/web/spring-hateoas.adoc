@@ -1,4 +1,4 @@
-[[web.spring-hateoas]]
+[[spring-hateoas]]
 = Spring HATEOAS
 :page-section-summary-toc: 1
 

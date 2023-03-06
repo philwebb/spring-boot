@@ -1,4 +1,4 @@
-[[build-tool-plugins.gradle]]
+[[gradle]]
 = Spring Boot Gradle Plugin
 :page-section-summary-toc: 1
 

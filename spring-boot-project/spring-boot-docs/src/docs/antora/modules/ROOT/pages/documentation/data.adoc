@@ -1,4 +1,4 @@
-[[documentation.data]]
+[[data]]
 = Data
 :page-section-summary-toc: 1
 

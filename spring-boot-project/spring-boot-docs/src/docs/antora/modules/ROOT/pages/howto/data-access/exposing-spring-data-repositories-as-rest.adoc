@@ -1,4 +1,4 @@
-[[howto.data-access.exposing-spring-data-repositories-as-rest]]
+[[exposing-spring-data-repositories-as-rest]]
 = Expose Spring Data Repositories as REST Endpoint
 :page-section-summary-toc: 1
 

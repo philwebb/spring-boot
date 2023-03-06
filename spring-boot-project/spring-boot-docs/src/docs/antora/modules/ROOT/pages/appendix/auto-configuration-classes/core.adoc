@@ -1,4 +1,4 @@
-[[appendix.auto-configuration-classes.core]]
+[[core]]
 = spring-boot-autoconfigure
 :page-section-summary-toc: 1
 

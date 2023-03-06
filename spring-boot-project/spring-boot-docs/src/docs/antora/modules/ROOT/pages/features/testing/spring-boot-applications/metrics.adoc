@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.metrics]]
+[[metrics]]
 = Using Metrics
 :page-section-summary-toc: 1
 

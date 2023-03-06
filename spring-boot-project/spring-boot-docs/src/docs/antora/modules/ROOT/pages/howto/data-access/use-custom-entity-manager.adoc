@@ -1,4 +1,4 @@
-[[howto.data-access.use-custom-entity-manager]]
+[[use-custom-entity-manager]]
 = Use a Custom EntityManagerFactory
 :page-section-summary-toc: 1
 
@@ -7,4 +7,4 @@ Spring Boot auto-configuration switches off its entity manager in the presence o
 
 
 
-[[howto.data-access.use-multiple-entity-managers]]
+[[use-multiple-entity-managers]]

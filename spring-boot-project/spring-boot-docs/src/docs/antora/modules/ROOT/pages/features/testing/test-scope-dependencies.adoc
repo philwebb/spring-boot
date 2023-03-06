@@ -1,4 +1,4 @@
-[[features.testing.test-scope-dependencies]]
+[[test-scope-dependencies]]
 = Test Scope Dependencies
 :page-section-summary-toc: 1
 

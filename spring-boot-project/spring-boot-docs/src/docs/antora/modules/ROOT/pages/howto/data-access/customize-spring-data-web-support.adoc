@@ -1,4 +1,4 @@
-[[howto.data-access.customize-spring-data-web-support]]
+[[customize-spring-data-web-support]]
 = Customize Spring Data's Web Support
 :page-section-summary-toc: 1
 

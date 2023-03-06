@@ -1,4 +1,4 @@
-[[features.external-config.files.multi-document]]
+[[multi-document]]
 = Working With Multi-Document Files
 
 Spring Boot allows you to split a single physical file into multiple logical documents which are each added independently.

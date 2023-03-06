@@ -1,4 +1,4 @@
-[[actuator.endpoints.security]]
+[[security]]
 = Security
 
 For security purposes, only the `/health` endpoint is exposed over HTTP by default.
@@ -40,7 +40,7 @@ Since Spring Boot's security configuration backs off completely in the presence 
 
 
 
-[[actuator.endpoints.security.csrf]]
+[[security.csrf]]
 == Cross Site Request Forgery Protection
 Since Spring Boot relies on Spring Security's defaults, CSRF protection is turned on by default.
 This means that the actuator endpoints that require a `POST` (shutdown and loggers endpoints), a `PUT`, or a `DELETE` get a 403 (forbidden) error when the default security configuration is in use.

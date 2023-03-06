@@ -1,4 +1,4 @@
-[[features.external-config.files.activation-properties]]
+[[activation-properties]]
 = Activation Properties
 
 It is sometimes useful to only activate a given set of properties when certain conditions are met.

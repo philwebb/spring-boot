@@ -1,4 +1,4 @@
-[[features.external-config.system-environment]]
+[[system-environment]]
 = Configuring System Environment Properties
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[web.reactive]]
+[[reactive]]
 = Reactive Web Applications
 :page-section-summary-toc: 1
 

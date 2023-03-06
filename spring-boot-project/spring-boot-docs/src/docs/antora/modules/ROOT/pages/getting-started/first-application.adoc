@@ -1,4 +1,4 @@
-[[getting-started.first-application]]
+[[first-application]]
 = Developing Your First Spring Boot Application
 
 This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
@@ -10,7 +10,7 @@ The https://spring.io[spring.io] web site contains many "`Getting Started`" http
 If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
-Doing so generates a new project structure so that you can xref:getting-started/first-application.adoc#getting-started.first-application.code[start coding right away].
+Doing so generates a new project structure so that you can xref:getting-started/first-application.adoc#first-application.code[start coding right away].
 Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
@@ -37,7 +37,7 @@ Subsequent instructions assume that you have created a suitable directory and th
 
 
 
-[[getting-started.first-application.pom]]
+[[first-application.pom]]
 == Creating the POM
 We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
@@ -97,12 +97,12 @@ For simplicity, we continue to use a plain text editor for this example.
 
 
 
-[[getting-started.first-application.dependencies]]
+[[first-application.dependencies]]
 == Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
 Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
-It also provides a xref:using/build-systems.adoc#using.build-systems.dependency-management[`dependency-management`] section so that you can omit `version` tags for "`blessed`" dependencies.
+It also provides a xref:using/build-systems.adoc#build-systems.dependency-management[`dependency-management`] section so that you can omit `version` tags for "`blessed`" dependencies.
 
 Other "`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
@@ -133,7 +133,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 
 
 
-[[getting-started.first-application.code]]
+[[first-application.code]]
 == Writing the Code
 To finish our application, we need to create a single Java file.
 By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
@@ -145,7 +145,7 @@ We step through the important parts in the next few sections.
 
 
 
-[[getting-started.first-application.code.mvc-annotations]]
+[[first-application.code.mvc-annotations]]
 === The @RestController and @RequestMapping Annotations
 The first annotation on our `MyApplication` class is `@RestController`.
 This is known as a _stereotype_ annotation.
@@ -161,7 +161,7 @@ See the {spring-framework-docs}/web.html#mvc[MVC section] in the Spring Referenc
 
 
 
-[[getting-started.first-application.code.spring-boot-application]]
+[[first-application.code.spring-boot-application]]
 === The @SpringBootApplication Annotation
 The second class-level annotation is `@SpringBootApplication`.
 This annotation is known as a _meta-annotation_, it combines `@SpringBootConfiguration`, `@EnableAutoConfiguration` and `@ComponentScan`.
@@ -179,7 +179,7 @@ Spring Boot still does its best to auto-configure your application.
 
 
 
-[[getting-started.first-application.code.main-method]]
+[[first-application.code.main-method]]
 === The "`main`" Method
 The final part of our application is the `main` method.
 This is a standard method that follows the Java convention for an application entry point.
@@ -190,7 +190,7 @@ The `args` array is also passed through to expose any command-line arguments.
 
 
 
-[[getting-started.first-application.run]]
+[[first-application.run]]
 == Running the Example
 At this point, your application should work.
 Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goal that you can use to start the application.
@@ -225,7 +225,7 @@ To gracefully exit the application, press `ctrl-c`.
 
 
 
-[[getting-started.first-application.executable-jar]]
+[[first-application.executable-jar]]
 == Creating an Executable Jar
 We finish our example by creating a completely self-contained executable jar file that we could run in production.
 Executable jars (sometimes called "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.

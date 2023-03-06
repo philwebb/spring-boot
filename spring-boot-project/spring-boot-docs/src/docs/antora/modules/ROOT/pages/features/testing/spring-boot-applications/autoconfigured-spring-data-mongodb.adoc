@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-data-mongodb]]
+[[autoconfigured-spring-data-mongodb]]
 = Auto-configured Data MongoDB Tests
 :page-section-summary-toc: 1
 

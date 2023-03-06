@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-data-ldap]]
+[[autoconfigured-spring-data-ldap]]
 = Auto-configured Data LDAP Tests
 :page-section-summary-toc: 1
 

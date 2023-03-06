@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties]]
+[[typesafe-configuration-properties]]
 = Type-safe Configuration Properties
 :page-section-summary-toc: 1
 

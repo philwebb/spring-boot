@@ -1,7 +1,7 @@
-[[container-images.whats-next]]
+[[whats-next]]
 = What to Read Next
 :page-section-summary-toc: 1
 
-Once you've learned how to build efficient container images, you can read about xref:deployment/cloud.adoc#deployment.cloud.kubernetes[deploying applications to a cloud platform], such as Kubernetes.
+Once you've learned how to build efficient container images, you can read about xref:deployment/cloud.adoc#cloud.kubernetes[deploying applications to a cloud platform], such as Kubernetes.
 
 

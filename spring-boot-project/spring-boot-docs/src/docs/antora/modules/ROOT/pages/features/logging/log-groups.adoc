@@ -1,4 +1,4 @@
-[[features.logging.log-groups]]
+[[log-groups]]
 = Log Groups
 
 It is often useful to be able to group related loggers together so that they can all be configured at the same time.

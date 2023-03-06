@@ -1,4 +1,4 @@
-[[howto.data-access.dependency-injection-in-hibernate-components]]
+[[dependency-injection-in-hibernate-components]]
 = Use Dependency Injection in Hibernate Components
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[howto.data-access.use-multiple-entity-managers]]
+[[use-multiple-entity-managers]]
 = Using Multiple EntityManagerFactories
 
 If you need to use JPA against multiple data sources, you likely need one `EntityManagerFactory` per data source.

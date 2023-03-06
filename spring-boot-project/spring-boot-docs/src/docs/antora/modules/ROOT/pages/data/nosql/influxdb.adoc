@@ -1,4 +1,4 @@
-[[data.nosql.influxdb]]
+[[influxdb]]
 = InfluxDB
 :page-section-summary-toc: 1
 
@@ -6,7 +6,7 @@ https://www.influxdata.com/[InfluxDB] is an open-source time series database opt
 
 
 
-[[data.nosql.influxdb.connecting]]
+[[influxdb.connecting]]
 == Connecting to InfluxDB
 Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
 

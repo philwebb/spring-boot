@@ -1,4 +1,4 @@
-[[deployment.installing.supported-operating-systems]]
+[[supported-operating-systems]]
 = Supported Operating Systems
 :page-section-summary-toc: 1
 

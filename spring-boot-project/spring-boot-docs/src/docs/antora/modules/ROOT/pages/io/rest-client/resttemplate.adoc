@@ -1,4 +1,4 @@
-[[io.rest-client.resttemplate]]
+[[resttemplate]]
 = RestTemplate
 
 If you need to call remote REST services from your application, you can use the Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class.
@@ -15,7 +15,7 @@ For example, to add BASIC auth support, you can use `builder.basicAuthentication
 
 
 
-[[io.rest-client.resttemplate.customization]]
+[[resttemplate.customization]]
 == RestTemplate Customization
 There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
 

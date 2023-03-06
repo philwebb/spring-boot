@@ -1,4 +1,4 @@
-[[actuator.metrics.getting-started]]
+[[getting-started]]
 = Getting started
 
 Spring Boot auto-configures a composite `MeterRegistry` and adds a registry to the composite for each of the supported implementations that it finds on the classpath.

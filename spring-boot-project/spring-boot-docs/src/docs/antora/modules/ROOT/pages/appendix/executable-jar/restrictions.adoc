@@ -1,4 +1,4 @@
-[[appendix.executable-jar.restrictions]]
+[[restrictions]]
 = Executable Jar Restrictions
 :page-section-summary-toc: 1
 

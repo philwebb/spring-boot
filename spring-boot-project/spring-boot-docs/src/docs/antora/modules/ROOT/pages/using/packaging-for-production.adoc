@@ -1,4 +1,4 @@
-[[using.packaging-for-production]]
+[[packaging-for-production]]
 = Packaging Your Application for Production
 :page-section-summary-toc: 1
 

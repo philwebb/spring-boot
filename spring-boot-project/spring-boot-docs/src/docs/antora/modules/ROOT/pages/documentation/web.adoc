@@ -1,4 +1,4 @@
-[[documentation.web]]
+[[web]]
 = Web
 :page-section-summary-toc: 1
 

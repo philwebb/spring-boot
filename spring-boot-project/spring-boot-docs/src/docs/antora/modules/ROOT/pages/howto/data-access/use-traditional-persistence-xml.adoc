@@ -1,4 +1,4 @@
-[[howto.data-access.use-traditional-persistence-xml]]
+[[use-traditional-persistence-xml]]
 = Use a Traditional persistence.xml File
 :page-section-summary-toc: 1
 

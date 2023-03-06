@@ -1,4 +1,4 @@
-[[howto.data-initialization]]
+[[data-initialization]]
 = Database Initialization
 
 An SQL database can be initialized in different ways depending on what your stack is.
@@ -7,7 +7,7 @@ It is recommended to use a single mechanism for schema generation.
 
 
 
-[[howto.data-initialization.using-jpa]]
+[[data-initialization.using-jpa]]
 == Initialize a Database Using JPA
 JPA has features for DDL generation, and these can be set up to run on startup against the database.
 This is controlled through two external properties:
@@ -18,7 +18,7 @@ This is controlled through two external properties:
 
 
 
-[[howto.data-initialization.using-hibernate]]
+[[data-initialization.using-hibernate]]
 == Initialize a Database Using Hibernate
 You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether it thinks your database is embedded.
@@ -37,7 +37,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 
 
-[[howto.data-initialization.using-basic-sql-scripts]]
+[[data-initialization.using-basic-sql-scripts]]
 == Initialize a Database Using Basic SQL Scripts
 Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
@@ -57,12 +57,12 @@ While we do not recommend using multiple data source initialization technologies
 This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
 `schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
-If you are using a xref:howto/data-initialization.adoc#howto.data-initialization.migration-tool[Higher-level Database Migration Tool], like Flyway or Liquibase, you should use them alone to create and initialize the schema.
+If you are using a xref:howto/data-initialization.adoc#data-initialization.migration-tool[Higher-level Database Migration Tool], like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
 
 
 
-[[howto.data-initialization.batch]]
+[[data-initialization.batch]]
 == Initialize a Spring Batch Database
 If you use Spring Batch, it comes pre-packaged with SQL initialization scripts for most popular database platforms.
 Spring Boot can detect your database type and execute those scripts on startup.
@@ -81,13 +81,13 @@ You can also switch off the initialization explicitly by setting `spring.batch.j
 
 
 
-[[howto.data-initialization.migration-tool]]
+[[data-initialization.migration-tool]]
 == Use a Higher-level Database Migration Tool
 Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Flyway] and https://www.liquibase.org/[Liquibase].
 
 
 
-[[howto.data-initialization.migration-tool.flyway]]
+[[data-initialization.migration-tool.flyway]]
 === Execute Flyway Database Migrations on Startup
 To automatically run Flyway database migrations on startup, add the `org.flywaydb:flyway-core` to your classpath.
 
@@ -155,7 +155,7 @@ With that setup, migrations in `dev/db/migration` run only when the `dev` profil
 
 
 
-[[howto.data-initialization.migration-tool.liquibase]]
+[[data-initialization.migration-tool.liquibase]]
 === Execute Liquibase Database Migrations on Startup
 To automatically run Liquibase database migrations on startup, add the `org.liquibase:liquibase-core` to your classpath.
 
@@ -180,7 +180,7 @@ See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`
 
 
 
-[[howto.data-initialization.dependencies]]
+[[data-initialization.dependencies]]
 == Depend Upon an Initialized Database
 Database initialization is performed while the application is starting up as part of application context refresh.
 To allow an initialized database to be accessed during startup, beans that act as database initializers and beans that require that database to have been initialized are detected automatically.
@@ -189,7 +189,7 @@ If, during startup, your application tries to access the database and it has not
 
 
 
-[[howto.data-initialization.dependencies.initializer-detection]]
+[[data-initialization.dependencies.initializer-detection]]
 === Detect a Database Initializer
 Spring Boot will automatically detect beans of the following types that initialize an SQL database:
 
@@ -205,7 +205,7 @@ To have other beans be detected, register an implementation of `DatabaseInitiali
 
 
 
-[[howto.data-initialization.dependencies.depends-on-initialization-detection]]
+[[data-initialization.dependencies.depends-on-initialization-detection]]
 === Detect a Bean That Depends On Database Initialization
 Spring Boot will automatically detect beans of the following types that depends upon database initialization:
 

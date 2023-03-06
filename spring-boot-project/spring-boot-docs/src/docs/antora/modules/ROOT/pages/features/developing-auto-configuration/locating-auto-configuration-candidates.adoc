@@ -1,4 +1,4 @@
-[[features.developing-auto-configuration.locating-auto-configuration-candidates]]
+[[locating-auto-configuration-candidates]]
 = Locating Auto-configuration Candidates
 
 Spring Boot checks for the presence of a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` file within your published jar.

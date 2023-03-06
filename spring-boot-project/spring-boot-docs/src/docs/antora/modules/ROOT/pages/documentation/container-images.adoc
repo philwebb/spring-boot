@@ -1,4 +1,4 @@
-[[documentation.container-images]]
+[[container-images]]
 = Container Images
 :page-section-summary-toc: 1
 

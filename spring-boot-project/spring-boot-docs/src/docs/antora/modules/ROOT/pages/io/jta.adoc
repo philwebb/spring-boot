@@ -1,4 +1,4 @@
-[[io.jta]]
+[[jta]]
 = Distributed Transactions With JTA
 
 Spring Boot supports distributed JTA transactions across multiple XA resources by using a transaction manager retrieved from JNDI.
@@ -10,16 +10,16 @@ If you are within a JTA environment and still want to use local transactions, yo
 
 
 
-[[io.jta.jakartaee]]
+[[jta.jakartaee]]
 == Using a Jakarta EE Managed Transaction Manager
 If you package your Spring Boot application as a `war` or `ear` file and deploy it to a Jakarta EE application server, you can use your application server's built-in transaction manager.
 Spring Boot tries to auto-configure a transaction manager by looking at common JNDI locations (`java:comp/UserTransaction`, `java:comp/TransactionManager`, and so on).
 When using a transaction service provided by your application server, you generally also want to ensure that all resources are managed by the server and exposed over JNDI.
-Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the xref:data/sql/datasource.adoc#data.sql.datasource.jndi[configprop:spring.datasource.jndi-name[] property] to configure your `DataSource`.
+Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the xref:data/sql/datasource.adoc#datasource.jndi[configprop:spring.datasource.jndi-name[] property] to configure your `DataSource`.
 
 
 
-[[io.jta.mixing-xa-and-non-xa-connections]]
+[[jta.mixing-xa-and-non-xa-connections]]
 == Mixing XA and Non-XA JMS Connections
 When using JTA, the primary JMS `ConnectionFactory` bean is XA-aware and participates in distributed transactions.
 You can inject into your bean without needing to use any `@Qualifier`:
@@ -39,7 +39,7 @@ include-code::./xa/MyBean[tag=*]
 
 
 
-[[io.jta.supporting-embedded-transaction-manager]]
+[[jta.supporting-embedded-transaction-manager]]
 == Supporting an Embedded Transaction Manager
 The {spring-boot-module-code}/jms/XAConnectionFactoryWrapper.java[`XAConnectionFactoryWrapper`] and {spring-boot-module-code}/jdbc/XADataSourceWrapper.java[`XADataSourceWrapper`] interfaces can be used to support embedded transaction managers.
 The interfaces are responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and exposing them as regular `ConnectionFactory` and `DataSource` beans, which transparently enroll in the distributed transaction.

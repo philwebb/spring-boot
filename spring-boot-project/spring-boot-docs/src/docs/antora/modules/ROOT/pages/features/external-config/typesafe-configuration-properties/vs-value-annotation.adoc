@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.vs-value-annotation]]
+[[vs-value-annotation]]
 = @ConfigurationProperties vs. @Value
 
 The `@Value` annotation is a core container feature, and it does not provide the same features as type-safe configuration properties.
@@ -10,7 +10,7 @@ The following table summarizes the features that are supported by `@Configuratio
 
 | xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc[Relaxed binding]
 | Yes
-| Limited (see xref:features/external-config/typesafe-configuration-properties/vs-value-annotation.adoc#features.external-config.typesafe-configuration-properties.vs-value-annotation.note[note below])
+| Limited (see xref:features/external-config/typesafe-configuration-properties/vs-value-annotation.adoc#vs-value-annotation.note[note below])
 
 | xref:appendix/configuration-metadata.adoc[Meta-data support]
 | Yes
@@ -21,7 +21,7 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 |===
 
-[[features.external-config.typesafe-configuration-properties.vs-value-annotation.note]]
+[[vs-value-annotation.note]]
 [NOTE]
 ====
 If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).

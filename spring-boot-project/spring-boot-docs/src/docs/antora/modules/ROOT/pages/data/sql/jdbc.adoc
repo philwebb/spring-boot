@@ -1,4 +1,4 @@
-[[data.sql.jdbc]]
+[[jdbc]]
 = Spring Data JDBC
 :page-section-summary-toc: 1
 

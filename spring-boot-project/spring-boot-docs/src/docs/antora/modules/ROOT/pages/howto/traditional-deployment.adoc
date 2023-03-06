@@ -1,4 +1,4 @@
-[[howto.traditional-deployment]]
+[[traditional-deployment]]
 = Traditional Deployment
 
 Spring Boot supports traditional deployment as well as more modern forms of deployment.
@@ -6,7 +6,7 @@ This section answers common questions about traditional deployment.
 
 
 
-[[howto.traditional-deployment.war]]
+[[traditional-deployment.war]]
 == Create a Deployable War File
 
 WARNING: Because Spring WebFlux does not strictly depend on the servlet API and applications are deployed by default on an embedded Reactor Netty server, War deployment is not supported for WebFlux applications.
@@ -69,7 +69,7 @@ This means that, in addition to being deployable to a servlet container, you can
 
 
 
-[[howto.traditional-deployment.convert-existing-application]]
+[[traditional-deployment.convert-existing-application]]
 == Convert an Existing Application to Spring Boot
 To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
 Spring MVC web applications are generally amenable to first creating a deployable war application and then migrating it later to an executable war or jar.
@@ -118,7 +118,7 @@ Servlet 3.0+ applications might translate pretty easily if they already use the 
 Normally, all the code from an existing `WebApplicationInitializer` can be moved into a `SpringBootServletInitializer`.
 If your existing application has more than one `ApplicationContext` (for example, if it uses `AbstractDispatcherServletInitializer`) then you might be able to combine all your context sources into a single `SpringApplication`.
 The main complication you might encounter is if combining does not work and you need to maintain the context hierarchy.
-See the xref:howto/application.adoc#howto.application.context-hierarchy[entry on building a hierarchy] for examples.
+See the xref:howto/application.adoc#application.context-hierarchy[entry on building a hierarchy] for examples.
 An existing parent context that contains web-specific features usually needs to be broken up so that all the `ServletContextAware` components are in the child context.
 
 Applications that are not already Spring applications might be convertible to Spring Boot applications, and the previously mentioned guidance may help.
@@ -127,7 +127,7 @@ In that case, we suggest https://stackoverflow.com/questions/tagged/spring-boot[
 
 
 
-[[howto.traditional-deployment.weblogic]]
+[[traditional-deployment.weblogic]]
 ==  Deploying a WAR to WebLogic
 To deploy a Spring Boot application to WebLogic, you must ensure that your servlet initializer *directly* implements `WebApplicationInitializer` (even if you extend from a base class that already implements it).
 

@@ -1,4 +1,4 @@
-[[actuator.observability]]
+[[observability]]
 = Observability
 :page-section-summary-toc: 1
 

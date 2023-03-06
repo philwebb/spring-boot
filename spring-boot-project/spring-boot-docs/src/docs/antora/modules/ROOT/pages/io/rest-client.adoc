@@ -1,4 +1,4 @@
-[[io.rest-client]]
+[[rest-client]]
 = Calling REST Services
 :page-section-summary-toc: 1
 

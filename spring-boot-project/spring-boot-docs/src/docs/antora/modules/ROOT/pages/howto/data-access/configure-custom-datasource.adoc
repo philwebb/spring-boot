@@ -1,4 +1,4 @@
-[[howto.data-access.configure-custom-datasource]]
+[[configure-custom-datasource]]
 = Configure a Custom DataSource
 
 To configure your own `DataSource`, define a `@Bean` of that type in your configuration.

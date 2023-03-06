@@ -1,4 +1,4 @@
-[[data.sql.h2-web-console]]
+[[h2-web-console]]
 = Using H2's Web Console
 
 The https://www.h2database.com[H2 database] provides a https://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that Spring Boot can auto-configure for you.
@@ -14,14 +14,14 @@ NOTE: The H2 console is only intended for use during development, so you should 
 
 
 
-[[data.sql.h2-web-console.custom-path]]
+[[h2-web-console.custom-path]]
 == Changing the H2 Console's Path
 By default, the console is available at `/h2-console`.
 You can customize the console's path by using the configprop:spring.h2.console.path[] property.
 
 
 
-[[data.sql.h2-web-console.spring-security]]
+[[h2-web-console.spring-security]]
 == Accessing the H2 Console in a Secured Application
 H2 Console uses frames and, as it is intended for development only, does not implement CSRF protection measures.
 If your application uses Spring Security, you need to configure it to

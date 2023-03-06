@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.using-annotated-types]]
+[[using-annotated-types]]
 = Using @ConfigurationProperties-annotated Types
 
 This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:

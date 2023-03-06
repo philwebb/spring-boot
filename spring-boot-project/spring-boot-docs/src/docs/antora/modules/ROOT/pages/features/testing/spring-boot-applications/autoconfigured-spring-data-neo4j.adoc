@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-data-neo4j]]
+[[autoconfigured-spring-data-neo4j]]
 = Auto-configured Data Neo4j Tests
 
 You can use `@DataNeo4jTest` to test Neo4j applications.

@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-data-jdbc]]
+[[autoconfigured-spring-data-jdbc]]
 = Auto-configured Data JDBC Tests
 :page-section-summary-toc: 1
 

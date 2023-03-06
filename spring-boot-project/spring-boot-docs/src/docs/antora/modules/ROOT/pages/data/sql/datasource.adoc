@@ -1,4 +1,4 @@
-[[data.sql.datasource]]
+[[datasource]]
 = Configure a DataSource
 
 Java's `javax.sql.DataSource` interface provides a standard method of working with database connections.
@@ -8,7 +8,7 @@ TIP: See xref:howto/data-access/configure-custom-datasource.adoc[the "`How-to`" 
 
 
 
-[[data.sql.datasource.embedded]]
+[[datasource.embedded]]
 == Embedded Database Support
 It is often convenient to develop applications by using an in-memory embedded database.
 Obviously, in-memory databases do not provide persistent storage.
@@ -53,13 +53,13 @@ Disabling the database's automatic shutdown lets Spring Boot control when the da
 
 
 
-[[data.sql.datasource.production]]
+[[datasource.production]]
 == Connection to a Production Database
 Production database connections can also be auto-configured by using a pooling `DataSource`.
 
 
 
-[[data.sql.datasource.configuration]]
+[[datasource.configuration]]
 == DataSource Configuration
 DataSource configuration is controlled by external configuration properties in `+spring.datasource.*+`.
 For example, you might declare the following section in `application.properties`:
@@ -83,7 +83,7 @@ NOTE: For a pooling `DataSource` to be created, we need to be able to verify tha
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
-These are the standard options that work regardless of xref:data/sql/datasource.adoc#data.sql.datasource.connection-pool[the actual implementation].
+These are the standard options that work regardless of xref:data/sql/datasource.adoc#datasource.connection-pool[the actual implementation].
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 See the documentation of the connection pool implementation you are using for more details.
 
@@ -103,7 +103,7 @@ This will set the pool to wait 10000ms before throwing an exception if no connec
 
 
 
-[[data.sql.datasource.connection-pool]]
+[[datasource.connection-pool]]
 == Supported Connection Pools
 Spring Boot uses the following algorithm for choosing a specific implementation:
 
@@ -133,7 +133,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 
 
 
-[[data.sql.datasource.jndi]]
+[[datasource.jndi]]
 == Connection to a JNDI DataSource
 If you deploy your Spring Boot application to an Application Server, you might want to configure and manage your DataSource by using your Application Server's built-in features and access it by using JNDI.
 

@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.detecting-web-app-type]]
+[[detecting-web-app-type]]
 = Detecting Web Application Type
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[actuator.metrics.endpoint]]
+[[endpoint]]
 = Metrics Endpoint
 :page-section-summary-toc: 1
 

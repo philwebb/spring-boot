@@ -1,4 +1,4 @@
-[[container-images.buildpacks]]
+[[buildpacks]]
 = Cloud Native Buildpacks
 :page-section-summary-toc: 1
 

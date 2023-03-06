@@ -1,4 +1,4 @@
-[[appendix.test-auto-configuration.slices]]
+[[slices]]
 = Test Slices
 :page-section-summary-toc: 1
 

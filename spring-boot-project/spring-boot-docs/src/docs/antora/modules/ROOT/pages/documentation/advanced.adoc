@@ -1,4 +1,4 @@
-[[documentation.advanced]]
+[[advanced]]
 = Advanced Topics
 :page-section-summary-toc: 1
 

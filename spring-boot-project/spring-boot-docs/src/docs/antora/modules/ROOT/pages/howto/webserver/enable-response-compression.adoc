@@ -1,4 +1,4 @@
-[[howto.webserver.enable-response-compression]]
+[[enable-response-compression]]
 = Enable HTTP Response Compression
 
 HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.

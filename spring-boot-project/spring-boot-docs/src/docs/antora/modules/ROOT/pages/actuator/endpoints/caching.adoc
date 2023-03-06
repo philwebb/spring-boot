@@ -1,4 +1,4 @@
-[[actuator.endpoints.caching]]
+[[caching]]
 = Configuring Endpoints
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[howto.actuator]]
+[[actuator]]
 = Actuator
 
 Spring Boot includes the Spring Boot Actuator.
@@ -6,17 +6,17 @@ This section answers questions that often arise from its use.
 
 
 
-[[howto.actuator.change-http-port-or-address]]
+[[actuator.change-http-port-or-address]]
 == Change the HTTP Port or Address of the Actuator Endpoints
 In a standalone application, the Actuator HTTP port defaults to the same as the main HTTP port.
 To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
-For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`xref:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port]`" in the "`Production-ready features`" section.
+For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`xref:actuator/monitoring.adoc#monitoring.customizing-management-server-port[Customizing the Management Server Port]`" in the "`Production-ready features`" section.
 
 
 
-[[howto.actuator.customize-whitelabel-error-page]]
+[[actuator.customize-whitelabel-error-page]]
 == Customize the '`whitelabel`' Error Page
 Spring Boot installs a '`whitelabel`' error page that you see in a browser client if you encounter a server error (machine clients consuming JSON and other media types should see a sensible response with the right error code).
 
@@ -31,11 +31,11 @@ In general, you need a `View` that resolves with a name of `error` or a `@Contro
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
 See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
-See also the section on "`xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.error-handling[Error Handling]`" for details of how to register handlers in the servlet container.
+See also the section on "`xref:web/servlet/spring-mvc.adoc#spring-mvc.error-handling[Error Handling]`" for details of how to register handlers in the servlet container.
 
 
 
-[[howto.actuator.sanitize-sensitive-values]]
+[[actuator.sanitize-sensitive-values]]
 == Sanitize Sensitive Values
 Information returned by the `/env`, `/configprops` and `/quartz` endpoints can be somewhat sensitive.
 All values are sanitized by default (that is replaced by `+******+`).
@@ -61,11 +61,11 @@ For JMX endpoints, all users are always authorized.
 
 The configuration above enables the ability for all users with the `admin` role to view all values in their original form from the `/env` endpoint.
 
-NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitization applied by a `xref:howto/actuator.adoc#howto.actuator.sanitize-sensitive-values.customizing-sanitization[SanitizingFunction]` will still be applied.
+NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitization applied by a `xref:howto/actuator.adoc#actuator.sanitize-sensitive-values.customizing-sanitization[SanitizingFunction]` will still be applied.
 
 
 
-[[howto.actuator.sanitize-sensitive-values.customizing-sanitization]]
+[[actuator.sanitize-sensitive-values.customizing-sanitization]]
 === Customizing Sanitization
 To take control over the sanitization, define a `SanitizingFunction` bean.
 The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.
@@ -74,7 +74,7 @@ Each `SanitizingFunction` is called in order until a function changes the value 
 
 
 
-[[howto.actuator.map-health-indicators-to-metrics]]
+[[actuator.map-health-indicators-to-metrics]]
 == Map Health Indicators to Micrometer Metrics
 Spring Boot health indicators return a `Status` type to indicate the overall system health.
 If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics with Micrometer.

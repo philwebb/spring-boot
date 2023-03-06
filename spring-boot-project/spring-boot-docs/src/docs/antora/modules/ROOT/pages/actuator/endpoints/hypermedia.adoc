@@ -1,4 +1,4 @@
-[[actuator.endpoints.hypermedia]]
+[[hypermedia]]
 = Hypermedia for Actuator Web Endpoints
 :page-section-summary-toc: 1
 

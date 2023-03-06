@@ -1,4 +1,4 @@
-[[actuator.endpoints.exposing]]
+[[exposing]]
 = Exposing Endpoints
 
 By default, only the health endpoint is exposed over HTTP and JMX.

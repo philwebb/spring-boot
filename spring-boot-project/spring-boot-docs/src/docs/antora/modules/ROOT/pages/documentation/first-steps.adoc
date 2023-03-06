@@ -1,9 +1,9 @@
-[[documentation.first-steps]]
+[[first-steps]]
 = First Steps
 :page-section-summary-toc: 1
 
 If you are getting started with Spring Boot or 'Spring' in general, start with xref:getting-started.adoc[the following topics]:
 
 * *From scratch:* xref:getting-started/introducing-spring-boot.adoc[Overview] | xref:getting-started/system-requirements.adoc[Requirements] | xref:getting-started/installing.adoc[Installation]
-* *Tutorial:* xref:getting-started/first-application.adoc[Part 1] | xref:getting-started/first-application.adoc#getting-started.first-application.code[Part 2]
-* *Running your example:* xref:getting-started/first-application.adoc#getting-started.first-application.run[Part 1] | xref:getting-started/first-application.adoc#getting-started.first-application.executable-jar[Part 2]
+* *Tutorial:* xref:getting-started/first-application.adoc[Part 1] | xref:getting-started/first-application.adoc#first-application.code[Part 2]
+* *Running your example:* xref:getting-started/first-application.adoc#first-application.run[Part 1] | xref:getting-started/first-application.adoc#first-application.executable-jar[Part 2]

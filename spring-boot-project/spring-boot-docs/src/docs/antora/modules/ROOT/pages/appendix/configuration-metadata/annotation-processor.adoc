@@ -1,4 +1,4 @@
-[[appendix.configuration-metadata.annotation-processor]]
+[[annotation-processor]]
 = Generating Your Own Metadata by Using the Annotation Processor
 
 You can easily generate your own configuration metadata file from items annotated with `@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
@@ -6,7 +6,7 @@ The jar includes a Java annotation processor which is invoked as your project is
 
 
 
-[[appendix.configuration-metadata.annotation-processor.configuring]]
+[[annotation-processor.configuring]]
 == Configuring the Annotation Processor
 To use the processor, include a dependency on `spring-boot-configuration-processor`.
 
@@ -69,7 +69,7 @@ If you are not using this attribute, and annotation processors are picked up by 
 
 
 
-[[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation]]
+[[annotation-processor.automatic-metadata-generation]]
 == Automatic Metadata Generation
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
 
@@ -91,12 +91,12 @@ The annotation processor applies a number of heuristics to extract the default v
 Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
 Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
 
-For cases where the default value could not be detected, xref:appendix/configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[manual metadata] should be provided.
+For cases where the default value could not be detected, xref:appendix/configuration-metadata/annotation-processor.adoc#annotation-processor.adding-additional-metadata[manual metadata] should be provided.
 Consider the following example:
 
 include-code::./MyMessagingProperties[]
 
-In order to document default values for properties in the class above, you could add the following content to xref:appendix/configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[the manual metadata of the module]:
+In order to document default values for properties in the class above, you could add the following content to xref:appendix/configuration-metadata/annotation-processor.adoc#annotation-processor.adding-additional-metadata[the manual metadata of the module]:
 
 [source,json,indent=0,subs="verbatim"]
 ----
@@ -116,7 +116,7 @@ NOTE: Only the `name` of the property is required to document additional metadat
 
 
 
-[[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.nested-properties]]
+[[annotation-processor.automatic-metadata-generation.nested-properties]]
 === Nested Properties
 The annotation processor automatically considers inner classes as nested properties.
 Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
@@ -131,7 +131,7 @@ TIP: This has no effect on collections and maps, as those types are automaticall
 
 
 
-[[appendix.configuration-metadata.annotation-processor.adding-additional-metadata]]
+[[annotation-processor.adding-additional-metadata]]
 == Adding Additional Metadata
 Spring Boot's configuration file handling is quite flexible, and it is often the case that properties may exist that are not bound to a `@ConfigurationProperties` bean.
 You may also need to tune some attributes of an existing key.

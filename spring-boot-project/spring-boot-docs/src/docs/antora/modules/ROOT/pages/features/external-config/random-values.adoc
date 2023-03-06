@@ -1,4 +1,4 @@
-[[features.external-config.random-values]]
+[[random-values]]
 = Configuring Random Values
 :page-section-summary-toc: 1
 

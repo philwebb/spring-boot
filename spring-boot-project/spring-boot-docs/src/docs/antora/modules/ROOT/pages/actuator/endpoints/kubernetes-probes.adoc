@@ -1,13 +1,13 @@
-[[actuator.endpoints.kubernetes-probes]]
+[[kubernetes-probes]]
 = Kubernetes Probes
 
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
 Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet calls those probes and reacts to the result.
 
 By default, Spring Boot manages your xref:features/spring-application/application-availability.adoc[Application Availability State].
-If deployed in a Kubernetes environment, actuator gathers the "`Liveness`" and "`Readiness`" information from the `ApplicationAvailability` interface and uses that information in dedicated xref:actuator/endpoints/health.adoc#actuator.endpoints.health.auto-configured-health-indicators[health indicators]: `LivenessStateHealthIndicator` and `ReadinessStateHealthIndicator`.
+If deployed in a Kubernetes environment, actuator gathers the "`Liveness`" and "`Readiness`" information from the `ApplicationAvailability` interface and uses that information in dedicated xref:actuator/endpoints/health.adoc#health.auto-configured-health-indicators[health indicators]: `LivenessStateHealthIndicator` and `ReadinessStateHealthIndicator`.
 These indicators are shown on the global health endpoint (`"/actuator/health"`).
-They are also exposed as separate HTTP Probes by using xref:actuator/endpoints/health.adoc#actuator.endpoints.health.groups[health groups]: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
+They are also exposed as separate HTTP Probes by using xref:actuator/endpoints/health.adoc#health.groups[health groups]: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
 
 You can then configure your Kubernetes infrastructure with the following endpoint information:
 
@@ -31,14 +31,14 @@ You can then configure your Kubernetes infrastructure with the following endpoin
 NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
 It could be the main web server port or a separate management port if the `"management.server.port"` property has been set.
 
-These health groups are automatically enabled only if the application xref:deployment/cloud.adoc#deployment.cloud.kubernetes[runs in a Kubernetes environment].
+These health groups are automatically enabled only if the application xref:deployment/cloud.adoc#cloud.kubernetes[runs in a Kubernetes environment].
 You can enable them in any environment by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mentions the `"startupProbe"` as a possible solution.
 Generally speaking, the `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done.
 This means your application will not receive traffic until it is ready.
 However, if your application takes a long time to start, consider using a `"startupProbe"` to make sure that Kubernetes won't kill your application while it is in the process of starting.
-See the section that describes xref:actuator/endpoints/kubernetes-probes.adoc#actuator.endpoints.kubernetes-probes.lifecycle[how probes behave during the application lifecycle].
+See the section that describes xref:actuator/endpoints/kubernetes-probes.adoc#kubernetes-probes.lifecycle[how probes behave during the application lifecycle].
 
 If your Actuator endpoints are deployed on a separate management context, the endpoints do not use the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
@@ -55,10 +55,10 @@ This would make `liveness` available at `/livez` and `readiness` at `readyz` on 
 
 
 
-[[actuator.endpoints.kubernetes-probes.external-state]]
+[[kubernetes-probes.external-state]]
 == Checking External State With Kubernetes Probes
 Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
-This means that all the xref:actuator/endpoints/health.adoc#actuator.endpoints.health.groups[health groups features] are available for them.
+This means that all the xref:actuator/endpoints/health.adoc#health.groups[health groups features] are available for them.
 You can, for example, configure additional Health Indicators:
 
 [configprops,yaml]
@@ -74,12 +74,12 @@ You can, for example, configure additional Health Indicators:
 By default, Spring Boot does not add other health indicators to these groups.
 
 The "`liveness`" probe should not depend on health checks for external systems.
-If the xref:features/spring-application/application-availability.adoc#features.spring-application.application-availability.liveness[liveness state of an application] is broken, Kubernetes tries to solve that problem by restarting the application instance.
+If the xref:features/spring-application/application-availability.adoc#application-availability.liveness[liveness state of an application] is broken, Kubernetes tries to solve that problem by restarting the application instance.
 This means that if an external system (such as a database, a Web API, or an external cache) fails, Kubernetes might restart all application instances and create cascading failures.
 
 As for the "`readiness`" probe, the choice of checking external systems must be made carefully by the application developers.
 For this reason, Spring Boot does not include any additional health checks in the readiness probe.
-If the xref:features/spring-application/application-availability.adoc#features.spring-application.application-availability.readiness[readiness state of an application instance] is unready, Kubernetes does not route traffic to that instance.
+If the xref:features/spring-application/application-availability.adoc#application-availability.readiness[readiness state of an application instance] is unready, Kubernetes does not route traffic to that instance.
 Some external systems might not be shared by application instances, in which case they could be included in a readiness probe.
 Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
 Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: Include it in the readiness probe and expect that the application is taken out of service when the external service is down or leave it out and deal with failures higher up the stack, perhaps by using a circuit breaker in the caller.
@@ -94,7 +94,7 @@ Also, if an application uses Kubernetes https://kubernetes.io/docs/tasks/run-app
 
 
 
-[[actuator.endpoints.kubernetes-probes.lifecycle]]
+[[kubernetes-probes.lifecycle]]
 == Application Lifecycle and Probe States
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
 There is a significant difference between the `AvailabilityState` (which is the in-memory, internal state of the application)
@@ -156,7 +156,7 @@ When a Spring Boot application shuts down:
 |The application context is closed and the application is shut down.
 |===
 
-TIP: See xref:deployment/cloud.adoc#deployment.cloud.kubernetes.container-lifecycle[Kubernetes container lifecycle section] for more information about Kubernetes deployment.
+TIP: See xref:deployment/cloud.adoc#cloud.kubernetes.container-lifecycle[Kubernetes container lifecycle section] for more information about Kubernetes deployment.
 
 
 

@@ -1,4 +1,4 @@
-[[howto.webserver.disable]]
+[[disable]]
 = Disabling the Web Server
 :page-section-summary-toc: 1
 

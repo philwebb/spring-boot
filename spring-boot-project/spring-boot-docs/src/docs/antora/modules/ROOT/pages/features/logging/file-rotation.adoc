@@ -1,4 +1,4 @@
-[[features.logging.file-rotation]]
+[[file-rotation]]
 = File Rotation
 
 If you are using the Logback, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.

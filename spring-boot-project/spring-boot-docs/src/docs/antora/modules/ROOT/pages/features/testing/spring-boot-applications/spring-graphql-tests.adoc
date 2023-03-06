@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.spring-graphql-tests]]
+[[spring-graphql-tests]]
 = Auto-configured Spring GraphQL Tests
 
 Spring GraphQL offers a dedicated testing support module; you'll need to add it to your project:

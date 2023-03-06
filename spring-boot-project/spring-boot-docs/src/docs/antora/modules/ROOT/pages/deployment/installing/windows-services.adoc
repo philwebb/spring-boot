@@ -1,4 +1,4 @@
-[[deployment.installing.windows-services]]
+[[windows-services]]
 = Microsoft Windows Services
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[actuator.endpoints.cors]]
+[[cors]]
 = CORS Support
 :page-section-summary-toc: 1
 

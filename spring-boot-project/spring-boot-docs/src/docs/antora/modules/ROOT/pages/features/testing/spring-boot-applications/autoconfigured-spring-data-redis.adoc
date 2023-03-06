@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-data-redis]]
+[[autoconfigured-spring-data-redis]]
 = Auto-configured Data Redis Tests
 :page-section-summary-toc: 1
 

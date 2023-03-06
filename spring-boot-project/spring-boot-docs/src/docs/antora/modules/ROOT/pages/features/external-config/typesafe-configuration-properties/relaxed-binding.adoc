@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.relaxed-binding]]
+[[relaxed-binding]]
 = Relaxed Binding
 
 Spring Boot uses some relaxed rules for binding `Environment` properties to `@ConfigurationProperties` beans, so there does not need to be an exact match between the `Environment` property name and the bean property name.
@@ -44,8 +44,8 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 | Standard YAML list syntax or comma-separated values
 
 | Environment Variables
-| Upper case format with underscore as the delimiter (see xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables]).
-| Numeric values surrounded by underscores (see xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables])
+| Upper case format with underscore as the delimiter (see xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc#relaxed-binding.environment-variables[Binding From Environment Variables]).
+| Numeric values surrounded by underscores (see xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc#relaxed-binding.environment-variables[Binding From Environment Variables])
 
 | System properties
 | Camel case, kebab case, or underscore notation
@@ -56,7 +56,7 @@ TIP: We recommend that, when possible, properties are stored in lower-case kebab
 
 
 
-[[features.external-config.typesafe-configuration-properties.relaxed-binding.maps]]
+[[relaxed-binding.maps]]
 == Binding Maps
 When binding to `Map` properties you may need to use a special bracket notation so that the original `key` value is preserved.
 If the key is not surrounded by `[]`, any characters that are not alpha-numeric, `-` or `.` are removed.
@@ -95,7 +95,7 @@ For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the
 
 
 
-[[features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables]]
+[[relaxed-binding.environment-variables]]
 == Binding From Environment Variables
 Most operating systems impose strict rules around the names that can be used for environment variables.
 For example, Linux shell variables can contain only letters (`a` to `z` or `A` to `Z`), numbers (`0` to `9`) or the underscore character (`_`).

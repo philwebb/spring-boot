@@ -1,4 +1,4 @@
-[[actuator.metrics.registering-custom]]
+[[registering-custom]]
 = Registering Custom Metrics
 :page-section-summary-toc: 1
 

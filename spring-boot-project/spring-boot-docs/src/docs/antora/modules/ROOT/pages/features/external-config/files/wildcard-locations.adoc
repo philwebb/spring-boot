@@ -1,4 +1,4 @@
-[[features.external-config.files.wildcard-locations]]
+[[wildcard-locations]]
 = Wildcard Locations
 :page-section-summary-toc: 1
 

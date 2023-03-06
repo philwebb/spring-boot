@@ -1,4 +1,4 @@
-[[actuator.loggers]]
+[[loggers]]
 = Loggers
 
 Spring Boot Actuator includes the ability to view and configure the log levels of your application at runtime.
@@ -18,7 +18,7 @@ These levels can be one of:
 
 
 
-[[actuator.loggers.configure]]
+[[loggers.configure]]
 == Configure a Logger
 To configure a given logger, `POST` a partial entity to the resource's URI, as the following example shows:
 

@@ -1,4 +1,4 @@
-[[howto.data-access.configure-two-datasources]]
+[[configure-two-datasources]]
 = Configure Two DataSources
 
 If you need to configure multiple data sources, you can apply the same tricks that are described in the previous section.

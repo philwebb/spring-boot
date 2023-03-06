@@ -1,4 +1,4 @@
-[[howto.webserver.configure-access-logs]]
+[[configure-access-logs]]
 = Configure Access Logging
 
 Access logs can be configured for Tomcat, Undertow, and Jetty through their respective namespaces.

@@ -1,4 +1,4 @@
-[[actuator.endpoints]]
+[[endpoints]]
 = Endpoints
 
 Actuator endpoints let you monitor and interact with your application.

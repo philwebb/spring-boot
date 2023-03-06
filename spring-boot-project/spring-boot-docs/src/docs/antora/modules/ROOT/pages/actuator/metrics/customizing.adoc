@@ -1,4 +1,4 @@
-[[actuator.metrics.customizing]]
+[[customizing]]
 = Customizing Individual Metrics
 
 If you need to apply customizations to specific `Meter` instances, you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
@@ -13,7 +13,7 @@ These use the global registry that is not Spring-managed.
 
 
 
-[[actuator.metrics.customizing.common-tags]]
+[[customizing.common-tags]]
 == Common Tags
 Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
 Commons tags are applied to all meters and can be configured, as the following example shows:
@@ -34,7 +34,7 @@ As the order of common tags cannot be guaranteed by using this approach, Graphit
 
 
 
-[[actuator.metrics.customizing.per-meter-properties]]
+[[customizing.per-meter-properties]]
 == Per-meter Properties
 In addition to `MeterFilter` beans, you can apply a limited set of customization on a per-meter basis using properties.
 Per-meter customizations are applied, using Spring Boot's `PropertiesMeterFilter`, to any meter IDs that start with the given name.

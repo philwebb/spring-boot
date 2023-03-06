@@ -1,4 +1,4 @@
-[[features.external-config.files.property-placeholders]]
+[[property-placeholders]]
 = Property Placeholders
 
 The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties or environment variables).
@@ -26,7 +26,7 @@ If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` 
 ====
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
-See the _xref:howto/properties-and-configuration.adoc#howto.properties-and-configuration.short-command-line-arguments[Use '`Short`' Command Line Arguments]_ how-to for details.
+See the _xref:howto/properties-and-configuration.adoc#properties-and-configuration.short-command-line-arguments[Use '`Short`' Command Line Arguments]_ how-to for details.
 
 
 

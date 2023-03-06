@@ -1,11 +1,11 @@
-[[features.testing.utilities]]
+[[utilities]]
 = Test Utilities
 
 A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.
 
 
 
-[[features.testing.utilities.config-data-application-context-initializer]]
+[[utilities.config-data-application-context-initializer]]
 == ConfigDataApplicationContextInitializer
 `ConfigDataApplicationContextInitializer` is an `ApplicationContextInitializer` that you can apply to your tests to load Spring Boot `application.properties` files.
 You can use it when you do not need the full set of features provided by `@SpringBootTest`, as shown in the following example:
@@ -18,7 +18,7 @@ For `@Value` support, you need to either additionally configure a `PropertySourc
 
 
 
-[[features.testing.utilities.test-property-values]]
+[[utilities.test-property-values]]
 == TestPropertyValues
 `TestPropertyValues` lets you quickly add properties to a `ConfigurableEnvironment` or `ConfigurableApplicationContext`.
 You can call it with `key=value` strings, as follows:
@@ -27,7 +27,7 @@ include-code::./MyEnvironmentTests[]
 
 
 
-[[features.testing.utilities.output-capture]]
+[[utilities.output-capture]]
 == OutputCapture
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and `System.err` output.
 To use it, add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutput` as an argument to your test class constructor or test method as follows:
@@ -36,7 +36,7 @@ include-code::./MyOutputCaptureTests[]
 
 
 
-[[features.testing.utilities.test-rest-template]]
+[[utilities.test-rest-template]]
 == TestRestTemplate
 `TestRestTemplate` is a convenience alternative to Spring's `RestTemplate` that is useful in integration tests.
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).

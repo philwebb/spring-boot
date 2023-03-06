@@ -1,4 +1,4 @@
-[[features.spring-application.application-exit]]
+[[application-exit]]
 = Application Exit
 :page-section-summary-toc: 1
 

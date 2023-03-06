@@ -1,4 +1,4 @@
-[[howto.data-access.configure-hibernate-naming-strategy]]
+[[configure-hibernate-naming-strategy]]
 = Configure Hibernate Naming Strategy
 
 Hibernate uses {hibernate-docs}#naming[two different naming strategies] to map names from the object model to the corresponding database names.

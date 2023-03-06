@@ -1,4 +1,4 @@
-[[web.security.spring-mvc]]
+[[spring-mvc]]
 = MVC Security
 :page-section-summary-toc: 1
 

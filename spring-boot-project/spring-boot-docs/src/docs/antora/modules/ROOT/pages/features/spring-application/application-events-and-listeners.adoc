@@ -1,4 +1,4 @@
-[[features.spring-application.application-events-and-listeners]]
+[[application-events-and-listeners]]
 = Application Events and Listeners
 
 In addition to the usual Spring Framework events, such as {spring-framework-api}/context/event/ContextRefreshedEvent.html[`ContextRefreshedEvent`], a `SpringApplication` sends some additional application events.

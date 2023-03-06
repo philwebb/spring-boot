@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications]]
+[[spring-boot-applications]]
 = Testing Spring Boot Applications
 
 A Spring Boot application is a Spring `ApplicationContext`, so nothing very special has to be done to test it beyond what you would normally do with a vanilla Spring context.

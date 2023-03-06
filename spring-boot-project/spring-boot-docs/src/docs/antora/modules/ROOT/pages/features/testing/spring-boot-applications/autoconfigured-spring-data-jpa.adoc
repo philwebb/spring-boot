@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-data-jpa]]
+[[autoconfigured-spring-data-jpa]]
 = Auto-configured Data JPA Tests
 
 You can use the `@DataJpaTest` annotation to test JPA applications.

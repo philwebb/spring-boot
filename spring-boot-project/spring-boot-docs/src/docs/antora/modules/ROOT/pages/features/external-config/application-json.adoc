@@ -1,4 +1,4 @@
-[[features.external-config.application-json]]
+[[application-json]]
 = JSON Application Properties
 
 Environment variables and system properties often have restrictions that mean some property names cannot be used.

@@ -1,13 +1,13 @@
-[[using.build-systems]]
+[[build-systems]]
 = Build Systems
 
-It is strongly recommended that you choose a build system that supports xref:using/build-systems.adoc#using.build-systems.dependency-management[_dependency management_] and that can consume artifacts published to the "`Maven Central`" repository.
+It is strongly recommended that you choose a build system that supports xref:using/build-systems.adoc#build-systems.dependency-management[_dependency management_] and that can consume artifacts published to the "`Maven Central`" repository.
 We would recommend that you choose Maven or Gradle.
 It is possible to get Spring Boot to work with other build systems (Ant, for example), but they are not particularly well supported.
 
 
 
-[[using.build-systems.dependency-management]]
+[[build-systems.dependency-management]]
 == Dependency Management
 Each release of Spring Boot provides a curated list of dependencies that it supports.
 In practice, you do not need to provide a version for any of these dependencies in your build configuration, as Spring Boot manages that for you.
@@ -16,14 +16,14 @@ When you upgrade Spring Boot itself, these dependencies are upgraded as well in 
 NOTE: You can still specify a version and override Spring Boot's recommendations if you need to do so.
 
 The curated list contains all the Spring modules that you can use with Spring Boot as well as a refined list of third party libraries.
-The list is available as a standard Bills of Materials (`spring-boot-dependencies`) that can be used with both xref:using/build-systems.adoc#using.build-systems.maven[Maven] and xref:using/build-systems.adoc#using.build-systems.gradle[Gradle].
+The list is available as a standard Bills of Materials (`spring-boot-dependencies`) that can be used with both xref:using/build-systems.adoc#build-systems.maven[Maven] and xref:using/build-systems.adoc#build-systems.gradle[Gradle].
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring Framework.
 We **highly** recommend that you do not specify its version.
 
 
 
-[[using.build-systems.maven]]
+[[build-systems.maven]]
 == Maven
 To learn about using Spring Boot with Maven, see the documentation for Spring Boot's Maven plugin:
 
@@ -32,7 +32,7 @@ To learn about using Spring Boot with Maven, see the documentation for Spring Bo
 
 
 
-[[using.build-systems.gradle]]
+[[build-systems.gradle]]
 == Gradle
 To learn about using Spring Boot with Gradle, see the documentation for Spring Boot's Gradle plugin:
 
@@ -41,7 +41,7 @@ To learn about using Spring Boot with Gradle, see the documentation for Spring B
 
 
 
-[[using.build-systems.ant]]
+[[build-systems.ant]]
 ==  Ant
 It is possible to build a Spring Boot project using Apache Ant+Ivy.
 The `spring-boot-antlib` "`AntLib`" module is also available to help Ant create executable jars.
@@ -102,11 +102,11 @@ A typical `build.xml` looks like the following example:
 	</project>
 ----
 
-TIP: If you do not want to use the `spring-boot-antlib` module, see the _xref:howto/build.adoc#howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib[Build an Executable Archive From Ant without Using spring-boot-antlib]_ "`How-to`" .
+TIP: If you do not want to use the `spring-boot-antlib` module, see the _xref:howto/build.adoc#build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib[Build an Executable Archive From Ant without Using spring-boot-antlib]_ "`How-to`" .
 
 
 
-[[using.build-systems.starters]]
+[[build-systems.starters]]
 == Starters
 Starters are a set of convenient dependency descriptors that you can include in your application.
 You get a one-stop shop for all the Spring and related technologies that you need without having to hunt through sample code and copy-paste loads of dependency descriptors.
@@ -138,6 +138,6 @@ Finally, Spring Boot also includes the following starters that can be used if yo
 
 .Spring Boot technical starters
 
-To learn how to swap technical facets, please see the how-to documentation for xref:howto/webserver/use-another.adoc[swapping web server] and xref:howto/logging.adoc#howto.logging.log4j[logging system].
+To learn how to swap technical facets, please see the how-to documentation for xref:howto/webserver/use-another.adoc[swapping web server] and xref:howto/logging.adoc#logging.log4j[logging system].
 
 TIP: For a list of additional community contributed starters, see the {spring-boot-latest-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.

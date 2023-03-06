@@ -1,4 +1,4 @@
-[[features.external-config]]
+[[external-config]]
 = Externalized Configuration
 
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
@@ -26,7 +26,7 @@ Sources are considered in the following order:
 . `properties` attribute on your tests.
   Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the xref:features/testing/spring-boot-applications/autoconfigured-tests.adoc[test annotations for testing a particular slice of your application].
 . {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
-. xref:using/devtools.adoc#using.devtools.globalsettings[Devtools global settings properties] in the `$HOME/.config/spring-boot` directory when devtools is active.
+. xref:using/devtools.adoc#devtools.globalsettings[Devtools global settings properties] in the `$HOME/.config/spring-boot` directory when devtools is active.
 
 Config data files are considered in the following order:
 

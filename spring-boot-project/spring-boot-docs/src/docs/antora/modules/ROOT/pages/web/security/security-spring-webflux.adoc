@@ -1,4 +1,4 @@
-[[web.security.spring-webflux]]
+[[spring-webflux]]
 = WebFlux Security
 :page-section-summary-toc: 1
 

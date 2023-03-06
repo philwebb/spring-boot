@@ -1,4 +1,4 @@
-[[features.logging.console-output]]
+[[console-output]]
 = Console Output
 
 The default log configuration echoes messages to the console as they are written.
@@ -20,7 +20,7 @@ Doing so enables trace logging for a selection of core loggers (embedded contain
 
 
 
-[[features.logging.console-output.color-coded]]
+[[console-output.color-coded]]
 == Color-coded Output
 If your terminal supports ANSI, color output is used to aid readability.
 You can set `spring.output.ansi.enabled` to a {spring-boot-module-api}/ansi/AnsiOutput.Enabled.html[supported value] to override the auto-detection.

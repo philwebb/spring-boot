@@ -1,4 +1,4 @@
-[[documentation.messaging]]
+[[messaging]]
 = Messaging
 :page-section-summary-toc: 1
 

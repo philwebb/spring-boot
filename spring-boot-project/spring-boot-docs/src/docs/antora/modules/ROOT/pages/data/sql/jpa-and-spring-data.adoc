@@ -1,4 +1,4 @@
-[[data.sql.jpa-and-spring-data]]
+[[jpa-and-spring-data]]
 = JPA and Spring Data JPA
 
 The Java Persistence API is a standard technology that lets you "`map`" objects to relational databases.
@@ -14,7 +14,7 @@ You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing D
 
 
 
-[[data.sql.jpa-and-spring-data.entity-classes]]
+[[jpa-and-spring-data.entity-classes]]
 == Entity Classes
 Traditionally, JPA "`Entity`" classes are specified in a `persistence.xml` file.
 With Spring Boot, this file is not necessary and "`Entity Scanning`" is used instead.
@@ -30,7 +30,7 @@ See the "`xref:howto/data-access/separate-entity-definitions-from-spring-configu
 
 
 
-[[data.sql.jpa-and-spring-data.repositories]]
+[[jpa-and-spring-data.repositories]]
 == Spring Data JPA Repositories
 {spring-data-jpa}[Spring Data JPA] repositories are interfaces that you can define to access data.
 JPA queries are created automatically from your method names.
@@ -62,7 +62,7 @@ For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference d
 
 
 
-[[data.sql.jpa-and-spring-data.envers-repositories]]
+[[jpa-and-spring-data.envers-repositories]]
 == Spring Data Envers Repositories
 If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
 
@@ -74,7 +74,7 @@ NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers re
 
 
 
-[[data.sql.jpa-and-spring-data.creating-and-dropping]]
+[[jpa-and-spring-data.creating-and-dropping]]
 == Creating and Dropping JPA Databases
 By default, JPA databases are automatically created *only* if you use an embedded database (H2, HSQL, or Derby).
 You can explicitly configure JPA settings by using `+spring.jpa.*+` properties.
@@ -107,7 +107,7 @@ There is also a `spring.jpa.generate-ddl` flag, but it is not used if Hibernate 
 
 
 
-[[data.sql.jpa-and-spring-data.open-entity-manager-in-view]]
+[[jpa-and-spring-data.open-entity-manager-in-view]]
 == Open EntityManager in View
 If you are running a web application, Spring Boot by default registers {spring-framework-api}/orm/jpa/support/OpenEntityManagerInViewInterceptor.html[`OpenEntityManagerInViewInterceptor`] to apply the "`Open EntityManager in View`" pattern, to allow for lazy loading in web views.
 If you do not want this behavior, you should set `spring.jpa.open-in-view` to `false` in your `application.properties`.

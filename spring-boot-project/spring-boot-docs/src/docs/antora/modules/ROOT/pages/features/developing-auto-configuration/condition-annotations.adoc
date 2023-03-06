@@ -1,4 +1,4 @@
-[[features.developing-auto-configuration.condition-annotations]]
+[[condition-annotations]]
 = Condition Annotations
 
 You almost always want to include one or more `@Conditional` annotations on your auto-configuration class.
@@ -7,16 +7,16 @@ The `@ConditionalOnMissingBean` annotation is one common example that is used to
 Spring Boot includes a number of `@Conditional` annotations that you can reuse in your own code by annotating `@Configuration` classes or individual `@Bean` methods.
 These annotations include:
 
-* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.class-conditions[Class Conditions]
-* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.bean-conditions[Bean Conditions]
-* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.property-conditions[Property Conditions]
-* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.resource-conditions[Resource Conditions]
-* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.web-application-conditions[Web Application Conditions]
-* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.spel-conditions[SpEL Expression Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#condition-annotations.class-conditions[Class Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#condition-annotations.bean-conditions[Bean Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#condition-annotations.property-conditions[Property Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#condition-annotations.resource-conditions[Resource Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#condition-annotations.web-application-conditions[Web Application Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#condition-annotations.spel-conditions[SpEL Expression Conditions]
 
 
 
-[[features.developing-auto-configuration.condition-annotations.class-conditions]]
+[[condition-annotations.class-conditions]]
 == Class Conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let `@Configuration` classes be included based on the presence or absence of specific classes.
 Due to the fact that annotation metadata is parsed by using https://asm.ow2.io/[ASM], you can use the `value` attribute to refer to the real class, even though that class might not actually appear on the running application classpath.
@@ -32,7 +32,7 @@ TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part 
 
 
 
-[[features.developing-auto-configuration.condition-annotations.bean-conditions]]
+[[condition-annotations.bean-conditions]]
 == Bean Conditions
 The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations let a bean be included based on the presence or absence of specific beans.
 You can use the `value` attribute to specify beans by type or `name` to specify beans by name.
@@ -56,7 +56,7 @@ Providing as much type information as possible in `@Bean` methods is particularl
 
 
 
-[[features.developing-auto-configuration.condition-annotations.property-conditions]]
+[[condition-annotations.property-conditions]]
 == Property Conditions
 The `@ConditionalOnProperty` annotation lets configuration be included based on a Spring Environment property.
 Use the `prefix` and `name` attributes to specify the property that should be checked.
@@ -65,14 +65,14 @@ You can also create more advanced checks by using the `havingValue` and `matchIf
 
 
 
-[[features.developing-auto-configuration.condition-annotations.resource-conditions]]
+[[condition-annotations.resource-conditions]]
 == Resource Conditions
 The `@ConditionalOnResource` annotation lets configuration be included only when a specific resource is present.
 Resources can be specified by using the usual Spring conventions, as shown in the following example: `file:/home/user/test.dat`.
 
 
 
-[[features.developing-auto-configuration.condition-annotations.web-application-conditions]]
+[[condition-annotations.web-application-conditions]]
 == Web Application Conditions
 The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a "`web application`".
 A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
@@ -83,7 +83,7 @@ This condition will not match for applications that are run with an embedded ser
 
 
 
-[[features.developing-auto-configuration.condition-annotations.spel-conditions]]
+[[condition-annotations.spel-conditions]]
 == SpEL Expression Conditions
 The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {spring-framework-docs}/core.html#expressions[SpEL expression].
 

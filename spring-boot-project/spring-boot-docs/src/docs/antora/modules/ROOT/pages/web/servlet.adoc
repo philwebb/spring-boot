@@ -1,4 +1,4 @@
-[[web.servlet]]
+[[servlet]]
 = Servlet Web Applications
 :page-section-summary-toc: 1
 

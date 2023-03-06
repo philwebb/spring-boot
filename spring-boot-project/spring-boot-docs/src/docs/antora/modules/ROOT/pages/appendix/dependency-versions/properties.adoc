@@ -1,4 +1,4 @@
-[[appendix.dependency-versions.properties]]
+[[properties]]
 = Version Properties
 :page-section-summary-toc: 1
 

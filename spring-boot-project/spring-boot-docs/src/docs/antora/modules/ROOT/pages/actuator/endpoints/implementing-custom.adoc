@@ -1,4 +1,4 @@
-[[actuator.endpoints.implementing-custom]]
+[[implementing-custom]]
 = Implementing Custom Endpoints
 
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
@@ -20,7 +20,7 @@ Finally, if you need access to web-framework-specific functionality, you can imp
 
 
 
-[[actuator.endpoints.implementing-custom.input]]
+[[implementing-custom.input]]
 == Receiving Input
 Operations on an endpoint receive input through their parameters.
 When exposed over the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
@@ -51,27 +51,27 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 
 
 
-[[actuator.endpoints.implementing-custom.input.conversion]]
+[[implementing-custom.input.conversion]]
 === Input Type Conversion
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
 Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
 
 
 
-[[actuator.endpoints.implementing-custom.web]]
+[[implementing-custom.web]]
 == Custom Web Endpoints
 Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
 If both Jersey and Spring MVC are available, Spring MVC is used.
 
 
 
-[[actuator.endpoints.implementing-custom.web.request-predicates]]
+[[implementing-custom.web.request-predicates]]
 === Web Endpoint Request Predicates
 A request predicate is automatically generated for each operation on a web-exposed endpoint.
 
 
 
-[[actuator.endpoints.implementing-custom.web.path-predicates]]
+[[implementing-custom.web.path-predicates]]
 === Path
 The path of the predicate is determined by the ID of the endpoint and the base path of the web-exposed endpoints.
 The default base path is `/actuator`.
@@ -84,7 +84,7 @@ If you want to capture all remaining path elements, you can add `@Selector(Match
 
 
 
-[[actuator.endpoints.implementing-custom.web.method-predicates]]
+[[implementing-custom.web.method-predicates]]
 === HTTP method
 The HTTP method of the predicate is determined by the operation type, as shown in the following table:
 
@@ -104,14 +104,14 @@ The HTTP method of the predicate is determined by the operation type, as shown i
 
 
 
-[[actuator.endpoints.implementing-custom.web.consumes-predicates]]
+[[implementing-custom.web.consumes-predicates]]
 === Consumes
 For a `@WriteOperation` (HTTP `POST`) that uses the request body, the `consumes` clause of the predicate is `application/vnd.spring-boot.actuator.v2+json, application/json`.
 For all other operations, the `consumes` clause is empty.
 
 
 
-[[actuator.endpoints.implementing-custom.web.produces-predicates]]
+[[implementing-custom.web.produces-predicates]]
 === Produces
 The `produces` clause of the predicate can be determined by the `produces` attribute of the `@DeleteOperation`, `@ReadOperation`, and `@WriteOperation` annotations.
 The attribute is optional.
@@ -123,7 +123,7 @@ For all other operations, the `produces` clause is `application/vnd.spring-boot.
 
 
 
-[[actuator.endpoints.implementing-custom.web.response-status]]
+[[implementing-custom.web.response-status]]
 === Web Endpoint Response Status
 The default response status for an endpoint operation depends on the operation type (read, write, or delete) and what, if anything, the operation returns.
 
@@ -137,7 +137,7 @@ If an operation is invoked without a required parameter or with a parameter that
 
 
 
-[[actuator.endpoints.implementing-custom.web.range-requests]]
+[[implementing-custom.web.range-requests]]
 === Web Endpoint Range Requests
 You can use an HTTP range request to request part of an HTTP resource.
 When using Spring MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource` automatically support range requests.
@@ -146,7 +146,7 @@ NOTE: Range requests are not supported when using Jersey.
 
 
 
-[[actuator.endpoints.implementing-custom.web.security]]
+[[implementing-custom.web.security]]
 === Web Endpoint Security
 An operation on a web endpoint or a web-specific endpoint extension can receive the current `java.security.Principal` or `org.springframework.boot.actuate.endpoint.SecurityContext` as a method parameter.
 The former is typically used in conjunction with `@Nullable` to provide different behavior for authenticated and unauthenticated users.
@@ -154,7 +154,7 @@ The latter is typically used to perform authorization checks by using its `isUse
 
 
 
-[[actuator.endpoints.implementing-custom.servlet]]
+[[implementing-custom.servlet]]
 == Servlet Endpoints
 A servlet can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
 Servlet endpoints provide deeper integration with the servlet container but at the expense of portability.
@@ -163,7 +163,7 @@ For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be pref
 
 
 
-[[actuator.endpoints.implementing-custom.controller]]
+[[implementing-custom.controller]]
 == Controller Endpoints
 You can use `@ControllerEndpoint` and `@RestControllerEndpoint` to implement an endpoint that is exposed only by Spring MVC or Spring WebFlux.
 Methods are mapped by using the standard annotations for Spring MVC and Spring WebFlux, such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.

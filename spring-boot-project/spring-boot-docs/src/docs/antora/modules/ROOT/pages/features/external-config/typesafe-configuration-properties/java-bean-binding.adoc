@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.java-bean-binding]]
+[[java-bean-binding]]
 = JavaBean Properties Binding
 
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:

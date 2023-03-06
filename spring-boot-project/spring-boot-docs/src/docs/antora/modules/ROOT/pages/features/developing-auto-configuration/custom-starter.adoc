@@ -1,4 +1,4 @@
-[[features.developing-auto-configuration.custom-starter]]
+[[custom-starter]]
 = Creating Your Own Starter
 
 A typical Spring Boot starter contains code to auto-configure and customize the infrastructure of a given technology, let's call that "acme".
@@ -20,7 +20,7 @@ If the auto-configuration is relatively straightforward and does not have option
 
 
 
-[[features.developing-auto-configuration.custom-starter.naming]]
+[[custom-starter.naming]]
 == Naming
 You should make sure to provide a proper namespace for your starter.
 Do not start your module names with `spring-boot`, even if you use a different Maven `groupId`.
@@ -32,7 +32,7 @@ If you only have one module that combines the two, name it `acme-spring-boot-sta
 
 
 
-[[features.developing-auto-configuration.custom-starter.configuration-keys]]
+[[custom-starter.configuration-keys]]
 == Configuration keys
 If your starter provides configuration keys, use a unique namespace for them.
 In particular, do not include your keys in the namespaces that Spring Boot uses (such as `server`, `management`, `spring`, and so on).
@@ -59,7 +59,7 @@ Using your own starter in a compatible IDE is also a good idea to validate that 
 
 
 
-[[features.developing-auto-configuration.custom-starter.autoconfigure-module]]
+[[custom-starter.autoconfigure-module]]
 == The "`autoconfigure`" Module
 The `autoconfigure` module contains everything that is necessary to get started with the library.
 It may also contain configuration key definitions (such as `@ConfigurationProperties`) and any callback interface that can be used to further customize how the components are initialized.
@@ -116,7 +116,7 @@ With Gradle, the dependency should be declared in the `annotationProcessor` conf
 
 
 
-[[features.developing-auto-configuration.custom-starter.starter-module]]
+[[custom-starter.starter-module]]
 == Starter Module
 The starter is really an empty jar.
 Its only purpose is to provide the necessary dependencies to work with the library.

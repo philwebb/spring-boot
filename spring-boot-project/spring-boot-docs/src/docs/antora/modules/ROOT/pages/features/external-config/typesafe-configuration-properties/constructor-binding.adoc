@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.constructor-binding]]
+[[constructor-binding]]
 = Constructor Binding
 
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:

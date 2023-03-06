@@ -1,4 +1,4 @@
-[[features.spring-application.web-environment]]
+[[web-environment]]
 = Web Environment
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.enabling-annotated-types]]
+[[enabling-annotated-types]]
 = Enabling @ConfigurationProperties-annotated Types
 
 Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and register them as beans.

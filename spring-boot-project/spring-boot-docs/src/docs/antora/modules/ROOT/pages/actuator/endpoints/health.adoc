@@ -1,4 +1,4 @@
-[[actuator.endpoints.health]]
+[[health]]
 = Health Information
 
 You can use health information to check the status of your running application.
@@ -43,7 +43,7 @@ TIP: You can use the `HealthContributorRegistry` to register and unregister heal
 
 
 
-[[actuator.endpoints.health.auto-configured-health-indicators]]
+[[health.auto-configured-health-indicators]]
 == Auto-configured HealthIndicators
 When appropriate, Spring Boot auto-configures the `HealthIndicators` listed in the following table.
 You can also enable or disable selected indicators by configuring `management.health.key.enabled`,
@@ -133,7 +133,7 @@ Additional `HealthIndicators` are available but are not enabled by default:
 
 
 
-[[actuator.endpoints.health.writing-custom-health-indicators]]
+[[health.writing-custom-health-indicators]]
 == Writing Custom HealthIndicators
 To provide custom health information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] interface.
 You need to provide an implementation of the `health()` method and return a `Health` response.
@@ -207,7 +207,7 @@ The following table shows the default status mappings for the built-in statuses:
 
 
 
-[[actuator.endpoints.health.reactive-health-indicators]]
+[[health.reactive-health-indicators]]
 == Reactive Health Indicators
 For reactive applications, such as those that use Spring WebFlux, `ReactiveHealthContributor` provides a non-blocking contract for getting application health.
 Similar to a traditional `HealthContributor`, health information is collected from the content of a {spring-boot-actuator-module-code}/health/ReactiveHealthContributorRegistry.java[`ReactiveHealthContributorRegistry`] (by default, all {spring-boot-actuator-module-code}/health/HealthContributor.java[`HealthContributor`] and {spring-boot-actuator-module-code}/health/ReactiveHealthContributor.java[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
@@ -225,7 +225,7 @@ TIP: To handle the error automatically, consider extending from `AbstractReactiv
 
 
 
-[[actuator.endpoints.health.auto-configured-reactive-health-indicators]]
+[[health.auto-configured-reactive-health-indicators]]
 == Auto-configured ReactiveHealthIndicators
 When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndicators`:
 
@@ -263,7 +263,7 @@ Also, any `HealthIndicator` that is not handled explicitly is wrapped automatica
 
 
 
-[[actuator.endpoints.health.groups]]
+[[health.groups]]
 == Health Groups
 It is sometimes useful to organize health indicators into groups that you can use for different purposes.
 
@@ -346,7 +346,7 @@ The path must be a single path segment.
 
 
 
-[[actuator.endpoints.health.datasource]]
+[[health.datasource]]
 == DataSource Health
 The `DataSource` health indicator shows the health of both standard data sources and routing data source beans.
 The health of a routing data source includes the health of each of its target data sources.

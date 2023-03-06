@@ -1,5 +1,5 @@
 [appendix]
-[[appendix.test-auto-configuration]]
+[[test-auto-configuration]]
 = Test Auto-configuration Annotations
 :page-section-summary-toc: 1
 

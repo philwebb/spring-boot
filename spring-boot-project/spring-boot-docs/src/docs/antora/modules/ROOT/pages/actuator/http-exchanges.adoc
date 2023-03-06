@@ -1,4 +1,4 @@
-[[actuator.http-exchanges]]
+[[http-exchanges]]
 = Recording HTTP Exchanges
 :page-section-summary-toc: 1
 
@@ -12,7 +12,7 @@ You can use the `httpexchanges` endpoint to obtain information about the request
 
 
 
-[[actuator.http-exchanges.custom]]
+[[http-exchanges.custom]]
 == Custom HTTP Exchange Recording
 To customize the items that are included in each recorded exchange, use the configprop:management.httpexchanges.recording.include[] configuration property.
 

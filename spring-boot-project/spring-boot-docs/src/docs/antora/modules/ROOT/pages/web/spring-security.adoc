@@ -1,4 +1,4 @@
-[[web.security]]
+[[security]]
 = Spring Security
 
 If {spring-security}[Spring Security] is on the classpath, then web applications are secured by default.

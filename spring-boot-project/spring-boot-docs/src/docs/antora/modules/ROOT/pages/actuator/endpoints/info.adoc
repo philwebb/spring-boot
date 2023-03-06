@@ -1,4 +1,4 @@
-[[actuator.endpoints.info]]
+[[info]]
 = Application Information
 
 Application information exposes various information collected from all {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] beans defined in your `ApplicationContext`.
@@ -6,7 +6,7 @@ Spring Boot includes a number of auto-configured `InfoContributor` beans, and yo
 
 
 
-[[actuator.endpoints.info.auto-configured-info-contributors]]
+[[info.auto-configured-info-contributors]]
 == Auto-configured InfoContributors
 When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
@@ -53,7 +53,7 @@ Alternatively, to disable every contributor that is usually enabled by default, 
 
 
 
-[[actuator.endpoints.info.custom-application-information]]
+[[info.custom-application-information]]
 == Custom Application Information
 When the `env` contributor is enabled, you can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
 All `Environment` properties under the `info` key are automatically exposed.
@@ -71,7 +71,7 @@ For example, you could add the following settings to your `application.propertie
 
 [TIP]
 ====
-Rather than hardcoding those values, you could also xref:howto/properties-and-configuration.adoc#howto.properties-and-configuration.expand-properties[expand info properties at build time].
+Rather than hardcoding those values, you could also xref:howto/properties-and-configuration.adoc#properties-and-configuration.expand-properties[expand info properties at build time].
 
 Assuming you use Maven, you could rewrite the preceding example as follows:
 
@@ -88,13 +88,13 @@ Assuming you use Maven, you could rewrite the preceding example as follows:
 
 
 
-[[actuator.endpoints.info.git-commit-information]]
+[[info.git-commit-information]]
 == Git Commit Information
 Another useful feature of the `info` endpoint is its ability to publish information about the state of your `git` source code repository when the project was built.
 If a `GitProperties` bean is available, you can use the `info` endpoint to expose these properties.
 
 TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
-See "xref:howto/build.adoc#howto.build.generate-git-info[how to generate git information]" for more detail.
+See "xref:howto/build.adoc#build.generate-git-info[how to generate git information]" for more detail.
 
 By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
 If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
@@ -120,29 +120,29 @@ To disable the git commit information from the `info` endpoint completely, set t
 
 
 
-[[actuator.endpoints.info.build-information]]
+[[info.build-information]]
 == Build Information
 If a `BuildProperties` bean is available, the `info` endpoint can also publish information about your build.
 This happens if a `META-INF/build-info.properties` file is available in the classpath.
 
 TIP: The Maven and Gradle plugins can both generate that file.
-See "xref:howto/build.adoc#howto.build.generate-info[how to generate build information]" for more details.
+See "xref:howto/build.adoc#build.generate-info[how to generate build information]" for more details.
 
 
 
-[[actuator.endpoints.info.java-information]]
+[[info.java-information]]
 == Java Information
 The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
 
 
 
-[[actuator.endpoints.info.os-information]]
+[[info.os-information]]
 == OS Information
 The `info` endpoint publishes information about your Operating System, see {spring-boot-module-api}/info/OsInfo.html[`OsInfo`] for more details.
 
 
 
-[[actuator.endpoints.info.writing-custom-info-contributors]]
+[[info.writing-custom-info-contributors]]
 == Writing Custom InfoContributors
 To provide custom application information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] interface.
 

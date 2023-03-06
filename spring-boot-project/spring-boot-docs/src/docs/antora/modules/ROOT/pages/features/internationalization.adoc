@@ -1,4 +1,4 @@
-[[features.internationalization]]
+[[internationalization]]
 = Internationalization
 :page-section-summary-toc: 1
 

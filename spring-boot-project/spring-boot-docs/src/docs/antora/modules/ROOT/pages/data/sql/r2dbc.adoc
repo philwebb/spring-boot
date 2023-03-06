@@ -1,4 +1,4 @@
-[[data.sql.r2dbc]]
+[[r2dbc]]
 = Using R2DBC
 
 The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.
@@ -22,7 +22,7 @@ TIP: You do not need to specify a driver class name, since Spring Boot obtains t
 NOTE: At least the url should be provided.
 Information specified in the URL takes precedence over individual properties, that is `name`, `username`, `password` and pooling options.
 
-TIP: The "`How-to`" section includes a xref:howto/data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[section on how to initialize a database].
+TIP: The "`How-to`" section includes a xref:howto/data-initialization.adoc#data-initialization.using-basic-sql-scripts[section on how to initialize a database].
 
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
@@ -38,9 +38,9 @@ If you want to retain the JDBC `DataSource` auto-configuration, and are comforta
 
 
 
-[[data.sql.r2dbc.embedded]]
+[[r2dbc.embedded]]
 == Embedded Database Support
-Similarly to xref:data/sql/datasource.adoc#data.sql.datasource.embedded[the JDBC support], Spring Boot can automatically configure an embedded database for reactive usage.
+Similarly to xref:data/sql/datasource.adoc#datasource.embedded[the JDBC support], Spring Boot can automatically configure an embedded database for reactive usage.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use, as shown in the following example:
 
@@ -61,7 +61,7 @@ If you want to make sure that each context has a separate embedded database, you
 
 
 
-[[data.sql.r2dbc.using-database-client]]
+[[r2dbc.using-database-client]]
 == Using DatabaseClient
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
@@ -69,7 +69,7 @@ include-code::./MyBean[]
 
 
 
-[[data.sql.r2dbc.repositories]]
+[[r2dbc.repositories]]
 == Spring Data R2DBC Repositories
 https://spring.io/projects/spring-data-r2dbc[Spring Data R2DBC] repositories are interfaces that you can define to access data.
 Queries are created automatically from your method names.

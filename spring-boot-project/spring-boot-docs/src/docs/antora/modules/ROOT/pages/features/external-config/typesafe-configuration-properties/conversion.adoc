@@ -1,4 +1,4 @@
-[[features.external-config.typesafe-configuration-properties.conversion]]
+[[conversion]]
 = Properties Conversion
 
 Spring Boot attempts to coerce the external application properties to the right type when it binds to the `@ConfigurationProperties` beans.
@@ -10,7 +10,7 @@ You may want to rename your custom `ConversionService` if it is not required for
 
 
 
-[[features.external-config.typesafe-configuration-properties.conversion.durations]]
+[[conversion.durations]]
 == Converting Durations
 Spring Boot has dedicated support for expressing durations.
 If you expose a `java.time.Duration` property, the following formats in application properties are available:
@@ -49,7 +49,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 
-[[features.external-config.typesafe-configuration-properties.conversion.periods]]
+[[conversion.periods]]
 == Converting Periods
 In addition to durations, Spring Boot can also work with `java.time.Period` type.
 The following formats can be used in application properties:
@@ -69,7 +69,7 @@ NOTE: The `java.time.Period` type never actually stores the number of weeks, it 
 
 
 
-[[features.external-config.typesafe-configuration-properties.conversion.data-sizes]]
+[[conversion.data-sizes]]
 == Converting Data Sizes
 Spring Framework has a `DataSize` value type that expresses a size in bytes.
 If you expose a `DataSize` property, the following formats in application properties are available:

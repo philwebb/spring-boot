@@ -1,4 +1,4 @@
-[[data.sql.jdbc-template]]
+[[jdbc-template]]
 = Using JdbcTemplate
 :page-section-summary-toc: 1
 

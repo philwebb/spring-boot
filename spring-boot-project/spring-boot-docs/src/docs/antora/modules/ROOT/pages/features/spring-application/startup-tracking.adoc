@@ -1,4 +1,4 @@
-[[features.spring-application.startup-tracking]]
+[[startup-tracking]]
 = Application Startup tracking
 
 During the application startup, the `SpringApplication` and the `ApplicationContext` perform many tasks related to the application lifecycle,

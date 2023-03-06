@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-spring-restdocs]]
+[[autoconfigured-spring-restdocs]]
 = Auto-configured Spring REST Docs Tests
 
 You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
@@ -9,7 +9,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 
 
-[[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-mock-mvc]]
+[[autoconfigured-spring-restdocs.with-mock-mvc]]
 == Auto-configured Spring REST Docs Tests With Mock MVC
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
@@ -28,7 +28,7 @@ include-code::./MyResultHandlerConfiguration[]
 
 
 
-[[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-web-test-client]]
+[[autoconfigured-spring-restdocs.with-web-test-client]]
 == Auto-configured Spring REST Docs Tests With WebTestClient
 `@AutoConfigureRestDocs` can also be used with `WebTestClient` when testing reactive web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and Spring REST Docs, as shown in the following example:
@@ -46,7 +46,7 @@ include-code::./MyWebTestClientBuilderCustomizerConfiguration[]
 
 
 
-[[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
+[[autoconfigured-spring-restdocs.with-rest-assured]]
 == Auto-configured Spring REST Docs Tests With REST Assured
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST Docs, available to your tests.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:

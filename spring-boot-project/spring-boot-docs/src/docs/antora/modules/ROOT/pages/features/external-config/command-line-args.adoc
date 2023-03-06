@@ -1,4 +1,4 @@
-[[features.external-config.command-line-args]]
+[[command-line-args]]
 = Accessing Command Line Properties
 :page-section-summary-toc: 1
 

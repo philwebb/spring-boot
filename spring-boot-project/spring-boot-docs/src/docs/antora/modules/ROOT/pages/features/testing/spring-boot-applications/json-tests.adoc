@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.json-tests]]
+[[json-tests]]
 = Auto-configured JSON Tests
 
 To test that object JSON serialization and deserialization is working as expected, you can use the `@JsonTest` annotation.

@@ -1,14 +1,14 @@
-[[howto.webserver.add-servlet-filter-listener]]
+[[add-servlet-filter-listener]]
 = Add a Servlet, Filter, or Listener to an Application
 
 In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
 
-* xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[Add a Servlet, Filter, or Listener by Using a Spring Bean]
-* xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.using-scanning[Add Servlets, Filters, and Listeners by Using Classpath Scanning]
+* xref:howto/webserver/add-servlet-filter-listener.adoc#add-servlet-filter-listener.spring-bean[Add a Servlet, Filter, or Listener by Using a Spring Bean]
+* xref:howto/webserver/add-servlet-filter-listener.adoc#add-servlet-filter-listener.using-scanning[Add Servlets, Filters, and Listeners by Using Classpath Scanning]
 
 
 
-[[howto.webserver.add-servlet-filter-listener.spring-bean]]
+[[add-servlet-filter-listener.spring-bean]]
 == Add a Servlet, Filter, or Listener by Using a Spring Bean
 To add a `Servlet`, `Filter`, or servlet `*Listener` by using a Spring bean, you must provide a `@Bean` definition for it.
 Doing so can be very useful when you want to inject configuration or dependencies.
@@ -24,20 +24,20 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 This aligns with the servlet specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`xref:web/servlet/embedded-container.adoc#web.servlet.embedded-container.servlets-filters-listeners.beans[Registering Servlets, Filters, and Listeners as Spring Beans]`" section.
+Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`xref:web/servlet/embedded-container.adoc#embedded-container.servlets-filters-listeners.beans[Registering Servlets, Filters, and Listeners as Spring Beans]`" section.
 
 
 
-[[howto.webserver.add-servlet-filter-listener.spring-bean.disable]]
+[[add-servlet-filter-listener.spring-bean.disable]]
 === Disable Registration of a Servlet or Filter
-As xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[described earlier], any `Servlet` or `Filter` beans are registered with the servlet container automatically.
+As xref:howto/webserver/add-servlet-filter-listener.adoc#add-servlet-filter-listener.spring-bean[described earlier], any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
 include-code::./MyFilterConfiguration[]
 
 
 
-[[howto.webserver.add-servlet-filter-listener.using-scanning]]
+[[add-servlet-filter-listener.using-scanning]]
 == Add Servlets, Filters, and Listeners by Using Classpath Scanning
 `@WebServlet`, `@WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
 By default, `@ServletComponentScan` scans from the package of the annotated class.

@@ -1,4 +1,4 @@
-[[data.sql.jooq]]
+[[jooq]]
 = Using jOOQ
 
 jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
@@ -6,7 +6,7 @@ Both the commercial and open source editions can be used with Spring Boot.
 
 
 
-[[data.sql.jooq.codegen]]
+[[jooq.codegen]]
 == Code Generation
 In order to use jOOQ type-safe queries, you need to generate Java classes from your database schema.
 You can follow the instructions in the {jooq-docs}/#jooq-in-7-steps-step3[jOOQ user manual].
@@ -43,7 +43,7 @@ The following listing shows an example:
 
 
 
-[[data.sql.jooq.dslcontext]]
+[[jooq.dslcontext]]
 == Using DSLContext
 The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` interface.
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
@@ -59,7 +59,7 @@ include-code::./MyBean[tag=method]
 
 
 
-[[data.sql.jooq.sqldialect]]
+[[jooq.sqldialect]]
 == jOOQ SQL Dialect
 Unless the configprop:spring.jooq.sql-dialect[] property has been configured, Spring Boot determines the SQL dialect to use for your datasource.
 If Spring Boot could not detect the dialect, it uses `DEFAULT`.
@@ -68,7 +68,7 @@ NOTE: Spring Boot can only auto-configure dialects supported by the open source 
 
 
 
-[[data.sql.jooq.customizing]]
+[[jooq.customizing]]
 == Customizing jOOQ
 More advanced customizations can be achieved by defining your own `DefaultConfigurationCustomizer` bean that will be invoked prior to creating the `org.jooq.Configuration` `@Bean`.
 This takes precedence to anything that is applied by the auto-configuration.

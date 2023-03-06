@@ -1,4 +1,4 @@
-[[howto.data-access.configure-hibernate-second-level-caching]]
+[[configure-hibernate-second-level-caching]]
 = Configure Hibernate Second-Level Caching
 :page-section-summary-toc: 1
 

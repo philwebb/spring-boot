@@ -1,4 +1,4 @@
-[[features.external-config.files.configtree]]
+[[configtree]]
 = Using Configuration Trees
 
 When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.

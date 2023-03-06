@@ -1,4 +1,4 @@
-[[web.servlet.jersey]]
+[[jersey]]
 = JAX-RS and Jersey
 
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the available implementations instead of Spring MVC.

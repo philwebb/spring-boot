@@ -1,4 +1,4 @@
-[[build-tool-plugins.whats-next]]
+[[whats-next]]
 = What to Read Next
 :page-section-summary-toc: 1
 

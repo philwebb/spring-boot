@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.additional-autoconfiguration-and-slicing]]
+[[additional-autoconfiguration-and-slicing]]
 = Additional Auto-configuration and Slicing
 
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.

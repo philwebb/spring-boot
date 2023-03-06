@@ -1,4 +1,4 @@
-[[howto.webserver]]
+[[webserver]]
 = Embedded Web Servers
 :page-section-summary-toc: 1
 

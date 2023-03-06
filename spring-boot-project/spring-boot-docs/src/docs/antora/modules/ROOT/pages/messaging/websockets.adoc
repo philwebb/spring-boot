@@ -1,4 +1,4 @@
-[[messaging.websockets]]
+[[websockets]]
 = WebSockets
 :page-section-summary-toc: 1
 

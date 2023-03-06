@@ -1,4 +1,4 @@
-[[actuator.endpoints.enabling]]
+[[enabling]]
 = Enabling Endpoints
 
 By default, all endpoints except for `shutdown` are enabled.

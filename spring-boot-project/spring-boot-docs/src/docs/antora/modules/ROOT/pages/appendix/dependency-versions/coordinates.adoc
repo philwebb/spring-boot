@@ -1,4 +1,4 @@
-[[appendix.dependency-versions.coordinates]]
+[[coordinates]]
 = Managed Dependency Coordinates
 :page-section-summary-toc: 1
 

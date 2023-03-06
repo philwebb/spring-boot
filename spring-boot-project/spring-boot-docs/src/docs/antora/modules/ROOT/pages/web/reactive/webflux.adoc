@@ -1,4 +1,4 @@
-[[web.reactive.webflux]]
+[[webflux]]
 = The "`Spring WebFlux Framework`"
 
 Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
@@ -28,14 +28,14 @@ You can still enforce your choice by setting the chosen application type to `Spr
 
 
 
-[[web.reactive.webflux.auto-configuration]]
+[[webflux.auto-configuration]]
 == Spring WebFlux Auto-configuration
 Spring Boot provides auto-configuration for Spring WebFlux that works well with most applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
 
-* Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (described xref:web/reactive/webflux.adoc#web.reactive.webflux.httpcodecs[later in this document]).
-* Support for serving static resources, including support for WebJars (described xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.static-content[later in this document]).
+* Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (described xref:web/reactive/webflux.adoc#webflux.httpcodecs[later in this document]).
+* Support for serving static resources, including support for WebJars (described xref:web/servlet/spring-mvc.adoc#spring-mvc.static-content[later in this document]).
 
 If you want to keep Spring Boot WebFlux features and you want to add additional {spring-framework-docs}/web-reactive.html#webflux-config[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
 
@@ -43,7 +43,7 @@ If you want to take complete control of Spring WebFlux, you can add your own `@C
 
 
 
-[[web.reactive.webflux.httpcodecs]]
+[[webflux.httpcodecs]]
 == HTTP Codecs with HttpMessageReaders and HttpMessageWriters
 Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interfaces to convert HTTP requests and responses.
 They are configured with `CodecConfigurer` to have sensible defaults by looking at the libraries available in your classpath.
@@ -56,11 +56,11 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 
 include-code::./MyCodecsConfiguration[]
 
-You can also leverage xref:features/json.adoc#features.json.jackson.custom-serializers-and-deserializers[Boot's custom JSON serializers and deserializers].
+You can also leverage xref:features/json.adoc#json.jackson.custom-serializers-and-deserializers[Boot's custom JSON serializers and deserializers].
 
 
 
-[[web.reactive.webflux.static-content]]
+[[webflux.static-content]]
 == Static Content
 By default, Spring Boot serves static content from a directory called `/static` (or `/public` or `/resources` or `/META-INF/resources`) in the classpath.
 It uses the `ResourceWebHandler` from Spring WebFlux so that you can modify that behavior by adding your own `WebFluxConfigurer` and overriding the `addResourceHandlers` method.
@@ -88,7 +88,7 @@ TIP: Spring WebFlux applications do not strictly depend on the servlet API, so t
 
 
 
-[[web.reactive.webflux.welcome-page]]
+[[webflux.welcome-page]]
 == Welcome Page
 Spring Boot supports both static and templated welcome pages.
 It first looks for an `index.html` file in the configured static content locations.
@@ -97,7 +97,7 @@ If either is found, it is automatically used as the welcome page of the applicat
 
 
 
-[[web.reactive.webflux.template-engines]]
+[[webflux.template-engines]]
 == Template Engines
 As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML content.
 Spring WebFlux supports a variety of templating technologies, including Thymeleaf, FreeMarker, and Mustache.
@@ -112,13 +112,13 @@ When you use one of these templating engines with the default configuration, you
 
 
 
-[[web.reactive.webflux.error-handling]]
+[[webflux.error-handling]]
 == Error Handling
 Spring Boot provides a `WebExceptionHandler` that handles all errors in a sensible way.
 Its position in the processing order is immediately before the handlers provided by WebFlux, which are considered last.
 For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
 For browser clients, there is a "`whitelabel`" error handler that renders the same data in HTML format.
-You can also provide your own HTML templates to display errors (see the xref:web/reactive/webflux.adoc#web.reactive.webflux.error-handling.error-pages[next section]).
+You can also provide your own HTML templates to display errors (see the xref:web/reactive/webflux.adoc#webflux.error-handling.error-pages[next section]).
 
 Before customizing error handling in Spring Boot directly, you can leverage the {spring-framework-docs}/web-reactive.html#webflux-ann-rest-exceptions[RFC 7807 Problem Details] support in Spring WebFlux.
 Spring WebFlux can produce custom error messages with the `application/problem+json` media type, like:
@@ -147,14 +147,14 @@ include-code::./MyErrorWebExceptionHandler[]
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
 
-In some cases, errors handled at the controller or handler function level are not recorded by the xref:actuator/metrics/supported.adoc#actuator.metrics.supported.spring-webflux[metrics infrastructure].
+In some cases, errors handled at the controller or handler function level are not recorded by the xref:actuator/metrics/supported.adoc#supported.spring-webflux[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
 include-code::./MyExceptionHandlingController[]
 
 
 
-[[web.reactive.webflux.error-handling.error-pages]]
+[[webflux.error-handling.error-pages]]
 === Custom Error Pages
 If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
 Error pages can either be static HTML (that is, added under any of the static resource directories) or built with templates.
@@ -192,7 +192,7 @@ To map all `5xx` errors by using a Mustache template, your directory structure w
 
 
 
-[[web.reactive.webflux.web-filters]]
+[[webflux.web-filters]]
 == Web Filters
 Spring WebFlux provides a `WebFilter` interface that can be implemented to filter HTTP request-response exchanges.
 `WebFilter` beans found in the application context will be automatically used to filter each exchange.

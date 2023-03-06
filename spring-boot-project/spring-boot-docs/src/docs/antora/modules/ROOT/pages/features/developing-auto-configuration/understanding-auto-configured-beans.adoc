@@ -1,4 +1,4 @@
-[[features.developing-auto-configuration.understanding-auto-configured-beans]]
+[[understanding-auto-configured-beans]]
 = Understanding Auto-configured Beans
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[getting-started.installing]]
+[[installing]]
 = Installing Spring Boot
 
 Spring Boot can be used with "`classic`" Java development tools or installed as a command line tool.
@@ -10,12 +10,12 @@ Before you begin, you should check your current Java installation by using the f
 	$ java -version
 ----
 
-If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the xref:getting-started/installing.adoc#getting-started.installing.cli[Spring Boot CLI] (Command Line Interface) first.
+If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the xref:getting-started/installing.adoc#installing.cli[Spring Boot CLI] (Command Line Interface) first.
 Otherwise, read on for "`classic`" installation instructions.
 
 
 
-[[getting-started.installing.java]]
+[[installing.java]]
 == Installation Instructions for the Java Developer
 You can use Spring Boot in the same way as any standard Java library.
 To do so, include the appropriate `+spring-boot-*.jar+` files on your classpath.
@@ -26,7 +26,7 @@ Although you _could_ copy Spring Boot jars, we generally recommend that you use 
 
 
 
-[[getting-started.installing.java.maven]]
+[[installing.java.maven]]
 === Maven Installation
 Spring Boot is compatible with Apache Maven 3.5 or above.
 If you do not already have Maven installed, you can follow the instructions at https://maven.apache.org.
@@ -37,20 +37,20 @@ Ubuntu users can run `sudo apt-get install maven`.
 Windows users with https://chocolatey.org/[Chocolatey] can run `choco install maven` from an elevated (administrator) prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` group id.
-Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more xref:using/build-systems.adoc#using.build-systems.starters["`Starters`"].
+Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more xref:using/build-systems.adoc#build-systems.starters["`Starters`"].
 Spring Boot also provides an optional xref:build-tool-plugins/maven.adoc[Maven plugin] to create executable jars.
 
 More details on getting started with Spring Boot and Maven can be found in the {spring-boot-maven-plugin-docs}#getting-started[Getting Started section] of the Maven plugin's reference guide.
 
 
 
-[[getting-started.installing.java.gradle]]
+[[installing.java.gradle]]
 === Gradle Installation
 Spring Boot is compatible with Gradle 7.x (7.5 or later) and 8.x.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
-Typically, your project declares dependencies to one or more xref:using/build-systems.adoc#using.build-systems.starters["`Starters`"].
+Typically, your project declares dependencies to one or more xref:using/build-systems.adoc#build-systems.starters["`Starters`"].
 Spring Boot provides a useful xref:build-tool-plugins/gradle.adoc[Gradle plugin] that can be used to simplify dependency declarations and to create executable jars.
 
 .Gradle Wrapper
@@ -64,7 +64,7 @@ More details on getting started with Spring Boot and Gradle can be found in the 
 
 
 
-[[getting-started.installing.cli]]
+[[installing.cli]]
 == Installing the Spring Boot CLI
 The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring.
 
@@ -72,7 +72,7 @@ You do not need to use the CLI to work with Spring Boot, but it is a quick way t
 
 
 
-[[getting-started.installing.cli.manual-installation]]
+[[installing.cli.manual-installation]]
 === Manual Installation
 ifeval::["{artifact-release-type}" == "snapshot"]
 You can download one of the `spring-boot-cli-\*-bin.zip` or `spring-boot-cli-*-bin.tar.gz` files from the {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/[Spring software repository].
@@ -91,7 +91,7 @@ Alternatively, you can use `java -jar` with the `.jar` file (the script helps yo
 
 
 
-[[getting-started.installing.cli.sdkman]]
+[[installing.cli.sdkman]]
 === Installation with SDKMAN!
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of various binary SDKs, including Groovy and the Spring Boot CLI.
 Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following commands:
@@ -137,7 +137,7 @@ You can see it by running the following command:
 
 
 
-[[getting-started.installing.cli.homebrew]]
+[[installing.cli.homebrew]]
 === OSX Homebrew Installation
 If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot CLI by using the following commands:
 
@@ -154,7 +154,7 @@ In that case, run `brew update` and try again.
 
 
 
-[[getting-started.installing.cli.macports]]
+[[installing.cli.macports]]
 === MacPorts Installation
 If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the Spring Boot CLI by using the following command:
 
@@ -165,7 +165,7 @@ If you are on a Mac and use https://www.macports.org/[MacPorts], you can install
 
 
 
-[[getting-started.installing.cli.completion]]
+[[installing.cli.completion]]
 === Command-line Completion
 The Spring Boot CLI includes scripts that provide command completion for the https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and https://en.wikipedia.org/wiki/Z_shell[zsh] shells.
 You can `source` the script (also named `spring`) in any shell or put it in your personal or system-wide bash completion initialization.
@@ -183,7 +183,7 @@ NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the comm
 
 
 
-[[getting-started.installing.cli.scoop]]
+[[installing.cli.scoop]]
 === Windows Scoop Installation
 If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot CLI by using the following commands:
 

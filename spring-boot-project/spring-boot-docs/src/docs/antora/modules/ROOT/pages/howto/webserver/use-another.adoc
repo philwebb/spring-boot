@@ -1,4 +1,4 @@
-[[howto.webserver.use-another]]
+[[use-another]]
 = Use Another Web Server
 
 Many Spring Boot starters include default embedded containers.

@@ -1,4 +1,4 @@
-[[howto.webserver.enable-tomcat-mbean-registry]]
+[[enable-tomcat-mbean-registry]]
 = Enable Tomcat's MBean Registry
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[getting-started.introducing-spring-boot]]
+[[introducing-spring-boot]]
 = Introducing Spring Boot
 :page-section-summary-toc: 1
 

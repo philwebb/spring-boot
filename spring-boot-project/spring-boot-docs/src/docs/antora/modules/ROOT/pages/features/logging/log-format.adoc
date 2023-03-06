@@ -1,4 +1,4 @@
-[[features.logging.log-format]]
+[[log-format]]
 = Log Format
 :page-section-summary-toc: 1
 

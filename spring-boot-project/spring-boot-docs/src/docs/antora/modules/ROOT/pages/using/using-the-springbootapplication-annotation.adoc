@@ -1,4 +1,4 @@
-[[using.using-the-springbootapplication-annotation]]
+[[using-the-springbootapplication-annotation]]
 = Using the @SpringBootApplication Annotation
 :page-section-summary-toc: 1
 

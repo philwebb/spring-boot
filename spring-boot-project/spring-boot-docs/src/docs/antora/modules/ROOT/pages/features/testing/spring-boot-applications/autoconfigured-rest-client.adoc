@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.autoconfigured-rest-client]]
+[[autoconfigured-rest-client]]
 = Auto-configured REST Clients
 :page-section-summary-toc: 1
 

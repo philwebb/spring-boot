@@ -1,4 +1,4 @@
-[[features.spring-application.lazy-initialization]]
+[[lazy-initialization]]
 = Lazy Initialization
 
 `SpringApplication` allows an application to be initialized lazily.

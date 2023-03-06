@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.spock]]
+[[spock]]
 = Using Spock to Test Spring Boot Applications
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[features.spring-application.banner]]
+[[banner]]
 = Customizing the Banner
 
 The banner that is printed on start up can be changed by adding a `banner.txt` file to your classpath or by setting the configprop:spring.banner.location[] property to the location of such a file.

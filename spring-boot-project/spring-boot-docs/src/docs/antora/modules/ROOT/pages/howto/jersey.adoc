@@ -1,9 +1,9 @@
-[[howto.jersey]]
+[[jersey]]
 = Jersey
 
 
 
-[[howto.jersey.spring-security]]
+[[jersey.spring-security]]
 == Secure Jersey endpoints with Spring Security
 Spring Security can be used to secure a Jersey-based web application in much the same way as it can be used to secure a Spring MVC-based web application.
 However, if you want to use Spring Security's method-level security with Jersey, you must configure Jersey to use `setStatus(int)` rather `sendError(int)`.
@@ -18,7 +18,7 @@ include::{include-java}/howto/jersey/springsecurity/JerseySetStatusOverSendError
 
 
 
-[[howto.jersey.alongside-another-web-framework]]
+[[jersey.alongside-another-web-framework]]
 == Use Jersey Alongside Another Web Framework
 To use Jersey alongside another web framework, such as Spring MVC, it should be configured so that it will allow the other framework to handle requests that it cannot handle.
 First, configure Jersey to use a filter rather than a servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.

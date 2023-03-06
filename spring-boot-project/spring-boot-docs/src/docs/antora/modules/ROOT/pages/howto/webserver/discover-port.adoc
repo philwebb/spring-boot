@@ -1,4 +1,4 @@
-[[howto.webserver.discover-port]]
+[[discover-port]]
 = Discover the HTTP Port at Runtime
 :page-section-summary-toc: 1
 

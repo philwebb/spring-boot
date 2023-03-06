@@ -1,4 +1,4 @@
-[[upgrading.to-feature]]
+[[to-feature]]
 = Upgrading to a New Feature Release
 :page-section-summary-toc: 1
 

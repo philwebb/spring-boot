@@ -1,4 +1,4 @@
-[[features.spring-application.admin]]
+[[admin]]
 = Admin Features
 :page-section-summary-toc: 1
 

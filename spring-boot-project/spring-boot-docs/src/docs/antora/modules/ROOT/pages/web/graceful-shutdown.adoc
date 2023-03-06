@@ -1,4 +1,4 @@
-[[web.graceful-shutdown]]
+[[graceful-shutdown]]
 = Graceful Shutdown
 
 Graceful shutdown is supported with all four embedded web servers (Jetty, Reactor Netty, Tomcat, and Undertow) and with both reactive and servlet-based web applications.

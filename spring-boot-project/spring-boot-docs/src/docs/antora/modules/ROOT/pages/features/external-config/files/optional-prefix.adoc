@@ -1,4 +1,4 @@
-[[features.external-config.files.optional-prefix]]
+[[optional-prefix]]
 = Optional Locations
 :page-section-summary-toc: 1
 

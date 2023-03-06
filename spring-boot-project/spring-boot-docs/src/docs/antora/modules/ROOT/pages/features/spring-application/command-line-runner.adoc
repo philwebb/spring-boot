@@ -1,4 +1,4 @@
-[[features.spring-application.command-line-runner]]
+[[command-line-runner]]
 = Using the ApplicationRunner or CommandLineRunner
 :page-section-summary-toc: 1
 

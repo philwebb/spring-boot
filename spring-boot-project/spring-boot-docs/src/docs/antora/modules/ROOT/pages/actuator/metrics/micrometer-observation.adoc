@@ -1,4 +1,4 @@
-[[actuator.metrics.micrometer-observation]]
+[[micrometer-observation]]
 = Integration with Micrometer Observation
 :page-section-summary-toc: 1
 

@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.user-configuration-and-slicing]]
+[[user-configuration-and-slicing]]
 = User Configuration and Slicing
 
 If you xref:using/structuring-your-code.adoc[structure your code] in a sensible way, your `@SpringBootApplication` class is xref:features/testing/spring-boot-applications/detecting-configuration.adoc[used by default] as the configuration of your tests.
@@ -17,7 +17,7 @@ include-code::./MyBatchConfiguration[]
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
 The latter approach lets you enable it in one of your tests, if necessary, with the `@Import` annotation.
-See xref:howto/testing.adoc#howto.testing.slice-tests[this how-to section] for more details on when you might want to enable specific `@Configuration` classes for slice tests.
+See xref:howto/testing.adoc#testing.slice-tests[this how-to section] for more details on when you might want to enable specific `@Configuration` classes for slice tests.
 
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:

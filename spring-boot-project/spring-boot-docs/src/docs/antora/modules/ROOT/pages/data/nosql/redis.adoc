@@ -1,4 +1,4 @@
-[[data.nosql.redis]]
+[[redis]]
 = Redis
 
 https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
@@ -12,7 +12,7 @@ TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for
 
 
 
-[[data.nosql.redis.connecting]]
+[[redis.connecting]]
 == Connecting to Redis
 You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
 The following listing shows an example of such a bean:

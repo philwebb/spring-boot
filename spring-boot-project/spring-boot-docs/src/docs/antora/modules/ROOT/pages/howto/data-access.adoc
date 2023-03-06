@@ -1,4 +1,4 @@
-[[howto.data-access]]
+[[data-access]]
 = Data Access
 :page-section-summary-toc: 1
 

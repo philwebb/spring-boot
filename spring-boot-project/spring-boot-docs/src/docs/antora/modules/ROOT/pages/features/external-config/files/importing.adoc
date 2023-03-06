@@ -1,4 +1,4 @@
-[[features.external-config.files.importing]]
+[[importing]]
 = Importing Additional Data
 
 Application properties may import further config data from other locations using the `spring.config.import` property.

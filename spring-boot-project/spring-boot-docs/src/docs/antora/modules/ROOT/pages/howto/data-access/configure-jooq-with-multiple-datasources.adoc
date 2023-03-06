@@ -1,4 +1,4 @@
-[[howto.data-access.configure-jooq-with-multiple-datasources]]
+[[configure-jooq-with-multiple-datasources]]
 = Configure jOOQ with Two DataSources
 :page-section-summary-toc: 1
 

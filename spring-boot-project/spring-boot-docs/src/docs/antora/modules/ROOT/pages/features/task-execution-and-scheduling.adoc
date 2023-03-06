@@ -1,4 +1,4 @@
-[[features.task-execution-and-scheduling]]
+[[task-execution-and-scheduling]]
 = Task Execution and Scheduling
 
 In the absence of an `Executor` bean in the context, Spring Boot auto-configures a `ThreadPoolTaskExecutor` with sensible defaults that can be automatically associated to asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request processing.

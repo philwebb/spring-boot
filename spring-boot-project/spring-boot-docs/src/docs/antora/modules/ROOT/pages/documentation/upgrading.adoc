@@ -1,4 +1,4 @@
-[[documentation.upgrading]]
+[[upgrading]]
 = Upgrading From an Earlier Version
 :page-section-summary-toc: 1
 

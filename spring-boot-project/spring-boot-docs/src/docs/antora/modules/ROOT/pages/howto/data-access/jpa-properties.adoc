@@ -1,4 +1,4 @@
-[[howto.data-access.jpa-properties]]
+[[jpa-properties]]
 = Configure JPA Properties
 
 Spring Data JPA already provides some vendor-independent configuration options (such as those for SQL logging), and Spring Boot exposes those options and a few more for Hibernate as external configuration properties.

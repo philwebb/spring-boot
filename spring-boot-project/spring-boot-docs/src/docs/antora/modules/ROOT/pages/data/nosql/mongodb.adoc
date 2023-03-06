@@ -1,4 +1,4 @@
-[[data.nosql.mongodb]]
+[[mongodb]]
 = MongoDB
 
 https://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a JSON-like schema instead of traditional table-based relational data.
@@ -6,7 +6,7 @@ Spring Boot offers several conveniences for working with MongoDB, including the 
 
 
 
-[[data.nosql.mongodb.connecting]]
+[[mongodb.connecting]]
 == Connecting to a MongoDB Database
 To access MongoDB databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
@@ -66,7 +66,7 @@ The auto-configuration configures this factory automatically if Netty is availab
 
 
 
-[[data.nosql.mongodb.template]]
+[[mongodb.template]]
 == MongoTemplate
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
@@ -77,7 +77,7 @@ See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Ja
 
 
 
-[[data.nosql.mongodb.repositories]]
+[[mongodb.repositories]]
 == Spring Data MongoDB Repositories
 Spring Data includes repository support for MongoDB.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed automatically, based on method names.

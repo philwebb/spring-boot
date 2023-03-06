@@ -1,4 +1,4 @@
-[[howto.data-access.configure-a-component-that-is-used-by-jpa]]
+[[configure-a-component-that-is-used-by-jpa]]
 = Configure a Component that is Used by JPA
 :page-section-summary-toc: 1
 

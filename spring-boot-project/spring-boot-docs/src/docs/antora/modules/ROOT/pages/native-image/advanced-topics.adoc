@@ -1,9 +1,9 @@
-[[native-image.advanced]]
+[[advanced]]
 = Advanced Native Images Topics
 
 
 
-[[native-image.advanced.nested-configuration-properties]]
+[[advanced.nested-configuration-properties]]
 == Nested Configuration Properties
 
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
@@ -32,7 +32,7 @@ include-code::./MyPropertiesKotlin[]
 
 NOTE: Please use public getters and setters in all cases, otherwise the properties will not be bindable.
 
-[[native-image.advanced.converting-executable-jars]]
+[[advanced.converting-executable-jars]]
 == Converting a Spring Boot Executable Jar
 
 It is possible to convert a Spring Boot xref:appendix/executable-jar.adoc[executable jar] into a native image as long as the jar contains the AOT generated assets.
@@ -47,7 +47,7 @@ NOTE: Your executable jar must include AOT generated assets such as generated cl
 
 
 
-[[native-image.advanced.converting-executable-jars.buildpacks]]
+[[advanced.converting-executable-jars.buildpacks]]
 === Using Buildpacks
 Spring Boot applications usually use Cloud Native Buildpacks through the Maven (`mvn spring-boot:build-image`) or Gradle (`gradle bootBuildImage`) integrations.
 You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable jar into a native container image.
@@ -79,7 +79,7 @@ Once `pack` has finished, you can launch the application using `docker run`:
 
 
 
-[[native-image.advanced.converting-executable-jars.native-image]]
+[[advanced.converting-executable-jars.native-image]]
 === Using GraalVM native-image
 Another option to turn an AOT processed Spring Boot executable jar into a native executable is to use the GraalVM `native-image` tool.
 For this to work, you'll need a GraalVM distribution on your machine.
@@ -107,7 +107,7 @@ You need to ensure that all jars are listed (the command above uses `find` and `
 
 
 
-[[native-image.advanced.using-the-tracing-agent]]
+[[advanced.using-the-tracing-agent]]
 == Using the Tracing Agent
 The GraalVM native image {graal-native-image-docs}/metadata/AutomaticMetadataCollection[tracing agent] allows you to intercept reflection, resources or proxy usage on the JVM in order to generate the related hints.
 Spring should generate most of these hints automatically, but the tracing agent can be used to quickly identify the missing entries.
@@ -125,7 +125,7 @@ To address this problem the agent supports an access-filter file that will cause
 
 
 
-[[native-image.advanced.using-the-tracing-agent.launch]]
+[[advanced.using-the-tracing-agent.launch]]
 === Launch the Application Directly
 Use the following command to launch the application with the native image tracing agent attached:
 
@@ -148,7 +148,7 @@ For further reading, please see {graal-native-image-docs}/metadata/AutomaticMeta
 
 
 
-[[native-image.advanced.custom-hints]]
+[[advanced.custom-hints]]
 == Custom Hints
 If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use the `RuntimeHintsRegistrar` API.
 Create a class that implements the `RuntimeHintsRegistrar` interface, and then make appropriate calls to the provided `RuntimeHints` instance:
@@ -161,7 +161,7 @@ If you have classes which need binding (mostly needed when serializing or deseri
 Most of the hints are automatically inferred, for example when accepting or returning data from a `@RestController` method.
 But when you work with `WebClient` or `RestTemplate` directly, you might need to use `@RegisterReflectionForBinding`.
 
-[[native-image.advanced.custom-hints.testing]]
+[[advanced.custom-hints.testing]]
 === Testing custom hints
 The `RuntimeHintsPredicates` API can be used to test your hints.
 The API provides methods that build a `Predicate` that can be used to test a `RuntimeHints` instance.
@@ -172,7 +172,7 @@ include-code::./MyRuntimeHintsTests[]
 
 
 
-[[native-image.advanced.known-limitations]]
+[[advanced.known-limitations]]
 == Known Limitations
 GraalVM native images are an evolving technology and not all libraries provide support.
 The GraalVM community is helping by providing https://github.com/oracle/graalvm-reachability-metadata[reachability metadata] for projects that don't yet ship their own.

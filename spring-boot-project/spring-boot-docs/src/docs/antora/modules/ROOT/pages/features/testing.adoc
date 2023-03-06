@@ -1,4 +1,4 @@
-[[features.testing]]
+[[testing]]
 = Testing
 
 Spring Boot provides a number of utilities and annotations to help when testing your application.

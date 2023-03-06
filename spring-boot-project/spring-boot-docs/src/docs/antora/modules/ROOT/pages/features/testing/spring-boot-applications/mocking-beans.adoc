@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.mocking-beans]]
+[[mocking-beans]]
 = Mocking and Spying Beans
 
 When running tests, it is sometimes necessary to mock certain components within your application context.

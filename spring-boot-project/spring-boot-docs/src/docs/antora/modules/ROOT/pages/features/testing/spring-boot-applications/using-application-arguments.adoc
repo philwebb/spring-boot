@@ -1,4 +1,4 @@
-[[features.testing.spring-boot-applications.using-application-arguments]]
+[[using-application-arguments]]
 = Using Application Arguments
 :page-section-summary-toc: 1
 

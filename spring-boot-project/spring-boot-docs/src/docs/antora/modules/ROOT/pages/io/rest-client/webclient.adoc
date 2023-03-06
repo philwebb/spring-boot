@@ -1,4 +1,4 @@
-[[io.rest-client.webclient]]
+[[webclient]]
 = WebClient
 
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
@@ -7,7 +7,7 @@ You can learn more about the `WebClient` in the dedicated {spring-framework-docs
 
 Spring Boot creates and pre-configures a `WebClient.Builder` for you.
 It is strongly advised to inject it in your components and use it to create `WebClient` instances.
-Spring Boot is configuring that builder to share HTTP resources, reflect codecs setup in the same fashion as the server ones (see xref:web/reactive/webflux.adoc#web.reactive.webflux.httpcodecs[WebFlux HTTP codecs auto-configuration]), and more.
+Spring Boot is configuring that builder to share HTTP resources, reflect codecs setup in the same fashion as the server ones (see xref:web/reactive/webflux.adoc#webflux.httpcodecs[WebFlux HTTP codecs auto-configuration]), and more.
 
 The following code shows a typical example:
 
@@ -15,7 +15,7 @@ include-code::./MyService[]
 
 
 
-[[io.rest-client.webclient.runtime]]
+[[webclient.runtime]]
 == WebClient Runtime
 Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient`, depending on the libraries available on the application classpath.
 For now, Reactor Netty, Jetty ReactiveStream client, Apache HttpClient, and the JDK's HttpClient are supported.
@@ -32,7 +32,7 @@ You can learn more about the {spring-framework-docs}/web-reactive.html#webflux-c
 
 
 
-[[io.rest-client.webclient.customization]]
+[[webclient.customization]]
 == WebClient Customization
 There are three main approaches to `WebClient` customization, depending on how broadly you want the customizations to apply.
 

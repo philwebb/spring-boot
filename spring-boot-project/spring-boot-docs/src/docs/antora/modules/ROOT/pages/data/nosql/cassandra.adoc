@@ -1,4 +1,4 @@
-[[data.nosql.cassandra]]
+[[cassandra]]
 = Cassandra
 
 https://cassandra.apache.org/[Cassandra] is an open source, distributed database management system designed to handle large amounts of data across many commodity servers.
@@ -7,7 +7,7 @@ There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the d
 
 
 
-[[data.nosql.cassandra.connecting]]
+[[cassandra.connecting]]
 == Connecting to Cassandra
 You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
 The `spring.cassandra.*` properties can be used to customize the connection.
@@ -57,7 +57,7 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 
 
 
-[[data.nosql.cassandra.repositories]]
+[[cassandra.repositories]]
 == Spring Data Cassandra Repositories
 Spring Data includes basic repository support for Cassandra.
 Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
