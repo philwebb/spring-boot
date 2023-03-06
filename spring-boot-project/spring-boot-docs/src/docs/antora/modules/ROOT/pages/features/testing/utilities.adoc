@@ -10,7 +10,7 @@ A few test utility classes that are generally useful when testing your applicati
 `ConfigDataApplicationContextInitializer` is an `ApplicationContextInitializer` that you can apply to your tests to load Spring Boot `application.properties` files.
 You can use it when you do not need the full set of features provided by `@SpringBootTest`, as shown in the following example:
 
-include::code:MyConfigFileTests[]
+include-code::./MyConfigFileTests[]
 
 NOTE: Using `ConfigDataApplicationContextInitializer` alone does not provide support for `@Value("${...}")` injection.
 Its only job is to ensure that `application.properties` files are loaded into Spring's `Environment`.
@@ -23,7 +23,7 @@ For `@Value` support, you need to either additionally configure a `PropertySourc
 `TestPropertyValues` lets you quickly add properties to a `ConfigurableEnvironment` or `ConfigurableApplicationContext`.
 You can call it with `key=value` strings, as follows:
 
-include::code:MyEnvironmentTests[]
+include-code::./MyEnvironmentTests[]
 
 
 
@@ -32,7 +32,7 @@ include::code:MyEnvironmentTests[]
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and `System.err` output.
 To use it, add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutput` as an argument to your test class constructor or test method as follows:
 
-include::code:MyOutputCaptureTests[]
+include-code::./MyOutputCaptureTests[]
 
 
 
@@ -56,10 +56,10 @@ If you do use Apache's HTTP client, some additional test-friendly features are e
 
 `TestRestTemplate` can be instantiated directly in your integration tests, as shown in the following example:
 
-include::code:MyTests[]
+include-code::./MyTests[]
 
 Alternatively, if you use the `@SpringBootTest` annotation with `WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can inject a fully configured `TestRestTemplate` and start using it.
 If necessary, additional customizations can be applied through the `RestTemplateBuilder` bean.
 Any URLs that do not specify a host and port automatically connect to the embedded server, as shown in the following example:
 
-include::code:MySpringBootTests[]
+include-code::./MySpringBootTests[]

@@ -63,4 +63,4 @@ For SAML2 logout, by default, Spring Security's `Saml2LogoutRequestFilter` and `
 If you want to customize the `url` to which AP-initiated logout requests get sent to or the `response-url` to which an AP sends logout responses to, to use a different pattern, you need to provide configuration to process that custom pattern.
 For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
 
-include::code:MySamlRelyingPartyConfiguration[]
+include-code::./MySamlRelyingPartyConfiguration[]

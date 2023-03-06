@@ -39,11 +39,11 @@ Spring Boot also adds any auto-configured registries to the global static compos
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
-include::code:commontags/MyMeterRegistryConfiguration[]
+include-code::./commontags/MyMeterRegistryConfiguration[]
 
 You can apply customizations to particular registry implementations by being more specific about the generic type:
 
-include::code:specifictype/MyMeterRegistryConfiguration[]
+include-code::./specifictype/MyMeterRegistryConfiguration[]
 
 Spring Boot also xref:actuator/metrics/supported.adoc[configures built-in instrumentation] that you can control through configuration or dedicated annotation markers.
 

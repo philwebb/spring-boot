@@ -4,7 +4,7 @@
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
 Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
-include::code:MyJdbcTests[]
+include-code::./MyJdbcTests[]
 
 NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations as they are handled in a specific way by Spring Boot.
 

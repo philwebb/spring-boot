@@ -3,7 +3,7 @@
 
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
 
-include::code:MyProperties[]
+include-code::./MyProperties[]
 
 In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
 This means that the binder will find a constructor with the parameters that you wish to have bound.
@@ -20,7 +20,7 @@ The conversion service will be applied to coerce the annotation's `String` value
 Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
 To make it contain a non-null instance of `Security` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `Security` to be declared as nullable as they do not have default values), use an empty `@DefaultValue` annotation:
 
-include::code:nonnull/MyProperties[tag=*]
+include-code::./nonnull/MyProperties[tag=*]
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)

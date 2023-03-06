@@ -12,7 +12,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataCouchba
 
 The following example shows a typical setup for using Couchbase tests in Spring Boot:
 
-include::code:MyDataCouchbaseTests[]
+include-code::./MyDataCouchbaseTests[]
 
 
 

@@ -17,7 +17,7 @@ TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for
 You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
 The following listing shows an example of such a bean:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 By default, the instance tries to connect to a Redis server at `localhost:6379`.
 You can specify custom connection details using `spring.data.redis.*` properties, as shown in the following example:

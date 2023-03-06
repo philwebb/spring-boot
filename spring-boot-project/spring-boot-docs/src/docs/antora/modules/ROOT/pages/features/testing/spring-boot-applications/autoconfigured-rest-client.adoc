@@ -11,7 +11,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@RestClientT
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
-include::code:MyRestClientTests[]
+include-code::./MyRestClientTests[]
 
 
 

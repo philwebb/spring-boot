@@ -8,14 +8,14 @@ Sometimes, classes annotated with `@ConfigurationProperties` might not be suitab
 In these cases, specify the list of types to process using the `@EnableConfigurationProperties` annotation.
 This can be done on any `@Configuration` class, as shown in the following example:
 
-include::code:MyConfiguration[]
+include-code::./MyConfiguration[]
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
 Typically, it is added to the main application class that is annotated with `@SpringBootApplication` but it can be added to any `@Configuration` class.
 By default, scanning will occur from the package of the class that declares the annotation.
 If you want to define specific packages to scan, you can do so as shown in the following example:
 
-include::code:MyApplication[]
+include-code::./MyApplication[]
 
 [NOTE]
 ====

@@ -23,7 +23,7 @@ By default, all packages below your main configuration class (the one annotated 
 Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
 A typical entity class resembles the following example:
 
-include::code:City[]
+include-code::./City[]
 
 TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
 See the "`xref:howto/data-access/separate-entity-definitions-from-spring-configuration.adoc[Separate @Entity Definitions from Spring Configuration]`" how-to.
@@ -43,7 +43,7 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-include::code:CityRepository[]
+include-code::./CityRepository[]
 
 Spring Data JPA repositories support three different modes of bootstrapping: default, deferred, and lazy.
 To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.repositories.bootstrap-mode[] property to `deferred` or `lazy` respectively.
@@ -68,7 +68,7 @@ If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are a
 
 To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as shown in the following example:
 
-include::code:CountryRepository[]
+include-code::./CountryRepository[]
 
 NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers reference documentation].
 

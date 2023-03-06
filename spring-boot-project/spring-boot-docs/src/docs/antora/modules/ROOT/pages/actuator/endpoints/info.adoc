@@ -148,7 +148,7 @@ To provide custom application information, you can register Spring beans that im
 
 The following example contributes an `example` entry with a single value:
 
-include::code:MyInfoContributor[]
+include-code::./MyInfoContributor[]
 
 If you reach the `info` endpoint, you should see a response that contains the following additional entry:
 

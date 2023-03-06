@@ -269,7 +269,7 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 To take control over this behavior, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
 
-include::code:MyGraphiteConfiguration[]
+include-code::./MyGraphiteConfiguration[]
 ====
 
 
@@ -342,7 +342,7 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 To take control over this behavior, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
 
-include::code:MyJmxConfiguration[]
+include-code::./MyJmxConfiguration[]
 ====
 
 

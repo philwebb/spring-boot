@@ -5,7 +5,7 @@
 If your application expects xref:features/spring-application/application-arguments.adoc[arguments], you can
 have `@SpringBootTest` inject them using the `args` attribute.
 
-include::code:MyApplicationArgumentTests[]
+include-code::./MyApplicationArgumentTests[]
 
 
 

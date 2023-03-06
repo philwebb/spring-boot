@@ -6,7 +6,7 @@ Common examples where this is useful include dash-separated environment properti
 
 As an example, consider the following `@ConfigurationProperties` class:
 
-include::code:MyPersonProperties[]
+include-code::./MyPersonProperties[]
 
 With the preceding code, the following properties names can all be used:
 

@@ -11,7 +11,7 @@ This section answers common questions about testing.
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
-include::code:MySecurityTests[]
+include-code::./MySecurityTests[]
 
 Spring Security provides comprehensive integration with Spring MVC Test and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
 
@@ -27,14 +27,14 @@ It integrates with JUnit, allowing you to write a test class that can start up a
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 Testcontainers can be used in a Spring Boot test as follows:
 
-include::code:vanilla/MyIntegrationTests[]
+include-code::./vanilla/MyIntegrationTests[]
 
 This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
 In most cases, you will need to configure the application using details from the running container, such as container IP or port.
 
 This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
 
-include::code:dynamicproperties/MyIntegrationTests[]
+include-code::./dynamicproperties/MyIntegrationTests[]
 
 The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
 
@@ -48,7 +48,7 @@ Consider this example:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/testing/slicetests/MyConfiguration.java[]
+include::{include-java}/howto/testing/slicetests/MyConfiguration.java[]
 ----
 
 For a `@WebMvcTest` for an application with the above `@Configuration` class, you might expect to have the `SecurityFilterChain` bean in the application context so that you can test if your controller endpoints are secured properly.
@@ -59,12 +59,12 @@ Splitting the configuration class into two will enable importing just the securi
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/testing/slicetests/MySecurityConfiguration.java[]
+include::{include-java}/howto/testing/slicetests/MySecurityConfiguration.java[]
 ----
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/testing/slicetests/MyDatasourceConfiguration.java[]
+include::{include-java}/howto/testing/slicetests/MyDatasourceConfiguration.java[]
 ----
 
 Having a single configuration class can be inefficient when beans of a certain domain need to be included in slice tests.

@@ -4,7 +4,7 @@
 
 If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
 
-include::code:MyWebSocketConfiguration[]
+include-code::./MyWebSocketConfiguration[]
 
 The bean shown in the preceding example registers any `@ServerEndpoint` annotated beans with the underlying WebSocket container.
 When deployed to a standalone servlet container, this role is performed by a servlet container initializer, and the `ServerEndpointExporter` bean is not required.

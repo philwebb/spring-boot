@@ -7,7 +7,7 @@ Doing so can be particularly useful when you want to bind properties to third-pa
 
 To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to its bean registration, as shown in the following example:
 
-include::code:ThirdPartyConfiguration[]
+include-code::./ThirdPartyConfiguration[]
 
 Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `SomeProperties` example.
 

@@ -8,7 +8,7 @@ Concretely, each test should create a well defined `ApplicationContext` that rep
 `ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
 The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
 
-include::code:MyServiceAutoConfigurationTests[tag=runner]
+include-code::./MyServiceAutoConfigurationTests[tag=runner]
 
 TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
 
@@ -16,17 +16,17 @@ Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
 Invoking `run` provides a callback context that can be used with `AssertJ`.
 
-include::code:MyServiceAutoConfigurationTests[tag=test-user-config]
+include-code::./MyServiceAutoConfigurationTests[tag=test-user-config]
 
 It is also possible to easily customize the `Environment`, as shown in the following example:
 
-include::code:MyServiceAutoConfigurationTests[tag=test-env]
+include-code::./MyServiceAutoConfigurationTests[tag=test-env]
 
 The runner can also be used to display the `ConditionEvaluationReport`.
 The report can be printed at `INFO` or `DEBUG` level.
 The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
 
-include::code:MyConditionEvaluationReportingTests[]
+include-code::./MyConditionEvaluationReportingTests[]
 
 
 
@@ -42,7 +42,7 @@ It is also possible to test what happens when a particular class and/or package 
 Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
 In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
 
-include::code:../MyServiceAutoConfigurationTests[tag=test-classloader]
+include-code::./../MyServiceAutoConfigurationTests[tag=test-classloader]
 
 
 

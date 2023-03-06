@@ -74,7 +74,7 @@ This can be done using an `ApplicationListener` which listens for the `Applicati
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include:../:{docs-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean.java[]
+include::{include-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean.java[]
 ----
 
 
@@ -126,7 +126,7 @@ The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `SameSite` va
 There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
 For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.
 
-include::code:MySameSiteConfiguration[]
+include-code::./MySameSiteConfiguration[]
 
 
 
@@ -136,12 +136,12 @@ If you need to programmatically configure your embedded servlet container, you c
 `WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
-include::code:MyWebServerFactoryCustomizer[]
+include-code::./MyWebServerFactoryCustomizer[]
 
 `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
 The following example shows how to customize `TomcatServletWebServerFactory` that provides access to Tomcat-specific configuration options:
 
-include::code:MyTomcatWebServerFactoryCustomizer[]
+include-code::./MyTomcatWebServerFactoryCustomizer[]
 
 
 

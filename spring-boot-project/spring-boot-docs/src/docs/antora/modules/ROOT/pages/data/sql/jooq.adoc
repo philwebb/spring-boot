@@ -49,13 +49,13 @@ The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` in
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
 To use the `DSLContext`, you can inject it, as shown in the following example:
 
-include::code:MyBean[tag=!method]
+include-code::./MyBean[tag=!method]
 
 TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`.
 
 You can then use the `DSLContext` to construct your queries, as shown in the following example:
 
-include::code:MyBean[tag=method]
+include-code::./MyBean[tag=method]
 
 
 

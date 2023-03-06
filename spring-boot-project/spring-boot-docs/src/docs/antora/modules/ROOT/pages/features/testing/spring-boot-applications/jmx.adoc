@@ -5,5 +5,5 @@
 As the test context framework caches context, JMX is disabled by default to prevent identical components to register on the same domain.
 If such test needs access to an `MBeanServer`, consider marking it dirty as well:
 
-include::code:MyJmxTests[]
+include-code::./MyJmxTests[]
 

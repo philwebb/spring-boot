@@ -48,12 +48,12 @@ TIP: A list of the auto-configurations that are enabled by `@GraphQlTest` can be
 
 Often, `@GraphQlTest` is limited to a set of controllers and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
 
-include::code:GreetingControllerTests[]
+include-code::./GreetingControllerTests[]
 
 `@SpringBootTest` tests are full integration tests and involve the entire application.
 When using a random or defined port, a live server is configured and an `HttpGraphQlTester` bean is contributed automatically so you can use it to test your server.
 When a MOCK environment is configured, you can also request an `HttpGraphQlTester` bean by annotating your test class with `@AutoConfigureHttpGraphQlTester`:
 
-include::code:GraphQlIntegrationTests[]
+include-code::./GraphQlIntegrationTests[]
 
 

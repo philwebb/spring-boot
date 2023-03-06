@@ -4,7 +4,7 @@
 
 You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWebServerFactory`, which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
-include::code:MyTomcatConfiguration[]
+include-code::./MyTomcatConfiguration[]
 
 
 

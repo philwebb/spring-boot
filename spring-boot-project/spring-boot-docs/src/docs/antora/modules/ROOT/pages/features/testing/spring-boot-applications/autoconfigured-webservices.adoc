@@ -14,7 +14,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@WebServiceC
 
 The following example shows the `@WebServiceClientTest` annotation in use:
 
-include::code:MyWebServiceClientTests[]
+include-code::./MyWebServiceClientTests[]
 
 
 
@@ -29,7 +29,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@WebServiceS
 
 The following example shows the `@WebServiceServerTest` annotation in use:
 
-include::code:MyWebServiceServerTests[]
+include-code::./MyWebServiceServerTests[]
 
 
 

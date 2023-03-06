@@ -13,7 +13,7 @@ If you wish to configure custom security for HTTP endpoints (for example, to all
 
 A typical Spring Security configuration might look something like the following example:
 
-include::code:typical/MySecurityConfiguration[]
+include-code::./typical/MySecurityConfiguration[]
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
@@ -33,7 +33,7 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints, as the following example shows:
 
-include::code:exposeall/MySecurityConfiguration[]
+include-code::./exposeall/MySecurityConfiguration[]
 
 NOTE: In both of the preceding examples, the configuration applies only to the actuator endpoints.
 Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.

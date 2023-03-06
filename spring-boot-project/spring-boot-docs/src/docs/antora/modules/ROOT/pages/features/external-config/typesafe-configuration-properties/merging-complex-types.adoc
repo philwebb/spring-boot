@@ -6,7 +6,7 @@ When lists are configured in more than one place, overriding works by replacing 
 For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
 The following example exposes a list of `MyPojo` objects from `MyProperties`:
 
-include::code:list/MyProperties[]
+include-code::./list/MyProperties[]
 
 Consider the following configuration:
 
@@ -58,7 +58,7 @@ For `Map` properties, you can bind with property values drawn from multiple sour
 However, for the same property in multiple sources, the one with the highest priority is used.
 The following example exposes a `Map<String, MyPojo>` from `MyProperties`:
 
-include::code:map/MyProperties[]
+include-code::./map/MyProperties[]
 
 Consider the following configuration:
 

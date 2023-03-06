@@ -17,7 +17,7 @@ This style of configuration works particularly well with the `SpringApplication`
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
 
-include::code:MyService[]
+include-code::./MyService[]
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
 See the xref:configuration-metadata.adoc[appendix] for details.

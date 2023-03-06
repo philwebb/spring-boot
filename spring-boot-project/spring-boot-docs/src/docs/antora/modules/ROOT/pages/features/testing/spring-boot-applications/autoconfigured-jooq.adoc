@@ -14,7 +14,7 @@ TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be xr
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
 
-include::code:MyJooqTests[]
+include-code::./MyJooqTests[]
 
 JOOQ tests are transactional and roll back at the end of each test by default.
 If that is not what you want, you can disable transaction management for a test or for the whole test class as xref:features/testing/spring-boot-applications/autoconfigured-jdbc.adoc[shown in the JDBC example].

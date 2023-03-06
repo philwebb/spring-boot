@@ -17,7 +17,7 @@ Spring Boot provides convenience methods that can be used to override access rul
 
 For example, you can customize your security configuration by adding something like:
 
-include::code:MyWebFluxSecurityConfiguration[]
+include-code::./MyWebFluxSecurityConfiguration[]
 
 
 

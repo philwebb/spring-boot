@@ -14,17 +14,17 @@ It can also be used to configure the host, scheme, and port that appears in any 
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
-include::code:MyUserDocumentationTests[]
+include-code::./MyUserDocumentationTests[]
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsMockMvcConfigurationCustomizer` bean, as shown in the following example:
 
-include::code:MyRestDocsConfiguration[]
+include-code::./MyRestDocsConfiguration[]
 
 If you want to make use of Spring REST Docs support for a parameterized output directory, you can create a `RestDocumentationResultHandler` bean.
 The auto-configuration calls `alwaysDo` with this result handler, thereby causing each `MockMvc` call to automatically generate the default snippets.
 The following example shows a `RestDocumentationResultHandler` being defined:
 
-include::code:MyResultHandlerConfiguration[]
+include-code::./MyResultHandlerConfiguration[]
 
 
 
@@ -33,16 +33,16 @@ include::code:MyResultHandlerConfiguration[]
 `@AutoConfigureRestDocs` can also be used with `WebTestClient` when testing reactive web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and Spring REST Docs, as shown in the following example:
 
-include::code:MyUsersDocumentationTests[]
+include-code::./MyUsersDocumentationTests[]
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
 
-include::code:MyRestDocsConfiguration[]
+include-code::./MyRestDocsConfiguration[]
 
 If you want to make use of Spring REST Docs support for a parameterized output directory, you can use a `WebTestClientBuilderCustomizer` to configure a consumer for every entity exchange result.
 The following example shows such a `WebTestClientBuilderCustomizer` being defined:
 
-include::code:MyWebTestClientBuilderCustomizerConfiguration[]
+include-code::./MyWebTestClientBuilderCustomizerConfiguration[]
 
 
 
@@ -51,11 +51,11 @@ include::code:MyWebTestClientBuilderCustomizerConfiguration[]
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST Docs, available to your tests.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
 
-include::code:MyUserDocumentationTests[]
+include-code::./MyUserDocumentationTests[]
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
 
-include::code:MyRestDocsConfiguration[]
+include-code::./MyRestDocsConfiguration[]
 
 
 

@@ -9,7 +9,7 @@ This data can be collected for profiling purposes, or just to have a better unde
 You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
 For example, to use the `BufferingApplicationStartup`, you could write:
 
-include::code:MyApplication[]
+include-code::./MyApplication[]
 
 The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.
 It adds Spring-specific startup events to a Java Flight Recorder session and is meant for profiling applications and correlating their Spring context lifecycle with JVM events (such as allocations, GCs, class loading...).

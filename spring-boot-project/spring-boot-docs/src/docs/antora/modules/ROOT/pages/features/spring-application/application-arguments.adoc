@@ -5,7 +5,7 @@
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
 This lets you also inject single application arguments by using the `@Value` annotation.

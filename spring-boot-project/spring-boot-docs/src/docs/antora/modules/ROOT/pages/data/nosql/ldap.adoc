@@ -39,7 +39,7 @@ For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 
 

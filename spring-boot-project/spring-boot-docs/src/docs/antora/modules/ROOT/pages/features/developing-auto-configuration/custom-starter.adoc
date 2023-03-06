@@ -41,7 +41,7 @@ As a rule of thumb, prefix all your keys with a namespace that you own (for exam
 
 Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
 
-include::code:AcmeProperties[]
+include-code::./AcmeProperties[]
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 

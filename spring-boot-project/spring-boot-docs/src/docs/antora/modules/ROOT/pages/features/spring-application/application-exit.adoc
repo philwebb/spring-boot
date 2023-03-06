@@ -8,7 +8,7 @@ All the standard Spring lifecycle callbacks (such as the `DisposableBean` interf
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator` interface if they wish to return a specific exit code when `SpringApplication.exit()` is called.
 This exit code can then be passed to `System.exit()` to return it as a status code, as shown in the following example:
 
-include::code:MyApplication[]
+include-code::./MyApplication[]
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
 When such an exception is encountered, Spring Boot returns the exit code provided by the implemented `getExitCode()` method.

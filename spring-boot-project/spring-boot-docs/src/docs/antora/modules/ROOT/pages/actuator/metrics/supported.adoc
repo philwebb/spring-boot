@@ -305,7 +305,7 @@ Each metric is tagged with the following information by default:
 
 To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as the following example shows:
 
-include::code:MyCommandTagsProviderConfiguration[]
+include-code::./MyCommandTagsProviderConfiguration[]
 
 To disable the auto-configured command metrics, set the following property:
 
@@ -343,7 +343,7 @@ Each metric is tagged with the following information by default:
 
 To replace the default metric tags, define a `MongoConnectionPoolTagsProvider` bean:
 
-include::code:MyConnectionPoolTagsProviderConfiguration[]
+include-code::./MyConnectionPoolTagsProviderConfiguration[]
 
 To disable the auto-configured connection pool metrics, set the following property:
 

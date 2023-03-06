@@ -33,7 +33,7 @@ Like any other Spring bean, you can define the order of servlet filter beans; pl
 As xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[described earlier], any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
-include::code:MyFilterConfiguration[]
+include-code::./MyFilterConfiguration[]
 
 
 

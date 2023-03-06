@@ -51,7 +51,7 @@ NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep
 
 The following code listing shows how to inject a Cassandra bean:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default.
 

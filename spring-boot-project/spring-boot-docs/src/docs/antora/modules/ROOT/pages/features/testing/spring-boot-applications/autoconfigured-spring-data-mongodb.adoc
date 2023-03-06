@@ -12,7 +12,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTe
 
 The following class shows the `@DataMongoTest` annotation in use:
 
-include::code:MyDataMongoDbTests[]
+include-code::./MyDataMongoDbTests[]
 
 
 

@@ -7,7 +7,7 @@ You must, however, mark one of the `DataSource` instances as `@Primary`, because
 If you create your own `DataSource`, the auto-configuration backs off.
 In the following example, we provide the _exact_ same feature set as the auto-configuration provides on the primary data source:
 
-include::code:MyDataSourcesConfiguration[]
+include-code::./MyDataSourcesConfiguration[]
 
 TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database initializer feature uses your copy (if you use the initializer).
 
@@ -34,7 +34,7 @@ For instance, you could configure them as follows:
 
 You can apply the same concept to the secondary `DataSource` as well, as shown in the following example:
 
-include::code:MyCompleteDataSourcesConfiguration[]
+include-code::./MyCompleteDataSourcesConfiguration[]
 
 The preceding example configures two data sources on custom namespaces with the same logic as Spring Boot would use in auto-configuration.
 Note that each `configuration` sub namespace provides advanced settings based on the chosen implementation.

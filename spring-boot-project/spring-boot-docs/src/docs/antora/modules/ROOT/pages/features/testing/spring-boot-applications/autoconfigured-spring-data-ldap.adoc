@@ -12,12 +12,12 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTes
 
 The following example shows the `@DataLdapTest` annotation in use:
 
-include::code:inmemory/MyDataLdapTests[]
+include-code::./inmemory/MyDataLdapTests[]
 
 In-memory embedded LDAP generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real LDAP server, you should exclude the embedded LDAP auto-configuration, as shown in the following example:
 
-include::code:server/MyDataLdapTests[]
+include-code::./server/MyDataLdapTests[]
 
 
 

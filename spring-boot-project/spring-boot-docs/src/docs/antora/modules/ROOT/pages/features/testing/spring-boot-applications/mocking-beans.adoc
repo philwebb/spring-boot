@@ -16,13 +16,13 @@ Mock beans are automatically reset after each test method.
 If your test uses one of Spring Boot's test annotations (such as `@SpringBootTest`), this feature is automatically enabled.
 To use this feature with a different arrangement, listeners must be explicitly added, as shown in the following example:
 
-include::code:listener/MyTests[]
+include-code::./listener/MyTests[]
 
 ====
 
 The following example replaces an existing `RemoteService` bean with a mock implementation:
 
-include::code:bean/MyTests[]
+include-code::./bean/MyTests[]
 
 NOTE: `@MockBean` cannot be used to mock the behavior of a bean that is exercised during application context refresh.
 By the time the test is executed, the application context refresh has completed and it is too late to configure the mocked behavior.

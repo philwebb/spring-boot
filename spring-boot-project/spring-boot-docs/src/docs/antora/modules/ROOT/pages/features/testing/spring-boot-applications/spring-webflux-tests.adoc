@@ -17,7 +17,7 @@ Often, `@WebFluxTest` is limited to a single controller and used in combination 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
 The following example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 
-include::code:MyControllerTests[]
+include-code::./MyControllerTests[]
 
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a mocked web application only works with WebFlux at the moment.
 

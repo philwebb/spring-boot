@@ -11,7 +11,7 @@ NOTE: This contract is well suited for tasks that should run after application s
 The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
-include::code:MyCommandLineRunner[]
+include-code::./MyCommandLineRunner[]
 
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
 

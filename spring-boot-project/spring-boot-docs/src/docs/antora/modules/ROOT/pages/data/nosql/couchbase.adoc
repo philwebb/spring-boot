@@ -60,7 +60,7 @@ This happens when a `Cluster` is available, as described above, and a bucket nam
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
 
@@ -71,7 +71,7 @@ There are a few beans that you can define in your own configuration to override 
 To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
-include::code:MyCouchbaseConfiguration[]
+include-code::./MyCouchbaseConfiguration[]
 
 
 

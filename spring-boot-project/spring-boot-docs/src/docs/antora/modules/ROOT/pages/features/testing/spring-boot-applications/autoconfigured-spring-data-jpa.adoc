@@ -16,7 +16,7 @@ By default, data JPA tests are transactional and roll back at the end of each te
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
 
-include::code:MyNonTransactionalTests[]
+include-code::./MyNonTransactionalTests[]
 
 Data JPA tests may also inject a {spring-boot-test-autoconfigure-module-code}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
 
@@ -26,12 +26,12 @@ When doing so, make sure that your test is running in a transaction, for instanc
 A `JdbcTemplate` is also available if you need that.
 The following example shows the `@DataJpaTest` annotation in use:
 
-include::code:withoutdb/MyRepositoryTests[]
+include-code::./withoutdb/MyRepositoryTests[]
 
 In-memory embedded databases generally work well for tests, since they are fast and do not require any installation.
 If, however, you prefer to run tests against a real database you can use the `@AutoConfigureTestDatabase` annotation, as shown in the following example:
 
-include::code:withdb/MyRepositoryTests[]
+include-code::./withdb/MyRepositoryTests[]
 
 
 

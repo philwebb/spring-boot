@@ -5,13 +5,13 @@ By default, `@SpringBootTest` does not start the server but instead sets up a mo
 
 With Spring MVC, we can query our web endpoints using {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] or `WebTestClient`, as shown in the following example:
 
-include::code:MyMockMvcTests[]
+include-code::./MyMockMvcTests[]
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider xref:features/testing/spring-boot-applications/spring-mvc-tests.adoc[using `@WebMvcTest` instead].
 
 With Spring WebFlux endpoints, you can use {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
-include::code:MyMockWebTestClientTests[]
+include-code::./MyMockWebTestClientTests[]
 
 [TIP]
 ====

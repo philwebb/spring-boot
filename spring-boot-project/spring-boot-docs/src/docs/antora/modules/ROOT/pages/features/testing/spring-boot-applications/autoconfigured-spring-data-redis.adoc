@@ -12,7 +12,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTe
 
 The following example shows the `@DataRedisTest` annotation in use:
 
-include::code:MyDataRedisTests[]
+include-code::./MyDataRedisTests[]
 
 
 

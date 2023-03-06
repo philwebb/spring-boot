@@ -5,7 +5,7 @@ If you need to use JPA against multiple data sources, you likely need one `Entit
 The `LocalContainerEntityManagerFactoryBean` from Spring ORM allows you to configure an `EntityManagerFactory` for your needs.
 You can also reuse `JpaProperties` to bind settings for each `EntityManagerFactory`, as shown in the following example:
 
-include::code:MyEntityManagerFactoryConfiguration[]
+include-code::./MyEntityManagerFactoryConfiguration[]
 
 The example above creates an `EntityManagerFactory` using a `DataSource` bean named `firstDataSource`.
 It scans entities located in the same package as `Order`.
@@ -21,9 +21,9 @@ Alternatively, you might be able to use a JTA transaction manager that spans bot
 
 If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following examples:
 
-include::code:OrderConfiguration[]
+include-code::./OrderConfiguration[]
 
-include::code:CustomerConfiguration[]
+include-code::./CustomerConfiguration[]
 
 
 

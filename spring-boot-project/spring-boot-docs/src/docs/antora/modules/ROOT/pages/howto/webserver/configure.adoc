@@ -12,7 +12,7 @@ You can declare such a component and get access to the server factory relevant t
 
 The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):
 
-include::code:MyTomcatWebServerCustomizer[]
+include-code::./MyTomcatWebServerCustomizer[]
 
 NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
 Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.

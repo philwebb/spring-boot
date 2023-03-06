@@ -7,7 +7,7 @@ The best way to get that and be sure it has been initialized is to add a `@Bean`
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
 
-include::code:MyWebIntegrationTests[]
+include-code::./MyWebIntegrationTests[]
 
 [NOTE]
 ====

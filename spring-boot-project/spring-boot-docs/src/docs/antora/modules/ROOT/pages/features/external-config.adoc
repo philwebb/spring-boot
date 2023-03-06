@@ -40,7 +40,7 @@ If you have configuration files with both `.properties` and `.yml` format in the
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 On your application classpath (for example, inside your jar) you can have an `application.properties` file that provides a sensible default property value for `name`.
 When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.

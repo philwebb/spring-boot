@@ -18,14 +18,14 @@ Mock MVC offers a powerful way to quickly test MVC controllers without needing t
 TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureMockMvc`.
 The following example uses `MockMvc`:
 
-include::code:MyControllerTests[]
+include-code::./MyControllerTests[]
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
 
 If you use HtmlUnit and Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
-include::code:MyHtmlUnitTests[]
+include-code::./MyHtmlUnitTests[]
 
 NOTE: By default, Spring Boot puts `WebDriver` beans in a special "`scope`" to ensure that the driver exits after each test and that a new instance is injected.
 If you do not want this behavior, you can add `@Scope("singleton")` to your `WebDriver` `@Bean` definition.

@@ -140,7 +140,7 @@ You need to provide an implementation of the `health()` method and return a `Hea
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
 
-include::code:MyHealthIndicator[]
+include-code::./MyHealthIndicator[]
 
 NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the `HealthIndicator` suffix, if it exists.
 In the preceding example, the health information is available in an entry named `my`.
@@ -219,7 +219,7 @@ If you need to register a regular `HealthContributor`, you should wrap it with `
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
-include::code:MyReactiveHealthIndicator[]
+include-code::./MyReactiveHealthIndicator[]
 
 TIP: To handle the error automatically, consider extending from `AbstractReactiveHealthIndicator`.
 

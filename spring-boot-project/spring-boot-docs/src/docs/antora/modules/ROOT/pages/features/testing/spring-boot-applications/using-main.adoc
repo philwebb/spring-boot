@@ -6,14 +6,14 @@ In most well structured applications, this configuration class will also include
 
 For example, the following is a very common code pattern for a typical Spring Boot application:
 
-include::code:typical/MyApplication[]
+include-code::./typical/MyApplication[]
 
 In the example above, the `main` method doesn't do anything other than delegate to `SpringApplication.run`.
 It is, however, possible to have a more complex `main` method that applies customizations before calling `SpringApplication.run`.
 
 For example, here is an application that changes the banner mode and sets additional profiles:
 
-include::code:custom/MyApplication[]
+include-code::./custom/MyApplication[]
 
 Since customizations in the `main` method can affect the resulting `ApplicationContext`, it's possible that you might also want to use the `main` method to create the `ApplicationContext` used in your tests.
 By default, `@SpringBootTest` will not call your `main` method, and instead the class itself is used directly to create the `ApplicationContext`
@@ -25,7 +25,7 @@ When set to `WHEN_AVAILABLE` the `main` method will be used if it is available, 
 For example, the following test will invoke the `main` method of `MyApplication` in order to create the `ApplicationContext`.
 If the main method sets additional profiles then those will be active when the `ApplicationContext` starts.
 
-include::code:always/MyApplicationTests[]
+include-code::./always/MyApplicationTests[]
 
 
 

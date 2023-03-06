@@ -3,7 +3,7 @@
 
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
 
-include::code:MyProperties[]
+include-code::./MyProperties[]
 
 The preceding POJO defines the following properties:
 

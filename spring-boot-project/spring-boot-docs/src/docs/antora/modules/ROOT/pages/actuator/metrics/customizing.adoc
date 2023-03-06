@@ -5,7 +5,7 @@ If you need to apply customizations to specific `Meter` instances, you can use t
 
 For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
 
-include::code:MyMetricsFilterConfiguration[]
+include-code::./MyMetricsFilterConfiguration[]
 
 NOTE: By default, all `MeterFilter` beans are automatically bound to the Spring-managed `MeterRegistry`.
 Make sure to register your metrics by using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.

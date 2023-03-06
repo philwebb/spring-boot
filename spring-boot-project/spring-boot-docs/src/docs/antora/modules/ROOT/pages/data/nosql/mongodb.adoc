@@ -12,7 +12,7 @@ To access MongoDB databases, you can inject an auto-configured `org.springframew
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
 
@@ -71,7 +71,7 @@ The auto-configuration configures this factory automatically if Netty is availab
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
 
@@ -85,7 +85,7 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
 
-include::code:CityRepository[]
+include-code::./CityRepository[]
 
 TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
 

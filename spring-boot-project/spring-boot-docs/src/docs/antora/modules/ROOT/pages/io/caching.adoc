@@ -10,7 +10,7 @@ NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section]
 
 In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
-include::code:MyMathService[]
+include-code::./MyMathService[]
 
 This example demonstrates the use of caching on a potentially costly operation.
 Before invoking `computePiDecimal`, the abstraction looks for an entry in the `piDecimals` cache that matches the `i` argument.

@@ -13,7 +13,7 @@ By default, JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-include::code:MyTransactionalTests[]
+include-code::./MyTransactionalTests[]
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
 (See "xref:features/testing/spring-boot-applications/autoconfigured-spring-data-jpa.adoc[Auto-configured Data JPA Tests]".)

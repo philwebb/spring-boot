@@ -27,7 +27,7 @@ If you add dependencies manually, you must include `spring-context-support` in o
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
 The following example sets a flag to say that `null` values should not be passed down to the underlying map:
 
-include::code:MyCacheManagerConfiguration[]
+include-code::./MyCacheManagerConfiguration[]
 
 NOTE: In the preceding example, an auto-configured `ConcurrentMapCacheManager` is expected.
 If that is not the case (either you provided your own config or a different cache provider was auto-configured), the customizer is not invoked at all.
@@ -129,7 +129,7 @@ For instance, the following configuration creates `cache1` and `cache2` caches w
 If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
 The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
 
-include::code:MyCouchbaseCacheManagerConfiguration[]
+include-code::./MyCouchbaseCacheManagerConfiguration[]
 
 
 
@@ -157,7 +157,7 @@ This can be useful if you need to customize the default serialization strategy.
 If you need more control over the configuration, consider registering a `RedisCacheManagerBuilderCustomizer` bean.
 The following example shows a customizer that configures a specific time to live for `cache1` and `cache2`:
 
-include::code:MyRedisCacheManagerConfiguration[]
+include-code::./MyRedisCacheManagerConfiguration[]
 
 
 
@@ -197,7 +197,7 @@ Caches can be created on startup by setting the configprop:spring.cache.cache-na
 Cache defaults can be customized using a `Cache2kBuilderCustomizer` bean.
 The following example shows a customizer that configures the capacity of the cache to 200 entries, with an expiration of 5 minutes:
 
-include::code:MyCache2kDefaultsConfiguration[]
+include-code::./MyCache2kDefaultsConfiguration[]
 
 
 

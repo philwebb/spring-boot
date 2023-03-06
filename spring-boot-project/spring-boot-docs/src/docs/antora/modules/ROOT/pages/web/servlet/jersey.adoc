@@ -10,7 +10,7 @@ To get started with Jersey, include the `spring-boot-starter-jersey` as a depend
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include:../:{docs-java}/web/servlet/jersey/MyJerseyConfig.java[]
+include::{include-java}/web/servlet/jersey/MyJerseyConfig.java[]
 ----
 
 WARNING: Jersey's support for scanning executable archives is rather limited.
@@ -23,7 +23,7 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include:../:{docs-java}/web/servlet/jersey/MyEndpoint.java[]
+include::{include-java}/web/servlet/jersey/MyEndpoint.java[]
 ----
 
 Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.

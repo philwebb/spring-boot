@@ -12,7 +12,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataCassand
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
-include::code:MyDataCassandraTests[]
+include-code::./MyDataCassandraTests[]
 
 
 

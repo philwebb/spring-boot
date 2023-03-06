@@ -7,7 +7,7 @@ If both Jersey and Spring MVC are available, Spring MVC is used.
 
 The following example exposes a read operation that returns a custom object:
 
-include::code:MyEndpoint[tag=read]
+include-code::./MyEndpoint[tag=read]
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
 These endpoints are restricted to their respective technologies.
@@ -41,7 +41,7 @@ Consider the following JSON request body:
 
 You can use this to invoke a write operation that takes `String name` and `int counter` parameters, as the following example shows:
 
-include::code:../MyEndpoint[tag=write]
+include-code::./../MyEndpoint[tag=write]
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
 In particular, declaring a single parameter with a `CustomData` type that defines a `name` and `counter` properties is not supported.

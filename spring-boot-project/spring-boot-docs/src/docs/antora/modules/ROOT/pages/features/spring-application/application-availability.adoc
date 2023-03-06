@@ -42,11 +42,11 @@ More often, applications will want to listen to state updates or update the stat
 
 For example, we can export the "Readiness" state of the application to a file so that a Kubernetes "exec Probe" can look at this file:
 
-include::code:MyReadinessStateExporter[]
+include-code::./MyReadinessStateExporter[]
 
 We can also update the state of the application, when the application breaks and cannot recover:
 
-include::code:MyLocalCacheVerifier[]
+include-code::./MyLocalCacheVerifier[]
 
 Spring Boot provides xref:actuator/endpoints/kubernetes-probes.adoc[Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints].
 You can get more guidance about xref:deployment/cloud.adoc#deployment.cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].

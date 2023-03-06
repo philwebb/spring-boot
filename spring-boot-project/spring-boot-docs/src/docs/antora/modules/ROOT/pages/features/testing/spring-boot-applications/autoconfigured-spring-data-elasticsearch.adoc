@@ -12,7 +12,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataElastic
 
 The following example shows a typical setup for using Elasticsearch tests in Spring Boot:
 
-include::code:MyDataElasticsearchTests[]
+include-code::./MyDataElasticsearchTests[]
 
 
 

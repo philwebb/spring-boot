@@ -11,7 +11,7 @@ Additionally, by default, all table names are generated in lower case.
 For example, a `TelephoneNumber` entity is mapped to the `telephone_number` table.
 If your schema requires mixed-case identifiers, define a custom `CamelCaseToUnderscoresNamingStrategy` bean, as shown in the following example:
 
-include::code:spring/MyHibernateConfiguration[]
+include-code::./spring/MyHibernateConfiguration[]
 
 If you prefer to use Hibernate's default instead, set the following property:
 
@@ -22,7 +22,7 @@ If you prefer to use Hibernate's default instead, set the following property:
 
 Alternatively, you can configure the following bean:
 
-include::code:standard/MyHibernateConfiguration[]
+include-code::./standard/MyHibernateConfiguration[]
 
 See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`] and {spring-boot-autoconfigure-module-code}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for more details.
 

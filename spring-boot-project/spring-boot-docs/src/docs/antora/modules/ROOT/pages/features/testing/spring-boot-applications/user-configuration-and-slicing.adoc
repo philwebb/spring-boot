@@ -8,12 +8,12 @@ It then becomes important not to litter the application's main class with config
 Assume that you are using Spring Batch and you rely on the auto-configuration for it.
 You could define your `@SpringBootApplication` as follows:
 
-include::code:MyApplication[]
+include-code::./MyApplication[]
 
 Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
 A recommended approach is to move that area-specific configuration to a separate `@Configuration` class at the same level as your application, as shown in the following example:
 
-include::code:MyBatchConfiguration[]
+include-code::./MyBatchConfiguration[]
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
 The latter approach lets you enable it in one of your tests, if necessary, with the `@Import` annotation.
@@ -22,17 +22,17 @@ See xref:howto/testing.adoc#howto.testing.slice-tests[this how-to section] for m
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:
 
-include::code:MyWebConfiguration[]
+include-code::./MyWebConfiguration[]
 
 The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded by the test slice.
 
-include::code:MyWebMvcConfigurer[]
+include-code::./MyWebMvcConfigurer[]
 
 Another source of confusion is classpath scanning.
 Assume that, while you structured your code in a sensible way, you need to scan an additional package.
 Your application may resemble the following code:
 
-include::code:scan/MyApplication[]
+include-code::./scan/MyApplication[]
 
 Doing so effectively overrides the default component scan directive with the side effect of scanning those two packages regardless of the slice that you chose.
 For instance, a `@DataJpaTest` seems to suddenly scan components and user configurations of your application.

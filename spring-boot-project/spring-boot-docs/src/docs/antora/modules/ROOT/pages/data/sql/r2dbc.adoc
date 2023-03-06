@@ -27,11 +27,11 @@ TIP: The "`How-to`" section includes a xref:howto/data-initialization.adoc#howto
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
 
-include::code:MyR2dbcConfiguration[]
+include-code::./MyR2dbcConfiguration[]
 
 The following examples show how to set some PostgreSQL connection options:
 
-include::code:MyPostgresR2dbcConfiguration[]
+include-code::./MyPostgresR2dbcConfiguration[]
 
 When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
 If you want to retain the JDBC `DataSource` auto-configuration, and are comfortable with the risk of using the blocking JDBC API in a reactive application, add `@Import(DataSourceAutoConfiguration.class)` on a `@Configuration` class in your application to re-enable it.
@@ -65,7 +65,7 @@ If you want to make sure that each context has a separate embedded database, you
 == Using DatabaseClient
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
-include::code:MyBean[]
+include-code::./MyBean[]
 
 
 
@@ -82,6 +82,6 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-include::code:CityRepository[]
+include-code::./CityRepository[]
 
 TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].
