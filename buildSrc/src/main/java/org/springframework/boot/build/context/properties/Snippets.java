@@ -94,7 +94,7 @@ class Snippets {
 		Asciidoc asciidoc = new Asciidoc();
 		// We have to prepend 'appendix.' as a section id here, otherwise the
 		// spring-asciidoctor-extensions:section-id asciidoctor extension complains
-		asciidoc.appendln("[[appendix." + snippet.getAnchor() + "]]");
+		asciidoc.appendln("[[" + snippet.getAnchor() + "]]");
 		asciidoc.appendln("== ", snippet.getTitle());
 		table.write(asciidoc);
 		return asciidoc;
