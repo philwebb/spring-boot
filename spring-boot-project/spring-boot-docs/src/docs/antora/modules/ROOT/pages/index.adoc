@@ -29,9 +29,9 @@ xref:howto.adoc["`How-to`" Guides] :: Application Development, Configuration, Em
 The reference documentation has the following appendices:
 
 [horizontal]
-xref:application-properties.adoc[Application Properties] :: Common application properties that you can use to configure your application.
-xref:configuration-metadata.adoc[Configuration Metadata] :: Metadata that you can use to describe configuration properties.
-xref:auto-configuration-classes.adoc[Auto-configuration Classes] :: Auto-configuration classes provided by Spring Boot.
-xref:test-auto-configuration.adoc[Test Auto-configuration Annotations] :: Test auto-configuration annotations that you can use to test slices of your application.
-xref:executable-jar.adoc[Executable Jars] :: Spring Boot's executable jars, their launchers, and their format.
-xref:dependency-versions.adoc[Dependency Versions] :: Details of the dependencies that are managed by Spring Boot.
+xref:appendix/application-properties.adoc[Application Properties] :: Common application properties that you can use to configure your application.
+xref:appendix/configuration-metadata.adoc[Configuration Metadata] :: Metadata that you can use to describe configuration properties.
+xref:appendix/auto-configuration-classes.adoc[Auto-configuration Classes] :: Auto-configuration classes provided by Spring Boot.
+xref:appendix/test-auto-configuration.adoc[Test Auto-configuration Annotations] :: Test auto-configuration annotations that you can use to test slices of your application.
+xref:appendix/executable-jar.adoc[Executable Jars] :: Spring Boot's executable jars, their launchers, and their format.
+xref:appendix/dependency-versions.adoc[Dependency Versions] :: Details of the dependencies that are managed by Spring Boot.

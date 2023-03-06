@@ -6,7 +6,7 @@ To test whether Spring MVC controllers are working as expected, use the `@WebMvc
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be xref:test-auto-configuration.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be xref:appendix/test-auto-configuration.adoc[found in the appendix].
 
 TIP: If you need to register extra components, such as the Jackson `Module`, you can import additional configuration classes by using `@Import` on your test.
 

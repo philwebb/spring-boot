@@ -8,7 +8,7 @@ To test that object JSON serialization and deserialization is working as expecte
 * `Gson`
 * `Jsonb`
 
-TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be xref:test-auto-configuration.adoc[found in the appendix].
+TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be xref:appendix/test-auto-configuration.adoc[found in the appendix].
 
 If you need to configure elements of the auto-configuration, you can use the `@AutoConfigureJsonTesters` annotation.
 

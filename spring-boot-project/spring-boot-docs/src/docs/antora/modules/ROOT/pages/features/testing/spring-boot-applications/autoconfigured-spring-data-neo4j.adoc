@@ -7,7 +7,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Neo4J with Spring Boot, see "xref:data/nosql/neo4j.adoc[Neo4j]".)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be xref:test-auto-configuration.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be xref:appendix/test-auto-configuration.adoc[found in the appendix].
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 

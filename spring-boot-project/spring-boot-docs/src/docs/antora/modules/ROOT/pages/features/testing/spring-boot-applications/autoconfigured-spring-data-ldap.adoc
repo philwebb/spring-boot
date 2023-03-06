@@ -8,7 +8,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using LDAP with Spring Boot, see "xref:data/nosql/ldap.adoc[LDAP]".)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be xref:test-auto-configuration.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be xref:appendix/test-auto-configuration.adoc[found in the appendix].
 
 The following example shows the `@DataLdapTest` annotation in use:
 

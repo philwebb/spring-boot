@@ -12,7 +12,7 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 | Limited (see xref:features/external-config/typesafe-configuration-properties/vs-value-annotation.adoc#features.external-config.typesafe-configuration-properties.vs-value-annotation.note[note below])
 
-| xref:configuration-metadata.adoc[Meta-data support]
+| xref:appendix/configuration-metadata.adoc[Meta-data support]
 | Yes
 | No
 

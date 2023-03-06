@@ -7,7 +7,7 @@ By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `R
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@RestClientTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be xref:test-auto-configuration.adoc[found in the appendix].
+TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be xref:appendix/test-auto-configuration.adoc[found in the appendix].
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
