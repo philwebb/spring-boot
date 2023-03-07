@@ -24,9 +24,9 @@ asciidoc:
     hide-uri-scheme: '@'
     tabs-sync-option: '@'
     chomp: 'all'
-    include-java: 'ROOT:example$docs-src/main/java/org/springframework/boot/docs'
-    include-kotlin: 'ROOT:example$docs-src/main/kotlin/org/springframework/boot/docs'
-    docs-resources: 'example$docs-src/main/resources'
+    include-java: 'ROOT:example$src/main/java/org/springframework/boot/docs'
+    include-kotlin: 'ROOT:example$src/main/kotlin/org/springframework/boot/docs'
+    docs-resources: 'example$src/main/resources'
   extensions:
     - '@asciidoctor/tabs'
     - '@springio/asciidoctor-extensions'
