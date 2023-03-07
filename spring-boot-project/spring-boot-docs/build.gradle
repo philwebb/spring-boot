@@ -1,6 +1,9 @@
+import org.springframework.boot.build.artifacts.ArtifactRelease
+
 plugins {
 	id "java"
-	id "org.asciidoctor.jvm.convert"
+	id 'io.spring.antora.generate-antora-yml' version '0.0.1'
+	id 'org.antora' version '1.0.0-alpha.7'
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id 'org.jetbrains.kotlin.jvm'
@@ -43,12 +46,6 @@ plugins.withType(EclipsePlugin) {
 
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
-
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-devtools"))
 
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
@@ -191,9 +188,9 @@ task aggregatedJavadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
-			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { !it.path.contains(":spring-boot-tools:") }
-			.findAll { !it.name.startsWith('spring-boot-starter') }
+				.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+				.findAll { !it.path.contains(":spring-boot-tools:") }
+				.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
@@ -212,11 +209,11 @@ task aggregatedJavadoc(type: Javadoc) {
 			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
 			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
 			options.links = [
-				"https://docs.oracle.com/en/java/javase/17/docs/api/",
-				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
-				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
-				"https://jakarta.ee/specifications/platform/9/apidocs/",
-				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
+					"https://docs.oracle.com/en/java/javase/17/docs/api/",
+					"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
+					"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
+					"https://jakarta.ee/specifications/platform/9/apidocs/",
+					"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
 			] as String[]
 		}
 	}
@@ -283,171 +280,132 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	normalizeTomcatPort()
 }
 
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+antora {
+	playbook = 'cached-antora-playbook.yml'
+	playbookProvider {
+		repository = 'philwebb/spring-boot'
+		branch = 'site'
+		path = 'lib/antora/templates/per-branch-antora-playbook.yml'
+		checkLocalBranch = true
+	}
+	dependencies = [
+			'@antora/atlas-extension': '1.0.0-alpha.1',
+			'@antora/collector-extension': '1.0.0-alpha.2',
+			'@opendevise/antora-release-line-extension': '1.0.0-alpha.2',
+			'@springio/asciidoctor-extensions': '1.0.0-alpha.9'
+	]
+	options = [clean: true, fetch: !project.gradle.startParameter.offline, stacktrace: true]
+}
+
+tasks.named("generateAntoraYml") {
 	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
 	dependsOn dependencyVersions
 	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	asciidoctorj {
-		fatalWarnings = ['^((?!successfully validated).)*$']
-	}
-	doFirst {
+	outputFile = file("$buildDir/generateAntoraYml/antora.yml")
+	asciidocAttributes = project.provider( {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
 		if (securityVersion.endsWith("-SNAPSHOT")) {
 			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
 		}
-		attributes  "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
-					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
-					"jooq-version": versionConstraints["org.jooq:jooq"],
-					"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
-					"native-build-tools-version": nativeBuildToolsVersion,
-					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
-					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
-					"spring-boot-version": project.version,
-					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
-					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
-					"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
-					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
-					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
-					"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
-					"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
-					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
-					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
-					"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
-					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
-					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
-					"spring-security-version": securityVersion,
-					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
-					"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
-					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
-					"spring-application-output": runSpringApplicationExample.outputs.files.singleFile,
-					"logging-format-output": runLoggingFormatExample.outputs.files.singleFile
-	}
+		def artifacts = ArtifactRelease.forProject(project)
+
+		return  ["github-tag": determineGitHubTag(project),
+				 "artifact-release-type": artifacts.getType(),
+				 "artifact-download-repo": artifacts.getDownloadRepo(),
+				 "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
+				 "jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+				 "jooq-version": versionConstraints["org.jooq:jooq"],
+				 "lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
+				 "native-build-tools-version": nativeBuildToolsVersion,
+				 "spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
+				 "spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
+				 "spring-boot-version": project.version,
+				 "spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
+				 "spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
+				 "spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
+				 "spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
+				 "spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
+				 "spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
+				 "spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
+				 "spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
+				 "spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
+				 "spring-framework-version": versionConstraints["org.springframework:spring-core"],
+				 "spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
+				 "spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
+				 "spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
+				 "spring-security-version": securityVersion,
+				 "spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
+				 "tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
+				 "remote-spring-application-output": getRelativeExamplesPath( runRemoteSpringApplicationExample.outputs),
+				 "spring-application-output": getRelativeExamplesPath( runSpringApplicationExample.outputs),
+				 "logging-format-output": getRelativeExamplesPath(runLoggingFormatExample.outputs)]
+	} )
 }
 
-asciidoctor {
-	sources {
-		include "*.singleadoc"
-	}
+private String determineGitHubTag(Project project) {
+	String version = "v" + project.getVersion();
+	return (version.endsWith("-SNAPSHOT")) ? "main" : version;
 }
 
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "*.singleadoc"
-	}
+def getRelativeExamplesPath(var outputs) {
+	def fileName = outputs.files.singleFile.name
+	'example$example-output/' + fileName
 }
 
-task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "*.adoc"
+task collectConfigurationMetadataFiles(type: Copy) {
+	from project.configurations.configurationProperties
+	eachFile {
+		it.path = it.file
+				.toString()
+				.replaceFirst('/build/(?:classes|resources)/java/main/', '/')
+				.replaceFirst('^.*/([^/]+)/META-INF/(spring-configuration-metadata\\.json)$', '$1/$2')
 	}
+	into layout.buildDirectory.dir('collectConfigurationMetadataFiles')
 }
 
-syncDocumentationSourceForAsciidoctor {
-	dependsOn documentTestSlices
+task syncDocumentationSourceForAntora(type: Sync) {
+	dependsOn collectConfigurationMetadataFiles
 	dependsOn documentStarters
+	dependsOn documentTestSlices
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
 	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
 	dependsOn documentDevtoolsPropertyDefaults
+	destinationDir = file("${buildDir}/generated-antora-resources")
 	from("${buildDir}/docs/generated") {
-		into "asciidoc"
+		into "modules/ROOT/partials/"
 	}
-	from("src/main/java") {
-		into "main/java"
+	from(runRemoteSpringApplicationExample) {
+		into "modules/ROOT/examples/example-output/"
 	}
-	from("src/test/java") {
-		into "test/java"
+	from(runSpringApplicationExample) {
+		into "modules/ROOT/examples/example-output/"
 	}
-	from("src/main/kotlin") {
-		into "main/kotlin"
+	from(runLoggingFormatExample) {
+		into "modules/ROOT/examples/example-output/"
 	}
-	from("src/main/groovy") {
-		into "main/groovy"
+	from(collectConfigurationMetadataFiles) {
+		into 'modules/ROOT/partials/configuration-metadata'
 	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
+	from(generateAntoraYml)
 }
 
-syncDocumentationSourceForAsciidoctorMultipage {
-	dependsOn documentTestSlices
-	dependsOn documentStarters
-	dependsOn documentAutoConfigurationClasses
-	dependsOn documentDependencyVersions
-	dependsOn documentVersionProperties
-	dependsOn documentConfigurationProperties
-	dependsOn documentDevtoolsPropertyDefaults
-	from("${buildDir}/docs/generated") {
-		into "asciidoc"
-	}
-	from("src/main/java") {
-		into "main/java"
-	}
-	from("src/test/java") {
-		into "test/java"
-	}
-	from("src/main/kotlin") {
-		into "main/kotlin"
-	}
-	from("src/main/groovy") {
-		into "main/groovy"
-	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
-}
-
-syncDocumentationSourceForAsciidoctorPdf {
-	dependsOn documentTestSlices
-	dependsOn documentStarters
-	dependsOn documentAutoConfigurationClasses
-	dependsOn documentDependencyVersions
-	dependsOn documentVersionProperties
-	dependsOn documentConfigurationProperties
-	dependsOn documentDevtoolsPropertyDefaults
-	from("${buildDir}/docs/generated") {
-		into "asciidoc"
-	}
-	from("src/main/java") {
-		into "main/java"
-	}
-	from("src/test/java") {
-		into "test/java"
-	}
-	from("src/main/kotlin") {
-		into "main/kotlin"
-	}
-	from("src/main/groovy") {
-		into "main/groovy"
-	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
+task generateAntoraResources {
+	dependsOn 'syncDocumentationSourceForAntora', 'generateAntoraYml'
 }
 
 task zip(type: Zip) {
-	dependsOn asciidoctor,
-			asciidoctorMultipage,
-			asciidoctorPdf,
+	dependsOn antora,
 			configurations.gradlePluginDocumentation,
 			configurations.actuatorApiDocumentation,
 			configurations.mavenPluginDocumentation
 	duplicatesStrategy "fail"
-	from(asciidoctor.outputDir) {
-		into "reference/htmlsingle"
-	}
-	from(asciidoctorPdf.outputDir) {
-		into "reference/pdf"
-		include "index.pdf"
-		rename { "spring-boot-reference.pdf" }
-	}
-	from(asciidoctorMultipage.outputDir) {
-		into "reference/html"
+	from("build/site") {
+		into "reference/"
 	}
 	from(aggregatedJavadoc) {
 		into "api"
