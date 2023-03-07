@@ -17,8 +17,6 @@ asciidoc:
     # FIXME: the copyright is not removed
     # FIXME: The package is not renamed
     chomp: 'all'
-    spring-boot-artifactory-repo: 'snapshot'
-    github-tag: 'main'
     spring-boot-version: 'current'
     github-repo: 'spring-projects/spring-boot'
     github-raw: 'https://raw.githubusercontent.com/{github-repo}/{github-tag}'
