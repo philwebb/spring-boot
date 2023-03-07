@@ -303,6 +303,7 @@ tasks.named("generateAntoraYml") {
 	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
+	baseAntoraYmlFile = file('src/docs/antora/antora.yml')
 	outputFile = file("$buildDir/generateAntoraYml/antora.yml")
 	asciidocAttributes = project.provider( {
 		def versionConstraints = dependencyVersions.versionConstraints
