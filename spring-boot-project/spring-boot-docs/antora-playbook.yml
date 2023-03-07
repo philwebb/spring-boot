@@ -13,7 +13,7 @@ content:
   sources:
     - url: ./../..
       branches: HEAD
-      start_path: spring-boot-project/spring-boot-docs
+      start_path: spring-boot-project/spring-boot-docs/src/docs/antora
       worktrees: true
 asciidoc:
   attributes:
