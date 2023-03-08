@@ -188,9 +188,9 @@ task aggregatedJavadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
-				.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-				.findAll { !it.path.contains(":spring-boot-tools:") }
-				.findAll { !it.name.startsWith('spring-boot-starter') }
+			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+			.findAll { !it.path.contains(":spring-boot-tools:") }
+			.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
@@ -209,11 +209,11 @@ task aggregatedJavadoc(type: Javadoc) {
 			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
 			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
 			options.links = [
-					"https://docs.oracle.com/en/java/javase/17/docs/api/",
-					"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
-					"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
-					"https://jakarta.ee/specifications/platform/9/apidocs/",
-					"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
+				"https://docs.oracle.com/en/java/javase/17/docs/api/",
+				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
+				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
+				"https://jakarta.ee/specifications/platform/9/apidocs/",
+				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
 			] as String[]
 		}
 	}
@@ -295,6 +295,7 @@ antora {
 	options = [clean: true, fetch: !project.gradle.startParameter.offline, stacktrace: true]
 }
 
+// FIXME make AntoraConventions
 tasks.named("generateAntoraYml") {
 	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
 	dependsOn dependencyVersions
