@@ -283,47 +283,49 @@ antora {
 	options = [clean: true, fetch: !project.gradle.startParameter.offline, stacktrace: true]
 }
 
-// FIXME make AntoraConventions?
 tasks.withType(io.spring.gradle.antora.GenerateAntoraYmlTask) {
 	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
 	dependsOn dependencyVersions
 	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	asciidocAttributes = project.provider( {
-		def versionConstraints = dependencyVersions.versionConstraints
+	asciidocAttributes = project.provider(() -> getAsciidocAttributes(dependencyVersions.versionConstraints))
+}
+
+def getAsciidocAttributes(def versionConstraints) {
 		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
 		if (securityVersion.endsWith("-SNAPSHOT")) {
 			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
 		}
-		return  ["hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
-				 "jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
-				 "jooq-version": versionConstraints["org.jooq:jooq"],
-				 "lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
-				 "native-build-tools-version": nativeBuildToolsVersion,
-				 "spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
-				 "spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
-				 "spring-boot-version": project.version,
-				 "spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
-				 "spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
-				 "spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
-				 "spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
-				 "spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
-				 "spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
-				 "spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
-				 "spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
-				 "spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-				 "spring-framework-version": versionConstraints["org.springframework:spring-core"],
-				 "spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
-				 "spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
-				 "spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
-				 "spring-security-version": securityVersion,
-				 "spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
-				 "tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
-				 "remote-spring-application-output": getRelativeExamplesPath( runRemoteSpringApplicationExample.outputs),
-				 "spring-application-output": getRelativeExamplesPath( runSpringApplicationExample.outputs),
-				 "logging-format-output": getRelativeExamplesPath(runLoggingFormatExample.outputs)]
-	} )
+		return [
+			"hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
+			"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+			"jooq-version": versionConstraints["org.jooq:jooq"],
+			"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
+			"native-build-tools-version": nativeBuildToolsVersion,
+			"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
+			"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
+			"spring-boot-version": project.version,
+			"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
+			"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
+			"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
+			"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
+			"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
+			"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
+			"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
+			"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
+			"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
+			"spring-framework-version": versionConstraints["org.springframework:spring-core"],
+			"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
+			"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
+			"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
+			"spring-security-version": securityVersion,
+			"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
+			"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
+			"remote-spring-application-output": getRelativeExamplesPath( runRemoteSpringApplicationExample.outputs),
+			"spring-application-output": getRelativeExamplesPath( runSpringApplicationExample.outputs),
+			"logging-format-output": getRelativeExamplesPath(runLoggingFormatExample.outputs)
+		]
 }
 
 def getRelativeExamplesPath(var outputs) {
@@ -351,7 +353,7 @@ task syncDocumentationSourceForAntora(type: Sync) {
 	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
 	dependsOn documentDevtoolsPropertyDefaults
-	destinationDir = file("${buildDir}/generated-antora-resources")
+	destinationDir = file("${buildDir}/generated/antora-resources")
 	from("${buildDir}/docs/generated") {
 		into "modules/ROOT/partials/"
 	}

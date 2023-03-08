@@ -9,7 +9,7 @@ ext:
       command: gradlew -q -PbuildSrc.skipTests=true "-Dorg.gradle.jvmargs=-Xmx3g -XX:+HeapDumpOnOutOfMemoryError" :spring-boot-project:spring-boot-docs:generateAntoraResources
       local: true
     scan:
-      dir: ./../../../build/generated-antora-resources
+      dir: ./../../../build/generated/antora-resources
 
 asciidoc:
   attributes:
