@@ -219,33 +219,33 @@ task aggregatedJavadoc(type: Javadoc) {
 
 task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
-	outputFile = file("${buildDir}/docs/generated/test-auto-configuration/documented-slices.adoc")
+	outputFile = file("${buildDir}/generated/asciidoc/test-auto-configuration/documented-slices.adoc")
 }
 
 task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
-	outputDir = file("${buildDir}/docs/generated/using/starters/")
+	outputDir = file("${buildDir}/generated/asciidoc/using/starters/")
 }
 
 task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
 	autoConfiguration = configurations.autoConfiguration
-	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/documented-auto-configuration-classes/")
+	outputDir = file("${buildDir}/generated/asciidoc/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
 task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
 	dependsOn dependencyVersions
 	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
-	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-coordinates.adoc")
+	outputFile = file("${buildDir}/generated/asciidoc/dependency-versions/documented-coordinates.adoc")
 }
 
 task documentVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
 	dependsOn dependencyVersions
 	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
-	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-properties.adoc")
+	outputFile = file("${buildDir}/generated/asciidoc/dependency-versions/documented-properties.adoc")
 }
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/docs/generated/")
+	outputDir = file("${buildDir}/generated/asciidoc/")
 }
 
 task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
@@ -254,7 +254,7 @@ task runRemoteSpringApplicationExample(type: org.springframework.boot.build.docs
 	classpath = configurations.remoteSpringApplicationExample
 	mainClass = "org.springframework.boot.devtools.RemoteSpringApplication"
 	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
-	output = file("$buildDir/example-output/remote-spring-application.txt")
+	output = file("$buildDir/generated/example-output/remote-spring-application.txt")
 	expectedLogging = "Started RemoteSpringApplication in "
 	applicationJar = "/Users/myuser/.m2/repository/org/springframework/boot/spring-boot-devtools/${project.version}/spring-boot-devtools-${project.version}.jar"
 	normalizeLiveReloadPort()
@@ -264,7 +264,7 @@ task runSpringApplicationExample(type: org.springframework.boot.build.docs.Appli
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
 	args = ["--server.port=0"]
-	output = file("$buildDir/example-output/spring-application.txt")
+	output = file("$buildDir/generated/example-output/spring-application.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()
 }
@@ -273,7 +273,7 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
 	args = ["--spring.main.banner-mode=off", "--server.port=0"]
-	output = file("$buildDir/example-output/logging-format.txt")
+	output = file("$buildDir/generated/example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()
 }
@@ -344,7 +344,7 @@ task collectConfigurationMetadataFiles(type: Copy) {
 	into layout.buildDirectory.dir('collectConfigurationMetadataFiles')
 }
 
-task syncDocumentationSourceForAntora(type: Sync) {
+syncAntoraContent {
 	dependsOn collectConfigurationMetadataFiles
 	dependsOn documentStarters
 	dependsOn documentTestSlices
@@ -353,8 +353,8 @@ task syncDocumentationSourceForAntora(type: Sync) {
 	dependsOn documentVersionProperties
 	dependsOn documentConfigurationProperties
 	dependsOn documentDevtoolsPropertyDefaults
-	destinationDir = file("${buildDir}/generated/antora-resources")
-	from("${buildDir}/docs/generated") {
+	destinationDir = file("${buildDir}/generated/antora")
+	from("${buildDir}/generated/asciidoc") {
 		into "modules/ROOT/partials/"
 	}
 	from(runRemoteSpringApplicationExample) {
@@ -369,11 +369,6 @@ task syncDocumentationSourceForAntora(type: Sync) {
 	from(collectConfigurationMetadataFiles) {
 		into 'modules/ROOT/partials/configuration-metadata'
 	}
-	from(generateAntoraYml)
-}
-
-task generateAntoraResources {
-	dependsOn 'syncDocumentationSourceForAntora', 'generateAntoraYml'
 }
 
 task zip(type: Zip) {
