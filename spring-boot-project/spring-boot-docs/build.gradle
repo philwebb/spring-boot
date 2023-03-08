@@ -281,17 +281,7 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 }
 
 antora {
-	version = '3.2.0-alpha.2'
 	playbook = 'antora-playbook.yml'
-	packages = [
-			'@antora/atlas-extension': '1.0.0-alpha.1',
-			'@antora/collector-extension': '1.0.0-alpha.2',
-			'@antora/collector-extension': '1.0.0-alpha.3',
-			'@asciidoctor/tabs': '1.0.0-alpha.12',
-			'@opendevise/antora-release-line-extension': '1.0.0-alpha.2',
-			'@springio/antora-extensions': '1.1.0',
-			'@springio/asciidoctor-extensions': '1.0.0-alpha.9'
-	]
 	options = [clean: true, fetch: !project.gradle.startParameter.offline, stacktrace: true]
 }
 
