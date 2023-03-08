@@ -2,11 +2,11 @@ import org.springframework.boot.build.artifacts.ArtifactRelease
 
 plugins {
 	id "java"
-	id 'io.spring.antora.generate-antora-yml' version '0.0.1'
-	id 'org.antora' version '1.0.0-alpha.7'
+	id "io.spring.antora.generate-antora-yml"
+	id "org.antora"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id 'org.jetbrains.kotlin.jvm'
+	id "org.jetbrains.kotlin.jvm"
 }
 
 description = "Spring Boot Docs"
@@ -295,7 +295,7 @@ antora {
 	options = [clean: true, fetch: !project.gradle.startParameter.offline, stacktrace: true]
 }
 
-// FIXME make AntoraConventions
+// FIXME make AntoraConventions?
 tasks.named("generateAntoraYml") {
 	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
 	dependsOn dependencyVersions
@@ -315,6 +315,7 @@ tasks.named("generateAntoraYml") {
 		return  ["github-tag": determineGitHubTag(project),
 				 "artifact-release-type": artifacts.getType(),
 				 "artifact-download-repo": artifacts.getDownloadRepo(),
+
 				 "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
 				 "jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 				 "jooq-version": versionConstraints["org.jooq:jooq"],
