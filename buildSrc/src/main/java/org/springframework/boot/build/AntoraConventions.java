@@ -21,9 +21,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
+import io.spring.gradle.antora.GenerateAntoraYmlTask;
 import org.antora.gradle.AntoraExtension;
 import org.antora.gradle.AntoraPlugin;
 import org.gradle.api.Project;
+
+import org.springframework.boot.build.artifacts.ArtifactRelease;
 
 /**
  * Conventions that are applied in the presence of the {@link AntoraPlugin} and
@@ -49,17 +52,39 @@ public class AntoraConventions {
 	}
 
 	void apply(Project project) {
-		project.getPlugins().withType(AntoraPlugin.class, (plugin) -> apply(project, plugin));
-		project.getPlugins().withType(GenerateAntoraYmlPlugin.class, (plugin) -> apply(project, plugin));
+		project.getPlugins().withType(AntoraPlugin.class, (plugin) -> configureAntoraPlugin(project, plugin));
+		project.getPlugins()
+			.withType(GenerateAntoraYmlPlugin.class, (plugin) -> configureGenerateAntoraYmlPlugin(project, plugin));
 	}
 
-	private void apply(Project project, AntoraPlugin plugin) {
-		AntoraExtension antoraExtension = project.getExtensions().getByType(AntoraExtension.class);
-		antoraExtension.getVersion().convention(ANTORA_VERSION);
-		antoraExtension.getPackages().convention(PACKAGES);
+	private void configureAntoraPlugin(Project project, AntoraPlugin plugin) {
+		AntoraExtension extension = project.getExtensions().getByType(AntoraExtension.class);
+		extension.getVersion().convention(ANTORA_VERSION);
+		extension.getPackages().convention(PACKAGES);
 	}
 
-	private void apply(Project project, GenerateAntoraYmlPlugin plugin) {
+	private void configureGenerateAntoraYmlPlugin(Project project, GenerateAntoraYmlPlugin plugin) {
+		project.getTasks()
+			.withType(GenerateAntoraYmlTask.class, (task) -> configureGenerateAntoraYmlTask(project, task));
+	}
+
+	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask task) {
+		task.doFirst((actionedTask) -> task.getAsciidocAttributes()
+			.putAll(project.provider(() -> provideAsciidocAttributes(project))));
+	}
+
+	private Map<String, Object> provideAsciidocAttributes(Project project) {
+		Map<String, Object> attributes = new LinkedHashMap<>();
+		ArtifactRelease artifacts = ArtifactRelease.forProject(project);
+		attributes.put("github-tag", determineGitHubTag(project));
+		attributes.put("artifact-release-type", artifacts.getType());
+		attributes.put("artifact-download-repo", artifacts.getDownloadRepo());
+		return attributes;
+	}
+
+	private String determineGitHubTag(Project project) {
+		String version = "v" + project.getVersion();
+		return (version.endsWith("-SNAPSHOT")) ? "main" : version;
 	}
 
 }

@@ -1,5 +1,3 @@
-import org.springframework.boot.build.artifacts.ArtifactRelease
-
 plugins {
 	id "java"
 	id "io.spring.antora.generate-antora-yml"
@@ -300,13 +298,7 @@ tasks.named("generateAntoraYml") {
 		if (securityVersion.endsWith("-SNAPSHOT")) {
 			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
 		}
-		def artifacts = ArtifactRelease.forProject(project)
-
-		return  ["github-tag": determineGitHubTag(project),
-				 "artifact-release-type": artifacts.getType(),
-				 "artifact-download-repo": artifacts.getDownloadRepo(),
-
-				 "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
+		return  ["hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
 				 "jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 				 "jooq-version": versionConstraints["org.jooq:jooq"],
 				 "lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
@@ -334,11 +326,6 @@ tasks.named("generateAntoraYml") {
 				 "spring-application-output": getRelativeExamplesPath( runSpringApplicationExample.outputs),
 				 "logging-format-output": getRelativeExamplesPath(runLoggingFormatExample.outputs)]
 	} )
-}
-
-private String determineGitHubTag(Project project) {
-	String version = "v" + project.getVersion();
-	return (version.endsWith("-SNAPSHOT")) ? "main" : version;
 }
 
 def getRelativeExamplesPath(var outputs) {
