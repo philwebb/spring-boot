@@ -70,6 +70,7 @@ public class AntoraConventions {
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask task) {
 		task.setProperty("baseAntoraYmlFile", project.file("src/docs/antora/antora.yml"));
+		task.setProperty("outputFile", project.file("$buildDir/generated/antora/antora.yml"));
 		task.doFirst((actionedTask) -> task.getAsciidocAttributes()
 			.putAll(project.provider(() -> provideAsciidocAttributes(project))));
 	}

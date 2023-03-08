@@ -290,7 +290,7 @@ tasks.withType(io.spring.gradle.antora.GenerateAntoraYmlTask) {
 	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	outputFile = file("$buildDir/generateAntoraYml/antora.yml")
+	outputFile = file("$buildDir/generated/antora/antora.yml")
 	asciidocAttributes = project.provider( {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
