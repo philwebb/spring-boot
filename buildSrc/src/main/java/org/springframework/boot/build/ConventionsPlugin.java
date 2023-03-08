@@ -38,6 +38,7 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson
+ * @author Phillip Webb
  */
 public class ConventionsPlugin implements Plugin<Project> {
 
@@ -46,6 +47,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		new JavaConventions().apply(project);
 		new MavenPublishingConventions().apply(project);
 		new AsciidoctorConventions().apply(project);
+		new AntoraConventions().apply(project);
 		new KotlinConventions().apply(project);
 	}
 
