@@ -9,7 +9,7 @@ ext:
       command: .antora/collector
       local: true
     scan:
-      dir: ./
+      dir: ../../../build/generated/antora
 asciidoc:
   attributes:
     attribute-missing: 'warn'
