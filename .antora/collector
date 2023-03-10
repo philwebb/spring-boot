@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -n "$ANTORA_COLLECTOR" ]; then
+	ROOT="$( cd `dirname $0`/.. && pwd )"
+	echo "$ROOT"
+	"$ANTORA_COLLECTOR" $ROOT
+fi
