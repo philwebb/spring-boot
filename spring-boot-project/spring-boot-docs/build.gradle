@@ -279,8 +279,8 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 }
 
 antora {
-	playbook = 'antora-playbook.yml'
-	options = [clean: true, fetch: !project.gradle.startParameter.offline, stacktrace: true]
+	playbook = 'local-antora-playbook.yml'
+	options = [fetch: !project.gradle.startParameter.offline, stacktrace: true]
 }
 
 tasks.withType(io.spring.gradle.antora.GenerateAntoraYmlTask) {

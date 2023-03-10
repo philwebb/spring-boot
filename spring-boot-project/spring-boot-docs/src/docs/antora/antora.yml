@@ -3,13 +3,6 @@ version: true
 title: Spring Boot Documentation
 nav:
   - modules/ROOT/nav.adoc
-ext:
-  collector:
-    run:
-      command: .antora/collector
-      local: true
-    scan:
-      dir: ../../../build/generated/antora
 asciidoc:
   attributes:
     attribute-missing: 'warn'

@@ -13,8 +13,9 @@ content:
   sources:
     - url: ./../..
       branches: HEAD
-      start_path: spring-boot-project/spring-boot-docs/src/docs/antora
-      worktrees: true
+      start_paths: 
+      - spring-boot-project/spring-boot-docs/src/docs/antora
+      - spring-boot-project/spring-boot-docs/build/generated/antora
 asciidoc:
   attributes:
     page-pagination: ''

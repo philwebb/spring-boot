@@ -76,7 +76,7 @@ public class AntoraConventions {
 		createSyncContentTask(project, antoraTask);
 	}
 
-	private Sync createSyncContentTask(Project project, AntoraTask antoraTask) {
+	private void createSyncContentTask(Project project, AntoraTask antoraTask) {
 		String taskName = "sync" + StringUtils.capitalize(antoraTask.getName()) + "Content";
 		Sync syncTask = project.getTasks().create(taskName, Sync.class);
 		File destination = new File(project.getBuildDir(), "generated/antora");
@@ -87,7 +87,6 @@ public class AntoraConventions {
 			.dir(destination)
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withPropertyName("synced source");
-		return syncTask;
 	}
 
 	private void configureGenerateAntoraYmlPlugin(Project project, GenerateAntoraYmlPlugin generateAntoraYmlPlugin) {
