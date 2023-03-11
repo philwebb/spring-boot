@@ -28,11 +28,14 @@ import org.antora.gradle.AntoraExtension;
 import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.api.Project;
+import org.gradle.api.publish.PublishingExtension;
+import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.bundling.Zip;
 
 import org.springframework.boot.build.artifacts.ArtifactRelease;
-import org.springframework.util.StringUtils;
 
 /**
  * Conventions that are applied in the presence of the {@link AntoraPlugin} and
@@ -43,6 +46,8 @@ import org.springframework.util.StringUtils;
 public class AntoraConventions {
 
 	private static final String ANTORA_VERSION = "3.2.0-alpha.2";
+
+	private static final String ANTORA_SOURCE = "src/docs/antora";
 
 	private static final Map<String, String> PACKAGES;
 	static {
@@ -63,43 +68,26 @@ public class AntoraConventions {
 	}
 
 	private void configureAntoraPlugin(Project project, AntoraPlugin antoraPlugin) {
+		project.getPlugins().apply(DeployedPlugin.class);
 		GenerateAntoraYmlPlugin generateAntoraYmlPlugin = project.getPlugins().getPlugin(GenerateAntoraYmlPlugin.class);
 		Objects.requireNonNull(generateAntoraYmlPlugin, "GenerateAntoraYmlPlugin has not been applied");
-		AntoraExtension extension = project.getExtensions().getByType(AntoraExtension.class);
-		extension.getVersion().convention(ANTORA_VERSION);
-		extension.getPackages().convention(PACKAGES);
-		project.getTasks().withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
-		configureGenerateAntoraYmlPlugin(project, generateAntoraYmlPlugin);
+		TaskContainer tasks = project.getTasks();
+		tasks.withType(GenerateAntoraYmlTask.class,
+				(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask));
+		tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
+		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class));
 	}
 
-	private void configureAntoraTask(Project project, AntoraTask antoraTask) {
-		createSyncContentTask(project, antoraTask);
-	}
-
-	private void createSyncContentTask(Project project, AntoraTask antoraTask) {
-		String taskName = "sync" + StringUtils.capitalize(antoraTask.getName()) + "Content";
-		Sync syncTask = project.getTasks().create(taskName, Sync.class);
-		File destination = new File(project.getBuildDir(), "generated/antora");
-		syncTask.setDestinationDir(destination);
-		project.getTasks().withType(GenerateAntoraYmlTask.class).forEach(syncTask::from);
-		antoraTask.dependsOn(syncTask);
-		antoraTask.getInputs()
-			.dir(destination)
-			.withPathSensitivity(PathSensitivity.RELATIVE)
-			.withPropertyName("synced source");
-	}
-
-	private void configureGenerateAntoraYmlPlugin(Project project, GenerateAntoraYmlPlugin generateAntoraYmlPlugin) {
-		project.getTasks()
-			.withType(GenerateAntoraYmlTask.class,
-					(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask));
+	private void configureAntoraExtension(AntoraExtension antoraExtension) {
+		antoraExtension.getVersion().convention(ANTORA_VERSION);
+		antoraExtension.getPackages().convention(PACKAGES);
 	}
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask) {
-		generateAntoraYmlTask.setProperty("baseAntoraYmlFile", project.file("src/docs/antora/antora.yml"));
+		generateAntoraYmlTask.setProperty("baseAntoraYmlFile", project.file(ANTORA_SOURCE + "/antora.yml"));
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/antora-yml/antora.yml"));
-		generateAntoraYmlTask.doFirst((actionedTask) -> generateAntoraYmlTask.getAsciidocAttributes()
+		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
 			.putAll(project.provider(() -> provideAsciidocAttributes(project))));
 	}
 
@@ -115,6 +103,45 @@ public class AntoraConventions {
 	private String determineGitHubTag(Project project) {
 		String version = "v" + project.getVersion();
 		return (version.endsWith("-SNAPSHOT")) ? "main" : version;
+	}
+
+	private void configureAntoraTask(Project project, AntoraTask antoraTask) {
+		Sync syncGeneratedContentTask = createSyncGeneratedContentTask(project);
+		Sync syncContentTask = createSyncContentTask(project, syncGeneratedContentTask);
+		configurePublishGeneratedContent(project, syncGeneratedContentTask);
+		antoraTask.dependsOn(syncContentTask);
+		antoraTask.getInputs()
+			.dir(syncContentTask.getDestinationDir())
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("synced antora content");
+	}
+
+	private Sync createSyncGeneratedContentTask(Project project) {
+		Sync syncTask = project.getTasks().create("syncGeneratedAntoraContent", Sync.class);
+		File destination = new File(project.getBuildDir(), "generated/antora");
+		syncTask.setDestinationDir(destination);
+		project.getTasks().withType(GenerateAntoraYmlTask.class).forEach(syncTask::from);
+		return syncTask;
+	}
+
+	private Sync createSyncContentTask(Project project, Sync syncGeneratedContentTask) {
+		Sync syncTask = project.getTasks().create("syncAntoraContent", Sync.class);
+		syncTask.setDestinationDir(new File(project.getBuildDir(), "antora"));
+		syncTask.from(syncGeneratedContentTask);
+		syncTask.from(project.file(ANTORA_SOURCE), (spec) -> spec.exclude("**/antora.yml"));
+		return syncTask;
+	}
+
+	private void configurePublishGeneratedContent(Project project, Sync syncGeneratedContentTask) {
+		Zip zipTask = project.getTasks().create("zipGeneratedAntoraContent", Zip.class);
+		zipTask.dependsOn(syncGeneratedContentTask);
+		zipTask.from(syncGeneratedContentTask);
+		zipTask.getArchiveFileName().convention("generated-antora-content.zip");
+		project.getArtifacts().add("archives", zipTask);
+		PublishingExtension publishingExtension = project.getExtensions().getByType(PublishingExtension.class);
+		publishingExtension.getPublications()
+			.withType(MavenPublication.class,
+					(mavenPublication) -> mavenPublication.artifact(zipTask).setClassifier("antora"));
 	}
 
 }

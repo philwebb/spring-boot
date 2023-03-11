@@ -344,7 +344,7 @@ task collectConfigurationMetadataFiles(type: Copy) {
 	into layout.buildDirectory.dir('collectConfigurationMetadataFiles')
 }
 
-syncAntoraContent {
+syncGeneratedAntoraContent {
 	dependsOn collectConfigurationMetadataFiles
 	dependsOn documentStarters
 	dependsOn documentTestSlices
@@ -372,7 +372,7 @@ syncAntoraContent {
 }
 
 task zip(type: Zip) {
-	dependsOn antora,
+	dependsOn "antora",
 			configurations.gradlePluginDocumentation,
 			configurations.actuatorApiDocumentation,
 			configurations.mavenPluginDocumentation
