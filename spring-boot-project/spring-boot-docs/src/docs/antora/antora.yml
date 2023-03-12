@@ -2,7 +2,7 @@ name: boot
 version: true
 title: Spring Boot Documentation
 nav:
-  - modules/ROOT/nav.adoc
+  - modules/reference/nav.adoc
 asciidoc:
   attributes:
     attribute-missing: 'warn'

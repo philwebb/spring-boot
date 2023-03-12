@@ -355,19 +355,19 @@ syncGeneratedAntoraContent {
 	dependsOn documentDevtoolsPropertyDefaults
 	destinationDir = file("${buildDir}/generated/antora")
 	from("${buildDir}/generated/asciidoc") {
-		into "modules/ROOT/partials/"
+		into "modules/reference/partials/"
 	}
 	from(runRemoteSpringApplicationExample) {
-		into "modules/ROOT/examples/example-output/"
+		into "modules/reference/examples/example-output/"
 	}
 	from(runSpringApplicationExample) {
-		into "modules/ROOT/examples/example-output/"
+		into "modules/reference/examples/example-output/"
 	}
 	from(runLoggingFormatExample) {
-		into "modules/ROOT/examples/example-output/"
+		into "modules/reference/examples/example-output/"
 	}
 	from(collectConfigurationMetadataFiles) {
-		into 'modules/ROOT/partials/configuration-metadata'
+		into 'modules/reference/partials/configuration-metadata'
 	}
 }
 

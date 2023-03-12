@@ -8,7 +8,7 @@ antora:
   - require: '@springio/antora-extensions/tabs-migration-extension'
     unwrap_example_block: always
 site:
-  title: Spring Boot Reference
+  title: Spring Boot
 content:
   sources:
     - url: ./../..
@@ -21,8 +21,8 @@ asciidoc:
     hide-uri-scheme: '@'
     tabs-sync-option: '@'
     chomp: 'all'
-    include-java: 'ROOT:example$src/main/java/org/springframework/boot/docs'
-    include-kotlin: 'ROOT:example$src/main/kotlin/org/springframework/boot/docs'
+    include-java: 'reference:example$src/main/java/org/springframework/boot/docs'
+    include-kotlin: 'reference:example$src/main/kotlin/org/springframework/boot/docs'
     docs-resources: 'example$src/main/resources'
   extensions:
     - '@asciidoctor/tabs'
