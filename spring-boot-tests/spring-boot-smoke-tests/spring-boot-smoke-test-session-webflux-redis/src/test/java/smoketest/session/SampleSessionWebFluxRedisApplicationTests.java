@@ -25,12 +25,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.redis.RedisService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSessionWebFluxRedisApplicationTests {
 
 	@Container
+	@RedisService
 	private static final RedisContainer redis = new RedisContainer();
 
 	@LocalServerPort
@@ -53,12 +53,6 @@ class SampleSessionWebFluxRedisApplicationTests {
 
 	@Autowired
 	private WebClient.Builder webClientBuilder;
-
-	@DynamicPropertySource
-	static void applicationProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", redis::getHost);
-		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
 
 	@Test
 	void userDefinedMappingsSecureByDefault() {

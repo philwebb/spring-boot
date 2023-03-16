@@ -26,12 +26,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.mongo.MongoService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSessionWebFluxMongoApplicationTests {
 
 	@Container
+	@MongoService
 	private static final MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
 		.withStartupTimeout(Duration.ofMinutes(2));
 
@@ -55,11 +55,6 @@ class SampleSessionWebFluxMongoApplicationTests {
 
 	@Autowired
 	private WebClient.Builder webClientBuilder;
-
-	@DynamicPropertySource
-	static void applicationProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.mongodb.uri", mongo::getReplicaSetUrl);
-	}
 
 	@Test
 	void userDefinedMappingsSecureByDefault() {

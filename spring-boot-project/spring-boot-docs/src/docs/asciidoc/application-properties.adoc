@@ -43,6 +43,8 @@ include::application-properties/rsocket.adoc[]
 
 include::application-properties/actuator.adoc[]
 
+include::application-properties/dev-services.adoc[]
+
 include::application-properties/devtools.adoc[]
 
 include::application-properties/testing.adoc[]

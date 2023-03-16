@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ public enum DatabaseDriver {
 	 */
 	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP", "SELECT 1 FROM SYS.DUMMY") {
 		@Override
-		protected Collection<String> getUrlPrefixes() {
+		public Collection<String> getUrlPrefixes() {
 			return Collections.singleton("sap");
 		}
 	},
@@ -130,7 +130,7 @@ public enum DatabaseDriver {
 			"SELECT 1 FROM RDB$DATABASE") {
 
 		@Override
-		protected Collection<String> getUrlPrefixes() {
+		public Collection<String> getUrlPrefixes() {
 			return Arrays.asList("firebirdsql", "firebird");
 		}
 
@@ -164,7 +164,7 @@ public enum DatabaseDriver {
 		}
 
 		@Override
-		protected Collection<String> getUrlPrefixes() {
+		public Collection<String> getUrlPrefixes() {
 			return Collections.singleton("as400");
 		}
 
@@ -185,7 +185,7 @@ public enum DatabaseDriver {
 	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null, "select count(*) from systables") {
 
 		@Override
-		protected Collection<String> getUrlPrefixes() {
+		public Collection<String> getUrlPrefixes() {
 			return Arrays.asList("informix-sqli", "informix-direct");
 		}
 
@@ -203,7 +203,7 @@ public enum DatabaseDriver {
 	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
 
 		@Override
-		protected Collection<String> getUrlPrefixes() {
+		public Collection<String> getUrlPrefixes() {
 			return Collections.singleton("tc");
 		}
 
@@ -240,12 +240,17 @@ public enum DatabaseDriver {
 		return name().toLowerCase(Locale.ENGLISH);
 	}
 
-	protected boolean matchProductName(String productName) {
-		return this.productName != null && this.productName.equalsIgnoreCase(productName);
+	/**
+	 * Return the url prefixes of this driver.
+	 * @return the url prefixes
+	 * @since 3.1.0
+	 */
+	public Collection<String> getUrlPrefixes() {
+		return Collections.singleton(name().toLowerCase(Locale.ENGLISH));
 	}
 
-	protected Collection<String> getUrlPrefixes() {
-		return Collections.singleton(name().toLowerCase(Locale.ENGLISH));
+	protected boolean matchProductName(String productName) {
+		return this.productName != null && this.productName.equalsIgnoreCase(productName);
 	}
 
 	/**
