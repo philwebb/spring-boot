@@ -129,7 +129,7 @@ public abstract class AbstractEndpointDocumentationTests {
 			WebFluxEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 			WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
 			JacksonEndpointAutoConfiguration.class })
-	static class BaseDocumentationConfiguration {
+	protected static class BaseDocumentationConfiguration {
 
 		@Bean
 		static BeanPostProcessor endpointObjectMapperBeanPostProcessor() {

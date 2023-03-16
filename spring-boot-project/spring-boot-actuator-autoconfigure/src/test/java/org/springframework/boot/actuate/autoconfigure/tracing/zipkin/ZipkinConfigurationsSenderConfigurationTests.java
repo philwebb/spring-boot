@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,7 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -172,12 +174,83 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		}
 	}
 
+	@Test
+	void webClientSenderUsesZipkinServiceConnection() {
+		this.reactiveContextRunner
+			.withUserConfiguration(WebClientConfiguration.class, ZipkinServiceConnectionConfiguration.class)
+			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
+				ZipkinWebClientSender webClientSender = context.getBean(ZipkinWebClientSender.class);
+				assertThat(webClientSender).extracting("endpoint").isEqualTo("http://zipkin.example.com:80/api/span");
+			});
+	}
+
+	@Test
+	void urlSenderUsesZipkinServiceConnection() {
+		this.contextRunner.withUserConfiguration(ZipkinServiceConnectionConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(URLConnectionSender.class);
+			URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
+			assertThat(urlConnectionSender).extracting("endpoint")
+				.isEqualTo(new URL("http://zipkin.example.com:80/api/span"));
+		});
+	}
+
+	@Test
+	void restTemplateSenderUsesZipkinServiceConnection() {
+		this.servletContextRunner
+			.withUserConfiguration(RestTemplateConfiguration.class, ZipkinServiceConnectionConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
+				ZipkinRestTemplateSender restTemplateSender = context.getBean(ZipkinRestTemplateSender.class);
+				assertThat(restTemplateSender).extracting("endpoint")
+					.isEqualTo("http://zipkin.example.com:80/api/span");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class RestTemplateConfiguration {
 
 		@Bean
 		ZipkinRestTemplateBuilderCustomizer zipkinRestTemplateBuilderCustomizer() {
 			return new DummyZipkinRestTemplateBuilderCustomizer();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class ZipkinServiceConnectionConfiguration {
+
+		@Bean
+		ZipkinServiceConnection zipkinServiceConnection() {
+			return new ZipkinServiceConnection() {
+
+				@Override
+				public Origin getOrigin() {
+					return null;
+				}
+
+				@Override
+				public String getName() {
+					return "zipkinServiceConnection";
+				}
+
+				@Override
+				public String getHost() {
+					return "zipkin.example.com";
+				}
+
+				@Override
+				public int getPort() {
+					return 80;
+				}
+
+				@Override
+				public String getSpanPath() {
+					return "/api/span";
+				}
+			};
 		}
 
 	}

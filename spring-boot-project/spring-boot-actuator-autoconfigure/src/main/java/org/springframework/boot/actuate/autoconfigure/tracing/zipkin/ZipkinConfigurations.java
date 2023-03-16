@@ -59,11 +59,15 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		URLConnectionSender urlConnectionSender(ZipkinProperties properties) {
+		URLConnectionSender urlConnectionSender(ZipkinProperties properties,
+				ObjectProvider<ZipkinServiceConnection> serviceConnectionProvider) {
+			ZipkinServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
 			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
 			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
 			builder.readTimeout((int) properties.getReadTimeout().toMillis());
-			builder.endpoint(properties.getEndpoint());
+			String endpoint = (serviceConnection != null) ? serviceConnection.getSpanEndpoint()
+					: properties.getEndpoint();
+			builder.endpoint(endpoint);
 			return builder.build();
 		}
 
@@ -77,12 +81,16 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
-				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
+				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers,
+				ObjectProvider<ZipkinServiceConnection> serviceConnectionProvider) {
+			ZipkinServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setReadTimeout(properties.getReadTimeout());
 			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
-			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
+			String endpoint = (serviceConnection != null) ? serviceConnection.getSpanEndpoint()
+					: properties.getEndpoint();
+			return new ZipkinRestTemplateSender(endpoint, restTemplateBuilder.build());
 		}
 
 		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
@@ -106,10 +114,14 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
 		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
-				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers) {
+				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
+				ObjectProvider<ZipkinServiceConnection> serviceConnectionProvider) {
+			ZipkinServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
 			WebClient.Builder builder = WebClient.builder();
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return new ZipkinWebClientSender(properties.getEndpoint(), builder.build());
+			String endpoint = (serviceConnection != null) ? serviceConnection.getSpanEndpoint()
+					: properties.getEndpoint();
+			return new ZipkinWebClientSender(endpoint, builder.build());
 		}
 
 	}

@@ -94,6 +94,8 @@ include::endpoints/quartz.adoc[leveloffset=+1]
 
 include::endpoints/scheduledtasks.adoc[leveloffset=+1]
 
+include::endpoints/serviceconnections.adoc[leveloffset=+1]
+
 include::endpoints/sessions.adoc[leveloffset=+1]
 
 include::endpoints/shutdown.adoc[leveloffset=+1]
