@@ -60,6 +60,10 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:jdbc")
+	optional("org.testcontainers:mongodb")
+	optional("org.testcontainers:testcontainers")
 	optional("io.micrometer:micrometer-tracing")
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
@@ -99,11 +103,8 @@ dependencies {
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.testcontainers:cassandra")
 	testImplementation("org.testcontainers:couchbase")
-	testImplementation("org.testcontainers:elasticsearch")
 	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.thymeleaf:thymeleaf")
 }
 

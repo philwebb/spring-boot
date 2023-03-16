@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -43,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataRedisTestReactiveIntegrationTests {
 
 	@Container
+	@RedisService
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired
@@ -50,12 +49,6 @@ class DataRedisTestReactiveIntegrationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", redis::getHost);
-		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
 
 	@Test
 	void testRepository() {
