@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  * Configures {@link RabbitConnectionFactoryBean} with sensible defaults.
  *
  * @author Chris Bono
+ * @author Moritz Halbritter
  * @since 2.6.0
  */
 public class RabbitConnectionFactoryBeanConfigurer {
@@ -38,13 +39,21 @@ public class RabbitConnectionFactoryBeanConfigurer {
 
 	private final ResourceLoader resourceLoader;
 
+	private final RabbitServiceConnection serviceConnection;
+
 	private CredentialsProvider credentialsProvider;
 
 	private CredentialsRefreshService credentialsRefreshService;
 
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties) {
+		this(resourceLoader, properties, null);
+	}
+
+	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
+			RabbitServiceConnection serviceConnection) {
 		this.resourceLoader = resourceLoader;
 		this.rabbitProperties = properties;
+		this.serviceConnection = serviceConnection;
 	}
 
 	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
@@ -65,12 +74,22 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	public void configure(RabbitConnectionFactoryBean factory) {
 		Assert.notNull(factory, "RabbitConnectionFactoryBean must not be null");
 		factory.setResourceLoader(this.resourceLoader);
+		String host = (this.serviceConnection != null) ? this.serviceConnection.getFirstAddress().host()
+				: this.rabbitProperties.determineHost();
+		int port = (this.serviceConnection != null) ? this.serviceConnection.getFirstAddress().port()
+				: this.rabbitProperties.determinePort();
+		String username = (this.serviceConnection != null) ? this.serviceConnection.getUsername()
+				: this.rabbitProperties.determineUsername();
+		String password = (this.serviceConnection != null) ? this.serviceConnection.getPassword()
+				: this.rabbitProperties.determinePassword();
+		String virtualHost = (this.serviceConnection != null) ? this.serviceConnection.getVirtualHost()
+				: this.rabbitProperties.determineVirtualHost();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(this.rabbitProperties::determineHost).whenNonNull().to(factory::setHost);
-		map.from(this.rabbitProperties::determinePort).to(factory::setPort);
-		map.from(this.rabbitProperties::determineUsername).whenNonNull().to(factory::setUsername);
-		map.from(this.rabbitProperties::determinePassword).whenNonNull().to(factory::setPassword);
-		map.from(this.rabbitProperties::determineVirtualHost).whenNonNull().to(factory::setVirtualHost);
+		map.from(host).whenNonNull().to(factory::setHost);
+		map.from(port).to(factory::setPort);
+		map.from(username).whenNonNull().to(factory::setUsername);
+		map.from(password).whenNonNull().to(factory::setPassword);
+		map.from(virtualHost).whenNonNull().to(factory::setVirtualHost);
 		map.from(this.rabbitProperties::getRequestedHeartbeat)
 			.whenNonNull()
 			.asInt(Duration::getSeconds)

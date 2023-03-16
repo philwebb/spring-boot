@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -61,6 +62,7 @@ import org.springframework.util.StringUtils;
  * @author András Deák
  * @author Ferenc Gratzer
  * @author Evgeniy Cheban
+ * @author Moritz Halbritter
  * @since 1.1.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
@@ -91,9 +93,10 @@ public class LiquibaseAutoConfiguration {
 
 		@Bean
 		public SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
-				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
+				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource,
+				ObjectProvider<JdbcServiceConnection> serviceConnection) {
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
-					dataSource.getIfUnique());
+					dataSource.getIfUnique(), serviceConnection.getIfAvailable());
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setClearCheckSums(this.properties.isClearChecksums());
 			liquibase.setContexts(this.properties.getContexts());
@@ -112,9 +115,11 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
-		private SpringLiquibase createSpringLiquibase(DataSource liquibaseDataSource, DataSource dataSource) {
+		private SpringLiquibase createSpringLiquibase(DataSource liquibaseDataSource, DataSource dataSource,
+				JdbcServiceConnection serviceConnection) {
 			LiquibaseProperties properties = this.properties;
-			DataSource migrationDataSource = getMigrationDataSource(liquibaseDataSource, dataSource, properties);
+			DataSource migrationDataSource = getMigrationDataSource(liquibaseDataSource, dataSource, properties,
+					serviceConnection);
 			SpringLiquibase liquibase = (migrationDataSource == liquibaseDataSource
 					|| migrationDataSource == dataSource) ? new SpringLiquibase()
 							: new DataSourceClosingSpringLiquibase();
@@ -123,31 +128,37 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource getMigrationDataSource(DataSource liquibaseDataSource, DataSource dataSource,
-				LiquibaseProperties properties) {
+				LiquibaseProperties properties, JdbcServiceConnection serviceConnection) {
 			if (liquibaseDataSource != null) {
 				return liquibaseDataSource;
 			}
-			if (properties.getUrl() != null) {
+			String url = (serviceConnection != null) ? serviceConnection.getJdbcUrl() : properties.getUrl();
+			if (url != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
-				builder.url(properties.getUrl());
-				applyCommonBuilderProperties(properties, builder);
+				builder.url(url);
+				applyCommonBuilderProperties(properties, serviceConnection, builder);
 				return builder.build();
 			}
-			if (properties.getUser() != null && dataSource != null) {
+			String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
+			if (user != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
 					.type(SimpleDriverDataSource.class);
-				applyCommonBuilderProperties(properties, builder);
+				applyCommonBuilderProperties(properties, serviceConnection, builder);
 				return builder.build();
 			}
 			Assert.state(dataSource != null, "Liquibase migration DataSource missing");
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(LiquibaseProperties properties, DataSourceBuilder<?> builder) {
-			builder.username(properties.getUser());
-			builder.password(properties.getPassword());
-			if (StringUtils.hasText(properties.getDriverClassName())) {
-				builder.driverClassName(properties.getDriverClassName());
+		private void applyCommonBuilderProperties(LiquibaseProperties properties,
+				JdbcServiceConnection serviceConnection, DataSourceBuilder<?> builder) {
+			String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
+			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+			String driverClassName = (serviceConnection != null) ? null : properties.getDriverClassName();
+			builder.username(user);
+			builder.password(password);
+			if (StringUtils.hasText(driverClassName)) {
+				builder.driverClassName(driverClassName);
 			}
 		}
 
@@ -161,6 +172,11 @@ public class LiquibaseAutoConfiguration {
 
 		@ConditionalOnBean(DataSource.class)
 		private static final class DataSourceBeanCondition {
+
+		}
+
+		@ConditionalOnBean(JdbcServiceConnection.class)
+		private static final class JdbcServiceConnectionCondition {
 
 		}
 

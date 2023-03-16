@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistry;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -34,6 +35,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -66,6 +69,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @AutoConfiguration(after = MongoReactiveAutoConfiguration.class)
@@ -109,15 +113,16 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory,
-			MongoProperties properties) {
+			MongoProperties properties, ObjectProvider<MongoServiceConnection> serviceConnectionProvider) {
 		return new ReactiveGridFsTemplate(dataBufferFactory,
-				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties), mappingMongoConverter,
-				properties.getGridfs().getBucket());
+				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties,
+						serviceConnectionProvider.getIfAvailable()),
+				mappingMongoConverter, properties.getGridfs().getBucket());
 	}
 
 	/**
 	 * {@link ReactiveMongoDatabaseFactory} decorator to use {@link Gridfs#getDatabase()}
-	 * when set.
+	 * or {@link GridFs#getGridFs()} from the {@link MongoServiceConnection} when set.
 	 */
 	static class GridFsReactiveMongoDatabaseFactory implements ReactiveMongoDatabaseFactory {
 
@@ -125,9 +130,13 @@ public class MongoReactiveDataAutoConfiguration {
 
 		private final MongoProperties properties;
 
-		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties) {
+		private final MongoServiceConnection serviceConnection;
+
+		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties,
+				MongoServiceConnection serviceConnection) {
 			this.delegate = delegate;
 			this.properties = properties;
+			this.serviceConnection = serviceConnection;
 		}
 
 		@Override
@@ -137,7 +146,8 @@ public class MongoReactiveDataAutoConfiguration {
 
 		@Override
 		public Mono<MongoDatabase> getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = this.properties.getGridfs().getDatabase();
+			String gridFsDatabase = (this.serviceConnection != null) ? getGridFsDatabase(this.serviceConnection)
+					: this.properties.getGridfs().getDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.delegate.getMongoDatabase(gridFsDatabase);
 			}
@@ -177,6 +187,13 @@ public class MongoReactiveDataAutoConfiguration {
 		@Override
 		public boolean isTransactionActive() {
 			return this.delegate.isTransactionActive();
+		}
+
+		private String getGridFsDatabase(MongoServiceConnection serviceConnection) {
+			if (serviceConnection.getGridFs() == null) {
+				return null;
+			}
+			return serviceConnection.getGridFs().getDatabase();
 		}
 
 	}

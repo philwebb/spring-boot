@@ -110,10 +110,6 @@ abstract class MongoClientFactorySupportTests<T> {
 		assertThat(properties.isAutoIndexCreation()).isTrue();
 	}
 
-	protected T createMongoClient() {
-		return createMongoClient(null, MongoClientSettings.builder().build());
-	}
-
 	protected T createMongoClient(MongoClientSettings settings) {
 		return createMongoClient(null, settings);
 	}

@@ -96,6 +96,7 @@ import static org.mockito.Mockito.mock;
  * @author Gary Russell
  * @author HaiTao Zhang
  * @author Franjo Zilic
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
@@ -166,6 +167,26 @@ class RabbitAutoConfigurationTests {
 				assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
 				assertThat(rcf.getChannelRpcTimeout()).isEqualTo(140);
 				assertThat((List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
+			});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void testConnectionFactoryWithOverridesWhenUsingServiceConnection() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, ServiceConnectionConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
+					"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
+					"spring.rabbitmq.virtual_host:/vhost")
+			.run((context) -> {
+				CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
+				assertThat(connectionFactory.getHost()).isEqualTo("rabbit.example.com");
+				assertThat(connectionFactory.getPort()).isEqualTo(12345);
+				assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost-1");
+				assertThat(connectionFactory.getUsername()).isEqualTo("user-1");
+				assertThat(connectionFactory.getRabbitConnectionFactory().getPassword()).isEqualTo("password-1");
+				List<Address> addresses = (List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses");
+				assertThat(addresses).containsExactly(new Address("rabbit.example.com", 12345),
+						new Address("rabbit2.example.com", 23456));
 			});
 	}
 
@@ -1214,6 +1235,16 @@ class RabbitAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		ContainerCustomizer<DirectMessageListenerContainer> customizer() {
 			return mock(ContainerCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionConfiguration {
+
+		@Bean
+		RabbitServiceConnection rabbitServiceConnection() {
+			return new TestRabbitServiceConnection();
 		}
 
 	}

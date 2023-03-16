@@ -62,8 +62,10 @@ public class MongoAutoConfiguration {
 		}
 
 		@Bean
-		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties) {
-			return new MongoPropertiesClientSettingsBuilderCustomizer(properties);
+		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
+				ObjectProvider<MongoServiceConnection> serviceConnectionProvider) {
+			return new MongoPropertiesClientSettingsBuilderCustomizer(properties,
+					serviceConnectionProvider.getIfAvailable());
 		}
 
 	}

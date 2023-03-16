@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Josh Long
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  * @since 1.2.0
  */
 @AutoConfiguration(before = DataSourceAutoConfiguration.class)
@@ -67,8 +68,10 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
-			ObjectProvider<XADataSource> xaDataSource) throws Exception {
-		return wrapper.wrapDataSource(xaDataSource.getIfAvailable(() -> createXaDataSource(properties)));
+			ObjectProvider<JdbcServiceConnection> serviceConnectionProvider, ObjectProvider<XADataSource> xaDataSource)
+			throws Exception {
+		return wrapper.wrapDataSource(xaDataSource
+			.getIfAvailable(() -> createXaDataSource(properties, serviceConnectionProvider.getIfAvailable())));
 	}
 
 	@Override
@@ -76,14 +79,20 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	private XADataSource createXaDataSource(DataSourceProperties properties) {
-		String className = properties.getXa().getDataSourceClassName();
-		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(properties.determineUrl()).getXaDataSourceClassName();
+	private XADataSource createXaDataSource(DataSourceProperties properties, JdbcServiceConnection serviceConnection) {
+		String className;
+		if (serviceConnection != null) {
+			className = DatabaseDriver.fromJdbcUrl(serviceConnection.getJdbcUrl()).getXaDataSourceClassName();
+		}
+		else {
+			className = properties.getXa().getDataSourceClassName();
+			if (!StringUtils.hasLength(className)) {
+				className = DatabaseDriver.fromJdbcUrl(properties.determineUrl()).getXaDataSourceClassName();
+			}
 		}
 		Assert.state(StringUtils.hasLength(className), "No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
-		bindXaProperties(dataSource, properties);
+		bindXaProperties(dataSource, properties, serviceConnection);
 		return dataSource;
 	}
 
@@ -99,18 +108,22 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		}
 	}
 
-	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties) {
-		Binder binder = new Binder(getBinderSource(dataSourceProperties));
+	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties,
+			JdbcServiceConnection serviceConnection) {
+		Binder binder = new Binder(getBinderSource(dataSourceProperties, serviceConnection));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
-	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties) {
-		Map<Object, Object> properties = new HashMap<>();
-		properties.putAll(dataSourceProperties.getXa().getProperties());
-		properties.computeIfAbsent("user", (key) -> dataSourceProperties.determineUsername());
-		properties.computeIfAbsent("password", (key) -> dataSourceProperties.determinePassword());
+	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties,
+			JdbcServiceConnection serviceConnection) {
+		Map<Object, Object> properties = new HashMap<>(dataSourceProperties.getXa().getProperties());
+		properties.computeIfAbsent("user", (key) -> (serviceConnection != null) ? serviceConnection.getUsername()
+				: dataSourceProperties.determineUsername());
+		properties.computeIfAbsent("password", (key) -> (serviceConnection != null) ? serviceConnection.getPassword()
+				: dataSourceProperties.determinePassword());
 		try {
-			properties.computeIfAbsent("url", (key) -> dataSourceProperties.determineUrl());
+			properties.computeIfAbsent("url", (key) -> (serviceConnection != null) ? serviceConnection.getJdbcUrl()
+					: dataSourceProperties.determineUrl());
 		}
 		catch (DataSourceBeanCreationException ex) {
 			// Continue as not all XA DataSource's require a URL

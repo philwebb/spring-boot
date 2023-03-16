@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Josh Long
  * @author Oliver Gierke
  * @author Mark Paluch
+ * @author Moritz Halbritter
  */
 class MongoDataAutoConfigurationTests {
 
@@ -77,6 +79,16 @@ class MongoDataAutoConfigurationTests {
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
 			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
 			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid");
+		});
+	}
+
+	@Test
+	void usesMongoServiceConnectionIfAvailable() {
+		this.contextRunner.withUserConfiguration(ServiceConnectionConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(GridFsTemplate.class);
+			GridFsTemplate template = context.getBean(GridFsTemplate.class);
+			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid-database-1");
 		});
 	}
 
@@ -246,6 +258,16 @@ class MongoDataAutoConfigurationTests {
 		@Bean
 		MongoDatabaseFactory mongoDatabaseFactory() {
 			return new SimpleMongoClientDatabaseFactory(MongoClients.create(), "test");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionConfiguration {
+
+		@Bean
+		MongoServiceConnection mongoServiceConnection() {
+			return new TestMongoServiceConnection();
 		}
 
 	}

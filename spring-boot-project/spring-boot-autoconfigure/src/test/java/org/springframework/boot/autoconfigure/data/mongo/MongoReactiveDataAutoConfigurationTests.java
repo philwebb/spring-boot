@@ -21,8 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
  */
 class MongoReactiveDataAutoConfigurationTests {
 
@@ -59,6 +63,12 @@ class MongoReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
+	void usesMongoServiceConnectionIfAvailable() {
+		this.contextRunner.withUserConfiguration(ServiceConnectionConfiguration.class)
+			.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1"));
+	}
+
+	@Test
 	void whenGridFsBucketIsConfiguredThenGridFsTemplateUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
@@ -80,6 +90,16 @@ class MongoReactiveDataAutoConfigurationTests {
 		ReactiveMongoDatabaseFactory factory = (ReactiveMongoDatabaseFactory) ReflectionTestUtils.getField(template,
 				"dbFactory");
 		return factory.getMongoDatabase().block().getName();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionConfiguration {
+
+		@Bean
+		MongoServiceConnection mongoServiceConnection() {
+			return new TestMongoServiceConnection();
+		}
+
 	}
 
 }

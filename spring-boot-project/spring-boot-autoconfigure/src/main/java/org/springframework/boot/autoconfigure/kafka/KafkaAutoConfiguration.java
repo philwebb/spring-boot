@@ -18,6 +18,13 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -28,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
+import org.springframework.boot.autoconfigure.kafka.KafkaServiceConnection.Node;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +64,8 @@ import org.springframework.retry.backoff.SleepingBackOffPolicy;
  * @author Eddú Meléndez
  * @author Nakul Mishra
  * @author Tomaz Fernandes
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  * @since 1.5.0
  */
 @AutoConfiguration
@@ -93,9 +103,14 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(
-			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
-		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(
-				this.properties.buildConsumerProperties());
+			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers,
+			ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
+		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+		Map<String, Object> properties = this.properties.buildConsumerProperties();
+		if (serviceConnection != null) {
+			properties = applyKafkaServiceConnectionForConsumer(serviceConnection, properties);
+		}
+		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(properties);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		return factory;
 	}
@@ -103,9 +118,14 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(
-			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers) {
-		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
-				this.properties.buildProducerProperties());
+			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers,
+			ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
+		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+		Map<String, Object> properties = this.properties.buildProducerProperties();
+		if (serviceConnection != null) {
+			properties = applyKafkaServiceConnectionForProducer(serviceConnection, properties);
+		}
+		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(properties);
 		String transactionIdPrefix = this.properties.getProducer().getTransactionIdPrefix();
 		if (transactionIdPrefix != null) {
 			factory.setTransactionIdPrefix(transactionIdPrefix);
@@ -139,8 +159,13 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KafkaAdmin kafkaAdmin() {
-		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
+	public KafkaAdmin kafkaAdmin(ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
+		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+		Map<String, Object> properties = this.properties.buildAdminProperties();
+		if (serviceConnection != null) {
+			properties = applyKafkaServiceConnectionForAdmin(serviceConnection, properties);
+		}
+		KafkaAdmin kafkaAdmin = new KafkaAdmin(properties);
 		KafkaProperties.Admin admin = this.properties.getAdmin();
 		if (admin.getCloseTimeout() != null) {
 			kafkaAdmin.setCloseTimeout((int) admin.getCloseTimeout().getSeconds());
@@ -167,6 +192,37 @@ public class KafkaAutoConfiguration {
 			.doNotAutoCreateRetryTopics();
 		setBackOffPolicy(builder, retryTopic);
 		return builder.create(kafkaTemplate);
+	}
+
+	private Map<String, Object> applyKafkaServiceConnectionForConsumer(KafkaServiceConnection serviceConnection,
+			Map<String, Object> properties) {
+		Map<String, Object> result = new HashMap<>(properties);
+		result.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+				nodesToStringList(serviceConnection.getConsumerBootstrapNodes()));
+		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+		return result;
+	}
+
+	private Map<String, Object> applyKafkaServiceConnectionForProducer(KafkaServiceConnection serviceConnection,
+			Map<String, Object> properties) {
+		Map<String, Object> result = new HashMap<>(properties);
+		result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+				nodesToStringList(serviceConnection.getProducerBootstrapNodes()));
+		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+		return result;
+	}
+
+	private Map<String, Object> applyKafkaServiceConnectionForAdmin(KafkaServiceConnection serviceConnection,
+			Map<String, Object> properties) {
+		Map<String, Object> result = new HashMap<>(properties);
+		result.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+				nodesToStringList(serviceConnection.getAdminBootstrapNodes()));
+		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+		return result;
+	}
+
+	private List<String> nodesToStringList(List<Node> nodes) {
+		return nodes.stream().map((node) -> node.host() + ":" + node.port()).toList();
 	}
 
 	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {

@@ -249,6 +249,9 @@ dependencies {
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.yaml:snakeyaml")
+	testImplementation("org.postgresql:postgresql")
+	testImplementation("org.postgresql:r2dbc-postgresql")
+
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")

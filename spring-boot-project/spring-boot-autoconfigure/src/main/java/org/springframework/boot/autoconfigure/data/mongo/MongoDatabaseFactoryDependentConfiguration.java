@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,13 @@ import com.mongodb.ClientSessionOptions;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
+import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -46,6 +49,7 @@ import org.springframework.util.StringUtils;
  * Configuration for Mongo-related beans that depend on a {@link MongoDatabaseFactory}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(MongoDatabaseFactory.class)
@@ -75,14 +79,16 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
-	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, this.properties),
+	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate,
+			ObjectProvider<MongoServiceConnection> serviceConnectionProvider) {
+		return new GridFsTemplate(
+				new GridFsMongoDatabaseFactory(factory, this.properties, serviceConnectionProvider.getIfAvailable()),
 				mongoTemplate.getConverter(), this.properties.getGridfs().getBucket());
 	}
 
 	/**
-	 * {@link MongoDatabaseFactory} decorator to respect {@link Gridfs#getDatabase()} if
-	 * set.
+	 * {@link MongoDatabaseFactory} decorator to respect {@link Gridfs#getDatabase()} or
+	 * {@link GridFs#getGridFs()} from the {@link MongoServiceConnection} if set.
 	 */
 	static class GridFsMongoDatabaseFactory implements MongoDatabaseFactory {
 
@@ -90,16 +96,21 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 		private final MongoProperties properties;
 
-		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties) {
+		private final MongoServiceConnection serviceConnection;
+
+		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties,
+				MongoServiceConnection serviceConnection) {
 			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
 			Assert.notNull(properties, "Properties must not be null");
 			this.mongoDatabaseFactory = mongoDatabaseFactory;
 			this.properties = properties;
+			this.serviceConnection = serviceConnection;
 		}
 
 		@Override
 		public MongoDatabase getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = this.properties.getGridfs().getDatabase();
+			String gridFsDatabase = (this.serviceConnection != null) ? getGridFsDatabase(this.serviceConnection)
+					: this.properties.getGridfs().getDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDatabaseFactory.getMongoDatabase(gridFsDatabase);
 			}
@@ -124,6 +135,13 @@ class MongoDatabaseFactoryDependentConfiguration {
 		@Override
 		public MongoDatabaseFactory withSession(ClientSession session) {
 			return this.mongoDatabaseFactory.withSession(session);
+		}
+
+		private String getGridFsDatabase(MongoServiceConnection serviceConnection) {
+			if (serviceConnection.getGridFs() == null) {
+				return null;
+			}
+			return serviceConnection.getGridFs().getDatabase();
 		}
 
 	}

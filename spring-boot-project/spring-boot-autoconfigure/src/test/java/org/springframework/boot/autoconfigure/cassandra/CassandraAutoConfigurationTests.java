@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -32,6 +33,7 @@ import com.datastax.oss.driver.internal.core.session.throttling.RateLimitingRequ
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +47,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Ittay Stern
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
 class CassandraAutoConfigurationTests {
 
@@ -87,6 +91,26 @@ class CassandraAutoConfigurationTests {
 					.containsOnly("cluster.example.com:9042");
 				assertThat(configuration.getString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER))
 					.isEqualTo("cassandra-eu1");
+			});
+	}
+
+	@Test
+	void shouldUseServiceConnection() {
+		this.contextRunner
+			.withPropertyValues("spring.cassandra.contact-points=localhost:9042", "spring.cassandra.username=a-user",
+					"spring.cassandra.password=a-password", "spring.cassandra.local-datacenter=some-datacenter")
+			.withBean(CassandraServiceConnection.class, this::cassandraServiceConnection)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DriverConfigLoader.class);
+				DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class)
+					.getInitialConfig()
+					.getDefaultProfile();
+				assertThat(configuration.getStringList(DefaultDriverOption.CONTACT_POINTS))
+					.containsOnly("cassandra.example.com:9042");
+				assertThat(configuration.getString(DefaultDriverOption.AUTH_PROVIDER_USER_NAME)).isEqualTo("user-1");
+				assertThat(configuration.getString(DefaultDriverOption.AUTH_PROVIDER_PASSWORD)).isEqualTo("secret-1");
+				assertThat(configuration.getString(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER))
+					.isEqualTo("datacenter-1");
 			});
 	}
 
@@ -308,6 +332,40 @@ class CassandraAutoConfigurationTests {
 			assertThat(driverConfig.getProfile("first").getDuration(DefaultDriverOption.REQUEST_TIMEOUT))
 				.isEqualTo(Duration.ofMillis(100));
 		});
+	}
+
+	private CassandraServiceConnection cassandraServiceConnection() {
+		return new CassandraServiceConnection() {
+			@Override
+			public List<Node> getContactPoints() {
+				return List.of(new Node("cassandra.example.com", 9042));
+			}
+
+			@Override
+			public String getUsername() {
+				return "user-1";
+			}
+
+			@Override
+			public String getPassword() {
+				return "secret-1";
+			}
+
+			@Override
+			public String getLocalDatacenter() {
+				return "datacenter-1";
+			}
+
+			@Override
+			public String getName() {
+				return "cassandraServiceConnection";
+			}
+
+			@Override
+			public Origin getOrigin() {
+				return null;
+			}
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)

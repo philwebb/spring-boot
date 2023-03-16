@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  * Initialize a {@link Builder} based on {@link R2dbcProperties}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class ConnectionFactoryOptionsInitializer {
 
@@ -38,15 +39,18 @@ class ConnectionFactoryOptionsInitializer {
 	 * Initialize a {@link Builder ConnectionFactoryOptions.Builder} using the specified
 	 * properties.
 	 * @param properties the properties to use to initialize the builder
+	 * @param serviceConnection the service connection to use to initialize the builder or
+	 * {@code null}
 	 * @param embeddedDatabaseConnection the embedded connection to use as a fallback
 	 * @return an initialized builder
 	 * @throws ConnectionFactoryBeanCreationException if no suitable connection could be
 	 * determined
 	 */
-	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties,
+	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcServiceConnection serviceConnection,
 			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
-		if (StringUtils.hasText(properties.getUrl())) {
-			return initializeRegularOptions(properties);
+		String url = (serviceConnection != null) ? serviceConnection.getR2dbcUrl() : properties.getUrl();
+		if (StringUtils.hasText(url)) {
+			return initializeRegularOptions(url, properties, serviceConnection);
 		}
 		EmbeddedDatabaseConnection embeddedConnection = embeddedDatabaseConnection.get();
 		if (embeddedConnection != EmbeddedDatabaseConnection.NONE) {
@@ -56,15 +60,17 @@ class ConnectionFactoryOptionsInitializer {
 				embeddedConnection);
 	}
 
-	private ConnectionFactoryOptions.Builder initializeRegularOptions(R2dbcProperties properties) {
-		ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(properties.getUrl());
+	private ConnectionFactoryOptions.Builder initializeRegularOptions(String url, R2dbcProperties properties,
+			R2dbcServiceConnection serviceConnection) {
+		ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(url);
 		Builder optionsBuilder = urlOptions.mutate();
-		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, properties::getUsername,
-				StringUtils::hasText);
-		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, properties::getPassword,
+		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
+		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, () -> username, StringUtils::hasText);
+		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, () -> password,
 				StringUtils::hasText);
 		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
-				() -> determineDatabaseName(properties), StringUtils::hasText);
+				() -> determineDatabaseName(properties, serviceConnection), StringUtils::hasText);
 		if (properties.getProperties() != null) {
 			properties.getProperties().forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
 		}
@@ -89,7 +95,10 @@ class ConnectionFactoryOptionsInitializer {
 		return builder;
 	}
 
-	private String determineDatabaseName(R2dbcProperties properties) {
+	private String determineDatabaseName(R2dbcProperties properties, R2dbcServiceConnection serviceConnection) {
+		if (serviceConnection != null) {
+			return null;
+		}
 		if (properties.isGenerateUniqueName()) {
 			return properties.determineUniqueName();
 		}
@@ -100,7 +109,7 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	private String determineEmbeddedDatabaseName(R2dbcProperties properties) {
-		String databaseName = determineDatabaseName(properties);
+		String databaseName = determineDatabaseName(properties, null);
 		return (databaseName != null) ? databaseName : "testdb";
 	}
 

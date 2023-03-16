@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import retrofit2.Retrofit;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
 class InfluxDbAutoConfigurationTests {
 
@@ -47,6 +51,27 @@ class InfluxDbAutoConfigurationTests {
 	@Test
 	void influxDbRequiresUrl() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfluxDB.class));
+	}
+
+	@Test
+	void shouldUseServiceConnection() {
+		this.contextRunner.withBean(InfluxDbServiceConnection.class, this::influxDbServiceConnection).run((context) -> {
+			assertThat(context).hasSingleBean(InfluxDB.class);
+			InfluxDB influxDb = context.getBean(InfluxDB.class);
+			assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
+		});
+	}
+
+	@Test
+	void serviceConnectionOverwritesProperties() {
+		this.contextRunner.withBean(InfluxDbServiceConnection.class, this::influxDbServiceConnection)
+			.withPropertyValues("spring.influx.url=http://some-other-host", "spring.influx.user=user",
+					"spring.influx.password=password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(InfluxDB.class);
+				InfluxDB influxDb = context.getBean(InfluxDB.class);
+				assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
+			});
 	}
 
 	@Test
@@ -93,6 +118,35 @@ class InfluxDbAutoConfigurationTests {
 		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDb, "retrofit");
 		OkHttpClient callFactory = (OkHttpClient) retrofit.callFactory();
 		return callFactory.readTimeoutMillis();
+	}
+
+	private InfluxDbServiceConnection influxDbServiceConnection() {
+		return new InfluxDbServiceConnection() {
+			@Override
+			public URI getUrl() {
+				return URI.create("http://localhost");
+			}
+
+			@Override
+			public String getUsername() {
+				return "user-1";
+			}
+
+			@Override
+			public String getPassword() {
+				return "password-1";
+			}
+
+			@Override
+			public String getName() {
+				return "influxDbServiceConnection";
+			}
+
+			@Override
+			public Origin getOrigin() {
+				return null;
+			}
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)

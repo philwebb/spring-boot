@@ -64,6 +64,8 @@ import org.springframework.core.io.Resource;
  * @author Stephane Nicoll
  * @author Steffen F. Qvistgaard
  * @author Ittay Stern
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 @AutoConfiguration
@@ -91,22 +93,31 @@ public class CassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	@Scope("prototype")
 	public CqlSessionBuilder cassandraSessionBuilder(CassandraProperties properties,
-			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
+			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers,
+			ObjectProvider<CassandraServiceConnection> serviceConnectionProvider) {
+		CassandraServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
-		configureAuthentication(properties, builder);
-		configureSsl(properties, builder);
+		configureAuthentication(properties, serviceConnection, builder);
+		configureSsl(properties, serviceConnection, builder);
 		builder.withKeyspace(properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
-	private void configureAuthentication(CassandraProperties properties, CqlSessionBuilder builder) {
-		if (properties.getUsername() != null) {
-			builder.withAuthCredentials(properties.getUsername(), properties.getPassword());
+	private void configureAuthentication(CassandraProperties properties, CassandraServiceConnection serviceConnection,
+			CqlSessionBuilder builder) {
+		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
+		if (username != null) {
+			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+			builder.withAuthCredentials(username, password);
 		}
 	}
 
-	private void configureSsl(CassandraProperties properties, CqlSessionBuilder builder) {
+	private void configureSsl(CassandraProperties properties, CassandraServiceConnection serviceConnection,
+			CqlSessionBuilder builder) {
+		if (serviceConnection != null) {
+			return;
+		}
 		if (properties.isSsl()) {
 			try {
 				builder.withSslContext(SSLContext.getDefault());
@@ -120,17 +131,21 @@ public class CassandraAutoConfiguration {
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
-			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
+			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers,
+			ObjectProvider<CassandraServiceConnection> serviceConnectionProvider) {
+		CassandraServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
-				() -> cassandraConfiguration(properties), DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
+				() -> cassandraConfiguration(properties, serviceConnection),
+				DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
-	private Config cassandraConfiguration(CassandraProperties properties) {
+	private Config cassandraConfiguration(CassandraProperties properties,
+			CassandraServiceConnection serviceConnection) {
 		ConfigFactory.invalidateCaches();
 		Config config = ConfigFactory.defaultOverrides();
-		config = config.withFallback(mapConfig(properties));
+		config = config.withFallback(mapConfig(properties, serviceConnection));
 		if (properties.getConfig() != null) {
 			config = config.withFallback(loadConfig(properties.getConfig()));
 		}
@@ -148,24 +163,28 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private Config mapConfig(CassandraProperties properties) {
+	private Config mapConfig(CassandraProperties properties, CassandraServiceConnection serviceConnection) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties.getSessionName())
 			.whenHasText()
 			.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
-		map.from(properties::getUsername)
-			.to((username) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, username)
-				.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, properties.getPassword()));
+		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
+		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+		map.from(username)
+			.to((value) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, value)
+				.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, password));
 		map.from(properties::getCompression)
 			.to((compression) -> options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, compression));
 		mapConnectionOptions(properties, options);
 		mapPoolingOptions(properties, options);
 		mapRequestOptions(properties, options);
 		mapControlConnectionOptions(properties, options);
-		map.from(mapContactPoints(properties))
+		map.from(mapContactPoints(properties, serviceConnection))
 			.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
-		map.from(properties.getLocalDatacenter())
+		String localDataCenter = (serviceConnection != null) ? serviceConnection.getLocalDatacenter()
+				: properties.getLocalDatacenter();
+		map.from(localDataCenter)
 			.whenHasText()
 			.to((localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
 		return options.build();
@@ -230,7 +249,14 @@ public class CassandraAutoConfiguration {
 			.to((timeout) -> options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, timeout));
 	}
 
-	private List<String> mapContactPoints(CassandraProperties properties) {
+	private List<String> mapContactPoints(CassandraProperties properties,
+			CassandraServiceConnection serviceConnection) {
+		if (serviceConnection != null) {
+			return serviceConnection.getContactPoints()
+				.stream()
+				.map((node) -> node.host() + ":" + node.port())
+				.toList();
+		}
 		if (properties.getContactPoints() != null) {
 			return properties.getContactPoints()
 				.stream()

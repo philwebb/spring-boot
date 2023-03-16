@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.stream.Stream;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -37,6 +38,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Filip Hrisafov
+ * @author Moritz Halbritter
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -61,14 +64,16 @@ class ElasticsearchRestClientConfigurations {
 		}
 
 		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer() {
-			return new DefaultRestClientBuilderCustomizer(this.properties);
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
+				ObjectProvider<ElasticsearchServiceConnection> serviceConnectionProvider) {
+			return new DefaultRestClientBuilderCustomizer(this.properties, serviceConnectionProvider.getIfAvailable());
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(
-				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			HttpHost[] hosts = this.properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
+		RestClientBuilder elasticsearchRestClientBuilder(ObjectProvider<RestClientBuilderCustomizer> builderCustomizers,
+				ObjectProvider<ElasticsearchServiceConnection> serviceConnectionProvider) {
+			ElasticsearchServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			HttpHost[] hosts = (serviceConnection != null) ? getHosts(serviceConnection) : getHosts(this.properties);
 			RestClientBuilder builder = RestClient.builder(hosts);
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
@@ -78,11 +83,24 @@ class ElasticsearchRestClientConfigurations {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
-			if (this.properties.getPathPrefix() != null) {
-				builder.setPathPrefix(this.properties.getPathPrefix());
+			String pathPrefix = (serviceConnection != null) ? serviceConnection.getPathPrefix()
+					: this.properties.getPathPrefix();
+			if (pathPrefix != null) {
+				builder.setPathPrefix(pathPrefix);
 			}
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
+		}
+
+		private HttpHost[] getHosts(ElasticsearchProperties properties) {
+			return properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
+		}
+
+		private HttpHost[] getHosts(ElasticsearchServiceConnection serviceConnection) {
+			return serviceConnection.getNodes()
+				.stream()
+				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
+				.toArray(HttpHost[]::new);
 		}
 
 		private HttpHost createHttpHost(String uri) {
@@ -146,8 +164,12 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties) {
+		private final ElasticsearchServiceConnection serviceConnection;
+
+		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
+				ElasticsearchServiceConnection serviceConnection) {
 			this.properties = properties;
+			this.serviceConnection = serviceConnection;
 		}
 
 		@Override
@@ -156,7 +178,8 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
-			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
+			builder.setDefaultCredentialsProvider(
+					new PropertiesCredentialsProvider(this.properties, this.serviceConnection));
 			map.from(this.properties::isSocketKeepAlive)
 				.to((keepAlive) -> builder
 					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
@@ -178,17 +201,24 @@ class ElasticsearchRestClientConfigurations {
 
 	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
 
-		PropertiesCredentialsProvider(ElasticsearchProperties properties) {
-			if (StringUtils.hasText(properties.getUsername())) {
-				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
-						properties.getPassword());
+		PropertiesCredentialsProvider(ElasticsearchProperties properties,
+				ElasticsearchServiceConnection serviceConnection) {
+			String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
+			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+			if (StringUtils.hasText(username)) {
+				Credentials credentials = new UsernamePasswordCredentials(username, password);
 				setCredentials(AuthScope.ANY, credentials);
 			}
-			properties.getUris()
-				.stream()
-				.map(this::toUri)
-				.filter(this::hasUserInfo)
-				.forEach(this::addUserInfoCredentials);
+			Stream<URI> uris = (serviceConnection != null) ? getUris(serviceConnection) : getUris(properties);
+			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
+		}
+
+		private Stream<URI> getUris(ElasticsearchProperties properties) {
+			return properties.getUris().stream().map(this::toUri);
+		}
+
+		private Stream<URI> getUris(ElasticsearchServiceConnection serviceConnection) {
+			return serviceConnection.getNodes().stream().map(Node::toUri);
 		}
 
 		private URI toUri(String uri) {

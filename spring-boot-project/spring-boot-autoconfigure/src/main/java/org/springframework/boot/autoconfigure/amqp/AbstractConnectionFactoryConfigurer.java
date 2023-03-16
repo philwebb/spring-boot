@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.stream.Collectors;
+
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -27,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @param <T> the connection factory type.
  * @author Chris Bono
+ * @author Moritz Halbritter
  * @since 2.6.0
  */
 public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConnectionFactory> {
@@ -35,9 +38,17 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 
 	private ConnectionNameStrategy connectionNameStrategy;
 
+	private final RabbitServiceConnection serviceConnection;
+
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
+		this(properties, null);
+	}
+
+	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
+			RabbitServiceConnection serviceConnection) {
 		Assert.notNull(properties, "RabbitProperties must not be null");
 		this.rabbitProperties = properties;
+		this.serviceConnection = serviceConnection;
 	}
 
 	protected final ConnectionNameStrategy getConnectionNameStrategy() {
@@ -55,7 +66,9 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	public final void configure(T connectionFactory) {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
-		map.from(this.rabbitProperties::determineAddresses).to(connectionFactory::setAddresses);
+		String addresses = (this.serviceConnection != null) ? getAddresses(this.serviceConnection)
+				: this.rabbitProperties.determineAddresses();
+		map.from(addresses).to(connectionFactory::setAddresses);
 		map.from(this.rabbitProperties::getAddressShuffleMode)
 			.whenNonNull()
 			.to(connectionFactory::setAddressShuffleMode);
@@ -70,5 +83,12 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param rabbitProperties properties to use for the configuration
 	 */
 	protected abstract void configure(T connectionFactory, RabbitProperties rabbitProperties);
+
+	private String getAddresses(RabbitServiceConnection serviceConnection) {
+		return serviceConnection.getAddresses()
+			.stream()
+			.map((address) -> address.host() + ":" + address.port())
+			.collect(Collectors.joining(","));
+	}
 
 }

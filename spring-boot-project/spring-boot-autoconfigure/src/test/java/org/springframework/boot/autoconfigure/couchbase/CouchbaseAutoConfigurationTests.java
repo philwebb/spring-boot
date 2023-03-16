@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
 class CouchbaseAutoConfigurationTests {
 
@@ -61,6 +64,16 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldUseServiceConnection() {
+		this.contextRunner.withBean(CouchbaseServiceConnection.class, this::couchbaseServiceConnection)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				Cluster cluster = context.getBean(Cluster.class);
+				assertThat(cluster.core()).hasFieldOrPropertyWithValue("connectionString", "couchbase.example.com");
+			});
+	}
+
+	@Test
 	void connectionStringCreateEnvironmentAndCluster() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
 			.withPropertyValues("spring.couchbase.connection-string=localhost")
@@ -68,6 +81,18 @@ class CouchbaseAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				assertThat(context.getBean(Cluster.class))
 					.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
+			});
+	}
+
+	@Test
+	void serviceConnectionShouldOverrideProperties() {
+		this.contextRunner.withBean(CouchbaseServiceConnection.class, this::couchbaseServiceConnection)
+			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
+					"spring.couchbase.password=a-password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				Cluster cluster = context.getBean(Cluster.class);
+				assertThat(cluster.core()).hasFieldOrPropertyWithValue("connectionString", "couchbase.example.com");
 			});
 	}
 
@@ -174,6 +199,35 @@ class CouchbaseAutoConfigurationTests {
 				assertThat(env.timeoutConfig().kvTimeout()).isEqualTo(Duration.ofSeconds(5));
 				assertThat(env.timeoutConfig().connectTimeout()).isEqualTo(Duration.ofSeconds(2));
 			});
+	}
+
+	private CouchbaseServiceConnection couchbaseServiceConnection() {
+		return new CouchbaseServiceConnection() {
+			@Override
+			public String getConnectionString() {
+				return "couchbase.example.com";
+			}
+
+			@Override
+			public String getUsername() {
+				return "user-1";
+			}
+
+			@Override
+			public String getPassword() {
+				return "password-1";
+			}
+
+			@Override
+			public String getName() {
+				return "couchbaseServiceConnection";
+			}
+
+			@Override
+			public Origin getOrigin() {
+				return null;
+			}
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)

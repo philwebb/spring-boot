@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -71,6 +73,7 @@ import static org.mockito.Mockito.mock;
  * @author Alen Turkovic
  * @author Scott Frederick
  * @author Weix Sun
+ * @author Moritz Halbritter
  */
 class RedisAutoConfigurationTests {
 
@@ -490,6 +493,51 @@ class RedisAutoConfigurationTests {
 					(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources()).isTrue()));
 	}
 
+	@Test
+	void usesStandaloneServiceConnectionIfAvailable() {
+		this.contextRunner.withUserConfiguration(ServiceConnectionStandaloneConfiguration.class).run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isFalse();
+			RedisStandaloneConfiguration configuration = cf.getStandaloneConfiguration();
+			assertThat(configuration.getHostName()).isEqualTo("redis.example.com");
+			assertThat(configuration.getPort()).isEqualTo(16379);
+			assertThat(configuration.getDatabase()).isOne();
+			assertThat(configuration.getUsername()).isEqualTo("user-1");
+			assertThat(configuration.getPassword()).isEqualTo(RedisPassword.of("password-1"));
+		});
+	}
+
+	@Test
+	void usesSentinelServiceConnectionIfAvailable() {
+		this.contextRunner.withUserConfiguration(ServiceConnectionSentinelConfiguration.class).run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isFalse();
+			RedisSentinelConfiguration configuration = cf.getSentinelConfiguration();
+			assertThat(configuration).isNotNull();
+			assertThat(configuration.getSentinelUsername()).isEqualTo("sentinel-1");
+			assertThat(configuration.getSentinelPassword().get()).isEqualTo("secret-1".toCharArray());
+			assertThat(configuration.getSentinels()).containsExactly(new RedisNode("node-1", 12345));
+			assertThat(configuration.getUsername()).isEqualTo("user-1");
+			assertThat(configuration.getPassword()).isEqualTo(RedisPassword.of("password-1"));
+			assertThat(configuration.getDatabase()).isOne();
+			assertThat(configuration.getMaster().getName()).isEqualTo("master.redis.example.com");
+		});
+	}
+
+	@Test
+	void usesClusterServiceConnectionIfAvailable() {
+		this.contextRunner.withUserConfiguration(ServiceConnectionClusterConfiguration.class).run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isFalse();
+			RedisClusterConfiguration configuration = cf.getClusterConfiguration();
+			assertThat(configuration).isNotNull();
+			assertThat(configuration.getUsername()).isEqualTo("user-1");
+			assertThat(configuration.getPassword().get()).isEqualTo("password-1".toCharArray());
+			assertThat(configuration.getClusterNodes()).containsExactly(new RedisNode("node-1", 12345),
+					new RedisNode("node-2", 23456));
+		});
+	}
+
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(
 			Class<T> expectedType, Consumer<T> options) {
 		return (context) -> {
@@ -528,6 +576,186 @@ class RedisAutoConfigurationTests {
 			RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 			config.setHostName("foo");
 			return config;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionStandaloneConfiguration {
+
+		@Bean
+		RedisServiceConnection redisServiceConnection() {
+			return new RedisServiceConnection() {
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password-1";
+				}
+
+				@Override
+				public Standalone getStandalone() {
+					return new Standalone() {
+						@Override
+						public int getDatabase() {
+							return 1;
+						}
+
+						@Override
+						public String getHost() {
+							return "redis.example.com";
+						}
+
+						@Override
+						public int getPort() {
+							return 16379;
+						}
+					};
+				}
+
+				@Override
+				public Sentinel getSentinel() {
+					return null;
+				}
+
+				@Override
+				public Cluster getCluster() {
+					return null;
+				}
+
+				@Override
+				public String getName() {
+					return "redisServiceConnection";
+				}
+
+				@Override
+				public Origin getOrigin() {
+					return null;
+				}
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionSentinelConfiguration {
+
+		@Bean
+		RedisServiceConnection redisServiceConnection() {
+			return new RedisServiceConnection() {
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password-1";
+				}
+
+				@Override
+				public Standalone getStandalone() {
+					return null;
+				}
+
+				@Override
+				public Sentinel getSentinel() {
+					return new Sentinel() {
+						@Override
+						public int getDatabase() {
+							return 1;
+						}
+
+						@Override
+						public String getMaster() {
+							return "master.redis.example.com";
+						}
+
+						@Override
+						public List<Node> getNodes() {
+							return List.of(new Node("node-1", 12345));
+						}
+
+						@Override
+						public String getUsername() {
+							return "sentinel-1";
+						}
+
+						@Override
+						public String getPassword() {
+							return "secret-1";
+						}
+					};
+				}
+
+				@Override
+				public Cluster getCluster() {
+					return null;
+				}
+
+				@Override
+				public String getName() {
+					return "redisServiceConnection";
+				}
+
+				@Override
+				public Origin getOrigin() {
+					return null;
+				}
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionClusterConfiguration {
+
+		@Bean
+		RedisServiceConnection redisServiceConnection() {
+			return new RedisServiceConnection() {
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password-1";
+				}
+
+				@Override
+				public Standalone getStandalone() {
+					return null;
+				}
+
+				@Override
+				public Sentinel getSentinel() {
+					return null;
+				}
+
+				@Override
+				public Cluster getCluster() {
+					return new Cluster() {
+						@Override
+						public List<Node> getNodes() {
+							return List.of(new Node("node-1", 12345), new Node("node-2", 23456));
+						}
+					};
+				}
+
+				@Override
+				public String getName() {
+					return "redisServiceConnection";
+				}
+
+				@Override
+				public Origin getOrigin() {
+					return null;
+				}
+			};
 		}
 
 	}

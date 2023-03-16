@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Weix Sun
+ * @author Moritz Halbritter
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
@@ -76,6 +78,14 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
+		});
+	}
+
+	@Test
+	void usesServiceConnectionIfAvailable() {
+		this.contextRunner.withUserConfiguration(ServiceConnectionConfiguration.class).run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isFalse();
 		});
 	}
 
@@ -236,6 +246,66 @@ class RedisAutoConfigurationJedisTests {
 		@Bean
 		JedisClientConfigurationBuilderCustomizer customizer() {
 			return JedisClientConfigurationBuilder::useSsl;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionConfiguration {
+
+		@Bean
+		RedisServiceConnection redisServiceConnection() {
+			return new RedisServiceConnection() {
+				@Override
+				public String getUsername() {
+					return null;
+				}
+
+				@Override
+				public String getPassword() {
+					return null;
+				}
+
+				@Override
+				public Standalone getStandalone() {
+					return new Standalone() {
+						@Override
+						public int getDatabase() {
+							return 0;
+						}
+
+						@Override
+						public String getHost() {
+							return "localhost";
+						}
+
+						@Override
+						public int getPort() {
+							return 6379;
+						}
+					};
+				}
+
+				@Override
+				public Sentinel getSentinel() {
+					return null;
+				}
+
+				@Override
+				public Cluster getCluster() {
+					return null;
+				}
+
+				@Override
+				public String getName() {
+					return "redisServiceConnection";
+				}
+
+				@Override
+				public Origin getOrigin() {
+					return null;
+				}
+			};
 		}
 
 	}

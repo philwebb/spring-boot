@@ -271,7 +271,7 @@ public class FlywayProperties {
 	private String[] errorOverrides;
 
 	/**
-	 * Licence key for Flyway Teams.
+	 * License key for Flyway Teams.
 	 */
 	private String licenseKey;
 

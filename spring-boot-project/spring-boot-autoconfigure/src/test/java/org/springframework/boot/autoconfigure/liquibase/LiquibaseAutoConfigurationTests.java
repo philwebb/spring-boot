@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,11 +40,13 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -75,6 +78,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Andrii Hrytsiuk
  * @author Ferenc Gratzer
  * @author Evgeniy Cheban
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -98,6 +102,18 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	void createsDataSourceWithNoDataSourceBeanAndServiceConnection() {
+		this.contextRunner.withSystemProperties("shouldRun=false")
+			.withUserConfiguration(ServiceConnectionConfiguration.class)
+			.run(assertLiquibase((liquibase) -> {
+				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
+				assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
+				assertThat(dataSource.getUsername()).isEqualTo("user-1");
+				assertThat(dataSource.getPassword()).isEqualTo("secret-1");
+			}));
+	}
+
+	@Test
 	void backsOffWithLiquibaseUrlAndNoSpringJdbc() {
 		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 			.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
@@ -113,6 +129,30 @@ class LiquibaseAutoConfigurationTests {
 				assertThat(liquibase.getDefaultSchema()).isNull();
 				assertThat(liquibase.isDropFirst()).isFalse();
 				assertThat(liquibase.isClearCheckSums()).isFalse();
+			}));
+	}
+
+	@Test
+	void serviceConnectionIsUsedIfAvailable() {
+		this.contextRunner.withSystemProperties("shouldRun=false")
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, ServiceConnectionConfiguration.class)
+			.run(assertLiquibase((liquibase) -> {
+				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
+				assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
+				assertThat(dataSource.getUsername()).isEqualTo("user-1");
+				assertThat(dataSource.getPassword()).isEqualTo("secret-1");
+			}));
+	}
+
+	@Test
+	void liquibaseDataSourceIsUsedOverServiceConnection() {
+		this.contextRunner
+			.withUserConfiguration(LiquibaseDataSourceConfiguration.class, ServiceConnectionConfiguration.class)
+			.run(assertLiquibase((liquibase) -> {
+				HikariDataSource dataSource = (HikariDataSource) liquibase.getDataSource();
+				assertThat(dataSource.getJdbcUrl()).startsWith("jdbc:hsqldb:mem:liquibasetest");
+				assertThat(dataSource.getUsername()).isEqualTo("sa");
+				assertThat(dataSource.getPassword()).isNull();
 			}));
 	}
 
@@ -505,6 +545,41 @@ class LiquibaseAutoConfigurationTests {
 			dataSource.setUsername("sa");
 			dataSource.setPassword("");
 			return dataSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ServiceConnectionConfiguration {
+
+		@Bean
+		JdbcServiceConnection serviceConnection() {
+			return new JdbcServiceConnection() {
+				@Override
+				public String getJdbcUrl() {
+					return "jdbc:postgresql://database.example.com:12345/database-1";
+				}
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "secret-1";
+				}
+
+				@Override
+				public String getName() {
+					return "serviceConnection";
+				}
+
+				@Override
+				public Origin getOrigin() {
+					return null;
+				}
+			};
 		}
 
 	}
