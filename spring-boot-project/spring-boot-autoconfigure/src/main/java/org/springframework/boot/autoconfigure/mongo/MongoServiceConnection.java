@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 
 /**
  * A connection to a MongoDB service.

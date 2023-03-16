@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.serviceconnection;
+package org.springframework.boot.autoconfigure.service.connection;
+
+import org.springframework.boot.origin.OriginProvider;
 
 /**
- * A factory for {@link ServiceConnection} instances. Implementations should be registered
- * in {@code META-INF/spring.factories}.
+ * Details for establishing a connection to a remote service.
  *
- * @param <I> the type of input consumed by the factory
- * @param <SC> the type of {@link ServiceConnection} produced by the factory
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface ServiceConnectionFactory<I, SC extends ServiceConnection> {
+public interface ServiceConnection extends OriginProvider {
 
 	/**
-	 * Creates a new {@link ServiceConnection} from the given {@code source}. May return
-	 * {@code null} if no connection can be created.
-	 * @param source the source
-	 * @return the service connection or {@code null}
+	 * The name of the service connection. Should be unique within the scope of the
+	 * application.
+	 * @return the connection name.
 	 */
-	ServiceConnection createServiceConnection(ServiceConnectionSource<I, SC> source);
+	String getName();
 
 }

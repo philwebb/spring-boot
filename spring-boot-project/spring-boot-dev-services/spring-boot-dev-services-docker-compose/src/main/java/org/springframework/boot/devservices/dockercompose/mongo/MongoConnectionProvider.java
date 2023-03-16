@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;

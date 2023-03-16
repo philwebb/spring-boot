@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 
 /**
  * A connection to a Kafka service.

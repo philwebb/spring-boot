@@ -19,8 +19,8 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionFactory;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionSource;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionFactory;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
 
 /**

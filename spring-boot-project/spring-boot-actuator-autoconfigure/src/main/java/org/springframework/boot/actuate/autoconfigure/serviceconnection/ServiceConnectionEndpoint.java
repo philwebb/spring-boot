@@ -41,7 +41,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.Host;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 import org.springframework.boot.origin.Origin;
 
 /**

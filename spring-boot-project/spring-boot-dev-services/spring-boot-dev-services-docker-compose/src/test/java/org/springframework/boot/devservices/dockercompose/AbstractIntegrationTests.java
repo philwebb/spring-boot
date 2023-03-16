@@ -30,7 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.devservices.dockercompose.interop.DockerComposeOrigin;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;

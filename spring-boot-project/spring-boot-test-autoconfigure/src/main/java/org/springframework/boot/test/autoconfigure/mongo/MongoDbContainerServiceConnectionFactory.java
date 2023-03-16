@@ -23,9 +23,9 @@ import java.util.List;
 import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionFactory;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionSource;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionFactory;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
 
 /**

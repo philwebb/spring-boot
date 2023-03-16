@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.influx;
 
 import java.net.URI;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 
 /**
  * A connection to an InfluxDB service.

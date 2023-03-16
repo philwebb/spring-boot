@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;

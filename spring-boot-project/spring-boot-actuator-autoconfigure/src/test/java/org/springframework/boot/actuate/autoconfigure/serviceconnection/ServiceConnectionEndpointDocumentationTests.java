@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchService
 import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

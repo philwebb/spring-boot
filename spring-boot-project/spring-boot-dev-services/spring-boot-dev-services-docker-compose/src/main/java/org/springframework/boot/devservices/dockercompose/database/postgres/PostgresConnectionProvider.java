@@ -19,7 +19,7 @@ package org.springframework.boot.devservices.dockercompose.database.postgres;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.database.AbstractJdbcServiceConnection;
 import org.springframework.boot.devservices.dockercompose.database.AbstractR2dbcServiceConnection;

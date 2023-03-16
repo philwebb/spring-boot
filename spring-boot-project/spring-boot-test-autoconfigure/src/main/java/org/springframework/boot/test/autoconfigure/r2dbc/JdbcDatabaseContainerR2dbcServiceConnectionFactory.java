@@ -19,8 +19,8 @@ package org.springframework.boot.test.autoconfigure.r2dbc;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionFactory;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionSource;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionFactory;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
 
 /**

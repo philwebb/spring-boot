@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.serviceconnection;
+package org.springframework.boot.autoconfigure.service.connection;
 
 import org.springframework.boot.origin.Origin;
 

@@ -23,8 +23,8 @@ import java.util.Objects;
 
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnectionSource;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.test.context.ContextConfigurationAttributes;
