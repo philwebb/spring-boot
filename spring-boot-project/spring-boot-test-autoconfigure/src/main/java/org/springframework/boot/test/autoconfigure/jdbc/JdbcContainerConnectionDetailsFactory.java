@@ -42,12 +42,12 @@ class JdbcContainerConnectionDetailsFactory
 	/**
 	 * {@link JdbcConnectionDetails} backed by a {@link ServiceConnectedContainer}.
 	 */
-	private static class JdbcContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class JdbcContainerConnectionDetails extends ContainerConnectionDetails
 			implements JdbcConnectionDetails {
 
 		private final JdbcDatabaseContainer<?> container;
 
-		protected JdbcContainerConnectionDetails(
+		private JdbcContainerConnectionDetails(
 				ServiceConnectedContainer<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();

@@ -48,12 +48,12 @@ class ElasticsearchContainerConnectionDetailsFactory extends
 	 * {@link ElasticsearchConnectionDetails} backed by a
 	 * {@link ServiceConnectedContainer}.
 	 */
-	private static class ElasticsearchContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class ElasticsearchContainerConnectionDetails extends ContainerConnectionDetails
 			implements ElasticsearchConnectionDetails {
 
 		private final List<Node> nodes;
 
-		protected ElasticsearchContainerConnectionDetails(
+		private ElasticsearchContainerConnectionDetails(
 				ServiceConnectedContainer<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
 			super(source);
 			this.nodes = List.of(new Node(source.getContainer().getHost(),

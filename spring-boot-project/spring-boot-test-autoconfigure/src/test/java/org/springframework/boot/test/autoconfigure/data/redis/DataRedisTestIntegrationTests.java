@@ -27,7 +27,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,8 +63,10 @@ class DataRedisTestIntegrationTests {
 		assertThat(personHash.getId()).isNull();
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(savedEntity.getId()).isNotNull();
-		assertThat(this.operations.execute((RedisConnection connection) -> connection.keyCommands()
-			.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
+		assertThat(this.operations
+			.execute((org.springframework.data.redis.connection.RedisConnection connection) -> connection.keyCommands()
+				.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET))))
+			.isTrue();
 		this.exampleRepository.deleteAll();
 	}
 

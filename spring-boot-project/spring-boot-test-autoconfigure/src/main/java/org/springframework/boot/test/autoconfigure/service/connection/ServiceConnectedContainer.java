@@ -102,7 +102,7 @@ public final class ServiceConnectedContainer<A extends Annotation, D extends Con
 
 	@Override
 	public String toString() {
-		return "ServiceConnectedContainer for $s".formatted(this.origin);
+		return "ServiceConnectedContainer for %s".formatted(this.origin);
 	}
 
 }

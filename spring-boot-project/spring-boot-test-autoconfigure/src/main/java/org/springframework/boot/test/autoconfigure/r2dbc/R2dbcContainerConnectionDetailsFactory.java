@@ -43,12 +43,12 @@ class R2dbcContainerConnectionDetailsFactory
 	/**
 	 * {@link RedisConnectionDetails} backed by a {@link ServiceConnectedContainer}.
 	 */
-	private static class R2dbcContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class R2dbcContainerConnectionDetails extends ContainerConnectionDetails
 			implements R2dbcConnectionDetails {
 
 		private final JdbcDatabaseContainer<?> container;
 
-		protected R2dbcContainerConnectionDetails(
+		private R2dbcContainerConnectionDetails(
 				ServiceConnectedContainer<R2dbcConnection, R2dbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();

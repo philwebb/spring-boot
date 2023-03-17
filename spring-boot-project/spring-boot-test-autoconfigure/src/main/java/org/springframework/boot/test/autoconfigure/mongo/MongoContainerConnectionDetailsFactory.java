@@ -44,12 +44,12 @@ class MongoContainerConnectionDetailsFactory
 	/**
 	 * {@link MongoConnectionDetails} backed by a {@link ServiceConnectedContainer}.
 	 */
-	private static class MongoContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails
 			implements MongoConnectionDetails {
 
 		private final URI uri;
 
-		protected MongoContainerConnectionDetails(
+		private MongoContainerConnectionDetails(
 				ServiceConnectedContainer<MongoConnection, MongoConnectionDetails, MongoDBContainer> source) {
 			super(source);
 			this.uri = URI.create(source.getContainer().getReplicaSetUrl());

@@ -38,6 +38,7 @@ import org.springframework.boot.test.autoconfigure.service.connection.ServiceCon
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
 @ServiceConnection(RedisConnectionDetails.class)
+// TODO Clashes with org.springframework.data.redis.connection.RedisConnection
 public @interface RedisConnection {
 
 }

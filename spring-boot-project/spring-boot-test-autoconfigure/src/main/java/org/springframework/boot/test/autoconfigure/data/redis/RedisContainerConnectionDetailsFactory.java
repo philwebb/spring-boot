@@ -30,7 +30,7 @@ import org.springframework.boot.test.autoconfigure.service.connection.ServiceCon
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public class RedisContainerConnectionDetailsFactory
+class RedisContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<RedisConnection, RedisConnectionDetails, GenericContainer<?>> {
 
 	@Override
@@ -42,12 +42,12 @@ public class RedisContainerConnectionDetailsFactory
 	/**
 	 * {@link RedisConnectionDetails} backed by a {@link ServiceConnectedContainer}.
 	 */
-	private static class RedisContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class RedisContainerConnectionDetails extends ContainerConnectionDetails
 			implements RedisConnectionDetails {
 
 		private final Standalone standalone;
 
-		public RedisContainerConnectionDetails(
+		private RedisContainerConnectionDetails(
 				ServiceConnectedContainer<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
 			super(source);
 			this.standalone = new Standalone() {
