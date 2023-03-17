@@ -32,9 +32,9 @@ public interface ConnectionDetailsFactory<S, D extends ConnectionDetails> {
 
 	/**
 	 * Get the {@link ConnectionDetails} from the given {@code source}. May return
-	 * {@code null} if no connection can be created.
+	 * {@code null} if no details can be created.
 	 * @param source the source
-	 * @return the service connection or {@code null}
+	 * @return the connection details or {@code null}
 	 */
 	D getConnectionDetails(S source);
 

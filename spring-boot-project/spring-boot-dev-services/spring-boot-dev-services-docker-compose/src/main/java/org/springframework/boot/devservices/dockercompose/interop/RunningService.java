@@ -19,6 +19,10 @@ package org.springframework.boot.devservices.dockercompose.interop;
 import java.nio.file.Path;
 import java.util.Map;
 
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginProvider;
+import org.springframework.util.Assert;
+
 /**
  * A running docker compose service.
  *
@@ -34,7 +38,8 @@ import java.util.Map;
  * @author Andy Wilkinson
  */
 public record RunningService(Path composeConfigFile, String name, DockerImageName image, String host,
-		Map<Integer, Port> ports, Map<String, String> env, Map<String, String> labels) {
+		Map<Integer, Port> ports, Map<String, String> env, Map<String, String> labels) implements OriginProvider {
+
 	public DockerImageName originalImage() {
 		return this.image;
 	}
@@ -47,11 +52,20 @@ public record RunningService(Path composeConfigFile, String name, DockerImageNam
 	 * @see #originalImage()
 	 */
 	public DockerImageName image() {
+		// FIXME I think we should have a different name for this
+		// org.springframework.boot.service=redis
 		String override = this.labels.get("org.springframework.boot.image-override");
 		if (override != null) {
 			return DockerImageName.parse(override);
 		}
 		return this.image;
+	}
+
+	public Port getMappedPort(int sourcePort) {
+		// FIXME DC
+		Port mappedPort = ports().get(sourcePort);
+		Assert.state(mappedPort != null, () -> "Port %d has not been mapped".formatted(sourcePort));
+		return mappedPort;
 	}
 
 	/**
@@ -73,15 +87,11 @@ public record RunningService(Path composeConfigFile, String name, DockerImageNam
 		return !ignore() && !this.labels.containsKey("org.springframework.boot.readiness-check.disable");
 	}
 
-	/**
-	 * {@link DockerComposeOrigin Origin} for this service.
-	 * @return origin or {@code null}
-	 */
-	public DockerComposeOrigin origin() {
-		if (this.composeConfigFile == null) {
-			return null;
-		}
-		return new DockerComposeOrigin(this.composeConfigFile, this.name);
+	@Override
+	public Origin getOrigin() {
+		return (this.composeConfigFile != null) ? new DockerComposeOrigin(this.composeConfigFile, this.name) : null;
 	}
+
+	// FIXME toString
 
 }

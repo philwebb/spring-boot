@@ -24,9 +24,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.util.Assert;
 
 /**
  * {@link ContextCustomizer} to support registering {@link ConnectionDetails}.
@@ -63,7 +65,11 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	}
 
 	private <S> ConnectionDetails getConnectionDetails(S source) {
-		return this.factories.getConnectionDetailsFactory(source).getConnectionDetails(source);
+		ConnectionDetailsFactory<S, ConnectionDetails> factory = this.factories.getConnectionDetailsFactory(source);
+		ConnectionDetails connectionDetails = factory.getConnectionDetails(source);
+		Assert.state(connectionDetails != null,
+				() -> "No connection details created by %s".formatted(factory.getClass().getName()));
+		return connectionDetails;
 	}
 
 	@SuppressWarnings("unchecked")

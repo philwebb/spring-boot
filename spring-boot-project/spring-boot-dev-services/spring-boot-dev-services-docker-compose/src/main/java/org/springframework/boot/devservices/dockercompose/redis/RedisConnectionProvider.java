@@ -101,8 +101,8 @@ class RedisConnectionProvider implements RunningServiceServiceConnectionProvider
 
 		@Override
 		public String toString() {
-			return "DockerCompose[host='%s',port=%d,database='%s',username='%s']".formatted(getStandalone().getHost(),
-					getStandalone().getPort(), getStandalone().getDatabase(), getUsername());
+			return "DockerCompose[host='%s',port=%d,database='%s']".formatted(getStandalone().getHost(),
+					getStandalone().getPort(), getStandalone().getDatabase());
 		}
 
 	}

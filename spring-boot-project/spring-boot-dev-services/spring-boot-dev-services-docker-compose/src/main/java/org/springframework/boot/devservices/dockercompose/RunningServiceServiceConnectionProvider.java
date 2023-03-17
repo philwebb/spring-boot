@@ -24,9 +24,8 @@ import org.springframework.boot.devservices.dockercompose.interop.RunningService
 import org.springframework.core.env.Environment;
 
 /**
- * Provides {@link ConnectionDetails ServiceConnections} for running Docker Compose
- * services. The implementations of this class can use the following types in their
- * constructor:
+ * Provides {@link ConnectionDetails} for running Docker Compose services. The
+ * implementations of this class can use the following types in their constructor:
  * <ul>
  * <li>{@link Environment}</li>
  * <li>{@link Binder}</li>
