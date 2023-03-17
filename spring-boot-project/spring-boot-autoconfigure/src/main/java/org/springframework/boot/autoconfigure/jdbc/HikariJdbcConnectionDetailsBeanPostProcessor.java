@@ -25,8 +25,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class HikariJdbcConnectionDetailsBeanPostProcessor
-		extends JdbcConnectionDetailsBeanPostProcessor<HikariDataSource> {
+class HikariJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<HikariDataSource> {
 
 	HikariJdbcConnectionDetailsBeanPostProcessor() {
 		super(HikariDataSource.class);

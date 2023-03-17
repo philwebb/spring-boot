@@ -25,8 +25,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class Dbcp2JdbcConnectionDetailsBeanPostProcessor
-		extends JdbcConnectionDetailsBeanPostProcessor<BasicDataSource> {
+class Dbcp2JdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<BasicDataSource> {
 
 	Dbcp2JdbcConnectionDetailsBeanPostProcessor() {
 		super(BasicDataSource.class);

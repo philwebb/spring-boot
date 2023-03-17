@@ -70,8 +70,8 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
 			ObjectProvider<JdbcConnectionDetails> connectionDetails, ObjectProvider<XADataSource> xaDataSource)
 			throws Exception {
-		return wrapper.wrapDataSource(xaDataSource
-			.getIfAvailable(() -> createXaDataSource(properties, connectionDetails.getIfAvailable())));
+		return wrapper.wrapDataSource(
+				xaDataSource.getIfAvailable(() -> createXaDataSource(properties, connectionDetails.getIfAvailable())));
 	}
 
 	@Override
