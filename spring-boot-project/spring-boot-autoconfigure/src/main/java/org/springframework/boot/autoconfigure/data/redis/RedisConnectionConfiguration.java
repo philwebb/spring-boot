@@ -57,18 +57,18 @@ abstract class RedisConnectionConfiguration {
 
 	private final RedisClusterConfiguration clusterConfiguration;
 
-	protected final RedisConnectionDetails serviceConnection;
+	protected final RedisConnectionDetails connectionDetails;
 
 	protected RedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<RedisConnectionDetails> serviceConnectionProvider) {
+			ObjectProvider<RedisConnectionDetails> connectionDetailsProvider) {
 		this.properties = properties;
 		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
-		this.serviceConnection = serviceConnectionProvider.getIfAvailable();
+		this.connectionDetails = connectionDetailsProvider.getIfAvailable();
 	}
 
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
@@ -76,7 +76,7 @@ abstract class RedisConnectionConfiguration {
 			return this.standaloneConfiguration;
 		}
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-		if (this.serviceConnection == null && StringUtils.hasText(this.properties.getUrl())) {
+		if (this.connectionDetails == null && StringUtils.hasText(this.properties.getUrl())) {
 			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
 			config.setHostName(connectionInfo.getHostName());
 			config.setPort(connectionInfo.getPort());
@@ -84,20 +84,20 @@ abstract class RedisConnectionConfiguration {
 			config.setPassword(RedisPassword.of(connectionInfo.getPassword()));
 		}
 		else {
-			String host = (this.serviceConnection != null) ? this.serviceConnection.getStandalone().getHost()
+			String host = (this.connectionDetails != null) ? this.connectionDetails.getStandalone().getHost()
 					: this.properties.getHost();
-			String username = (this.serviceConnection != null) ? this.serviceConnection.getUsername()
+			String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
 					: this.properties.getUsername();
-			String password = (this.serviceConnection != null) ? this.serviceConnection.getPassword()
+			String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
 					: this.properties.getPassword();
-			int port = (this.serviceConnection != null) ? this.serviceConnection.getStandalone().getPort()
+			int port = (this.connectionDetails != null) ? this.connectionDetails.getStandalone().getPort()
 					: this.properties.getPort();
 			config.setHostName(host);
 			config.setPort(port);
 			config.setUsername(username);
 			config.setPassword(RedisPassword.of(password));
 		}
-		int database = (this.serviceConnection != null) ? this.serviceConnection.getStandalone().getDatabase()
+		int database = (this.connectionDetails != null) ? this.connectionDetails.getStandalone().getDatabase()
 				: this.properties.getDatabase();
 		config.setDatabase(database);
 		return config;
@@ -109,31 +109,31 @@ abstract class RedisConnectionConfiguration {
 		}
 		RedisProperties.Sentinel sentinelProperties = this.properties.getSentinel();
 		if (sentinelProperties != null
-				|| (this.serviceConnection != null && this.serviceConnection.getSentinel() != null)) {
+				|| (this.connectionDetails != null && this.connectionDetails.getSentinel() != null)) {
 			RedisSentinelConfiguration config = new RedisSentinelConfiguration();
-			String master = (this.serviceConnection != null) ? this.serviceConnection.getSentinel().getMaster()
+			String master = (this.connectionDetails != null) ? this.connectionDetails.getSentinel().getMaster()
 					: sentinelProperties.getMaster();
 			config.master(master);
-			List<RedisNode> sentinels = (this.serviceConnection != null)
-					? createSentinels(this.serviceConnection.getSentinel()) : createSentinels(sentinelProperties);
+			List<RedisNode> sentinels = (this.connectionDetails != null)
+					? createSentinels(this.connectionDetails.getSentinel()) : createSentinels(sentinelProperties);
 			config.setSentinels(sentinels);
-			String username = (this.serviceConnection != null) ? this.serviceConnection.getUsername()
+			String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
 					: this.properties.getUsername();
-			String password = (this.serviceConnection != null) ? this.serviceConnection.getPassword()
+			String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
 					: this.properties.getPassword();
 			config.setUsername(username);
 			if (password != null) {
 				config.setPassword(RedisPassword.of(password));
 			}
-			String sentinelUsername = (this.serviceConnection != null)
-					? this.serviceConnection.getSentinel().getUsername() : sentinelProperties.getUsername();
+			String sentinelUsername = (this.connectionDetails != null)
+					? this.connectionDetails.getSentinel().getUsername() : sentinelProperties.getUsername();
 			config.setSentinelUsername(sentinelUsername);
-			String sentinelPassword = (this.serviceConnection != null)
-					? this.serviceConnection.getSentinel().getPassword() : sentinelProperties.getPassword();
+			String sentinelPassword = (this.connectionDetails != null)
+					? this.connectionDetails.getSentinel().getPassword() : sentinelProperties.getPassword();
 			if (sentinelPassword != null) {
 				config.setSentinelPassword(RedisPassword.of(sentinelPassword));
 			}
-			int database = (this.serviceConnection != null) ? this.serviceConnection.getSentinel().getDatabase()
+			int database = (this.connectionDetails != null) ? this.connectionDetails.getSentinel().getDatabase()
 					: this.properties.getDatabase();
 			config.setDatabase(database);
 			return config;
@@ -151,16 +151,16 @@ abstract class RedisConnectionConfiguration {
 		}
 		RedisProperties.Cluster clusterProperties = this.properties.getCluster();
 		if (clusterProperties != null
-				|| (this.serviceConnection != null && this.serviceConnection.getCluster() != null)) {
-			List<String> nodes = (this.serviceConnection != null) ? getNodes(this.serviceConnection.getCluster())
+				|| (this.connectionDetails != null && this.connectionDetails.getCluster() != null)) {
+			List<String> nodes = (this.connectionDetails != null) ? getNodes(this.connectionDetails.getCluster())
 					: clusterProperties.getNodes();
 			RedisClusterConfiguration config = new RedisClusterConfiguration(nodes);
 			if (clusterProperties != null && clusterProperties.getMaxRedirects() != null) {
 				config.setMaxRedirects(clusterProperties.getMaxRedirects());
 			}
-			String username = (this.serviceConnection != null) ? this.serviceConnection.getUsername()
+			String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
 					: this.properties.getUsername();
-			String password = (this.serviceConnection != null) ? this.serviceConnection.getPassword()
+			String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
 					: this.properties.getPassword();
 			config.setUsername(username);
 			if (password != null) {

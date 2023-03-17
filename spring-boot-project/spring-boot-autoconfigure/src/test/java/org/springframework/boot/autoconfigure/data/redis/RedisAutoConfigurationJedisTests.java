@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
@@ -254,8 +253,9 @@ class RedisAutoConfigurationJedisTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		RedisConnectionDetails redisServiceConnection() {
+		RedisConnectionDetails redisConnectionDetails() {
 			return new RedisConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return null;
@@ -269,6 +269,7 @@ class RedisAutoConfigurationJedisTests {
 				@Override
 				public Standalone getStandalone() {
 					return new Standalone() {
+
 						@Override
 						public int getDatabase() {
 							return 0;
@@ -283,6 +284,7 @@ class RedisAutoConfigurationJedisTests {
 						public int getPort() {
 							return 6379;
 						}
+
 					};
 				}
 
@@ -296,15 +298,6 @@ class RedisAutoConfigurationJedisTests {
 					return null;
 				}
 
-				@Override
-				public String getName() {
-					return "redisServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 

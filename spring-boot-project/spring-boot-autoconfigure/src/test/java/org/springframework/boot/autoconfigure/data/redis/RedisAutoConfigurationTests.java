@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -586,6 +585,7 @@ class RedisAutoConfigurationTests {
 		@Bean
 		RedisConnectionDetails redisServiceConnection() {
 			return new RedisConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -599,6 +599,7 @@ class RedisAutoConfigurationTests {
 				@Override
 				public Standalone getStandalone() {
 					return new Standalone() {
+
 						@Override
 						public int getDatabase() {
 							return 1;
@@ -613,28 +614,10 @@ class RedisAutoConfigurationTests {
 						public int getPort() {
 							return 16379;
 						}
+
 					};
 				}
 
-				@Override
-				public Sentinel getSentinel() {
-					return null;
-				}
-
-				@Override
-				public Cluster getCluster() {
-					return null;
-				}
-
-				@Override
-				public String getName() {
-					return "redisServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 
@@ -646,6 +629,7 @@ class RedisAutoConfigurationTests {
 		@Bean
 		RedisConnectionDetails redisServiceConnection() {
 			return new RedisConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -657,13 +641,9 @@ class RedisAutoConfigurationTests {
 				}
 
 				@Override
-				public Standalone getStandalone() {
-					return null;
-				}
-
-				@Override
 				public Sentinel getSentinel() {
 					return new Sentinel() {
+
 						@Override
 						public int getDatabase() {
 							return 1;
@@ -688,23 +668,10 @@ class RedisAutoConfigurationTests {
 						public String getPassword() {
 							return "secret-1";
 						}
+
 					};
 				}
 
-				@Override
-				public Cluster getCluster() {
-					return null;
-				}
-
-				@Override
-				public String getName() {
-					return "redisServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 
@@ -714,8 +681,9 @@ class RedisAutoConfigurationTests {
 	static class ServiceConnectionClusterConfiguration {
 
 		@Bean
-		RedisConnectionDetails redisServiceConnection() {
+		RedisConnectionDetails redisConnectionDetails() {
 			return new RedisConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -727,34 +695,17 @@ class RedisAutoConfigurationTests {
 				}
 
 				@Override
-				public Standalone getStandalone() {
-					return null;
-				}
-
-				@Override
-				public Sentinel getSentinel() {
-					return null;
-				}
-
-				@Override
 				public Cluster getCluster() {
 					return new Cluster() {
+
 						@Override
 						public List<Node> getNodes() {
 							return List.of(new Node("node-1", 12345), new Node("node-2", 23456));
 						}
+
 					};
 				}
 
-				@Override
-				public String getName() {
-					return "redisServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 

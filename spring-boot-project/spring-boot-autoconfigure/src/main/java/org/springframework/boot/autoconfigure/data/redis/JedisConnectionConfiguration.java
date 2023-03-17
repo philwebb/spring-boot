@@ -53,9 +53,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-			ObjectProvider<RedisConnectionDetails> serviceConnectionProvider) {
+			ObjectProvider<RedisConnectionDetails> connectionDetailsProvider) {
 		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration,
-				serviceConnectionProvider);
+				connectionDetailsProvider);
 	}
 
 	@Bean
@@ -92,7 +92,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		boolean ssl = (this.serviceConnection != null) ? false : getProperties().isSsl();
+		boolean ssl = (this.connectionDetails != null) ? false : getProperties().isSsl();
 		map.from(ssl).whenTrue().toCall(builder::useSsl);
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);

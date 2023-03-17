@@ -62,9 +62,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<RedisConnectionDetails> serviceConnectionProvider) {
+			ObjectProvider<RedisConnectionDetails> connectionDetailsProvider) {
 		super(properties, standaloneConfigurationProvider, sentinelConfigurationProvider, clusterConfigurationProvider,
-				serviceConnectionProvider);
+				connectionDetailsProvider);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -118,7 +118,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceClientConfigurationBuilder applyProperties(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		boolean ssl = (this.serviceConnection != null) ? false : getProperties().isSsl();
+		boolean ssl = (this.connectionDetails != null) ? false : getProperties().isSsl();
 		if (ssl) {
 			builder.useSsl();
 		}

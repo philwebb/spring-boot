@@ -27,7 +27,6 @@ import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConne
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.origin.Origin;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.ClassUtils;
 
@@ -75,16 +74,6 @@ class ZipkinServiceConnectionProvider implements RunningServiceServiceConnection
 
 		DockerComposeZipkinServiceConnection(ZipkinService service) {
 			this.service = service;
-		}
-
-		@Override
-		public Origin getOrigin() {
-			return this.service.getOrigin();
-		}
-
-		@Override
-		public String getName() {
-			return "docker-compose-zipkin-%s".formatted(this.service.getName());
 		}
 
 		@Override

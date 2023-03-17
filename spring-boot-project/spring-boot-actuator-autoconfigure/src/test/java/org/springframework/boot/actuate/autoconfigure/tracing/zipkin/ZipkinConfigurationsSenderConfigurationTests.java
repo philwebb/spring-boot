@@ -31,7 +31,6 @@ import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -225,16 +224,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		@Bean
 		ZipkinConnectionDetails zipkinServiceConnection() {
 			return new ZipkinConnectionDetails() {
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
-
-				@Override
-				public String getName() {
-					return "zipkinServiceConnection";
-				}
 
 				@Override
 				public String getHost() {

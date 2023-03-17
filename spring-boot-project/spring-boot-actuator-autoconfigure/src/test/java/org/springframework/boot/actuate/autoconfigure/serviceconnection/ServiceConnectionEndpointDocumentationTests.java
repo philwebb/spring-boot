@@ -246,7 +246,7 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		ZipkinConnectionDetails zipkinServiceConnection() {
+		ZipkinConnectionDetails zipkinConnectionDetails() {
 			return new ZipkinConnectionDetails() {
 
 				@Override
