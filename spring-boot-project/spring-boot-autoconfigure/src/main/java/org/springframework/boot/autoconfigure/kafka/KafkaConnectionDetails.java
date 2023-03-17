@@ -63,7 +63,7 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	 * Returns the list of bootstrap nodes used for Kafka Streams.
 	 * @return the list of bootstrap nodes used for Kafka Streams
 	 */
-	default List<Node> getStreamBootstrapNodes() {
+	default List<Node> getStreamsBootstrapNodes() {
 		return getBootstrapNodes();
 	}
 

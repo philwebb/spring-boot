@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,11 +64,10 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
 			ObjectProvider<KafkaConnectionDetails> connectionDetailsProvider) {
-		KafkaConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+		KafkaConnectionDetails connectionDetails = connectionDetailsProvider
+			.getIfAvailable(() -> new PropertiesKafkaConnectionDetails(this.properties));
 		Map<String, Object> properties = this.properties.buildStreamsProperties();
-		if (connectionDetails != null) {
-			properties = applyKafkaServiceConnectionForStreams(connectionDetails, properties);
-		}
+		applyKafkaServiceConnectionForStreams(connectionDetails, properties);
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
@@ -89,13 +87,13 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForStreams(KafkaConnectionDetails connectionDetails,
+	private void applyKafkaServiceConnectionForStreams(KafkaConnectionDetails connectionDetails,
 			Map<String, Object> properties) {
-		Map<String, Object> result = new HashMap<>(properties);
-		result.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(connectionDetails.getStreamBootstrapNodes()));
-		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
-		return result;
+		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+				nodesToStringList(connectionDetails.getStreamsBootstrapNodes()));
+		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
+			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+		}
 	}
 
 	private List<String> nodesToStringList(List<Node> nodes) {
