@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a RabbitMQ service.
@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface RabbitServiceConnection extends ServiceConnection {
+public interface RabbitServiceConnection extends ConnectionDetails {
 
 	/**
 	 * Login user to authenticate to the broker.

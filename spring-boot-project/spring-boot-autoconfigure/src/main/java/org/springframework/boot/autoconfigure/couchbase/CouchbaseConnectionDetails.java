@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a Couchbase service.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface CouchbaseServiceConnection extends ServiceConnection {
+public interface CouchbaseConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Connection string used to locate the Couchbase cluster.

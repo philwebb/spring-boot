@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node.Protocol;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;
@@ -44,11 +44,11 @@ class ElasticsearchConnectionProvider implements RunningServiceServiceConnection
 	}
 
 	@Override
-	public List<? extends ServiceConnection> provideServiceConnection(List<RunningService> services) {
+	public List<? extends ConnectionDetails> provideServiceConnection(List<RunningService> services) {
 		if (!this.serviceConnectionPresent) {
 			return Collections.emptyList();
 		}
-		List<ElasticsearchServiceConnection> result = new ArrayList<>();
+		List<ElasticsearchConnectionDetails> result = new ArrayList<>();
 		for (RunningService service : services) {
 			if (!ElasticsearchService.matches(service)) {
 				continue;
@@ -59,7 +59,7 @@ class ElasticsearchConnectionProvider implements RunningServiceServiceConnection
 		return result;
 	}
 
-	private static class DockerComposeElasticsearchServiceConnection implements ElasticsearchServiceConnection {
+	private static class DockerComposeElasticsearchServiceConnection implements ElasticsearchConnectionDetails {
 
 		private final ElasticsearchService service;
 

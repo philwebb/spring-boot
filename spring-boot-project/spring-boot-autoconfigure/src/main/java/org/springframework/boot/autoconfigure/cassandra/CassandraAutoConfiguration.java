@@ -94,8 +94,8 @@ public class CassandraAutoConfiguration {
 	@Scope("prototype")
 	public CqlSessionBuilder cassandraSessionBuilder(CassandraProperties properties,
 			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers,
-			ObjectProvider<CassandraServiceConnection> serviceConnectionProvider) {
-		CassandraServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<CassandraConnectionDetails> serviceConnectionProvider) {
+		CassandraConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
 		configureAuthentication(properties, serviceConnection, builder);
 		configureSsl(properties, serviceConnection, builder);
@@ -104,7 +104,7 @@ public class CassandraAutoConfiguration {
 		return builder;
 	}
 
-	private void configureAuthentication(CassandraProperties properties, CassandraServiceConnection serviceConnection,
+	private void configureAuthentication(CassandraProperties properties, CassandraConnectionDetails serviceConnection,
 			CqlSessionBuilder builder) {
 		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
 		if (username != null) {
@@ -113,7 +113,7 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private void configureSsl(CassandraProperties properties, CassandraServiceConnection serviceConnection,
+	private void configureSsl(CassandraProperties properties, CassandraConnectionDetails serviceConnection,
 			CqlSessionBuilder builder) {
 		if (serviceConnection != null) {
 			return;
@@ -132,8 +132,8 @@ public class CassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers,
-			ObjectProvider<CassandraServiceConnection> serviceConnectionProvider) {
-		CassandraServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<CassandraConnectionDetails> serviceConnectionProvider) {
+		CassandraConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
 				() -> cassandraConfiguration(properties, serviceConnection),
 				DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
@@ -142,7 +142,7 @@ public class CassandraAutoConfiguration {
 	}
 
 	private Config cassandraConfiguration(CassandraProperties properties,
-			CassandraServiceConnection serviceConnection) {
+			CassandraConnectionDetails serviceConnection) {
 		ConfigFactory.invalidateCaches();
 		Config config = ConfigFactory.defaultOverrides();
 		config = config.withFallback(mapConfig(properties, serviceConnection));
@@ -163,7 +163,7 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private Config mapConfig(CassandraProperties properties, CassandraServiceConnection serviceConnection) {
+	private Config mapConfig(CassandraProperties properties, CassandraConnectionDetails serviceConnection) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties.getSessionName())
@@ -250,7 +250,7 @@ public class CassandraAutoConfiguration {
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties,
-			CassandraServiceConnection serviceConnection) {
+			CassandraConnectionDetails serviceConnection) {
 		if (serviceConnection != null) {
 			return serviceConnection.getContactPoints()
 				.stream()

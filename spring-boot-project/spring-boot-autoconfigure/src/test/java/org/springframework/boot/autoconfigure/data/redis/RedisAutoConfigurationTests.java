@@ -584,8 +584,8 @@ class RedisAutoConfigurationTests {
 	static class ServiceConnectionStandaloneConfiguration {
 
 		@Bean
-		RedisServiceConnection redisServiceConnection() {
-			return new RedisServiceConnection() {
+		RedisConnectionDetails redisServiceConnection() {
+			return new RedisConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -644,8 +644,8 @@ class RedisAutoConfigurationTests {
 	static class ServiceConnectionSentinelConfiguration {
 
 		@Bean
-		RedisServiceConnection redisServiceConnection() {
-			return new RedisServiceConnection() {
+		RedisConnectionDetails redisServiceConnection() {
+			return new RedisConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -714,8 +714,8 @@ class RedisAutoConfigurationTests {
 	static class ServiceConnectionClusterConfiguration {
 
 		@Bean
-		RedisServiceConnection redisServiceConnection() {
-			return new RedisServiceConnection() {
+		RedisConnectionDetails redisServiceConnection() {
+			return new RedisConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-1";

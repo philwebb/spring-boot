@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.serviceconnection;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+package org.springframework.boot.autoconfigure.service.connection;
 
 /**
- * A remote service for which a {@link ServiceConnection} can be created.
+ * A registry of {@link ConnectionDetailsFactory} instances.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.TYPE })
-public @interface ConnectableService {
+public class ConnectionDetailsFactories {
 
-	/**
-	 * The type of {@link ServiceConnection} that can describe how to connect to the
-	 * service.
-	 * @return the connection type
-	 */
-	Class<? extends ServiceConnection> value();
+	public <S> ConnectionDetailsFactory<S, ConnectionDetails> getConnectionDetailsFactory(S source) {
+		return null;
+	}
 
 }

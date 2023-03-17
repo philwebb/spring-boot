@@ -28,7 +28,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.devservices.dockercompose.configuration.DockerComposeDevServiceConfigurationProperties;
@@ -64,7 +64,7 @@ import org.springframework.core.log.LogMessage;
  * compose has been started by this provider, docker compose will be stopped afterwards.
  * <p>
  * It uses {@link RunningServiceServiceConnectionProvider extractors} to delegate the work
- * of translating running docker compose services to {@link ServiceConnection service
+ * of translating running docker compose services to {@link ConnectionDetails service
  * connections}. Those providers can be registered in {@code spring.factories} under the
  * {@link RunningServiceServiceConnectionProvider} key.
  *
@@ -155,7 +155,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 				this.serviceConnectionProviders = loadServiceProviders(this.classLoader, this.environment, this.binder);
 			}
 			for (RunningServiceServiceConnectionProvider serviceConnectionProvider : this.serviceConnectionProviders) {
-				List<? extends ServiceConnection> serviceConnections = serviceConnectionProvider
+				List<? extends ConnectionDetails> serviceConnections = serviceConnectionProvider
 					.provideServiceConnection(runningServices);
 				registerServiceConnections(serviceConnections, beanDefinitionRegistry);
 			}
@@ -181,9 +181,9 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		return true;
 	}
 
-	private void registerServiceConnections(List<? extends ServiceConnection> serviceConnections,
+	private void registerServiceConnections(List<? extends ConnectionDetails> serviceConnections,
 			BeanDefinitionRegistry beanDefinitionRegistry) {
-		for (ServiceConnection serviceConnection : serviceConnections) {
+		for (ConnectionDetails serviceConnection : serviceConnections) {
 			RootBeanDefinition definition = new RootBeanDefinition(serviceConnection.getClass());
 			definition.setInstanceSupplier((() -> serviceConnection));
 			String beanName = serviceConnection.getName();

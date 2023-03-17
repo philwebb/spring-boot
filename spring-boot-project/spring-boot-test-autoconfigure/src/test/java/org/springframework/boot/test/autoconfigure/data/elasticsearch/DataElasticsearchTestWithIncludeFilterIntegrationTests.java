@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchService;
+import org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataElasticsearchTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	@ElasticsearchService
+	@ElasticsearchConnection
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));

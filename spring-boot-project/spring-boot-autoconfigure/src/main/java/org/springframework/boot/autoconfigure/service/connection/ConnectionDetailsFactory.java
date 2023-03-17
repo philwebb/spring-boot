@@ -16,23 +16,24 @@
 
 package org.springframework.boot.autoconfigure.service.connection;
 
-import org.springframework.boot.origin.Origin;
-
 /**
- * A source from which a {@link ServiceConnection} can be created.
+ * A factory for {@link ConnectionDetails} instances. Implementations should be registered
+ * in {@code META-INF/spring.factories}.
  *
- * @param input the input from which to create the service connection
- * @param name the name of the service connection
- * @param origin the origin of the service connection
- * @param connectionType the required type of the service connection
- * @param <I> the type of the input
- * @param <SC> the type of the service connection
+ * @param <S> the source type accepted by the factory
+ * @param <D> the type of {@link ConnectionDetails} produced by the factory
  * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @see ServiceConnectionFactory
  * @since 3.1.0
  */
-public record ServiceConnectionSource<I, SC extends ServiceConnection>(I input, String name, Origin origin,
-		Class<SC> connectionType) {
+public interface ConnectionDetailsFactory<S, D extends ConnectionDetails> {
+
+	/**
+	 * Get the {@link ConnectionDetails} from the given {@code source}. May return
+	 * {@code null} if no connection can be created.
+	 * @param source the source
+	 * @return the service connection or {@code null}
+	 */
+	D getConnectionDetails(S source);
 
 }

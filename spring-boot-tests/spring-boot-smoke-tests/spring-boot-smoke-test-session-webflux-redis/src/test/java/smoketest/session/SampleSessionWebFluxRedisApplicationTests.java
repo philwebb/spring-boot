@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.redis.RedisService;
+import org.springframework.boot.test.autoconfigure.data.redis.RedisConnection;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSessionWebFluxRedisApplicationTests {
 
 	@Container
-	@RedisService
+	@RedisConnection
 	private static final RedisContainer redis = new RedisContainer();
 
 	@LocalServerPort

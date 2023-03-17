@@ -22,21 +22,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ConnectableService;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
- * Denotes that a field represents a Redis service from which a
- * {@link RedisServiceConnection} should be resolved.
+ * Annotation that indicates a field provides a Redis service that can be connected to.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
+ * @see ServiceConnection
+ * @see RedisConnectionDetails
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ConnectableService(RedisServiceConnection.class)
-public @interface RedisService {
+@ServiceConnection(RedisConnectionDetails.class)
+public @interface RedisConnection {
 
 }

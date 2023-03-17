@@ -65,7 +65,7 @@ class CouchbaseAutoConfigurationTests {
 
 	@Test
 	void shouldUseServiceConnection() {
-		this.contextRunner.withBean(CouchbaseServiceConnection.class, this::couchbaseServiceConnection)
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseServiceConnection)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				Cluster cluster = context.getBean(Cluster.class);
@@ -86,7 +86,7 @@ class CouchbaseAutoConfigurationTests {
 
 	@Test
 	void serviceConnectionShouldOverrideProperties() {
-		this.contextRunner.withBean(CouchbaseServiceConnection.class, this::couchbaseServiceConnection)
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseServiceConnection)
 			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
 					"spring.couchbase.password=a-password")
 			.run((context) -> {
@@ -201,8 +201,8 @@ class CouchbaseAutoConfigurationTests {
 			});
 	}
 
-	private CouchbaseServiceConnection couchbaseServiceConnection() {
-		return new CouchbaseServiceConnection() {
+	private CouchbaseConnectionDetails couchbaseServiceConnection() {
+		return new CouchbaseConnectionDetails() {
 			@Override
 			public String getConnectionString() {
 				return "couchbase.example.com";

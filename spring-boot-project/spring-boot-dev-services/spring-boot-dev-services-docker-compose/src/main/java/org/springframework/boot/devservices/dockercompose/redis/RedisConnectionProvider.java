@@ -20,11 +20,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginProvider;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -43,11 +44,11 @@ class RedisConnectionProvider implements RunningServiceServiceConnectionProvider
 	}
 
 	@Override
-	public List<? extends ServiceConnection> provideServiceConnection(List<RunningService> services) {
+	public List<? extends ConnectionDetails> provideServiceConnection(List<RunningService> services) {
 		if (!this.serviceConnectionPresent) {
 			return Collections.emptyList();
 		}
-		List<RedisServiceConnection> result = new ArrayList<>();
+		List<RedisConnectionDetails> result = new ArrayList<>();
 		for (RunningService service : services) {
 			if (!RedisService.matches(service)) {
 				continue;
@@ -58,7 +59,7 @@ class RedisConnectionProvider implements RunningServiceServiceConnectionProvider
 		return result;
 	}
 
-	private static class DockerComposeRedisServiceConnection implements RedisServiceConnection {
+	private static class DockerComposeRedisServiceConnection implements RedisConnectionDetails, OriginProvider {
 
 		private final RedisService service;
 
@@ -67,18 +68,9 @@ class RedisConnectionProvider implements RunningServiceServiceConnectionProvider
 		}
 
 		@Override
-		public String getUsername() {
-			return null;
-		}
-
-		@Override
-		public String getPassword() {
-			return null;
-		}
-
-		@Override
 		public Standalone getStandalone() {
 			return new Standalone() {
+
 				@Override
 				public int getDatabase() {
 					return 0;
@@ -93,20 +85,11 @@ class RedisConnectionProvider implements RunningServiceServiceConnectionProvider
 				public int getPort() {
 					return DockerComposeRedisServiceConnection.this.service.getPort();
 				}
+
 			};
 		}
 
-		@Override
-		public Sentinel getSentinel() {
-			return null;
-		}
-
-		@Override
-		public Cluster getCluster() {
-			return null;
-		}
-
-		@Override
+		// FIXME
 		public String getName() {
 			return "docker-compose-redis-%s".formatted(this.service.getName());
 		}

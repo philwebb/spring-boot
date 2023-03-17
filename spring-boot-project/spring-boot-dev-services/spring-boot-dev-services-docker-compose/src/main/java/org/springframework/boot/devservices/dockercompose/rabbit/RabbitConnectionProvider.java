@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;
@@ -43,7 +43,7 @@ class RabbitConnectionProvider implements RunningServiceServiceConnectionProvide
 	}
 
 	@Override
-	public List<? extends ServiceConnection> provideServiceConnection(List<RunningService> services) {
+	public List<? extends ConnectionDetails> provideServiceConnection(List<RunningService> services) {
 		if (!this.serviceConnectionPresent) {
 			return Collections.emptyList();
 		}

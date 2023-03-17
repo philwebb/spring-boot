@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	@RedisService
+	@RedisConnection
 	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired

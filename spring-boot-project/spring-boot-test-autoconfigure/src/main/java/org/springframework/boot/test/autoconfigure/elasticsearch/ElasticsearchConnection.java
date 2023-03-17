@@ -22,21 +22,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ConnectableService;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
- * Denotes that a field represents a Redis service from which a
- * {@link ElasticsearchServiceConnection} should be resolved.
+ * Annotation that indicates a field provides a Elasticsearch service that can be
+ * connected to.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
+ * @see ServiceConnection
+ * @see ElasticsearchConnectionDetails
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ConnectableService(ElasticsearchServiceConnection.class)
-public @interface ElasticsearchService {
+@ServiceConnection(ElasticsearchConnectionDetails.class)
+public @interface ElasticsearchConnection {
 
 }

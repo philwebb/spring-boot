@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a MongoDB service.
@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface MongoServiceConnection extends ServiceConnection {
+public interface MongoServiceConnection extends ConnectionDetails {
 
 	/**
 	 * Mongo server host.

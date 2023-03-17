@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.util.function.Tuples;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.mongo.MongoService;
+import org.springframework.boot.test.autoconfigure.mongo.MongoConnection;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSessionWebFluxMongoApplicationTests {
 
 	@Container
-	@MongoService
+	@MongoConnection
 	private static final MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
 		.withStartupTimeout(Duration.ofMinutes(2));
 

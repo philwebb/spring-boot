@@ -19,7 +19,7 @@ package org.springframework.boot.devservices.dockercompose.database.mariadb;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.database.AbstractJdbcServiceConnection;
 import org.springframework.boot.devservices.dockercompose.database.AbstractR2dbcServiceConnection;
@@ -47,8 +47,8 @@ class MariaDbConnectionProvider implements RunningServiceServiceConnectionProvid
 	}
 
 	@Override
-	public List<? extends ServiceConnection> provideServiceConnection(List<RunningService> services) {
-		List<ServiceConnection> result = new ArrayList<>();
+	public List<? extends ConnectionDetails> provideServiceConnection(List<RunningService> services) {
+		List<ConnectionDetails> result = new ArrayList<>();
 		for (RunningService service : services) {
 			if (!MariaDbService.matches(service)) {
 				continue;

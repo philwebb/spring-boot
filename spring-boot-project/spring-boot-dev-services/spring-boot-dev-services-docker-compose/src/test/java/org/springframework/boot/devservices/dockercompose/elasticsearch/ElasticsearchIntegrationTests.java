@@ -20,9 +20,9 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node.Protocol;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ class ElasticsearchIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void test() {
-		ElasticsearchServiceConnection serviceConnection = runProvider(ElasticsearchServiceConnection.class);
+		ElasticsearchConnectionDetails serviceConnection = runProvider(ElasticsearchConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-elasticsearch-elasticsearch");
 		assertThat(serviceConnection.getUsername()).isEqualTo("elastic");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");

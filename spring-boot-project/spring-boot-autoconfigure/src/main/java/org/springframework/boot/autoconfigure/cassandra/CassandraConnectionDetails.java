@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.cassandra;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a Cassandra service.
@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface CassandraServiceConnection extends ServiceConnection {
+public interface CassandraConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Cluster node addresses.

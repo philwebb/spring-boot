@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.mongo;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,21 +22,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ConnectableService;
+import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
- * Denotes that a field represents a Mongo service from which a
- * {@link MongoServiceConnection} should be resolved.
+ * Annotation that indicates a field provides a JDBC database service that can be
+ * connected to.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
+ * @see ServiceConnection
+ * @see JdbcServiceConnection
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ConnectableService(MongoServiceConnection.class)
-public @interface MongoService {
+@ServiceConnection(JdbcServiceConnection.class)
+public @interface JdbcConnection {
 
 }

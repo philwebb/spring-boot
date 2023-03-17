@@ -45,7 +45,7 @@ class DataRedisTestIntegrationTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Container
-	@RedisService
+	@RedisConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired

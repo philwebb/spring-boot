@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a SQL database service through R2DBC.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface R2dbcServiceConnection extends ServiceConnection {
+public interface R2dbcServiceConnection extends ConnectionDetails {
 
 	/**
 	 * Hostname for the database.

@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataRedisTestReactiveIntegrationTests {
 
 	@Container
-	@RedisService
+	@RedisConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired

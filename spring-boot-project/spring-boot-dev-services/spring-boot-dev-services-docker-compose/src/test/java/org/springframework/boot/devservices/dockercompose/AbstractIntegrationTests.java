@@ -30,7 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.devservices.dockercompose.interop.DockerComposeOrigin;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
@@ -73,11 +73,11 @@ public abstract class AbstractIntegrationTests {
 
 	protected abstract InputStream getComposeContent();
 
-	protected final <T extends ServiceConnection> T runProvider(Class<T> serviceConnectionClass) {
+	protected final <T extends ConnectionDetails> T runProvider(Class<T> serviceConnectionClass) {
 		return runProvider(new MockEnvironment(), serviceConnectionClass);
 	}
 
-	protected final <T extends ServiceConnection> T runProvider(MockEnvironment environment,
+	protected final <T extends ConnectionDetails> T runProvider(MockEnvironment environment,
 			Class<T> serviceConnectionClass) {
 		environment.setProperty("spring.dev-services.docker-compose.stop-mode", "down");
 		DockerComposeListener dockerComposeListener = createProvider(environment);

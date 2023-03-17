@@ -254,8 +254,8 @@ class RedisAutoConfigurationJedisTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		RedisServiceConnection redisServiceConnection() {
-			return new RedisServiceConnection() {
+		RedisConnectionDetails redisServiceConnection() {
+			return new RedisConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return null;

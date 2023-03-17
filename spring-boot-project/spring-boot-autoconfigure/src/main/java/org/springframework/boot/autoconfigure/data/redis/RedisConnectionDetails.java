@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a Redis service.
@@ -27,40 +27,50 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface RedisServiceConnection extends ServiceConnection {
+public interface RedisConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Login username of the redis server.
 	 * @return the login username of the redis server
 	 */
-	String getUsername();
+	default String getUsername() {
+		return null;
+	}
 
 	/**
 	 * Login password of the redis server.
 	 * @return the login password of the redis server
 	 */
-	String getPassword();
+	default String getPassword() {
+		return null;
+	}
 
 	/**
 	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()} and
 	 * {@link #getCluster()}.
 	 * @return the Redis standalone configuration
 	 */
-	Standalone getStandalone();
+	default Standalone getStandalone() {
+		return null;
+	}
 
 	/**
 	 * Redis sentinel configuration. Mutually exclusive with {@link #getStandalone()} and
 	 * {@link #getCluster()}.
 	 * @return the Redis sentinel configuration
 	 */
-	Sentinel getSentinel();
+	default Sentinel getSentinel() {
+		return null;
+	}
 
 	/**
 	 * Redis cluster configuration. Mutually exclusive with {@link #getStandalone()} and
 	 * {@link #getStandalone()}.
 	 * @return the Redis cluster configuration
 	 */
-	Cluster getCluster();
+	default Cluster getCluster() {
+		return null;
+	}
 
 	/**
 	 * Redis standalone configuration.
@@ -71,7 +81,9 @@ public interface RedisServiceConnection extends ServiceConnection {
 		 * Database index used by the connection factory.
 		 * @return the database index used by the connection factory
 		 */
-		int getDatabase();
+		default int getDatabase() {
+			return 0;
+		}
 
 		/**
 		 * Redis server host.

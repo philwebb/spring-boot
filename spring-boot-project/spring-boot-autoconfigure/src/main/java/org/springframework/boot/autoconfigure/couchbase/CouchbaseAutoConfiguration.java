@@ -70,7 +70,7 @@ public class CouchbaseAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseProperties properties,
 			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers,
-			ObjectProvider<CouchbaseServiceConnection> serviceConnectionProvider) {
+			ObjectProvider<CouchbaseConnectionDetails> serviceConnectionProvider) {
 		Builder builder = initializeEnvironmentBuilder(properties, serviceConnectionProvider.getIfAvailable());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -79,8 +79,8 @@ public class CouchbaseAutoConfiguration {
 	@Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
 	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment,
-			ObjectProvider<CouchbaseServiceConnection> serviceConnectionProvider) {
-		CouchbaseServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<CouchbaseConnectionDetails> serviceConnectionProvider) {
+		CouchbaseConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
 		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
 		String connectionString = (serviceConnection != null) ? serviceConnection.getConnectionString()
@@ -91,7 +91,7 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties,
-			CouchbaseServiceConnection serviceConnection) {
+			CouchbaseConnectionDetails serviceConnection) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = properties.getEnv().getTimeouts();
 		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
@@ -182,7 +182,7 @@ public class CouchbaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(CouchbaseServiceConnection.class)
+		@ConditionalOnBean(CouchbaseConnectionDetails.class)
 		private static final class CouchbaseServiceConnectionCondition {
 
 		}

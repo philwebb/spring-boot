@@ -18,20 +18,23 @@ package org.springframework.boot.test.autoconfigure.r2dbc;
 
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionFactory;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.test.autoconfigure.data.redis.RedisConnection;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 
 /**
- * A {@link ServiceConnectionFactory} for creating an {@link R2dbcServiceConnection} from
+ * A {@link ConnectionDetailsFactory} for creating an {@link R2dbcServiceConnection} from
  * a {@link JdbcDatabaseContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
 class JdbcDatabaseContainerR2dbcServiceConnectionFactory
-		implements ServiceConnectionFactory<JdbcDatabaseContainer<?>, R2dbcServiceConnection> {
+		extends ContainerConnectionDetailsFactory<RedisConnection, RedisConnectionDetails> {
 
 	@Override
 	public R2dbcServiceConnection createServiceConnection(

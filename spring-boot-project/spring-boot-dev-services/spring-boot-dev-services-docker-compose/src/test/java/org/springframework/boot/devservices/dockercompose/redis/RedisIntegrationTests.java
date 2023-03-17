@@ -20,8 +20,8 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Standalone;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +36,7 @@ class RedisIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void test() {
-		RedisServiceConnection serviceConnection = runProvider(RedisServiceConnection.class);
+		RedisConnectionDetails serviceConnection = runProvider(RedisConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-redis-redis");
 		assertThat(serviceConnection.getUsername()).isNull();
 		assertThat(serviceConnection.getPassword()).isNull();

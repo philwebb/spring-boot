@@ -24,8 +24,8 @@ import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcSqlService;
-import org.springframework.boot.test.autoconfigure.r2dbc.R2dbcSqlService;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcConnection;
+import org.springframework.boot.test.autoconfigure.r2dbc.R2dbcSqlConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CityRepositoryTests {
 
 	@Container
-	@JdbcSqlService
-	@R2dbcSqlService
+	@JdbcConnection
+	@R2dbcSqlConnection
 	static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(DockerImageNames.postgresql())
 		.withDatabaseName("test_liquibase");
 

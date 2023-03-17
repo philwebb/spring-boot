@@ -99,7 +99,7 @@ class CassandraAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.cassandra.contact-points=localhost:9042", "spring.cassandra.username=a-user",
 					"spring.cassandra.password=a-password", "spring.cassandra.local-datacenter=some-datacenter")
-			.withBean(CassandraServiceConnection.class, this::cassandraServiceConnection)
+			.withBean(CassandraConnectionDetails.class, this::cassandraServiceConnection)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(DriverConfigLoader.class);
 				DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class)
@@ -334,8 +334,8 @@ class CassandraAutoConfigurationTests {
 		});
 	}
 
-	private CassandraServiceConnection cassandraServiceConnection() {
-		return new CassandraServiceConnection() {
+	private CassandraConnectionDetails cassandraServiceConnection() {
+		return new CassandraConnectionDetails() {
 			@Override
 			public List<Node> getContactPoints() {
 				return List.of(new Node("cassandra.example.com", 9042));

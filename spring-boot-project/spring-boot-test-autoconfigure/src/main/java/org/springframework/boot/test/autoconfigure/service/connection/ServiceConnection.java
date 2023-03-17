@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.jdbc;
+package org.springframework.boot.test.autoconfigure.service.connection;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ConnectableService;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 
 /**
- * Denotes that a field represents an SQL service from which a
- * {@link JdbcServiceConnection} should be resolved.
+ * Annotation used to indicate that a field provides a service that can be connected to.
+ * Typically used to meta-annotate a higher-level annotation.
+ * <p>
+ * When used, a {@link ConnectionDetailsFactory} must be registered in
+ * {@code spring.factories} to provide {@link ConnectionDetails} for the field value.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.TYPE })
-@ConnectableService(JdbcServiceConnection.class)
-public @interface JdbcSqlService {
+@Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+public @interface ServiceConnection {
+
+	/**
+	 * The type of {@link ConnectionDetails} that can describe how to connect to the
+	 * service.
+	 * @return the connection type
+	 */
+	Class<? extends ConnectionDetails> value();
 
 }

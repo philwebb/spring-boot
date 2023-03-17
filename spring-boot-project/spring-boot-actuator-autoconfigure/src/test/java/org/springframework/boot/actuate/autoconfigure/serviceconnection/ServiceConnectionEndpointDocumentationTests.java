@@ -25,13 +25,13 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
 import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node.Protocol;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -163,13 +163,13 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 	static class TestConfiguration {
 
 		@Bean
-		ServiceConnectionEndpoint endpoint(ObjectProvider<ServiceConnection> serviceConnectionProvider) {
+		ServiceConnectionEndpoint endpoint(ObjectProvider<ConnectionDetails> serviceConnectionProvider) {
 			return new ServiceConnectionEndpoint(serviceConnectionProvider);
 		}
 
 		@Bean
-		RedisServiceConnection redisServiceConnection() {
-			return new RedisServiceConnection() {
+		RedisConnectionDetails redisServiceConnection() {
+			return new RedisConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -378,8 +378,8 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		ElasticsearchServiceConnection elasticsearchServiceConnection() {
-			return new ElasticsearchServiceConnection() {
+		ElasticsearchConnectionDetails elasticsearchServiceConnection() {
+			return new ElasticsearchConnectionDetails() {
 				@Override
 				public List<Node> getNodes() {
 					return List.of(new Node("localhost", 12345, Protocol.HTTP, "user", "password"));

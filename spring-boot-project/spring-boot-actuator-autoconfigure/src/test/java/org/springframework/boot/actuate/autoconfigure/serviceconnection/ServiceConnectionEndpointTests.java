@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.serviceconnection.ServiceConnectionEndpoint.ServiceConnectionsDto;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
 import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
@@ -41,10 +41,10 @@ class ServiceConnectionEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withBean("endpoint", ServiceConnectionEndpoint.class)
-		.withBean("elasticsearchServiceConnection", ElasticsearchServiceConnection.class,
-				() -> mock(ElasticsearchServiceConnection.class))
+		.withBean("elasticsearchServiceConnection", ElasticsearchConnectionDetails.class,
+				() -> mock(ElasticsearchConnectionDetails.class))
 		.withBean("mongoServiceConnection", MongoServiceConnection.class, () -> mock(MongoServiceConnection.class))
-		.withBean("redisServiceConnection", RedisServiceConnection.class, () -> mock(RedisServiceConnection.class))
+		.withBean("redisServiceConnection", RedisConnectionDetails.class, () -> mock(RedisConnectionDetails.class))
 		.withBean("jdbcServiceConnection", JdbcServiceConnection.class, () -> mock(JdbcServiceConnection.class))
 		.withBean("r2dbcServiceConnection", R2dbcServiceConnection.class, () -> mock(R2dbcServiceConnection.class))
 		.withBean("rabbitServiceConnection", RabbitServiceConnection.class, () -> mock(RabbitServiceConnection.class))

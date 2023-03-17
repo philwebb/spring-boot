@@ -38,7 +38,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,14 +65,14 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
-				ObjectProvider<ElasticsearchServiceConnection> serviceConnectionProvider) {
+				ObjectProvider<ElasticsearchConnectionDetails> serviceConnectionProvider) {
 			return new DefaultRestClientBuilderCustomizer(this.properties, serviceConnectionProvider.getIfAvailable());
 		}
 
 		@Bean
 		RestClientBuilder elasticsearchRestClientBuilder(ObjectProvider<RestClientBuilderCustomizer> builderCustomizers,
-				ObjectProvider<ElasticsearchServiceConnection> serviceConnectionProvider) {
-			ElasticsearchServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+				ObjectProvider<ElasticsearchConnectionDetails> serviceConnectionProvider) {
+			ElasticsearchConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 			HttpHost[] hosts = (serviceConnection != null) ? getHosts(serviceConnection) : getHosts(this.properties);
 			RestClientBuilder builder = RestClient.builder(hosts);
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
@@ -96,7 +96,7 @@ class ElasticsearchRestClientConfigurations {
 			return properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
 		}
 
-		private HttpHost[] getHosts(ElasticsearchServiceConnection serviceConnection) {
+		private HttpHost[] getHosts(ElasticsearchConnectionDetails serviceConnection) {
 			return serviceConnection.getNodes()
 				.stream()
 				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
@@ -164,10 +164,10 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		private final ElasticsearchServiceConnection serviceConnection;
+		private final ElasticsearchConnectionDetails serviceConnection;
 
 		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
-				ElasticsearchServiceConnection serviceConnection) {
+				ElasticsearchConnectionDetails serviceConnection) {
 			this.properties = properties;
 			this.serviceConnection = serviceConnection;
 		}
@@ -202,7 +202,7 @@ class ElasticsearchRestClientConfigurations {
 	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
 
 		PropertiesCredentialsProvider(ElasticsearchProperties properties,
-				ElasticsearchServiceConnection serviceConnection) {
+				ElasticsearchConnectionDetails serviceConnection) {
 			String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
 			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
 			if (StringUtils.hasText(username)) {
@@ -217,7 +217,7 @@ class ElasticsearchRestClientConfigurations {
 			return properties.getUris().stream().map(this::toUri);
 		}
 
-		private Stream<URI> getUris(ElasticsearchServiceConnection serviceConnection) {
+		private Stream<URI> getUris(ElasticsearchConnectionDetails serviceConnection) {
 			return serviceConnection.getNodes().stream().map(Node::toUri);
 		}
 

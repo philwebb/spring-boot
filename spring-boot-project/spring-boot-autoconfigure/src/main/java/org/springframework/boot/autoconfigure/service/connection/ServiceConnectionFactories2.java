@@ -23,29 +23,29 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * A registry of {@link ServiceConnectionFactory} instances.
+ * A registry of {@link ConnectionDetailsFactory} instances.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public class ServiceConnectionFactories {
+public class ServiceConnectionFactories2 {
 
 	private List<RegisteredFactory> registeredFactories = new ArrayList<>();
 
-	public ServiceConnectionFactories() {
-		this(SpringFactoriesLoader.forDefaultResourceLocation(ServiceConnectionFactories.class.getClassLoader()));
+	public ServiceConnectionFactories2() {
+		this(SpringFactoriesLoader.forDefaultResourceLocation(ServiceConnectionFactories2.class.getClassLoader()));
 	}
 
 	@SuppressWarnings("rawtypes")
-	ServiceConnectionFactories(SpringFactoriesLoader loader) {
-		List<ServiceConnectionFactory> factories = loader.load(ServiceConnectionFactory.class);
-		for (ServiceConnectionFactory<?, ?> factory : factories) {
+	ServiceConnectionFactories2(SpringFactoriesLoader loader) {
+		List<ConnectionDetailsFactory> factories = loader.load(ConnectionDetailsFactory.class);
+		for (ConnectionDetailsFactory<?, ?> factory : factories) {
 			ResolvableType type = ResolvableType.forClass(factory.getClass());
 			try {
 				ResolvableType[] interfaces = type.getInterfaces();
 				for (ResolvableType iface : interfaces) {
-					if (iface.getRawClass().equals(ServiceConnectionFactory.class)) {
+					if (iface.getRawClass().equals(ConnectionDetailsFactory.class)) {
 						ResolvableType input = iface.getGeneric(0);
 						ResolvableType output = iface.getGeneric(1);
 						registerFactory(input.getRawClass(), output.getRawClass(), factory);
@@ -59,31 +59,31 @@ public class ServiceConnectionFactories {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <I, SC extends ServiceConnection> void registerFactory(Class<?> input, Class<?> connectionType,
-			ServiceConnectionFactory<?, ?> factory) {
-		addFactory((Class<I>) input, (Class<SC>) connectionType, (ServiceConnectionFactory<I, SC>) factory);
+	private <I, SC extends ConnectionDetails> void registerFactory(Class<?> input, Class<?> connectionType,
+			ConnectionDetailsFactory<?, ?> factory) {
+		addFactory((Class<I>) input, (Class<SC>) connectionType, (ConnectionDetailsFactory<I, SC>) factory);
 	}
 
-	private <I, SC extends ServiceConnection> void addFactory(Class<I> input, Class<SC> output,
-			ServiceConnectionFactory<I, SC> factory) {
+	private <I, SC extends ConnectionDetails> void addFactory(Class<I> input, Class<SC> output,
+			ConnectionDetailsFactory<I, SC> factory) {
 		this.registeredFactories.add(new RegisteredFactory(input, output, factory));
 	}
 
 	@SuppressWarnings("unchecked")
-	public <I, SC extends ServiceConnection> ServiceConnectionFactory<I, SC> getFactory(
+	public <I, SC extends ConnectionDetails> ConnectionDetailsFactory<I, SC> getFactory(
 			ServiceConnectionSource<I, SC> source) {
 		Class<I> input = (Class<I>) source.input().getClass();
 		Class<SC> connectionType = source.connectionType();
 		for (RegisteredFactory factory : this.registeredFactories) {
 			if (factory.input.isAssignableFrom(input) && factory.output.isAssignableFrom(connectionType)) {
-				return (ServiceConnectionFactory<I, SC>) factory.factory();
+				return (ConnectionDetailsFactory<I, SC>) factory.factory();
 			}
 		}
 		throw new ServiceConnectionFactoryNotFoundException(source);
 	}
 
-	private record RegisteredFactory(Class<?> input, Class<? extends ServiceConnection> output,
-			ServiceConnectionFactory<?, ?> factory) {
+	private record RegisteredFactory(Class<?> input, Class<? extends ConnectionDetails> output,
+			ConnectionDetailsFactory<?, ?> factory) {
 	}
 
 }

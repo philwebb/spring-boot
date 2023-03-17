@@ -20,26 +20,26 @@ import java.util.List;
 
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node.Protocol;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionFactory;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 
 /**
  * An adapter from an {@link ElasticsearchContainer} to an
- * {@link ElasticsearchServiceConnection}.
+ * {@link ElasticsearchConnectionDetails}.
  *
  * @author Andy Wilkinson
  */
-class ElasticsearchContainerServiceConnectionFactory
-		implements ServiceConnectionFactory<ElasticsearchContainer, ElasticsearchServiceConnection> {
+class ElasticsearchContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<ElasticsearchConnection, ElasticsearchConnectionDetails> {
 
 	@Override
-	public ServiceConnection createServiceConnection(
-			ServiceConnectionSource<ElasticsearchContainer, ElasticsearchServiceConnection> source) {
-		return new ElasticsearchServiceConnection() {
+	public ConnectionDetails createServiceConnection(
+			ServiceConnectionSource<ElasticsearchContainer, ElasticsearchConnectionDetails> source) {
+		return new ElasticsearchConnectionDetails() {
 
 			private static final int DEFAULT_PORT = 9200;
 

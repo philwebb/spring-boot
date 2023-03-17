@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Cluster;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Node;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Sentinel;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Cluster;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Node;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Sentinel;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
@@ -57,13 +57,13 @@ abstract class RedisConnectionConfiguration {
 
 	private final RedisClusterConfiguration clusterConfiguration;
 
-	protected final RedisServiceConnection serviceConnection;
+	protected final RedisConnectionDetails serviceConnection;
 
 	protected RedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<RedisServiceConnection> serviceConnectionProvider) {
+			ObjectProvider<RedisConnectionDetails> serviceConnectionProvider) {
 		this.properties = properties;
 		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();

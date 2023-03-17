@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a Zipkin service.
@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Moritz Halbritter
  * @since 3.1.0
  */
-public interface ZipkinServiceConnection extends ServiceConnection {
+public interface ZipkinServiceConnection extends ConnectionDetails {
 
 	/**
 	 * Hostname of the Zipkin service.

@@ -23,20 +23,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ConnectableService;
+import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
- * Denotes that a field represents an SQL service from which an
- * {@link R2dbcServiceConnection} should be resolved.
+ * Annotation that indicates a field provides a R2DBC database service that can be
+ * connected to.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
+ * @see ServiceConnection
+ * @see R2dbcServiceConnection
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ConnectableService(R2dbcServiceConnection.class)
-public @interface R2dbcSqlService {
+@ServiceConnection(R2dbcServiceConnection.class)
+public @interface R2dbcSqlConnection {
 
 }

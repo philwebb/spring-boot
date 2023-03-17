@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a SQL database service through JDBC.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface JdbcServiceConnection extends ServiceConnection {
+public interface JdbcServiceConnection extends ConnectionDetails {
 
 	/**
 	 * Hostname for the database.

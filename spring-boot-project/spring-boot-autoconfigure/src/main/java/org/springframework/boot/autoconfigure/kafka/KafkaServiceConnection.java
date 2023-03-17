@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * A connection to a Kafka service.
@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ServiceConnecti
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface KafkaServiceConnection extends ServiceConnection {
+public interface KafkaServiceConnection extends ConnectionDetails {
 
 	/**
 	 * Returns the list of bootstrap nodes.

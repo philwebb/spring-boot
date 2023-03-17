@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.redis.RedisService;
+import org.springframework.boot.test.autoconfigure.data.redis.RedisConnection;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSessionRedisApplicationTests {
 
 	@Container
-	@RedisService
+	@RedisConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired

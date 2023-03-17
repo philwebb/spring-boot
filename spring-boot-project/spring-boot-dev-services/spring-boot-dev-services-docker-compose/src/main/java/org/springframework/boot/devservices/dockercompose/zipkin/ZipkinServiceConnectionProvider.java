@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;
@@ -49,7 +49,7 @@ class ZipkinServiceConnectionProvider implements RunningServiceServiceConnection
 	}
 
 	@Override
-	public List<? extends ServiceConnection> provideServiceConnection(List<RunningService> services) {
+	public List<? extends ConnectionDetails> provideServiceConnection(List<RunningService> services) {
 		if (!this.zipkinServiceConnectionPresent) {
 			return Collections.emptyList();
 		}

@@ -33,7 +33,7 @@ import org.elasticsearch.client.sniff.Sniffer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node.Protocol;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -277,8 +277,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		ElasticsearchServiceConnection elasticsearchServiceConnection() {
-			return new ElasticsearchServiceConnection() {
+		ElasticsearchConnectionDetails elasticsearchServiceConnection() {
+			return new ElasticsearchConnectionDetails() {
 				@Override
 				public List<Node> getNodes() {
 					return List

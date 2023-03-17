@@ -18,13 +18,13 @@ package org.springframework.boot.devservices.dockercompose;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.core.env.Environment;
 
 /**
- * Provides {@link ServiceConnection ServiceConnections} for running Docker Compose
+ * Provides {@link ConnectionDetails ServiceConnections} for running Docker Compose
  * services. The implementations of this class can use the following types in their
  * constructor:
  * <ul>
@@ -40,11 +40,11 @@ import org.springframework.core.env.Environment;
 public interface RunningServiceServiceConnectionProvider {
 
 	/**
-	 * Returns a list of {@link ServiceConnection service connections} for the given
+	 * Returns a list of {@link ConnectionDetails service connections} for the given
 	 * {@code services}.
 	 * @param services the running Docker Compose services
 	 * @return the list of service connections
 	 */
-	List<? extends ServiceConnection> provideServiceConnection(List<RunningService> services);
+	List<? extends ConnectionDetails> provideServiceConnection(List<RunningService> services);
 
 }

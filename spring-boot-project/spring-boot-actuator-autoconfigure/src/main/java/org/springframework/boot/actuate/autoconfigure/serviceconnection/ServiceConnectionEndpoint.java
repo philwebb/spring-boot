@@ -30,18 +30,18 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
 import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection.Address;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Cluster;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Sentinel;
-import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection.Standalone;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Cluster;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Sentinel;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
 import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.Host;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 
 /**
@@ -53,21 +53,21 @@ import org.springframework.boot.origin.Origin;
 @Endpoint(id = "serviceconnection")
 class ServiceConnectionEndpoint {
 
-	private final ObjectProvider<ServiceConnection> serviceConnectionProvider;
+	private final ObjectProvider<ConnectionDetails> serviceConnectionProvider;
 
-	ServiceConnectionEndpoint(ObjectProvider<ServiceConnection> serviceConnectionProvider) {
+	ServiceConnectionEndpoint(ObjectProvider<ConnectionDetails> serviceConnectionProvider) {
 		this.serviceConnectionProvider = serviceConnectionProvider;
 	}
 
 	@ReadOperation
 	ServiceConnectionsDto serviceConnections() {
-		Stream<RedisServiceConnection> redis = getServiceConnections(RedisServiceConnection.class);
+		Stream<RedisConnectionDetails> redis = getServiceConnections(RedisConnectionDetails.class);
 		Stream<ZipkinServiceConnection> zipkin = getServiceConnections(ZipkinServiceConnection.class);
 		Stream<JdbcServiceConnection> jdbc = getServiceConnections(JdbcServiceConnection.class);
 		Stream<R2dbcServiceConnection> r2dbc = getServiceConnections(R2dbcServiceConnection.class);
 		Stream<RabbitServiceConnection> rabbit = getServiceConnections(RabbitServiceConnection.class);
-		Stream<ElasticsearchServiceConnection> elasticsearch = getServiceConnections(
-				ElasticsearchServiceConnection.class);
+		Stream<ElasticsearchConnectionDetails> elasticsearch = getServiceConnections(
+				ElasticsearchConnectionDetails.class);
 		Stream<MongoServiceConnection> mongo = getServiceConnections(MongoServiceConnection.class);
 		return new ServiceConnectionsDto(redis.map(RedisServiceConnectionDto::from).toList(),
 				zipkin.map(ZipkinServiceConnectionDto::from).toList(),
@@ -127,7 +127,7 @@ class ServiceConnectionEndpoint {
 	private record RedisServiceConnectionDto(String name, String origin, String username, StandaloneDto standalone,
 			SentinelDto sentinel, ClusterDto cluster) {
 
-		private static RedisServiceConnectionDto from(RedisServiceConnection serviceConnection) {
+		private static RedisServiceConnectionDto from(RedisConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new RedisServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getUsername(),
@@ -164,7 +164,7 @@ class ServiceConnectionEndpoint {
 		}
 
 		private record NodeDto(String host, int port) {
-			private static NodeDto from(RedisServiceConnection.Node node) {
+			private static NodeDto from(RedisConnectionDetails.Node node) {
 				return new NodeDto(node.host(), node.port());
 			}
 		}
@@ -193,7 +193,7 @@ class ServiceConnectionEndpoint {
 	private record ElasticsearchServiceConnectionDto(String name, String origin, String username, String pathPrefix,
 			List<NodeDto> nodes) {
 
-		private static ElasticsearchServiceConnectionDto from(ElasticsearchServiceConnection serviceConnection) {
+		private static ElasticsearchServiceConnectionDto from(ElasticsearchConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new ElasticsearchServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getUsername(),

@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.service.connection;
-
-import org.springframework.boot.origin.OriginProvider;
-
 /**
- * Details for establishing a connection to a remote service.
- *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @since 3.1.0
+ * General support for auto-configuration of service connections in tests.
  */
-public interface ServiceConnection extends OriginProvider {
-
-	/**
-	 * The name of the service connection. Should be unique within the scope of the
-	 * application.
-	 * @return the connection name.
-	 */
-	String getName();
-
-}
+package org.springframework.boot.test.autoconfigure.service.connection;

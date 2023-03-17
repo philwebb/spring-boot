@@ -20,7 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -35,7 +35,7 @@ class ServiceConnectionEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ServiceConnectionEndpoint serviceConnectionEndpoint(ObjectProvider<ServiceConnection> serviceConnectionProvider) {
+	ServiceConnectionEndpoint serviceConnectionEndpoint(ObjectProvider<ConnectionDetails> serviceConnectionProvider) {
 		return new ServiceConnectionEndpoint(serviceConnectionProvider);
 	}
 

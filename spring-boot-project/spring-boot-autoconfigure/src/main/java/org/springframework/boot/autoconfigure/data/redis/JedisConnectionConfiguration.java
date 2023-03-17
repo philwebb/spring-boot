@@ -53,7 +53,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-			ObjectProvider<RedisServiceConnection> serviceConnectionProvider) {
+			ObjectProvider<RedisConnectionDetails> serviceConnectionProvider) {
 		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration,
 				serviceConnectionProvider);
 	}
