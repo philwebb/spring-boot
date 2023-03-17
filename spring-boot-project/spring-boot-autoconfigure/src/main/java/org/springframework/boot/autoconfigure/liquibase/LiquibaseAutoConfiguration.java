@@ -85,41 +85,34 @@ public class LiquibaseAutoConfiguration {
 	@EnableConfigurationProperties(LiquibaseProperties.class)
 	public static class LiquibaseConfiguration {
 
-		private final LiquibaseProperties properties;
-
-		public LiquibaseConfiguration(LiquibaseProperties properties) {
-			this.properties = properties;
-		}
-
 		@Bean
 		public SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
-				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource,
+				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
 				ObjectProvider<JdbcConnectionDetails> connectionDetails) {
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
-					dataSource.getIfUnique(), connectionDetails.getIfAvailable());
-			liquibase.setChangeLog(this.properties.getChangeLog());
-			liquibase.setClearCheckSums(this.properties.isClearChecksums());
-			liquibase.setContexts(this.properties.getContexts());
-			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
-			liquibase.setLiquibaseSchema(this.properties.getLiquibaseSchema());
-			liquibase.setLiquibaseTablespace(this.properties.getLiquibaseTablespace());
-			liquibase.setDatabaseChangeLogTable(this.properties.getDatabaseChangeLogTable());
-			liquibase.setDatabaseChangeLogLockTable(this.properties.getDatabaseChangeLogLockTable());
-			liquibase.setDropFirst(this.properties.isDropFirst());
-			liquibase.setShouldRun(this.properties.isEnabled());
-			liquibase.setLabelFilter(this.properties.getLabelFilter());
-			liquibase.setChangeLogParameters(this.properties.getParameters());
-			liquibase.setRollbackFile(this.properties.getRollbackFile());
-			liquibase.setTestRollbackOnUpdate(this.properties.isTestRollbackOnUpdate());
-			liquibase.setTag(this.properties.getTag());
+					dataSource.getIfUnique(),
+					connectionDetails.getIfAvailable(() -> new LiquibasePropertiesJdbcConnectionDetails(properties)));
+			liquibase.setChangeLog(properties.getChangeLog());
+			liquibase.setClearCheckSums(properties.isClearChecksums());
+			liquibase.setContexts(properties.getContexts());
+			liquibase.setDefaultSchema(properties.getDefaultSchema());
+			liquibase.setLiquibaseSchema(properties.getLiquibaseSchema());
+			liquibase.setLiquibaseTablespace(properties.getLiquibaseTablespace());
+			liquibase.setDatabaseChangeLogTable(properties.getDatabaseChangeLogTable());
+			liquibase.setDatabaseChangeLogLockTable(properties.getDatabaseChangeLogLockTable());
+			liquibase.setDropFirst(properties.isDropFirst());
+			liquibase.setShouldRun(properties.isEnabled());
+			liquibase.setLabelFilter(properties.getLabelFilter());
+			liquibase.setChangeLogParameters(properties.getParameters());
+			liquibase.setRollbackFile(properties.getRollbackFile());
+			liquibase.setTestRollbackOnUpdate(properties.isTestRollbackOnUpdate());
+			liquibase.setTag(properties.getTag());
 			return liquibase;
 		}
 
 		private SpringLiquibase createSpringLiquibase(DataSource liquibaseDataSource, DataSource dataSource,
 				JdbcConnectionDetails connectionDetails) {
-			LiquibaseProperties properties = this.properties;
-			DataSource migrationDataSource = getMigrationDataSource(liquibaseDataSource, dataSource, properties,
-					connectionDetails);
+			DataSource migrationDataSource = getMigrationDataSource(liquibaseDataSource, dataSource, connectionDetails);
 			SpringLiquibase liquibase = (migrationDataSource == liquibaseDataSource
 					|| migrationDataSource == dataSource) ? new SpringLiquibase()
 							: new DataSourceClosingSpringLiquibase();
@@ -128,35 +121,32 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource getMigrationDataSource(DataSource liquibaseDataSource, DataSource dataSource,
-				LiquibaseProperties properties, JdbcConnectionDetails connectionDetails) {
+				JdbcConnectionDetails connectionDetails) {
 			if (liquibaseDataSource != null) {
 				return liquibaseDataSource;
 			}
-			String url = (connectionDetails != null) ? connectionDetails.getJdbcUrl() : properties.getUrl();
+			String url = connectionDetails.getJdbcUrl();
 			if (url != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
 				builder.url(url);
-				applyCommonBuilderProperties(properties, connectionDetails, builder);
+				applyConnectionDetails(connectionDetails, builder);
 				return builder.build();
 			}
-			String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
+			String user = connectionDetails.getUsername();
 			if (user != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
 					.type(SimpleDriverDataSource.class);
-				applyCommonBuilderProperties(properties, connectionDetails, builder);
+				applyConnectionDetails(connectionDetails, builder);
 				return builder.build();
 			}
 			Assert.state(dataSource != null, "Liquibase migration DataSource missing");
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(LiquibaseProperties properties,
-				JdbcConnectionDetails connectionDetails, DataSourceBuilder<?> builder) {
-			String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
-			String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
-			String driverClassName = (connectionDetails != null) ? null : properties.getDriverClassName();
-			builder.username(user);
-			builder.password(password);
+		private void applyConnectionDetails(JdbcConnectionDetails connectionDetails, DataSourceBuilder<?> builder) {
+			builder.username(connectionDetails.getUsername());
+			builder.password(connectionDetails.getPassword());
+			String driverClassName = connectionDetails.getDriverClassName();
 			if (StringUtils.hasText(driverClassName)) {
 				builder.driverClassName(driverClassName);
 			}
@@ -192,6 +182,41 @@ public class LiquibaseAutoConfiguration {
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("db/changelog/db.changelog-master.yaml");
+		}
+
+	}
+
+	/**
+	 * Adapts {@link LiquibaseProperties} to {@link JdbcConnectionDetails}.
+	 *
+	 * @author Andy Wilkinson
+	 */
+	static class LiquibasePropertiesJdbcConnectionDetails implements JdbcConnectionDetails {
+
+		private final LiquibaseProperties properties;
+
+		public LiquibasePropertiesJdbcConnectionDetails(LiquibaseProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUser();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public String getJdbcUrl() {
+			return this.properties.getUrl();
+		}
+
+		@Override
+		public String getDriverClassName() {
+			return this.properties.getDriverClassName();
 		}
 
 	}

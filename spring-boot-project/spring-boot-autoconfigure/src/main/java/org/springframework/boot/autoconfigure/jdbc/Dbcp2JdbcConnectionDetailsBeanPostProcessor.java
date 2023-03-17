@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
+
 /**
  * Post-processes beans of type {@link BasicDataSource} and name 'dataSource' to apply the
  * values from {@link JdbcConnectionDetails}.
@@ -27,8 +29,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
  */
 class Dbcp2JdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<BasicDataSource> {
 
-	Dbcp2JdbcConnectionDetailsBeanPostProcessor() {
-		super(BasicDataSource.class);
+	Dbcp2JdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+		super(BasicDataSource.class, connectionDetailsProvider);
 	}
 
 	@Override
@@ -36,6 +38,7 @@ class Dbcp2JdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsB
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());
 		dataSource.setPassword(connectionDetails.getPassword());
+		dataSource.setDriverClassName(connectionDetails.getDriverClassName());
 		return dataSource;
 	}
 

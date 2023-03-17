@@ -17,40 +17,36 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 
 /**
- * Abstract base classes for datasource bean post processors which apply values from
+ * Abstract base class for DataSource bean post processors which apply values from
  * {@link JdbcConnectionDetails}. Acts on beans named 'dataSource' of type {@code T}.
  *
  * @param <T> type of the datasource
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-abstract class JdbcConnectionDetailsBeanPostProcessor<T>
-		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware {
+abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProcessor, PriorityOrdered {
 
 	private final Class<T> dataSourceClass;
 
-	private ApplicationContext applicationContext;
+	private final ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider;
 
-	/**
-	 * Constructor.
-	 * @param dataSourceClass class of the datasource
-	 */
-	JdbcConnectionDetailsBeanPostProcessor(Class<T> dataSourceClass) {
+	JdbcConnectionDetailsBeanPostProcessor(Class<T> dataSourceClass,
+			ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 		this.dataSourceClass = dataSourceClass;
+		this.connectionDetailsProvider = connectionDetailsProvider;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (this.dataSourceClass.isAssignableFrom(bean.getClass()) && "dataSource".equals(beanName)) {
-			JdbcConnectionDetails connectionDetails = this.applicationContext.getBean(JdbcConnectionDetails.class);
+			JdbcConnectionDetails connectionDetails = this.connectionDetailsProvider.getObject();
 			return processDataSource((T) bean, connectionDetails);
 		}
 		return bean;
@@ -62,11 +58,6 @@ abstract class JdbcConnectionDetailsBeanPostProcessor<T>
 	public int getOrder() {
 		// Runs after ConfigurationPropertiesBindingPostProcessor
 		return Ordered.HIGHEST_PRECEDENCE + 2;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
 	}
 
 }

@@ -83,8 +83,9 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static TomcatJdbcConnectionDetailsBeanPostProcessor tomcatJdbcConnectionDetailsBeanPostProcessor() {
-			return new TomcatJdbcConnectionDetailsBeanPostProcessor();
+		static TomcatJdbcConnectionDetailsBeanPostProcessor tomcatJdbcConnectionDetailsBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new TomcatJdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
 		}
 
 		@Bean
@@ -128,8 +129,9 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static HikariJdbcConnectionDetailsBeanPostProcessor jdbcConnectionDetailsHikariBeanPostProcessor() {
-			return new HikariJdbcConnectionDetailsBeanPostProcessor();
+		static HikariJdbcConnectionDetailsBeanPostProcessor jdbcConnectionDetailsHikariBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new HikariJdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
 		}
 
 		@Bean
@@ -167,8 +169,9 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static Dbcp2JdbcConnectionDetailsBeanPostProcessor dbcp2JdbcConnectionDetailsBeanPostProcessor() {
-			return new Dbcp2JdbcConnectionDetailsBeanPostProcessor();
+		static Dbcp2JdbcConnectionDetailsBeanPostProcessor dbcp2JdbcConnectionDetailsBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new Dbcp2JdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
 		}
 
 		@Bean
@@ -203,8 +206,9 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static OracleUcpJdbcConnectionDetailsBeanPostProcessor oracleUcpJdbcConnectionDetailsBeanPostProcessor() {
-			return new OracleUcpJdbcConnectionDetailsBeanPostProcessor();
+		static OracleUcpJdbcConnectionDetailsBeanPostProcessor oracleUcpJdbcConnectionDetailsBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new OracleUcpJdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
 		}
 
 		@Bean

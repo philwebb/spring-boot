@@ -20,6 +20,8 @@ import java.sql.SQLException;
 
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 
+import org.springframework.beans.factory.ObjectProvider;
+
 /**
  * Post-processes beans of type {@link PoolDataSourceImpl} and name 'dataSource' to apply
  * the values from {@link JdbcConnectionDetails}.
@@ -30,8 +32,8 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 class OracleUcpJdbcConnectionDetailsBeanPostProcessor
 		extends JdbcConnectionDetailsBeanPostProcessor<PoolDataSourceImpl> {
 
-	OracleUcpJdbcConnectionDetailsBeanPostProcessor() {
-		super(PoolDataSourceImpl.class);
+	OracleUcpJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+		super(PoolDataSourceImpl.class, connectionDetailsProvider);
 	}
 
 	@Override
@@ -40,6 +42,7 @@ class OracleUcpJdbcConnectionDetailsBeanPostProcessor
 			dataSource.setURL(connectionDetails.getJdbcUrl());
 			dataSource.setUser(connectionDetails.getUsername());
 			dataSource.setPassword(connectionDetails.getPassword());
+			dataSource.setConnectionFactoryClassName(connectionDetails.getDriverClassName());
 			return dataSource;
 		}
 		catch (SQLException ex) {

@@ -122,9 +122,9 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void createsDataSourceWithNoDataSourceBeanAndServiceConnection() {
+	void createsDataSourceWithNoDataSourceBeanAndJdbcConnectionDetails() {
 		this.contextRunner
-			.withUserConfiguration(ServiceConnectionConfiguration.class, MockFlywayMigrationStrategy.class)
+			.withUserConfiguration(JdbcConnectionDetailsConfiguration.class, MockFlywayMigrationStrategy.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
@@ -149,9 +149,9 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void createDataSourceWithServiceConnection() {
+	void createDataSourceWithJdbcConnectionDetails() {
 		this.contextRunner
-			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, ServiceConnectionConfiguration.class,
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
 					MockFlywayMigrationStrategy.class)
 			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest", "spring.flyway.user=some-user",
 					"spring.flyway.password=some-password",
@@ -234,10 +234,10 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void flywayDataSourceIsUsedWhenServiceConnectionIsAvailable() {
+	void flywayDataSourceIsUsedWhenJdbcConnectionDetailsIsAvailable() {
 		this.contextRunner
 			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class,
-					ServiceConnectionConfiguration.class)
+					JdbcConnectionDetailsConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JdbcConnectionDetails.class);
 				assertThat(context).hasSingleBean(Flyway.class);
@@ -1083,10 +1083,10 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class JdbcConnectionDetailsConfiguration {
 
 		@Bean
-		JdbcConnectionDetails serviceConnection() {
+		JdbcConnectionDetails jdbcConnectionDetails() {
 			return new JdbcConnectionDetails() {
 
 				@Override

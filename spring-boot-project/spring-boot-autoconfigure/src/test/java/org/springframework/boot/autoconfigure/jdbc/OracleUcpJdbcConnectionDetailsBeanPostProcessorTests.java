@@ -22,6 +22,8 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 import oracle.ucp.util.OpaqueString;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.jdbc.DatabaseDriver;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,13 +40,16 @@ class OracleUcpJdbcConnectionDetailsBeanPostProcessorTests {
 		dataSource.setURL("will-be-overwritten");
 		dataSource.setUser("will-be-overwritten");
 		dataSource.setPassword("will-be-overwritten");
-		new OracleUcpJdbcConnectionDetailsBeanPostProcessor().processDataSource(dataSource,
+		dataSource.setConnectionFactoryClassName("will-be-overwritten");
+		new OracleUcpJdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
 				new TestJdbcServiceConnection());
 		assertThat(dataSource.getURL()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
 		assertThat(dataSource.getUser()).isEqualTo("user-1");
 		assertThat(dataSource).extracting("password")
 			.extracting((password) -> ((OpaqueString) password).get())
 			.isEqualTo("password-1");
+		assertThat(dataSource.getConnectionFactoryClassName())
+			.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 	}
 
 }

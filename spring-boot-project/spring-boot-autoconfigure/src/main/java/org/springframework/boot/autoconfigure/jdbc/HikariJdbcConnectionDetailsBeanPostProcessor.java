@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
+
 /**
  * Post-processes beans of type {@link HikariDataSource} and name 'dataSource' to apply
  * the values from {@link JdbcConnectionDetails}.
@@ -27,8 +29,8 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 class HikariJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<HikariDataSource> {
 
-	HikariJdbcConnectionDetailsBeanPostProcessor() {
-		super(HikariDataSource.class);
+	HikariJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+		super(HikariDataSource.class, connectionDetailsProvider);
 	}
 
 	@Override
@@ -36,6 +38,7 @@ class HikariJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetails
 		dataSource.setJdbcUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());
 		dataSource.setPassword(connectionDetails.getPassword());
+		dataSource.setDriverClassName(connectionDetails.getDriverClassName());
 		return dataSource;
 	}
 

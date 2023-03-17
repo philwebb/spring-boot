@@ -137,8 +137,9 @@ public class FlywayAutoConfiguration {
 				ResourceProviderCustomizer resourceProviderCustomizer,
 				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
-			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique(),
-					connectionDetailsProvider.getIfAvailable());
+			configureDataSource(configuration, flywayDataSource.getIfAvailable(), dataSource.getIfUnique(),
+					connectionDetailsProvider
+						.getIfAvailable(() -> new FlywayPropertiesJdbcConnectionDetails(properties)));
 			configureProperties(configuration, properties);
 			configureCallbacks(configuration, callbacks.orderedStream().toList());
 			configureJavaMigrations(configuration, javaMigrations.orderedStream().toList());
@@ -147,43 +148,39 @@ public class FlywayAutoConfiguration {
 			return configuration.load();
 		}
 
-		private void configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
-				DataSource flywayDataSource, DataSource dataSource, JdbcConnectionDetails connectionDetails) {
-			DataSource migrationDataSource = getMigrationDataSource(properties, flywayDataSource, dataSource,
-					connectionDetails);
+		private void configureDataSource(FluentConfiguration configuration, DataSource flywayDataSource,
+				DataSource dataSource, JdbcConnectionDetails connectionDetails) {
+			DataSource migrationDataSource = getMigrationDataSource(flywayDataSource, dataSource, connectionDetails);
 			configuration.dataSource(migrationDataSource);
 		}
 
-		private DataSource getMigrationDataSource(FlywayProperties properties, DataSource flywayDataSource,
-				DataSource dataSource, JdbcConnectionDetails connectionDetails) {
+		private DataSource getMigrationDataSource(DataSource flywayDataSource, DataSource dataSource,
+				JdbcConnectionDetails connectionDetails) {
 			if (flywayDataSource != null) {
 				return flywayDataSource;
 			}
-			String url = (connectionDetails != null) ? connectionDetails.getJdbcUrl() : properties.getUrl();
+			String url = connectionDetails.getJdbcUrl();
 			if (url != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
 				builder.url(url);
-				applyCommonBuilderProperties(properties, connectionDetails, builder);
+				applyConnectionDetails(connectionDetails, builder);
 				return builder.build();
 			}
-			String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
+			String user = connectionDetails.getUsername();
 			if (user != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
 					.type(SimpleDriverDataSource.class);
-				applyCommonBuilderProperties(properties, connectionDetails, builder);
+				applyConnectionDetails(connectionDetails, builder);
 				return builder.build();
 			}
 			Assert.state(dataSource != null, "Flyway migration DataSource missing");
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(FlywayProperties properties, JdbcConnectionDetails connectionDetails,
-				DataSourceBuilder<?> builder) {
-			String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
-			String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
-			String driverClassName = (connectionDetails != null) ? null : properties.getDriverClassName();
-			builder.username(user);
-			builder.password(password);
+		private void applyConnectionDetails(JdbcConnectionDetails connectionDetails, DataSourceBuilder<?> builder) {
+			builder.username(connectionDetails.getUsername());
+			builder.password(connectionDetails.getPassword());
+			String driverClassName = connectionDetails.getDriverClassName();
 			if (StringUtils.hasText(driverClassName)) {
 				builder.driverClassName(driverClassName);
 			}
@@ -400,6 +397,39 @@ public class FlywayAutoConfiguration {
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.resources().registerPattern("db/migration/*");
+		}
+
+	}
+
+	/**
+	 * Adapts {@link FlywayProperties} to {@link JdbcConnectionDetails}
+	 */
+	static class FlywayPropertiesJdbcConnectionDetails implements JdbcConnectionDetails {
+
+		private final FlywayProperties properties;
+
+		public FlywayPropertiesJdbcConnectionDetails(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUser();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public String getJdbcUrl() {
+			return this.properties.getUrl();
+		}
+
+		@Override
+		public String getDriverClassName() {
+			return this.properties.getDriverClassName();
 		}
 
 	}

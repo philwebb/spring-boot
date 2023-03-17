@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.jdbc.DatabaseDriver;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -35,11 +37,13 @@ class HikariJdbcConnectionDetailsBeanPostProcessorTests {
 		dataSource.setJdbcUrl("will-be-overwritten");
 		dataSource.setUsername("will-be-overwritten");
 		dataSource.setPassword("will-be-overwritten");
-		new HikariJdbcConnectionDetailsBeanPostProcessor().processDataSource(dataSource,
+		dataSource.setDriverClassName(DatabaseDriver.H2.getDriverClassName());
+		new HikariJdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
 				new TestJdbcServiceConnection());
 		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
 		assertThat(dataSource.getUsername()).isEqualTo("user-1");
 		assertThat(dataSource.getPassword()).isEqualTo("password-1");
+		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 	}
 
 }

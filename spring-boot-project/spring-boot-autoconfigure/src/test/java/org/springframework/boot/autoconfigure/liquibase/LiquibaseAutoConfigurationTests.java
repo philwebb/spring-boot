@@ -101,9 +101,9 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void createsDataSourceWithNoDataSourceBeanAndServiceConnection() {
+	void createsDataSourceWithNoDataSourceBeanAndJdbcConnectionDetails() {
 		this.contextRunner.withSystemProperties("shouldRun=false")
-			.withUserConfiguration(ServiceConnectionConfiguration.class)
+			.withUserConfiguration(JdbcConnectionDetailsConfiguration.class)
 			.run(assertLiquibase((liquibase) -> {
 				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
 				assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
@@ -132,9 +132,9 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void serviceConnectionIsUsedIfAvailable() {
+	void jdbcConnectionDetailsAreUsedIfAvailable() {
 		this.contextRunner.withSystemProperties("shouldRun=false")
-			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, ServiceConnectionConfiguration.class)
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class)
 			.run(assertLiquibase((liquibase) -> {
 				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
 				assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
@@ -144,9 +144,9 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void liquibaseDataSourceIsUsedOverServiceConnection() {
+	void liquibaseDataSourceIsUsedOverJdbcConnectionDetails() {
 		this.contextRunner
-			.withUserConfiguration(LiquibaseDataSourceConfiguration.class, ServiceConnectionConfiguration.class)
+			.withUserConfiguration(LiquibaseDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class)
 			.run(assertLiquibase((liquibase) -> {
 				HikariDataSource dataSource = (HikariDataSource) liquibase.getDataSource();
 				assertThat(dataSource.getJdbcUrl()).startsWith("jdbc:hsqldb:mem:liquibasetest");
@@ -549,10 +549,10 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class JdbcConnectionDetailsConfiguration {
 
 		@Bean
-		JdbcConnectionDetails serviceConnection() {
+		JdbcConnectionDetails jdbcConnectionDetails() {
 			return new JdbcConnectionDetails() {
 
 				@Override

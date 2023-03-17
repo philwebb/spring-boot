@@ -17,9 +17,10 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.jdbc.DatabaseDriver;
 
 /**
- * A connection to a SQL database service through JDBC.
+ * Details for connecting to an SQL database with JDBC.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -44,5 +45,16 @@ public interface JdbcConnectionDetails extends ConnectionDetails {
 	 * @return the JDBC url for the database
 	 */
 	String getJdbcUrl();
+
+	/**
+	 * The name of the JDBC driver class. Defaults to the class name of the driver
+	 * specified in the JDBC URL.
+	 * @return the JDBC driver class name
+	 * @see #getJdbcUrl()
+	 * @see DatabaseDriver#fromJdbcUrl(String)
+	 */
+	default String getDriverClassName() {
+		return DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getDriverClassName();
+	}
 
 }

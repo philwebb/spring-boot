@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
+
 /**
  * Post-processes beans of type {@link DataSource} and name 'dataSource' to apply the
  * values from {@link JdbcConnectionDetails}.
@@ -27,22 +29,16 @@ import org.apache.tomcat.jdbc.pool.DataSource;
  */
 class TomcatJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<DataSource> {
 
-	TomcatJdbcConnectionDetailsBeanPostProcessor() {
-		super(DataSource.class);
+	TomcatJdbcConnectionDetailsBeanPostProcessor(ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+		super(DataSource.class, connectionDetailsProvider);
 	}
 
 	@Override
 	protected Object processDataSource(DataSource dataSource, JdbcConnectionDetails connectionDetails) {
-		String url = connectionDetails.getJdbcUrl();
-		String username = connectionDetails.getUsername();
-		String password = connectionDetails.getPassword();
-		dataSource.setUrl(url);
-		if (username != null) {
-			dataSource.setUsername(username);
-		}
-		if (password != null) {
-			dataSource.setPassword(password);
-		}
+		dataSource.setUrl(connectionDetails.getJdbcUrl());
+		dataSource.setUsername(connectionDetails.getUsername());
+		dataSource.setPassword(connectionDetails.getPassword());
+		dataSource.setDriverClassName(connectionDetails.getDriverClassName());
 		return dataSource;
 	}
 

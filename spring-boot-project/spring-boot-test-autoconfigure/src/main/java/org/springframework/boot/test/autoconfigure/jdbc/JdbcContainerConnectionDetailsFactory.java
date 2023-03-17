@@ -68,6 +68,11 @@ class JdbcContainerConnectionDetailsFactory
 			return this.container.getJdbcUrl();
 		}
 
+		@Override
+		public String getDriverClassName() {
+			return this.container.getDriverClassName();
+		}
+
 	}
 
 }
