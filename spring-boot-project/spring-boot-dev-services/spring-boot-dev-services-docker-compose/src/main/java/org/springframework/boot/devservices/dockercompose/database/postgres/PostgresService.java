@@ -35,6 +35,11 @@ class PostgresService extends DatabaseService {
 
 	@Override
 	public String getUsername() {
+
+		// .
+		// org.springframework.boot.postgres.user=${MY_POSTGRES_USER}
+		// org.springframework.boot.postgres.user=myuser
+
 		if (this.service.env().containsKey("POSTGRES_USER")) {
 			return this.service.env().get("POSTGRES_USER");
 		}

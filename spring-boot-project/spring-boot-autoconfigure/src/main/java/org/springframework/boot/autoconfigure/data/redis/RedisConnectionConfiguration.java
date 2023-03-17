@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Cluster;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Sentinel;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
