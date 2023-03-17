@@ -135,10 +135,10 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks,
 				ResourceProviderCustomizer resourceProviderCustomizer,
-				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) {
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
 			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique(),
-					serviceConnectionProvider.getIfAvailable());
+					connectionDetailsProvider.getIfAvailable());
 			configureProperties(configuration, properties);
 			configureCallbacks(configuration, callbacks.orderedStream().toList());
 			configureJavaMigrations(configuration, javaMigrations.orderedStream().toList());
@@ -148,40 +148,40 @@ public class FlywayAutoConfiguration {
 		}
 
 		private void configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
-				DataSource flywayDataSource, DataSource dataSource, JdbcConnectionDetails serviceConnection) {
+				DataSource flywayDataSource, DataSource dataSource, JdbcConnectionDetails connectionDetails) {
 			DataSource migrationDataSource = getMigrationDataSource(properties, flywayDataSource, dataSource,
-					serviceConnection);
+					connectionDetails);
 			configuration.dataSource(migrationDataSource);
 		}
 
 		private DataSource getMigrationDataSource(FlywayProperties properties, DataSource flywayDataSource,
-				DataSource dataSource, JdbcConnectionDetails serviceConnection) {
+				DataSource dataSource, JdbcConnectionDetails connectionDetails) {
 			if (flywayDataSource != null) {
 				return flywayDataSource;
 			}
-			String url = (serviceConnection != null) ? serviceConnection.getJdbcUrl() : properties.getUrl();
+			String url = (connectionDetails != null) ? connectionDetails.getJdbcUrl() : properties.getUrl();
 			if (url != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.create().type(SimpleDriverDataSource.class);
 				builder.url(url);
-				applyCommonBuilderProperties(properties, serviceConnection, builder);
+				applyCommonBuilderProperties(properties, connectionDetails, builder);
 				return builder.build();
 			}
-			String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
+			String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
 			if (user != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
 					.type(SimpleDriverDataSource.class);
-				applyCommonBuilderProperties(properties, serviceConnection, builder);
+				applyCommonBuilderProperties(properties, connectionDetails, builder);
 				return builder.build();
 			}
 			Assert.state(dataSource != null, "Flyway migration DataSource missing");
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(FlywayProperties properties, JdbcConnectionDetails serviceConnection,
+		private void applyCommonBuilderProperties(FlywayProperties properties, JdbcConnectionDetails connectionDetails,
 				DataSourceBuilder<?> builder) {
-			String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
-			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
-			String driverClassName = (serviceConnection != null) ? null : properties.getDriverClassName();
+			String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
+			String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
+			String driverClassName = (connectionDetails != null) ? null : properties.getDriverClassName();
 			builder.username(user);
 			builder.password(password);
 			if (StringUtils.hasText(driverClassName)) {
@@ -384,7 +384,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		private static final class JdbcServiceConnectionCondition {
+		private static final class JdbcConnectionDetailsCondition {
 
 		}
 

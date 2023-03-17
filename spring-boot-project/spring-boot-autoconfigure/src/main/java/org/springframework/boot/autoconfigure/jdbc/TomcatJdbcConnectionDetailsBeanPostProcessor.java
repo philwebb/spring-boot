@@ -25,17 +25,17 @@ import org.apache.tomcat.jdbc.pool.DataSource;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class JdbcServiceConnectionTomcatBeanPostProcessor extends AbstractJdbcServiceConnectionBeanPostProcessor<DataSource> {
+class TomcatJdbcConnectionDetailsBeanPostProcessor extends JdbcConnectionDetailsBeanPostProcessor<DataSource> {
 
-	JdbcServiceConnectionTomcatBeanPostProcessor() {
+	TomcatJdbcConnectionDetailsBeanPostProcessor() {
 		super(DataSource.class);
 	}
 
 	@Override
-	protected Object processDataSource(DataSource dataSource, JdbcConnectionDetails serviceConnection) {
-		String url = serviceConnection.getJdbcUrl();
-		String username = serviceConnection.getUsername();
-		String password = serviceConnection.getPassword();
+	protected Object processDataSource(DataSource dataSource, JdbcConnectionDetails connectionDetails) {
+		String url = connectionDetails.getJdbcUrl();
+		String username = connectionDetails.getUsername();
+		String password = connectionDetails.getPassword();
 		dataSource.setUrl(url);
 		if (username != null) {
 			dataSource.setUsername(username);

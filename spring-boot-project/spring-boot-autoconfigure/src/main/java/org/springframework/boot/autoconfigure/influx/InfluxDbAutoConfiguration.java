@@ -52,11 +52,11 @@ public class InfluxDbAutoConfiguration {
 	@Conditional(InfluxDBCondition.class)
 	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<InfluxDbCustomizer> customizers,
-			ObjectProvider<InfluxDbConnectionDetails> serviceConnectionProvider) {
-		InfluxDbConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-		String url = (serviceConnection != null) ? serviceConnection.getUrl().toString() : properties.getUrl();
-		String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
-		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+			ObjectProvider<InfluxDbConnectionDetails> connectionDetailsProvider) {
+		InfluxDbConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+		String url = (connectionDetails != null) ? connectionDetails.getUrl().toString() : properties.getUrl();
+		String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
+		String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
 		InfluxDB influxDb = new InfluxDBImpl(url, user, password, determineBuilder(builder.getIfAvailable()));
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));
 		return influxDb;
@@ -81,7 +81,7 @@ public class InfluxDbAutoConfiguration {
 		}
 
 		@ConditionalOnBean(InfluxDbConnectionDetails.class)
-		private static final class InfluxDbServiceConnectionCondition {
+		private static final class InfluxDbConnectionDetailsCondition {
 
 		}
 

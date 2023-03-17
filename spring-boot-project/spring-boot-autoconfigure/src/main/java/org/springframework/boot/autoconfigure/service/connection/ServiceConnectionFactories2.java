@@ -79,7 +79,7 @@ public class ServiceConnectionFactories2 {
 				return (ConnectionDetailsFactory<I, SC>) factory.factory();
 			}
 		}
-		throw new ServiceConnectionFactoryNotFoundException(source);
+		throw new ConnectionDetailsFactoryNotFoundException(source);
 	}
 
 	private record RegisteredFactory(Class<?> input, Class<? extends ConnectionDetails> output,

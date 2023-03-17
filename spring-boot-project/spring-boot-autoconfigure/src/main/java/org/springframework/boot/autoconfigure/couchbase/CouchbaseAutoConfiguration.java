@@ -70,8 +70,8 @@ public class CouchbaseAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseProperties properties,
 			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers,
-			ObjectProvider<CouchbaseConnectionDetails> serviceConnectionProvider) {
-		Builder builder = initializeEnvironmentBuilder(properties, serviceConnectionProvider.getIfAvailable());
+			ObjectProvider<CouchbaseConnectionDetails> connectionDetailsProvider) {
+		Builder builder = initializeEnvironmentBuilder(properties, connectionDetailsProvider.getIfAvailable());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -79,11 +79,11 @@ public class CouchbaseAutoConfiguration {
 	@Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
 	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment,
-			ObjectProvider<CouchbaseConnectionDetails> serviceConnectionProvider) {
-		CouchbaseConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
-		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
-		String connectionString = (serviceConnection != null) ? serviceConnection.getConnectionString()
+			ObjectProvider<CouchbaseConnectionDetails> connectionDetailsProvider) {
+		CouchbaseConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+		String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
+		String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
+		String connectionString = (connectionDetails != null) ? connectionDetails.getConnectionString()
 				: properties.getConnectionString();
 		ClusterOptions options = ClusterOptions.clusterOptions(username, password)
 			.environment(couchbaseClusterEnvironment);
@@ -91,7 +91,7 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties,
-			CouchbaseConnectionDetails serviceConnection) {
+			CouchbaseConnectionDetails connectionDetails) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = properties.getEnv().getTimeouts();
 		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
@@ -107,7 +107,7 @@ public class CouchbaseAutoConfiguration {
 		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
 			.numKvConnections(io.getMinEndpoints())
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
-		if (serviceConnection == null && properties.getEnv().getSsl().getEnabled()) {
+		if (connectionDetails == null && properties.getEnv().getSsl().getEnabled()) {
 			builder.securityConfig((config) -> config.enableTls(true)
 				.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
 		}
@@ -183,7 +183,7 @@ public class CouchbaseAutoConfiguration {
 		}
 
 		@ConditionalOnBean(CouchbaseConnectionDetails.class)
-		private static final class CouchbaseServiceConnectionCondition {
+		private static final class CouchbaseConnectionDetailsCondition {
 
 		}
 

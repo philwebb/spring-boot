@@ -33,7 +33,6 @@ import com.datastax.oss.driver.internal.core.session.throttling.RateLimitingRequ
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -336,6 +335,7 @@ class CassandraAutoConfigurationTests {
 
 	private CassandraConnectionDetails cassandraServiceConnection() {
 		return new CassandraConnectionDetails() {
+
 			@Override
 			public List<Node> getContactPoints() {
 				return List.of(new Node("cassandra.example.com", 9042));
@@ -356,15 +356,6 @@ class CassandraAutoConfigurationTests {
 				return "datacenter-1";
 			}
 
-			@Override
-			public String getName() {
-				return "cassandraServiceConnection";
-			}
-
-			@Override
-			public Origin getOrigin() {
-				return null;
-			}
 		};
 	}
 

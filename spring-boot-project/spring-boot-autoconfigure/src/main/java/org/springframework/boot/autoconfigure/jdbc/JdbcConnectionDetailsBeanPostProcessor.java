@@ -31,7 +31,7 @@ import org.springframework.core.PriorityOrdered;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-abstract class AbstractJdbcServiceConnectionBeanPostProcessor<T>
+abstract class JdbcConnectionDetailsBeanPostProcessor<T>
 		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware {
 
 	private final Class<T> dataSourceClass;
@@ -42,7 +42,7 @@ abstract class AbstractJdbcServiceConnectionBeanPostProcessor<T>
 	 * Constructor.
 	 * @param dataSourceClass class of the datasource
 	 */
-	AbstractJdbcServiceConnectionBeanPostProcessor(Class<T> dataSourceClass) {
+	JdbcConnectionDetailsBeanPostProcessor(Class<T> dataSourceClass) {
 		this.dataSourceClass = dataSourceClass;
 	}
 
@@ -50,13 +50,13 @@ abstract class AbstractJdbcServiceConnectionBeanPostProcessor<T>
 	@SuppressWarnings("unchecked")
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (this.dataSourceClass.isAssignableFrom(bean.getClass()) && "dataSource".equals(beanName)) {
-			JdbcConnectionDetails serviceConnection = this.applicationContext.getBean(JdbcConnectionDetails.class);
-			return processDataSource((T) bean, serviceConnection);
+			JdbcConnectionDetails connectionDetails = this.applicationContext.getBean(JdbcConnectionDetails.class);
+			return processDataSource((T) bean, connectionDetails);
 		}
 		return bean;
 	}
 
-	protected abstract Object processDataSource(T dataSource, JdbcConnectionDetails serviceConnection);
+	protected abstract Object processDataSource(T dataSource, JdbcConnectionDetails connectionDetails);
 
 	@Override
 	public int getOrder() {

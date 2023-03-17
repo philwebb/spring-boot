@@ -16,35 +16,30 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.sql.SQLException;
-
-import oracle.ucp.jdbc.PoolDataSourceImpl;
-import oracle.ucp.util.OpaqueString;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JdbcServiceConnectionOracleUcpBeanPostProcessor}.
+ * Tests for {@link TomcatJdbcConnectionDetailsBeanPostProcessor}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class JdbcServiceConnectionOracleUcpBeanPostProcessorTests {
+class TomcatJdbcConnectionDetailsBeanPostProcessorTests {
 
 	@Test
-	void setUsernamePasswordAndUrl() throws SQLException {
-		PoolDataSourceImpl dataSource = new PoolDataSourceImpl();
-		dataSource.setURL("will-be-overwritten");
-		dataSource.setUser("will-be-overwritten");
+	void setUsernamePasswordAndUrl() {
+		DataSource dataSource = new DataSource();
+		dataSource.setUrl("will-be-overwritten");
+		dataSource.setUsername("will-be-overwritten");
 		dataSource.setPassword("will-be-overwritten");
-		new JdbcServiceConnectionOracleUcpBeanPostProcessor().processDataSource(dataSource,
+		new TomcatJdbcConnectionDetailsBeanPostProcessor().processDataSource(dataSource,
 				new TestJdbcServiceConnection());
-		assertThat(dataSource.getURL()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
-		assertThat(dataSource.getUser()).isEqualTo("user-1");
-		assertThat(dataSource).extracting("password")
-			.extracting((password) -> ((OpaqueString) password).get())
-			.isEqualTo("password-1");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+		assertThat(dataSource.getUsername()).isEqualTo("user-1");
+		assertThat(dataSource.getPoolProperties().getPassword()).isEqualTo("password-1");
 	}
 
 }

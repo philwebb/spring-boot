@@ -44,7 +44,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -170,7 +169,7 @@ class KafkaAutoConfigurationTests {
 			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
 					"spring.kafka.consumer.bootstrap-servers=foo:1234", "spring.kafka.security.protocol=SSL",
 					"spring.kafka.consumer.security.protocol=SSL")
-			.withBean(KafkaConnectionDetails.class, this::kafkaServiceConnection)
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
 				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
 				Map<String, Object> configs = consumerFactory.getConfigurationProperties();
@@ -238,7 +237,7 @@ class KafkaAutoConfigurationTests {
 			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
 					"spring.kafka.producer.bootstrap-servers=foo:1234", "spring.kafka.security.protocol=SSL",
 					"spring.kafka.producer.security.protocol=SSL")
-			.withBean(KafkaConnectionDetails.class, this::kafkaServiceConnection)
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
 				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 				Map<String, Object> configs = producerFactory.getConfigurationProperties();
@@ -296,7 +295,7 @@ class KafkaAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234", "spring.kafka.security.protocol=SSL",
 					"spring.kafka.admin.security.protocol=SSL")
-			.withBean(KafkaConnectionDetails.class, this::kafkaServiceConnection)
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
 				KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 				Map<String, Object> configs = admin.getConfigurationProperties();
@@ -361,7 +360,7 @@ class KafkaAutoConfigurationTests {
 			.withPropertyValues("spring.kafka.streams.auto-startup=false", "spring.kafka.streams.application-id=test",
 					"spring.kafka.bootstrap-servers=foo:1234", "spring.kafka.streams.bootstrap-servers=foo:1234",
 					"spring.kafka.security.protocol=SSL", "spring.kafka.streams.security.protocol=SSL")
-			.withBean(KafkaConnectionDetails.class, this::kafkaServiceConnection)
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
 				Properties configs = context
 					.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
@@ -822,22 +821,14 @@ class KafkaAutoConfigurationTests {
 			});
 	}
 
-	private KafkaConnectionDetails kafkaServiceConnection() {
+	private KafkaConnectionDetails kafkaConnectionDetails() {
 		return new KafkaConnectionDetails() {
+
 			@Override
 			public List<Node> getBootstrapNodes() {
 				return List.of(new Node("kafka.example.com", 12345));
 			}
 
-			@Override
-			public String getName() {
-				return "kafkaServiceConnection";
-			}
-
-			@Override
-			public Origin getOrigin() {
-				return null;
-			}
 		};
 	}
 

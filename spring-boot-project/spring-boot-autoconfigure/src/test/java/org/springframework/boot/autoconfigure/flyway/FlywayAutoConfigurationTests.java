@@ -53,7 +53,6 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -1089,6 +1088,7 @@ class FlywayAutoConfigurationTests {
 		@Bean
 		JdbcConnectionDetails serviceConnection() {
 			return new JdbcConnectionDetails() {
+
 				@Override
 				public String getJdbcUrl() {
 					return "jdbc:postgresql://database.example.com:12345/database-1";
@@ -1104,15 +1104,6 @@ class FlywayAutoConfigurationTests {
 					return "secret-1";
 				}
 
-				@Override
-				public String getName() {
-					return "serviceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 

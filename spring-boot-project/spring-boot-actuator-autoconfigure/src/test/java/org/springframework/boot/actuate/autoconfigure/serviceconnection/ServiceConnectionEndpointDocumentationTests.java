@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.serviceconnection;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +31,6 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-import org.springframework.boot.origin.Origin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -170,6 +168,7 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		@Bean
 		RedisConnectionDetails redisServiceConnection() {
 			return new RedisConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -183,6 +182,7 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 				@Override
 				public Standalone getStandalone() {
 					return new Standalone() {
+
 						@Override
 						public int getDatabase() {
 							return 0;
@@ -197,12 +197,14 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 						public int getPort() {
 							return 6379;
 						}
+
 					};
 				}
 
 				@Override
 				public Sentinel getSentinel() {
 					return new Sentinel() {
+
 						@Override
 						public int getDatabase() {
 							return 0;
@@ -240,21 +242,13 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 					};
 				}
 
-				@Override
-				public String getName() {
-					return "redisServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method redisServiceConnection");
-				}
 			};
 		}
 
 		@Bean
 		ZipkinConnectionDetails zipkinServiceConnection() {
 			return new ZipkinConnectionDetails() {
+
 				@Override
 				public String getHost() {
 					return "localhost";
@@ -270,21 +264,13 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 					return "/api/v2/span";
 				}
 
-				@Override
-				public String getName() {
-					return "zipkinServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method zipkinServiceConnection");
-				}
 			};
 		}
 
 		@Bean
 		JdbcConnectionDetails jdbcServiceConnection() {
 			return new JdbcConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -300,21 +286,13 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 					return "jdbc:mysql:localhost/database-1";
 				}
 
-				@Override
-				public String getName() {
-					return "jdbcServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method jdbcServiceConnection");
-				}
 			};
 		}
 
 		@Bean
 		R2dbcConnectionDetails r2dbcServiceConnection() {
 			return new R2dbcConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-2";
@@ -330,15 +308,6 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 					return "jdbc:postgresql:localhost/database-1";
 				}
 
-				@Override
-				public String getName() {
-					return "r2dbcServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method r2dbcServiceConnection");
-				}
 			};
 		}
 
@@ -365,21 +334,13 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 					return List.of(new Address("localhost", 12345));
 				}
 
-				@Override
-				public String getName() {
-					return "rabbitServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method rabbitServiceConnection");
-				}
 			};
 		}
 
 		@Bean
-		ElasticsearchConnectionDetails elasticsearchServiceConnection() {
+		ElasticsearchConnectionDetails elasticsearchConnectionDetails() {
 			return new ElasticsearchConnectionDetails() {
+
 				@Override
 				public List<Node> getNodes() {
 					return List.of(new Node("localhost", 12345, Protocol.HTTP, "user", "password"));
@@ -400,21 +361,13 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 					return "/";
 				}
 
-				@Override
-				public String getName() {
-					return "elasticsearchServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method elasticsearchServiceConnection");
-				}
 			};
 		}
 
 		@Bean
 		MongoConnectionDetails mongoServiceConnection() {
 			return new MongoConnectionDetails() {
+
 				@Override
 				public String getHost() {
 					return "localhost";
@@ -458,55 +411,16 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 				@Override
 				public GridFs getGridFs() {
 					return new GridFs() {
+
 						@Override
 						public String getDatabase() {
 							return "grid-database-1";
 						}
+
 					};
 				}
 
-				@Override
-				public String getName() {
-					return "mongoServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return new DummyOrigin("bean method mongoServiceConnection");
-				}
 			};
-		}
-
-	}
-
-	private static class DummyOrigin implements Origin {
-
-		private final String text;
-
-		DummyOrigin(String text) {
-			this.text = text;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (o == null || getClass() != o.getClass()) {
-				return false;
-			}
-			DummyOrigin that = (DummyOrigin) o;
-			return Objects.equals(this.text, that.text);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(this.text);
-		}
-
-		@Override
-		public String toString() {
-			return this.text;
 		}
 
 	}

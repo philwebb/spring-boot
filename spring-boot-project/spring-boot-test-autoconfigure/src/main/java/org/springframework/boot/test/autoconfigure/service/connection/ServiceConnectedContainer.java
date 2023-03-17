@@ -46,6 +46,8 @@ public final class ServiceConnectedContainer<A extends Annotation, D extends Con
 
 	private final Class<D> connectionDetailsType;
 
+	private final Field field;
+
 	private final A annotation;
 
 	private final C container;
@@ -60,6 +62,7 @@ public final class ServiceConnectedContainer<A extends Annotation, D extends Con
 
 	ServiceConnectedContainer(Class<D> connectionDetailsType, Field field, A annotation, C container) {
 		this.connectionDetailsType = connectionDetailsType;
+		this.field = field;
 		this.annotation = annotation;
 		this.container = container;
 		this.origin = new AnnotatedFieldOrigin(field, annotation);
@@ -69,6 +72,10 @@ public final class ServiceConnectedContainer<A extends Annotation, D extends Con
 		return annotationType.isInstance(this.annotation)
 				&& connectionDetailsType.isAssignableFrom(this.connectionDetailsType)
 				&& containerType.isInstance(this.container);
+	}
+
+	String getBeanName() {
+		return this.field.getName() + this.connectionDetailsType.getSimpleName() + "ConnectedContainer";
 	}
 
 	/**
@@ -91,6 +98,11 @@ public final class ServiceConnectedContainer<A extends Annotation, D extends Con
 	@Override
 	public Origin getOrigin() {
 		return this.origin;
+	}
+
+	@Override
+	public String toString() {
+		return "ServiceConnectedContainer for $s".formatted(this.origin);
 	}
 
 }

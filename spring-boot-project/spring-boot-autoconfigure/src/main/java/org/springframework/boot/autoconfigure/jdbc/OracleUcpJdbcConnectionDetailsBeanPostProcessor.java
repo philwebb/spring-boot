@@ -16,28 +16,35 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
+import java.sql.SQLException;
+
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 
 /**
- * Post-processes beans of type {@link HikariDataSource} and name 'dataSource' to apply
+ * Post-processes beans of type {@link PoolDataSourceImpl} and name 'dataSource' to apply
  * the values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class JdbcServiceConnectionHikariBeanPostProcessor
-		extends AbstractJdbcServiceConnectionBeanPostProcessor<HikariDataSource> {
+class OracleUcpJdbcConnectionDetailsBeanPostProcessor
+		extends JdbcConnectionDetailsBeanPostProcessor<PoolDataSourceImpl> {
 
-	JdbcServiceConnectionHikariBeanPostProcessor() {
-		super(HikariDataSource.class);
+	OracleUcpJdbcConnectionDetailsBeanPostProcessor() {
+		super(PoolDataSourceImpl.class);
 	}
 
 	@Override
-	protected Object processDataSource(HikariDataSource dataSource, JdbcConnectionDetails serviceConnection) {
-		dataSource.setJdbcUrl(serviceConnection.getJdbcUrl());
-		dataSource.setUsername(serviceConnection.getUsername());
-		dataSource.setPassword(serviceConnection.getPassword());
-		return dataSource;
+	protected Object processDataSource(PoolDataSourceImpl dataSource, JdbcConnectionDetails connectionDetails) {
+		try {
+			dataSource.setURL(connectionDetails.getJdbcUrl());
+			dataSource.setUser(connectionDetails.getUsername());
+			dataSource.setPassword(connectionDetails.getPassword());
+			return dataSource;
+		}
+		catch (SQLException ex) {
+			throw new RuntimeException("Failed to set URL / user / password of datasource", ex);
+		}
 	}
 
 }

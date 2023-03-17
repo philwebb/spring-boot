@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
-import org.springframework.boot.origin.Origin;
 
 /**
  * A {@link MongoConnectionDetails} for tests.
@@ -72,21 +71,13 @@ class TestMongoServiceConnection implements MongoConnectionDetails {
 	@Override
 	public GridFs getGridFs() {
 		return new GridFs() {
+
 			@Override
 			public String getDatabase() {
 				return "grid-database-1";
 			}
+
 		};
-	}
-
-	@Override
-	public String getName() {
-		return "mongoServiceConnection";
-	}
-
-	@Override
-	public Origin getOrigin() {
-		return null;
 	}
 
 }

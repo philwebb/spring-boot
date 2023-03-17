@@ -94,28 +94,28 @@ public class CassandraAutoConfiguration {
 	@Scope("prototype")
 	public CqlSessionBuilder cassandraSessionBuilder(CassandraProperties properties,
 			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers,
-			ObjectProvider<CassandraConnectionDetails> serviceConnectionProvider) {
-		CassandraConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<CassandraConnectionDetails> connectionDetailsProvider) {
+		CassandraConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
-		configureAuthentication(properties, serviceConnection, builder);
-		configureSsl(properties, serviceConnection, builder);
+		configureAuthentication(properties, connectionDetails, builder);
+		configureSsl(properties, connectionDetails, builder);
 		builder.withKeyspace(properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
-	private void configureAuthentication(CassandraProperties properties, CassandraConnectionDetails serviceConnection,
+	private void configureAuthentication(CassandraProperties properties, CassandraConnectionDetails connectionDetails,
 			CqlSessionBuilder builder) {
-		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
+		String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
 		if (username != null) {
-			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+			String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
 			builder.withAuthCredentials(username, password);
 		}
 	}
 
-	private void configureSsl(CassandraProperties properties, CassandraConnectionDetails serviceConnection,
+	private void configureSsl(CassandraProperties properties, CassandraConnectionDetails connectionDetails,
 			CqlSessionBuilder builder) {
-		if (serviceConnection != null) {
+		if (connectionDetails != null) {
 			return;
 		}
 		if (properties.isSsl()) {
@@ -132,20 +132,20 @@ public class CassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers,
-			ObjectProvider<CassandraConnectionDetails> serviceConnectionProvider) {
-		CassandraConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<CassandraConnectionDetails> connectionDetailsProvider) {
+		CassandraConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
-				() -> cassandraConfiguration(properties, serviceConnection),
+				() -> cassandraConfiguration(properties, connectionDetails),
 				DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
 	private Config cassandraConfiguration(CassandraProperties properties,
-			CassandraConnectionDetails serviceConnection) {
+			CassandraConnectionDetails connectionDetails) {
 		ConfigFactory.invalidateCaches();
 		Config config = ConfigFactory.defaultOverrides();
-		config = config.withFallback(mapConfig(properties, serviceConnection));
+		config = config.withFallback(mapConfig(properties, connectionDetails));
 		if (properties.getConfig() != null) {
 			config = config.withFallback(loadConfig(properties.getConfig()));
 		}
@@ -163,14 +163,14 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private Config mapConfig(CassandraProperties properties, CassandraConnectionDetails serviceConnection) {
+	private Config mapConfig(CassandraProperties properties, CassandraConnectionDetails connectionDetails) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties.getSessionName())
 			.whenHasText()
 			.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
-		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
-		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+		String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
+		String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
 		map.from(username)
 			.to((value) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, value)
 				.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, password));
@@ -180,9 +180,9 @@ public class CassandraAutoConfiguration {
 		mapPoolingOptions(properties, options);
 		mapRequestOptions(properties, options);
 		mapControlConnectionOptions(properties, options);
-		map.from(mapContactPoints(properties, serviceConnection))
+		map.from(mapContactPoints(properties, connectionDetails))
 			.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
-		String localDataCenter = (serviceConnection != null) ? serviceConnection.getLocalDatacenter()
+		String localDataCenter = (connectionDetails != null) ? connectionDetails.getLocalDatacenter()
 				: properties.getLocalDatacenter();
 		map.from(localDataCenter)
 			.whenHasText()
@@ -250,9 +250,9 @@ public class CassandraAutoConfiguration {
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties,
-			CassandraConnectionDetails serviceConnection) {
-		if (serviceConnection != null) {
-			return serviceConnection.getContactPoints()
+			CassandraConnectionDetails connectionDetails) {
+		if (connectionDetails != null) {
+			return connectionDetails.getContactPoints()
 				.stream()
 				.map((node) -> node.host() + ":" + node.port())
 				.toList();

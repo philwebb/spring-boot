@@ -16,27 +16,27 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * Post-processes beans of type {@link BasicDataSource} and name 'dataSource' to apply the
- * values from {@link JdbcConnectionDetails}.
+ * Post-processes beans of type {@link HikariDataSource} and name 'dataSource' to apply
+ * the values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class JdbcServiceConnectionDbcp2BeanPostProcessor
-		extends AbstractJdbcServiceConnectionBeanPostProcessor<BasicDataSource> {
+class HikariJdbcConnectionDetailsBeanPostProcessor
+		extends JdbcConnectionDetailsBeanPostProcessor<HikariDataSource> {
 
-	JdbcServiceConnectionDbcp2BeanPostProcessor() {
-		super(BasicDataSource.class);
+	HikariJdbcConnectionDetailsBeanPostProcessor() {
+		super(HikariDataSource.class);
 	}
 
 	@Override
-	protected Object processDataSource(BasicDataSource dataSource, JdbcConnectionDetails serviceConnection) {
-		dataSource.setUrl(serviceConnection.getJdbcUrl());
-		dataSource.setUsername(serviceConnection.getUsername());
-		dataSource.setPassword(serviceConnection.getPassword());
+	protected Object processDataSource(HikariDataSource dataSource, JdbcConnectionDetails connectionDetails) {
+		dataSource.setJdbcUrl(connectionDetails.getJdbcUrl());
+		dataSource.setUsername(connectionDetails.getUsername());
+		dataSource.setPassword(connectionDetails.getPassword());
 		return dataSource;
 	}
 

@@ -27,6 +27,7 @@ import org.springframework.boot.origin.OriginProvider;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
 public interface ConnectionDetails {

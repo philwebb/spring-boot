@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,7 +64,7 @@ class CouchbaseAutoConfigurationTests {
 
 	@Test
 	void shouldUseServiceConnection() {
-		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseServiceConnection)
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				Cluster cluster = context.getBean(Cluster.class);
@@ -86,7 +85,7 @@ class CouchbaseAutoConfigurationTests {
 
 	@Test
 	void serviceConnectionShouldOverrideProperties() {
-		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseServiceConnection)
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
 			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
 					"spring.couchbase.password=a-password")
 			.run((context) -> {
@@ -201,8 +200,9 @@ class CouchbaseAutoConfigurationTests {
 			});
 	}
 
-	private CouchbaseConnectionDetails couchbaseServiceConnection() {
+	private CouchbaseConnectionDetails couchbaseConnectionDetails() {
 		return new CouchbaseConnectionDetails() {
+
 			@Override
 			public String getConnectionString() {
 				return "couchbase.example.com";
@@ -218,15 +218,6 @@ class CouchbaseAutoConfigurationTests {
 				return "password-1";
 			}
 
-			@Override
-			public String getName() {
-				return "couchbaseServiceConnection";
-			}
-
-			@Override
-			public Origin getOrigin() {
-				return null;
-			}
 		};
 	}
 

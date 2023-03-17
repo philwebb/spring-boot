@@ -65,15 +65,15 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
-				ObjectProvider<ElasticsearchConnectionDetails> serviceConnectionProvider) {
-			return new DefaultRestClientBuilderCustomizer(this.properties, serviceConnectionProvider.getIfAvailable());
+				ObjectProvider<ElasticsearchConnectionDetails> connectionDetails) {
+			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails.getIfAvailable());
 		}
 
 		@Bean
 		RestClientBuilder elasticsearchRestClientBuilder(ObjectProvider<RestClientBuilderCustomizer> builderCustomizers,
-				ObjectProvider<ElasticsearchConnectionDetails> serviceConnectionProvider) {
-			ElasticsearchConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-			HttpHost[] hosts = (serviceConnection != null) ? getHosts(serviceConnection) : getHosts(this.properties);
+				ObjectProvider<ElasticsearchConnectionDetails> connectionDetailsProvider) {
+			ElasticsearchConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			HttpHost[] hosts = (connectionDetails != null) ? getHosts(connectionDetails) : getHosts(this.properties);
 			RestClientBuilder builder = RestClient.builder(hosts);
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
@@ -83,7 +83,7 @@ class ElasticsearchRestClientConfigurations {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
-			String pathPrefix = (serviceConnection != null) ? serviceConnection.getPathPrefix()
+			String pathPrefix = (connectionDetails != null) ? connectionDetails.getPathPrefix()
 					: this.properties.getPathPrefix();
 			if (pathPrefix != null) {
 				builder.setPathPrefix(pathPrefix);
@@ -96,8 +96,8 @@ class ElasticsearchRestClientConfigurations {
 			return properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
 		}
 
-		private HttpHost[] getHosts(ElasticsearchConnectionDetails serviceConnection) {
-			return serviceConnection.getNodes()
+		private HttpHost[] getHosts(ElasticsearchConnectionDetails connectionDetails) {
+			return connectionDetails.getNodes()
 				.stream()
 				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
 				.toArray(HttpHost[]::new);
@@ -164,12 +164,12 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		private final ElasticsearchConnectionDetails serviceConnection;
+		private final ElasticsearchConnectionDetails connectionDetails;
 
 		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
-				ElasticsearchConnectionDetails serviceConnection) {
+				ElasticsearchConnectionDetails connectionDetails) {
 			this.properties = properties;
-			this.serviceConnection = serviceConnection;
+			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
@@ -179,7 +179,7 @@ class ElasticsearchRestClientConfigurations {
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
 			builder.setDefaultCredentialsProvider(
-					new PropertiesCredentialsProvider(this.properties, this.serviceConnection));
+					new PropertiesCredentialsProvider(this.properties, this.connectionDetails));
 			map.from(this.properties::isSocketKeepAlive)
 				.to((keepAlive) -> builder
 					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
@@ -202,14 +202,14 @@ class ElasticsearchRestClientConfigurations {
 	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
 
 		PropertiesCredentialsProvider(ElasticsearchProperties properties,
-				ElasticsearchConnectionDetails serviceConnection) {
-			String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
-			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+				ElasticsearchConnectionDetails connectionDetails) {
+			String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
+			String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
 			if (StringUtils.hasText(username)) {
 				Credentials credentials = new UsernamePasswordCredentials(username, password);
 				setCredentials(AuthScope.ANY, credentials);
 			}
-			Stream<URI> uris = (serviceConnection != null) ? getUris(serviceConnection) : getUris(properties);
+			Stream<URI> uris = (connectionDetails != null) ? getUris(connectionDetails) : getUris(properties);
 			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
 		}
 
@@ -217,8 +217,8 @@ class ElasticsearchRestClientConfigurations {
 			return properties.getUris().stream().map(this::toUri);
 		}
 
-		private Stream<URI> getUris(ElasticsearchConnectionDetails serviceConnection) {
-			return serviceConnection.getNodes().stream().map(Node::toUri);
+		private Stream<URI> getUris(ElasticsearchConnectionDetails connectionDetails) {
+			return connectionDetails.getNodes().stream().map(Node::toUri);
 		}
 
 		private URI toUri(String uri) {

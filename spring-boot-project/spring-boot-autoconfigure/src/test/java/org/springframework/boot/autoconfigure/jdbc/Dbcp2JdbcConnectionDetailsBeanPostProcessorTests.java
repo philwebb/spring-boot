@@ -16,28 +16,28 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JdbcServiceConnectionHikariBeanPostProcessor}.
+ * Tests for {@link Dbcp2JdbcConnectionDetailsBeanPostProcessor}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class JdbcServiceConnectionHikariBeanPostProcessorTests {
+class Dbcp2JdbcConnectionDetailsBeanPostProcessorTests {
 
 	@Test
 	void setUsernamePasswordAndUrl() {
-		HikariDataSource dataSource = new HikariDataSource();
-		dataSource.setJdbcUrl("will-be-overwritten");
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setUrl("will-be-overwritten");
 		dataSource.setUsername("will-be-overwritten");
 		dataSource.setPassword("will-be-overwritten");
-		new JdbcServiceConnectionHikariBeanPostProcessor().processDataSource(dataSource,
+		new Dbcp2JdbcConnectionDetailsBeanPostProcessor().processDataSource(dataSource,
 				new TestJdbcServiceConnection());
-		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
 		assertThat(dataSource.getUsername()).isEqualTo("user-1");
 		assertThat(dataSource.getPassword()).isEqualTo("password-1");
 	}

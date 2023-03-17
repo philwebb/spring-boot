@@ -16,30 +16,30 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JdbcServiceConnectionTomcatBeanPostProcessor}.
+ * Tests for {@link HikariJdbcConnectionDetailsBeanPostProcessor}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class JdbcServiceConnectionTomcatBeanPostProcessorTests {
+class HikariJdbcConnectionDetailsBeanPostProcessorTests {
 
 	@Test
 	void setUsernamePasswordAndUrl() {
-		DataSource dataSource = new DataSource();
-		dataSource.setUrl("will-be-overwritten");
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setJdbcUrl("will-be-overwritten");
 		dataSource.setUsername("will-be-overwritten");
 		dataSource.setPassword("will-be-overwritten");
-		new JdbcServiceConnectionTomcatBeanPostProcessor().processDataSource(dataSource,
+		new HikariJdbcConnectionDetailsBeanPostProcessor().processDataSource(dataSource,
 				new TestJdbcServiceConnection());
-		assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
 		assertThat(dataSource.getUsername()).isEqualTo("user-1");
-		assertThat(dataSource.getPoolProperties().getPassword()).isEqualTo("password-1");
+		assertThat(dataSource.getPassword()).isEqualTo("password-1");
 	}
 
 }

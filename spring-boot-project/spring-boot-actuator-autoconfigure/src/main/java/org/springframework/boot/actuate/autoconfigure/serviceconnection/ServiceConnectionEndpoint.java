@@ -93,11 +93,11 @@ class ServiceConnectionEndpoint {
 	@JsonInclude(Include.NON_NULL)
 	private record JdbcServiceConnectionDto(String name, String origin, String username, String url) {
 
-		private static JdbcServiceConnectionDto from(JdbcConnectionDetails serviceConnection) {
-			Origin origin = serviceConnection.getOrigin();
-			return new JdbcServiceConnectionDto(serviceConnection.getName(),
-					(origin != null) ? origin.toString() : null, serviceConnection.getUsername(),
-					serviceConnection.getJdbcUrl());
+		private static JdbcServiceConnectionDto from(JdbcConnectionDetails connectionDetails) {
+			Origin origin = connectionDetails.getOrigin();
+			return new JdbcServiceConnectionDto(connectionDetails.getName(),
+					(origin != null) ? origin.toString() : null, connectionDetails.getUsername(),
+					connectionDetails.getJdbcUrl());
 		}
 	}
 

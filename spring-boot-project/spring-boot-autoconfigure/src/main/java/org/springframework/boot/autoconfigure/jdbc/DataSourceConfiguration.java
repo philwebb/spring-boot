@@ -54,12 +54,12 @@ abstract class DataSourceConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static <T> T createDataSource(JdbcConnectionDetails serviceConnection, Class<? extends DataSource> type,
+	protected static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
 			ClassLoader classLoader) {
 		return (T) DataSourceBuilder.create(classLoader)
-			.url(serviceConnection.getJdbcUrl())
-			.username(serviceConnection.getUsername())
-			.password(serviceConnection.getPassword())
+			.url(connectionDetails.getJdbcUrl())
+			.username(connectionDetails.getUsername())
+			.password(connectionDetails.getPassword())
 			.type(type)
 			.build();
 	}
@@ -83,21 +83,21 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static JdbcServiceConnectionTomcatBeanPostProcessor jdbcServiceConnectionTomcatBeanPostProcessor() {
-			return new JdbcServiceConnectionTomcatBeanPostProcessor();
+		static TomcatJdbcConnectionDetailsBeanPostProcessor tomcatJdbcConnectionDetailsBeanPostProcessor() {
+			return new TomcatJdbcConnectionDetailsBeanPostProcessor();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties,
-				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) {
-			JdbcConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-			org.apache.tomcat.jdbc.pool.DataSource dataSource = (serviceConnection != null)
-					? createDataSource(serviceConnection, org.apache.tomcat.jdbc.pool.DataSource.class,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			org.apache.tomcat.jdbc.pool.DataSource dataSource = (connectionDetails != null)
+					? createDataSource(connectionDetails, org.apache.tomcat.jdbc.pool.DataSource.class,
 							this.classLoader)
 					: createDataSource(properties, org.apache.tomcat.jdbc.pool.DataSource.class);
 			String validationQuery;
-			String url = (serviceConnection != null) ? serviceConnection.getJdbcUrl() : properties.determineUrl();
+			String url = (connectionDetails != null) ? connectionDetails.getJdbcUrl() : properties.determineUrl();
 			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(url);
 			validationQuery = databaseDriver.getValidationQuery();
 			if (validationQuery != null) {
@@ -128,17 +128,17 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static JdbcServiceConnectionHikariBeanPostProcessor jdbcServiceConnectionHikariBeanPostProcessor() {
-			return new JdbcServiceConnectionHikariBeanPostProcessor();
+		static HikariJdbcConnectionDetailsBeanPostProcessor jdbcConnectionDetailsHikariBeanPostProcessor() {
+			return new HikariJdbcConnectionDetailsBeanPostProcessor();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		HikariDataSource dataSource(DataSourceProperties properties,
-				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) {
-			JdbcConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-			HikariDataSource dataSource = (serviceConnection != null)
-					? createDataSource(serviceConnection, HikariDataSource.class, this.classLoader)
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			HikariDataSource dataSource = (connectionDetails != null)
+					? createDataSource(connectionDetails, HikariDataSource.class, this.classLoader)
 					: createDataSource(properties, HikariDataSource.class);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
@@ -167,17 +167,17 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static JdbcServiceConnectionDbcp2BeanPostProcessor jdbcServiceConnectionDbcp2BeanPostProcessor() {
-			return new JdbcServiceConnectionDbcp2BeanPostProcessor();
+		static Dbcp2JdbcConnectionDetailsBeanPostProcessor dbcp2JdbcConnectionDetailsBeanPostProcessor() {
+			return new Dbcp2JdbcConnectionDetailsBeanPostProcessor();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
 		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties,
-				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) {
-			JdbcConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-			return (serviceConnection != null)
-					? createDataSource(serviceConnection, org.apache.commons.dbcp2.BasicDataSource.class,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			return (connectionDetails != null)
+					? createDataSource(connectionDetails, org.apache.commons.dbcp2.BasicDataSource.class,
 							this.classLoader)
 					: createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
 		}
@@ -203,17 +203,17 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JdbcConnectionDetails.class)
-		static JdbcServiceConnectionOracleUcpBeanPostProcessor jdbcServiceConnectionOracleUcpBeanPostProcessor() {
-			return new JdbcServiceConnectionOracleUcpBeanPostProcessor();
+		static OracleUcpJdbcConnectionDetailsBeanPostProcessor oracleUcpJdbcConnectionDetailsBeanPostProcessor() {
+			return new OracleUcpJdbcConnectionDetailsBeanPostProcessor();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.oracleucp")
 		PoolDataSourceImpl dataSource(DataSourceProperties properties,
-				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) throws SQLException {
-			JdbcConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-			PoolDataSourceImpl dataSource = (serviceConnection != null)
-					? createDataSource(serviceConnection, PoolDataSourceImpl.class, this.classLoader)
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) throws SQLException {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			PoolDataSourceImpl dataSource = (connectionDetails != null)
+					? createDataSource(connectionDetails, PoolDataSourceImpl.class, this.classLoader)
 					: createDataSource(properties, PoolDataSourceImpl.class);
 			dataSource.setValidateConnectionOnBorrow(true);
 			if (StringUtils.hasText(properties.getName())) {
@@ -241,13 +241,13 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		DataSource dataSource(DataSourceProperties properties,
-				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) {
-			JdbcConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
-			if (serviceConnection != null) {
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			if (connectionDetails != null) {
 				return DataSourceBuilder.create(this.classLoader)
-					.url(serviceConnection.getJdbcUrl())
-					.username(serviceConnection.getUsername())
-					.password(serviceConnection.getPassword())
+					.url(connectionDetails.getJdbcUrl())
+					.username(connectionDetails.getUsername())
+					.password(connectionDetails.getPassword())
 					.type(properties.getType())
 					.build();
 			}

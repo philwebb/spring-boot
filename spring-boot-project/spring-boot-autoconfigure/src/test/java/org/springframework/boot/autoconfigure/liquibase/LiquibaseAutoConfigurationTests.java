@@ -46,7 +46,6 @@ import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -555,6 +554,7 @@ class LiquibaseAutoConfigurationTests {
 		@Bean
 		JdbcConnectionDetails serviceConnection() {
 			return new JdbcConnectionDetails() {
+
 				@Override
 				public String getJdbcUrl() {
 					return "jdbc:postgresql://database.example.com:12345/database-1";
@@ -570,15 +570,6 @@ class LiquibaseAutoConfigurationTests {
 					return "secret-1";
 				}
 
-				@Override
-				public String getName() {
-					return "serviceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 

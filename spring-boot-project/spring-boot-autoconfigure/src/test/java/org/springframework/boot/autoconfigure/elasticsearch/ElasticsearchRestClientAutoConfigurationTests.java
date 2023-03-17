@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -277,8 +276,9 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		ElasticsearchConnectionDetails elasticsearchServiceConnection() {
+		ElasticsearchConnectionDetails elasticsearchConnectionDetails() {
 			return new ElasticsearchConnectionDetails() {
+
 				@Override
 				public List<Node> getNodes() {
 					return List
@@ -300,15 +300,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 					return "/some-path";
 				}
 
-				@Override
-				public String getName() {
-					return "elasticsearchServiceConnection";
-				}
-
-				@Override
-				public Origin getOrigin() {
-					return null;
-				}
 			};
 		}
 

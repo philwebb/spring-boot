@@ -104,11 +104,11 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers,
-			ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
-		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<KafkaConnectionDetails> connectionDetailsProvider) {
+		KafkaConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildConsumerProperties();
-		if (serviceConnection != null) {
-			properties = applyKafkaServiceConnectionForConsumer(serviceConnection, properties);
+		if (connectionDetails != null) {
+			properties = applyKafkaServiceConnectionForConsumer(connectionDetails, properties);
 		}
 		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(properties);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
@@ -119,11 +119,11 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(
 			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers,
-			ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
-		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<KafkaConnectionDetails> connectionDetailsProvider) {
+		KafkaConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildProducerProperties();
-		if (serviceConnection != null) {
-			properties = applyKafkaServiceConnectionForProducer(serviceConnection, properties);
+		if (connectionDetails != null) {
+			properties = applyKafkaServiceConnectionForProducer(connectionDetails, properties);
 		}
 		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(properties);
 		String transactionIdPrefix = this.properties.getProducer().getTransactionIdPrefix();
@@ -159,11 +159,11 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KafkaAdmin kafkaAdmin(ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
-		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
+	public KafkaAdmin kafkaAdmin(ObjectProvider<KafkaConnectionDetails> connectionDetailsProvider) {
+		KafkaConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildAdminProperties();
-		if (serviceConnection != null) {
-			properties = applyKafkaServiceConnectionForAdmin(serviceConnection, properties);
+		if (connectionDetails != null) {
+			properties = applyKafkaServiceConnectionForAdmin(connectionDetails, properties);
 		}
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(properties);
 		KafkaProperties.Admin admin = this.properties.getAdmin();
@@ -194,29 +194,29 @@ public class KafkaAutoConfiguration {
 		return builder.create(kafkaTemplate);
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForConsumer(KafkaConnectionDetails serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForConsumer(KafkaConnectionDetails connectionDetails,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(serviceConnection.getConsumerBootstrapNodes()));
+				nodesToStringList(connectionDetails.getConsumerBootstrapNodes()));
 		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		return result;
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForProducer(KafkaConnectionDetails serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForProducer(KafkaConnectionDetails connectionDetails,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(serviceConnection.getProducerBootstrapNodes()));
+				nodesToStringList(connectionDetails.getProducerBootstrapNodes()));
 		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		return result;
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForAdmin(KafkaConnectionDetails serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForAdmin(KafkaConnectionDetails connectionDetails,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(serviceConnection.getAdminBootstrapNodes()));
+				nodesToStringList(connectionDetails.getAdminBootstrapNodes()));
 		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		return result;
 	}

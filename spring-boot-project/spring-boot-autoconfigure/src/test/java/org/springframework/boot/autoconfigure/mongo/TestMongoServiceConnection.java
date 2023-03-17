@@ -20,8 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.origin.Origin;
-
 /**
  * A {@link MongoConnectionDetails} for tests.
  *
@@ -107,21 +105,13 @@ final class TestMongoServiceConnection implements MongoConnectionDetails {
 			return null;
 		}
 		return new GridFs() {
+
 			@Override
 			public String getDatabase() {
 				return TestMongoServiceConnection.this.gridDatabaseName;
 			}
+
 		};
-	}
-
-	@Override
-	public String getName() {
-		return "mongoServiceConnection";
-	}
-
-	@Override
-	public Origin getOrigin() {
-		return null;
 	}
 
 	TestMongoServiceConnection withPort(int port) {

@@ -21,11 +21,12 @@ package org.springframework.boot.autoconfigure.service.connection;
  * found.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
-public class ServiceConnectionFactoryNotFoundException extends RuntimeException {
+public class ConnectionDetailsFactoryNotFoundException extends RuntimeException {
 
-	public ServiceConnectionFactoryNotFoundException(ServiceConnectionSource<?, ?> source) {
+	public <S> ConnectionDetailsFactoryNotFoundException(S source) {
 		super("No ServiceConnectionFactory found for source '" + source + "'");
 	}
 

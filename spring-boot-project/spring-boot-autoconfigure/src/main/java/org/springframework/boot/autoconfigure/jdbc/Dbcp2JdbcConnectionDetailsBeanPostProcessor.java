@@ -16,26 +16,28 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
 /**
- * {@link JdbcConnectionDetails} used in tests.
+ * Post-processes beans of type {@link BasicDataSource} and name 'dataSource' to apply the
+ * values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
-class TestJdbcServiceConnection implements JdbcConnectionDetails {
+class Dbcp2JdbcConnectionDetailsBeanPostProcessor
+		extends JdbcConnectionDetailsBeanPostProcessor<BasicDataSource> {
 
-	@Override
-	public String getJdbcUrl() {
-		return "jdbc:postgresql://postgres.example.com:12345/database-1";
+	Dbcp2JdbcConnectionDetailsBeanPostProcessor() {
+		super(BasicDataSource.class);
 	}
 
 	@Override
-	public String getUsername() {
-		return "user-1";
-	}
-
-	@Override
-	public String getPassword() {
-		return "password-1";
+	protected Object processDataSource(BasicDataSource dataSource, JdbcConnectionDetails connectionDetails) {
+		dataSource.setUrl(connectionDetails.getJdbcUrl());
+		dataSource.setUsername(connectionDetails.getUsername());
+		dataSource.setPassword(connectionDetails.getPassword());
+		return dataSource;
 	}
 
 }

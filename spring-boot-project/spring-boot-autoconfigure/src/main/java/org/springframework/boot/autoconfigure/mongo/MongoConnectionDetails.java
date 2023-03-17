@@ -34,13 +34,7 @@ public interface MongoConnectionDetails extends ConnectionDetails {
 	 * Mongo server host.
 	 * @return the mongo server host
 	 */
-	String getHost();
-
-	/**
-	 * Mongo server port.
-	 * @return the mongo server port
-	 */
-	int getPort();
+	String getHost(); // FIXME return Host type and drop getPort?
 
 	/**
 	 * Additional server hosts.
@@ -49,6 +43,12 @@ public interface MongoConnectionDetails extends ConnectionDetails {
 	default List<Host> getAdditionalHosts() {
 		return Collections.emptyList();
 	}
+
+	/**
+	 * Mongo server port.
+	 * @return the mongo server port
+	 */
+	int getPort();
 
 	/**
 	 * Database name.

@@ -38,9 +38,9 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
 	private final ConnectionDetailsFactories factories = new ConnectionDetailsFactories();
 
-	private final List<?> sources;
+	private final List<ServiceConnectedContainer<?, ?, ?>> sources;
 
-	ServiceConnectionContextCustomizer(List<?> sources) {
+	ServiceConnectionContextCustomizer(List<ServiceConnectedContainer<?, ?, ?>> sources) {
 		this.sources = sources;
 	}
 
@@ -53,16 +53,17 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	}
 
 	private void registerServiceConnections(BeanDefinitionRegistry registry) {
-		for (Object source : this.sources) {
-			registerServiceConnection(registry, source);
-		}
+		this.sources.forEach((source) -> registerServiceConnection(registry, source));
 	}
 
-	private <S> void registerServiceConnection(BeanDefinitionRegistry registry, S source) {
-		ConnectionDetails connectionDetails = this.factories.getConnectionDetailsFactory(source)
-			.getConnectionDetails(source);
-		String beanName = "";
+	private void registerServiceConnection(BeanDefinitionRegistry registry, ServiceConnectedContainer<?, ?, ?> source) {
+		ConnectionDetails connectionDetails = getConnectionDetails(source);
+		String beanName = source.getBeanName();
 		registry.registerBeanDefinition(beanName, createBeanDefinition(connectionDetails));
+	}
+
+	private <S> ConnectionDetails getConnectionDetails(S source) {
+		return this.factories.getConnectionDetailsFactory(source).getConnectionDetails(source);
 	}
 
 	@SuppressWarnings("unchecked")

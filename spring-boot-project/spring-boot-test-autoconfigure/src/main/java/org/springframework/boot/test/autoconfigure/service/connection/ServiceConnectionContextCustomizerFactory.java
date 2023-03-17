@@ -42,7 +42,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		List<Object> sources = new ArrayList<>();
+		List<ServiceConnectedContainer<?, ?, ?>> sources = new ArrayList<>();
 		ReflectionUtils.doWithFields(testClass, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
@@ -51,7 +51,8 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
 	}
 
-	private Object createSource(Field field, MergedAnnotation<ServiceConnection> annotation) {
+	private ServiceConnectedContainer<?, ?, ?> createSource(Field field,
+			MergedAnnotation<ServiceConnection> annotation) {
 		Class<? extends ConnectionDetails> connectionDetailsType = getConnectionDetailsType(annotation);
 		Object fieldValue = getFieldValue(field);
 		Assert.isInstanceOf(GenericContainer.class, fieldValue,

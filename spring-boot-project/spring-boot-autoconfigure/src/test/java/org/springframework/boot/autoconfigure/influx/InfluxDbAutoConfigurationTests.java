@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import retrofit2.Retrofit;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +54,7 @@ class InfluxDbAutoConfigurationTests {
 
 	@Test
 	void shouldUseServiceConnection() {
-		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbServiceConnection).run((context) -> {
+		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails).run((context) -> {
 			assertThat(context).hasSingleBean(InfluxDB.class);
 			InfluxDB influxDb = context.getBean(InfluxDB.class);
 			assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
@@ -64,7 +63,7 @@ class InfluxDbAutoConfigurationTests {
 
 	@Test
 	void serviceConnectionOverwritesProperties() {
-		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbServiceConnection)
+		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails)
 			.withPropertyValues("spring.influx.url=http://some-other-host", "spring.influx.user=user",
 					"spring.influx.password=password")
 			.run((context) -> {
@@ -120,8 +119,9 @@ class InfluxDbAutoConfigurationTests {
 		return callFactory.readTimeoutMillis();
 	}
 
-	private InfluxDbConnectionDetails influxDbServiceConnection() {
+	private InfluxDbConnectionDetails influxDbConnectionDetails() {
 		return new InfluxDbConnectionDetails() {
+
 			@Override
 			public URI getUrl() {
 				return URI.create("http://localhost");
@@ -137,15 +137,6 @@ class InfluxDbAutoConfigurationTests {
 				return "password-1";
 			}
 
-			@Override
-			public String getName() {
-				return "influxDbServiceConnection";
-			}
-
-			@Override
-			public Origin getOrigin() {
-				return null;
-			}
 		};
 	}
 

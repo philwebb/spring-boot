@@ -68,10 +68,10 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
-			ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider, ObjectProvider<XADataSource> xaDataSource)
+			ObjectProvider<JdbcConnectionDetails> connectionDetails, ObjectProvider<XADataSource> xaDataSource)
 			throws Exception {
 		return wrapper.wrapDataSource(xaDataSource
-			.getIfAvailable(() -> createXaDataSource(properties, serviceConnectionProvider.getIfAvailable())));
+			.getIfAvailable(() -> createXaDataSource(properties, connectionDetails.getIfAvailable())));
 	}
 
 	@Override
@@ -79,10 +79,10 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	private XADataSource createXaDataSource(DataSourceProperties properties, JdbcConnectionDetails serviceConnection) {
+	private XADataSource createXaDataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
 		String className;
-		if (serviceConnection != null) {
-			className = DatabaseDriver.fromJdbcUrl(serviceConnection.getJdbcUrl()).getXaDataSourceClassName();
+		if (connectionDetails != null) {
+			className = DatabaseDriver.fromJdbcUrl(connectionDetails.getJdbcUrl()).getXaDataSourceClassName();
 		}
 		else {
 			className = properties.getXa().getDataSourceClassName();
@@ -92,7 +92,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		}
 		Assert.state(StringUtils.hasLength(className), "No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
-		bindXaProperties(dataSource, properties, serviceConnection);
+		bindXaProperties(dataSource, properties, connectionDetails);
 		return dataSource;
 	}
 
@@ -109,20 +109,20 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties,
-			JdbcConnectionDetails serviceConnection) {
-		Binder binder = new Binder(getBinderSource(dataSourceProperties, serviceConnection));
+			JdbcConnectionDetails connectionDetails) {
+		Binder binder = new Binder(getBinderSource(dataSourceProperties, connectionDetails));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
 	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties,
-			JdbcConnectionDetails serviceConnection) {
+			JdbcConnectionDetails connectionDetails) {
 		Map<Object, Object> properties = new HashMap<>(dataSourceProperties.getXa().getProperties());
-		properties.computeIfAbsent("user", (key) -> (serviceConnection != null) ? serviceConnection.getUsername()
+		properties.computeIfAbsent("user", (key) -> (connectionDetails != null) ? connectionDetails.getUsername()
 				: dataSourceProperties.determineUsername());
-		properties.computeIfAbsent("password", (key) -> (serviceConnection != null) ? serviceConnection.getPassword()
+		properties.computeIfAbsent("password", (key) -> (connectionDetails != null) ? connectionDetails.getPassword()
 				: dataSourceProperties.determinePassword());
 		try {
-			properties.computeIfAbsent("url", (key) -> (serviceConnection != null) ? serviceConnection.getJdbcUrl()
+			properties.computeIfAbsent("url", (key) -> (connectionDetails != null) ? connectionDetails.getJdbcUrl()
 					: dataSourceProperties.determineUrl());
 		}
 		catch (DataSourceBeanCreationException ex) {

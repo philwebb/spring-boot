@@ -64,11 +64,11 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
-			ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
-		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<KafkaConnectionDetails> connectionDetailsProvider) {
+		KafkaConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildStreamsProperties();
-		if (serviceConnection != null) {
-			properties = applyKafkaServiceConnectionForStreams(serviceConnection, properties);
+		if (connectionDetails != null) {
+			properties = applyKafkaServiceConnectionForStreams(connectionDetails, properties);
 		}
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
@@ -89,11 +89,11 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForStreams(KafkaConnectionDetails serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForStreams(KafkaConnectionDetails connectionDetails,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				nodesToStringList(serviceConnection.getStreamBootstrapNodes()));
+				nodesToStringList(connectionDetails.getStreamBootstrapNodes()));
 		result.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		return result;
 	}
