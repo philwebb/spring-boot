@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
@@ -47,7 +47,7 @@ class RabbitConnectionProvider implements RunningServiceServiceConnectionProvide
 		if (!this.serviceConnectionPresent) {
 			return Collections.emptyList();
 		}
-		List<RabbitServiceConnection> result = new ArrayList<>();
+		List<RabbitConnectionDetails> result = new ArrayList<>();
 		for (RunningService service : services) {
 			if (!RabbitService.matches(service)) {
 				continue;
@@ -58,7 +58,7 @@ class RabbitConnectionProvider implements RunningServiceServiceConnectionProvide
 		return result;
 	}
 
-	private static class DockerComposeRabbitServiceConnection implements RabbitServiceConnection {
+	private static class DockerComposeRabbitServiceConnection implements RabbitConnectionDetails {
 
 		private final RabbitService service;
 

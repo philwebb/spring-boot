@@ -38,14 +38,14 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 
 	private ConnectionNameStrategy connectionNameStrategy;
 
-	private final RabbitServiceConnection serviceConnection;
+	private final RabbitConnectionDetails serviceConnection;
 
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
 		this(properties, null);
 	}
 
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
-			RabbitServiceConnection serviceConnection) {
+			RabbitConnectionDetails serviceConnection) {
 		Assert.notNull(properties, "RabbitProperties must not be null");
 		this.rabbitProperties = properties;
 		this.serviceConnection = serviceConnection;
@@ -84,7 +84,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 */
 	protected abstract void configure(T connectionFactory, RabbitProperties rabbitProperties);
 
-	private String getAddresses(RabbitServiceConnection serviceConnection) {
+	private String getAddresses(RabbitConnectionDetails serviceConnection) {
 		return serviceConnection.getAddresses()
 			.stream()
 			.map((address) -> address.host() + ":" + address.port())

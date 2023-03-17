@@ -35,8 +35,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -113,7 +113,7 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory,
-			MongoProperties properties, ObjectProvider<MongoServiceConnection> serviceConnectionProvider) {
+			MongoProperties properties, ObjectProvider<MongoConnectionDetails> serviceConnectionProvider) {
 		return new ReactiveGridFsTemplate(dataBufferFactory,
 				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties,
 						serviceConnectionProvider.getIfAvailable()),
@@ -122,7 +122,7 @@ public class MongoReactiveDataAutoConfiguration {
 
 	/**
 	 * {@link ReactiveMongoDatabaseFactory} decorator to use {@link Gridfs#getDatabase()}
-	 * or {@link GridFs#getGridFs()} from the {@link MongoServiceConnection} when set.
+	 * or {@link GridFs#getGridFs()} from the {@link MongoConnectionDetails} when set.
 	 */
 	static class GridFsReactiveMongoDatabaseFactory implements ReactiveMongoDatabaseFactory {
 
@@ -130,10 +130,10 @@ public class MongoReactiveDataAutoConfiguration {
 
 		private final MongoProperties properties;
 
-		private final MongoServiceConnection serviceConnection;
+		private final MongoConnectionDetails serviceConnection;
 
 		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties,
-				MongoServiceConnection serviceConnection) {
+				MongoConnectionDetails serviceConnection) {
 			this.delegate = delegate;
 			this.properties = properties;
 			this.serviceConnection = serviceConnection;
@@ -189,7 +189,7 @@ public class MongoReactiveDataAutoConfiguration {
 			return this.delegate.isTransactionActive();
 		}
 
-		private String getGridFsDatabase(MongoServiceConnection serviceConnection) {
+		private String getGridFsDatabase(MongoConnectionDetails serviceConnection) {
 			if (serviceConnection.getGridFs() == null) {
 				return null;
 			}

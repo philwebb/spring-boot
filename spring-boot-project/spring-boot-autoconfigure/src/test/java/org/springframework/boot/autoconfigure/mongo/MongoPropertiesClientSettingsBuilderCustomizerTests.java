@@ -26,7 +26,7 @@ import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.Host;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.Host;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,7 +40,7 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 
 	private MongoProperties properties;
 
-	private MongoServiceConnection serviceConnection;
+	private MongoConnectionDetails serviceConnection;
 
 	@BeforeEach
 	void setUp() {

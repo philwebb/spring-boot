@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.r2dbc;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
 import org.springframework.boot.origin.Origin;
@@ -27,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.RedisConnection;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 
 /**
- * A {@link ConnectionDetailsFactory} for creating an {@link R2dbcServiceConnection} from
+ * A {@link ConnectionDetailsFactory} for creating an {@link R2dbcConnectionDetails} from
  * a {@link JdbcDatabaseContainer}.
  *
  * @author Moritz Halbritter
@@ -37,9 +37,9 @@ class JdbcDatabaseContainerR2dbcServiceConnectionFactory
 		extends ContainerConnectionDetailsFactory<RedisConnection, RedisConnectionDetails> {
 
 	@Override
-	public R2dbcServiceConnection createServiceConnection(
-			ServiceConnectionSource<JdbcDatabaseContainer<?>, R2dbcServiceConnection> source) {
-		return new R2dbcServiceConnection() {
+	public R2dbcConnectionDetails createServiceConnection(
+			ServiceConnectionSource<JdbcDatabaseContainer<?>, R2dbcConnectionDetails> source) {
+		return new R2dbcConnectionDetails() {
 
 			@Override
 			public Origin getOrigin() {

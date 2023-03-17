@@ -23,11 +23,11 @@ import java.util.List;
 import org.springframework.boot.origin.Origin;
 
 /**
- * A {@link MongoServiceConnection} for tests.
+ * A {@link MongoConnectionDetails} for tests.
  *
  * @author Moritz Halbritter
  */
-final class TestMongoServiceConnection implements MongoServiceConnection {
+final class TestMongoServiceConnection implements MongoConnectionDetails {
 
 	private final String host;
 

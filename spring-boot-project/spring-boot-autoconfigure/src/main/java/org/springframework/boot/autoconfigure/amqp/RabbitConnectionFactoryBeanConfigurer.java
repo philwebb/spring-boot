@@ -39,7 +39,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 
 	private final ResourceLoader resourceLoader;
 
-	private final RabbitServiceConnection serviceConnection;
+	private final RabbitConnectionDetails serviceConnection;
 
 	private CredentialsProvider credentialsProvider;
 
@@ -50,7 +50,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	}
 
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
-			RabbitServiceConnection serviceConnection) {
+			RabbitConnectionDetails serviceConnection) {
 		this.resourceLoader = resourceLoader;
 		this.rabbitProperties = properties;
 		this.serviceConnection = serviceConnection;

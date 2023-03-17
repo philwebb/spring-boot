@@ -22,7 +22,7 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 
 /**
  * Post-processes beans of type {@link PoolDataSourceImpl} and name 'dataSource' to apply
- * the values from {@link JdbcServiceConnection}.
+ * the values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -35,7 +35,7 @@ class JdbcServiceConnectionOracleUcpBeanPostProcessor
 	}
 
 	@Override
-	protected Object processDataSource(PoolDataSourceImpl dataSource, JdbcServiceConnection serviceConnection) {
+	protected Object processDataSource(PoolDataSourceImpl dataSource, JdbcConnectionDetails serviceConnection) {
 		try {
 			dataSource.setURL(serviceConnection.getJdbcUrl());
 			dataSource.setUser(serviceConnection.getUsername());

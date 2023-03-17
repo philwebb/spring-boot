@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ class MySqlIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void shouldHaveJdbcServiceConnection() {
-		JdbcServiceConnection serviceConnection = runProvider(JdbcServiceConnection.class);
+		JdbcConnectionDetails serviceConnection = runProvider(JdbcConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mysql-jdbc-database");
 		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");

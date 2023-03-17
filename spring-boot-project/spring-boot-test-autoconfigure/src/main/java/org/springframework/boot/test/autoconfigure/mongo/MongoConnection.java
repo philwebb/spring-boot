@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
@@ -32,12 +32,12 @@ import org.springframework.boot.test.autoconfigure.service.connection.ServiceCon
  * @author Andy Wilkinson
  * @since 3.1.0
  * @see ServiceConnection
- * @see MongoServiceConnection
+ * @see MongoConnectionDetails
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ServiceConnection(MongoServiceConnection.class)
+@ServiceConnection(MongoConnectionDetails.class)
 public @interface MongoConnection {
 
 }

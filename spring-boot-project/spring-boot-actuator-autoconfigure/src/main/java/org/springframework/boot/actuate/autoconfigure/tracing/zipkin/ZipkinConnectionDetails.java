@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @author Moritz Halbritter
  * @since 3.1.0
  */
-public interface ZipkinServiceConnection extends ConnectionDetails {
+public interface ZipkinConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Hostname of the Zipkin service.

@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.MockMvcEndpointDocumentationTests;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.annotation.Bean;
@@ -253,8 +253,8 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		ZipkinServiceConnection zipkinServiceConnection() {
-			return new ZipkinServiceConnection() {
+		ZipkinConnectionDetails zipkinServiceConnection() {
+			return new ZipkinConnectionDetails() {
 				@Override
 				public String getHost() {
 					return "localhost";
@@ -283,8 +283,8 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		JdbcServiceConnection jdbcServiceConnection() {
-			return new JdbcServiceConnection() {
+		JdbcConnectionDetails jdbcServiceConnection() {
+			return new JdbcConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -313,8 +313,8 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		R2dbcServiceConnection r2dbcServiceConnection() {
-			return new R2dbcServiceConnection() {
+		R2dbcConnectionDetails r2dbcServiceConnection() {
+			return new R2dbcConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-2";
@@ -343,8 +343,8 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		RabbitServiceConnection rabbitServiceConnection() {
-			return new RabbitServiceConnection() {
+		RabbitConnectionDetails rabbitServiceConnection() {
+			return new RabbitConnectionDetails() {
 				@Override
 				public String getUsername() {
 					return "user-1";
@@ -413,8 +413,8 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		MongoServiceConnection mongoServiceConnection() {
-			return new MongoServiceConnection() {
+		MongoConnectionDetails mongoServiceConnection() {
+			return new MongoConnectionDetails() {
 				@Override
 				public String getHost() {
 					return "localhost";

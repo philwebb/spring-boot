@@ -24,23 +24,23 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection.Address;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Cluster;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Sentinel;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.Host;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.Host;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 
@@ -62,13 +62,13 @@ class ServiceConnectionEndpoint {
 	@ReadOperation
 	ServiceConnectionsDto serviceConnections() {
 		Stream<RedisConnectionDetails> redis = getServiceConnections(RedisConnectionDetails.class);
-		Stream<ZipkinServiceConnection> zipkin = getServiceConnections(ZipkinServiceConnection.class);
-		Stream<JdbcServiceConnection> jdbc = getServiceConnections(JdbcServiceConnection.class);
-		Stream<R2dbcServiceConnection> r2dbc = getServiceConnections(R2dbcServiceConnection.class);
-		Stream<RabbitServiceConnection> rabbit = getServiceConnections(RabbitServiceConnection.class);
+		Stream<ZipkinConnectionDetails> zipkin = getServiceConnections(ZipkinConnectionDetails.class);
+		Stream<JdbcConnectionDetails> jdbc = getServiceConnections(JdbcConnectionDetails.class);
+		Stream<R2dbcConnectionDetails> r2dbc = getServiceConnections(R2dbcConnectionDetails.class);
+		Stream<RabbitConnectionDetails> rabbit = getServiceConnections(RabbitConnectionDetails.class);
 		Stream<ElasticsearchConnectionDetails> elasticsearch = getServiceConnections(
 				ElasticsearchConnectionDetails.class);
-		Stream<MongoServiceConnection> mongo = getServiceConnections(MongoServiceConnection.class);
+		Stream<MongoConnectionDetails> mongo = getServiceConnections(MongoConnectionDetails.class);
 		return new ServiceConnectionsDto(redis.map(RedisServiceConnectionDto::from).toList(),
 				zipkin.map(ZipkinServiceConnectionDto::from).toList(),
 				jdbc.map(JdbcServiceConnectionDto::from).toList(), r2dbc.map(R2dbcServiceConnectionDto::from).toList(),
@@ -93,7 +93,7 @@ class ServiceConnectionEndpoint {
 	@JsonInclude(Include.NON_NULL)
 	private record JdbcServiceConnectionDto(String name, String origin, String username, String url) {
 
-		private static JdbcServiceConnectionDto from(JdbcServiceConnection serviceConnection) {
+		private static JdbcServiceConnectionDto from(JdbcConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new JdbcServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getUsername(),
@@ -104,7 +104,7 @@ class ServiceConnectionEndpoint {
 	@JsonInclude(Include.NON_NULL)
 	private record R2dbcServiceConnectionDto(String name, String origin, String username, String url) {
 
-		private static R2dbcServiceConnectionDto from(R2dbcServiceConnection serviceConnection) {
+		private static R2dbcServiceConnectionDto from(R2dbcConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new R2dbcServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getUsername(),
@@ -115,7 +115,7 @@ class ServiceConnectionEndpoint {
 	@JsonInclude(Include.NON_NULL)
 	private record ZipkinServiceConnectionDto(String name, String origin, String host, int port, String spanPath) {
 
-		private static ZipkinServiceConnectionDto from(ZipkinServiceConnection serviceConnection) {
+		private static ZipkinServiceConnectionDto from(ZipkinConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new ZipkinServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getHost(),
@@ -174,7 +174,7 @@ class ServiceConnectionEndpoint {
 	private record RabbitServiceConnectionDto(String name, String origin, String username, String virtualHost,
 			List<AddressDto> addresses) {
 
-		private static RabbitServiceConnectionDto from(RabbitServiceConnection serviceConnection) {
+		private static RabbitServiceConnectionDto from(RabbitConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new RabbitServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getUsername(),
@@ -213,7 +213,7 @@ class ServiceConnectionEndpoint {
 			List<HostDto> additionalHosts, String database, String authenticationDatabase, String username,
 			String replicaSetName, GridFsDto gridFs) {
 
-		private static MongoServiceConnectionDto from(MongoServiceConnection serviceConnection) {
+		private static MongoServiceConnectionDto from(MongoConnectionDetails serviceConnection) {
 			Origin origin = serviceConnection.getOrigin();
 			return new MongoServiceConnectionDto(serviceConnection.getName(),
 					(origin != null) ? origin.toString() : null, serviceConnection.getHost(),

@@ -47,7 +47,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
@@ -135,7 +135,7 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks,
 				ResourceProviderCustomizer resourceProviderCustomizer,
-				ObjectProvider<JdbcServiceConnection> serviceConnectionProvider) {
+				ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
 			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique(),
 					serviceConnectionProvider.getIfAvailable());
@@ -148,14 +148,14 @@ public class FlywayAutoConfiguration {
 		}
 
 		private void configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
-				DataSource flywayDataSource, DataSource dataSource, JdbcServiceConnection serviceConnection) {
+				DataSource flywayDataSource, DataSource dataSource, JdbcConnectionDetails serviceConnection) {
 			DataSource migrationDataSource = getMigrationDataSource(properties, flywayDataSource, dataSource,
 					serviceConnection);
 			configuration.dataSource(migrationDataSource);
 		}
 
 		private DataSource getMigrationDataSource(FlywayProperties properties, DataSource flywayDataSource,
-				DataSource dataSource, JdbcServiceConnection serviceConnection) {
+				DataSource dataSource, JdbcConnectionDetails serviceConnection) {
 			if (flywayDataSource != null) {
 				return flywayDataSource;
 			}
@@ -177,7 +177,7 @@ public class FlywayAutoConfiguration {
 			return dataSource;
 		}
 
-		private void applyCommonBuilderProperties(FlywayProperties properties, JdbcServiceConnection serviceConnection,
+		private void applyCommonBuilderProperties(FlywayProperties properties, JdbcConnectionDetails serviceConnection,
 				DataSourceBuilder<?> builder) {
 			String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
 			String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
@@ -383,7 +383,7 @@ public class FlywayAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(JdbcServiceConnection.class)
+		@ConditionalOnBean(JdbcConnectionDetails.class)
 		private static final class JdbcServiceConnectionCondition {
 
 		}

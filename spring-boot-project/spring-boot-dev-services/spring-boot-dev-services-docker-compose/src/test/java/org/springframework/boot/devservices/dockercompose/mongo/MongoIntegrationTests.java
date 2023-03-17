@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ class MongoIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void test() {
-		MongoServiceConnection serviceConnection = runProvider(MongoServiceConnection.class);
+		MongoConnectionDetails serviceConnection = runProvider(MongoConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mongo-mongo");
 		assertThat(serviceConnection.getHost()).isNotNull();
 		assertThat(serviceConnection.getPort()).isGreaterThan(0);

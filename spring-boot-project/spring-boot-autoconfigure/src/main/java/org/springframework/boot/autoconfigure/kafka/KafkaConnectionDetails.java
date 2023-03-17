@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface KafkaServiceConnection extends ConnectionDetails {
+public interface KafkaConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Returns the list of bootstrap nodes.

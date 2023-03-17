@@ -46,7 +46,7 @@ class ConnectionFactoryOptionsInitializer {
 	 * @throws ConnectionFactoryBeanCreationException if no suitable connection could be
 	 * determined
 	 */
-	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcServiceConnection serviceConnection,
+	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcConnectionDetails serviceConnection,
 			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
 		String url = (serviceConnection != null) ? serviceConnection.getR2dbcUrl() : properties.getUrl();
 		if (StringUtils.hasText(url)) {
@@ -61,7 +61,7 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	private ConnectionFactoryOptions.Builder initializeRegularOptions(String url, R2dbcProperties properties,
-			R2dbcServiceConnection serviceConnection) {
+			R2dbcConnectionDetails serviceConnection) {
 		ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(url);
 		Builder optionsBuilder = urlOptions.mutate();
 		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
@@ -95,7 +95,7 @@ class ConnectionFactoryOptionsInitializer {
 		return builder;
 	}
 
-	private String determineDatabaseName(R2dbcProperties properties, R2dbcServiceConnection serviceConnection) {
+	private String determineDatabaseName(R2dbcProperties properties, R2dbcConnectionDetails serviceConnection) {
 		if (serviceConnection != null) {
 			return null;
 		}

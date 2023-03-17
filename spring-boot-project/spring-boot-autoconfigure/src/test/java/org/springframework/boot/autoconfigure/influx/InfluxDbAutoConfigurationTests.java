@@ -55,7 +55,7 @@ class InfluxDbAutoConfigurationTests {
 
 	@Test
 	void shouldUseServiceConnection() {
-		this.contextRunner.withBean(InfluxDbServiceConnection.class, this::influxDbServiceConnection).run((context) -> {
+		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbServiceConnection).run((context) -> {
 			assertThat(context).hasSingleBean(InfluxDB.class);
 			InfluxDB influxDb = context.getBean(InfluxDB.class);
 			assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
@@ -64,7 +64,7 @@ class InfluxDbAutoConfigurationTests {
 
 	@Test
 	void serviceConnectionOverwritesProperties() {
-		this.contextRunner.withBean(InfluxDbServiceConnection.class, this::influxDbServiceConnection)
+		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbServiceConnection)
 			.withPropertyValues("spring.influx.url=http://some-other-host", "spring.influx.user=user",
 					"spring.influx.password=password")
 			.run((context) -> {
@@ -120,8 +120,8 @@ class InfluxDbAutoConfigurationTests {
 		return callFactory.readTimeoutMillis();
 	}
 
-	private InfluxDbServiceConnection influxDbServiceConnection() {
-		return new InfluxDbServiceConnection() {
+	private InfluxDbConnectionDetails influxDbServiceConnection() {
+		return new InfluxDbConnectionDetails() {
 			@Override
 			public URI getUrl() {
 				return URI.create("http://localhost");

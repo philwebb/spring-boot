@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
@@ -69,7 +69,7 @@ class ZipkinServiceConnectionProvider implements RunningServiceServiceConnection
 		return "http://%s:%d/zipkin/".formatted(service.getHost(), service.getPort());
 	}
 
-	private static class DockerComposeZipkinServiceConnection implements ZipkinServiceConnection {
+	private static class DockerComposeZipkinServiceConnection implements ZipkinConnectionDetails {
 
 		private final ZipkinService service;
 

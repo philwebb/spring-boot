@@ -20,7 +20,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Post-processes beans of type {@link HikariDataSource} and name 'dataSource' to apply
- * the values from {@link JdbcServiceConnection}.
+ * the values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -33,7 +33,7 @@ class JdbcServiceConnectionHikariBeanPostProcessor
 	}
 
 	@Override
-	protected Object processDataSource(HikariDataSource dataSource, JdbcServiceConnection serviceConnection) {
+	protected Object processDataSource(HikariDataSource dataSource, JdbcConnectionDetails serviceConnection) {
 		dataSource.setJdbcUrl(serviceConnection.getJdbcUrl());
 		dataSource.setUsername(serviceConnection.getUsername());
 		dataSource.setPassword(serviceConnection.getPassword());

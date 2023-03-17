@@ -31,7 +31,11 @@ public class RedisContainerConnectionDetailsFactory
 		return new RedisContainerConnectionDetails(source);
 	}
 
-	private static class RedisContainerConnectionDetails extends ContainerConnectionDetails implements RedisConnectionDetails {
+	/**
+	 * {@link RedisConnectionDetails} backed by a {@link ServiceConnectedContainer}.
+	 */
+	private static class RedisContainerConnectionDetails extends ContainerConnectionDetails
+			implements RedisConnectionDetails {
 
 		private final Standalone standalone;
 

@@ -21,11 +21,11 @@ import java.util.List;
 import org.springframework.boot.origin.Origin;
 
 /**
- * A {@link RabbitServiceConnection} for tests.
+ * A {@link RabbitConnectionDetails} for tests.
  *
  * @author Moritz Halbritter
  */
-class TestRabbitServiceConnection implements RabbitServiceConnection {
+class TestRabbitServiceConnection implements RabbitConnectionDetails {
 
 	@Override
 	public String getUsername() {

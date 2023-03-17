@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.kafka.KafkaServiceConnection.Node;
+import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails.Node;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,8 +64,8 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
-			ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
-		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
+		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildStreamsProperties();
 		if (serviceConnection != null) {
 			properties = applyKafkaServiceConnectionForStreams(serviceConnection, properties);
@@ -89,7 +89,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForStreams(KafkaServiceConnection serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForStreams(KafkaConnectionDetails serviceConnection,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,

@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface MongoServiceConnection extends ConnectionDetails {
+public interface MongoConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Mongo server host.

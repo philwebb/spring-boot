@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.influx;
-
-import java.net.URI;
+package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * A connection to an InfluxDB service.
+ * A connection to a SQL database service through JDBC.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface InfluxDbServiceConnection extends ConnectionDetails {
+public interface JdbcConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * URL of the InfluxDB instance to which to connect.
-	 * @return the URL of the InfluxDB instance to which to connect
-	 */
-	URI getUrl();
-
-	/**
-	 * Login user.
-	 * @return the login user or {@code null}
+	 * Hostname for the database.
+	 * @return the username for the database
 	 */
 	String getUsername();
 
 	/**
-	 * Login password.
-	 * @return the login password or {@code null}
+	 * Password for the database.
+	 * @return the password for the database
 	 */
 	String getPassword();
+
+	/**
+	 * JDBC url for the database.
+	 * @return the JDBC url for the database
+	 */
+	String getJdbcUrl();
 
 }

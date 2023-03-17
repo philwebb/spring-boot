@@ -40,7 +40,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
@@ -553,8 +553,8 @@ class LiquibaseAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		JdbcServiceConnection serviceConnection() {
-			return new JdbcServiceConnection() {
+		JdbcConnectionDetails serviceConnection() {
+			return new JdbcConnectionDetails() {
 				@Override
 				public String getJdbcUrl() {
 					return "jdbc:postgresql://database.example.com:12345/database-1";

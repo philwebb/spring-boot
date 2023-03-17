@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.serviceconnection;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.serviceconnection.ServiceConnectionEndpoint.ServiceConnectionsDto;
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,12 +43,12 @@ class ServiceConnectionEndpointTests {
 		.withBean("endpoint", ServiceConnectionEndpoint.class)
 		.withBean("elasticsearchServiceConnection", ElasticsearchConnectionDetails.class,
 				() -> mock(ElasticsearchConnectionDetails.class))
-		.withBean("mongoServiceConnection", MongoServiceConnection.class, () -> mock(MongoServiceConnection.class))
+		.withBean("mongoServiceConnection", MongoConnectionDetails.class, () -> mock(MongoConnectionDetails.class))
 		.withBean("redisServiceConnection", RedisConnectionDetails.class, () -> mock(RedisConnectionDetails.class))
-		.withBean("jdbcServiceConnection", JdbcServiceConnection.class, () -> mock(JdbcServiceConnection.class))
-		.withBean("r2dbcServiceConnection", R2dbcServiceConnection.class, () -> mock(R2dbcServiceConnection.class))
-		.withBean("rabbitServiceConnection", RabbitServiceConnection.class, () -> mock(RabbitServiceConnection.class))
-		.withBean("zipkinServiceConnection", ZipkinServiceConnection.class, () -> mock(ZipkinServiceConnection.class));
+		.withBean("jdbcServiceConnection", JdbcConnectionDetails.class, () -> mock(JdbcConnectionDetails.class))
+		.withBean("r2dbcServiceConnection", R2dbcConnectionDetails.class, () -> mock(R2dbcConnectionDetails.class))
+		.withBean("rabbitServiceConnection", RabbitConnectionDetails.class, () -> mock(RabbitConnectionDetails.class))
+		.withBean("zipkinServiceConnection", ZipkinConnectionDetails.class, () -> mock(ZipkinConnectionDetails.class));
 
 	@Test
 	void serviceConnectionsAreProduced() {

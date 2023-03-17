@@ -16,17 +16,17 @@
 
 package org.springframework.boot.devservices.dockercompose.database;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.origin.Origin;
 
 /**
- * Abstract base class for {@link JdbcServiceConnection} implementations.
+ * Abstract base class for {@link JdbcConnectionDetails} implementations.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public abstract class AbstractJdbcServiceConnection implements JdbcServiceConnection {
+public abstract class AbstractJdbcServiceConnection implements JdbcConnectionDetails {
 
 	protected final DatabaseService service;
 

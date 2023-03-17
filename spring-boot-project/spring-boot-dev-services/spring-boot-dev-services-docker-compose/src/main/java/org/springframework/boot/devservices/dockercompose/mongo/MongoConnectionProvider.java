@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
@@ -47,7 +47,7 @@ class MongoConnectionProvider implements RunningServiceServiceConnectionProvider
 		if (!this.serviceConnectionPresent) {
 			return Collections.emptyList();
 		}
-		List<MongoServiceConnection> result = new ArrayList<>();
+		List<MongoConnectionDetails> result = new ArrayList<>();
 		for (RunningService service : services) {
 			if (!MongoService.matches(service)) {
 				continue;
@@ -58,7 +58,7 @@ class MongoConnectionProvider implements RunningServiceServiceConnectionProvider
 		return result;
 	}
 
-	private static class DockerComposeMongoServiceConnection implements MongoServiceConnection {
+	private static class DockerComposeMongoServiceConnection implements MongoConnectionDetails {
 
 		private final MongoService service;
 

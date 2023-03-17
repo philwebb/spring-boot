@@ -1243,7 +1243,7 @@ class RabbitAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		RabbitServiceConnection rabbitServiceConnection() {
+		RabbitConnectionDetails rabbitServiceConnection() {
 			return new TestRabbitServiceConnection();
 		}
 

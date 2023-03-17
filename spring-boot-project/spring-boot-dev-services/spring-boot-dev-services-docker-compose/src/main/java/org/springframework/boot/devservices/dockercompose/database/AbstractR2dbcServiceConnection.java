@@ -16,17 +16,17 @@
 
 package org.springframework.boot.devservices.dockercompose.database;
 
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.origin.Origin;
 
 /**
- * Abstract base class for {@link R2dbcServiceConnection} implementations.
+ * Abstract base class for {@link R2dbcConnectionDetails} implementations.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public abstract class AbstractR2dbcServiceConnection implements R2dbcServiceConnection {
+public abstract class AbstractR2dbcServiceConnection implements R2dbcConnectionDetails {
 
 	protected final DatabaseService service;
 

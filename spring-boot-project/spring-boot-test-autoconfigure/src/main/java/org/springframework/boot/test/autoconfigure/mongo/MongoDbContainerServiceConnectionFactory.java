@@ -23,7 +23,7 @@ import java.util.List;
 import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
@@ -32,7 +32,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.RedisConnection;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 
 /**
- * A {@link ConnectionDetailsFactory} for creating a {@link MongoServiceConnection} from a
+ * A {@link ConnectionDetailsFactory} for creating a {@link MongoConnectionDetails} from a
  * {@link MongoDBContainer}.
  *
  * @author Moritz Halbritter
@@ -43,8 +43,8 @@ class MongoDbContainerServiceConnectionFactory
 
 	@Override
 	public ConnectionDetails createServiceConnection(
-			ServiceConnectionSource<MongoDBContainer, MongoServiceConnection> source) {
-		return new MongoServiceConnection() {
+			ServiceConnectionSource<MongoDBContainer, MongoConnectionDetails> source) {
+		return new MongoConnectionDetails() {
 
 			@Override
 			public String getName() {

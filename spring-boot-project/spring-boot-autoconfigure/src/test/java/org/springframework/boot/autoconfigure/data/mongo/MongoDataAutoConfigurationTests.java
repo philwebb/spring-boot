@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -266,7 +266,7 @@ class MongoDataAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		MongoServiceConnection mongoServiceConnection() {
+		MongoConnectionDetails mongoServiceConnection() {
 			return new TestMongoServiceConnection();
 		}
 

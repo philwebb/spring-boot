@@ -33,7 +33,7 @@ public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactor
 		this(properties, null);
 	}
 
-	public CachingConnectionFactoryConfigurer(RabbitProperties properties, RabbitServiceConnection serviceConnection) {
+	public CachingConnectionFactoryConfigurer(RabbitProperties properties, RabbitConnectionDetails serviceConnection) {
 		super(properties, serviceConnection);
 	}
 

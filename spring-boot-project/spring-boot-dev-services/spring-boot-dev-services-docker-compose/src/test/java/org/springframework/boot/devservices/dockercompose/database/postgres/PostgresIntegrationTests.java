@@ -20,8 +20,8 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +36,7 @@ class PostgresIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void shouldHaveJdbcServiceConnection() {
-		JdbcServiceConnection serviceConnection = runProvider(JdbcServiceConnection.class);
+		JdbcConnectionDetails serviceConnection = runProvider(JdbcConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-postgres-jdbc-database");
 		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
@@ -45,7 +45,7 @@ class PostgresIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void shouldHaveR2dbcServiceConnection() {
-		R2dbcServiceConnection serviceConnection = runProvider(R2dbcServiceConnection.class);
+		R2dbcConnectionDetails serviceConnection = runProvider(R2dbcConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-postgres-r2dbc-database");
 		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");

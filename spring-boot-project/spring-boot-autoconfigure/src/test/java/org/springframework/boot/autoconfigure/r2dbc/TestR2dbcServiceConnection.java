@@ -19,11 +19,11 @@ package org.springframework.boot.autoconfigure.r2dbc;
 import org.springframework.boot.origin.Origin;
 
 /**
- * {@link R2dbcServiceConnection} used in tests.
+ * {@link R2dbcConnectionDetails} used in tests.
  *
  * @author Moritz Halbritter
  */
-class TestR2dbcServiceConnection implements R2dbcServiceConnection {
+class TestR2dbcServiceConnection implements R2dbcConnectionDetails {
 
 	@Override
 	public String getR2dbcUrl() {

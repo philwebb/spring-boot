@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public interface R2dbcServiceConnection extends ConnectionDetails {
+public interface R2dbcConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Hostname for the database.

@@ -20,7 +20,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
  * Post-processes beans of type {@link DataSource} and name 'dataSource' to apply the
- * values from {@link JdbcServiceConnection}.
+ * values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -32,7 +32,7 @@ class JdbcServiceConnectionTomcatBeanPostProcessor extends AbstractJdbcServiceCo
 	}
 
 	@Override
-	protected Object processDataSource(DataSource dataSource, JdbcServiceConnection serviceConnection) {
+	protected Object processDataSource(DataSource dataSource, JdbcConnectionDetails serviceConnection) {
 		String url = serviceConnection.getJdbcUrl();
 		String username = serviceConnection.getUsername();
 		String password = serviceConnection.getPassword();

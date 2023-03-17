@@ -35,7 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
-import org.springframework.boot.autoconfigure.kafka.KafkaServiceConnection.Node;
+import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails.Node;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -104,8 +104,8 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers,
-			ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
-		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
+		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildConsumerProperties();
 		if (serviceConnection != null) {
 			properties = applyKafkaServiceConnectionForConsumer(serviceConnection, properties);
@@ -119,8 +119,8 @@ public class KafkaAutoConfiguration {
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(
 			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers,
-			ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
-		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
+		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildProducerProperties();
 		if (serviceConnection != null) {
 			properties = applyKafkaServiceConnectionForProducer(serviceConnection, properties);
@@ -159,8 +159,8 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KafkaAdmin kafkaAdmin(ObjectProvider<KafkaServiceConnection> serviceConnectionProvider) {
-		KafkaServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+	public KafkaAdmin kafkaAdmin(ObjectProvider<KafkaConnectionDetails> serviceConnectionProvider) {
+		KafkaConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		Map<String, Object> properties = this.properties.buildAdminProperties();
 		if (serviceConnection != null) {
 			properties = applyKafkaServiceConnectionForAdmin(serviceConnection, properties);
@@ -194,7 +194,7 @@ public class KafkaAutoConfiguration {
 		return builder.create(kafkaTemplate);
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForConsumer(KafkaServiceConnection serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForConsumer(KafkaConnectionDetails serviceConnection,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -203,7 +203,7 @@ public class KafkaAutoConfiguration {
 		return result;
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForProducer(KafkaServiceConnection serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForProducer(KafkaConnectionDetails serviceConnection,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -212,7 +212,7 @@ public class KafkaAutoConfiguration {
 		return result;
 	}
 
-	private Map<String, Object> applyKafkaServiceConnectionForAdmin(KafkaServiceConnection serviceConnection,
+	private Map<String, Object> applyKafkaServiceConnectionForAdmin(KafkaConnectionDetails serviceConnection,
 			Map<String, Object> properties) {
 		Map<String, Object> result = new HashMap<>(properties);
 		result.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,

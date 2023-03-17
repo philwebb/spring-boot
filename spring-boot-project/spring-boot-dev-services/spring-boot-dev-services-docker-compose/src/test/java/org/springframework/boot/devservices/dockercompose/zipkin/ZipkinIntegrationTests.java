@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ class ZipkinIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void test() {
-		ZipkinServiceConnection serviceConnection = runProvider(ZipkinServiceConnection.class);
+		ZipkinConnectionDetails serviceConnection = runProvider(ZipkinConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-zipkin-zipkin");
 		assertThat(serviceConnection.getHost()).isNotNull();
 		assertThat(serviceConnection.getPort()).isGreaterThan(0);

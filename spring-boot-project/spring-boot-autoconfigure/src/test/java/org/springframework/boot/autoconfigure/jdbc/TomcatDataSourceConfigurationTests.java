@@ -133,7 +133,7 @@ class TomcatDataSourceConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		JdbcServiceConnection sqlServiceConnection() {
+		JdbcConnectionDetails sqlServiceConnection() {
 			return new TestJdbcServiceConnection();
 		}
 

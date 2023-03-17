@@ -223,8 +223,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private static class ZipkinServiceConnectionConfiguration {
 
 		@Bean
-		ZipkinServiceConnection zipkinServiceConnection() {
-			return new ZipkinServiceConnection() {
+		ZipkinConnectionDetails zipkinServiceConnection() {
+			return new ZipkinConnectionDetails() {
 
 				@Override
 				public Origin getOrigin() {

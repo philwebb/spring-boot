@@ -19,15 +19,15 @@ package org.springframework.boot.autoconfigure.data.mongo;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.origin.Origin;
 
 /**
- * A {@link MongoServiceConnection} for tests.
+ * A {@link MongoConnectionDetails} for tests.
  *
  * @author Moritz Halbritter
  */
-class TestMongoServiceConnection implements MongoServiceConnection {
+class TestMongoServiceConnection implements MongoConnectionDetails {
 
 	@Override
 	public String getHost() {

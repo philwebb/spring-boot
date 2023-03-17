@@ -60,8 +60,8 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
 		URLConnectionSender urlConnectionSender(ZipkinProperties properties,
-				ObjectProvider<ZipkinServiceConnection> serviceConnectionProvider) {
-			ZipkinServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+				ObjectProvider<ZipkinConnectionDetails> serviceConnectionProvider) {
+			ZipkinConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
 			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
 			builder.readTimeout((int) properties.getReadTimeout().toMillis());
@@ -82,8 +82,8 @@ class ZipkinConfigurations {
 		@ConditionalOnMissingBean(Sender.class)
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinServiceConnection> serviceConnectionProvider) {
-			ZipkinServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+				ObjectProvider<ZipkinConnectionDetails> serviceConnectionProvider) {
+			ZipkinConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setReadTimeout(properties.getReadTimeout());
@@ -115,8 +115,8 @@ class ZipkinConfigurations {
 		@ConditionalOnMissingBean(Sender.class)
 		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinServiceConnection> serviceConnectionProvider) {
-			ZipkinServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+				ObjectProvider<ZipkinConnectionDetails> serviceConnectionProvider) {
+			ZipkinConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 			WebClient.Builder builder = WebClient.builder();
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			String endpoint = (serviceConnection != null) ? serviceConnection.getSpanEndpoint()

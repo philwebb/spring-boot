@@ -40,20 +40,26 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * Username for authentication with Elasticsearch.
 	 * @return username for authentication with Elasticsearch or {@code null}
 	 */
-	String getUsername();
+	default String getUsername() {
+		return null;
+	}
 
 	/**
 	 * Password for authentication with Elasticsearch.
 	 * @return password for authentication with Elasticsearch or {@code null}
 	 */
-	String getPassword();
+	default String getPassword() {
+		return null;
+	}
 
 	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 * @return prefix added to the path of every request sent to Elasticsearch or
 	 * {@code null}
 	 */
-	String getPathPrefix();
+	default String getPathPrefix() {
+		return null;
+	}
 
 	/**
 	 * An elasticsearch node.
@@ -64,8 +70,8 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * @param username the username or {@code null}
 	 * @param password the password or {@code null}
 	 */
-	record Node(String hostname, int port, Protocol protocol, String username, String password) {
-		public Node(String host, int port, Protocol protocol) {
+	record Node(String hostname, int port, Node.Protocol protocol, String username, String password) {
+		public Node(String host, int port, Node.Protocol protocol) {
 			this(host, port, protocol, null, null);
 		}
 

@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
@@ -33,12 +33,12 @@ import org.springframework.boot.test.autoconfigure.service.connection.ServiceCon
  * @author Andy Wilkinson
  * @since 3.1.0
  * @see ServiceConnection
- * @see JdbcServiceConnection
+ * @see JdbcConnectionDetails
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ServiceConnection(JdbcServiceConnection.class)
+@ServiceConnection(JdbcConnectionDetails.class)
 public @interface JdbcConnection {
 
 }

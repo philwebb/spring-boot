@@ -19,11 +19,11 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.boot.origin.Origin;
 
 /**
- * {@link JdbcServiceConnection} used in tests.
+ * {@link JdbcConnectionDetails} used in tests.
  *
  * @author Moritz Halbritter
  */
-class TestJdbcServiceConnection implements JdbcServiceConnection {
+class TestJdbcServiceConnection implements JdbcConnectionDetails {
 
 	@Override
 	public String getJdbcUrl() {

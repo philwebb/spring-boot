@@ -41,12 +41,12 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private final MongoProperties properties;
 
-	private final MongoServiceConnection serviceConnection;
+	private final MongoConnectionDetails serviceConnection;
 
 	private int order = 0;
 
 	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties,
-			MongoServiceConnection serviceConnection) {
+			MongoConnectionDetails serviceConnection) {
 		this.properties = properties;
 		this.serviceConnection = serviceConnection;
 	}
@@ -84,7 +84,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 		settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddresses));
 	}
 
-	private List<ServerAddress> getServerAddresses(MongoServiceConnection serviceConnection) {
+	private List<ServerAddress> getServerAddresses(MongoConnectionDetails serviceConnection) {
 		return serviceConnection.getAdditionalHosts()
 			.stream()
 			.map((h) -> new ServerAddress(h.host(), h.port()))
@@ -116,7 +116,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 		}
 	}
 
-	private char[] getPasswordAsCharArray(MongoServiceConnection serviceConnection) {
+	private char[] getPasswordAsCharArray(MongoConnectionDetails serviceConnection) {
 		if (serviceConnection.getPassword() == null) {
 			return null;
 		}

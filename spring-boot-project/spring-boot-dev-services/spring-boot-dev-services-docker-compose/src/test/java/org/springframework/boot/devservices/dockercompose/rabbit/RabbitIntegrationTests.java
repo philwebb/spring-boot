@@ -20,8 +20,8 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection;
-import org.springframework.boot.autoconfigure.amqp.RabbitServiceConnection.Address;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +36,7 @@ class RabbitIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void test() {
-		RabbitServiceConnection serviceConnection = runProvider(RabbitServiceConnection.class);
+		RabbitConnectionDetails serviceConnection = runProvider(RabbitConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-rabbit-rabbitmq");
 		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");

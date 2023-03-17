@@ -22,10 +22,8 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-import org.springframework.boot.autoconfigure.service.connection.ServiceConnectionSource;
-import org.springframework.boot.origin.Origin;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
+import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
 
 /**
  * An adapter from an {@link ElasticsearchContainer} to an
@@ -36,45 +34,34 @@ import org.springframework.boot.test.autoconfigure.service.connection.ContainerC
 class ElasticsearchContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<ElasticsearchConnection, ElasticsearchConnectionDetails> {
 
+	private static final int DEFAULT_PORT = 9200;
+
 	@Override
-	public ConnectionDetails createServiceConnection(
-			ServiceConnectionSource<ElasticsearchContainer, ElasticsearchConnectionDetails> source) {
-		return new ElasticsearchConnectionDetails() {
+	protected ElasticsearchConnectionDetails getContainerConnectionDetails(
+			ServiceConnectedContainer<ElasticsearchConnection> source) {
+		return new ElasticsearchContainerConnectionDetails(source);
+	}
 
-			private static final int DEFAULT_PORT = 9200;
+	/**
+	 * {@link ElasticsearchConnectionDetails} backed by a
+	 * {@link ServiceConnectedContainer}.
+	 */
+	private static class ElasticsearchContainerConnectionDetails extends ContainerConnectionDetails
+			implements ElasticsearchConnectionDetails {
 
-			@Override
-			public String getName() {
-				return source.name();
-			}
+		private final List<Node> nodes;
 
-			@Override
-			public Origin getOrigin() {
-				return source.origin();
-			}
+		protected ElasticsearchContainerConnectionDetails(ServiceConnectedContainer<ElasticsearchConnection> source) {
+			super(source);
+			this.nodes = List.of(new Node(source.getContainer().getHost(),
+					source.getContainer().getMappedPort(DEFAULT_PORT), Protocol.HTTP, null, null));
+		}
 
-			@Override
-			public List<Node> getNodes() {
-				return List.of(new Node(source.input().getHost(), source.input().getMappedPort(DEFAULT_PORT),
-						Protocol.HTTP, null, null));
-			}
+		@Override
+		public List<Node> getNodes() {
+			return this.nodes;
+		}
 
-			@Override
-			public String getUsername() {
-				return null;
-			}
-
-			@Override
-			public String getPassword() {
-				return null;
-			}
-
-			@Override
-			public String getPathPrefix() {
-				return null;
-			}
-
-		};
 	}
 
 }

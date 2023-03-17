@@ -365,7 +365,7 @@ class R2dbcAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		R2dbcServiceConnection sqlServiceConnection() {
+		R2dbcConnectionDetails sqlServiceConnection() {
 			return new TestR2dbcServiceConnection();
 		}
 

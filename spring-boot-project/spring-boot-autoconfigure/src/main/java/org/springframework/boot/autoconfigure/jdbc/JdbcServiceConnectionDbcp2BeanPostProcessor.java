@@ -20,7 +20,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
  * Post-processes beans of type {@link BasicDataSource} and name 'dataSource' to apply the
- * values from {@link JdbcServiceConnection}.
+ * values from {@link JdbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -33,7 +33,7 @@ class JdbcServiceConnectionDbcp2BeanPostProcessor
 	}
 
 	@Override
-	protected Object processDataSource(BasicDataSource dataSource, JdbcServiceConnection serviceConnection) {
+	protected Object processDataSource(BasicDataSource dataSource, JdbcConnectionDetails serviceConnection) {
 		dataSource.setUrl(serviceConnection.getJdbcUrl());
 		dataSource.setUsername(serviceConnection.getUsername());
 		dataSource.setPassword(serviceConnection.getPassword());

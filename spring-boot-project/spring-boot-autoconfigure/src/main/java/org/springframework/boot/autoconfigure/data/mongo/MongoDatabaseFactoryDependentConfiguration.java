@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection;
-import org.springframework.boot.autoconfigure.mongo.MongoServiceConnection.GridFs;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -80,7 +80,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
 	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate,
-			ObjectProvider<MongoServiceConnection> serviceConnectionProvider) {
+			ObjectProvider<MongoConnectionDetails> serviceConnectionProvider) {
 		return new GridFsTemplate(
 				new GridFsMongoDatabaseFactory(factory, this.properties, serviceConnectionProvider.getIfAvailable()),
 				mongoTemplate.getConverter(), this.properties.getGridfs().getBucket());
@@ -88,7 +88,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 	/**
 	 * {@link MongoDatabaseFactory} decorator to respect {@link Gridfs#getDatabase()} or
-	 * {@link GridFs#getGridFs()} from the {@link MongoServiceConnection} if set.
+	 * {@link GridFs#getGridFs()} from the {@link MongoConnectionDetails} if set.
 	 */
 	static class GridFsMongoDatabaseFactory implements MongoDatabaseFactory {
 
@@ -96,10 +96,10 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 		private final MongoProperties properties;
 
-		private final MongoServiceConnection serviceConnection;
+		private final MongoConnectionDetails serviceConnection;
 
 		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties,
-				MongoServiceConnection serviceConnection) {
+				MongoConnectionDetails serviceConnection) {
 			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
 			Assert.notNull(properties, "Properties must not be null");
 			this.mongoDatabaseFactory = mongoDatabaseFactory;
@@ -137,7 +137,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 			return this.mongoDatabaseFactory.withSession(session);
 		}
 
-		private String getGridFsDatabase(MongoServiceConnection serviceConnection) {
+		private String getGridFsDatabase(MongoConnectionDetails serviceConnection) {
 			if (serviceConnection.getGridFs() == null) {
 				return null;
 			}

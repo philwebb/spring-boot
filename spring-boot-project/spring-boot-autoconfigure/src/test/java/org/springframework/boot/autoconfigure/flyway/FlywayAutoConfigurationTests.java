@@ -49,7 +49,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.JdbcServiceConnection;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
@@ -240,7 +240,7 @@ class FlywayAutoConfigurationTests {
 			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class,
 					ServiceConnectionConfiguration.class)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(JdbcServiceConnection.class);
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class);
 				assertThat(context).hasSingleBean(Flyway.class);
 				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
 					.isEqualTo(context.getBean("flywayDataSource"));
@@ -1087,8 +1087,8 @@ class FlywayAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		JdbcServiceConnection serviceConnection() {
-			return new JdbcServiceConnection() {
+		JdbcConnectionDetails serviceConnection() {
+			return new JdbcConnectionDetails() {
 				@Override
 				public String getJdbcUrl() {
 					return "jdbc:postgresql://database.example.com:12345/database-1";

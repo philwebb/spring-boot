@@ -68,7 +68,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
-			ObjectProvider<JdbcServiceConnection> serviceConnectionProvider, ObjectProvider<XADataSource> xaDataSource)
+			ObjectProvider<JdbcConnectionDetails> serviceConnectionProvider, ObjectProvider<XADataSource> xaDataSource)
 			throws Exception {
 		return wrapper.wrapDataSource(xaDataSource
 			.getIfAvailable(() -> createXaDataSource(properties, serviceConnectionProvider.getIfAvailable())));
@@ -79,7 +79,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	private XADataSource createXaDataSource(DataSourceProperties properties, JdbcServiceConnection serviceConnection) {
+	private XADataSource createXaDataSource(DataSourceProperties properties, JdbcConnectionDetails serviceConnection) {
 		String className;
 		if (serviceConnection != null) {
 			className = DatabaseDriver.fromJdbcUrl(serviceConnection.getJdbcUrl()).getXaDataSourceClassName();
@@ -109,13 +109,13 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	private void bindXaProperties(XADataSource target, DataSourceProperties dataSourceProperties,
-			JdbcServiceConnection serviceConnection) {
+			JdbcConnectionDetails serviceConnection) {
 		Binder binder = new Binder(getBinderSource(dataSourceProperties, serviceConnection));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
 	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties,
-			JdbcServiceConnection serviceConnection) {
+			JdbcConnectionDetails serviceConnection) {
 		Map<Object, Object> properties = new HashMap<>(dataSourceProperties.getXa().getProperties());
 		properties.computeIfAbsent("user", (key) -> (serviceConnection != null) ? serviceConnection.getUsername()
 				: dataSourceProperties.determineUsername());

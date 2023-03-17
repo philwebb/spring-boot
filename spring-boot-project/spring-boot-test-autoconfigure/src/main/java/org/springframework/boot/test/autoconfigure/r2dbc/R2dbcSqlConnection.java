@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcServiceConnection;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
@@ -33,12 +33,12 @@ import org.springframework.boot.test.autoconfigure.service.connection.ServiceCon
  * @author Andy Wilkinson
  * @since 3.1.0
  * @see ServiceConnection
- * @see R2dbcServiceConnection
+ * @see R2dbcConnectionDetails
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@ServiceConnection(R2dbcServiceConnection.class)
+@ServiceConnection(R2dbcConnectionDetails.class)
 public @interface R2dbcSqlConnection {
 
 }

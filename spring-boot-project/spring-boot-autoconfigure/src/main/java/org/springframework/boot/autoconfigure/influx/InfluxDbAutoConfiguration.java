@@ -52,8 +52,8 @@ public class InfluxDbAutoConfiguration {
 	@Conditional(InfluxDBCondition.class)
 	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<InfluxDbCustomizer> customizers,
-			ObjectProvider<InfluxDbServiceConnection> serviceConnectionProvider) {
-		InfluxDbServiceConnection serviceConnection = serviceConnectionProvider.getIfAvailable();
+			ObjectProvider<InfluxDbConnectionDetails> serviceConnectionProvider) {
+		InfluxDbConnectionDetails serviceConnection = serviceConnectionProvider.getIfAvailable();
 		String url = (serviceConnection != null) ? serviceConnection.getUrl().toString() : properties.getUrl();
 		String user = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUser();
 		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
@@ -80,7 +80,7 @@ public class InfluxDbAutoConfiguration {
 
 		}
 
-		@ConditionalOnBean(InfluxDbServiceConnection.class)
+		@ConditionalOnBean(InfluxDbConnectionDetails.class)
 		private static final class InfluxDbServiceConnectionCondition {
 
 		}
