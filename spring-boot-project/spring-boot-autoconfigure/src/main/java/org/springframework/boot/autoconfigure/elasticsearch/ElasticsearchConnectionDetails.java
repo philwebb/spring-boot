@@ -75,18 +75,20 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 			this(host, port, protocol, null, null);
 		}
 
-		boolean hasCredentials() {
-			return this.username != null && this.password != null;
-		}
-
 		URI toUri() {
-			String userInfo = (hasCredentials()) ? this.username + ":" + this.password : null;
 			try {
-				return new URI(this.protocol.getScheme(), userInfo, this.hostname, this.port, null, null, null);
+				return new URI(this.protocol.getScheme(), userInfo(), this.hostname, this.port, null, null, null);
 			}
 			catch (URISyntaxException ex) {
 				throw new IllegalStateException("Can't construct URI", ex);
 			}
+		}
+
+		private String userInfo() {
+			if (this.username == null) {
+				return null;
+			}
+			return (this.password != null) ? (this.username + ":" + this.password) : this.username;
 		}
 
 		/**
@@ -111,6 +113,15 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 
 			String getScheme() {
 				return this.scheme;
+			}
+
+			static Protocol forScheme(String scheme) {
+				for (Protocol protocol : values()) {
+					if (protocol.scheme.equals(scheme)) {
+						return protocol;
+					}
+				}
+				throw new IllegalArgumentException("Unknown scheme '" + scheme + "'");
 			}
 
 		}

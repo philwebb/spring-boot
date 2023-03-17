@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.http.HttpHost;
@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,22 +60,27 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		RestClientBuilderConfiguration(ElasticsearchProperties properties) {
-			this.properties = properties;
-		}
+		private final ElasticsearchConnectionDetails connectionDetails;
 
-		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
+		RestClientBuilderConfiguration(ElasticsearchProperties properties,
 				ObjectProvider<ElasticsearchConnectionDetails> connectionDetails) {
-			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails.getIfAvailable());
+			this.properties = properties;
+			this.connectionDetails = connectionDetails
+				.getIfAvailable(() -> new PropertiesElasticsearchConnectionDetails(properties));
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(ObjectProvider<RestClientBuilderCustomizer> builderCustomizers,
-				ObjectProvider<ElasticsearchConnectionDetails> connectionDetailsProvider) {
-			ElasticsearchConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
-			HttpHost[] hosts = (connectionDetails != null) ? getHosts(connectionDetails) : getHosts(this.properties);
-			RestClientBuilder builder = RestClient.builder(hosts);
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer() {
+			return new DefaultRestClientBuilderCustomizer(this.properties, this.connectionDetails);
+		}
+
+		@Bean
+		RestClientBuilder elasticsearchRestClientBuilder(
+				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
+			RestClientBuilder builder = RestClient.builder(this.connectionDetails.getNodes()
+				.stream()
+				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
+				.toArray(HttpHost[]::new));
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
 				return httpClientBuilder;
@@ -83,47 +89,12 @@ class ElasticsearchRestClientConfigurations {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
-			String pathPrefix = (connectionDetails != null) ? connectionDetails.getPathPrefix()
-					: this.properties.getPathPrefix();
+			String pathPrefix = this.connectionDetails.getPathPrefix();
 			if (pathPrefix != null) {
 				builder.setPathPrefix(pathPrefix);
 			}
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
-		}
-
-		private HttpHost[] getHosts(ElasticsearchProperties properties) {
-			return properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
-		}
-
-		private HttpHost[] getHosts(ElasticsearchConnectionDetails connectionDetails) {
-			return connectionDetails.getNodes()
-				.stream()
-				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
-				.toArray(HttpHost[]::new);
-		}
-
-		private HttpHost createHttpHost(String uri) {
-			try {
-				return createHttpHost(URI.create(uri));
-			}
-			catch (IllegalArgumentException ex) {
-				return HttpHost.create(uri);
-			}
-		}
-
-		private HttpHost createHttpHost(URI uri) {
-			if (!StringUtils.hasLength(uri.getUserInfo())) {
-				return HttpHost.create(uri.toString());
-			}
-			try {
-				return HttpHost.create(new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(),
-						uri.getQuery(), uri.getFragment())
-					.toString());
-			}
-			catch (URISyntaxException ex) {
-				throw new IllegalStateException(ex);
-			}
 		}
 
 	}
@@ -178,8 +149,7 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
-			builder.setDefaultCredentialsProvider(
-					new PropertiesCredentialsProvider(this.properties, this.connectionDetails));
+			builder.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
 			map.from(this.properties::isSocketKeepAlive)
 				.to((keepAlive) -> builder
 					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
@@ -199,35 +169,20 @@ class ElasticsearchRestClientConfigurations {
 
 	}
 
-	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
+	private static class ConnectionDetailsCredentialsProvider extends BasicCredentialsProvider {
 
-		PropertiesCredentialsProvider(ElasticsearchProperties properties,
-				ElasticsearchConnectionDetails connectionDetails) {
-			String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
-			String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
+		ConnectionDetailsCredentialsProvider(ElasticsearchConnectionDetails connectionDetails) {
+			String username = connectionDetails.getUsername();
 			if (StringUtils.hasText(username)) {
-				Credentials credentials = new UsernamePasswordCredentials(username, password);
+				Credentials credentials = new UsernamePasswordCredentials(username, connectionDetails.getPassword());
 				setCredentials(AuthScope.ANY, credentials);
 			}
-			Stream<URI> uris = (connectionDetails != null) ? getUris(connectionDetails) : getUris(properties);
+			Stream<URI> uris = getUris(connectionDetails);
 			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
-		}
-
-		private Stream<URI> getUris(ElasticsearchProperties properties) {
-			return properties.getUris().stream().map(this::toUri);
 		}
 
 		private Stream<URI> getUris(ElasticsearchConnectionDetails connectionDetails) {
 			return connectionDetails.getNodes().stream().map(Node::toUri);
-		}
-
-		private URI toUri(String uri) {
-			try {
-				return URI.create(uri);
-			}
-			catch (IllegalArgumentException ex) {
-				return null;
-			}
 		}
 
 		private boolean hasUserInfo(URI uri) {
@@ -248,6 +203,59 @@ class ElasticsearchRestClientConfigurations {
 			String username = userInfo.substring(0, delimiter);
 			String password = userInfo.substring(delimiter + 1);
 			return new UsernamePasswordCredentials(username, password);
+		}
+
+	}
+
+	private static class PropertiesElasticsearchConnectionDetails implements ElasticsearchConnectionDetails {
+
+		private final ElasticsearchProperties properties;
+
+		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public List<Node> getNodes() {
+			return this.properties.getUris().stream().map(this::createNode).toList();
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public String getPathPrefix() {
+			return this.properties.getPathPrefix();
+		}
+
+		private Node createNode(String uri) {
+			if (uri.startsWith("http://") || uri.startsWith("https://")) {
+				return createNode(URI.create(uri));
+			}
+			else {
+				return createNode(URI.create("http://" + uri));
+			}
+		}
+
+		private Node createNode(URI uri) {
+			String userInfo = uri.getUserInfo();
+			if (!StringUtils.hasLength(userInfo)) {
+				return new Node(uri.getHost(), uri.getPort(), Protocol.forScheme(uri.getScheme()), null, null);
+			}
+			int separatorIndex = userInfo.indexOf(':');
+			if (separatorIndex == -1) {
+				return new Node(uri.getHost(), uri.getPort(), Protocol.forScheme(uri.getScheme()), userInfo, null);
+			}
+			String[] components = userInfo.split(":");
+			return new Node(uri.getHost(), uri.getPort(), Protocol.forScheme(uri.getScheme()), components[0],
+					(components.length > 1) ? components[1] : "");
 		}
 
 	}

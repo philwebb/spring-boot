@@ -247,8 +247,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void serviceConnectionIsUsedIfAvailable() {
-		this.contextRunner.withUserConfiguration(ServiceConnectionConfiguration.class).run((context) -> {
+	void connectionDetailsAreUsedIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(RestClient.class);
 			RestClient restClient = context.getBean(RestClient.class);
 			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/some-path");
@@ -273,7 +273,7 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class ConnectionDetailsConfiguration {
 
 		@Bean
 		ElasticsearchConnectionDetails elasticsearchConnectionDetails() {
