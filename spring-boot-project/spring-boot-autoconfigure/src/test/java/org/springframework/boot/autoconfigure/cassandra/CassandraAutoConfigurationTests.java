@@ -94,11 +94,11 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseServiceConnection() {
+	void shouldUseConnectionDetails() {
 		this.contextRunner
 			.withPropertyValues("spring.cassandra.contact-points=localhost:9042", "spring.cassandra.username=a-user",
 					"spring.cassandra.password=a-password", "spring.cassandra.local-datacenter=some-datacenter")
-			.withBean(CassandraConnectionDetails.class, this::cassandraServiceConnection)
+			.withBean(CassandraConnectionDetails.class, this::cassandraConnectionDetails)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(DriverConfigLoader.class);
 				DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class)
@@ -333,7 +333,7 @@ class CassandraAutoConfigurationTests {
 		});
 	}
 
-	private CassandraConnectionDetails cassandraServiceConnection() {
+	private CassandraConnectionDetails cassandraConnectionDetails() {
 		return new CassandraConnectionDetails() {
 
 			@Override
