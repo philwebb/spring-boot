@@ -63,12 +63,15 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseServiceConnection() {
+	void shouldUseConnectionDetails() {
 		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				Cluster cluster = context.getBean(Cluster.class);
-				assertThat(cluster.core()).hasFieldOrPropertyWithValue("connectionString", "couchbase.example.com");
+				assertThat(cluster.core()).extracting("connectionString.hosts")
+					.asList()
+					.extractingResultOf("host")
+					.containsExactly("couchbase.example.com");
 			});
 	}
 
@@ -84,14 +87,17 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	void serviceConnectionShouldOverrideProperties() {
+	void connectionDetailsShouldOverrideProperties() {
 		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
 			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
 					"spring.couchbase.password=a-password")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				Cluster cluster = context.getBean(Cluster.class);
-				assertThat(cluster.core()).hasFieldOrPropertyWithValue("connectionString", "couchbase.example.com");
+				assertThat(cluster.core()).extracting("connectionString.hosts")
+					.asList()
+					.extractingResultOf("host")
+					.containsExactly("couchbase.example.com");
 			});
 	}
 

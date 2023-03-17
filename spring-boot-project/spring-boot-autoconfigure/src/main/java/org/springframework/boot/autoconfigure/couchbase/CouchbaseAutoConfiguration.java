@@ -66,34 +66,38 @@ import org.springframework.util.ResourceUtils;
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
+	private final CouchbaseProperties properties;
+
+	private final CouchbaseConnectionDetails connectionDetails;
+
+	CouchbaseAutoConfiguration(CouchbaseProperties properties,
+			ObjectProvider<CouchbaseConnectionDetails> connectionDetails) {
+		this.properties = properties;
+		this.connectionDetails = connectionDetails
+			.getIfAvailable(() -> new PropertiesCouchbaseConnectionDetails(properties));
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseProperties properties,
-			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers,
-			ObjectProvider<CouchbaseConnectionDetails> connectionDetailsProvider) {
-		Builder builder = initializeEnvironmentBuilder(properties, connectionDetailsProvider.getIfAvailable());
+	public ClusterEnvironment couchbaseClusterEnvironment(
+			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers) {
+		Builder builder = initializeEnvironmentBuilder();
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
 	@Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
-	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment,
-			ObjectProvider<CouchbaseConnectionDetails> connectionDetailsProvider) {
-		CouchbaseConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
-		String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
-		String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
-		String connectionString = (connectionDetails != null) ? connectionDetails.getConnectionString()
-				: properties.getConnectionString();
-		ClusterOptions options = ClusterOptions.clusterOptions(username, password)
+	public Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment) {
+		ClusterOptions options = ClusterOptions
+			.clusterOptions(this.connectionDetails.getUsername(), this.connectionDetails.getPassword())
 			.environment(couchbaseClusterEnvironment);
-		return Cluster.connect(connectionString, options);
+		return Cluster.connect(this.connectionDetails.getConnectionString(), options);
 	}
 
-	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties,
-			CouchbaseConnectionDetails connectionDetails) {
+	private ClusterEnvironment.Builder initializeEnvironmentBuilder() {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
-		Timeouts timeouts = properties.getEnv().getTimeouts();
+		Timeouts timeouts = this.properties.getEnv().getTimeouts();
 		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
 			.analyticsTimeout(timeouts.getAnalytics())
 			.kvDurableTimeout(timeouts.getKeyValueDurable())
@@ -103,13 +107,14 @@ public class CouchbaseAutoConfiguration {
 			.managementTimeout(timeouts.getManagement())
 			.connectTimeout(timeouts.getConnect())
 			.disconnectTimeout(timeouts.getDisconnect()));
-		CouchbaseProperties.Io io = properties.getEnv().getIo();
+		CouchbaseProperties.Io io = this.properties.getEnv().getIo();
 		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
 			.numKvConnections(io.getMinEndpoints())
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
-		if (connectionDetails == null && properties.getEnv().getSsl().getEnabled()) {
+		if ((this.connectionDetails instanceof PropertiesCouchbaseConnectionDetails)
+				&& this.properties.getEnv().getSsl().getEnabled()) {
 			builder.securityConfig((config) -> config.enableTls(true)
-				.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
+				.trustManagerFactory(getTrustManagerFactory(this.properties.getEnv().getSsl())));
 		}
 		return builder;
 	}
@@ -185,6 +190,31 @@ public class CouchbaseAutoConfiguration {
 		@ConditionalOnBean(CouchbaseConnectionDetails.class)
 		private static final class CouchbaseConnectionDetailsCondition {
 
+		}
+
+	}
+
+	static final class PropertiesCouchbaseConnectionDetails implements CouchbaseConnectionDetails {
+
+		private final CouchbaseProperties properties;
+
+		PropertiesCouchbaseConnectionDetails(CouchbaseProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getConnectionString() {
+			return this.properties.getConnectionString();
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
 		}
 
 	}
