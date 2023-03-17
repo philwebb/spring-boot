@@ -53,7 +53,7 @@ class InfluxDbAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseServiceConnection() {
+	void shouldUseConnectionDetails() {
 		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails).run((context) -> {
 			assertThat(context).hasSingleBean(InfluxDB.class);
 			InfluxDB influxDb = context.getBean(InfluxDB.class);
@@ -62,7 +62,7 @@ class InfluxDbAutoConfigurationTests {
 	}
 
 	@Test
-	void serviceConnectionOverwritesProperties() {
+	void connectionDetailsOverwriteProperties() {
 		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails)
 			.withPropertyValues("spring.influx.url=http://some-other-host", "spring.influx.user=user",
 					"spring.influx.password=password")

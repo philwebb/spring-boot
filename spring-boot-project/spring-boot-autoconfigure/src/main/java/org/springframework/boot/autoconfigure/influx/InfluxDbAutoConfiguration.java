@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
+import java.net.URI;
+
 import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.InfluxDBImpl;
@@ -53,11 +55,10 @@ public class InfluxDbAutoConfiguration {
 	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
 			ObjectProvider<InfluxDbCustomizer> customizers,
 			ObjectProvider<InfluxDbConnectionDetails> connectionDetailsProvider) {
-		InfluxDbConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
-		String url = (connectionDetails != null) ? connectionDetails.getUrl().toString() : properties.getUrl();
-		String user = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUser();
-		String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
-		InfluxDB influxDb = new InfluxDBImpl(url, user, password, determineBuilder(builder.getIfAvailable()));
+		InfluxDbConnectionDetails connectionDetails = connectionDetailsProvider
+			.getIfAvailable(() -> new PropertiesInfluxDbConnectionDetails(properties));
+		InfluxDB influxDb = new InfluxDBImpl(connectionDetails.getUrl().toString(), connectionDetails.getUsername(),
+				connectionDetails.getPassword(), determineBuilder(builder.getIfAvailable()));
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));
 		return influxDb;
 	}
@@ -83,6 +84,31 @@ public class InfluxDbAutoConfiguration {
 		@ConditionalOnBean(InfluxDbConnectionDetails.class)
 		private static final class InfluxDbConnectionDetailsCondition {
 
+		}
+
+	}
+
+	static class PropertiesInfluxDbConnectionDetails implements InfluxDbConnectionDetails {
+
+		private final InfluxDbProperties properties;
+
+		PropertiesInfluxDbConnectionDetails(InfluxDbProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public URI getUrl() {
+			return URI.create(this.properties.getUrl());
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUser();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
 		}
 
 	}
