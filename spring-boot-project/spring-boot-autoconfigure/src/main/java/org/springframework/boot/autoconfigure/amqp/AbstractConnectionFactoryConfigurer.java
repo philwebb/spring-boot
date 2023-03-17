@@ -38,17 +38,17 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 
 	private ConnectionNameStrategy connectionNameStrategy;
 
-	private final RabbitConnectionDetails serviceConnection;
+	private final RabbitConnectionDetails connectionDetails;
 
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
 		this(properties, null);
 	}
 
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
-			RabbitConnectionDetails serviceConnection) {
+			RabbitConnectionDetails connectionDetails) {
 		Assert.notNull(properties, "RabbitProperties must not be null");
 		this.rabbitProperties = properties;
-		this.serviceConnection = serviceConnection;
+		this.connectionDetails = connectionDetails;
 	}
 
 	protected final ConnectionNameStrategy getConnectionNameStrategy() {
@@ -66,7 +66,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	public final void configure(T connectionFactory) {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
-		String addresses = (this.serviceConnection != null) ? getAddresses(this.serviceConnection)
+		String addresses = (this.connectionDetails != null) ? getAddresses(this.connectionDetails)
 				: this.rabbitProperties.determineAddresses();
 		map.from(addresses).to(connectionFactory::setAddresses);
 		map.from(this.rabbitProperties::getAddressShuffleMode)
@@ -84,8 +84,8 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 */
 	protected abstract void configure(T connectionFactory, RabbitProperties rabbitProperties);
 
-	private String getAddresses(RabbitConnectionDetails serviceConnection) {
-		return serviceConnection.getAddresses()
+	private String getAddresses(RabbitConnectionDetails connectionDetails) {
+		return connectionDetails.getAddresses()
 			.stream()
 			.map((address) -> address.host() + ":" + address.port())
 			.collect(Collectors.joining(","));

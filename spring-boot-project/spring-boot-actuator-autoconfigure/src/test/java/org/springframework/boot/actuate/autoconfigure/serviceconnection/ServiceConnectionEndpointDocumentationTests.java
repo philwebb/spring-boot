@@ -312,8 +312,9 @@ class ServiceConnectionEndpointDocumentationTests extends MockMvcEndpointDocumen
 		}
 
 		@Bean
-		RabbitConnectionDetails rabbitServiceConnection() {
+		RabbitConnectionDetails rabbitConnectionDetails() {
 			return new RabbitConnectionDetails() {
+
 				@Override
 				public String getUsername() {
 					return "user-1";

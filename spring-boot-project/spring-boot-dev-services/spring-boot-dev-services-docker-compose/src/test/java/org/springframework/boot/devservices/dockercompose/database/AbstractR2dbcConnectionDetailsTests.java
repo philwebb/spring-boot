@@ -24,12 +24,12 @@ import org.springframework.boot.devservices.dockercompose.test.RunningServiceBui
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AbstractR2dbcServiceConnection}.
+ * Tests for {@link AbstractR2dbcConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class AbstractR2dbcServiceConnectionTests {
+class AbstractR2dbcConnectionDetailsTests {
 
 	@Test
 	void getR2dbcUrl() {
@@ -50,7 +50,7 @@ class AbstractR2dbcServiceConnectionTests {
 			.isEqualTo("r2dbc:dummy://127.0.0.1:12345/database-1?ssl=true&defaultRowFetchSize=100");
 	}
 
-	private static class DummyR2dbcServiceConnection extends AbstractR2dbcServiceConnection {
+	private static class DummyR2dbcServiceConnection extends AbstractR2dbcConnectionDetails {
 
 		DummyR2dbcServiceConnection(RunningService service) {
 			super(new DummyDatabaseService(service));

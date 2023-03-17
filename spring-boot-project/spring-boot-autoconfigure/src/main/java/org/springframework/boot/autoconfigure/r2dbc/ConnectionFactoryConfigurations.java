@@ -56,11 +56,11 @@ import org.springframework.util.StringUtils;
 abstract class ConnectionFactoryConfigurations {
 
 	protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties,
-			R2dbcConnectionDetails serviceConnection, ClassLoader classLoader,
+			R2dbcConnectionDetails connectionDetails, ClassLoader classLoader,
 			List<ConnectionFactoryOptionsBuilderCustomizer> optionsCustomizers) {
 		try {
 			return org.springframework.boot.r2dbc.ConnectionFactoryBuilder
-				.withOptions(new ConnectionFactoryOptionsInitializer().initialize(properties, serviceConnection,
+				.withOptions(new ConnectionFactoryOptionsInitializer().initialize(properties, connectionDetails,
 						() -> EmbeddedDatabaseConnection.get(classLoader)))
 				.configure((options) -> {
 					for (ConnectionFactoryOptionsBuilderCustomizer optionsCustomizer : optionsCustomizers) {
@@ -90,10 +90,10 @@ abstract class ConnectionFactoryConfigurations {
 
 			@Bean(destroyMethod = "dispose")
 			ConnectionPool connectionFactory(R2dbcProperties properties,
-					ObjectProvider<R2dbcConnectionDetails> serviceConnectionProvider, ResourceLoader resourceLoader,
+					ObjectProvider<R2dbcConnectionDetails> connectionDetailsProvider, ResourceLoader resourceLoader,
 					ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
 				ConnectionFactory connectionFactory = createConnectionFactory(properties,
-						serviceConnectionProvider.getIfAvailable(), resourceLoader.getClassLoader(),
+						connectionDetailsProvider.getIfAvailable(), resourceLoader.getClassLoader(),
 						customizers.orderedStream().toList());
 				R2dbcProperties.Pool pool = properties.getPool();
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -121,9 +121,9 @@ abstract class ConnectionFactoryConfigurations {
 
 		@Bean
 		ConnectionFactory connectionFactory(R2dbcProperties properties,
-				ObjectProvider<R2dbcConnectionDetails> serviceConnectionProvider, ResourceLoader resourceLoader,
+				ObjectProvider<R2dbcConnectionDetails> connectionDetailsProvider, ResourceLoader resourceLoader,
 				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
-			return createConnectionFactory(properties, serviceConnectionProvider.getIfAvailable(),
+			return createConnectionFactory(properties, connectionDetailsProvider.getIfAvailable(),
 					resourceLoader.getClassLoader(), customizers.orderedStream().toList());
 		}
 

@@ -16,14 +16,12 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
-import org.springframework.boot.origin.Origin;
-
 /**
  * {@link R2dbcConnectionDetails} used in tests.
  *
  * @author Moritz Halbritter
  */
-class TestR2dbcServiceConnection implements R2dbcConnectionDetails {
+class TestR2dbcConnectionDetails implements R2dbcConnectionDetails {
 
 	@Override
 	public String getR2dbcUrl() {
@@ -38,16 +36,6 @@ class TestR2dbcServiceConnection implements R2dbcConnectionDetails {
 	@Override
 	public String getPassword() {
 		return "password-1";
-	}
-
-	@Override
-	public String getName() {
-		return "test-service-connection";
-	}
-
-	@Override
-	public Origin getOrigin() {
-		return null;
 	}
 
 }

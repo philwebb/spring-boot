@@ -41,14 +41,14 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private final MongoProperties properties;
 
-	private final MongoConnectionDetails serviceConnection;
+	private final MongoConnectionDetails connectionDetails;
 
 	private int order = 0;
 
 	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties,
-			MongoConnectionDetails serviceConnection) {
+			MongoConnectionDetails connectionDetails) {
 		this.properties = properties;
-		this.serviceConnection = serviceConnection;
+		this.connectionDetails = connectionDetails;
 	}
 
 	@Override
@@ -64,28 +64,28 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyHostAndPort(MongoClientSettings.Builder settings) {
-		if (this.serviceConnection == null && this.properties.getUri() != null) {
+		if (this.connectionDetails == null && this.properties.getUri() != null) {
 			settings.applyConnectionString(new ConnectionString(this.properties.getUri()));
 			return;
 		}
-		if (this.serviceConnection == null && this.properties.getHost() == null && this.properties.getPort() == null) {
+		if (this.connectionDetails == null && this.properties.getHost() == null && this.properties.getPort() == null) {
 			settings.applyConnectionString(new ConnectionString(MongoProperties.DEFAULT_URI));
 			return;
 		}
-		String host = (this.serviceConnection != null) ? this.serviceConnection.getHost()
+		String host = (this.connectionDetails != null) ? this.connectionDetails.getHost()
 				: getOrDefault(this.properties.getHost(), "localhost");
-		int port = (this.serviceConnection != null) ? this.serviceConnection.getPort()
+		int port = (this.connectionDetails != null) ? this.connectionDetails.getPort()
 				: getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
 		List<ServerAddress> serverAddresses = new ArrayList<>();
 		serverAddresses.add(new ServerAddress(host, port));
-		List<ServerAddress> additionalServerAddresses = (this.serviceConnection != null)
-				? getServerAddresses(this.serviceConnection) : getServerAddresses(this.properties);
+		List<ServerAddress> additionalServerAddresses = (this.connectionDetails != null)
+				? getServerAddresses(this.connectionDetails) : getServerAddresses(this.properties);
 		serverAddresses.addAll(additionalServerAddresses);
 		settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddresses));
 	}
 
-	private List<ServerAddress> getServerAddresses(MongoConnectionDetails serviceConnection) {
-		return serviceConnection.getAdditionalHosts()
+	private List<ServerAddress> getServerAddresses(MongoConnectionDetails connectionDetails) {
+		return connectionDetails.getAdditionalHosts()
 			.stream()
 			.map((h) -> new ServerAddress(h.host(), h.port()))
 			.toList();
@@ -99,32 +99,32 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyCredentials(MongoClientSettings.Builder builder) {
-		if (this.serviceConnection == null && this.properties.getUri() != null) {
+		if (this.connectionDetails == null && this.properties.getUri() != null) {
 			return;
 		}
-		String username = (this.serviceConnection != null) ? this.serviceConnection.getUsername()
+		String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
 				: this.properties.getUsername();
-		char[] password = (this.serviceConnection != null) ? getPasswordAsCharArray(this.serviceConnection)
+		char[] password = (this.connectionDetails != null) ? getPasswordAsCharArray(this.connectionDetails)
 				: this.properties.getPassword();
 		if (username != null && password != null) {
-			String authenticationDatabase = (this.serviceConnection != null)
-					? this.serviceConnection.getAuthenticationDatabase() : this.properties.getAuthenticationDatabase();
-			String database = (this.serviceConnection != null) ? this.serviceConnection.getDatabase()
+			String authenticationDatabase = (this.connectionDetails != null)
+					? this.connectionDetails.getAuthenticationDatabase() : this.properties.getAuthenticationDatabase();
+			String database = (this.connectionDetails != null) ? this.connectionDetails.getDatabase()
 					: this.properties.getMongoClientDatabase();
 			String databaseToAuthAgainst = (authenticationDatabase != null) ? authenticationDatabase : database;
 			builder.credential((MongoCredential.createCredential(username, databaseToAuthAgainst, password)));
 		}
 	}
 
-	private char[] getPasswordAsCharArray(MongoConnectionDetails serviceConnection) {
-		if (serviceConnection.getPassword() == null) {
+	private char[] getPasswordAsCharArray(MongoConnectionDetails connectionDetails) {
+		if (connectionDetails.getPassword() == null) {
 			return null;
 		}
-		return serviceConnection.getPassword().toCharArray();
+		return connectionDetails.getPassword().toCharArray();
 	}
 
 	private void applyReplicaSet(MongoClientSettings.Builder builder) {
-		String replicaSetName = (this.serviceConnection != null) ? this.serviceConnection.getReplicaSetName()
+		String replicaSetName = (this.connectionDetails != null) ? this.connectionDetails.getReplicaSetName()
 				: this.properties.getReplicaSetName();
 		if (replicaSetName != null) {
 			builder.applyToClusterSettings((cluster) -> cluster.requiredReplicaSetName(replicaSetName));

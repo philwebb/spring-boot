@@ -266,7 +266,7 @@ class MongoDataAutoConfigurationTests {
 	static class ServiceConnectionConfiguration {
 
 		@Bean
-		MongoConnectionDetails mongoServiceConnection() {
+		MongoConnectionDetails mongoConnectionDetails() {
 			return new TestMongoServiceConnection();
 		}
 

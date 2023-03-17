@@ -39,7 +39,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 
 	private final ResourceLoader resourceLoader;
 
-	private final RabbitConnectionDetails serviceConnection;
+	private final RabbitConnectionDetails connectionDetails;
 
 	private CredentialsProvider credentialsProvider;
 
@@ -50,10 +50,10 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	}
 
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
-			RabbitConnectionDetails serviceConnection) {
+			RabbitConnectionDetails connectionDetails) {
 		this.resourceLoader = resourceLoader;
 		this.rabbitProperties = properties;
-		this.serviceConnection = serviceConnection;
+		this.connectionDetails = connectionDetails;
 	}
 
 	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
@@ -74,15 +74,15 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	public void configure(RabbitConnectionFactoryBean factory) {
 		Assert.notNull(factory, "RabbitConnectionFactoryBean must not be null");
 		factory.setResourceLoader(this.resourceLoader);
-		String host = (this.serviceConnection != null) ? this.serviceConnection.getFirstAddress().host()
+		String host = (this.connectionDetails != null) ? this.connectionDetails.getFirstAddress().host()
 				: this.rabbitProperties.determineHost();
-		int port = (this.serviceConnection != null) ? this.serviceConnection.getFirstAddress().port()
+		int port = (this.connectionDetails != null) ? this.connectionDetails.getFirstAddress().port()
 				: this.rabbitProperties.determinePort();
-		String username = (this.serviceConnection != null) ? this.serviceConnection.getUsername()
+		String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
 				: this.rabbitProperties.determineUsername();
-		String password = (this.serviceConnection != null) ? this.serviceConnection.getPassword()
+		String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
 				: this.rabbitProperties.determinePassword();
-		String virtualHost = (this.serviceConnection != null) ? this.serviceConnection.getVirtualHost()
+		String virtualHost = (this.connectionDetails != null) ? this.connectionDetails.getVirtualHost()
 				: this.rabbitProperties.determineVirtualHost();
 		PropertyMapper map = PropertyMapper.get();
 		map.from(host).whenNonNull().to(factory::setHost);

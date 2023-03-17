@@ -98,9 +98,9 @@ public class RabbitAutoConfiguration {
 		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(RabbitProperties properties,
 				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
-				ObjectProvider<RabbitConnectionDetails> rabbitServiceConnectionProvider) {
+				ObjectProvider<RabbitConnectionDetails> connectionDetailsProvider) {
 			RabbitConnectionFactoryBeanConfigurer configurer = new RabbitConnectionFactoryBeanConfigurer(resourceLoader,
-					properties, rabbitServiceConnectionProvider.getIfAvailable());
+					properties, connectionDetailsProvider.getIfAvailable());
 			configurer.setCredentialsProvider(credentialsProvider.getIfUnique());
 			configurer.setCredentialsRefreshService(credentialsRefreshService.getIfUnique());
 			return configurer;
@@ -110,9 +110,9 @@ public class RabbitAutoConfiguration {
 		@ConditionalOnMissingBean
 		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(RabbitProperties rabbitProperties,
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy,
-				ObjectProvider<RabbitConnectionDetails> rabbitServiceConnectionProvider) {
+				ObjectProvider<RabbitConnectionDetails> connectionDetailsProvider) {
 			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(rabbitProperties,
-					rabbitServiceConnectionProvider.getIfAvailable());
+					connectionDetailsProvider.getIfAvailable());
 			configurer.setConnectionNameStrategy(connectionNameStrategy.getIfUnique());
 			return configurer;
 		}

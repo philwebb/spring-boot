@@ -17,7 +17,6 @@
 package org.springframework.boot.devservices.dockercompose.database;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.origin.Origin;
 
 /**
  * Abstract base class for {@link R2dbcConnectionDetails} implementations.
@@ -26,11 +25,11 @@ import org.springframework.boot.origin.Origin;
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public abstract class AbstractR2dbcServiceConnection implements R2dbcConnectionDetails {
+public abstract class AbstractR2dbcConnectionDetails implements R2dbcConnectionDetails {
 
 	protected final DatabaseService service;
 
-	public AbstractR2dbcServiceConnection(DatabaseService service) {
+	public AbstractR2dbcConnectionDetails(DatabaseService service) {
 		this.service = service;
 	}
 
@@ -57,11 +56,6 @@ public abstract class AbstractR2dbcServiceConnection implements R2dbcConnectionD
 	@Override
 	public String getPassword() {
 		return this.service.getPassword();
-	}
-
-	@Override
-	public Origin getOrigin() {
-		return this.service.getOrigin();
 	}
 
 	@Override

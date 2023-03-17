@@ -39,18 +39,18 @@ class ConnectionFactoryOptionsInitializer {
 	 * Initialize a {@link Builder ConnectionFactoryOptions.Builder} using the specified
 	 * properties.
 	 * @param properties the properties to use to initialize the builder
-	 * @param serviceConnection the service connection to use to initialize the builder or
+	 * @param connectionDetails the service connection to use to initialize the builder or
 	 * {@code null}
 	 * @param embeddedDatabaseConnection the embedded connection to use as a fallback
 	 * @return an initialized builder
 	 * @throws ConnectionFactoryBeanCreationException if no suitable connection could be
 	 * determined
 	 */
-	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcConnectionDetails serviceConnection,
+	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcConnectionDetails connectionDetails,
 			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
-		String url = (serviceConnection != null) ? serviceConnection.getR2dbcUrl() : properties.getUrl();
+		String url = (connectionDetails != null) ? connectionDetails.getR2dbcUrl() : properties.getUrl();
 		if (StringUtils.hasText(url)) {
-			return initializeRegularOptions(url, properties, serviceConnection);
+			return initializeRegularOptions(url, properties, connectionDetails);
 		}
 		EmbeddedDatabaseConnection embeddedConnection = embeddedDatabaseConnection.get();
 		if (embeddedConnection != EmbeddedDatabaseConnection.NONE) {
@@ -61,16 +61,16 @@ class ConnectionFactoryOptionsInitializer {
 	}
 
 	private ConnectionFactoryOptions.Builder initializeRegularOptions(String url, R2dbcProperties properties,
-			R2dbcConnectionDetails serviceConnection) {
+			R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(url);
 		Builder optionsBuilder = urlOptions.mutate();
-		String username = (serviceConnection != null) ? serviceConnection.getUsername() : properties.getUsername();
-		String password = (serviceConnection != null) ? serviceConnection.getPassword() : properties.getPassword();
+		String username = (connectionDetails != null) ? connectionDetails.getUsername() : properties.getUsername();
+		String password = (connectionDetails != null) ? connectionDetails.getPassword() : properties.getPassword();
 		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, () -> username, StringUtils::hasText);
 		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, () -> password,
 				StringUtils::hasText);
 		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
-				() -> determineDatabaseName(properties, serviceConnection), StringUtils::hasText);
+				() -> determineDatabaseName(properties, connectionDetails), StringUtils::hasText);
 		if (properties.getProperties() != null) {
 			properties.getProperties().forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
 		}
@@ -95,8 +95,8 @@ class ConnectionFactoryOptionsInitializer {
 		return builder;
 	}
 
-	private String determineDatabaseName(R2dbcProperties properties, R2dbcConnectionDetails serviceConnection) {
-		if (serviceConnection != null) {
+	private String determineDatabaseName(R2dbcProperties properties, R2dbcConnectionDetails connectionDetails) {
+		if (connectionDetails != null) {
 			return null;
 		}
 		if (properties.isGenerateUniqueName()) {

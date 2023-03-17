@@ -366,7 +366,7 @@ class R2dbcAutoConfigurationTests {
 
 		@Bean
 		R2dbcConnectionDetails sqlServiceConnection() {
-			return new TestR2dbcServiceConnection();
+			return new TestR2dbcConnectionDetails();
 		}
 
 	}

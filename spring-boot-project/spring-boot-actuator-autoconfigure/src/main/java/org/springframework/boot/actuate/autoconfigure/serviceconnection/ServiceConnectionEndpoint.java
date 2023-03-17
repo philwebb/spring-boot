@@ -53,22 +53,22 @@ import org.springframework.boot.origin.Origin;
 @Endpoint(id = "serviceconnection")
 class ServiceConnectionEndpoint {
 
-	private final ObjectProvider<ConnectionDetails> serviceConnectionProvider;
+	private final ObjectProvider<ConnectionDetails> connectionDetailsProvider;
 
 	ServiceConnectionEndpoint(ObjectProvider<ConnectionDetails> serviceConnectionProvider) {
-		this.serviceConnectionProvider = serviceConnectionProvider;
+		this.connectionDetailsProvider = serviceConnectionProvider;
 	}
 
 	@ReadOperation
 	ServiceConnectionsDto serviceConnections() {
-		Stream<RedisConnectionDetails> redis = getServiceConnections(RedisConnectionDetails.class);
-		Stream<ZipkinConnectionDetails> zipkin = getServiceConnections(ZipkinConnectionDetails.class);
-		Stream<JdbcConnectionDetails> jdbc = getServiceConnections(JdbcConnectionDetails.class);
-		Stream<R2dbcConnectionDetails> r2dbc = getServiceConnections(R2dbcConnectionDetails.class);
-		Stream<RabbitConnectionDetails> rabbit = getServiceConnections(RabbitConnectionDetails.class);
-		Stream<ElasticsearchConnectionDetails> elasticsearch = getServiceConnections(
+		Stream<RedisConnectionDetails> redis = getConnectionDetails(RedisConnectionDetails.class);
+		Stream<ZipkinConnectionDetails> zipkin = getConnectionDetails(ZipkinConnectionDetails.class);
+		Stream<JdbcConnectionDetails> jdbc = getConnectionDetails(JdbcConnectionDetails.class);
+		Stream<R2dbcConnectionDetails> r2dbc = getConnectionDetails(R2dbcConnectionDetails.class);
+		Stream<RabbitConnectionDetails> rabbit = getConnectionDetails(RabbitConnectionDetails.class);
+		Stream<ElasticsearchConnectionDetails> elasticsearch = getConnectionDetails(
 				ElasticsearchConnectionDetails.class);
-		Stream<MongoConnectionDetails> mongo = getServiceConnections(MongoConnectionDetails.class);
+		Stream<MongoConnectionDetails> mongo = getConnectionDetails(MongoConnectionDetails.class);
 		return new ServiceConnectionsDto(redis.map(RedisServiceConnectionDto::from).toList(),
 				zipkin.map(ZipkinServiceConnectionDto::from).toList(),
 				jdbc.map(JdbcServiceConnectionDto::from).toList(), r2dbc.map(R2dbcServiceConnectionDto::from).toList(),
@@ -78,8 +78,8 @@ class ServiceConnectionEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Stream<T> getServiceConnections(Class<T> serviceConnectionClass) {
-		return (Stream<T>) this.serviceConnectionProvider.stream()
+	private <T> Stream<T> getConnectionDetails(Class<T> serviceConnectionClass) {
+		return (Stream<T>) this.connectionDetailsProvider.stream()
 			.filter((serviceConnection) -> serviceConnectionClass.isAssignableFrom(serviceConnection.getClass()));
 	}
 
@@ -213,15 +213,15 @@ class ServiceConnectionEndpoint {
 			List<HostDto> additionalHosts, String database, String authenticationDatabase, String username,
 			String replicaSetName, GridFsDto gridFs) {
 
-		private static MongoServiceConnectionDto from(MongoConnectionDetails serviceConnection) {
-			Origin origin = serviceConnection.getOrigin();
-			return new MongoServiceConnectionDto(serviceConnection.getName(),
-					(origin != null) ? origin.toString() : null, serviceConnection.getHost(),
-					serviceConnection.getPort(),
-					serviceConnection.getAdditionalHosts().stream().map(HostDto::from).toList(),
-					serviceConnection.getDatabase(), serviceConnection.getAuthenticationDatabase(),
-					serviceConnection.getUsername(), serviceConnection.getReplicaSetName(),
-					GridFsDto.from(serviceConnection.getGridFs()));
+		private static MongoServiceConnectionDto from(MongoConnectionDetails connectionDetails) {
+			Origin origin = connectionDetails.getOrigin();
+			return new MongoServiceConnectionDto(connectionDetails.getName(),
+					(origin != null) ? origin.toString() : null, connectionDetails.getHost(),
+					connectionDetails.getPort(),
+					connectionDetails.getAdditionalHosts().stream().map(HostDto::from).toList(),
+					connectionDetails.getDatabase(), connectionDetails.getAuthenticationDatabase(),
+					connectionDetails.getUsername(), connectionDetails.getReplicaSetName(),
+					GridFsDto.from(connectionDetails.getGridFs()));
 		}
 
 		private record HostDto(String host, int port) {

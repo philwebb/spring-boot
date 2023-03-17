@@ -70,9 +70,9 @@ public class MongoReactiveAutoConfiguration {
 
 		@Bean
 		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
-				ObjectProvider<MongoConnectionDetails> serviceConnectionProvider) {
+				ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
 			return new MongoPropertiesClientSettingsBuilderCustomizer(properties,
-					serviceConnectionProvider.getIfAvailable());
+					connectionDetailsProvider.getIfAvailable());
 		}
 
 	}

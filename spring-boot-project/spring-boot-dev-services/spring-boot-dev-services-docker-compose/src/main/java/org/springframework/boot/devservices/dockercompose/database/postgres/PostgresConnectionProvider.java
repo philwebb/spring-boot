@@ -22,7 +22,7 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.database.AbstractJdbcServiceConnection;
-import org.springframework.boot.devservices.dockercompose.database.AbstractR2dbcServiceConnection;
+import org.springframework.boot.devservices.dockercompose.database.AbstractR2dbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.util.ClassUtils;
@@ -82,7 +82,7 @@ class PostgresConnectionProvider implements RunningServiceServiceConnectionProvi
 
 	}
 
-	private static class DockerComposePostgresDbR2dbcServiceConnection extends AbstractR2dbcServiceConnection {
+	private static class DockerComposePostgresDbR2dbcServiceConnection extends AbstractR2dbcConnectionDetails {
 
 		DockerComposePostgresDbR2dbcServiceConnection(PostgresService service) {
 			super(service);

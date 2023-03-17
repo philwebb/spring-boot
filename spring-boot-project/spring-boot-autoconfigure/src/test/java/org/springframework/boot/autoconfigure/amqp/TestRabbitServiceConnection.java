@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import java.util.List;
 
-import org.springframework.boot.origin.Origin;
-
 /**
  * A {@link RabbitConnectionDetails} for tests.
  *
@@ -45,16 +43,6 @@ class TestRabbitServiceConnection implements RabbitConnectionDetails {
 	@Override
 	public List<Address> getAddresses() {
 		return List.of(new Address("rabbit.example.com", 12345), new Address("rabbit2.example.com", 23456));
-	}
-
-	@Override
-	public String getName() {
-		return "test-rabbit-service-connection";
-	}
-
-	@Override
-	public Origin getOrigin() {
-		return null;
 	}
 
 }

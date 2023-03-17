@@ -113,10 +113,10 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory,
-			MongoProperties properties, ObjectProvider<MongoConnectionDetails> serviceConnectionProvider) {
+			MongoProperties properties, ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
 		return new ReactiveGridFsTemplate(dataBufferFactory,
 				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties,
-						serviceConnectionProvider.getIfAvailable()),
+						connectionDetailsProvider.getIfAvailable()),
 				mappingMongoConverter, properties.getGridfs().getBucket());
 	}
 
@@ -130,13 +130,13 @@ public class MongoReactiveDataAutoConfiguration {
 
 		private final MongoProperties properties;
 
-		private final MongoConnectionDetails serviceConnection;
+		private final MongoConnectionDetails connectionDetails;
 
 		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties,
-				MongoConnectionDetails serviceConnection) {
+				MongoConnectionDetails connectionDetails) {
 			this.delegate = delegate;
 			this.properties = properties;
-			this.serviceConnection = serviceConnection;
+			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
@@ -146,7 +146,7 @@ public class MongoReactiveDataAutoConfiguration {
 
 		@Override
 		public Mono<MongoDatabase> getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = (this.serviceConnection != null) ? getGridFsDatabase(this.serviceConnection)
+			String gridFsDatabase = (this.connectionDetails != null) ? getGridFsDatabase(this.connectionDetails)
 					: this.properties.getGridfs().getDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.delegate.getMongoDatabase(gridFsDatabase);
@@ -189,11 +189,11 @@ public class MongoReactiveDataAutoConfiguration {
 			return this.delegate.isTransactionActive();
 		}
 
-		private String getGridFsDatabase(MongoConnectionDetails serviceConnection) {
-			if (serviceConnection.getGridFs() == null) {
+		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+			if (connectionDetails.getGridFs() == null) {
 				return null;
 			}
-			return serviceConnection.getGridFs().getDatabase();
+			return connectionDetails.getGridFs().getDatabase();
 		}
 
 	}
