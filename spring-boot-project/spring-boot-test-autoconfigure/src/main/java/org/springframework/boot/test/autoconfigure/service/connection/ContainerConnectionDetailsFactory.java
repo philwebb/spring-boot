@@ -35,22 +35,27 @@ import org.springframework.util.Assert;
  * @param <A> the source annotation type. The annotation will be mergable to a
  * {@link ServiceConnection @ServiceConnection}.
  * @param <D> the connection details type
+ * @param <C> the generic container type
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 3.1.0
  */
-public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D extends ConnectionDetails>
-		implements ConnectionDetailsFactory<ServiceConnectedContainer<A>, D> {
+public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
+		implements ConnectionDetailsFactory<ServiceConnectedContainer<A, D, C>, D> {
 
 	@Override
-	public final D getConnectionDetails(ServiceConnectedContainer<A> source) {
-		Class<?> annotationType = ResolvableType.forClass(ContainerConnectionDetailsFactory.class, getClass())
-			.resolveGeneric();
-		if (!annotationType.isInstance(source.getAnnotation())) {
-			return null;
-		}
-		return getContainerConnectionDetails(source);
+	public final D getConnectionDetails(ServiceConnectedContainer<A, D, C> source) {
+		Class<?>[] generics = resolveGenerics();
+		Class<?> annotationType = generics[0];
+		Class<?> connectionDetailsType = generics[1];
+		Class<?> containerType = generics[2];
+		return (!source.accepts(annotationType, connectionDetailsType, containerType)) ? null
+				: getContainerConnectionDetails(source);
+	}
+
+	private Class<?>[] resolveGenerics() {
+		return ResolvableType.forClass(ContainerConnectionDetailsFactory.class, getClass()).resolveGenerics();
 	}
 
 	/**
@@ -60,7 +65,7 @@ public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D 
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getContainerConnectionDetails(ServiceConnectedContainer<A> source);
+	protected abstract D getContainerConnectionDetails(ServiceConnectedContainer<A, D, C> source);
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
@@ -74,7 +79,7 @@ public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D 
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ServiceConnectedContainer}
 		 */
-		protected ContainerConnectionDetails(ServiceConnectedContainer<?> source) {
+		protected ContainerConnectionDetails(ServiceConnectedContainer<?, ?, ?> source) {
 			Assert.notNull(source, "Source must not be null");
 			this.origin = source.getOrigin();
 		}

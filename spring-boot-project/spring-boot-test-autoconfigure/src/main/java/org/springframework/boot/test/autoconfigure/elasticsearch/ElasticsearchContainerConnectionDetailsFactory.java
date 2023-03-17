@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.elasticsearch;
 
 import java.util.List;
 
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
@@ -26,19 +26,21 @@ import org.springframework.boot.test.autoconfigure.service.connection.ContainerC
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
 
 /**
- * An adapter from an {@link ElasticsearchContainer} to an
- * {@link ElasticsearchConnectionDetails}.
+ * {@link ContainerConnectionDetailsFactory} for
+ * {@link ElasticsearchConnection @ElasticsearchConnection} annotated
+ * {@link GenericContainer} fields.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class ElasticsearchContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ElasticsearchConnection, ElasticsearchConnectionDetails> {
+class ElasticsearchContainerConnectionDetailsFactory extends
+		ContainerConnectionDetailsFactory<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> {
 
 	private static final int DEFAULT_PORT = 9200;
 
 	@Override
 	protected ElasticsearchConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<ElasticsearchConnection> source) {
+			ServiceConnectedContainer<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
 		return new ElasticsearchContainerConnectionDetails(source);
 	}
 
@@ -51,7 +53,8 @@ class ElasticsearchContainerConnectionDetailsFactory
 
 		private final List<Node> nodes;
 
-		protected ElasticsearchContainerConnectionDetails(ServiceConnectedContainer<ElasticsearchConnection> source) {
+		protected ElasticsearchContainerConnectionDetails(
+				ServiceConnectedContainer<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
 			super(source);
 			this.nodes = List.of(new Node(source.getContainer().getHost(),
 					source.getContainer().getMappedPort(DEFAULT_PORT), Protocol.HTTP, null, null));

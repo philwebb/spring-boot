@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
@@ -45,7 +46,9 @@ public interface MongoConnectionDetails extends ConnectionDetails {
 	 * Additional server hosts.
 	 * @return the additional server hosts
 	 */
-	List<Host> getAdditionalHosts();
+	default List<Host> getAdditionalHosts() {
+		return Collections.emptyList();
+	}
 
 	/**
 	 * Database name.
@@ -57,31 +60,41 @@ public interface MongoConnectionDetails extends ConnectionDetails {
 	 * Authentication database name.
 	 * @return the Authentication database name or {@code null}
 	 */
-	String getAuthenticationDatabase();
+	default String getAuthenticationDatabase() {
+		return null;
+	}
 
 	/**
 	 * Login user of the mongo server.
 	 * @return the login user of the mongo server or {@code null}
 	 */
-	String getUsername();
+	default String getUsername() {
+		return null;
+	}
 
 	/**
 	 * Login password of the mongo server.
 	 * @return the login password of the mongo server or {@code null}
 	 */
-	String getPassword();
+	default String getPassword() {
+		return null;
+	}
 
 	/**
 	 * Replica set name for the cluster.
 	 * @return the required replica set name for the cluster or {@code null}
 	 */
-	String getReplicaSetName();
+	default String getReplicaSetName() {
+		return null;
+	}
 
 	/**
 	 * GridFS configuration.
 	 * @return the GridFS configuration or {@code null}
 	 */
-	GridFs getGridFs();
+	default GridFs getGridFs() {
+		return null;
+	}
 
 	/**
 	 * GridFS configuration.

@@ -16,18 +16,26 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
+import org.testcontainers.containers.GenericContainer;
+
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
 
 /**
- * @author pwebb
+ * {@link ContainerConnectionDetailsFactory} for {@link RedisConnection @RedisConnection}
+ * annotated {@link GenericContainer} fields.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class RedisContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<RedisConnection, RedisConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<RedisConnection, RedisConnectionDetails, GenericContainer<?>> {
 
 	@Override
-	public RedisConnectionDetails getContainerConnectionDetails(ServiceConnectedContainer<RedisConnection> source) {
+	public RedisConnectionDetails getContainerConnectionDetails(
+			ServiceConnectedContainer<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
 		return new RedisContainerConnectionDetails(source);
 	}
 
@@ -39,7 +47,8 @@ public class RedisContainerConnectionDetailsFactory
 
 		private final Standalone standalone;
 
-		public RedisContainerConnectionDetails(ServiceConnectedContainer<RedisConnection> source) {
+		public RedisContainerConnectionDetails(
+				ServiceConnectedContainer<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
 			super(source);
 			this.standalone = new Standalone() {
 

@@ -14,41 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.jdbc;
+package org.springframework.boot.test.autoconfigure.r2dbc;
 
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for {@link JdbcConnection @JdbcConnection}
+ * {@link ContainerConnectionDetailsFactory} for {@link R2dbcConnection @R2dbcConnection}
  * annotated {@link JdbcDatabaseContainer} fields.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class JdbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> {
+class R2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<R2dbcConnection, R2dbcConnectionDetails, JdbcDatabaseContainer<?>> {
 
 	@Override
-	protected JdbcConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
-		return new JdbcContainerConnectionDetails(source);
+	protected R2dbcConnectionDetails getContainerConnectionDetails(
+			ServiceConnectedContainer<R2dbcConnection, R2dbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+		return new R2dbcContainerConnectionDetails(source);
 	}
 
 	/**
-	 * {@link JdbcConnectionDetails} backed by a {@link ServiceConnectedContainer}.
+	 * {@link RedisConnectionDetails} backed by a {@link ServiceConnectedContainer}.
 	 */
-	private static class JdbcContainerConnectionDetails extends ContainerConnectionDetails
-			implements JdbcConnectionDetails {
+	private static class R2dbcContainerConnectionDetails extends ContainerConnectionDetails
+			implements R2dbcConnectionDetails {
 
 		private final JdbcDatabaseContainer<?> container;
 
-		protected JdbcContainerConnectionDetails(
-				ServiceConnectedContainer<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+		protected R2dbcContainerConnectionDetails(
+				ServiceConnectedContainer<R2dbcConnection, R2dbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}
@@ -64,8 +65,9 @@ class JdbcContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getJdbcUrl() {
-			return this.container.getJdbcUrl();
+		public String getR2dbcUrl() {
+			// FIXME A better way of mapping JDBC to R2DBC
+			return "r2dbc" + this.container.getJdbcUrl().substring(4);
 		}
 
 	}

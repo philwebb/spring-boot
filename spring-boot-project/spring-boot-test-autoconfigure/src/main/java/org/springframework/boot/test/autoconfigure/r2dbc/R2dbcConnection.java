@@ -39,6 +39,6 @@ import org.springframework.boot.test.autoconfigure.service.connection.ServiceCon
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
 @ServiceConnection(R2dbcConnectionDetails.class)
-public @interface R2dbcSqlConnection {
+public @interface R2dbcConnection {
 
 }

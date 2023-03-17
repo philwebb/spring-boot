@@ -57,7 +57,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		Assert.isInstanceOf(GenericContainer.class, fieldValue,
 				"Field %s must be a %s".formatted(field.getName(), GenericContainer.class.getName()));
 		GenericContainer<?> container = (GenericContainer<?>) fieldValue;
-		return new AnnotatedFieldServiceConnectedContainer<>(connectionDetailsType, field, annotation, container);
+		return new ServiceConnectedContainer<>(connectionDetailsType, field, annotation, container);
 	}
 
 	@SuppressWarnings("unchecked")
