@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.zipkin;
+package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.interop.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.devservices.dockercompose.interop.Port;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 
 /**
  * @author pwebb
@@ -39,7 +39,7 @@ class ZipkinDockerComposeConnectionDetailsFactory
 		return new ZipkinDockerComposeConnectionDetails(source);
 	}
 
-	private static class ZipkinDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class ZipkinDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements ZipkinConnectionDetails {
 
 		private final String host;

@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.docker.compose.autoconfigure.r2dbc;
+
+import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+
 /**
- * Handles Redis services.
+ * @author pwebb
  */
-package org.springframework.boot.devservices.dockercompose.redis;
+public class R2dbcUrl {
+
+	/**
+	 * @param source
+	 * @param string
+	 * @param mariadbPort
+	 * @param database
+	 */
+	public R2dbcUrl(RunningService source, String string, int mariadbPort, String database) {
+		// TODO Auto-generated constructor stub
+		String parameters = source.labels().get("org.springframework.boot.r2dbc.parameters");
+
+	}
+
+}

@@ -17,4 +17,4 @@
 /**
  * MySQL services.
  */
-package org.springframework.boot.devservices.dockercompose.database.mysql;
+package org.springframework.boot.docker.compose.autoconfigure.mysql;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.redis;
+package org.springframework.boot.docker.compose.autoconfigure.redis;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.interop.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.devservices.dockercompose.interop.Port;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 
 /**
  * @author pwebb
@@ -37,12 +37,12 @@ class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 		return new RedisDockerComposeConnectionDetails(source);
 	}
 
-	private static class RedisDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class RedisDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements RedisConnectionDetails {
 
 		private final Standalone standalone;
 
-		protected RedisDockerComposeConnectionDetails(RunningService source) {
+		RedisDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			Port mappedPort = source.getMappedPort(REDIS_PORT);
 			this.standalone = new Standalone() {

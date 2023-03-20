@@ -15,6 +15,6 @@
  */
 
 /**
- * Handles Zipkin services.
+ * Handles Redis services.
  */
-package org.springframework.boot.devservices.dockercompose.zipkin;
+package org.springframework.boot.docker.compose.autoconfigure.redis;

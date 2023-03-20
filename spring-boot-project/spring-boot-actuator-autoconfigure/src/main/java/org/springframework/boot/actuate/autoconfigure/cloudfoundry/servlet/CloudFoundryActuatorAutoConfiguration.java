@@ -173,6 +173,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 		@Override
 		public void customize(WebSecurity web) {
+
 			web.ignoring().requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
 		}
 

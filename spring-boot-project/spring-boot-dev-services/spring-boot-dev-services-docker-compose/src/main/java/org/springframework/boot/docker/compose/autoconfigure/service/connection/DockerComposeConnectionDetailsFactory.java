@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.interop;
+package org.springframework.boot.docker.compose.autoconfigure.service.connection;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
+import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.util.Assert;
@@ -81,7 +82,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 		 */
 		protected DockerComposeConnectionDetails(RunningService source) {
 			Assert.notNull(source, "Source must not be null");
-			this.origin = source.origin();
+			this.origin = source.getOrigin();
 		}
 
 		@Override

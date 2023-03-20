@@ -17,4 +17,4 @@
 /**
  * MariaDB services.
  */
-package org.springframework.boot.devservices.dockercompose.database.mariadb;
+package org.springframework.boot.docker.compose.autoconfigure.mariadb;

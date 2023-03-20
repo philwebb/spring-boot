@@ -98,10 +98,12 @@ public enum DatabaseDriver {
 	 * @since 2.1.0
 	 */
 	HANA("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP", "SELECT 1 FROM SYS.DUMMY") {
+
 		@Override
-		public Collection<String> getUrlPrefixes() {
+		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("sap");
 		}
+
 	},
 
 	/**
@@ -130,7 +132,7 @@ public enum DatabaseDriver {
 			"SELECT 1 FROM RDB$DATABASE") {
 
 		@Override
-		public Collection<String> getUrlPrefixes() {
+		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("firebirdsql", "firebird");
 		}
 
@@ -164,7 +166,7 @@ public enum DatabaseDriver {
 		}
 
 		@Override
-		public Collection<String> getUrlPrefixes() {
+		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("as400");
 		}
 
@@ -185,7 +187,7 @@ public enum DatabaseDriver {
 	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null, "select count(*) from systables") {
 
 		@Override
-		public Collection<String> getUrlPrefixes() {
+		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("informix-sqli", "informix-direct");
 		}
 
@@ -203,7 +205,7 @@ public enum DatabaseDriver {
 	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
 
 		@Override
-		public Collection<String> getUrlPrefixes() {
+		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("tc");
 		}
 
@@ -243,9 +245,8 @@ public enum DatabaseDriver {
 	/**
 	 * Return the url prefixes of this driver.
 	 * @return the url prefixes
-	 * @since 3.1.0
 	 */
-	public Collection<String> getUrlPrefixes() {
+	protected Collection<String> getUrlPrefixes() {
 		return Collections.singleton(name().toLowerCase(Locale.ENGLISH));
 	}
 
