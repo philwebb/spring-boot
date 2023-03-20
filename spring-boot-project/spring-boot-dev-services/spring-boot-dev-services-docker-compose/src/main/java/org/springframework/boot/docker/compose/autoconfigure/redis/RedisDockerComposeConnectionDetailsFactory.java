@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.interop.Port;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
  * @author pwebb
@@ -33,8 +34,8 @@ class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 	}
 
 	@Override
-	protected RedisConnectionDetails getDockerComposeConnectionDetails(RunningService source) {
-		return new RedisDockerComposeConnectionDetails(source);
+	protected RedisConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new RedisDockerComposeConnectionDetails(source.getService());
 	}
 
 	static class RedisDockerComposeConnectionDetails extends DockerComposeConnectionDetails

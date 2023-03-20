@@ -44,6 +44,8 @@ import org.springframework.core.annotation.MergedAnnotation;
 public final class ServiceConnectedContainer<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
 		implements OriginProvider {
 
+	// FIXME rename to ContainerConnectionSource
+
 	private final Class<D> connectionDetailsType;
 
 	private final Field field;

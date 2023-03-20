@@ -40,21 +40,21 @@ class MariaDbServiceTests {
 	void usernameUsesMariaDbVariables() {
 		RunningService service = createService(Map.of("MARIADB_USER", "user-1"));
 		MariaDbService mariaDbService = new MariaDbService(service);
-		assertThat(mariaDbService.getUsername()).isEqualTo("user-1");
+		assertThat(mariaDbService.getUser()).isEqualTo("user-1");
 	}
 
 	@Test
 	void usernameUsesMysqlVariables() {
 		RunningService service = createService(Map.of("MYSQL_USER", "user-1"));
 		MariaDbService mariaDbService = new MariaDbService(service);
-		assertThat(mariaDbService.getUsername()).isEqualTo("user-1");
+		assertThat(mariaDbService.getUser()).isEqualTo("user-1");
 	}
 
 	@Test
 	void usernameDefaultsToRoot() {
 		RunningService service = createService(Collections.emptyMap());
 		MariaDbService mariaDbService = new MariaDbService(service);
-		assertThat(mariaDbService.getUsername()).isEqualTo("root");
+		assertThat(mariaDbService.getUser()).isEqualTo("root");
 	}
 
 	@Test

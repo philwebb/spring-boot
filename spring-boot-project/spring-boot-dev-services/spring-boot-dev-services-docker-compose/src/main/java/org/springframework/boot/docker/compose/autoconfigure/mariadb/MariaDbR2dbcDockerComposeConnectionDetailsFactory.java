@@ -16,44 +16,47 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.mariadb;
 
+import io.r2dbc.spi.ConnectionFactoryOptions;
+
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.autoconfigure.r2dbc.R2dbcUrl;
+import org.springframework.boot.docker.compose.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilder;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
  * @author pwebb
  */
 class MariaDbR2dbcDockerComposeConnectionDetailsFactory
-		extends MariaDbDockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
+		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	@Override
-	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(RunningService source) {
-		return new MariaDbJdbcDockerComposeConnectionDetails(source);
+	MariaDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
+		super("mariadb", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
-	static class MariaDbJdbcDockerComposeConnectionDetails extends MariaDbDockerComposeConnectionDetails
+	@Override
+	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new MariaDbJdbcDockerComposeConnectionDetails(source.getService());
+	}
+
+	static class MariaDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements R2dbcConnectionDetails {
 
-		private final R2dbcUrl r2dbcUrl;
+		private static final ConnectionFactoryOptionsBuilder connectionFactoryOptionsBuilder = new ConnectionFactoryOptionsBuilder(
+				"mariadb", 3306);
 
-		MariaDbJdbcDockerComposeConnectionDetails(RunningService source) {
-			super(source);
-			this.r2dbcUrl = new R2dbcUrl(source, "mariadb", MARIADB_PORT, getDatabase());
+		private final ConnectionFactoryOptions connectionFactoryOptions;
+
+		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
+			super(service);
+			MariaDbEnv env = new MariaDbEnv(service.env());
+			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, env.getDatabase(),
+					env.getUser(), env.getPassword());
 		}
 
 		@Override
-		public String getUsername() {
-			return super.getUsername();
-		}
-
-		@Override
-		public String getPassword() {
-			return super.getPassword();
-		}
-
-		@Override
-		public String getR2dbcUrl() {
-			return this.r2dbcUrl.toString();
+		public ConnectionFactoryOptions getConnectionFactoryOptions() {
+			return this.connectionFactoryOptions;
 		}
 
 	}

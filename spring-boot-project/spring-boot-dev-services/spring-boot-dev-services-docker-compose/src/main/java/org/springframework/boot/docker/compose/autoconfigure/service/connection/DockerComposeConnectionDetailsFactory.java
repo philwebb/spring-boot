@@ -28,7 +28,9 @@ import org.springframework.util.ClassUtils;
  * @author pwebb
  */
 public abstract class DockerComposeConnectionDetailsFactory<D extends ConnectionDetails>
-		implements ConnectionDetailsFactory<RunningService, D> {
+		implements ConnectionDetailsFactory<DockerComposeConnectionSource, D> {
+
+	// FIXME we need access to all running services?
 
 	private final String name;
 
@@ -47,12 +49,12 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	}
 
 	@Override
-	public final D getConnectionDetails(RunningService source) {
+	public final D getConnectionDetails(DockerComposeConnectionSource source) {
 		return (!accept(source)) ? null : getDockerComposeConnectionDetails(source);
 	}
 
-	private boolean accept(RunningService source) {
-		return hasRequiredClass() && this.name.equals(source.image().image());
+	private boolean accept(DockerComposeConnectionSource source) {
+		return hasRequiredClass() && this.name.equals(source.getService().image().image());
 	}
 
 	private boolean hasRequiredClass() {
@@ -66,7 +68,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getDockerComposeConnectionDetails(RunningService source);
+	protected abstract D getDockerComposeConnectionDetails(DockerComposeConnectionSource source);
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
@@ -78,11 +80,11 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 		/**
 		 * Create a new {@link DockerComposeConnectionDetails} instance.
-		 * @param source the source {@link RunningService}
+		 * @param service the source {@link RunningService}
 		 */
-		protected DockerComposeConnectionDetails(RunningService source) {
-			Assert.notNull(source, "Source must not be null");
-			this.origin = source.getOrigin();
+		protected DockerComposeConnectionDetails(RunningService service) {
+			Assert.notNull(service, "Source must not be null");
+			this.origin = service.getOrigin();
 		}
 
 		@Override

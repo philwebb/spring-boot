@@ -25,6 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.Config;
+import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.HostConfig;
+import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.NetworkSettings;
+import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.NetworkSettings.PortDto;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,6 +60,7 @@ public record DockerInspectOutput(@JsonProperty("Id") String id, @JsonProperty("
 			@JsonProperty("ExposedPorts") Map<String, ExposedPort> exposedPorts,
 			@JsonProperty("Env") List<String> env) {
 		public Map<String, String> envAsMap() {
+			// FIXME part of service mapper?
 			if (this.env == null || this.env.isEmpty()) {
 				return Collections.emptyMap();
 			}

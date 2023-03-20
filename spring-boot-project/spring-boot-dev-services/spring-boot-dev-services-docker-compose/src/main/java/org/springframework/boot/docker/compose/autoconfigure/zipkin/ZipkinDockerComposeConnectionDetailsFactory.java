@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConne
 import org.springframework.boot.devservices.dockercompose.interop.Port;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
  * @author pwebb
@@ -35,8 +36,8 @@ class ZipkinDockerComposeConnectionDetailsFactory
 	}
 
 	@Override
-	protected ZipkinConnectionDetails getDockerComposeConnectionDetails(RunningService source) {
-		return new ZipkinDockerComposeConnectionDetails(source);
+	protected ZipkinConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new ZipkinDockerComposeConnectionDetails(source.getService());
 	}
 
 	static class ZipkinDockerComposeConnectionDetails extends DockerComposeConnectionDetails

@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.autoconfigure.r2dbc;
+package org.springframework.boot.docker.compose.autoconfigure.jdbc;
 
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 
 /**
  * @author pwebb
  */
-public class R2dbcUrl {
+public class JdbcUrlBuilder {
 
-	/**
-	 * @param source
-	 * @param string
-	 * @param mariadbPort
-	 * @param database
-	 */
-	public R2dbcUrl(RunningService source, String string, int mariadbPort, String database) {
-		// TODO Auto-generated constructor stub
-		String parameters = source.labels().get("org.springframework.boot.r2dbc.parameters");
+	private final String protocol;
 
+	private final int sourcePort;
+
+	public JdbcUrlBuilder(String protocol, int sourcePort) {
+		this.protocol = protocol;
+		this.sourcePort = sourcePort;
 	}
+
+	public String build(RunningService service, String database) {
+		return null;
+	}
+
+	// FIXME String parameters =
+	// source.labels().getOrDefault("org.springframework.boot.jdbc.parameters", "");
 
 }

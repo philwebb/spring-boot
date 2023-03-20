@@ -39,7 +39,7 @@ class MongoIntegrationTests extends AbstractIntegrationTests {
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mongo-mongo");
 		assertThat(serviceConnection.getHost()).isNotNull();
 		assertThat(serviceConnection.getPort()).isGreaterThan(0);
-		assertThat(serviceConnection.getUsername()).isEqualTo("root");
+		assertThat(serviceConnection.getUser()).isEqualTo("root");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
 		assertThat(serviceConnection.getDatabase()).isEqualTo("mydatabase");
 		assertThat(serviceConnection.getAuthenticationDatabase()).isEqualTo("admin");

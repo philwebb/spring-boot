@@ -51,7 +51,7 @@ public class R2dbcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(R2dbcConnectionDetails.class)
-	@ConditionalOnProperty(prefix = "spring.r2dbc", name = "url")
+	@ConditionalOnProperty("spring.r2dbc.url")
 	PropertiesR2dbcConnectionDetails propertiesR2dbcConnectionDetails(R2dbcProperties properties) {
 		return new PropertiesR2dbcConnectionDetails(properties);
 	}

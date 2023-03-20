@@ -18,42 +18,53 @@ package org.springframework.boot.docker.compose.autoconfigure.mariadb;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrl;
+import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrlBuilder;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
  * @author pwebb
  */
 class MariaDbJdbcDockerComposeConnectionDetailsFactory
-		extends MariaDbDockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
+		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	@Override
-	protected JdbcConnectionDetails getDockerComposeConnectionDetails(RunningService source) {
-		return new MariaDbJdbcDockerComposeConnectionDetails(source);
+	protected MariaDbJdbcDockerComposeConnectionDetailsFactory(String name) {
+		super("mariadb");
 	}
 
-	static class MariaDbJdbcDockerComposeConnectionDetails extends MariaDbDockerComposeConnectionDetails
+	@Override
+	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new MariaDbJdbcDockerComposeConnectionDetails(source.getService());
+	}
+
+	static class MariaDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private final JdbcUrl jdbcUrl;
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mariadb", 3306);
 
-		MariaDbJdbcDockerComposeConnectionDetails(RunningService source) {
-			super(source);
-			this.jdbcUrl = new JdbcUrl(source, "mysql", MARIADB_PORT, getDatabase());
+		private final MariaDbEnv env;
+
+		private final String jdbcUrl;
+
+		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
+			super(service);
+			this.env = new MariaDbEnv(service.env());
+			this.jdbcUrl = jdbcUrlBuilder.build(service, this.env.getDatabase());
 		}
 
 		@Override
 		public String getUsername() {
-			return super.getUsername();
+			return this.env.getUser();
 		}
 
 		@Override
 		public String getPassword() {
-			return super.getPassword();
+			return this.env.getPassword();
 		}
 
 		@Override
 		public String getJdbcUrl() {
-			return this.jdbcUrl.toString();
+			return this.jdbcUrl;
 		}
 
 	}

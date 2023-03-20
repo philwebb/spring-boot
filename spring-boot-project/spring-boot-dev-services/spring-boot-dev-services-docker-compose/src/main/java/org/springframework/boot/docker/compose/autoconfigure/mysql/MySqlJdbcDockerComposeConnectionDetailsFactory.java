@@ -16,14 +16,11 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.mysql;
 
-import java.util.Map;
-
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrl;
+import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrlBuilder;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
  * @author pwebb
@@ -31,67 +28,43 @@ import org.springframework.util.StringUtils;
 class MySqlJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final int MYSQL_PORT = 3306;
-
 	protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
 		super("mysql");
 	}
 
 	@Override
-	protected JdbcConnectionDetails getDockerComposeConnectionDetails(RunningService source) {
-		return new MySqlJdbcDockerComposeConnectionDetails(source);
+	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
+		return new MySqlJdbcDockerComposeConnectionDetails(source.getService());
 	}
 
 	static class MySqlJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private final String username;
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mariadb", 3306);
 
-		private final String password;
+		private final MySqlEnv env;
 
-		private JdbcUrl jdbcUrl;
+		private final String jdbcUrl;
 
-		MySqlJdbcDockerComposeConnectionDetails(RunningService source) {
-			super(source);
-			Map<String, String> env = source.env();
-			this.username = extractUsername(env);
-			this.password = extractPassword(env);
-			this.jdbcUrl = new JdbcUrl(source, "mysql", MYSQL_PORT, extractDatabase(env));
-		}
-
-		private String extractUsername(Map<String, String> env) {
-			String username = env.get("MYSQL_PASSWORD");
-			return (username != null) ? username : "root";
-		}
-
-		private String extractPassword(Map<String, String> env) {
-			Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
-			boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD");
-			String password = env.get("MYSQL_PASSWORD");
-			password = (password != null) ? password : env.get("MYSQL_ROOT_PASSWORD");
-			Assert.state(StringUtils.hasLength(password) || allowEmpty, "No MySQL password found");
-			return (password != null) ? password : "";
-		}
-
-		private String extractDatabase(Map<String, String> env) {
-			String database = env.get("MYSQL_DATABASE");
-			Assert.state(database != null, "No database name found. Use MYSQL_DATABASE to specify it");
-			return database;
+		MySqlJdbcDockerComposeConnectionDetails(RunningService service) {
+			super(service);
+			this.env = new MySqlEnv(service.env());
+			this.jdbcUrl = jdbcUrlBuilder.build(service, this.env.getDatabase());
 		}
 
 		@Override
 		public String getUsername() {
-			return this.username;
+			return this.env.getUser();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.password;
+			return this.env.getPassword();
 		}
 
 		@Override
 		public String getJdbcUrl() {
-			return this.jdbcUrl.toString();
+			return this.jdbcUrl;
 		}
 
 	}

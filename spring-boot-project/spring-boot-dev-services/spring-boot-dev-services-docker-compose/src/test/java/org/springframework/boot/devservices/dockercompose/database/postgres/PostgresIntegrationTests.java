@@ -47,7 +47,7 @@ class PostgresIntegrationTests extends AbstractIntegrationTests {
 	void shouldHaveR2dbcServiceConnection() {
 		R2dbcConnectionDetails serviceConnection = runProvider(R2dbcConnectionDetails.class);
 		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-postgres-r2dbc-database");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
+		assertThat(serviceConnection.getUser()).isEqualTo("myuser");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
 		assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:postgresql://").endsWith("/mydatabase");
 	}
