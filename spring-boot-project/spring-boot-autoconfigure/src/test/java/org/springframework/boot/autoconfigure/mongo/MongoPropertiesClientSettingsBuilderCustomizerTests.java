@@ -19,14 +19,13 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.Host;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,29 +37,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class MongoPropertiesClientSettingsBuilderCustomizerTests {
 
-	private MongoProperties properties;
+	private final TestMongoConnectionDetails connectionDetails = new TestMongoConnectionDetails();
 
-	private MongoConnectionDetails serviceConnection;
+	private MongoProperties properties = new MongoProperties();
 
 	@BeforeEach
 	void setUp() {
 		this.properties = new MongoProperties();
-		this.serviceConnection = null;
 	}
 
 	@Test
 	void portCanBeCustomized() {
 		this.properties.setPort(12345);
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertThat(allAddresses.get(0).getPort()).isEqualTo(12345);
-	}
-
-	@Test
-	void portCanBeCustomizedWhenUsingServiceConnection() {
-		this.properties.setPort(12345);
-		this.serviceConnection = TestMongoServiceConnection.create().withPort(23456);
+		this.connectionDetails.setConnectionString("mongodb://localhost:23456");
 		MongoClientSettings settings = customizeSettings();
 		List<ServerAddress> allAddresses = getAllAddresses(settings);
 		assertThat(allAddresses).hasSize(1);
@@ -70,16 +59,7 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	@Test
 	void hostCanBeCustomized() {
 		this.properties.setHost("mongo.example.com");
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertThat(allAddresses.get(0).getHost()).isEqualTo("mongo.example.com");
-	}
-
-	@Test
-	void hostCanBeCustomizedWhenUsingServiceConnection() {
-		this.properties.setHost("mongo.example.com");
-		this.serviceConnection = TestMongoServiceConnection.create().withHost("some-other-mongo.example.com");
+		this.connectionDetails.setConnectionString("mongodb://some-other-mongo.example.com");
 		MongoClientSettings settings = customizeSettings();
 		List<ServerAddress> allAddresses = getAllAddresses(settings);
 		assertThat(allAddresses).hasSize(1);
@@ -87,25 +67,11 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	}
 
 	@Test
-	void additionalHostCanBeAdded() {
+	void additionalsHostCanBeAdded() {
 		this.properties.setHost("mongo.example.com");
 		this.properties.setAdditionalHosts(Arrays.asList("mongo.example.com:33", "mongo.example2.com"));
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(3);
-		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
-		assertServerAddress(allAddresses.get(1), "mongo.example.com", 33);
-		assertServerAddress(allAddresses.get(2), "mongo.example2.com", 27017);
-	}
-
-	@Test
-	void additionalHostCanBeAddedWhenUsingServiceConnection() {
-		this.properties.setHost("mongo.example.com");
-		this.properties.setAdditionalHosts(Arrays.asList("mongo.example.com:33", "mongo.example2.com"));
-		this.serviceConnection = TestMongoServiceConnection.create()
-			.withPort(1337)
-			.withHost("mongo1.example.com")
-			.withAdditionalHosts(new Host("mongo2.example.com", 1234), new Host("mongo3.example.com", 2345));
+		this.connectionDetails
+			.setConnectionString("mongodb://mongo1.example.com:1337,mongo2.example.com:1234,mongo3.example.com:2345");
 		MongoClientSettings settings = customizeSettings();
 		List<ServerAddress> allAddresses = getAllAddresses(settings);
 		assertThat(allAddresses).hasSize(3);
@@ -118,17 +84,7 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	void credentialsCanBeCustomized() {
 		this.properties.setUsername("user");
 		this.properties.setPassword("secret".toCharArray());
-		MongoClientSettings settings = customizeSettings();
-		assertMongoCredential(settings.getCredential(), "user", "secret");
-	}
-
-	@Test
-	void credentialsCanBeCustomizedWhenUsingServiceConnection() {
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		this.serviceConnection = TestMongoServiceConnection.create()
-			.withUsername("some-user")
-			.withPassword("some-password");
+		this.connectionDetails.setConnectionString("mongodb://some-user:some-password@localhost");
 		MongoClientSettings settings = customizeSettings();
 		assertMongoCredential(settings.getCredential(), "some-user", "some-password");
 	}
@@ -136,16 +92,9 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	@Test
 	void replicaSetCanBeCustomized() {
 		this.properties.setReplicaSetName("test");
+		this.connectionDetails.setConnectionString("mongodb://localhost/?replicaSet=some-replica-set");
 		MongoClientSettings settings = customizeSettings();
-		assertThat(settings.getClusterSettings().getRequiredReplicaSetName()).isEqualTo("test");
-	}
-
-	@Test
-	void replicaSetCanBeCustomizedWhenUsingServiceConnection() {
-		this.properties.setReplicaSetName("test");
-		this.serviceConnection = TestMongoServiceConnection.create().withReplicaSetName("some-replicate-set");
-		MongoClientSettings settings = customizeSettings();
-		assertThat(settings.getClusterSettings().getRequiredReplicaSetName()).isEqualTo("some-replicate-set");
+		assertThat(settings.getClusterSettings().getRequiredReplicaSetName()).isEqualTo("some-replica-set");
 	}
 
 	@Test
@@ -153,24 +102,26 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 		this.properties.setDatabase("foo");
 		this.properties.setUsername("user");
 		this.properties.setPassword("secret".toCharArray());
-		MongoClientSettings settings = customizeSettings();
-		assertMongoDatabase(settings.getCredential(), "foo");
-	}
-
-	@Test
-	void databaseCanBeCustomizedWhenUsingServiceConnection() {
-		this.properties.setDatabase("foo");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		this.serviceConnection = TestMongoServiceConnection.create()
-			.withDatabase("database-1")
-			.withAuthenticationDatabase(null);
+		this.connectionDetails.setConnectionString("mongodb://some-user:some-password@localhost/database-1");
 		MongoClientSettings settings = customizeSettings();
 		assertMongoDatabase(settings.getCredential(), "database-1");
 	}
 
 	@Test
+	// TODO database and authentication database are the same thing
+	void authenticationDatabaseCanBeCustomized() {
+		this.properties.setAuthenticationDatabase("foo");
+		this.properties.setUsername("user");
+		this.properties.setPassword("secret".toCharArray());
+		this.connectionDetails
+			.setConnectionString("mongodb://some-user:some-password@localhost/authentication-database-1");
+		MongoClientSettings settings = customizeSettings();
+		assertMongoDatabase(settings.getCredential(), "authentication-database-1");
+	}
+
+	@Test
 	void uuidRepresentationDefaultToJavaLegacy() {
+		this.connectionDetails.setConnectionString("mongodb://localhost");
 		MongoClientSettings settings = customizeSettings();
 		assertThat(settings.getUuidRepresentation()).isEqualTo(UuidRepresentation.JAVA_LEGACY);
 	}
@@ -178,36 +129,15 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	@Test
 	void uuidRepresentationCanBeCustomized() {
 		this.properties.setUuidRepresentation(UuidRepresentation.STANDARD);
+		this.connectionDetails.setConnectionString("mongodb://localhost");
 		MongoClientSettings settings = customizeSettings();
 		assertThat(settings.getUuidRepresentation()).isEqualTo(UuidRepresentation.STANDARD);
 	}
 
 	@Test
-	void authenticationDatabaseCanBeCustomized() {
-		this.properties.setAuthenticationDatabase("foo");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		MongoClientSettings settings = customizeSettings();
-		assertMongoDatabase(settings.getCredential(), "foo");
-	}
-
-	@Test
-	void authenticationDatabaseCanBeCustomizedWhenUsingServiceConnection() {
-		this.properties.setAuthenticationDatabase("foo");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		this.serviceConnection = TestMongoServiceConnection.create()
-			.withAuthenticationDatabase("authentication-database-1");
-		MongoClientSettings settings = customizeSettings();
-		assertMongoDatabase(settings.getCredential(), "authentication-database-1");
-	}
-
-	@Test
-	void uriHasNoEffectWhenServiceConnectionIsUsed() {
+	void uriHasNoEffectWhenConnectionDetailsAreUsed() {
 		this.properties.setUri("mongodb://mongo1.example.com:12345");
-		this.serviceConnection = TestMongoServiceConnection.create()
-			.withHost("some-other-mongo.example.com")
-			.withPort(23456);
+		this.connectionDetails.setConnectionString("mongodb://some-other-mongo.example.com:23456");
 		MongoClientSettings settings = customizeSettings();
 		List<ServerAddress> allAddresses = getAllAddresses(settings);
 		assertThat(allAddresses).hasSize(1);
@@ -215,85 +145,15 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	}
 
 	@Test
-	void onlyHostAndPortSetShouldUseThat() {
-		this.properties.setHost("localhost");
-		this.properties.setPort(27017);
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 27017);
-	}
-
-	@Test
-	void onlyUriSetShouldUseThat() {
-		this.properties.setUri("mongodb://mongo1.example.com:12345");
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
-	}
-
-	@Test
-	void noCustomAddressAndNoUriUsesDefaultUri() {
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 27017);
-	}
-
-	@Test
-	void uriCanBeCustomized() {
-		this.properties.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(2);
-		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
-		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-		assertMongoCredential(settings.getCredential(), "user", "secret");
-		assertMongoDatabase(settings.getCredential(), "test");
-	}
-
-	@Test
-	void uriOverridesUsernameAndPassword() {
-		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		MongoClientSettings settings = customizeSettings();
-		assertThat(settings.getCredential()).isNull();
-	}
-
-	@Test
-	void uriOverridesDatabase() {
-		this.properties.setUri("mongodb://secret:password@127.0.0.1:1234/mydb");
-		this.properties.setDatabase("test");
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> allAddresses = getAllAddresses(settings);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "127.0.0.1", 1234);
-		assertThat(settings.getCredential().getSource()).isEqualTo("mydb");
-	}
-
-	@Test
-	void uriOverridesHostAndPort() {
-		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		this.properties.setHost("localhost");
-		this.properties.setPort(4567);
-		MongoClientSettings settings = customizeSettings();
-		List<ServerAddress> addresses = getAllAddresses(settings);
-		assertThat(addresses.get(0).getHost()).isEqualTo("127.0.0.1");
-		assertThat(addresses.get(0).getPort()).isEqualTo(1234);
-	}
-
-	@Test
-	void retryWritesIsPropagatedFromUri() {
-		this.properties.setUri("mongodb://localhost/test?retryWrites=false");
+	void retryWritesIsPropagatedFromConnectionString() {
+		this.connectionDetails.setConnectionString("mongodb://localhost/?retryWrites=false");
 		MongoClientSettings settings = customizeSettings();
 		assertThat(settings.getRetryWrites()).isFalse();
 	}
 
 	private MongoClientSettings customizeSettings() {
 		MongoClientSettings.Builder settings = MongoClientSettings.builder();
-		new MongoPropertiesClientSettingsBuilderCustomizer(this.properties, this.serviceConnection).customize(settings);
+		new MongoPropertiesClientSettingsBuilderCustomizer(this.properties, this.connectionDetails).customize(settings);
 		return settings.build();
 	}
 
@@ -313,6 +173,21 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 	private void assertMongoCredential(MongoCredential credentials, String expectedUsername, String expectedPassword) {
 		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
 		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
+	}
+
+	private static final class TestMongoConnectionDetails implements MongoConnectionDetails {
+
+		private ConnectionString connectionString;
+
+		@Override
+		public ConnectionString getConnectionString() {
+			return this.connectionString;
+		}
+
+		private void setConnectionString(String connectionString) {
+			this.connectionString = new ConnectionString(connectionString);
+		}
+
 	}
 
 }

@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.mongo;
 
-import java.net.URI;
-
+import com.mongodb.ConnectionString;
 import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
@@ -47,27 +46,17 @@ class MongoContainerConnectionDetailsFactory
 	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails
 			implements MongoConnectionDetails {
 
-		private final URI uri;
+		private final ConnectionString connectionString;
 
 		private MongoContainerConnectionDetails(
 				ServiceConnectedContainer<MongoConnection, MongoConnectionDetails, MongoDBContainer> source) {
 			super(source);
-			this.uri = URI.create(source.getContainer().getReplicaSetUrl());
+			this.connectionString = new ConnectionString(source.getContainer().getReplicaSetUrl());
 		}
 
 		@Override
-		public String getHost() {
-			return this.uri.getHost();
-		}
-
-		@Override
-		public int getPort() {
-			return this.uri.getPort();
-		}
-
-		@Override
-		public String getDatabase() {
-			return this.uri.getPath();
+		public ConnectionString getConnectionString() {
+			return this.connectionString;
 		}
 
 	}

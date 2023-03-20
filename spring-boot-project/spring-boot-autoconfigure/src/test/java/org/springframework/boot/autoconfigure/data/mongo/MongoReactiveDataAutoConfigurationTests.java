@@ -16,12 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import com.mongodb.ConnectionString;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -63,9 +64,12 @@ class MongoReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	void usesMongoServiceConnectionIfAvailable() {
-		this.contextRunner.withUserConfiguration(ServiceConnectionConfiguration.class)
-			.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1"));
+	void usesMongoConnectionDetailsIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
+			assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1");
+			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
+			assertThat(template).hasFieldOrPropertyWithValue("bucket", "connection-details-bucket");
+		});
 	}
 
 	@Test
@@ -93,11 +97,35 @@ class MongoReactiveDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class ConnectionDetailsConfiguration {
 
 		@Bean
-		MongoConnectionDetails mongoServiceConnection() {
-			return new TestMongoServiceConnection();
+		MongoConnectionDetails mongoConnectionDetails() {
+			return new MongoConnectionDetails() {
+
+				@Override
+				public ConnectionString getConnectionString() {
+					return new ConnectionString("mongodb://localhost");
+				}
+
+				@Override
+				public GridFs getGridFs() {
+					return new GridFs() {
+
+						@Override
+						public String getDatabase() {
+							return "grid-database-1";
+						}
+
+						@Override
+						public String getBucket() {
+							return "connection-details-bucket";
+						}
+
+					};
+				}
+
+			};
 		}
 
 	}

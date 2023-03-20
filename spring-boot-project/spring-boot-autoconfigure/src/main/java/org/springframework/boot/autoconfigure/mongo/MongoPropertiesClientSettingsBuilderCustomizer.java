@@ -16,17 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 
 import org.springframework.core.Ordered;
-import org.springframework.util.CollectionUtils;
 
 /**
  * A {@link MongoClientSettingsBuilderCustomizer} that applies properties from a
@@ -45,6 +37,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private int order = 0;
 
+	// TODO Breaking API change due to addition of MongoConnectionDetails
 	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties,
 			MongoConnectionDetails connectionDetails) {
 		this.properties = properties;
@@ -55,8 +48,6 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	public void customize(MongoClientSettings.Builder settingsBuilder) {
 		applyUuidRepresentation(settingsBuilder);
 		applyHostAndPort(settingsBuilder);
-		applyCredentials(settingsBuilder);
-		applyReplicaSet(settingsBuilder);
 	}
 
 	private void applyUuidRepresentation(MongoClientSettings.Builder settingsBuilder) {
@@ -64,75 +55,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyHostAndPort(MongoClientSettings.Builder settings) {
-		if (this.connectionDetails == null && this.properties.getUri() != null) {
-			settings.applyConnectionString(new ConnectionString(this.properties.getUri()));
-			return;
-		}
-		if (this.connectionDetails == null && this.properties.getHost() == null && this.properties.getPort() == null) {
-			settings.applyConnectionString(new ConnectionString(MongoProperties.DEFAULT_URI));
-			return;
-		}
-		String host = (this.connectionDetails != null) ? this.connectionDetails.getHost()
-				: getOrDefault(this.properties.getHost(), "localhost");
-		int port = (this.connectionDetails != null) ? this.connectionDetails.getPort()
-				: getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
-		List<ServerAddress> serverAddresses = new ArrayList<>();
-		serverAddresses.add(new ServerAddress(host, port));
-		List<ServerAddress> additionalServerAddresses = (this.connectionDetails != null)
-				? getServerAddresses(this.connectionDetails) : getServerAddresses(this.properties);
-		serverAddresses.addAll(additionalServerAddresses);
-		settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddresses));
-	}
-
-	private List<ServerAddress> getServerAddresses(MongoConnectionDetails connectionDetails) {
-		return connectionDetails.getAdditionalHosts()
-			.stream()
-			.map((h) -> new ServerAddress(h.host(), h.port()))
-			.toList();
-	}
-
-	private List<ServerAddress> getServerAddresses(MongoProperties properties) {
-		if (CollectionUtils.isEmpty(properties.getAdditionalHosts())) {
-			return Collections.emptyList();
-		}
-		return properties.getAdditionalHosts().stream().map(ServerAddress::new).toList();
-	}
-
-	private void applyCredentials(MongoClientSettings.Builder builder) {
-		if (this.connectionDetails == null && this.properties.getUri() != null) {
-			return;
-		}
-		String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
-				: this.properties.getUsername();
-		char[] password = (this.connectionDetails != null) ? getPasswordAsCharArray(this.connectionDetails)
-				: this.properties.getPassword();
-		if (username != null && password != null) {
-			String authenticationDatabase = (this.connectionDetails != null)
-					? this.connectionDetails.getAuthenticationDatabase() : this.properties.getAuthenticationDatabase();
-			String database = (this.connectionDetails != null) ? this.connectionDetails.getDatabase()
-					: this.properties.getMongoClientDatabase();
-			String databaseToAuthAgainst = (authenticationDatabase != null) ? authenticationDatabase : database;
-			builder.credential((MongoCredential.createCredential(username, databaseToAuthAgainst, password)));
-		}
-	}
-
-	private char[] getPasswordAsCharArray(MongoConnectionDetails connectionDetails) {
-		if (connectionDetails.getPassword() == null) {
-			return null;
-		}
-		return connectionDetails.getPassword().toCharArray();
-	}
-
-	private void applyReplicaSet(MongoClientSettings.Builder builder) {
-		String replicaSetName = (this.connectionDetails != null) ? this.connectionDetails.getReplicaSetName()
-				: this.properties.getReplicaSetName();
-		if (replicaSetName != null) {
-			builder.applyToClusterSettings((cluster) -> cluster.requiredReplicaSetName(replicaSetName));
-		}
-	}
-
-	private <V> V getOrDefault(V value, V defaultValue) {
-		return (value != null) ? value : defaultValue;
+		settings.applyConnectionString(this.connectionDetails.getConnectionString());
 	}
 
 	@Override

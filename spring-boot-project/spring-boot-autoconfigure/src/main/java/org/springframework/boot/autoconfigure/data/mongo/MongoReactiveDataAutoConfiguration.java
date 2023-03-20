@@ -32,11 +32,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
-import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -83,6 +83,7 @@ public class MongoReactiveDataAutoConfiguration {
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
 	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoProperties properties,
 			MongoClient mongo) {
+		// TODO Database from connection details?
 		String database = properties.getMongoClientDatabase();
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
@@ -114,28 +115,27 @@ public class MongoReactiveDataAutoConfiguration {
 	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory,
 			MongoProperties properties, ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
+		MongoConnectionDetails connectionDetails = connectionDetailsProvider
+			.getIfAvailable(() -> new PropertiesMongoConnectionDetails(properties));
 		return new ReactiveGridFsTemplate(dataBufferFactory,
-				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties,
-						connectionDetailsProvider.getIfAvailable()),
-				mappingMongoConverter, properties.getGridfs().getBucket());
+				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, connectionDetails),
+				mappingMongoConverter,
+				(connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getBucket() : null);
 	}
 
 	/**
-	 * {@link ReactiveMongoDatabaseFactory} decorator to use {@link Gridfs#getDatabase()}
-	 * or {@link GridFs#getGridFs()} from the {@link MongoConnectionDetails} when set.
+	 * {@link ReactiveMongoDatabaseFactory} decorator to use {@link GridFs#getGridFs()}
+	 * from the {@link MongoConnectionDetails} when set.
 	 */
 	static class GridFsReactiveMongoDatabaseFactory implements ReactiveMongoDatabaseFactory {
 
 		private final ReactiveMongoDatabaseFactory delegate;
 
-		private final MongoProperties properties;
-
 		private final MongoConnectionDetails connectionDetails;
 
-		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties,
+		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate,
 				MongoConnectionDetails connectionDetails) {
 			this.delegate = delegate;
-			this.properties = properties;
 			this.connectionDetails = connectionDetails;
 		}
 
@@ -146,12 +146,18 @@ public class MongoReactiveDataAutoConfiguration {
 
 		@Override
 		public Mono<MongoDatabase> getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = (this.connectionDetails != null) ? getGridFsDatabase(this.connectionDetails)
-					: this.properties.getGridfs().getDatabase();
+			String gridFsDatabase = getGridFsDatabase(this.connectionDetails);
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.delegate.getMongoDatabase(gridFsDatabase);
 			}
 			return this.delegate.getMongoDatabase();
+		}
+
+		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+			if (connectionDetails.getGridFs() == null) {
+				return null;
+			}
+			return connectionDetails.getGridFs().getDatabase();
 		}
 
 		@Override
@@ -187,13 +193,6 @@ public class MongoReactiveDataAutoConfiguration {
 		@Override
 		public boolean isTransactionActive() {
 			return this.delegate.isTransactionActive();
-		}
-
-		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
-			if (connectionDetails.getGridFs() == null) {
-				return null;
-			}
-			return connectionDetails.getGridFs().getDatabase();
 		}
 
 	}

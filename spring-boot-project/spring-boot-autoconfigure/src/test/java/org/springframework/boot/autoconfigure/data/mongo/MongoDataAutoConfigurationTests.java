@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.mongo;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.junit.jupiter.api.Test;
@@ -83,10 +84,11 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void usesMongoServiceConnectionIfAvailable() {
-		this.contextRunner.withUserConfiguration(ServiceConnectionConfiguration.class).run((context) -> {
+	void usesMongoConnectionDetailsIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
+			assertThat(template).hasFieldOrPropertyWithValue("bucket", "connection-details-bucket");
 			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
 			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid-database-1");
 		});
@@ -263,11 +265,35 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class ConnectionDetailsConfiguration {
 
 		@Bean
 		MongoConnectionDetails mongoConnectionDetails() {
-			return new TestMongoServiceConnection();
+			return new MongoConnectionDetails() {
+
+				@Override
+				public ConnectionString getConnectionString() {
+					return new ConnectionString("mongodb://localhost");
+				}
+
+				@Override
+				public GridFs getGridFs() {
+					return new GridFs() {
+
+						@Override
+						public String getDatabase() {
+							return "grid-database-1";
+						}
+
+						@Override
+						public String getBucket() {
+							return "connection-details-bucket";
+						}
+
+					};
+				}
+
+			};
 		}
 
 	}

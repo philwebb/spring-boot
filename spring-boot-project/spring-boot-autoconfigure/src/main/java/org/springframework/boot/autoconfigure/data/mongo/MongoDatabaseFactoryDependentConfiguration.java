@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
+import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -81,9 +82,11 @@ class MongoDatabaseFactoryDependentConfiguration {
 	@ConditionalOnMissingBean(GridFsOperations.class)
 	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate,
 			ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
-		return new GridFsTemplate(
-				new GridFsMongoDatabaseFactory(factory, this.properties, connectionDetailsProvider.getIfAvailable()),
-				mongoTemplate.getConverter(), this.properties.getGridfs().getBucket());
+		MongoConnectionDetails connectionDetails = connectionDetailsProvider
+			.getIfAvailable(() -> new PropertiesMongoConnectionDetails(this.properties));
+		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, connectionDetails),
+				mongoTemplate.getConverter(),
+				(connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getBucket() : null);
 	}
 
 	/**
@@ -94,23 +97,19 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 		private final MongoDatabaseFactory mongoDatabaseFactory;
 
-		private final MongoProperties properties;
-
 		private final MongoConnectionDetails connectionDetails;
 
-		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties,
-				MongoConnectionDetails serviceConnection) {
+		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory,
+				MongoConnectionDetails connectionDetails) {
 			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
-			Assert.notNull(properties, "Properties must not be null");
+			Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
 			this.mongoDatabaseFactory = mongoDatabaseFactory;
-			this.properties = properties;
-			this.connectionDetails = serviceConnection;
+			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
 		public MongoDatabase getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = (this.connectionDetails != null) ? getGridFsDatabase(this.connectionDetails)
-					: this.properties.getGridfs().getDatabase();
+			String gridFsDatabase = getGridFsDatabase(this.connectionDetails);
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDatabaseFactory.getMongoDatabase(gridFsDatabase);
 			}

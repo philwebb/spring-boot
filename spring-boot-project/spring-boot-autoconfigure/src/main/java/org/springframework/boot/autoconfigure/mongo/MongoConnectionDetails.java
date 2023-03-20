@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.Collections;
-import java.util.List;
+import com.mongodb.ConnectionString;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
@@ -31,62 +30,10 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 public interface MongoConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Mongo server host.
-	 * @return the mongo server host
+	 * The {@link ConnectionString} for MongoDB.
+	 * @return the connection string
 	 */
-	String getHost(); // FIXME return Host type and drop getPort?
-
-	/**
-	 * Additional server hosts.
-	 * @return the additional server hosts
-	 */
-	default List<Host> getAdditionalHosts() {
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Mongo server port.
-	 * @return the mongo server port
-	 */
-	int getPort();
-
-	/**
-	 * Database name.
-	 * @return the database name
-	 */
-	String getDatabase();
-
-	/**
-	 * Authentication database name.
-	 * @return the Authentication database name or {@code null}
-	 */
-	default String getAuthenticationDatabase() {
-		return null;
-	}
-
-	/**
-	 * Login user of the mongo server.
-	 * @return the login user of the mongo server or {@code null}
-	 */
-	default String getUsername() {
-		return null;
-	}
-
-	/**
-	 * Login password of the mongo server.
-	 * @return the login password of the mongo server or {@code null}
-	 */
-	default String getPassword() {
-		return null;
-	}
-
-	/**
-	 * Replica set name for the cluster.
-	 * @return the required replica set name for the cluster or {@code null}
-	 */
-	default String getReplicaSetName() {
-		return null;
-	}
+	ConnectionString getConnectionString();
 
 	/**
 	 * GridFS configuration.
@@ -107,15 +54,12 @@ public interface MongoConnectionDetails extends ConnectionDetails {
 		 */
 		String getDatabase();
 
-	}
+		/**
+		 * GridFS bucket name.
+		 * @return the GridFS bucket name or {@code null}
+		 */
+		String getBucket();
 
-	/**
-	 * A mongo host.
-	 *
-	 * @param host the host
-	 * @param port the port
-	 */
-	record Host(String host, int port) {
 	}
 
 }

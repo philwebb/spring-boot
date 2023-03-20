@@ -40,6 +40,7 @@ class MongoDatabaseFactoryConfiguration {
 
 	@Bean
 	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties) {
+		// TODOD database from MongoConnectionDetails
 		return new SimpleMongoClientDatabaseFactory(mongoClient, properties.getMongoClientDatabase());
 	}
 

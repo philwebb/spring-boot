@@ -65,7 +65,7 @@ public class MongoAutoConfiguration {
 		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
 				ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
 			return new MongoPropertiesClientSettingsBuilderCustomizer(properties,
-					connectionDetailsProvider.getIfAvailable());
+					connectionDetailsProvider.getIfAvailable(() -> new PropertiesMongoConnectionDetails(properties)));
 		}
 
 	}
