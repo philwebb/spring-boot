@@ -62,7 +62,12 @@ dependencies {
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.testcontainers:elasticsearch")
 	optional("org.testcontainers:jdbc")
+	optional("org.testcontainers:mariadb")
 	optional("org.testcontainers:mongodb")
+	optional("org.testcontainers:mssqlserver")
+	optional("org.testcontainers:mysql")
+	optional("org.testcontainers:postgresql")
+	optional("org.testcontainers:r2dbc")
 	optional("org.testcontainers:testcontainers")
 	optional("io.micrometer:micrometer-tracing")
 

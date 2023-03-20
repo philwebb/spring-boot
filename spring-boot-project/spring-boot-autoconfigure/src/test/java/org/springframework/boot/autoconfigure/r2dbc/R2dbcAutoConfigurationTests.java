@@ -308,9 +308,9 @@ class R2dbcAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseServiceConnectionIfAvailable() {
+	void shouldUseCustomConnectionDetailsIfAvailable() {
 		this.contextRunner.withPropertyValues("spring.r2dbc.pool.enabled=false")
-			.withUserConfiguration(ServiceConnectionConfiguration.class)
+			.withUserConfiguration(ConnectionDetailsConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ConnectionFactory.class);
 				OptionsCapableConnectionFactory connectionFactory = context
@@ -362,11 +362,19 @@ class R2dbcAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class ConnectionDetailsConfiguration {
 
 		@Bean
-		R2dbcConnectionDetails sqlServiceConnection() {
-			return new TestR2dbcConnectionDetails();
+		R2dbcConnectionDetails r2dbcConnectionDetails() {
+			return new R2dbcConnectionDetails() {
+
+				@Override
+				public ConnectionFactoryOptions getConnectionFactoryOptions() {
+					return ConnectionFactoryOptions
+						.parse("r2dbc:postgresql://user-1:password-1@postgres.example.com:12345/database-1");
+				}
+
+			};
 		}
 
 	}

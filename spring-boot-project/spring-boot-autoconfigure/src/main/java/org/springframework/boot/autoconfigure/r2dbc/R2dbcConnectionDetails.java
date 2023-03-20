@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
+import io.r2dbc.spi.ConnectionFactoryOptions;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -28,21 +30,9 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 public interface R2dbcConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Hostname for the database.
-	 * @return the username for the database
+	 * Connection factory options for connecting to the database.
+	 * @return the connection factory options
 	 */
-	String getUsername();
-
-	/**
-	 * Password for the database.
-	 * @return the password for the database
-	 */
-	String getPassword();
-
-	/**
-	 * R2DBC url for the database.
-	 * @return the R2DBC url for the database
-	 */
-	String getR2dbcUrl();
+	ConnectionFactoryOptions getConnectionFactoryOptions();
 
 }

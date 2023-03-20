@@ -90,10 +90,10 @@ abstract class ConnectionFactoryConfigurations {
 
 			@Bean(destroyMethod = "dispose")
 			ConnectionPool connectionFactory(R2dbcProperties properties,
-					ObjectProvider<R2dbcConnectionDetails> connectionDetailsProvider, ResourceLoader resourceLoader,
+					ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 					ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
 				ConnectionFactory connectionFactory = createConnectionFactory(properties,
-						connectionDetailsProvider.getIfAvailable(), resourceLoader.getClassLoader(),
+						connectionDetails.getIfAvailable(), resourceLoader.getClassLoader(),
 						customizers.orderedStream().toList());
 				R2dbcProperties.Pool pool = properties.getPool();
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -121,9 +121,9 @@ abstract class ConnectionFactoryConfigurations {
 
 		@Bean
 		ConnectionFactory connectionFactory(R2dbcProperties properties,
-				ObjectProvider<R2dbcConnectionDetails> connectionDetailsProvider, ResourceLoader resourceLoader,
+				ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 				ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers) {
-			return createConnectionFactory(properties, connectionDetailsProvider.getIfAvailable(),
+			return createConnectionFactory(properties, connectionDetails.getIfAvailable(),
 					resourceLoader.getClassLoader(), customizers.orderedStream().toList());
 		}
 
