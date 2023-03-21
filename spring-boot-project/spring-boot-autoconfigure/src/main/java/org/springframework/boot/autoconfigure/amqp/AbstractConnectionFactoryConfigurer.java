@@ -41,12 +41,13 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	private final RabbitConnectionDetails connectionDetails;
 
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
-		this(properties, null);
+		this(properties, new PropertiesRabbitConnectionDetails(properties));
 	}
 
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
 			RabbitConnectionDetails connectionDetails) {
 		Assert.notNull(properties, "RabbitProperties must not be null");
+		Assert.notNull(properties, "ConnectionDetails must not be null");
 		this.rabbitProperties = properties;
 		this.connectionDetails = connectionDetails;
 	}
@@ -66,8 +67,10 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	public final void configure(T connectionFactory) {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
-		String addresses = (this.connectionDetails != null) ? getAddresses(this.connectionDetails)
-				: this.rabbitProperties.determineAddresses();
+		String addresses = this.connectionDetails.getAddresses()
+			.stream()
+			.map((address) -> address.host() + ":" + address.port())
+			.collect(Collectors.joining(","));
 		map.from(addresses).to(connectionFactory::setAddresses);
 		map.from(this.rabbitProperties::getAddressShuffleMode)
 			.whenNonNull()
@@ -83,12 +86,5 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param rabbitProperties properties to use for the configuration
 	 */
 	protected abstract void configure(T connectionFactory, RabbitProperties rabbitProperties);
-
-	private String getAddresses(RabbitConnectionDetails connectionDetails) {
-		return connectionDetails.getAddresses()
-			.stream()
-			.map((address) -> address.host() + ":" + address.port())
-			.collect(Collectors.joining(","));
-	}
 
 }

@@ -16,33 +16,48 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link RabbitConnectionDetails} for tests.
+ * Adapts {@link RabbitProperties} to {@link RabbitConnectionDetails}.
  *
  * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 3.1.0
  */
-class TestRabbitServiceConnection implements RabbitConnectionDetails {
+public class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
+
+	private final RabbitProperties properties;
+
+	public PropertiesRabbitConnectionDetails(RabbitProperties properties) {
+		this.properties = properties;
+	}
 
 	@Override
 	public String getUsername() {
-		return "user-1";
+		return this.properties.determineUsername();
 	}
 
 	@Override
 	public String getPassword() {
-		return "password-1";
+		return this.properties.determinePassword();
 	}
 
 	@Override
 	public String getVirtualHost() {
-		return "/vhost-1";
+		return this.properties.determineVirtualHost();
 	}
 
 	@Override
 	public List<Address> getAddresses() {
-		return List.of(new Address("rabbit.example.com", 12345), new Address("rabbit2.example.com", 23456));
+		List<Address> addresses = new ArrayList<>();
+		for (String address : this.properties.determineAddresses().split(",")) {
+			String[] components = address.split(":");
+			addresses.add(new Address(components[0], Integer.parseInt(components[1])));
+		}
+		return addresses;
 	}
 
 }

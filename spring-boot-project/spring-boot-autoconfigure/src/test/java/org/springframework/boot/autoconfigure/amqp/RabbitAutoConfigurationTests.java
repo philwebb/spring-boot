@@ -172,8 +172,8 @@ class RabbitAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void testConnectionFactoryWithOverridesWhenUsingServiceConnection() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class, ServiceConnectionConfiguration.class)
+	void testConnectionFactoryWithOverridesWhenUsingConnectionDetails() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, ConnectionDetailsConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
 					"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
 					"spring.rabbitmq.virtual_host:/vhost")
@@ -1240,11 +1240,33 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ServiceConnectionConfiguration {
+	static class ConnectionDetailsConfiguration {
 
 		@Bean
 		RabbitConnectionDetails rabbitConnectionDetails() {
-			return new TestRabbitServiceConnection();
+			return new RabbitConnectionDetails() {
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password-1";
+				}
+
+				@Override
+				public String getVirtualHost() {
+					return "/vhost-1";
+				}
+
+				@Override
+				public List<Address> getAddresses() {
+					return List.of(new Address("rabbit.example.com", 12345), new Address("rabbit2.example.com", 23456));
+				}
+
+			};
 		}
 
 	}

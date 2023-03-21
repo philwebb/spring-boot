@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactoryConfigurer<CachingConnectionFactory> {
 
 	public CachingConnectionFactoryConfigurer(RabbitProperties properties) {
-		this(properties, null);
+		this(properties, new PropertiesRabbitConnectionDetails(properties));
 	}
 
 	public CachingConnectionFactoryConfigurer(RabbitProperties properties, RabbitConnectionDetails connectionDetails) {

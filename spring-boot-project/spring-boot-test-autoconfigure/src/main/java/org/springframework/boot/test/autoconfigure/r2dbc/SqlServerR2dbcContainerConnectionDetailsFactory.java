@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.r2dbc;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.testcontainers.containers.MSSQLR2DBCDatabaseContainer;
 import org.testcontainers.containers.MSSQLServerContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
@@ -28,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.service.connection.ContainerC
 
 /**
  * {@link ConnectionDetailsFactory} for {@link R2dbcConnection @R2dbcConnection} annotated
- * {@link PostgreSQLContainer} fields.
+ * {@link MSSQLServerContainer} fields.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

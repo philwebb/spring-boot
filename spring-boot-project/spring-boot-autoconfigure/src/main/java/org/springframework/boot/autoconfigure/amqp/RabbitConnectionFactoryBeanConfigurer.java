@@ -22,6 +22,7 @@ import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -46,7 +47,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	private CredentialsRefreshService credentialsRefreshService;
 
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties) {
-		this(resourceLoader, properties, null);
+		this(resourceLoader, properties, new PropertiesRabbitConnectionDetails(properties));
 	}
 
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
@@ -74,22 +75,13 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	public void configure(RabbitConnectionFactoryBean factory) {
 		Assert.notNull(factory, "RabbitConnectionFactoryBean must not be null");
 		factory.setResourceLoader(this.resourceLoader);
-		String host = (this.connectionDetails != null) ? this.connectionDetails.getFirstAddress().host()
-				: this.rabbitProperties.determineHost();
-		int port = (this.connectionDetails != null) ? this.connectionDetails.getFirstAddress().port()
-				: this.rabbitProperties.determinePort();
-		String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
-				: this.rabbitProperties.determineUsername();
-		String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
-				: this.rabbitProperties.determinePassword();
-		String virtualHost = (this.connectionDetails != null) ? this.connectionDetails.getVirtualHost()
-				: this.rabbitProperties.determineVirtualHost();
+		Address address = this.connectionDetails.getFirstAddress();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(host).whenNonNull().to(factory::setHost);
-		map.from(port).to(factory::setPort);
-		map.from(username).whenNonNull().to(factory::setUsername);
-		map.from(password).whenNonNull().to(factory::setPassword);
-		map.from(virtualHost).whenNonNull().to(factory::setVirtualHost);
+		map.from(address::host).whenNonNull().to(factory::setHost);
+		map.from(address::port).to(factory::setPort);
+		map.from(this.connectionDetails::getUsername).whenNonNull().to(factory::setUsername);
+		map.from(this.connectionDetails::getPassword).whenNonNull().to(factory::setPassword);
+		map.from(this.connectionDetails::getVirtualHost).whenNonNull().to(factory::setVirtualHost);
 		map.from(this.rabbitProperties::getRequestedHeartbeat)
 			.whenNonNull()
 			.asInt(Duration::getSeconds)

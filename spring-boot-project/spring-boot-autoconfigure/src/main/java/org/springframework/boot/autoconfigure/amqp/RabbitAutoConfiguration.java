@@ -100,7 +100,8 @@ public class RabbitAutoConfiguration {
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
 				ObjectProvider<RabbitConnectionDetails> connectionDetailsProvider) {
 			RabbitConnectionFactoryBeanConfigurer configurer = new RabbitConnectionFactoryBeanConfigurer(resourceLoader,
-					properties, connectionDetailsProvider.getIfAvailable());
+					properties,
+					connectionDetailsProvider.getIfAvailable(() -> new PropertiesRabbitConnectionDetails(properties)));
 			configurer.setCredentialsProvider(credentialsProvider.getIfUnique());
 			configurer.setCredentialsRefreshService(credentialsRefreshService.getIfUnique());
 			return configurer;
@@ -112,7 +113,8 @@ public class RabbitAutoConfiguration {
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy,
 				ObjectProvider<RabbitConnectionDetails> connectionDetailsProvider) {
 			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(rabbitProperties,
-					connectionDetailsProvider.getIfAvailable());
+					connectionDetailsProvider
+						.getIfAvailable(() -> new PropertiesRabbitConnectionDetails(rabbitProperties)));
 			configurer.setConnectionNameStrategy(connectionNameStrategy.getIfUnique());
 			return configurer;
 		}
