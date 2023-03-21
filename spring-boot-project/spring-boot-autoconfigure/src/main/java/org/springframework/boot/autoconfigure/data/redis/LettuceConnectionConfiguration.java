@@ -118,7 +118,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceClientConfigurationBuilder applyProperties(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		boolean ssl = (this.connectionDetails != null) ? false : getProperties().isSsl();
+		boolean ssl = (!(this.connectionDetails instanceof PropertiesRedisConnectionDetails)) ? false
+				: getProperties().isSsl();
 		if (ssl) {
 			builder.useSsl();
 		}
@@ -164,8 +165,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
-		if (connectionInfo.isUseSsl()) {
+		if (useSsl()) {
 			builder.useSsl();
 		}
 	}

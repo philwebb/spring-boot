@@ -66,7 +66,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Redis cluster configuration. Mutually exclusive with {@link #getStandalone()} and
-	 * {@link #getStandalone()}.
+	 * {@link #getSentinel()}.
 	 * @return the Redis cluster configuration
 	 */
 	default Cluster getCluster() {

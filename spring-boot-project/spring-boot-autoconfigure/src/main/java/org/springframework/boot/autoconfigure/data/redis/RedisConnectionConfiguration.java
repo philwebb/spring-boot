@@ -32,7 +32,6 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Base Redis connection configuration.
@@ -68,7 +67,8 @@ abstract class RedisConnectionConfiguration {
 		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
-		this.connectionDetails = connectionDetailsProvider.getIfAvailable();
+		this.connectionDetails = connectionDetailsProvider
+			.getIfAvailable(() -> new PropertiesRedisConnectionDetails(properties));
 	}
 
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
@@ -76,30 +76,11 @@ abstract class RedisConnectionConfiguration {
 			return this.standaloneConfiguration;
 		}
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-		if (this.connectionDetails == null && StringUtils.hasText(this.properties.getUrl())) {
-			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
-			config.setHostName(connectionInfo.getHostName());
-			config.setPort(connectionInfo.getPort());
-			config.setUsername(connectionInfo.getUsername());
-			config.setPassword(RedisPassword.of(connectionInfo.getPassword()));
-		}
-		else {
-			String host = (this.connectionDetails != null) ? this.connectionDetails.getStandalone().getHost()
-					: this.properties.getHost();
-			String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
-					: this.properties.getUsername();
-			String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
-					: this.properties.getPassword();
-			int port = (this.connectionDetails != null) ? this.connectionDetails.getStandalone().getPort()
-					: this.properties.getPort();
-			config.setHostName(host);
-			config.setPort(port);
-			config.setUsername(username);
-			config.setPassword(RedisPassword.of(password));
-		}
-		int database = (this.connectionDetails != null) ? this.connectionDetails.getStandalone().getDatabase()
-				: this.properties.getDatabase();
-		config.setDatabase(database);
+		config.setHostName(this.connectionDetails.getStandalone().getHost());
+		config.setPort(this.connectionDetails.getStandalone().getPort());
+		config.setUsername(this.connectionDetails.getUsername());
+		config.setPassword(RedisPassword.of(this.connectionDetails.getPassword()));
+		config.setDatabase(this.connectionDetails.getStandalone().getDatabase());
 		return config;
 	}
 
@@ -107,35 +88,21 @@ abstract class RedisConnectionConfiguration {
 		if (this.sentinelConfiguration != null) {
 			return this.sentinelConfiguration;
 		}
-		RedisProperties.Sentinel sentinelProperties = this.properties.getSentinel();
-		if (sentinelProperties != null
-				|| (this.connectionDetails != null && this.connectionDetails.getSentinel() != null)) {
+		if (this.connectionDetails.getSentinel() != null) {
 			RedisSentinelConfiguration config = new RedisSentinelConfiguration();
-			String master = (this.connectionDetails != null) ? this.connectionDetails.getSentinel().getMaster()
-					: sentinelProperties.getMaster();
-			config.master(master);
-			List<RedisNode> sentinels = (this.connectionDetails != null)
-					? createSentinels(this.connectionDetails.getSentinel()) : createSentinels(sentinelProperties);
-			config.setSentinels(sentinels);
-			String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
-					: this.properties.getUsername();
-			String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
-					: this.properties.getPassword();
-			config.setUsername(username);
+			config.master(this.connectionDetails.getSentinel().getMaster());
+			config.setSentinels(createSentinels(this.connectionDetails.getSentinel()));
+			config.setUsername(this.connectionDetails.getUsername());
+			String password = this.connectionDetails.getPassword();
 			if (password != null) {
 				config.setPassword(RedisPassword.of(password));
 			}
-			String sentinelUsername = (this.connectionDetails != null)
-					? this.connectionDetails.getSentinel().getUsername() : sentinelProperties.getUsername();
-			config.setSentinelUsername(sentinelUsername);
-			String sentinelPassword = (this.connectionDetails != null)
-					? this.connectionDetails.getSentinel().getPassword() : sentinelProperties.getPassword();
+			config.setSentinelUsername(this.connectionDetails.getSentinel().getUsername());
+			String sentinelPassword = this.connectionDetails.getSentinel().getPassword();
 			if (sentinelPassword != null) {
 				config.setSentinelPassword(RedisPassword.of(sentinelPassword));
 			}
-			int database = (this.connectionDetails != null) ? this.connectionDetails.getSentinel().getDatabase()
-					: this.properties.getDatabase();
-			config.setDatabase(database);
+			config.setDatabase(this.connectionDetails.getSentinel().getDatabase());
 			return config;
 		}
 		return null;
@@ -150,19 +117,14 @@ abstract class RedisConnectionConfiguration {
 			return this.clusterConfiguration;
 		}
 		RedisProperties.Cluster clusterProperties = this.properties.getCluster();
-		if (clusterProperties != null
-				|| (this.connectionDetails != null && this.connectionDetails.getCluster() != null)) {
-			List<String> nodes = (this.connectionDetails != null) ? getNodes(this.connectionDetails.getCluster())
-					: clusterProperties.getNodes();
-			RedisClusterConfiguration config = new RedisClusterConfiguration(nodes);
+		if (this.connectionDetails.getCluster() != null) {
+			RedisClusterConfiguration config = new RedisClusterConfiguration(
+					getNodes(this.connectionDetails.getCluster()));
 			if (clusterProperties != null && clusterProperties.getMaxRedirects() != null) {
 				config.setMaxRedirects(clusterProperties.getMaxRedirects());
 			}
-			String username = (this.connectionDetails != null) ? this.connectionDetails.getUsername()
-					: this.properties.getUsername();
-			String password = (this.connectionDetails != null) ? this.connectionDetails.getPassword()
-					: this.properties.getPassword();
-			config.setUsername(username);
+			config.setUsername(this.connectionDetails.getUsername());
+			String password = this.connectionDetails.getPassword();
 			if (password != null) {
 				config.setPassword(RedisPassword.of(password));
 			}
@@ -184,19 +146,6 @@ abstract class RedisConnectionConfiguration {
 		return (enabled != null) ? enabled : COMMONS_POOL2_AVAILABLE;
 	}
 
-	private List<RedisNode> createSentinels(RedisProperties.Sentinel sentinel) {
-		List<RedisNode> nodes = new ArrayList<>();
-		for (String node : sentinel.getNodes()) {
-			try {
-				nodes.add(RedisNode.fromString(node));
-			}
-			catch (RuntimeException ex) {
-				throw new IllegalStateException("Invalid redis sentinel property '" + node + "'", ex);
-			}
-		}
-		return nodes;
-	}
-
 	private List<RedisNode> createSentinels(Sentinel sentinel) {
 		List<RedisNode> nodes = new ArrayList<>();
 		for (Node node : sentinel.getNodes()) {
@@ -205,7 +154,11 @@ abstract class RedisConnectionConfiguration {
 		return nodes;
 	}
 
-	protected ConnectionInfo parseUrl(String url) {
+	protected boolean useSsl() {
+		return parseUrl(this.properties.getUrl()).isUseSsl();
+	}
+
+	private static ConnectionInfo parseUrl(String url) {
 		try {
 			URI uri = new URI(url);
 			String scheme = uri.getScheme();
@@ -268,6 +221,122 @@ abstract class RedisConnectionConfiguration {
 
 		String getPassword() {
 			return this.password;
+		}
+
+	}
+
+	static class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
+
+		private final RedisProperties properties;
+
+		PropertiesRedisConnectionDetails(RedisProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUsername() {
+			if (this.properties.getUrl() != null) {
+				ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
+				String userInfo = connectionInfo.uri.getUserInfo();
+				if (userInfo != null) {
+					int index = userInfo.indexOf(':');
+					if (index != -1) {
+						return userInfo.substring(0, index);
+					}
+				}
+			}
+			return this.properties.getUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			if (this.properties.getUrl() != null) {
+				ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
+				String userInfo = connectionInfo.uri.getUserInfo();
+				if (userInfo != null) {
+					int index = userInfo.indexOf(':');
+					if (index != -1) {
+						return userInfo.substring(index + 1);
+					}
+				}
+			}
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public Standalone getStandalone() {
+			if (this.properties.getUrl() != null) {
+				ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
+				return Standalone.of(connectionInfo.getHostName(), connectionInfo.getPort(),
+						this.properties.getDatabase());
+			}
+			return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
+		}
+
+		private ConnectionInfo connectionInfo(String url) {
+			if (url == null) {
+				return null;
+			}
+			return parseUrl(url);
+		}
+
+		@Override
+		public Sentinel getSentinel() {
+			org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel sentinel = this.properties
+				.getSentinel();
+			if (sentinel == null) {
+				return null;
+			}
+			return new Sentinel() {
+
+				@Override
+				public int getDatabase() {
+					return PropertiesRedisConnectionDetails.this.properties.getDatabase();
+				}
+
+				@Override
+				public String getMaster() {
+					return sentinel.getMaster();
+				}
+
+				@Override
+				public List<Node> getNodes() {
+					return sentinel.getNodes().stream().map(PropertiesRedisConnectionDetails.this::asNode).toList();
+				}
+
+				@Override
+				public String getUsername() {
+					return sentinel.getUsername();
+				}
+
+				@Override
+				public String getPassword() {
+					return sentinel.getPassword();
+				}
+
+			};
+		}
+
+		@Override
+		public Cluster getCluster() {
+			org.springframework.boot.autoconfigure.data.redis.RedisProperties.Cluster cluster = this.properties
+				.getCluster();
+			if (cluster == null) {
+				return null;
+			}
+			return new Cluster() {
+
+				@Override
+				public List<Node> getNodes() {
+					return cluster.getNodes().stream().map(PropertiesRedisConnectionDetails.this::asNode).toList();
+				}
+
+			};
+		}
+
+		private Node asNode(String node) {
+			String[] components = node.split(":");
+			return new Node(components[0], Integer.parseInt(components[1]));
 		}
 
 	}

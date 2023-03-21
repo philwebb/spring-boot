@@ -92,7 +92,8 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		boolean ssl = (this.connectionDetails != null) ? false : getProperties().isSsl();
+		boolean ssl = (!(this.connectionDetails instanceof PropertiesRedisConnectionDetails)) ? false
+				: getProperties().isSsl();
 		map.from(ssl).whenTrue().toCall(builder::useSsl);
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
@@ -120,8 +121,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
-		if (connectionInfo.isUseSsl()) {
+		if (useSsl()) {
 			builder.useSsl();
 		}
 	}
