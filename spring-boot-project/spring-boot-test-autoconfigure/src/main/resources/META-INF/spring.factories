@@ -20,6 +20,7 @@ org.springframework.boot.test.autoconfigure.ConditionReportApplicationContextFai
 
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
 org.springframework.boot.test.autoconfigure.cassandra.CassandraContainerConnectionDetailsFactory,\
+org.springframework.boot.test.autoconfigure.couchbase.CouchbaseContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.data.redis.RedisContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.jdbc.JdbcContainerConnectionDetailsFactory,\
