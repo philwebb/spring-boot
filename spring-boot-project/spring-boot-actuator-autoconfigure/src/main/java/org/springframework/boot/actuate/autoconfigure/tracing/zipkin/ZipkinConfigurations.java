@@ -61,13 +61,12 @@ class ZipkinConfigurations {
 		@ConditionalOnMissingBean(Sender.class)
 		URLConnectionSender urlConnectionSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
+				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
 			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
 			builder.readTimeout((int) properties.getReadTimeout().toMillis());
-			String endpoint = (connectionDetails != null) ? connectionDetails.getSpanEndpoint()
-					: properties.getEndpoint();
-			builder.endpoint(endpoint);
+			builder.endpoint(connectionDetails.getSpanEndpoint());
 			return builder.build();
 		}
 
@@ -83,14 +82,13 @@ class ZipkinConfigurations {
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers,
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
+				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
 				.setConnectTimeout(properties.getConnectTimeout())
 				.setReadTimeout(properties.getReadTimeout());
 			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
-			String endpoint = (connectionDetails != null) ? connectionDetails.getSpanEndpoint()
-					: properties.getEndpoint();
-			return new ZipkinRestTemplateSender(endpoint, restTemplateBuilder.build());
+			return new ZipkinRestTemplateSender(connectionDetails.getSpanEndpoint(), restTemplateBuilder.build());
 		}
 
 		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
@@ -116,12 +114,11 @@ class ZipkinConfigurations {
 		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
+				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			WebClient.Builder builder = WebClient.builder();
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			String endpoint = (connectionDetails != null) ? connectionDetails.getSpanEndpoint()
-					: properties.getEndpoint();
-			return new ZipkinWebClientSender(endpoint, builder.build());
+			return new ZipkinWebClientSender(connectionDetails.getSpanEndpoint(), builder.build());
 		}
 
 	}

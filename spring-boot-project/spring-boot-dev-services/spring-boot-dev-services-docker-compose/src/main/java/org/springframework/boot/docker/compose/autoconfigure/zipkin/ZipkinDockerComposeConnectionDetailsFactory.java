@@ -62,18 +62,8 @@ class ZipkinDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getHost() {
-			return this.host;
-		}
-
-		@Override
-		public int getPort() {
-			return this.mappedPort.number();
-		}
-
-		@Override
-		public String getSpanPath() {
-			return "/api/v2/spans";
+		public String getSpanEndpoint() {
+			return "http://" + this.host + ":" + this.mappedPort.number() + "/api/v2/spans";
 		}
 
 	}

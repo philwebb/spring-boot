@@ -174,37 +174,36 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void webClientSenderUsesZipkinServiceConnection() {
+	void webClientSenderUsesZipkinConnectionDetails() {
 		this.reactiveContextRunner
-			.withUserConfiguration(WebClientConfiguration.class, ZipkinServiceConnectionConfiguration.class)
+			.withUserConfiguration(WebClientConfiguration.class, ZipkinConnectionDetailsConfiguration.class)
 			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 				ZipkinWebClientSender webClientSender = context.getBean(ZipkinWebClientSender.class);
-				assertThat(webClientSender).extracting("endpoint").isEqualTo("http://zipkin.example.com:80/api/span");
+				assertThat(webClientSender).extracting("endpoint").isEqualTo("http://zipkin.example.com/api/span");
 			});
 	}
 
 	@Test
-	void urlSenderUsesZipkinServiceConnection() {
-		this.contextRunner.withUserConfiguration(ZipkinServiceConnectionConfiguration.class).run((context) -> {
+	void urlSenderUsesZipkinConnectionDetails() {
+		this.contextRunner.withUserConfiguration(ZipkinConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(URLConnectionSender.class);
 			URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
 			assertThat(urlConnectionSender).extracting("endpoint")
-				.isEqualTo(new URL("http://zipkin.example.com:80/api/span"));
+				.isEqualTo(new URL("http://zipkin.example.com/api/span"));
 		});
 	}
 
 	@Test
-	void restTemplateSenderUsesZipkinServiceConnection() {
+	void restTemplateSenderUsesZipkinConnectionDetails() {
 		this.servletContextRunner
-			.withUserConfiguration(RestTemplateConfiguration.class, ZipkinServiceConnectionConfiguration.class)
+			.withUserConfiguration(RestTemplateConfiguration.class, ZipkinConnectionDetailsConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 				ZipkinRestTemplateSender restTemplateSender = context.getBean(ZipkinRestTemplateSender.class);
-				assertThat(restTemplateSender).extracting("endpoint")
-					.isEqualTo("http://zipkin.example.com:80/api/span");
+				assertThat(restTemplateSender).extracting("endpoint").isEqualTo("http://zipkin.example.com/api/span");
 			});
 	}
 
@@ -219,26 +218,17 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class ZipkinServiceConnectionConfiguration {
+	private static class ZipkinConnectionDetailsConfiguration {
 
 		@Bean
-		ZipkinConnectionDetails zipkinServiceConnection() {
+		ZipkinConnectionDetails zipkinConnectionDetails() {
 			return new ZipkinConnectionDetails() {
 
 				@Override
-				public String getHost() {
-					return "zipkin.example.com";
+				public String getSpanEndpoint() {
+					return "http://zipkin.example.com/api/span";
 				}
 
-				@Override
-				public int getPort() {
-					return 80;
-				}
-
-				@Override
-				public String getSpanPath() {
-					return "/api/span";
-				}
 			};
 		}
 

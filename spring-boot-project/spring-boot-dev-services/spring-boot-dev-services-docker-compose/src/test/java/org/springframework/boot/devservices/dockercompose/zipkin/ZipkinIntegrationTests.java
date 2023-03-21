@@ -36,10 +36,6 @@ class ZipkinIntegrationTests extends AbstractIntegrationTests {
 	@Test
 	void test() {
 		ZipkinConnectionDetails connectionDetails = runProvider(ZipkinConnectionDetails.class);
-		assertThat(connectionDetails.getName()).isEqualTo("docker-compose-zipkin-zipkin");
-		assertThat(connectionDetails.getHost()).isNotNull();
-		assertThat(connectionDetails.getPort()).isGreaterThan(0);
-		assertThat(connectionDetails.getSpanPath()).isEqualTo("/api/v2/spans");
 		assertThat(connectionDetails.getSpanEndpoint()).startsWith("http://").endsWith("/api/v2/spans");
 	}
 

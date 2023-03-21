@@ -16,20 +16,24 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-
 /**
- * A connection to a Zipkin service.
+ * Adapts {@link ZipkinProperties} to {@link ZipkinConnectionDetails}.
  *
  * @author Moritz Halbritter
- * @since 3.1.0
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-public interface ZipkinConnectionDetails extends ConnectionDetails {
+class PropertiesZipkinConnectionDetails implements ZipkinConnectionDetails {
 
-	/**
-	 * The endpoint for the span reporting.
-	 * @return the endpoint
-	 */
-	String getSpanEndpoint();
+	private final ZipkinProperties properties;
+
+	PropertiesZipkinConnectionDetails(ZipkinProperties properties) {
+		this.properties = properties;
+	}
+
+	@Override
+	public String getSpanEndpoint() {
+		return this.properties.getEndpoint();
+	}
 
 }
