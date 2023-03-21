@@ -42,6 +42,8 @@ public final class DockerImageNames {
 
 	private static final String REGISTRY_VERSION = "2.7.1";
 
+	private static final String INFLUX_DB_VERSION = "2.6.1";
+
 	private DockerImageNames() {
 	}
 
@@ -108,6 +110,10 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName registry() {
 		return DockerImageName.parse("registry").withTag(REGISTRY_VERSION);
+	}
+
+	public static DockerImageName influxDb() {
+		return DockerImageName.parse("influxdb").withTag(INFLUX_DB_VERSION);
 	}
 
 }

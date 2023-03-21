@@ -63,6 +63,7 @@ dependencies {
 	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:influxdb")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:mariadb")
 	optional("org.testcontainers:mongodb")
@@ -97,6 +98,7 @@ dependencies {
 	testImplementation("org.eclipse:yasson")
 	testImplementation("org.hibernate.validator:hibernate-validator")
 	testImplementation("org.hsqldb:hsqldb")
+	testImplementation("org.influxdb:influxdb-java")
 	testImplementation("org.jooq:jooq") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
