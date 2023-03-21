@@ -23,6 +23,7 @@ org.springframework.boot.test.autoconfigure.data.redis.RedisContainerConnectionD
 org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.jdbc.JdbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.mongo.MongoContainerConnectionDetailsFactory,\
+org.springframework.boot.test.autoconfigure.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\

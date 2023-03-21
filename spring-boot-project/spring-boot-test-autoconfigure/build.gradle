@@ -66,6 +66,7 @@ dependencies {
 	optional("org.testcontainers:mongodb")
 	optional("org.testcontainers:mssqlserver")
 	optional("org.testcontainers:mysql")
+	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:postgresql")
 	optional("org.testcontainers:r2dbc")
 	optional("org.testcontainers:testcontainers")
@@ -109,7 +110,6 @@ dependencies {
 	testImplementation("org.testcontainers:cassandra")
 	testImplementation("org.testcontainers:couchbase")
 	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.thymeleaf:thymeleaf")
 }
 
