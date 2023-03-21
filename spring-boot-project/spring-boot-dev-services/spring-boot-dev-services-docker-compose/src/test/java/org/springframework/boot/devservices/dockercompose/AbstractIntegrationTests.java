@@ -94,6 +94,7 @@ public abstract class AbstractIntegrationTests {
 	private DockerComposeListener createProvider(Environment environment) {
 		return new DockerComposeListener(getClass().getClassLoader(), environment, null, null, null, tempDir,
 				new SpringApplicationShutdownHandlers() {
+
 					@Override
 					public void add(Runnable action) {
 						shutdownHandler.add(action);
@@ -101,8 +102,8 @@ public abstract class AbstractIntegrationTests {
 
 					@Override
 					public void remove(Runnable action) {
-
 					}
+
 				});
 	}
 

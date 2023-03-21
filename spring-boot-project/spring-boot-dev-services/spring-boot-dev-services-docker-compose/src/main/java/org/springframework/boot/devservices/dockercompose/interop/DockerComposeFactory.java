@@ -18,7 +18,7 @@ package org.springframework.boot.devservices.dockercompose.interop;
 
 import java.nio.file.Path;
 
-import org.springframework.boot.devservices.dockercompose.configuration.DockerComposeDevServiceConfigurationProperties;
+import org.springframework.boot.devservices.dockercompose.configuration.NeededDockerComposeDevServiceConfigurationProperties;
 import org.springframework.boot.devservices.dockercompose.interop.command.DockerNotInstalledException;
 import org.springframework.boot.devservices.dockercompose.interop.command.DockerNotRunningException;
 
@@ -39,7 +39,7 @@ public interface DockerComposeFactory {
 	 * @throws DockerNotRunningException if docker is not running
 	 * @throws DockerNotInstalledException if docker is not installed
 	 */
-	DockerCompose create(DockerComposeDevServiceConfigurationProperties configuration, Path configFile);
+	DockerCompose create(NeededDockerComposeDevServiceConfigurationProperties configuration, Path configFile);
 
 	/**
 	 * Creates the default implementation for that interface.

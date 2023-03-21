@@ -30,7 +30,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 3.1.0
  */
 @ConfigurationProperties(prefix = DockerComposeDevServiceConfigurationProperties.PREFIX)
-public class DockerComposeDevServiceConfigurationProperties {
+public class DockerComposeDevServiceConfigurationProperties
+		implements NeededDockerComposeDevServiceConfigurationProperties {
 
 	/**
 	 * Prefix for the configuration properties.

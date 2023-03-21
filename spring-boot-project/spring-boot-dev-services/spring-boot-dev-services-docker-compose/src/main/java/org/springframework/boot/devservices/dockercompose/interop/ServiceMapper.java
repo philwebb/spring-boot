@@ -94,7 +94,6 @@ class ServiceMapper {
 		if (inspect.hostConfig().isHostNetwork()) {
 			return createPortMap(inspect.config());
 		}
-
 		Map<Integer, Port> result = new HashMap<>();
 		for (Entry<String, List<PortDto>> entry : inspect.networkSettings().ports().entrySet()) {
 			if (entry.getValue() == null) {
@@ -132,10 +131,12 @@ class ServiceMapper {
 
 	record DockerEnvironment(DockerContextOutput currentContext, String dockerHostname, String servicesHost,
 			String dockerHost) {
+
 		static DockerEnvironment load(String dockerHostname, DockerContextOutput currentContext) {
 			return new DockerEnvironment(currentContext, dockerHostname, System.getenv("SERVICES_HOST"),
 					System.getenv("DOCKER_HOST"));
 		}
+
 	}
 
 }

@@ -18,7 +18,7 @@ package org.springframework.boot.devservices.dockercompose.interop;
 
 import java.nio.file.Path;
 
-import org.springframework.boot.devservices.dockercompose.configuration.DockerComposeDevServiceConfigurationProperties;
+import org.springframework.boot.devservices.dockercompose.configuration.NeededDockerComposeDevServiceConfigurationProperties;
 import org.springframework.boot.devservices.dockercompose.interop.command.DockerExec;
 import org.springframework.boot.devservices.dockercompose.interop.command.DockerExecFactory;
 
@@ -32,7 +32,7 @@ import org.springframework.boot.devservices.dockercompose.interop.command.Docker
 class DefaultDockerComposeFactory implements DockerComposeFactory {
 
 	@Override
-	public DockerCompose create(DockerComposeDevServiceConfigurationProperties configuration, Path configFile) {
+	public DockerCompose create(NeededDockerComposeDevServiceConfigurationProperties configuration, Path configFile) {
 		DockerExec dockerExec = DockerExecFactory.create(configFile, configuration.getActiveProfiles());
 		return new DefaultDockerCompose(configFile, dockerExec, configuration.getDockerHostname());
 	}

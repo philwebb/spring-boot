@@ -55,7 +55,6 @@ class ServiceMapperTests {
 		assertThat(service1.readinessCheck()).isTrue();
 		assertThat(service1.env()).isEqualTo(Map.of("GOSU_VERSION", "1.16", "REDIS_VERSION", "7.0.8"));
 		assertThat(service1.composeConfigFile()).isEqualTo(Path.of("compose.yaml"));
-		assertThat(service1.origin()).isNotNull();
 		assertThat(service1.labels()).isEqualTo(Map.of("com.docker.compose.config-hash",
 				"cfdc8e119d85a53c7d47edb37a3b160a8c83ba48b0428ebc07713befec991dd0",
 				"com.docker.compose.container-number", "1", "com.docker.compose.depends_on", "",
