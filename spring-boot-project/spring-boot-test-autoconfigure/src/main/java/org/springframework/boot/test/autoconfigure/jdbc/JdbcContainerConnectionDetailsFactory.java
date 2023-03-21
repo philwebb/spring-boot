@@ -20,7 +20,7 @@ import org.testcontainers.containers.JdbcDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionSource;
 
 /**
  * {@link ContainerConnectionDetailsFactory} for {@link JdbcConnection @JdbcConnection}
@@ -35,12 +35,12 @@ class JdbcContainerConnectionDetailsFactory
 
 	@Override
 	protected JdbcConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 		return new JdbcContainerConnectionDetails(source);
 	}
 
 	/**
-	 * {@link JdbcConnectionDetails} backed by a {@link ServiceConnectedContainer}.
+	 * {@link JdbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class JdbcContainerConnectionDetails extends ContainerConnectionDetails
 			implements JdbcConnectionDetails {
@@ -48,7 +48,7 @@ class JdbcContainerConnectionDetailsFactory
 		private final JdbcDatabaseContainer<?> container;
 
 		private JdbcContainerConnectionDetails(
-				ServiceConnectedContainer<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+				ContainerConnectionSource<JdbcConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

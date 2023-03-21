@@ -29,14 +29,17 @@ public enum StopMode {
 	 * Equivalent to {@code docker compose stop}.
 	 */
 	STOP,
+
 	/**
 	 * Equivalent to {@code docker compose stop --timeout 0}.
 	 */
 	FORCE_STOP,
+
 	/**
 	 * Equivalent to {@code docker compose down}.
 	 */
 	DOWN,
+
 	/**
 	 * Equivalent to {@code docker compose down --timeout 0}.
 	 */

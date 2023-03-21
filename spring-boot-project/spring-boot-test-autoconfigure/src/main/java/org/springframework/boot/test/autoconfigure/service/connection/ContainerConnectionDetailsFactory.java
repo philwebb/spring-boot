@@ -29,8 +29,7 @@ import org.springframework.util.Assert;
 
 /**
  * Base class for {@link ConnectionDetailsFactory} implementations that provide
- * {@link ConnectionDetails} from a {@link ServiceConnection @ServiceConnection}
- * meta-annotated {@link GenericContainer} field.
+ * {@link ConnectionDetails} from a {@link ContainerConnectionSource}.
  *
  * @param <A> the source annotation type. The annotation will be mergable to a
  * {@link ServiceConnection @ServiceConnection}.
@@ -42,10 +41,10 @@ import org.springframework.util.Assert;
  * @since 3.1.0
  */
 public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
-		implements ConnectionDetailsFactory<ServiceConnectedContainer<A, D, C>, D> {
+		implements ConnectionDetailsFactory<ContainerConnectionSource<A, D, C>, D> {
 
 	@Override
-	public final D getConnectionDetails(ServiceConnectedContainer<A, D, C> source) {
+	public final D getConnectionDetails(ContainerConnectionSource<A, D, C> source) {
 		Class<?>[] generics = resolveGenerics();
 		Class<?> annotationType = generics[0];
 		Class<?> connectionDetailsType = generics[1];
@@ -59,17 +58,17 @@ public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D 
 	}
 
 	/**
-	 * Get the {@link ConnectionDetails} from the given {@link ServiceConnectedContainer}
+	 * Get the {@link ConnectionDetails} from the given {@link ContainerConnectionSource}
 	 * {@code source}. May return {@code null} if no connection can be created. Result
 	 * types should consider extending {@link ContainerConnectionDetails}.
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getContainerConnectionDetails(ServiceConnectedContainer<A, D, C> source);
+	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<A, D, C> source);
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
-	 * {@link ServiceConnectedContainer}.
+	 * {@link ContainerConnectionSource}.
 	 */
 	protected static class ContainerConnectionDetails implements ConnectionDetails, OriginProvider {
 
@@ -77,9 +76,9 @@ public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D 
 
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
-		 * @param source the source {@link ServiceConnectedContainer}
+		 * @param source the source {@link ContainerConnectionSource}
 		 */
-		protected ContainerConnectionDetails(ServiceConnectedContainer<?, ?, ?> source) {
+		protected ContainerConnectionDetails(ContainerConnectionSource<?, ?, ?> source) {
 			Assert.notNull(source, "Source must not be null");
 			this.origin = source.getOrigin();
 		}

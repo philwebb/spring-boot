@@ -24,23 +24,18 @@ import org.springframework.util.StringUtils;
 /**
  * @author pwebb
  */
-class MySqlEnv {
+class MySqlEnvironment {
 
-	private final String user;
+	private final String username;
 
 	private final String password;
 
 	private final String database;
 
-	MySqlEnv(Map<String, String> env) {
-		this.user = extractUsername(env);
+	MySqlEnvironment(Map<String, String> env) {
+		this.username = env.getOrDefault("MYSQL_USER", "root");
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
-	}
-
-	private String extractUsername(Map<String, String> env) {
-		String user = env.get("MYSQL_USER");
-		return (user != null) ? user : "root";
 	}
 
 	private String extractPassword(Map<String, String> env) {
@@ -58,8 +53,8 @@ class MySqlEnv {
 		return database;
 	}
 
-	String getUser() {
-		return this.user;
+	String getUsername() {
+		return this.username;
 	}
 
 	String getPassword() {

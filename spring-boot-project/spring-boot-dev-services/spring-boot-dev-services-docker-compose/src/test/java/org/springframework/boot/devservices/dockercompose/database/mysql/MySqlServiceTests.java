@@ -40,14 +40,14 @@ class MySqlServiceTests {
 	void usernameUsesMysqlVariables() {
 		RunningService service = createService(Map.of("MYSQL_USER", "user-1"));
 		MySqlService mysqlService = new MySqlService(service);
-		assertThat(mysqlService.getUser()).isEqualTo("user-1");
+		assertThat(mysqlService.getUsername()).isEqualTo("user-1");
 	}
 
 	@Test
 	void usernameDefaultsToRoot() {
 		RunningService service = createService(Collections.emptyMap());
 		MySqlService mysqlService = new MySqlService(service);
-		assertThat(mysqlService.getUser()).isEqualTo("root");
+		assertThat(mysqlService.getUsername()).isEqualTo("root");
 	}
 
 	@Test

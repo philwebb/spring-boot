@@ -186,7 +186,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		for (ConnectionDetails serviceConnection : serviceConnections) {
 			RootBeanDefinition definition = new RootBeanDefinition(serviceConnection.getClass());
 			definition.setInstanceSupplier((() -> serviceConnection));
-			String beanName = serviceConnection.getName();
+			String beanName = ""; // FIXME
 			logger.debug(LogMessage.format("Registering bean '%s' of type %s for %s", beanName,
 					serviceConnection.getClass().getName(), serviceConnection));
 			beanDefinitionRegistry.registerBeanDefinition(beanName, definition);

@@ -30,6 +30,7 @@ import java.util.Set;
  * @since 3.1.0
  */
 public record DockerComposeInfo(List<String> executable, String version, Set<String> activeProfiles) {
+
 	@Override
 	public String toString() {
 		String executableAsString = String.join(" ", this.executable);
@@ -41,4 +42,5 @@ public record DockerComposeInfo(List<String> executable, String version, Set<Str
 					String.join(", ", this.activeProfiles));
 		}
 	}
+
 }

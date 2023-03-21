@@ -71,6 +71,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * @param password the password or {@code null}
 	 */
 	record Node(String hostname, int port, Node.Protocol protocol, String username, String password) {
+
 		public Node(String host, int port, Node.Protocol protocol) {
 			this(host, port, protocol, null, null);
 		}
@@ -100,6 +101,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 			 * HTTP.
 			 */
 			HTTP("http"),
+
 			/**
 			 * HTTPS.
 			 */

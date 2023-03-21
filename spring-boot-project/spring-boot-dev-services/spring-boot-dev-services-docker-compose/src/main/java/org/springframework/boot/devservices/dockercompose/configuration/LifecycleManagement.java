@@ -29,10 +29,12 @@ public enum LifecycleManagement {
 	 * Don't start or stop docker compose.
 	 */
 	NONE(false, false),
+
 	/**
 	 * Only start docker compose if it's not running.
 	 */
 	START_ONLY(true, false),
+
 	/**
 	 * Start and stop docker compose if it's not running.
 	 */

@@ -41,7 +41,7 @@ import org.springframework.core.annotation.MergedAnnotation;
  * @since 3.1.0
  * @see ContainerConnectionDetailsFactory
  */
-public final class ServiceConnectedContainer<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
+public final class ContainerConnectionSource<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
 		implements OriginProvider {
 
 	// FIXME rename to ContainerConnectionSource
@@ -57,12 +57,12 @@ public final class ServiceConnectedContainer<A extends Annotation, D extends Con
 	private final AnnotatedFieldOrigin origin;
 
 	@SuppressWarnings("unchecked")
-	ServiceConnectedContainer(Class<D> connectionDetailsType, Field field,
+	ContainerConnectionSource(Class<D> connectionDetailsType, Field field,
 			MergedAnnotation<ServiceConnection> annotation, C container) {
 		this(connectionDetailsType, field, (A) annotation.getRoot().synthesize(), container);
 	}
 
-	ServiceConnectedContainer(Class<D> connectionDetailsType, Field field, A annotation, C container) {
+	ContainerConnectionSource(Class<D> connectionDetailsType, Field field, A annotation, C container) {
 		this.connectionDetailsType = connectionDetailsType;
 		this.field = field;
 		this.annotation = annotation;

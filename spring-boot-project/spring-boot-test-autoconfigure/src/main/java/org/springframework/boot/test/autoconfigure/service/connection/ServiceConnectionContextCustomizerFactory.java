@@ -42,7 +42,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		List<ServiceConnectedContainer<?, ?, ?>> sources = new ArrayList<>();
+		List<ContainerConnectionSource<?, ?, ?>> sources = new ArrayList<>();
 		ReflectionUtils.doWithFields(testClass, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
@@ -51,14 +51,14 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
 	}
 
-	private ServiceConnectedContainer<?, ?, ?> createSource(Field field,
+	private ContainerConnectionSource<?, ?, ?> createSource(Field field,
 			MergedAnnotation<ServiceConnection> annotation) {
 		Class<? extends ConnectionDetails> connectionDetailsType = getConnectionDetailsType(annotation);
 		Object fieldValue = getFieldValue(field);
 		Assert.isInstanceOf(GenericContainer.class, fieldValue,
 				"Field %s must be a %s".formatted(field.getName(), GenericContainer.class.getName()));
 		GenericContainer<?> container = (GenericContainer<?>) fieldValue;
-		return new ServiceConnectedContainer<>(connectionDetailsType, field, annotation, container);
+		return new ContainerConnectionSource<>(connectionDetailsType, field, annotation, container);
 	}
 
 	@SuppressWarnings("unchecked")

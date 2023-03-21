@@ -24,24 +24,23 @@ import org.springframework.util.StringUtils;
 /**
  * @author pwebb
  */
-class MariaDbEnv {
+class MariaDbEnvironment {
 
-	private final String user;
+	private final String username;
 
 	private final String password;
 
 	private final String database;
 
-	MariaDbEnv(Map<String, String> env) {
-		this.user = extractUsername(env);
+	MariaDbEnvironment(Map<String, String> env) {
+		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
 	}
 
 	private String extractUsername(Map<String, String> env) {
 		String user = env.get("MARIADB_USER");
-		user = (user != null) ? user : env.get("MYSQL_USER");
-		return (user != null) ? user : "root";
+		return (user != null) ? user : env.getOrDefault("MYSQL_USER", "root");
 	}
 
 	private String extractPassword(Map<String, String> env) {
@@ -65,8 +64,8 @@ class MariaDbEnv {
 		return database;
 	}
 
-	String getUser() {
-		return this.user;
+	String getUsername() {
+		return this.username;
 	}
 
 	String getPassword() {

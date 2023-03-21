@@ -23,7 +23,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionSource;
 
 /**
  * {@link ContainerConnectionDetailsFactory} for
@@ -40,13 +40,13 @@ class ElasticsearchContainerConnectionDetailsFactory extends
 
 	@Override
 	protected ElasticsearchConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
+			ContainerConnectionSource<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
 		return new ElasticsearchContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link ElasticsearchConnectionDetails} backed by a
-	 * {@link ServiceConnectedContainer}.
+	 * {@link ContainerConnectionSource}.
 	 */
 	private static final class ElasticsearchContainerConnectionDetails extends ContainerConnectionDetails
 			implements ElasticsearchConnectionDetails {
@@ -54,7 +54,7 @@ class ElasticsearchContainerConnectionDetailsFactory extends
 		private final List<Node> nodes;
 
 		private ElasticsearchContainerConnectionDetails(
-				ServiceConnectedContainer<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
+				ContainerConnectionSource<ElasticsearchConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
 			super(source);
 			this.nodes = List.of(new Node(source.getContainer().getHost(),
 					source.getContainer().getMappedPort(DEFAULT_PORT), Protocol.HTTP, null, null));

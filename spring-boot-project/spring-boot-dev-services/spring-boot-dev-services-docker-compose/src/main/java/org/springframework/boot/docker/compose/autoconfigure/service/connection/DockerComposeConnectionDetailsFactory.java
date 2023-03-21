@@ -25,12 +25,17 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * @author pwebb
+ * Base class for {@link ConnectionDetailsFactory} implementations that provide
+ * {@link ConnectionDetails} from a {@link DockerComposeConnectionSource}.
+ *
+ * @param <D> the connection details type
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 3.1.0
  */
 public abstract class DockerComposeConnectionDetailsFactory<D extends ConnectionDetails>
 		implements ConnectionDetailsFactory<DockerComposeConnectionSource, D> {
-
-	// FIXME we need access to all running services?
 
 	private final String name;
 
@@ -80,11 +85,11 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 		/**
 		 * Create a new {@link DockerComposeConnectionDetails} instance.
-		 * @param service the source {@link RunningService}
+		 * @param runningService the source {@link RunningService}
 		 */
-		protected DockerComposeConnectionDetails(RunningService service) {
-			Assert.notNull(service, "Source must not be null");
-			this.origin = service.getOrigin();
+		protected DockerComposeConnectionDetails(RunningService runningService) {
+			Assert.notNull(runningService, "RunningService must not be null");
+			this.origin = runningService.getOrigin();
 		}
 
 		@Override

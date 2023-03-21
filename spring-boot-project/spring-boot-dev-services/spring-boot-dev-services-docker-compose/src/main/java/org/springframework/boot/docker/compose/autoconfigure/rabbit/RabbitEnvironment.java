@@ -14,7 +14,27 @@
  * limitations under the License.
  */
 
-/**
- * Handles Elasticsearch services.
- */
-package org.springframework.boot.devservices.dockercompose.elasticsearch;
+package org.springframework.boot.docker.compose.autoconfigure.rabbit;
+
+import java.util.Map;
+
+class RabbitEnvironment {
+
+	private final String username;
+
+	private final String password;
+
+	public RabbitEnvironment(Map<String, String> env) {
+		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", "guest");
+		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", "guest");
+	}
+
+	String getUsername() {
+		return this.username;
+	}
+
+	String getPassword() {
+		return this.password;
+	}
+
+}

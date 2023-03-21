@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.util.Assert;
 
 /**
  * A connection to a Redis service.
@@ -78,14 +79,6 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	interface Standalone {
 
 		/**
-		 * Database index used by the connection factory.
-		 * @return the database index used by the connection factory
-		 */
-		default int getDatabase() {
-			return 0;
-		}
-
-		/**
 		 * Redis server host.
 		 * @return the redis server host
 		 */
@@ -96,6 +89,40 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @return the redis server port
 		 */
 		int getPort();
+
+		/**
+		 * Database index used by the connection factory.
+		 * @return the database index used by the connection factory
+		 */
+		default int getDatabase() {
+			return 0;
+		}
+
+		static Standalone of(String host, int port) {
+			return of(host, port, 0);
+		}
+
+		static Standalone of(String host, int port, int database) {
+			Assert.hasLength(host, "Host must not be empty");
+			return new Standalone() {
+
+				@Override
+				public String getHost() {
+					return host;
+				}
+
+				@Override
+				public int getPort() {
+					return port;
+				}
+
+				@Override
+				public int getDatabase() {
+					return database;
+				}
+
+			};
+		}
 
 	}
 

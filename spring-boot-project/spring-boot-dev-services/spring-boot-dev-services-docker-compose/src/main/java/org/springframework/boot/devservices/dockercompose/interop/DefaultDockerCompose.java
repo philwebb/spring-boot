@@ -41,9 +41,9 @@ import org.springframework.core.log.LogMessage;
  */
 class DefaultDockerCompose implements DockerCompose {
 
-	private static final Log logger = LogFactory.getLog(DefaultDockerCompose.class);
-
 	private static final Duration DEFAULT_STOP_TIMEOUT = Duration.ofSeconds(10);
+
+	private static final Log logger = LogFactory.getLog(DefaultDockerCompose.class);
 
 	private final Path configFile;
 

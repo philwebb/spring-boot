@@ -23,7 +23,7 @@ import org.testcontainers.containers.PostgreSQLR2DBCDatabaseContainer;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionSource;
 
 /**
  * {@link ConnectionDetailsFactory} for {@link R2dbcConnection @R2dbcConnection} annotated
@@ -38,7 +38,7 @@ class PostgresR2dbcContainerConnectionDetailsFactory
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<R2dbcConnection, R2dbcConnectionDetails, PostgreSQLContainer<?>> source) {
+			ContainerConnectionSource<R2dbcConnection, R2dbcConnectionDetails, PostgreSQLContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

@@ -40,9 +40,9 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
 	private final ConnectionDetailsFactories factories = new ConnectionDetailsFactories();
 
-	private final List<ServiceConnectedContainer<?, ?, ?>> sources;
+	private final List<ContainerConnectionSource<?, ?, ?>> sources;
 
-	ServiceConnectionContextCustomizer(List<ServiceConnectedContainer<?, ?, ?>> sources) {
+	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?, ?, ?>> sources) {
 		this.sources = sources;
 	}
 
@@ -58,7 +58,7 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 		this.sources.forEach((source) -> registerServiceConnection(registry, source));
 	}
 
-	private void registerServiceConnection(BeanDefinitionRegistry registry, ServiceConnectedContainer<?, ?, ?> source) {
+	private void registerServiceConnection(BeanDefinitionRegistry registry, ContainerConnectionSource<?, ?, ?> source) {
 		ConnectionDetails connectionDetails = getConnectionDetails(source);
 		String beanName = source.getBeanName();
 		registry.registerBeanDefinition(beanName, createBeanDefinition(connectionDetails));

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.autoconfigure.mysql;
+package org.springframework.boot.docker.compose.autoconfigure.postgres;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
@@ -24,39 +24,39 @@ import org.springframework.boot.docker.compose.autoconfigure.service.connection.
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
- * for a {@code mysql} service.
+ * for a {@code postgres} service.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MySqlJdbcDockerComposeConnectionDetailsFactory
+class PostgresJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
-		super("mysql");
+	protected PostgresJdbcDockerComposeConnectionDetailsFactory() {
+		super("postgres");
 	}
 
 	@Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new MySqlJdbcDockerComposeConnectionDetails(source.getService());
+		return new PostgresJdbcDockerComposeConnectionDetails(source.getService());
 	}
 
 	/**
-	 * {@link JdbcConnectionDetails} backed by a {@code mysql} {@link RunningService}.
+	 * {@link JdbcConnectionDetails} backed by a {@code postgres} {@link RunningService}.
 	 */
-	static class MySqlJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class PostgresJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mariadb", 3306);
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("postgresql", 5432);
 
-		private final MySqlEnvironment environment;
+		private final PostgresEnvironment environment;
 
 		private final String jdbcUrl;
 
-		MySqlJdbcDockerComposeConnectionDetails(RunningService service) {
+		PostgresJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.environment = new MySqlEnvironment(service.env());
+			this.environment = new PostgresEnvironment(service.env());
 			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
 		}
 

@@ -21,7 +21,7 @@ import org.testcontainers.containers.MongoDBContainer;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionSource;
 
 /**
  * {@link ContainerConnectionDetailsFactory} for {@link MongoConnection @MongoConnection}
@@ -36,12 +36,12 @@ class MongoContainerConnectionDetailsFactory
 
 	@Override
 	protected MongoConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<MongoConnection, MongoConnectionDetails, MongoDBContainer> source) {
+			ContainerConnectionSource<MongoConnection, MongoConnectionDetails, MongoDBContainer> source) {
 		return new MongoContainerConnectionDetails(source);
 	}
 
 	/**
-	 * {@link MongoConnectionDetails} backed by a {@link ServiceConnectedContainer}.
+	 * {@link MongoConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails
 			implements MongoConnectionDetails {
@@ -49,7 +49,7 @@ class MongoContainerConnectionDetailsFactory
 		private final ConnectionString connectionString;
 
 		private MongoContainerConnectionDetails(
-				ServiceConnectedContainer<MongoConnection, MongoConnectionDetails, MongoDBContainer> source) {
+				ContainerConnectionSource<MongoConnection, MongoConnectionDetails, MongoDBContainer> source) {
 			super(source);
 			this.connectionString = new ConnectionString(source.getContainer().getReplicaSetUrl());
 		}

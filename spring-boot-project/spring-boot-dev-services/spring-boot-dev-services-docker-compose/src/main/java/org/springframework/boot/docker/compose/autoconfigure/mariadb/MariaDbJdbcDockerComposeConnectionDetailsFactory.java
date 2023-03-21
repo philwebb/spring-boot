@@ -23,12 +23,17 @@ import org.springframework.boot.docker.compose.autoconfigure.service.connection.
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
- * @author pwebb
+ * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
+ * for a {@code mariadb} service.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class MariaDbJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	protected MariaDbJdbcDockerComposeConnectionDetailsFactory(String name) {
+	protected MariaDbJdbcDockerComposeConnectionDetailsFactory() {
 		super("mariadb");
 	}
 
@@ -37,29 +42,32 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactory
 		return new MariaDbJdbcDockerComposeConnectionDetails(source.getService());
 	}
 
+	/**
+	 * {@link JdbcConnectionDetails} backed by a {@code mariadb} {@link RunningService}.
+	 */
 	static class MariaDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
 		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mariadb", 3306);
 
-		private final MariaDbEnv env;
+		private final MariaDbEnvironment environment;
 
 		private final String jdbcUrl;
 
 		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.env = new MariaDbEnv(service.env());
-			this.jdbcUrl = jdbcUrlBuilder.build(service, this.env.getDatabase());
+			this.environment = new MariaDbEnvironment(service.env());
+			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
 		}
 
 		@Override
 		public String getUsername() {
-			return this.env.getUser();
+			return this.environment.getUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.env.getPassword();
+			return this.environment.getPassword();
 		}
 
 		@Override

@@ -23,7 +23,12 @@ import org.springframework.boot.docker.compose.autoconfigure.service.connection.
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
 
 /**
- * @author pwebb
+ * {@link DockerComposeConnectionDetailsFactory} to create {@link ZipkinConnectionDetails}
+ * for a {@code zipkin} service.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ZipkinDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<ZipkinConnectionDetails> {
@@ -40,6 +45,9 @@ class ZipkinDockerComposeConnectionDetailsFactory
 		return new ZipkinDockerComposeConnectionDetails(source.getService());
 	}
 
+	/**
+	 * {@link ZipkinConnectionDetails} backed by a {@code zipkin} {@link RunningService}.
+	 */
 	static class ZipkinDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements ZipkinConnectionDetails {
 

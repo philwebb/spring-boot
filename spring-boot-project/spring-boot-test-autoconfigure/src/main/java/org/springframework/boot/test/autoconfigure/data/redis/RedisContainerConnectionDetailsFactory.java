@@ -20,7 +20,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectedContainer;
+import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionSource;
 
 /**
  * {@link ContainerConnectionDetailsFactory} for {@link RedisConnection @RedisConnection}
@@ -35,12 +35,12 @@ class RedisContainerConnectionDetailsFactory
 
 	@Override
 	public RedisConnectionDetails getContainerConnectionDetails(
-			ServiceConnectedContainer<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
+			ContainerConnectionSource<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
 		return new RedisContainerConnectionDetails(source);
 	}
 
 	/**
-	 * {@link RedisConnectionDetails} backed by a {@link ServiceConnectedContainer}.
+	 * {@link RedisConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class RedisContainerConnectionDetails extends ContainerConnectionDetails
 			implements RedisConnectionDetails {
@@ -48,7 +48,7 @@ class RedisContainerConnectionDetailsFactory
 		private final Standalone standalone;
 
 		private RedisContainerConnectionDetails(
-				ServiceConnectedContainer<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
+				ContainerConnectionSource<RedisConnection, RedisConnectionDetails, GenericContainer<?>> source) {
 			super(source);
 			this.standalone = new Standalone() {
 

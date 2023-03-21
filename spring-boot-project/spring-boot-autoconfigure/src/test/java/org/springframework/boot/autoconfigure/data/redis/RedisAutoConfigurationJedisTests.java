@@ -271,11 +271,6 @@ class RedisAutoConfigurationJedisTests {
 					return new Standalone() {
 
 						@Override
-						public int getDatabase() {
-							return 0;
-						}
-
-						@Override
 						public String getHost() {
 							return "localhost";
 						}

@@ -19,7 +19,9 @@ package org.springframework.boot.docker.compose.autoconfigure.jdbc;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 
 /**
- * @author pwebb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class JdbcUrlBuilder {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.autoconfigure.mariadb;
+package org.springframework.boot.docker.compose.autoconfigure.mysql;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
@@ -26,17 +26,17 @@ import org.springframework.boot.docker.compose.autoconfigure.service.connection.
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}
- * for a {@code mariadb} service.
+ * for a {@code mysql} service.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MariaDbR2dbcDockerComposeConnectionDetailsFactory
+class MySqlDbR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	MariaDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
-		super("mariadb", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
+	MySqlDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
+		super("mysql", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
@@ -45,19 +45,19 @@ class MariaDbR2dbcDockerComposeConnectionDetailsFactory
 	}
 
 	/**
-	 * {@link R2dbcConnectionDetails} backed by a {@code mariadb} {@link RunningService}.
+	 * {@link R2dbcConnectionDetails} backed by a {@code mysql} {@link RunningService}.
 	 */
 	static class MariaDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements R2dbcConnectionDetails {
 
 		private static final ConnectionFactoryOptionsBuilder connectionFactoryOptionsBuilder = new ConnectionFactoryOptionsBuilder(
-				"mariadb", 3306);
+				"mysql", 3306);
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
 		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			MariaDbEnvironment environment = new MariaDbEnvironment(service.env());
+			MySqlEnvironment environment = new MySqlEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),
 					environment.getUsername(), environment.getPassword());
 		}

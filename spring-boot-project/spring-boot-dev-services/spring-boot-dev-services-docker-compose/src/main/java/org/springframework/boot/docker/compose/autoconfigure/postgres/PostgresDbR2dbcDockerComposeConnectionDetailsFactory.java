@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.autoconfigure.mariadb;
+package org.springframework.boot.docker.compose.autoconfigure.postgres;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
@@ -26,38 +26,38 @@ import org.springframework.boot.docker.compose.autoconfigure.service.connection.
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}
- * for a {@code mariadb} service.
+ * for a {@code postgres} service.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MariaDbR2dbcDockerComposeConnectionDetailsFactory
+class PostgresDbR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	MariaDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
-		super("mariadb", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
+	PostgresDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
+		super("postgres", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new MariaDbJdbcDockerComposeConnectionDetails(source.getService());
+		return new PostgresDbJdbcDockerComposeConnectionDetails(source.getService());
 	}
 
 	/**
-	 * {@link R2dbcConnectionDetails} backed by a {@code mariadb} {@link RunningService}.
+	 * {@link R2dbcConnectionDetails} backed by a {@code postgres} {@link RunningService}.
 	 */
-	static class MariaDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class PostgresDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements R2dbcConnectionDetails {
 
 		private static final ConnectionFactoryOptionsBuilder connectionFactoryOptionsBuilder = new ConnectionFactoryOptionsBuilder(
-				"mariadb", 3306);
+				"postgresql", 5432);
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
+		PostgresDbJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			MariaDbEnvironment environment = new MariaDbEnvironment(service.env());
+			PostgresEnvironment environment = new PostgresEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),
 					environment.getUsername(), environment.getPassword());
 		}

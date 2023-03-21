@@ -82,7 +82,7 @@ public abstract class DatabaseService {
 	 * @return the origin for this service
 	 */
 	public Origin getOrigin() {
-		return this.service.origin();
+		return null; // FIXME
 	}
 
 	/**
