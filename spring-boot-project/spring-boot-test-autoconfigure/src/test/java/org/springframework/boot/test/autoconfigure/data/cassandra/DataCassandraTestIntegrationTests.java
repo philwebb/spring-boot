@@ -26,14 +26,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.cassandra.CassandraConnection;
 import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.CassandraTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -43,20 +42,15 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Artsiom Yudovin
  */
-@DataCassandraTest(properties = { "spring.cassandra.local-datacenter=datacenter1",
-		"spring.cassandra.schema-action=create-if-not-exists", "spring.cassandra.connection.connect-timeout=60s",
-		"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s" })
+@DataCassandraTest(properties = { "spring.cassandra.schema-action=create-if-not-exists",
+		"spring.cassandra.connection.connect-timeout=60s", "spring.cassandra.connection.init-query-timeout=60s",
+		"spring.cassandra.request.timeout=60s" })
 @Testcontainers(disabledWithoutDocker = true)
 class DataCassandraTestIntegrationTests {
 
 	@Container
+	@CassandraConnection
 	static final CassandraContainer cassandra = new CassandraContainer();
-
-	@DynamicPropertySource
-	static void cassandraProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cassandra.contact-points",
-				() -> cassandra.getHost() + ":" + cassandra.getFirstMappedPort());
-	}
 
 	@Autowired
 	private CassandraTemplate cassandraTemplate;
