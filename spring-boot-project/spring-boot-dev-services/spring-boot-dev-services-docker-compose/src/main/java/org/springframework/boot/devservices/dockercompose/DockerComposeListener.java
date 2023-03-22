@@ -132,21 +132,30 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		}
 		this.configuration = this.binder.bindOrCreate(DockerComposeDevServiceConfigurationProperties.PREFIX,
 				DockerComposeDevServiceConfigurationProperties.class);
+		// Test detection and `run-in-tests` check
 		if (!shouldRun()) {
 			return;
 		}
+		// Use or find the config yaml
 		Path composeYaml = findComposeYaml();
 		if (composeYaml == null) {
+			// If we don't have one don't start
 			return;
 		}
 		composeYaml = composeYaml.toAbsolutePath();
 		logger.info(LogMessage.format("Found docker compose config file %s", composeYaml));
+
+		// Create the docker compose with the yaml and active profiles and host name (if
+		// any)
 		DockerCompose dockerCompose = this.dockerComposeFactory.create(this.configuration, composeYaml);
 		try {
+
 			List<RunningService> runningServices = startComposeIfNeeded(dockerCompose);
 			if (runningServices.isEmpty()) {
+				// We have nothing
 				return;
 			}
+			// This is a reaction to the services being started
 			List<RunningService> nonIgnoredServices = runningServices.stream().filter((s) -> !s.ignore()).toList();
 			if (nonIgnoredServices.isEmpty()) {
 				return;
@@ -161,6 +170,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 			}
 		}
 		catch (RuntimeException ex) {
+			// Shouldn't need if we fix the handler bug
 			if (this.dockerComposeNeedsShutdown) {
 				shutdownCompose(dockerCompose, this.configuration.getStopMode());
 			}
@@ -196,27 +206,34 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 	private List<RunningService> startComposeIfNeeded(DockerCompose dockerCompose) {
 		List<RunningService> runningServices = dockerCompose.listRunningServices();
 		List<DefinedService> definedServices = dockerCompose.listDefinedServices();
+		// ???
 		if (!dockerCompose.isRunning(definedServices, runningServices)) {
 			logger.debug("docker compose is not running");
 			if (!this.configuration.getLifecycleManagement().isStart()) {
+				// We don't want to start, so return an empty list I think
 				logger.debug("Not starting docker compose");
 				return runningServices;
 			}
+			// We do want to start
 			logger.info("Starting services with docker compose");
 			dockerCompose.startServices();
+			// Not sure about difference between start and stop and stop mode
 			if (this.configuration.getLifecycleManagement().isStop()) {
 				logger.debug("Registering shutdown handler to stop docker compose");
 				this.dockerComposeNeedsShutdown = true;
 				StopMode stopMode = this.configuration.getStopMode();
 				this.shutdownHandlers.add(() -> shutdownCompose(dockerCompose, stopMode));
 			}
+			// We now have more running services
 			runningServices = dockerCompose.listRunningServices();
 		}
 		logger.debug("Checking readiness of services");
+		// Wait for them to be ready
 		waitForReadiness(runningServices, this.configuration.getReadiness().getTimeout());
 		return runningServices;
 	}
 
+	// This should be extracted
 	private void waitForReadiness(List<RunningService> runningServices, Duration timeout) {
 		if (runningServices.isEmpty()) {
 			return;
@@ -249,11 +266,13 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		}
 	}
 
+	// Stop mode ??
 	private void shutdownCompose(DockerCompose dockerCompose, StopMode stopMode) {
 		logger.info("Stopping services via docker compose");
 		dockerCompose.stopServices(stopMode);
 	}
 
+	// This should be extracted
 	private Path findComposeYaml() {
 		if (this.configuration.getConfigFile() != null) {
 			Path file = Path.of(this.configuration.getConfigFile()).toAbsolutePath();

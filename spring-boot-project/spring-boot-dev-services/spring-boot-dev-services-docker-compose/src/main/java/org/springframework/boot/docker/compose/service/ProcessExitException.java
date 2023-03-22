@@ -17,7 +17,7 @@
 package org.springframework.boot.docker.compose.service;
 
 /**
- * Is thrown if process execution failed.
+ * Exception thrown by {@link ProcessRunner} when the process exits with a non-zero code.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -31,23 +31,23 @@ class ProcessExitException extends RuntimeException {
 
 	private final String stdOut;
 
-	private final String strErr;
+	private final String stdErr;
 
-	ProcessExitException(int exitCode, String[] command, String stdOut, String strErr) {
-		this(exitCode, command, stdOut, strErr, null);
+	ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr) {
+		this(exitCode, command, stdOut, stdErr, null);
 	}
 
-	ProcessExitException(int exitCode, String[] command, String stdOut, String strErr, Throwable cause) {
-		super(buildMessage(exitCode, command, stdOut, strErr), cause);
+	ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr, Throwable cause) {
+		super(buildMessage(exitCode, command, stdOut, stdErr), cause);
 		this.exitCode = exitCode;
 		this.command = command;
 		this.stdOut = stdOut;
-		this.strErr = strErr;
+		this.stdErr = stdErr;
 	}
 
 	private static String buildMessage(int exitCode, String[] command, String stdOut, String strErr) {
-		return "'%s' failed with exit code %d.\n\n" + "Stdout: '%s'\n\n"
-				+ "Stderr: '%s'".formatted(String.join(" ", command), exitCode, stdOut, strErr);
+		return "'%s' failed with exit code %d.\n\nStdout:\n%s\n\nStderr:\n%s".formatted(String.join(" ", command),
+				exitCode, stdOut, strErr);
 	}
 
 	int getExitCode() {
@@ -62,8 +62,8 @@ class ProcessExitException extends RuntimeException {
 		return this.stdOut;
 	}
 
-	String getStrErr() {
-		return this.strErr;
+	String getStdErr() {
+		return this.stdErr;
 	}
 
 }

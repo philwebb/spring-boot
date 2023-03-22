@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.logging.Log;
@@ -40,25 +38,20 @@ import org.springframework.core.log.LogMessage;
  */
 class ProcessRunner {
 
+	private static final String USR_LOCAL_BIN = "/usr/local/bin";
+
+	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase().contains("mac");
+
 	private static final Log logger = LogFactory.getLog(ProcessRunner.class);
 
-	private final File directory;
+	private final File workingDirectory;
 
 	/**
 	 * Create a new {@link ProcessRunner} instance.
-	 * @param directory the working directory for the process
+	 * @param workingDirectory the working directory for the process
 	 */
-	ProcessRunner(Path directory) {
-		this.directory = directory.toFile();
-	}
-
-	/**
-	 * Runs the given {@code command}.
-	 * @param command the command to run
-	 * @return the output of the command
-	 */
-	String run(Collection<String> command) {
-		return run(command.toArray(new String[0]));
+	ProcessRunner(File workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}
 
 	/**
@@ -77,19 +70,28 @@ class ProcessRunner {
 		int exitCode = waitForProcess(process);
 		logger.trace(LogMessage.format("Process exited with exit code %d", exitCode));
 		String stdOut = stdOutReader.toString();
-		String stdIn = stdErrReader.toString();
+		String stdErr = stdErrReader.toString();
 		if (exitCode != 0) {
-			throw new ProcessExitException(exitCode, command, stdOut, stdIn);
+			throw new ProcessExitException(exitCode, command, stdOut, stdErr);
 		}
 		return stdOut;
 	}
 
 	private Process startProcess(String[] command) {
+		ProcessBuilder processBuilder = new ProcessBuilder(command);
+		processBuilder.directory(this.workingDirectory);
 		try {
-			return new ProcessBuilder(command).directory(this.directory).start();
+			return processBuilder.start();
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Unable to start command %s".formatted(String.join(" ", command)));
+			String path = processBuilder.environment().get("PATH");
+			if (MAC_OS && path != null && !path.contains(USR_LOCAL_BIN)
+					&& !command[0].startsWith(USR_LOCAL_BIN + "/")) {
+				String[] localCommand = command.clone();
+				localCommand[0] = USR_LOCAL_BIN + "/" + localCommand[0];
+				return startProcess(localCommand);
+			}
+			throw new ProcessStartException(command, ex);
 		}
 	}
 

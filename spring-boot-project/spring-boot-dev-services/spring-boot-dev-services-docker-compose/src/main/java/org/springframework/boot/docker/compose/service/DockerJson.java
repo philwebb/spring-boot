@@ -17,7 +17,6 @@
 package org.springframework.boot.docker.compose.service;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -77,7 +76,7 @@ final class DockerJson {
 			return objectMapper.readValue(json.trim(), type);
 		}
 		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+			throw new DockerOutputParseException(json, ex);
 		}
 	}
 
