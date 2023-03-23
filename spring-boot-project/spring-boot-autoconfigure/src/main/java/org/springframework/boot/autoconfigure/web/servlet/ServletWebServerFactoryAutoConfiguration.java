@@ -33,9 +33,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.WebListenerRegistrar;
@@ -57,9 +61,10 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
  * @author Ivan Sopov
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = { SslAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnClass(ServletRequest.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -73,9 +78,9 @@ public class ServletWebServerFactoryAutoConfiguration {
 	@Bean
 	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
-			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers) {
+			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers, ObjectProvider<SslBundles> sslBundles) {
 		return new ServletWebServerFactoryCustomizer(serverProperties, webListenerRegistrars.orderedStream().toList(),
-				cookieSameSiteSuppliers.orderedStream().toList());
+				cookieSameSiteSuppliers.orderedStream().toList(), getSslBundle(sslBundles, serverProperties));
 	}
 
 	@Bean
@@ -83,6 +88,17 @@ public class ServletWebServerFactoryAutoConfiguration {
 	public TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
 		return new TomcatServletWebServerFactoryCustomizer(serverProperties);
+	}
+
+	private SslBundle getSslBundle(ObjectProvider<SslBundles> sslBundles, ServerProperties properties) {
+		SslBundles registry = sslBundles.getIfAvailable();
+		if (registry != null) {
+			Ssl ssl = properties.getSsl();
+			if (ssl != null && ssl.isEnabled() && ssl.getBundle() != null) {
+				return registry.getBundle(ssl.getBundle());
+			}
+		}
+		return null;
 	}
 
 	@Configuration(proxyBeanMethods = false)

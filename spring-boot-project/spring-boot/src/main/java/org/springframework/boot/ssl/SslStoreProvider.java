@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl;
 
 import java.security.KeyStore;
 
 /**
- * Interface to provide SSL key stores for an {@link WebServer} to use. Can be used when
- * file based key stores cannot be used.
+ * Interface to provide SSL key and trust stores.
  *
  * @author Phillip Webb
- * @since 2.0.0
- * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
- * {@link org.springframework.boot.ssl.SslStoreProvider}
+ * @author Scott Frederick
+ * @since 3.1.0
  */
-@Deprecated(since = "3.1.0", forRemoval = true)
 public interface SslStoreProvider {
 
 	/**
@@ -47,9 +44,16 @@ public interface SslStoreProvider {
 	/**
 	 * Return the password of the private key in the key store.
 	 * @return the key password
-	 * @since 2.7.2
 	 */
 	default String getKeyPassword() {
+		return null;
+	}
+
+	/**
+	 * Return the password of the key store.
+	 * @return the key store password
+	 */
+	default String getKeyStorePassword() {
 		return null;
 	}
 

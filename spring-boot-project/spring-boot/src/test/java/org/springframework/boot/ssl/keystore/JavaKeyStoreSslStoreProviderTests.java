@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.keystore;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -24,6 +24,7 @@ import java.security.UnrecoverableKeyException;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.ssl.SslStoreProvider;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,23 +45,17 @@ class JavaKeyStoreSslStoreProviderTests {
 	}
 
 	@Test
-	void fromSslWhenDisabledReturnsNull() {
-		Ssl ssl = new Ssl();
-		ssl.setEnabled(false);
-		assertThat(JavaKeyStoreSslStoreProvider.from(ssl)).isNull();
-	}
-
-	@Test
-	void getKeyStoreWithNoLocationThrowsException() {
-		Ssl ssl = new Ssl();
+	void getKeyStoreWithNoLocationReturnsStoreProviderWithNullStores() throws Exception {
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		SslStoreProvider storeProvider = JavaKeyStoreSslStoreProvider.from(ssl);
-		assertThatIllegalStateException().isThrownBy(storeProvider::getKeyStore)
-			.withMessageContaining("KeyStore location must not be empty or null");
+		assertThat(storeProvider).isNotNull();
+		assertThat(storeProvider.getKeyStore()).isNull();
+		assertThat(storeProvider.getTrustStore()).isNull();
 	}
 
 	@Test
 	void getKeyStoreWithTypePKCS11AndLocationThrowsException() {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStoreType("PKCS11");
 		SslStoreProvider storeProvider = JavaKeyStoreSslStoreProvider.from(ssl);
@@ -70,7 +65,7 @@ class JavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void getKeyStoreWithLocationReturnsKeyStore() throws Exception {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
 		SslStoreProvider storeProvider = JavaKeyStoreSslStoreProvider.from(ssl);
@@ -80,7 +75,7 @@ class JavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void getTrustStoreWithLocationsReturnsTrustStore() throws Exception {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setTrustStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
 		SslStoreProvider storeProvider = JavaKeyStoreSslStoreProvider.from(ssl);
@@ -90,7 +85,7 @@ class JavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void getKeyStoreWithTypeUsesType() throws Exception {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyStoreType("PKCS12");
@@ -101,7 +96,7 @@ class JavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void getTrustStoreWithTypeUsesType() throws Exception {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setTrustStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
 		ssl.setTrustStoreType("PKCS12");
@@ -112,7 +107,7 @@ class JavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void getKeyStoreWithProviderUsesProvider() {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslStoreProvider storeProvider = JavaKeyStoreSslStoreProvider.from(ssl);
@@ -122,7 +117,7 @@ class JavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void getTrustStoreWithProviderUsesProvider() {
-		Ssl ssl = new Ssl();
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setTrustStore("classpath:test.jks");
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslStoreProvider storeProvider = JavaKeyStoreSslStoreProvider.from(ssl);

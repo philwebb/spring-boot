@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.certificate;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.security.cert.X509Certificate;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link CertificateParser}.
@@ -31,27 +36,27 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class CertificateParserTests {
 
 	@Test
-	void parseCertificate() {
-		X509Certificate[] certificates = CertificateParser.parse("classpath:test-cert.pem");
+	void parseCertificate() throws Exception {
+		X509Certificate[] certificates = CertificateParser.parse(fromResource("classpath:test-cert.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(1);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 	}
 
 	@Test
-	void parseCertificateChain() {
-		X509Certificate[] certificates = CertificateParser.parse("classpath:test-cert-chain.pem");
+	void parseCertificateChain() throws Exception {
+		X509Certificate[] certificates = CertificateParser.parse(fromResource("classpath:test-cert-chain.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}
 
-	@Test
-	void parseWithInvalidPathWillThrowException() {
-		String path = "file:///bad/path/cert.pem";
-		assertThatIllegalStateException().isThrownBy(() -> CertificateParser.parse("file:///bad/path/cert.pem"))
-			.withMessageContaining(path);
+	private String fromResource(String resource) throws Exception {
+		URL url = ResourceUtils.getURL(resource);
+		try (Reader reader = new InputStreamReader(url.openStream())) {
+			return FileCopyUtils.copyToString(reader);
+		}
 	}
 
 }

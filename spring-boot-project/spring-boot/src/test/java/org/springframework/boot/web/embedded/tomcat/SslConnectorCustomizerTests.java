@@ -39,6 +39,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
+import org.springframework.boot.web.server.ServerSslBundleFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.core.io.ClassPathResource;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  * @author Cyril Dangerville
  */
+@SuppressWarnings("removal")
 @ExtendWith(OutputCaptureExtension.class)
 @DirtiesUrlFactories
 @MockPkcs11Security
@@ -84,10 +86,11 @@ class SslConnectorCustomizerTests {
 	@Test
 	void sslCiphersConfiguration() throws Exception {
 		Ssl ssl = new Ssl();
-		ssl.setKeyStore("test.jks");
+		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyStorePassword("secret");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl));
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
@@ -102,7 +105,8 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl));
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
@@ -118,7 +122,8 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl));
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
@@ -135,7 +140,8 @@ class SslConnectorCustomizerTests {
 		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
 		KeyStore keyStore = loadStore();
 		given(sslStoreProvider.getKeyStore()).willReturn(keyStore);
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, sslStoreProvider);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl, sslStoreProvider));
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
@@ -155,7 +161,8 @@ class SslConnectorCustomizerTests {
 		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
 		KeyStore trustStore = loadStore();
 		given(sslStoreProvider.getTrustStore()).willReturn(trustStore);
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, sslStoreProvider);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl, sslStoreProvider));
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
@@ -172,7 +179,8 @@ class SslConnectorCustomizerTests {
 		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
 		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
 		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, sslStoreProvider);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl, sslStoreProvider));
 		Connector connector = this.tomcat.getConnector();
 		customizer.customize(connector);
 		this.tomcat.start();
@@ -183,7 +191,8 @@ class SslConnectorCustomizerTests {
 	@Test
 	void customizeWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new SslConnectorCustomizer(new Ssl()).customize(this.tomcat.getConnector()))
+			.isThrownBy(() -> new SslConnectorCustomizer(Ssl.ClientAuth.NONE, ServerSslBundleFactory.from(new Ssl()))
+				.customize(this.tomcat.getConnector()))
 			.withMessageContaining("KeyStore location must not be empty or null");
 	}
 
@@ -194,7 +203,8 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl));
 		assertThatIllegalStateException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()))
 			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
@@ -205,7 +215,8 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStoreType("PKCS11");
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl.getClientAuth(),
+				ServerSslBundleFactory.from(ssl));
 		assertThatNoException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()));
 	}
 

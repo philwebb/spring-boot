@@ -111,6 +111,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InOrder;
 
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
+import org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider;
+import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
+import org.springframework.boot.ssl.keystore.JavaKeyStoreSslStoreProvider;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -170,6 +175,7 @@ import static org.mockito.Mockito.mock;
  * @author Raja Kolli
  * @author Scott Frederick
  */
+@SuppressWarnings("removal")
 @ExtendWith(OutputCaptureExtension.class)
 @DirtiesUrlFactories
 public abstract class AbstractServletWebServerFactoryTests {
@@ -558,6 +564,42 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	void pkcs12KeyStoreAndTrustStoreFromBundle() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		factory.setSsl(new Ssl());
+		factory.setSslBundle(createJksSslBundle("classpath:test.p12", "classpath:test.p12"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		KeyStore keyStore = KeyStore.getInstance("pkcs12");
+		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+					.loadKeyMaterial(keyStore, "secret".toCharArray())
+					.build());
+		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
+	}
+
+	@Test
+	void pemKeyStoreAndTrustStoreFromBundle() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		factory.setSsl(new Ssl());
+		factory.setSslBundle(createCertSslBundle("classpath:test-cert.pem", "classpath:test-key.pem"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		KeyStore keyStore = KeyStore.getInstance("pkcs12");
+		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+					.loadKeyMaterial(keyStore, "secret".toCharArray())
+					.build());
+		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
+	}
+
+	@Test
 	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setRegisterDefaultServlet(true);
@@ -713,6 +755,25 @@ public abstract class AbstractServletWebServerFactoryTests {
 		ssl.setCertificatePrivateKey(privateKey);
 		ssl.setTrustCertificate(cert);
 		return ssl;
+	}
+
+	private SslBundle createJksSslBundle(String keyStore, String trustStore) {
+		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyStoreType(getStoreType(keyStore));
+		ssl.setTrustStore(trustStore);
+		ssl.setTrustStorePassword("secret");
+		ssl.setTrustStoreType(getStoreType(trustStore));
+		return new SslBundle(ssl, JavaKeyStoreSslStoreProvider.from(ssl));
+	}
+
+	private SslBundle createCertSslBundle(String cert, String privateKey) {
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
+		ssl.setCertificate(cert);
+		ssl.setCertificatePrivateKey(privateKey);
+		ssl.setTrustCertificate(cert);
+		return new SslBundle(ssl, CertificateFileSslStoreProvider.from(ssl));
 	}
 
 	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols, String[] ciphers) throws Exception {

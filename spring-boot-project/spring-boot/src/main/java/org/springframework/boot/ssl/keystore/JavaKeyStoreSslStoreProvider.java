@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.keystore;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.security.KeyStore;
 
+import org.springframework.boot.ssl.SslDetails;
+import org.springframework.boot.ssl.SslStoreProvider;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -28,17 +30,21 @@ import org.springframework.util.StringUtils;
  * An {@link SslStoreProvider} that creates key and trust stores from Java keystore files.
  *
  * @author Scott Frederick
+ * @since 3.1.0
  */
-final class JavaKeyStoreSslStoreProvider implements SslStoreProvider {
+public final class JavaKeyStoreSslStoreProvider implements SslStoreProvider {
 
-	private final Ssl ssl;
+	private final JavaKeyStoreSslDetails ssl;
 
-	private JavaKeyStoreSslStoreProvider(Ssl ssl) {
+	private JavaKeyStoreSslStoreProvider(JavaKeyStoreSslDetails ssl) {
 		this.ssl = ssl;
 	}
 
 	@Override
 	public KeyStore getKeyStore() throws Exception {
+		if (this.ssl.getKeyStore() == null) {
+			return null;
+		}
 		return createKeyStore(this.ssl.getKeyStoreType(), this.ssl.getKeyStoreProvider(), this.ssl.getKeyStore(),
 				this.ssl.getKeyStorePassword());
 	}
@@ -55,6 +61,11 @@ final class JavaKeyStoreSslStoreProvider implements SslStoreProvider {
 	@Override
 	public String getKeyPassword() {
 		return this.ssl.getKeyPassword();
+	}
+
+	@Override
+	public String getKeyStorePassword() {
+		return this.ssl.getKeyStorePassword();
 	}
 
 	private KeyStore createKeyStore(String type, String provider, String location, String password) throws Exception {
@@ -87,9 +98,9 @@ final class JavaKeyStoreSslStoreProvider implements SslStoreProvider {
 	 * @param ssl the SSL properties
 	 * @return an {@code SslStoreProvider} or {@code null}
 	 */
-	static SslStoreProvider from(Ssl ssl) {
-		if (ssl != null && ssl.isEnabled()) {
-			return new JavaKeyStoreSslStoreProvider(ssl);
+	public static SslStoreProvider from(SslDetails ssl) {
+		if (ssl instanceof JavaKeyStoreSslDetails jksSsl) {
+			return new JavaKeyStoreSslStoreProvider(jksSsl);
 		}
 		return null;
 	}
