@@ -37,7 +37,7 @@ public final class RunningServiceBuilder {
 
 	private final String name;
 
-	private final DockerImageName image;
+	private final ImageReference image;
 
 	private String host = "127.0.0.1";
 
@@ -47,7 +47,7 @@ public final class RunningServiceBuilder {
 
 	private Map<String, String> labels = new HashMap<>();
 
-	private RunningServiceBuilder(String name, DockerImageName image) {
+	private RunningServiceBuilder(String name, ImageReference image) {
 		this.name = name;
 		this.image = image;
 	}
@@ -103,10 +103,10 @@ public final class RunningServiceBuilder {
 	}
 
 	public static RunningServiceBuilder create(String name, String image) {
-		return new RunningServiceBuilder(name, DockerImageName.parse(image));
+		return new RunningServiceBuilder(name, ImageReference.parse(image));
 	}
 
-	public static RunningServiceBuilder create(String name, DockerImageName image) {
+	public static RunningServiceBuilder create(String name, ImageReference image) {
 		return new RunningServiceBuilder(name, image);
 	}
 

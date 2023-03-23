@@ -97,14 +97,14 @@ public class ServiceReadinessChecks {
 		List<ServiceNotReadyException> exceptions = null;
 		for (RunningService service : runningServices) {
 			if (shouldCheckService(service)) {
-				logger.trace(LogMessage.format("Checking readiness of service '%s'", service.logicalTypeName()));
+				logger.trace(LogMessage.format("Checking readiness of service '%s'", service));
 				for (ServiceReadinessCheck check : this.checks) {
 					try {
 						check.check(service);
-						logger.trace(LogMessage.format("Service '%s' is ready", service.logicalTypeName()));
+						logger.trace(LogMessage.format("Service '%s' is ready", service));
 					}
 					catch (ServiceNotReadyException ex) {
-						logger.trace(LogMessage.format("Service '%s' is not ready", service.logicalTypeName()), ex);
+						logger.trace(LogMessage.format("Service '%s' is not ready", service), ex);
 						exceptions = (exceptions != null) ? exceptions : new ArrayList<>();
 						exceptions.add(ex);
 					}

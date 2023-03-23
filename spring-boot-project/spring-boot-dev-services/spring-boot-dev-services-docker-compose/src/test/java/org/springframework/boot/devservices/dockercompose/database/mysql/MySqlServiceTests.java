@@ -112,15 +112,15 @@ class MySqlServiceTests {
 	@Test
 	void matches() {
 		assertThat(MySqlService.matches(createService(Collections.emptyMap()))).isTrue();
-		assertThat(MySqlService.matches(createService(DockerImageName.parse("redis:7.1"), Collections.emptyMap())))
+		assertThat(MySqlService.matches(createService(ImageReference.parse("redis:7.1"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("mysql:8.0"), env);
+		return createService(ImageReference.parse("mysql:8.0"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(3306, 33060).env(env).build();
 	}
 

@@ -89,15 +89,15 @@ class PostgresServiceTests {
 	@Test
 	void matches() {
 		assertThat(PostgresService.matches(createService(Collections.emptyMap()))).isTrue();
-		assertThat(PostgresService.matches(createService(DockerImageName.parse("redis:7.1"), Collections.emptyMap())))
+		assertThat(PostgresService.matches(createService(ImageReference.parse("redis:7.1"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("postgres:15.2"), env);
+		return createService(ImageReference.parse("postgres:15.2"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(5432, 54320).env(env).build();
 	}
 

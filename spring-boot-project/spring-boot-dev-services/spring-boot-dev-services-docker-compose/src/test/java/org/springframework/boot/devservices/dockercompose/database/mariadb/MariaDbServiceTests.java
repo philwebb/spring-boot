@@ -164,15 +164,15 @@ class MariaDbServiceTests {
 	@Test
 	void matches() {
 		assertThat(MariaDbService.matches(createService(Collections.emptyMap()))).isTrue();
-		assertThat(MariaDbService.matches(createService(DockerImageName.parse("redis:7.1"), Collections.emptyMap())))
+		assertThat(MariaDbService.matches(createService(ImageReference.parse("redis:7.1"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("mariadb:10.10"), env);
+		return createService(ImageReference.parse("mariadb:10.10"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(3306, 33060).env(env).build();
 	}
 

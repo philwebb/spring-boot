@@ -28,14 +28,14 @@ package org.springframework.boot.docker.compose.service;
  */
 // See https://docs.docker.com/compose/compose-file/#image
 // [<registry>/][<project>/]<image>[:<tag>|@<digest>]
-public record DockerImageName(String project, String image, String tag) {
+public record ImageReference(String project, String image, String tag) {
 
 	/**
 	 * Parses a docker image name from a string.
 	 * @param value the string to parse
 	 * @return the parsed docker image name
 	 */
-	public static DockerImageName parse(String value) {
+	public static ImageReference parse(String value) {
 		String input = value;
 		// Strip digest
 		int digestStart = input.lastIndexOf('@');
@@ -77,6 +77,6 @@ public record DockerImageName(String project, String image, String tag) {
 		if (project != null && (project.contains(".") || project.contains(":"))) {
 			project = null;
 		}
-		return new DockerImageName(project, image, tag);
+		return new ImageReference(project, image, tag);
 	}
 }

@@ -50,7 +50,7 @@ class ServiceMapperTests {
 		ServiceMapper serviceMapper = new ServiceMapper(linuxEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect.json");
 		assertThat(service1.logicalTypeName()).isEqualTo("redis");
-		assertThat(service1.image()).isEqualTo(DockerImageName.parse("redis:7.0"));
+		assertThat(service1.image()).isEqualTo(ImageReference.parse("redis:7.0"));
 		assertThat(service1.ignore()).isFalse();
 		assertThat(service1.readinessCheck()).isTrue();
 		assertThat(service1.env()).isEqualTo(Map.of("GOSU_VERSION", "1.16", "REDIS_VERSION", "7.0.8"));

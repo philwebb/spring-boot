@@ -27,8 +27,7 @@ public interface RunningService {
 	// getOrigin from ComposeFile and Service Name
 	String name(); // Get from compose ps
 
-	DockerImageName imageName(); // FIXME rename and make rich type. Used to get the
-									// logical name
+	ImageReference image();
 
 	String host(); // A bunch of logic
 
@@ -38,10 +37,9 @@ public interface RunningService {
 
 	Map<String, String> labels(); // from inspect
 
-	String logicalTypeName(); // This is the type, not the name. Probably don't want it
-	// here
-
 	boolean ignore(); // FIXME do we want this here?
+
+	// FIXME toString
 
 	interface Ports {
 

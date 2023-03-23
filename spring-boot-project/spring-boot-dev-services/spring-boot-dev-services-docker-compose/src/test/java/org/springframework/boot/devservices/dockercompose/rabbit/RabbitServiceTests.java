@@ -73,15 +73,15 @@ class RabbitServiceTests {
 	@Test
 	void matches() {
 		assertThat(RabbitService.matches(createService(Collections.emptyMap()))).isTrue();
-		assertThat(RabbitService.matches(createService(DockerImageName.parse("redis:7.1"), Collections.emptyMap())))
+		assertThat(RabbitService.matches(createService(ImageReference.parse("redis:7.1"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("rabbitmq:3.11"), env);
+		return createService(ImageReference.parse("rabbitmq:3.11"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(5672, 15672).env(env).build();
 	}
 

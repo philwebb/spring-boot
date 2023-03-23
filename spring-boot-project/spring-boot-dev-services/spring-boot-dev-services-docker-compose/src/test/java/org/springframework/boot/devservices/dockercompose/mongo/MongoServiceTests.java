@@ -104,15 +104,15 @@ class MongoServiceTests {
 	@Test
 	void matches() {
 		assertThat(MongoService.matches(createService(Collections.emptyMap()))).isTrue();
-		assertThat(MongoService.matches(createService(DockerImageName.parse("redis:7.1"), Collections.emptyMap())))
+		assertThat(MongoService.matches(createService(ImageReference.parse("redis:7.1"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("mongo:6.0"), env);
+		return createService(ImageReference.parse("mongo:6.0"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(27017, 12345).env(env).build();
 	}
 

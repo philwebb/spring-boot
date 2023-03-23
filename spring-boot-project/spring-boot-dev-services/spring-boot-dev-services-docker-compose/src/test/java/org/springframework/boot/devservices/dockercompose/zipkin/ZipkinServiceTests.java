@@ -45,15 +45,15 @@ class ZipkinServiceTests {
 	@Test
 	void matches() {
 		assertThat(ZipkinService.matches(createService(Collections.emptyMap()))).isTrue();
-		assertThat(ZipkinService.matches(createService(DockerImageName.parse("postgres:15.2"), Collections.emptyMap())))
+		assertThat(ZipkinService.matches(createService(ImageReference.parse("postgres:15.2"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("openzipkin/zipkin:2.24"), env);
+		return createService(ImageReference.parse("openzipkin/zipkin:2.24"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(9411, 19411).env(env).build();
 	}
 

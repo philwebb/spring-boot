@@ -76,15 +76,15 @@ class ElasticsearchServiceTests {
 	void matches() {
 		assertThat(ElasticsearchService.matches(createService(Collections.emptyMap()))).isTrue();
 		assertThat(
-				ElasticsearchService.matches(createService(DockerImageName.parse("redis:7.1"), Collections.emptyMap())))
+				ElasticsearchService.matches(createService(ImageReference.parse("redis:7.1"), Collections.emptyMap())))
 			.isFalse();
 	}
 
 	private RunningService createService(Map<String, String> env) {
-		return createService(DockerImageName.parse("elasticsearch:8.6.2"), env);
+		return createService(ImageReference.parse("elasticsearch:8.6.2"), env);
 	}
 
-	private RunningService createService(DockerImageName image, Map<String, String> env) {
+	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(9200, 19200).env(env).build();
 	}
 

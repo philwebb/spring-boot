@@ -37,18 +37,19 @@ import org.springframework.util.ClassUtils;
 public abstract class DockerComposeConnectionDetailsFactory<D extends ConnectionDetails>
 		implements ConnectionDetailsFactory<DockerComposeConnectionSource, D> {
 
-	private final String name;
+	private final String connectionName;
 
 	private final ClassLoader classLoader;
 
 	private final String requiredClassName;
 
-	protected DockerComposeConnectionDetailsFactory(String name) {
-		this(name, null, null);
+	protected DockerComposeConnectionDetailsFactory(String connectionName) {
+		this(connectionName, null, null);
 	}
 
-	protected DockerComposeConnectionDetailsFactory(String name, ClassLoader classLoader, String requiredClassName) {
-		this.name = name;
+	protected DockerComposeConnectionDetailsFactory(String connectionName, ClassLoader classLoader,
+			String requiredClassName) {
+		this.connectionName = connectionName;
 		this.classLoader = classLoader;
 		this.requiredClassName = requiredClassName;
 	}
@@ -59,7 +60,12 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	}
 
 	private boolean accept(DockerComposeConnectionSource source) {
-		return hasRequiredClass() && this.name.equals(source.getService().logicalTypeName());
+		return hasRequiredClass() && this.connectionName.equals(getConnectionName(source.getService()));
+	}
+
+	private String getConnectionName(RunningService service) {
+		String connectionName = service.labels().get("org.springframework.boot.service-connection");
+		return (connectionName != null) ? connectionName : service.image().image();
 	}
 
 	private boolean hasRequiredClass() {

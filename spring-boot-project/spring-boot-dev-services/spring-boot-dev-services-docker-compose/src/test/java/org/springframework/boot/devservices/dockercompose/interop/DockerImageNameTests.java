@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerImageName}.
+ * Tests for {@link ImageReference}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -30,55 +30,55 @@ class DockerImageNameTests {
 
 	@Test
 	void imageOnly() {
-		assertThat(DockerImageName.parse("redis")).isEqualTo(new DockerImageName(null, "redis", null));
+		assertThat(ImageReference.parse("redis")).isEqualTo(new ImageReference(null, "redis", null));
 	}
 
 	@Test
 	void imageAndTag() {
-		assertThat(DockerImageName.parse("redis:5")).isEqualTo(new DockerImageName(null, "redis", "5"));
+		assertThat(ImageReference.parse("redis:5")).isEqualTo(new ImageReference(null, "redis", "5"));
 	}
 
 	@Test
 	void imageAndDigest() {
 		assertThat(
-				DockerImageName.parse("redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7"))
-			.isEqualTo(new DockerImageName(null, "redis", null));
+				ImageReference.parse("redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7"))
+			.isEqualTo(new ImageReference(null, "redis", null));
 	}
 
 	@Test
 	void projectAndImage() {
-		assertThat(DockerImageName.parse("library/redis")).isEqualTo(new DockerImageName("library", "redis", null));
+		assertThat(ImageReference.parse("library/redis")).isEqualTo(new ImageReference("library", "redis", null));
 	}
 
 	@Test
 	void registryLibraryAndImage() {
-		assertThat(DockerImageName.parse("docker.io/library/redis"))
-			.isEqualTo(new DockerImageName("library", "redis", null));
+		assertThat(ImageReference.parse("docker.io/library/redis"))
+			.isEqualTo(new ImageReference("library", "redis", null));
 	}
 
 	@Test
 	void registryLibraryImageAndTag() {
-		assertThat(DockerImageName.parse("docker.io/library/redis:5"))
-			.isEqualTo(new DockerImageName("library", "redis", "5"));
+		assertThat(ImageReference.parse("docker.io/library/redis:5"))
+			.isEqualTo(new ImageReference("library", "redis", "5"));
 	}
 
 	@Test
 	void registryLibraryImageAndDigest() {
-		assertThat(DockerImageName
+		assertThat(ImageReference
 			.parse("docker.io/library/redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7"))
-			.isEqualTo(new DockerImageName("library", "redis", null));
+			.isEqualTo(new ImageReference("library", "redis", null));
 	}
 
 	@Test
 	void registryWithPort() {
-		assertThat(DockerImageName.parse("my_private.registry:5000/redis"))
-			.isEqualTo(new DockerImageName(null, "redis", null));
+		assertThat(ImageReference.parse("my_private.registry:5000/redis"))
+			.isEqualTo(new ImageReference(null, "redis", null));
 	}
 
 	@Test
 	void registryWithPortAndTag() {
-		assertThat(DockerImageName.parse("my_private.registry:5000/redis:5"))
-			.isEqualTo(new DockerImageName(null, "redis", "5"));
+		assertThat(ImageReference.parse("my_private.registry:5000/redis:5"))
+			.isEqualTo(new ImageReference(null, "redis", "5"));
 	}
 
 }

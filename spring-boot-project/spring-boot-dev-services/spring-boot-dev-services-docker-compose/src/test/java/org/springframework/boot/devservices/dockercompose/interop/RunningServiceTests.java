@@ -35,8 +35,8 @@ class RunningServiceTests {
 	@Test
 	void image() {
 		RunningService service = RunningServiceBuilder.create("service1", "service1").build();
-		assertThat(service.image()).isEqualTo(DockerImageName.parse("service1"));
-		assertThat(service.originalImage()).isEqualTo(DockerImageName.parse("service1"));
+		assertThat(service.image()).isEqualTo(ImageReference.parse("service1"));
+		assertThat(service.originalImage()).isEqualTo(ImageReference.parse("service1"));
 	}
 
 	@Test
@@ -44,8 +44,8 @@ class RunningServiceTests {
 		RunningService service = RunningServiceBuilder.create("service1", "service1")
 			.addLabel("org.springframework.boot.image-override", "redis:7.0")
 			.build();
-		assertThat(service.image()).isEqualTo(DockerImageName.parse("redis:7.0"));
-		assertThat(service.originalImage()).isEqualTo(DockerImageName.parse("service1"));
+		assertThat(service.image()).isEqualTo(ImageReference.parse("redis:7.0"));
+		assertThat(service.originalImage()).isEqualTo(ImageReference.parse("service1"));
 	}
 
 	@Test
