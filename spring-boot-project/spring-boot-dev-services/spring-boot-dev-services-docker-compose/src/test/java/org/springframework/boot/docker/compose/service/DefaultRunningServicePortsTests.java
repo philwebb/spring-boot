@@ -40,18 +40,18 @@ class DefaultRunningServicePortsTests {
 
 	@Test
 	void createWhenBridgeNetwork() throws IOException {
-		DefaultRunningServicePorts ports = createForJson("/docker/inspect-bridge-network.json");
+		DefaultRunningServicePorts ports = createForJson("docker-inspect-bridge-network.json");
 		assertThat(ports.getMappings()).containsExactly(entry(new ContainerPort(6379, "tcp"), 32770));
 	}
 
 	@Test
 	void createWhenHostNetwork() throws Exception {
-		DefaultRunningServicePorts ports = createForJson("/docker/inspect-host-network.json");
+		DefaultRunningServicePorts ports = createForJson("docker-inspect-host-network.json");
 		assertThat(ports.getMappings()).containsExactly(entry(new ContainerPort(6379, "tcp"), 6379));
 	}
 
 	private DefaultRunningServicePorts createForJson(String path) throws IOException {
-		String json = new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
+		String json = new ClassPathResource(path, getClass()).getContentAsString(StandardCharsets.UTF_8);
 		DockerCliInspectResponse inspectResponse = DockerJson.deserialize(json, DockerCliInspectResponse.class);
 		return new DefaultRunningServicePorts(inspectResponse);
 	}
