@@ -60,6 +60,9 @@ class DefaultRunningServicePorts implements RunningService.Ports {
 	}
 
 	private Map<ContainerPort, Integer> buildMappingsForNetworkSettings(NetworkSettings networkSettings) {
+		if (networkSettings == null || CollectionUtils.isEmpty(networkSettings.ports())) {
+			return Collections.emptyMap();
+		}
 		Map<ContainerPort, Integer> mappings = new HashMap<>();
 		networkSettings.ports().forEach((containerPortString, hostPorts) -> {
 			if (!CollectionUtils.isEmpty(hostPorts)) {

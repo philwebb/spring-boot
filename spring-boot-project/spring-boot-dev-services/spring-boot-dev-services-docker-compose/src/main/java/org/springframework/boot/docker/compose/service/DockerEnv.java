@@ -47,18 +47,18 @@ class DockerEnv {
 			return Collections.emptyMap();
 		}
 		Map<String, String> result = new LinkedHashMap<>();
-		env.stream().map(this::parseEntry).forEach((entry) -> result.put(entry.getKey(), entry.getValue()));
+		env.stream().map(this::parseEntry).forEach((entry) -> result.put(entry.key(), entry.value()));
 		return Collections.unmodifiableMap(result);
 	}
 
-	private Map.Entry<String, String> parseEntry(String entry) {
+	private Entry parseEntry(String entry) {
 		int index = entry.indexOf('=');
 		if (index != -1) {
 			String key = entry.substring(0, index);
 			String value = entry.substring(index + 1);
-			return Map.entry(key, value);
+			return new Entry(key, value);
 		}
-		return Map.entry(entry, null);
+		return new Entry(entry, null);
 	}
 
 	/**
@@ -67,6 +67,10 @@ class DockerEnv {
 	 */
 	Map<String, String> asMap() {
 		return this.map;
+	}
+
+	private record Entry(String key, String value) {
+
 	}
 
 }

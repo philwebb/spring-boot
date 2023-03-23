@@ -112,10 +112,15 @@ final class DockerHost {
 	}
 
 	private static String fromUri(URI uri) {
-		return switch (uri.getScheme()) {
-			case "http", "https", "tcp" -> uri.getHost();
-			default -> null;
-		};
+		try {
+			return switch (uri.getScheme()) {
+				case "http", "https", "tcp" -> uri.getHost();
+				default -> null;
+			};
+		}
+		catch (Exception ex) {
+			return null;
+		}
 	}
 
 }

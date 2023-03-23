@@ -37,9 +37,9 @@ class DefaultDockerCompose implements DockerCompose {
 
 	private final DockerHost hostname;
 
-	DefaultDockerCompose(DockerCli cli, String hostname) {
+	DefaultDockerCompose(DockerCli cli, String host) {
 		this.cli = cli;
-		this.hostname = DockerHost.get(hostname, () -> cli.run(new DockerCliCommand.Context()));
+		this.hostname = DockerHost.get(host, () -> cli.run(new DockerCliCommand.Context()));
 	}
 
 	@Override

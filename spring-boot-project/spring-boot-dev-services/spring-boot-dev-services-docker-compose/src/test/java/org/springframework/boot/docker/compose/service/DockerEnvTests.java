@@ -16,9 +16,13 @@
 
 package org.springframework.boot.docker.compose.service;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link DockerEnv}.
@@ -30,8 +34,21 @@ import static org.junit.jupiter.api.Assertions.fail;
 class DockerEnvTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void createWhenEnvIsNullReturnsEmpty() {
+		DockerEnv env = new DockerEnv(null);
+		assertThat(env.asMap()).isEmpty();
+	}
+
+	@Test
+	void createWhenEnvIsEmptyReturnsEmpty() {
+		DockerEnv env = new DockerEnv(Collections.emptyList());
+		assertThat(env.asMap()).isEmpty();
+	}
+
+	@Test
+	void createParsesEnv() {
+		DockerEnv env = new DockerEnv(List.of("a=b", "c"));
+		assertThat(env.asMap()).containsExactly(entry("a", "b"), entry("c", null));
 	}
 
 }

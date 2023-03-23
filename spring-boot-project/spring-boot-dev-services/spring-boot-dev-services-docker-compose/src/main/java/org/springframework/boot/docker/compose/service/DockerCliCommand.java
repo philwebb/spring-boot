@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Commands that can be executed by the {@link DockerCli}.
@@ -60,6 +61,34 @@ abstract sealed class DockerCliCommand<R> {
 		}
 		return (R) ((!this.listResponse) ? DockerJson.deserialize(json, this.responseType)
 				: DockerJson.deserializeToList(json, this.responseType));
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.type, this.responseType, this.listResponse, this.command);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DockerCliCommand<?> other = (DockerCliCommand<?>) obj;
+		boolean result = true;
+		result = result && this.type == other.type;
+		result = result && this.responseType == other.responseType;
+		result = result && this.listResponse == other.listResponse;
+		result = result && this.command.equals(other.command);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "DockerCliCommand [type=%s, responseType=%s, listResponse=%s, command=%s]".formatted(this.type,
+				this.responseType, this.listResponse, this.command);
 	}
 
 	protected static String[] join(Collection<String> command, Collection<String> args) {
