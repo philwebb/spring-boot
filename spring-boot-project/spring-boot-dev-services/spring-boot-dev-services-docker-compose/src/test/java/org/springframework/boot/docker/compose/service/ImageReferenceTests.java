@@ -18,7 +18,7 @@ package org.springframework.boot.docker.compose.service;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ImageReference}.
@@ -30,8 +30,74 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ImageReferenceTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void getImageWhenImageOnly() {
+		ImageReference imageReference = ImageReference.of("redis");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenImageAndTag() {
+		ImageReference imageReference = ImageReference.of("redis:5");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenImageAndDigest() {
+		ImageReference imageReference = ImageReference
+			.of("redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenProjectAndImage() {
+		ImageReference imageReference = ImageReference.of("library/redis");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenRegistryLibraryAndImage() {
+		ImageReference imageReference = ImageReference.of("docker.io/library/redis");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenRegistryLibraryImageAndTag() {
+		ImageReference imageReference = ImageReference.of("docker.io/library/redis:5");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenRegistryLibraryImageAndDigest() {
+		ImageReference imageReference = ImageReference
+			.of("docker.io/library/redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenRegistryWithPort() {
+		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void getImageWhenRegistryWithPortAndTag() {
+		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis:5");
+		assertThat(imageReference.getImage()).isEqualTo("redis");
+	}
+
+	@Test
+	void toStringReturnsReferenceString() {
+		ImageReference imageReference = ImageReference.of("docker.io/library/redis");
+		assertThat(imageReference).hasToString("docker.io/library/redis");
+	}
+
+	@Test
+	void equalsAndHashCode() {
+		ImageReference imageReference1 = ImageReference.of("docker.io/library/redis");
+		ImageReference imageReference2 = ImageReference.of("docker.io/library/redis");
+		ImageReference imageReference3 = ImageReference.of("docker.io/library/other");
+		assertThat(imageReference1.hashCode()).isEqualTo(imageReference2.hashCode());
+		assertThat(imageReference1).isEqualTo(imageReference1).isEqualTo(imageReference2).isNotEqualTo(imageReference3);
 	}
 
 }

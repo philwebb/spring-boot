@@ -16,9 +16,15 @@
 
 package org.springframework.boot.docker.compose.service;
 
-import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.util.FileCopyUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DockerComposeOrigin}.
@@ -29,9 +35,37 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class DockerComposeOriginTests {
 
+	@TempDir
+	File temp;
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void hasToString() throws Exception {
+		DockerComposeFile composeFile = createTempComposeFile();
+		DockerComposeOrigin origin = new DockerComposeOrigin(composeFile, "service-1");
+		assertThat(origin.toString()).startsWith("Docker compose service 'service-1' defined in '")
+			.endsWith("compose.yaml'");
+	}
+
+	@Test
+	void equalsAndHashcode() throws Exception {
+		DockerComposeFile composeFile = createTempComposeFile();
+		DockerComposeOrigin origin1 = new DockerComposeOrigin(composeFile, "service-1");
+		DockerComposeOrigin origin2 = new DockerComposeOrigin(composeFile, "service-1");
+		DockerComposeOrigin origin3 = new DockerComposeOrigin(composeFile, "service-3");
+		assertThat(origin1).isEqualTo(origin1);
+		assertThat(origin1).isEqualTo(origin2);
+		assertThat(origin1).hasSameHashCodeAs(origin2);
+		assertThat(origin2).isEqualTo(origin1);
+		assertThat(origin1).isNotEqualTo(origin3);
+		assertThat(origin2).isNotEqualTo(origin3);
+		assertThat(origin3).isNotEqualTo(origin1);
+		assertThat(origin3).isNotEqualTo(origin2);
+	}
+
+	private DockerComposeFile createTempComposeFile() throws IOException {
+		File file = new File(this.temp, "compose.yaml");
+		FileCopyUtils.copy(new byte[0], file);
+		return DockerComposeFile.of(file);
 	}
 
 }

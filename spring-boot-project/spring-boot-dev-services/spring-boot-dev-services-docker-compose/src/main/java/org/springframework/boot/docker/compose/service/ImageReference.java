@@ -17,69 +17,70 @@
 package org.springframework.boot.docker.compose.service;
 
 /**
- * A docker image name.
+ * A docker image reference of form
+ * {@code [<registry>/][<project>/]<image>[:<tag>|@<digest>]}.
  *
- * @param tag tag or {@code null}
- * @param project project or {@code null}
- * @param image image
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 3.1.0
+ * @see <a href="https://docs.docker.com/compose/compose-file/#image">docker
+ * documentation</a>
  */
-// See https://docs.docker.com/compose/compose-file/#image
-// [<registry>/][<project>/]<image>[:<tag>|@<digest>]
-public record ImageReference(String project, String image, String tag) {
+public final class ImageReference {
 
-	// FIXME can be a lot simpler for our needs
+	private final String reference;
+
+	private final String image;
+
+	ImageReference(String reference) {
+		this.reference = reference;
+		int lastSlashIndex = reference.lastIndexOf('/');
+		String imageTagDigest = (lastSlashIndex != -1) ? reference.substring(lastSlashIndex + 1) : reference;
+		int digestIndex = imageTagDigest.indexOf('@');
+		String imageAndTag = (digestIndex != -1) ? imageTagDigest.substring(0, digestIndex) : imageTagDigest;
+		int colon = imageAndTag.indexOf(':');
+		this.image = (colon != -1) ? imageAndTag.substring(0, colon) : imageAndTag;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.reference.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ImageReference other = (ImageReference) obj;
+		return this.reference.equals(other.reference);
+	}
+
+	@Override
+	public String toString() {
+		return this.reference;
+	}
 
 	/**
-	 * Parses a docker image name from a string.
-	 * @param value the string to parse
-	 * @return the parsed docker image name
+	 * Return the referenced image, excluding the registry or project. For example, a
+	 * reference of {@code my_private.registry:5000/redis:5} would return {@code redis}.
+	 * @return the referenced image
 	 */
-	public static ImageReference parse(String value) {
-		String input = value;
-		// Strip digest
-		int digestStart = input.lastIndexOf('@');
-		if (digestStart != -1) {
-			input = input.substring(0, digestStart);
-		}
-		// Parse tag
-		int lastSlash = input.lastIndexOf('/');
-		int tagStart = input.lastIndexOf(':');
-		boolean portNumberInRegistry = lastSlash > tagStart;
-		String tag = null;
-		if (tagStart != -1 && !portNumberInRegistry) {
-			tag = input.substring(tagStart + 1);
-			input = input.substring(0, tagStart);
-		}
-		// Parse image
-		int imageStart = input.lastIndexOf('/');
-		String image;
-		if (imageStart == -1) {
-			image = input;
-			input = "";
-		}
-		else {
-			image = input.substring(imageStart + 1);
-			input = input.substring(0, imageStart);
-		}
-		// Parse project
-		String project = null;
-		if (!input.isEmpty()) {
-			int projectStart = input.lastIndexOf('/');
-			if (projectStart == -1) {
-				project = input;
-			}
-			else {
-				project = input.substring(projectStart + 1);
-			}
-		}
-		// Project and registry is sometimes ambiguous
-		if (project != null && (project.contains(".") || project.contains(":"))) {
-			project = null;
-		}
-		return new ImageReference(project, image, tag);
+	public String getImage() {
+		return this.image;
 	}
+
+	/**
+	 * Create an image reference from the given String value.
+	 * @param value the string used to create the reference
+	 * @return an {@link ImageReference} instance
+	 */
+	public static ImageReference of(String value) {
+		return (value != null) ? new ImageReference(value) : null;
+	}
+
 }
