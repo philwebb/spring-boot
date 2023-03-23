@@ -17,7 +17,7 @@
 package org.springframework.boot.docker.compose.service;
 
 /**
- * Is thrown if the docker daemon is not running.
+ * {@link DockerException} thrown if the docker daemon is not running.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -26,20 +26,19 @@ package org.springframework.boot.docker.compose.service;
  */
 public class DockerNotRunningException extends DockerException {
 
-	private final String stdErr;
+	private final String errorOutput;
 
-	/**
-	 * Constructor.
-	 * @param stdErr stderr output
-	 * @param cause cause
-	 */
-	public DockerNotRunningException(String stdErr, Throwable cause) {
+	DockerNotRunningException(String errorOutput, Throwable cause) {
 		super("Docker is not running", cause);
-		this.stdErr = stdErr;
+		this.errorOutput = errorOutput;
 	}
 
-	public String getStdErr() {
-		return this.stdErr;
+	/**
+	 * Return the error output returned from docker.
+	 * @return the error output
+	 */
+	public String getErrorOutput() {
+		return this.errorOutput;
 	}
 
 }

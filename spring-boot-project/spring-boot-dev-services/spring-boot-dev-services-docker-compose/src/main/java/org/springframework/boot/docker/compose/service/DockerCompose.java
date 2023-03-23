@@ -21,26 +21,78 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Provides a high-level API to work with Docker compose.
+ *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 3.1.0
  */
 public interface DockerCompose {
 
+	/**
+	 * Timeout duration used to request a forced shutdown.
+	 */
+	Duration FORCE_SHUTDOWN = Duration.ZERO;
+
+	/**
+	 * Run {@code docker compose up} to startup services. Waits until all contains are
+	 * started and healthy.
+	 */
 	void up();
 
+	/**
+	 * Run {@code docker compose down} to shutdown any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shutdown
+	 * without waiting.
+	 */
 	void down(Duration timeout);
 
+	/**
+	 * Run {@code docker compose start} to startup services. Waits until all contains are
+	 * started and healthy.
+	 */
 	void start();
 
+	/**
+	 * Run {@code docker compose stop} to shutdown any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shutdown
+	 * without waiting.
+	 */
 	void stop(Duration timeout);
 
+	/**
+	 * Return if services have been defined in the {@link DockerComposeFile} for the
+	 * active profiles.
+	 * @return {@code true} if services have been defined
+	 * @see #hasDefinedServices()
+	 */
 	boolean hasDefinedServices();
 
+	/**
+	 * Return if services defined in the {@link DockerComposeFile} for the active profile
+	 * are running.
+	 * @return {@code true} if services are running
+	 * @see #hasDefinedServices()
+	 * @see #getRunningServices()
+	 */
 	boolean hasRunningServices();
 
+	/**
+	 * Returns the running services for the active profile, or an empty list if no
+	 * services are running.
+	 * @return the list of running services
+	 */
 	List<RunningService> getRunningServices();
 
+	/**
+	 * Factory method used to create a {@link DockerCompose} instance.
+	 * @param file the docker compose file
+	 * @param hostname the hostname used for services or {@code null} if the hostname
+	 * should be deduced
+	 * @param activeProfiles a set of the profiles that should be activated
+	 * @return a {@link DockerCompose} instance
+	 */
 	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles) {
 		DockerCli cli = new DockerCli(null, file, activeProfiles);
 		return new DefaultDockerCompose(cli, hostname);

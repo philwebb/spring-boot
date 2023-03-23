@@ -80,7 +80,7 @@ class DockerComposeLifecycleManager {
 		// FIXME if we're in a test exit we might want to exit
 		DockerComposeFile composeFile = getComposeFile();
 		Set<String> activeProfiles = this.properties.getProfiles().getActive();
-		DockerCompose dockerCompose = DockerCompose.get(composeFile, this.properties.getHostname(), activeProfiles);
+		DockerCompose dockerCompose = DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles);
 		if (!dockerCompose.hasDefinedServices()) {
 			logger.warn(LogMessage.format("No services defined in docker compose file '%s' with active profiles %s",
 					composeFile, activeProfiles));

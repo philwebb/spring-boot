@@ -31,6 +31,8 @@ package org.springframework.boot.docker.compose.service;
 // [<registry>/][<project>/]<image>[:<tag>|@<digest>]
 public record ImageReference(String project, String image, String tag) {
 
+	// FIXME can be a lot simpler for our needs
+
 	/**
 	 * Parses a docker image name from a string.
 	 * @param value the string to parse

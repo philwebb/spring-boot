@@ -17,6 +17,8 @@
 package org.springframework.boot.docker.compose.service;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -24,25 +26,72 @@ import java.util.List;
 import org.springframework.util.Assert;
 
 /**
+ * A reference to a docker compose file (usually named {@code compose.yaml}).
+ *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @see #of(File)
+ * @see #find(File)
+ * @since 3.1.0
  */
 public final class DockerComposeFile {
 
 	private static final List<String> SEARCH_ORDER = List.of("compose.yaml", "compose.yml", "docker-compose.yaml",
 			"docker-compose.yml");
 
+	private File file;
+
 	private DockerComposeFile(File file) {
+		try {
+			this.file = file.getCanonicalFile();
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return this.file.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DockerComposeFile other = (DockerComposeFile) obj;
+		return this.file.equals(other.file);
 	}
 
 	@Override
 	public String toString() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.file.toString();
 	}
 
+	/**
+	 * Find the docker compose file by searching in the given working directory. Files are
+	 * considered in the same order that {@code docker compose} uses, namely:
+	 * <ul>
+	 * <li>{@code compose.yaml}</li>
+	 * <li>{@code compose.yml}</li>
+	 * <li>{@code docker-compose.yaml}</li>
+	 * <li>{@code docker-compose.yml}</li>
+	 * </ul>
+	 * @param workingDirectory the working directory to search or {@code null} to use the
+	 * current directory
+	 * @return the located file or {@code null} if no docker compose file can be found
+	 */
 	public static DockerComposeFile find(File workingDirectory) {
-		Assert.notNull(workingDirectory, "WorkingDirectory must not be null");
+		File base = (workingDirectory != null) ? workingDirectory : new File(".");
+		if (!base.exists()) {
+			return null;
+		}
+		Assert.state(base.isDirectory(), () -> "'%s' is not a directory".formatted(base));
 		Path basePath = workingDirectory.toPath();
 		for (String candidate : SEARCH_ORDER) {
 			Path resolved = basePath.resolve(candidate);
@@ -53,6 +102,11 @@ public final class DockerComposeFile {
 		return null;
 	}
 
+	/**
+	 * Create a new {@link DockerComposeFile} for the given {@link File}.
+	 * @param file the source file
+	 * @return the docker compose file
+	 */
 	public static DockerComposeFile of(File file) {
 		Assert.notNull(file, "File must not be null");
 		Assert.state(file.exists(), () -> "'%s' does not exist".formatted(file));

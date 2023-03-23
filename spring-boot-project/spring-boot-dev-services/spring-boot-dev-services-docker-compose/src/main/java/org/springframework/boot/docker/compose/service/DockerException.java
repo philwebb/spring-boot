@@ -17,9 +17,12 @@
 package org.springframework.boot.docker.compose.service;
 
 /**
+ * Base class for docker exceptions.
+ *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 3.1.0
  */
 public abstract class DockerException extends RuntimeException {
 

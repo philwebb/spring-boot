@@ -157,9 +157,20 @@ abstract sealed class DockerCliCommand<R> {
 
 	}
 
+	/**
+	 * Command Types.
+	 */
 	enum Type {
 
-		DOCKER, DOCKER_COMPOSE
+		/**
+		 * A command executed using {@code docker}.
+		 */
+		DOCKER,
+
+		/**
+		 * A command executed using {@code docker compose} or {@code docker-compose}.
+		 */
+		DOCKER_COMPOSE
 
 	}
 

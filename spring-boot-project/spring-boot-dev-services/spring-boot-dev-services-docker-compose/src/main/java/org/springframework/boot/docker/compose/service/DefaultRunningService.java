@@ -17,13 +17,10 @@
 package org.springframework.boot.docker.compose.service;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Default {@link RunningService} implementation backed by {@link DockerCli} responses.
@@ -40,39 +37,23 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	private final ImageReference image;
 
+	private final DockerHost host;
+
 	private final DefaultRunningServicePorts ports;
 
 	private final Map<String, String> labels;
 
-	private Map<String, String> env;
+	private DockerEnv env;
 
-	DefaultRunningService(DockerComposeFile composeFile, DockerCliComposePsResponse psResponse,
-			DockerCliInspectResponse inspectResponse, String hostname) {
+	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse psResponse,
+			DockerCliInspectResponse inspectResponse) {
 		this.origin = new DockerComposeOrigin(composeFile, psResponse.name());
 		this.name = psResponse.name();
 		this.image = ImageReference.parse(psResponse.image());
+		this.host = host;
 		this.ports = new DefaultRunningServicePorts(inspectResponse);
-		this.env = envToMap(inspectResponse.config().env());
+		this.env = new DockerEnv(inspectResponse.config().env());
 		this.labels = Collections.unmodifiableMap(inspectResponse.config().labels());
-	}
-
-	private Map<String, String> envToMap(List<String> env) {
-		if (CollectionUtils.isEmpty(env)) {
-			return Collections.emptyMap();
-		}
-		Map<String, String> result = new LinkedHashMap<>();
-		env.stream().map(this::envItemToMapEntry).forEach((entry) -> result.put(entry.getKey(), entry.getValue()));
-		return Collections.unmodifiableMap(result);
-	}
-
-	private Map.Entry<String, String> envItemToMapEntry(String item) {
-		int index = item.indexOf('=');
-		if (index != -1) {
-			String key = item.substring(0, index);
-			String value = item.substring(index + 1);
-			return Map.entry(key, value);
-		}
-		return Map.entry(item, null);
 	}
 
 	@Override
@@ -92,8 +73,7 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	@Override
 	public String host() {
-		// FIXME copy logic from ServiceMapper
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.host.toString();
 	}
 
 	@Override
@@ -103,7 +83,7 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	@Override
 	public Map<String, String> env() {
-		return this.env;
+		return this.env.asMap();
 	}
 
 	@Override

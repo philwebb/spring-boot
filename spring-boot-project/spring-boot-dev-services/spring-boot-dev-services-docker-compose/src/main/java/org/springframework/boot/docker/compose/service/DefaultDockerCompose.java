@@ -35,11 +35,11 @@ class DefaultDockerCompose implements DockerCompose {
 
 	private final DockerCli cli;
 
-	private final String hostname;
+	private final DockerHost hostname;
 
 	DefaultDockerCompose(DockerCli cli, String hostname) {
 		this.cli = cli;
-		this.hostname = hostname;
+		this.hostname = DockerHost.get(hostname, () -> cli.run(new DockerCliCommand.Context()));
 	}
 
 	@Override
@@ -83,7 +83,7 @@ class DefaultDockerCompose implements DockerCompose {
 		Map<String, DockerCliInspectResponse> inspected = inspect(runningPsResponses);
 		for (DockerCliComposePsResponse psResponse : runningPsResponses) {
 			DockerCliInspectResponse inspectResponse = inspected.get(psResponse.id());
-			result.add(new DefaultRunningService(dockerComposeFile, psResponse, inspectResponse, this.hostname));
+			result.add(new DefaultRunningService(this.hostname, dockerComposeFile, psResponse, inspectResponse));
 		}
 		return Collections.unmodifiableList(result);
 	}

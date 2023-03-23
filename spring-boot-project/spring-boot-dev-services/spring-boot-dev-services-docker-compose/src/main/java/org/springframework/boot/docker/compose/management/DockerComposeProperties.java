@@ -48,7 +48,7 @@ class DockerComposeProperties {
 	/**
 	 * Hostname or IP of the machine where the docker containers are started.
 	 */
-	private String hostname;
+	private String host;
 
 	/**
 	 * Start configuration.
@@ -81,12 +81,12 @@ class DockerComposeProperties {
 		this.lifecycleManagement = lifecycleManagement;
 	}
 
-	String getHostname() {
-		return this.hostname;
+	String getHost() {
+		return this.host;
 	}
 
-	void setHostname(String hostname) {
-		this.hostname = hostname;
+	void setHost(String host) {
+		this.host = host;
 	}
 
 	Startup getStartup() {

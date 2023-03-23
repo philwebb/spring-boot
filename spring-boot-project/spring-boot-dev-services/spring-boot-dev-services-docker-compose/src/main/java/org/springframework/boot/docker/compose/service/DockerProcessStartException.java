@@ -17,7 +17,8 @@
 package org.springframework.boot.docker.compose.service;
 
 /**
- * Is thrown if docker is not installed.
+ * {@link DockerException} thrown if the docker process cannot be started. Usually
+ * indicates that docker is not installed.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

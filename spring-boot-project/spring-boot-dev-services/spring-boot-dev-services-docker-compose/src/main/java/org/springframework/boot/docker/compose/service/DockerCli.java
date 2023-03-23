@@ -50,6 +50,12 @@ class DockerCli {
 
 	private final Set<String> activeProfiles;
 
+	/**
+	 * Create a new {@link DockerCli} instance.
+	 * @param workingDirectory the working directory or {@code null}
+	 * @param dockerComposeFile the docker compose file to use
+	 * @param activeProfiles the docker compose profiles to activate
+	 */
 	DockerCli(File workingDirectory, DockerComposeFile dockerComposeFile, Set<String> activeProfiles) {
 		this.processRunner = new ProcessRunner(workingDirectory);
 		this.dockerCommand = getDockerCommand(this.processRunner);
@@ -65,7 +71,7 @@ class DockerCli {
 			return List.of("docker");
 		}
 		catch (ProcessStartException ex) {
-			throw new DockerProcessStartException("Unable to start docker process", ex);
+			throw new DockerProcessStartException("Unable to start docker process. Is docker correctly installed?", ex);
 		}
 		catch (ProcessExitException ex) {
 			if (ex.getStdErr().contains("docker daemon is not running")
@@ -96,11 +102,18 @@ class DockerCli {
 			return List.of("docker-compose");
 		}
 		catch (ProcessStartException ex) {
-			throw new DockerProcessStartException("Unable to start 'docker-compose' process or use 'docker compose'",
+			throw new DockerProcessStartException(
+					"Unable to start 'docker-compose' process or use 'docker compose'. Is docker correctly installed?",
 					ex);
 		}
 	}
 
+	/**
+	 * Run the given {@link DockerCli} command and return the response.
+	 * @param <R> the response type
+	 * @param dockerCommand the command to run
+	 * @return the response
+	 */
 	<R> R run(DockerCliCommand<R> dockerCommand) {
 		List<String> command = createCommand(dockerCommand.getType());
 		command.addAll(dockerCommand.getCommand());
@@ -126,6 +139,10 @@ class DockerCli {
 		};
 	}
 
+	/**
+	 * Return the {@link DockerComposeFile} being used by this CLI instance.
+	 * @return the docker compose file
+	 */
 	DockerComposeFile getDockerComposeFile() {
 		return this.dockerComposeFile;
 	}
