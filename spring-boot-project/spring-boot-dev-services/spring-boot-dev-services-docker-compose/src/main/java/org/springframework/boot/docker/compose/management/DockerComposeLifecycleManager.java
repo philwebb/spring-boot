@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.management;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +43,8 @@ import org.springframework.core.log.LogMessage;
 class DockerComposeLifecycleManager {
 
 	private static final Log logger = LogFactory.getLog(DockerComposeLifecycleManager.class);
+
+	private static final Object IGNORE_LABEL = "org.springframework.boot.ignore";
 
 	private final ApplicationContext applicationContext;
 
@@ -92,7 +95,8 @@ class DockerComposeLifecycleManager {
 				this.shutdownHandlers.add(() -> shutdown.getCommand().applyTo(dockerCompose, shutdown.getTimeout()));
 			}
 		}
-		List<RunningService> runningServices = dockerCompose.getRunningServices();
+		List<RunningService> runningServices = new ArrayList<>(dockerCompose.getRunningServices());
+		runningServices.removeIf(this::isIgnored);
 		this.serviceReadinessChecks.waitUntilReady(runningServices);
 		DockerComposeServicesReadyEvent event = new DockerComposeServicesReadyEvent(this.applicationContext,
 				runningServices);
@@ -104,6 +108,10 @@ class DockerComposeLifecycleManager {
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
 		logger.info(LogMessage.format("Found docker compose file '%s'", composeFile));
 		return composeFile;
+	}
+
+	private boolean isIgnored(RunningService service) {
+		return service.labels().containsKey(IGNORE_LABEL);
 	}
 
 }

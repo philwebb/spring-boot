@@ -37,8 +37,6 @@ public interface RunningService {
 
 	Map<String, String> labels(); // from inspect
 
-	boolean ignore(); // FIXME do we want this here?
-
 	// FIXME toString
 
 	interface Ports {

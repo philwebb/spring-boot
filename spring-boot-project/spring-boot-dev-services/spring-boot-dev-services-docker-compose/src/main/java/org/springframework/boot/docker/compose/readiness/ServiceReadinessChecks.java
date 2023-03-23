@@ -96,26 +96,27 @@ public class ServiceReadinessChecks {
 	private List<ServiceNotReadyException> check(List<RunningService> runningServices) {
 		List<ServiceNotReadyException> exceptions = null;
 		for (RunningService service : runningServices) {
-			if (shouldCheckService(service)) {
-				logger.trace(LogMessage.format("Checking readiness of service '%s'", service));
-				for (ServiceReadinessCheck check : this.checks) {
-					try {
-						check.check(service);
-						logger.trace(LogMessage.format("Service '%s' is ready", service));
-					}
-					catch (ServiceNotReadyException ex) {
-						logger.trace(LogMessage.format("Service '%s' is not ready", service), ex);
-						exceptions = (exceptions != null) ? exceptions : new ArrayList<>();
-						exceptions.add(ex);
-					}
+			if (isDisabled(service)) {
+				continue;
+			}
+			logger.trace(LogMessage.format("Checking readiness of service '%s'", service));
+			for (ServiceReadinessCheck check : this.checks) {
+				try {
+					check.check(service);
+					logger.trace(LogMessage.format("Service '%s' is ready", service));
+				}
+				catch (ServiceNotReadyException ex) {
+					logger.trace(LogMessage.format("Service '%s' is not ready", service), ex);
+					exceptions = (exceptions != null) ? exceptions : new ArrayList<>();
+					exceptions.add(ex);
 				}
 			}
 		}
 		return (exceptions != null) ? exceptions : Collections.emptyList();
 	}
 
-	private boolean shouldCheckService(RunningService service) {
-		return !service.ignore() && !service.labels().containsKey(DISABLE_LABEL);
+	private boolean isDisabled(RunningService service) {
+		return service.labels().containsKey(DISABLE_LABEL);
 	}
 
 	private static void sleep(Duration duration) {
