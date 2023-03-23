@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,24 +27,28 @@ import java.util.Set;
  */
 public interface DockerCompose {
 
-	DockerComposeServices listServices();
-
-	DockerComposeServices up();
-
-	DockerComposeServices start();
+	void up();
 
 	void down(Duration timeout);
 
-	DockerComposeServices stop(Duration timeout);
+	void start();
 
-	/**
-	 * @param dockerComposeFile
-	 * @param hostname
-	 * @param active
-	 * @return
-	 */
-	static DockerCompose get(DockerComposeFile dockerComposeFile, String hostname, Set<String> activeProfiles) {
+	void stop(Duration timeout);
+
+	List<DefinedService> listServices();
+
+	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles) {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
+
+	/**
+	 * @return
+	 */
+	boolean isEmpty(); // hasDefinitions
+
+	/**
+	 * @return
+	 */
+	boolean hasRunningService(); // FIXME isStarted
 
 }

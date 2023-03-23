@@ -19,20 +19,10 @@ package org.springframework.boot.docker.compose.service;
 /**
  * @author pwebb
  */
-public interface DockerComposeServices {
+public interface DefinedService {
 
-	/**
-	 * @return
-	 */
-	boolean isEmpty();
+	String name(); // Get from compose ps
 
-	/**
-	 * @return
-	 */
-	boolean hasRunningService();
-
-	// Each service is backed by DockerComposePsResponse
-
-	// If it's running, it also has a DockerInspectResponse
+	String imageName(); // FIXME rename and make rich type. Used to get the logical name
 
 }

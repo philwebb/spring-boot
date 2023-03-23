@@ -19,10 +19,9 @@ package org.springframework.boot.docker.compose.autoconfigure.rabbit;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
@@ -57,7 +56,7 @@ class RabbitDockerComposeConnectionDetailsFactory
 
 		private final List<Address> addresses;
 
-		protected RabbitDockerComposeConnectionDetails(DockerComposeRunningService service) {
+		protected RabbitDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
 			this.addresses = List.of(new Address(service.host(), service.getMappedPort(RABBITMQ_PORT).number()));

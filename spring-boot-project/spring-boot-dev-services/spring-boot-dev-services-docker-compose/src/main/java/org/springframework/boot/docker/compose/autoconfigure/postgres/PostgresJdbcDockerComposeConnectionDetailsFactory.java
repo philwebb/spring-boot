@@ -17,11 +17,10 @@
 package org.springframework.boot.docker.compose.autoconfigure.postgres;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrlBuilder;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
@@ -55,7 +54,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 		private final String jdbcUrl;
 
-		PostgresJdbcDockerComposeConnectionDetails(DockerComposeRunningService service) {
+		PostgresJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new PostgresEnvironment(service.env());
 			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());

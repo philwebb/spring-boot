@@ -16,8 +16,7 @@
 
 package org.springframework.boot.docker.compose.readiness;
 
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * Exception thrown when a single {@link RunningService} is not ready.
@@ -30,18 +29,18 @@ import org.springframework.boot.docker.compose.service.DockerComposeRunningServi
  */
 public class ServiceNotReadyException extends RuntimeException {
 
-	private final DockerComposeRunningService service;
+	private final RunningService service;
 
-	public ServiceNotReadyException(DockerComposeRunningService service, String message) {
+	public ServiceNotReadyException(RunningService service, String message) {
 		this(service, message, null);
 	}
 
-	public ServiceNotReadyException(DockerComposeRunningService service, String message, Throwable cause) {
+	public ServiceNotReadyException(RunningService service, String message, Throwable cause) {
 		super(message, cause);
 		this.service = service;
 	}
 
-	public DockerComposeRunningService getService() {
+	public RunningService getService() {
 		return this.service;
 	}
 

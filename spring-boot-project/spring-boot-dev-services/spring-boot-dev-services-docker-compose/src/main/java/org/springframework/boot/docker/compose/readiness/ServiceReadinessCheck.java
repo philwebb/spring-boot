@@ -17,8 +17,7 @@
 package org.springframework.boot.docker.compose.readiness;
 
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 import org.springframework.core.env.Environment;
 
 /**
@@ -43,6 +42,6 @@ public interface ServiceReadinessCheck {
 	 * @param service service to check
 	 * @throws ServiceNotReadyException if the service is not ready
 	 */
-	void check(DockerComposeRunningService service) throws ServiceNotReadyException;
+	void check(RunningService service) throws ServiceNotReadyException;
 
 }

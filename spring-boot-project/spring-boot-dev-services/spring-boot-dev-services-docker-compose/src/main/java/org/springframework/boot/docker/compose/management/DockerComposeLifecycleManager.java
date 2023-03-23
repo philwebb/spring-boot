@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.management;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,9 +26,9 @@ import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.management.DockerComposeProperties.Stop;
 import org.springframework.boot.docker.compose.readiness.ServiceReadinessChecks;
+import org.springframework.boot.docker.compose.service.DefinedService;
 import org.springframework.boot.docker.compose.service.DockerCompose;
 import org.springframework.boot.docker.compose.service.DockerComposeFile;
-import org.springframework.boot.docker.compose.service.DockerComposeServices;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.log.LogMessage;
 
@@ -77,18 +78,18 @@ class DockerComposeLifecycleManager {
 		logger.info(LogMessage.format("Found docker compose file '%s'", composeFile));
 		DockerCompose dockerCompose = DockerCompose.get(composeFile, this.properties.getHostname(),
 				this.properties.getProfiles().getActive());
-		DockerComposeServices services = dockerCompose.listServices();
-		if (services.isEmpty()) {
+		if (dockerCompose.isEmpty()) {
 			logger.warn(LogMessage.format("No services defined in docker compose file '%s'", composeFile));
 			return;
 		}
-		if (this.properties.getLifecycleManagement().shouldStart() && !services.hasRunningService()) {
-			services = this.properties.getStart().getCommand().applyTo(dockerCompose);
+		if (this.properties.getLifecycleManagement().shouldStart() && !dockerCompose.hasRunningService()) {
+			this.properties.getStart().getCommand().applyTo(dockerCompose);
 			if (this.properties.getLifecycleManagement().shouldStop()) {
 				Stop stop = this.properties.getStop();
 				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
 			}
 		}
+		List<DefinedService> listServices = dockerCompose.listServices();
 		this.serviceReadinessChecks.wait(null); // FIXME
 		this.applicationContext.publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext));
 	}

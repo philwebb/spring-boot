@@ -90,7 +90,7 @@ public abstract class DatabaseService {
 	 * @return the name for this service
 	 */
 	public String getName() {
-		return this.service.name();
+		return this.service.logicalTypeName();
 	}
 
 	/**

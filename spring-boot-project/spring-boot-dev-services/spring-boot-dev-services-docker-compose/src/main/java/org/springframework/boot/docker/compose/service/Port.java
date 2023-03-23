@@ -24,7 +24,12 @@ public interface Port {
 	/**
 	 * @return
 	 */
-	int number();
+	int number(); // FIXME exposedPort?
+
+	/**
+	 * @return
+	 */
+	Protocol protocol();
 
 	/**
 	 * Protocol.
@@ -35,10 +40,12 @@ public interface Port {
 		 * TCP.
 		 */
 		TCP,
+
 		/**
 		 * UDP.
 		 */
 		UDP,
+
 		/**
 		 * Other.
 		 */
@@ -61,10 +68,5 @@ public interface Port {
 		}
 
 	}
-
-	/**
-	 * @return
-	 */
-	Protocol protocol();
 
 }

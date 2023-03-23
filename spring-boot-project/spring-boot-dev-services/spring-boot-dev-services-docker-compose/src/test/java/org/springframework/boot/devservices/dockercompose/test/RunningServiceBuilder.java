@@ -111,7 +111,7 @@ public final class RunningServiceBuilder {
 	}
 
 	public static RunningServiceBuilder create(RunningService service) {
-		return new RunningServiceBuilder(service.name(), service.image()).composeConfigFile(service.composeConfigFile())
+		return new RunningServiceBuilder(service.logicalTypeName(), service.image()).composeConfigFile(service.composeConfigFile())
 			.host(service.host())
 			.env(service.env())
 			.labels(service.labels())

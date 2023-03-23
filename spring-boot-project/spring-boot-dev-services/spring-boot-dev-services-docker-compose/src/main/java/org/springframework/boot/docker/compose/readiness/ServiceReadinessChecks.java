@@ -27,8 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
@@ -78,7 +77,7 @@ public class ServiceReadinessChecks {
 	 * Wait for the given services to be ready.
 	 * @param runningServices the services to wait for
 	 */
-	public void wait(List<DockerComposeRunningService> runningServices) {
+	public void wait(List<RunningService> runningServices) {
 		Duration timeout = this.properties.getTimeout();
 		Instant start = this.clock.instant();
 		while (true) {
@@ -94,18 +93,18 @@ public class ServiceReadinessChecks {
 		}
 	}
 
-	private List<ServiceNotReadyException> check(List<DockerComposeRunningService> runningServices) {
+	private List<ServiceNotReadyException> check(List<RunningService> runningServices) {
 		List<ServiceNotReadyException> exceptions = null;
-		for (DockerComposeRunningService service : runningServices) {
+		for (RunningService service : runningServices) {
 			if (shouldCheckService(service)) {
-				logger.trace(LogMessage.format("Checking readiness of service '%s'", service.name()));
+				logger.trace(LogMessage.format("Checking readiness of service '%s'", service.logicalTypeName()));
 				for (ServiceReadinessCheck check : this.checks) {
 					try {
 						check.check(service);
-						logger.trace(LogMessage.format("Service '%s' is ready", service.name()));
+						logger.trace(LogMessage.format("Service '%s' is ready", service.logicalTypeName()));
 					}
 					catch (ServiceNotReadyException ex) {
-						logger.trace(LogMessage.format("Service '%s' is not ready", service.name()), ex);
+						logger.trace(LogMessage.format("Service '%s' is not ready", service.logicalTypeName()), ex);
 						exceptions = (exceptions != null) ? exceptions : new ArrayList<>();
 						exceptions.add(ex);
 					}
@@ -115,7 +114,7 @@ public class ServiceReadinessChecks {
 		return (exceptions != null) ? exceptions : Collections.emptyList();
 	}
 
-	private boolean shouldCheckService(DockerComposeRunningService service) {
+	private boolean shouldCheckService(RunningService service) {
 		return !service.ignore() && !service.labels().containsKey(DISABLE_LABEL);
 	}
 

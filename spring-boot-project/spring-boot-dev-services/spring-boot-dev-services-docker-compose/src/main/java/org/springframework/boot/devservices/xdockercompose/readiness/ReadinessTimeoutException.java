@@ -35,7 +35,7 @@ public class ReadinessTimeoutException extends RuntimeException {
 	private final Duration timeout;
 
 	public ReadinessTimeoutException(RunningService service, Duration timeout, Throwable cause) {
-		super("Timeout of %s reached while waiting for service '%s' readiness".formatted(timeout, service.name()),
+		super("Timeout of %s reached while waiting for service '%s' readiness".formatted(timeout, service.logicalTypeName()),
 				cause);
 		this.service = service;
 		this.timeout = timeout;

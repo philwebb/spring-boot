@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * Exception thrown if readiness checking has timed out. Related
@@ -45,7 +45,7 @@ public final class ReadinessTimeoutException extends RuntimeException {
 		List<String> serviceNames = exceptions.stream()
 			.map(ServiceNotReadyException::getService)
 			.filter(Objects::nonNull)
-			.map(DockerComposeRunningService::imageName)
+			.map(RunningService::imageName)
 			.toList();
 		return "Readiness timeout of %s reached while waiting for services %s".formatted(timeout, serviceNames);
 	}

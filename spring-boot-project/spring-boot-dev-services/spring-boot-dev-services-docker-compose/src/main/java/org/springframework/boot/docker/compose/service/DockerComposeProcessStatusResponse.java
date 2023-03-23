@@ -20,11 +20,13 @@ package org.springframework.boot.docker.compose.service;
  * Response from {@link DockerCommand.ComposePs docker compose ps}.
  *
  * @param id the container ID
+ * @param name the name of the service
+ * @param image the image reference
  * @param state the state of the container
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-record DockerComposeProcessStatusResponse(String id, String state) {
+record DockerComposeProcessStatusResponse(String id, String name, String image, String state) {
 
 }

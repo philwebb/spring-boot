@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.jdbc;
 
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * @author Moritz Halbritter
@@ -34,7 +34,7 @@ public class JdbcUrlBuilder {
 		this.sourcePort = sourcePort;
 	}
 
-	public String build(DockerComposeRunningService service, String database) {
+	public String build(RunningService service, String database) {
 		return null;
 	}
 

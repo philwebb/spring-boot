@@ -19,11 +19,10 @@ package org.springframework.boot.docker.compose.autoconfigure.mariadb;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilder;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}
@@ -56,7 +55,7 @@ class MariaDbR2dbcDockerComposeConnectionDetailsFactory
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		MariaDbJdbcDockerComposeConnectionDetails(DockerComposeRunningService service) {
+		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			MariaDbEnvironment environment = new MariaDbEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),

@@ -49,7 +49,7 @@ class ServiceMapperTests {
 	void map() throws Exception {
 		ServiceMapper serviceMapper = new ServiceMapper(linuxEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect.json");
-		assertThat(service1.name()).isEqualTo("redis");
+		assertThat(service1.logicalTypeName()).isEqualTo("redis");
 		assertThat(service1.image()).isEqualTo(DockerImageName.parse("redis:7.0"));
 		assertThat(service1.ignore()).isFalse();
 		assertThat(service1.readinessCheck()).isTrue();

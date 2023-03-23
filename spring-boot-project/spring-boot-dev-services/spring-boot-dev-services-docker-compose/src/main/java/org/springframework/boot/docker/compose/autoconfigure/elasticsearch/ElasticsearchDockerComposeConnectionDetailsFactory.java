@@ -20,10 +20,9 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -58,7 +57,7 @@ class ElasticsearchDockerComposeConnectionDetailsFactory
 
 		private final List<Node> nodes;
 
-		ElasticsearchDockerComposeConnectionDetails(DockerComposeRunningService service) {
+		ElasticsearchDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ElasticsearchEnvironment(service.env());
 			this.nodes = List.of(new Node(service.host(), service.getMappedPort(ELASTICSEARCH_PORT).number(),

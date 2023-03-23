@@ -18,49 +18,27 @@ package org.springframework.boot.docker.compose.service;
 
 import java.util.Map;
 
-import org.springframework.boot.origin.OriginProvider;
-
 /**
  * @author pwebb
  */
-public interface DockerComposeRunningService extends OriginProvider {
+public interface RunningService extends DefinedService {
 
-	/**
-	 * @return
-	 */
-	String host();
+	// getOrigin from ComposeFile and Service Name
 
-	/**
-	 * @param zipkinPort
-	 * @return
-	 */
-	Port getMappedPort(int zipkinPort);
 
-	/**
-	 * @return
-	 */
-	Map<String, String> env();
+	String host(); // A bunch of logic
 
-	/**
-	 * @return
-	 */
-	String name();
+	Map<Integer, Port> ports(); // from inspect output with a bunch of logic
 
-	String imageName();
+	Port getMappedPort(int sourcePort); // just on ports. Rich type
 
-	/**
-	 * @return
-	 */
-	Map<String, String> labels();
+	Map<String, String> env(); // from inspect env (processed)
 
-	/**
-	 * @return
-	 */
+	Map<String, String> labels(); // from inspect
+
+	String logicalTypeName(); // This is the type, not the name. Probably don't want it
+	// here
+
 	boolean ignore(); // FIXME do we want this here?
-
-	/**
-	 * @return
-	 */
-	Map<Integer, Port> ports();
 
 }

@@ -16,10 +16,9 @@
 
 package org.springframework.boot.docker.compose.management;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.springframework.boot.docker.compose.service.DockerCompose;
-import org.springframework.boot.docker.compose.service.DockerComposeServices;
 
 /**
  * @author pwebb
@@ -30,14 +29,14 @@ public enum StartCommand {
 
 	START(DockerCompose::start);
 
-	private final Function<DockerCompose, DockerComposeServices> action;
+	private final Consumer<DockerCompose> action;
 
-	StartCommand(Function<DockerCompose, DockerComposeServices> action) {
+	StartCommand(Consumer<DockerCompose> action) {
 		this.action = action;
 	}
 
-	DockerComposeServices applyTo(DockerCompose dockerCompose) {
-		return this.action.apply(dockerCompose);
+	void applyTo(DockerCompose dockerCompose) {
+		this.action.accept(dockerCompose);
 	}
 
 }

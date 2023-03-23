@@ -18,8 +18,7 @@ package org.springframework.boot.docker.compose.autoconfigure.service.connection
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
-import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
-import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.RunningService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.util.Assert;
@@ -60,7 +59,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	}
 
 	private boolean accept(DockerComposeConnectionSource source) {
-		return hasRequiredClass() && this.name.equals(source.getService().name());
+		return hasRequiredClass() && this.name.equals(source.getService().logicalTypeName());
 	}
 
 	private boolean hasRequiredClass() {
@@ -78,7 +77,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
-	 * {@link DockerComposeRunningService}.
+	 * {@link RunningService}.
 	 */
 	protected static class DockerComposeConnectionDetails implements ConnectionDetails, OriginProvider {
 
@@ -86,11 +85,11 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 		/**
 		 * Create a new {@link DockerComposeConnectionDetails} instance.
-		 * @param runningService the source {@link DockerComposeRunningService}
+		 * @param runningService the source {@link RunningService}
 		 */
-		protected DockerComposeConnectionDetails(DockerComposeRunningService runningService) {
+		protected DockerComposeConnectionDetails(RunningService runningService) {
 			Assert.notNull(runningService, "RunningService must not be null");
-			this.origin = runningService.getOrigin();
+			this.origin = Origin.from(runningService);
 		}
 
 		@Override

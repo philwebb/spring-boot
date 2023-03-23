@@ -244,7 +244,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 			if (!service.readinessCheck()) {
 				continue;
 			}
-			logger.debug(LogMessage.format("Checking readiness of service '%s'", service.name()));
+			logger.debug(LogMessage.format("Checking readiness of service '%s'", service.logicalTypeName()));
 			ServiceNotReadyException lastException = null;
 			while (true) {
 				Duration elapsed = Duration.ofNanos(System.nanoTime() - start);
@@ -253,12 +253,12 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 				}
 				try {
 					readyCheck.check(service);
-					logger.debug(LogMessage.format("Service '%s' is ready", service.name()));
+					logger.debug(LogMessage.format("Service '%s' is ready", service.logicalTypeName()));
 					break;
 				}
 				catch (ServiceNotReadyException ex) {
 					lastException = ex;
-					logger.debug(LogMessage.format("Service '%s' is not ready", service.name()));
+					logger.debug(LogMessage.format("Service '%s' is not ready", service.logicalTypeName()));
 					logger.trace("Exception details", ex);
 					sleep(SLEEP_BETWEEN_READINESS_TRIES);
 				}
