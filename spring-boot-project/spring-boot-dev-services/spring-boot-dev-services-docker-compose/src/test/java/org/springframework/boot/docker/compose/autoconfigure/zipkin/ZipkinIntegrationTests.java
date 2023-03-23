@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.database.mysql;
+package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 
 import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for MySQL.
+ * Integration tests for Zipkin.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class MySqlIntegrationTests extends AbstractIntegrationTests {
+class ZipkinIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
-	void shouldHaveJdbcServiceConnection() {
-		JdbcConnectionDetails serviceConnection = runProvider(JdbcConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mysql-jdbc-database");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");
+	void test() {
+		ZipkinConnectionDetails connectionDetails = runProvider(ZipkinConnectionDetails.class);
+		assertThat(connectionDetails.getSpanEndpoint()).startsWith("http://").endsWith("/api/v2/spans");
 	}
 
 	@Override
 	protected InputStream getComposeContent() {
-		return MySqlIntegrationTests.class.getResourceAsStream("mysql-compose.yaml");
+		return ZipkinIntegrationTests.class.getResourceAsStream("zipkin-compose.yaml");
 	}
 
 }

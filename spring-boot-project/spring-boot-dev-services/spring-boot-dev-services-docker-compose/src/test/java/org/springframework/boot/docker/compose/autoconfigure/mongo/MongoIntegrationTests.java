@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.mongo;
+package org.springframework.boot.docker.compose.autoconfigure.mongo;
 
 import java.io.InputStream;
 

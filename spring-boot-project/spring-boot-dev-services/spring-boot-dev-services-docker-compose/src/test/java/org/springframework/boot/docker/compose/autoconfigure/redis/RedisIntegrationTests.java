@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.redis;
+package org.springframework.boot.docker.compose.autoconfigure.redis;
 
 import java.io.InputStream;
 

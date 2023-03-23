@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.rabbit;
+package org.springframework.boot.docker.compose.autoconfigure.rabbit;
 
 import java.io.InputStream;
 

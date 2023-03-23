@@ -14,47 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.database.postgres;
+package org.springframework.boot.docker.compose.autoconfigure.mysql;
 
 import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for PostgreSQL.
+ * Integration tests for MySQL.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class PostgresIntegrationTests extends AbstractIntegrationTests {
+class MySqlIntegrationTests extends AbstractIntegrationTests {
 
 	@Test
 	void shouldHaveJdbcServiceConnection() {
 		JdbcConnectionDetails serviceConnection = runProvider(JdbcConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-postgres-jdbc-database");
+		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mysql-jdbc-database");
 		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
-	}
-
-	@Test
-	void shouldHaveR2dbcServiceConnection() {
-		R2dbcConnectionDetails serviceConnection = runProvider(R2dbcConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-postgres-r2dbc-database");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:postgresql://").endsWith("/mydatabase");
+		assertThat(serviceConnection.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");
 	}
 
 	@Override
 	protected InputStream getComposeContent() {
-		return PostgresIntegrationTests.class.getResourceAsStream("postgres-compose.yaml");
+		return MySqlIntegrationTests.class.getResourceAsStream("mysql-compose.yaml");
 	}
 
 }

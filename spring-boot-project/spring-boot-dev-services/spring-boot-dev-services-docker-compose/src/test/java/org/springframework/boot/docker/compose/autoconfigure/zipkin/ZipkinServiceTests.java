@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose.zipkin;
+package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 
 import java.util.Collections;
 import java.util.Map;
