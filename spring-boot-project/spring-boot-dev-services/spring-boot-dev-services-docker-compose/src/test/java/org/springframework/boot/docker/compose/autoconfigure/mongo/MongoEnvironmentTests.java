@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.docker.compose.autoconfigure.mongo;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Auto-configuration for docker compose Zipkin service connections.
+ * @author pwebb
  */
-package org.springframework.boot.docker.compose.autoconfigure.zipkin;
+class MongoEnvironmentTests {
+
+	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
+
+}

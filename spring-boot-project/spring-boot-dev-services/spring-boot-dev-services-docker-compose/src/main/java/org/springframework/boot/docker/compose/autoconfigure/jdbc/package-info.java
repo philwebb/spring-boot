@@ -15,6 +15,7 @@
  */
 
 /**
- * Auto-configuration for docker compose Zipkin service connections.
+ * Utilities to help when creating
+ * {@link org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails}.
  */
-package org.springframework.boot.docker.compose.autoconfigure.zipkin;
+package org.springframework.boot.docker.compose.autoconfigure.jdbc;

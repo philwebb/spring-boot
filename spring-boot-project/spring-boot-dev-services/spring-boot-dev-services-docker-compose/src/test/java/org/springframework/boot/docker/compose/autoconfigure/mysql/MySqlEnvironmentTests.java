@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.docker.compose.autoconfigure.mysql;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Auto-configuration for docker compose Zipkin service connections.
+ * @author pwebb
  */
-package org.springframework.boot.docker.compose.autoconfigure.zipkin;
+class MySqlEnvironmentTests {
+
+	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
+
+}

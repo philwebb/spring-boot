@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose Zipkin service connections.
+ * Auto-configuration for docker compose Elasticsearch service connections.
  */
-package org.springframework.boot.docker.compose.autoconfigure.zipkin;
+package org.springframework.boot.docker.compose.autoconfigure.elasticsearch;

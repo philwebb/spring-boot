@@ -15,6 +15,6 @@
  */
 
 /**
- * MySQL services.
+ * Auto-configuration for docker compose MySQL service connections.
  */
 package org.springframework.boot.docker.compose.autoconfigure.mysql;
