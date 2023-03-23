@@ -16,32 +16,25 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for Zipkin.
+ * Docker compose integration tests for Zipkin.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
-class ZipkinIntegrationTests extends AbstractIntegrationTests {
+class ZipkinDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
 		ZipkinConnectionDetails connectionDetails = runProvider(ZipkinConnectionDetails.class);
 		assertThat(connectionDetails.getSpanEndpoint()).startsWith("http://").endsWith("/api/v2/spans");
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return ZipkinIntegrationTests.class.getResourceAsStream("zipkin-compose.yaml");
 	}
 
 }

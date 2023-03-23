@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Test for {@link MySqlDbR2dbcDockerComposeConnectionDetailsFactory}.
  *
- * @author pwebb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class MySqlDbR2dbcDockerComposeConnectionDetailsFactoryTests {
 

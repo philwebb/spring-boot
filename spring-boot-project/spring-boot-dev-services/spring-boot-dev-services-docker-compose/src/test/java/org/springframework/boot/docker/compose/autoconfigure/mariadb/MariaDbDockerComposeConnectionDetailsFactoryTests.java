@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Tests for {@link MariaDbDockerComposeConnectionDetailsFactoryTests}.
  *
- * @author pwebb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class MariaDbDockerComposeConnectionDetailsFactoryTests {
 

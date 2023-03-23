@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.autoconfigure.mariadb;
+package org.springframework.boot.docker.compose.autoconfigure.postgres;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,20 +25,20 @@ import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDocker
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for MariaDB.
+ * Docker compose integration tests for PostgreSQL.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MariaDbIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class PostgresDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void shouldHaveJdbcServiceConnection() {
 		JdbcConnectionDetails connectionDetails = runProvider(JdbcConnectionDetails.class);
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mariadb://").endsWith("/mydatabase");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
 	}
 
 	@Test
@@ -47,7 +47,7 @@ class MariaDbIntegrationTests extends AbstractDockerComposeIntegrationTests {
 		assertThat(connectionDetails.getConnectionFactoryOptions()).hasToString("");
 		// assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		// assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		// assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:mariadb://").endsWith("/mydatabase");
+		// assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:postgresql://").endsWith("/mydatabase");
 	}
 
 }

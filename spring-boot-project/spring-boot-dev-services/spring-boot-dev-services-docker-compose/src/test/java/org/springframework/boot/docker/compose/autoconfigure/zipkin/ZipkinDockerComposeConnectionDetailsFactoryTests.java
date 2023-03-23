@@ -20,6 +20,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Tests for {@link ZipkinDockerComposeConnectionDetailsFactory}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ */
 class ZipkinDockerComposeConnectionDetailsFactoryTests {
 
 	@Test

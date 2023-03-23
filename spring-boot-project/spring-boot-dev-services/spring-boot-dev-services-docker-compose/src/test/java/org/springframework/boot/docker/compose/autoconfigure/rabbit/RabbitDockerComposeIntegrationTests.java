@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.autoconfigure.redis;
+package org.springframework.boot.docker.compose.autoconfigure.rabbit;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
-import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for Redis.
+ * Docker compose integration tests for RabbitMQ.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class RedisIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class RabbitDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
-		RedisConnectionDetails connectionDetails = runProvider(RedisConnectionDetails.class);
-		Standalone standalone = connectionDetails.getStandalone();
-		assertThat(connectionDetails.getUsername()).isNull();
-		assertThat(connectionDetails.getPassword()).isNull();
-		assertThat(connectionDetails.getCluster()).isNull();
-		assertThat(connectionDetails.getSentinel()).isNull();
-		assertThat(standalone).isNotNull();
-		assertThat(standalone.getDatabase()).isZero();
-		assertThat(standalone.getPort()).isGreaterThan(0);
-		assertThat(standalone.getHost()).isNotNull();
+		RabbitConnectionDetails connectionDetails = runProvider(RabbitConnectionDetails.class);
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
+		assertThat(connectionDetails.getAddresses()).hasSize(1);
+		Address address = connectionDetails.getFirstAddress();
+		assertThat(address.host()).isNotNull();
+		assertThat(address.port()).isGreaterThan(0);
 	}
 
 }

@@ -26,13 +26,13 @@ import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDocker
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for ElasticSearch.
+ * Docker compose integration tests for Elasticsearch.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ElasticsearchIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class ElasticsearchDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {

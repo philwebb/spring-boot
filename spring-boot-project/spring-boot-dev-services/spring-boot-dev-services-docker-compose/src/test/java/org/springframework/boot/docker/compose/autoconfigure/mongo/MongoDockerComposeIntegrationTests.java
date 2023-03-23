@@ -24,13 +24,13 @@ import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDocker
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for MongoDB.
+ * Docker compose integration tests for Mongo.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MongoIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class MongoDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
