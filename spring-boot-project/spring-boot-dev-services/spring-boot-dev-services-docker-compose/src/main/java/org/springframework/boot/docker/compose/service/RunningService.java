@@ -16,21 +16,23 @@
 
 package org.springframework.boot.docker.compose.service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author pwebb
  */
-public interface RunningService extends DefinedService {
+public interface RunningService {
 
 	// getOrigin from ComposeFile and Service Name
+	String name(); // Get from compose ps
 
+	DockerImageName imageName(); // FIXME rename and make rich type. Used to get the
+									// logical name
 
 	String host(); // A bunch of logic
 
-	Map<Integer, Port> ports(); // from inspect output with a bunch of logic
-
-	Port getMappedPort(int sourcePort); // just on ports. Rich type
+	Ports ports(); // from inspect output with a bunch of logic
 
 	Map<String, String> env(); // from inspect env (processed)
 
@@ -40,5 +42,15 @@ public interface RunningService extends DefinedService {
 	// here
 
 	boolean ignore(); // FIXME do we want this here?
+
+	interface Ports {
+
+		int get(int containerPort);
+
+		List<Integer> getAll();
+
+		List<Integer> getAll(String protocol);
+
+	}
 
 }

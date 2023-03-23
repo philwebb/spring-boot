@@ -19,18 +19,33 @@ package org.springframework.boot.docker.compose.service;
 /**
  * @author pwebb
  */
-public interface Port {
+class ContainerPort {
+
+	// FIXME move
+
+	/**
+	 * @param hostPortAsInt
+	 * @param protocol
+	 */
+	public ContainerPort(int hostPortAsInt, Protocol protocol) {
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @return
 	 */
-	int number(); // FIXME exposedPort?
+	public int number() {
+		return 0;
+	}
 
 	/**
 	 * @return
 	 */
-	Protocol protocol();
+	public Protocol protocol() {
+		return null;
+	}
 
+	// FIXME we don't need
 	/**
 	 * Protocol.
 	 */
@@ -67,6 +82,15 @@ public interface Port {
 			};
 		}
 
+	}
+
+	/**
+	 * @param entry
+	 * @return
+	 */
+	static ContainerPort parsePortWithProtocol(String entry) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

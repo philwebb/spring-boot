@@ -19,7 +19,6 @@ package org.springframework.boot.docker.compose.autoconfigure.redis;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.Port;
 import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
@@ -51,10 +50,9 @@ class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private final Standalone standalone;
 
-		RedisDockerComposeConnectionDetails(RunningService source) {
-			super(source);
-			Port mappedPort = source.getMappedPort(REDIS_PORT);
-			this.standalone = Standalone.of(source.host(), mappedPort.number());
+		RedisDockerComposeConnectionDetails(RunningService service) {
+			super(service);
+			this.standalone = Standalone.of(service.host(), service.ports().get(REDIS_PORT));
 		}
 
 		@Override

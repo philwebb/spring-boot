@@ -19,7 +19,6 @@ package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.Port;
 import org.springframework.boot.docker.compose.service.RunningService;
 
 /**
@@ -53,17 +52,17 @@ class ZipkinDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final Port mappedPort;
+		private final int port;
 
 		ZipkinDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.mappedPort = source.getMappedPort(ZIPKIN_PORT);
+			this.port = source.ports().get(ZIPKIN_PORT);
 		}
 
 		@Override
 		public String getSpanEndpoint() {
-			return "http://" + this.host + ":" + this.mappedPort.number() + "/api/v2/spans";
+			return "http://" + this.host + ":" + this.port + "/api/v2/spans";
 		}
 
 	}

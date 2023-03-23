@@ -28,7 +28,7 @@ import org.springframework.boot.docker.compose.service.DockerInspectResponse.Con
 import org.springframework.boot.docker.compose.service.DockerInspectResponse.ExposedPort;
 import org.springframework.boot.docker.compose.service.DockerInspectResponse.HostConfig;
 import org.springframework.boot.docker.compose.service.DockerInspectResponse.NetworkSettings;
-import org.springframework.boot.docker.compose.service.DockerInspectResponse.PortMapping;
+import org.springframework.boot.docker.compose.service.DockerInspectResponse.HostPort;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +63,7 @@ class DockerInspectResponseTests {
 						List.of("PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 								"GOSU_VERSION=1.16", "REDIS_VERSION=7.0.8")),
 				new NetworkSettings(Map.of("6379/tcp",
-						List.of(new PortMapping("0.0.0.0", "32770"), new PortMapping("::", "32770")))),
+						List.of(new HostPort("0.0.0.0", "32770"), new HostPort("::", "32770")))),
 				new HostConfig("redis-docker_default"));
 		assertThat(response).isEqualTo(expected);
 	}

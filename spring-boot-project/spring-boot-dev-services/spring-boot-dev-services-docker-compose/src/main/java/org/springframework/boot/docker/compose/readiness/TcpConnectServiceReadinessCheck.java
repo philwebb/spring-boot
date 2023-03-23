@@ -22,7 +22,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.springframework.boot.docker.compose.service.RunningService;
-import org.springframework.boot.docker.compose.service.Port;
 
 /**
  * Default {@link ServiceReadinessCheck} that readiness by connecting to the exposed TCP
@@ -47,19 +46,17 @@ class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 		if (service.labels().containsKey(this.DISABLE_LABEL)) {
 			return;
 		}
-		for (Port port : service.ports().values()) {
-			if (port.protocol() == Port.Protocol.TCP) {
-				check(service, port);
-			}
+		for (int port : service.ports().getAll("tcp")) {
+			check(service, port);
 		}
 	}
 
-	private void check(RunningService service, Port port) {
+	private void check(RunningService service, int port) {
 		int connectTimeout = (int) this.properties.getConnectTimeout().toMillis();
 		int readTimeout = (int) this.properties.getReadTimeout().toMillis();
 		try (Socket socket = new Socket()) {
 			socket.setSoTimeout(readTimeout);
-			socket.connect(new InetSocketAddress(service.host(), port.number()), connectTimeout);
+			socket.connect(new InetSocketAddress(service.host(), port), connectTimeout);
 			check(service, port, socket);
 		}
 		catch (IOException ex) {
@@ -67,7 +64,7 @@ class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 		}
 	}
 
-	private void check(RunningService service, Port port, Socket socket) throws IOException {
+	private void check(RunningService service, int port, Socket socket) throws IOException {
 		try {
 			// -1 is indicates the socket has been closed immediately
 			// Other responses or a timeout are considered as success

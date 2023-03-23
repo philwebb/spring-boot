@@ -35,20 +35,14 @@ public interface DockerCompose {
 
 	void stop(Duration timeout);
 
-	List<DefinedService> listServices();
+	boolean hasDefinedServices();
+
+	boolean hasRunningServices();
+
+	List<RunningService> getRunningServices();
 
 	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles) {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
-
-	/**
-	 * @return
-	 */
-	boolean isEmpty(); // hasDefinitions
-
-	/**
-	 * @return
-	 */
-	boolean hasRunningService(); // FIXME isStarted
 
 }

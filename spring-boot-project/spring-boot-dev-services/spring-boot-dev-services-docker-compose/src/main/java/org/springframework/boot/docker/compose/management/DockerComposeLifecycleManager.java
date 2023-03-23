@@ -18,17 +18,19 @@ package org.springframework.boot.docker.compose.management;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.docker.compose.management.DockerComposeProperties.Stop;
+import org.springframework.boot.docker.compose.management.DockerComposeProperties.Shutdown;
+import org.springframework.boot.docker.compose.management.DockerComposeProperties.Startup;
 import org.springframework.boot.docker.compose.readiness.ServiceReadinessChecks;
-import org.springframework.boot.docker.compose.service.DefinedService;
 import org.springframework.boot.docker.compose.service.DockerCompose;
 import org.springframework.boot.docker.compose.service.DockerComposeFile;
+import org.springframework.boot.docker.compose.service.RunningService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.log.LogMessage;
 
@@ -73,25 +75,35 @@ class DockerComposeLifecycleManager {
 
 	void prepare() {
 		// FIXME if we're in a test exit we might want to exit
+		DockerComposeFile composeFile = getComposeFile();
+		Set<String> activeProfiles = this.properties.getProfiles().getActive();
+		DockerCompose dockerCompose = DockerCompose.get(composeFile, this.properties.getHostname(), activeProfiles);
+		if (!dockerCompose.hasDefinedServices()) {
+			logger.warn(LogMessage.format("No services defined in docker compose file '%s' with active profiles %s",
+					composeFile, activeProfiles));
+			return;
+		}
+		LifecycleManagement lifecycleManagement = this.properties.getLifecycleManagement();
+		Startup startup = this.properties.getStartup();
+		Shutdown shutdown = this.properties.getShutdown();
+		if (lifecycleManagement.shouldStart() && !dockerCompose.hasRunningServices()) {
+			startup.getCommand().applyTo(dockerCompose);
+			if (lifecycleManagement.shouldStop()) {
+				this.shutdownHandlers.add(() -> shutdown.getCommand().applyTo(dockerCompose, shutdown.getTimeout()));
+			}
+		}
+		List<RunningService> runningServices = dockerCompose.getRunningServices();
+		this.serviceReadinessChecks.waitUntilReady(runningServices);
+		DockerComposeServicesReadyEvent event = new DockerComposeServicesReadyEvent(this.applicationContext,
+				runningServices);
+		this.applicationContext.publishEvent(event);
+	}
+
+	private DockerComposeFile getComposeFile() {
 		DockerComposeFile composeFile = (this.properties.getFile() != null)
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
 		logger.info(LogMessage.format("Found docker compose file '%s'", composeFile));
-		DockerCompose dockerCompose = DockerCompose.get(composeFile, this.properties.getHostname(),
-				this.properties.getProfiles().getActive());
-		if (dockerCompose.isEmpty()) {
-			logger.warn(LogMessage.format("No services defined in docker compose file '%s'", composeFile));
-			return;
-		}
-		if (this.properties.getLifecycleManagement().shouldStart() && !dockerCompose.hasRunningService()) {
-			this.properties.getStart().getCommand().applyTo(dockerCompose);
-			if (this.properties.getLifecycleManagement().shouldStop()) {
-				Stop stop = this.properties.getStop();
-				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
-			}
-		}
-		List<DefinedService> listServices = dockerCompose.listServices();
-		this.serviceReadinessChecks.wait(null); // FIXME
-		this.applicationContext.publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext));
+		return composeFile;
 	}
 
 }

@@ -44,7 +44,7 @@ class MongoIntegrationTests extends AbstractIntegrationTests {
 		assertThat(serviceConnection.getDatabase()).isEqualTo("mydatabase");
 		assertThat(serviceConnection.getAuthenticationDatabase()).isEqualTo("admin");
 		assertThat(serviceConnection.getReplicaSetName()).isNull();
-		assertThat(serviceConnection.getAdditionalHosts()).isEmpty();
+		assertThat(serviceConnection.getAdditionalHosts()).hasDefinedServices();
 		assertThat(serviceConnection.getGridFs()).isNull();
 	}
 

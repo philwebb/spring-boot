@@ -41,7 +41,7 @@ public final class RunningServiceBuilder {
 
 	private String host = "127.0.0.1";
 
-	private Map<Integer, Port> ports = new HashMap<>();
+	private Map<Integer, ContainerPort> ports = new HashMap<>();
 
 	private Map<String, String> env = new HashMap<>();
 
@@ -62,18 +62,18 @@ public final class RunningServiceBuilder {
 		return this;
 	}
 
-	public RunningServiceBuilder ports(Map<Integer, Port> ports) {
+	public RunningServiceBuilder ports(Map<Integer, ContainerPort> ports) {
 		this.ports = ports;
 		return this;
 	}
 
-	public RunningServiceBuilder addPort(int containerPort, Port port) {
+	public RunningServiceBuilder addPort(int containerPort, ContainerPort port) {
 		this.ports.put(containerPort, port);
 		return this;
 	}
 
 	public RunningServiceBuilder addTcpPort(int containerPort, int hostPort) {
-		this.ports.put(containerPort, new Port(hostPort, Protocol.TCP));
+		this.ports.put(containerPort, new ContainerPort(hostPort, Protocol.TCP));
 		return this;
 	}
 

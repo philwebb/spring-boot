@@ -27,6 +27,8 @@ import org.springframework.boot.devservices.xdockercompose.interop.command.Docke
  */
 class ServiceMapper {
 
+	// ExposedPort <port>/tcp
+
 	// @formatter:off
 
 	/*

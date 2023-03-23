@@ -53,12 +53,12 @@ class DockerComposeProperties {
 	/**
 	 * Start configuration.
 	 */
-	private final Start start = new Start();
+	private final Startup startup = new Startup();
 
 	/**
 	 * Stop configuration.
 	 */
-	private final Stop stop = new Stop();
+	private final Shutdown shutdown = new Shutdown();
 
 	/**
 	 * Profiles configuration.
@@ -89,54 +89,52 @@ class DockerComposeProperties {
 		this.hostname = hostname;
 	}
 
-	Start getStart() {
-		return this.start;
+	Startup getStartup() {
+		return this.startup;
 	}
 
-	Stop getStop() {
-		return this.stop;
+	Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
 	Profiles getProfiles() {
 		return this.profiles;
 	}
 
-	// FIXME Startup
-	static class Start {
+	static class Startup {
 
 		/**
 		 * The command used to start docker compose.
 		 */
-		private StartCommand command = StartCommand.UP;
+		private StartupCommand command = StartupCommand.UP;
 
-		StartCommand getCommand() {
+		StartupCommand getCommand() {
 			return this.command;
 		}
 
-		void setCommand(StartCommand command) {
+		void setCommand(StartupCommand command) {
 			this.command = command;
 		}
 
 	}
 
-	// FIXME Shutdown
-	static class Stop {
+	static class Shutdown {
 
 		/**
 		 * The command used to stop docker compose.
 		 */
-		private StopCommand command = StopCommand.STOP;
+		private ShutdownCommand command = ShutdownCommand.STOP;
 
 		/**
 		 * The timeout for stopping docker compose. Use '0' for forced stop.
 		 */
 		private Duration timeout = Duration.ofSeconds(10);
 
-		StopCommand getCommand() {
+		ShutdownCommand getCommand() {
 			return this.command;
 		}
 
-		void setCommand(StopCommand command) {
+		void setCommand(ShutdownCommand command) {
 			this.command = command;
 		}
 

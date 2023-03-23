@@ -63,16 +63,16 @@ record DockerInspectResponse(String id, DockerInspectResponse.Config config,
 	 *
 	 * @param ports the mapping of container ports to host ports
 	 */
-	record NetworkSettings(Map<String, List<PortMapping>> ports) {
+	record NetworkSettings(Map<String, List<HostPort>> ports) {
 	}
 
 	/**
-	 * Port details
+	 * Port mapping details.
 	 *
 	 * @param hostIp the host IP
 	 * @param hostPort the host port
 	 */
-	record PortMapping(String hostIp, String hostPort) {
+	record HostPort(String hostIp, String hostPort) {
 	}
 
 }

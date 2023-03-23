@@ -14,15 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service;
+package org.springframework.boot.docker.compose.management;
+
+import java.time.Duration;
+import java.util.function.BiConsumer;
+
+import org.springframework.boot.docker.compose.service.DockerCompose;
 
 /**
  * @author pwebb
  */
-public interface DefinedService {
+public enum ShutdownCommand {
 
-	String name(); // Get from compose ps
+	DOWN(DockerCompose::down),
 
-	String imageName(); // FIXME rename and make rich type. Used to get the logical name
+	STOP(DockerCompose::stop);
+
+	private final BiConsumer<DockerCompose, Duration> action;
+
+	ShutdownCommand(BiConsumer<DockerCompose, Duration> action) {
+		this.action = action;
+	}
+
+	void applyTo(DockerCompose dockerCompose, Duration timeout) {
+		this.action.accept(dockerCompose, timeout);
+	}
 
 }

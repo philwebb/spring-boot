@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import java.util.List;
+
+import org.springframework.boot.docker.compose.service.RunningService;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -23,7 +26,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class DockerComposeServicesReadyEvent extends ApplicationEvent {
 
-	DockerComposeServicesReadyEvent(Object source) {
+	DockerComposeServicesReadyEvent(Object source, List<RunningService> runningServices) {
 		super(source);
 	}
 

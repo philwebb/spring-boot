@@ -23,7 +23,7 @@ import org.springframework.boot.docker.compose.service.DockerCompose;
 /**
  * @author pwebb
  */
-public enum StartCommand {
+public enum StartupCommand {
 
 	UP(DockerCompose::up),
 
@@ -31,7 +31,7 @@ public enum StartCommand {
 
 	private final Consumer<DockerCompose> action;
 
-	StartCommand(Consumer<DockerCompose> action) {
+	StartupCommand(Consumer<DockerCompose> action) {
 		this.action = action;
 	}
 

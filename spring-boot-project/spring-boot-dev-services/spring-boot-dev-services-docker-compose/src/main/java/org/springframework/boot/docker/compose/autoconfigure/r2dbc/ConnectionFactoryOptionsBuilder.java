@@ -35,12 +35,11 @@ public class ConnectionFactoryOptionsBuilder {
 		this.sourcePort = sourcePort;
 	}
 
-	public ConnectionFactoryOptions build(RunningService service, String database, String user,
-			String password) {
+	public ConnectionFactoryOptions build(RunningService service, String database, String user, String password) {
 		return ConnectionFactoryOptions.builder()
 			.option(ConnectionFactoryOptions.DRIVER, this.driver)
 			.option(ConnectionFactoryOptions.HOST, service.host())
-			.option(ConnectionFactoryOptions.PORT, service.getMappedPort(this.sourcePort).number())
+			.option(ConnectionFactoryOptions.PORT, service.ports().get(this.sourcePort))
 			.option(ConnectionFactoryOptions.DATABASE, database)
 			.option(ConnectionFactoryOptions.USER, user)
 			.option(ConnectionFactoryOptions.PASSWORD, password)

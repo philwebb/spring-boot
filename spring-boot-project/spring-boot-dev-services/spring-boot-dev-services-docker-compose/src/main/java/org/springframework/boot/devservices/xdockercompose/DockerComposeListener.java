@@ -151,13 +151,13 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		try {
 
 			List<RunningService> runningServices = startComposeIfNeeded(dockerCompose);
-			if (runningServices.isEmpty()) {
+			if (runningServices.hasDefinedServices()) {
 				// We have nothing
 				return;
 			}
 			// This is a reaction to the services being started
 			List<RunningService> nonIgnoredServices = runningServices.stream().filter((s) -> !s.ignore()).toList();
-			if (nonIgnoredServices.isEmpty()) {
+			if (nonIgnoredServices.hasDefinedServices()) {
 				return;
 			}
 			if (this.serviceConnectionProviders == null) {
@@ -235,7 +235,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 
 	// This should be extracted
 	private void waitForReadiness(List<RunningService> runningServices, Duration timeout) {
-		if (runningServices.isEmpty()) {
+		if (runningServices.hasDefinedServices()) {
 			return;
 		}
 		ServiceReadinessCheck readyCheck = this.serviceReadinessCheckFactory.create(this.configuration);

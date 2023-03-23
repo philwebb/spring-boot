@@ -45,7 +45,7 @@ public final class ReadinessTimeoutException extends RuntimeException {
 		List<String> serviceNames = exceptions.stream()
 			.map(ServiceNotReadyException::getService)
 			.filter(Objects::nonNull)
-			.map(RunningService::imageName)
+			.map(RunningService::name)
 			.toList();
 		return "Readiness timeout of %s reached while waiting for services %s".formatted(timeout, serviceNames);
 	}

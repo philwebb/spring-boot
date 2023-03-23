@@ -44,8 +44,8 @@ class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 
 	@Override
 	public void check(RunningService service) {
-		for (Port port : service.ports().values()) {
-			if (port.protocol() == Port.Protocol.TCP) {
+		for (ContainerPort port : service.ports().values()) {
+			if (port.protocol() == ContainerPort.Protocol.TCP) {
 				try (Socket socket = new Socket()) {
 					socket.setSoTimeout((int) this.readTimeout.toMillis());
 					socket.connect(new InetSocketAddress(service.host(), port.number()),

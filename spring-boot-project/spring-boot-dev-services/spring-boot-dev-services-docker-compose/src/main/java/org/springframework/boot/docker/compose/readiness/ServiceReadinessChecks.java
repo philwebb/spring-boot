@@ -77,7 +77,7 @@ public class ServiceReadinessChecks {
 	 * Wait for the given services to be ready.
 	 * @param runningServices the services to wait for
 	 */
-	public void wait(List<RunningService> runningServices) {
+	public void waitUntilReady(List<RunningService> runningServices) {
 		Duration timeout = this.properties.getTimeout();
 		Instant start = this.clock.instant();
 		while (true) {

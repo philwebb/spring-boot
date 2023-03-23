@@ -60,8 +60,8 @@ class ElasticsearchDockerComposeConnectionDetailsFactory
 		ElasticsearchDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new ElasticsearchEnvironment(service.env());
-			this.nodes = List.of(new Node(service.host(), service.getMappedPort(ELASTICSEARCH_PORT).number(),
-					Protocol.HTTP, getUsername(), getPassword()));
+			this.nodes = List.of(new Node(service.host(), service.ports().get(ELASTICSEARCH_PORT), Protocol.HTTP,
+					getUsername(), getPassword()));
 		}
 
 		@Override

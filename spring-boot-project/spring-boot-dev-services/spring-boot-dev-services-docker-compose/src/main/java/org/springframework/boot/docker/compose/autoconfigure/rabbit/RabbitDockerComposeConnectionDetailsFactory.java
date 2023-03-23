@@ -59,7 +59,7 @@ class RabbitDockerComposeConnectionDetailsFactory
 		protected RabbitDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new RabbitEnvironment(service.env());
-			this.addresses = List.of(new Address(service.host(), service.getMappedPort(RABBITMQ_PORT).number()));
+			this.addresses = List.of(new Address(service.host(), service.ports().get(RABBITMQ_PORT)));
 		}
 
 		@Override
