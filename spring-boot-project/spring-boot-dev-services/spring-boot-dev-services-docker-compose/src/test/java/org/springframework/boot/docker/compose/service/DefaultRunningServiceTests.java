@@ -18,10 +18,14 @@ package org.springframework.boot.docker.compose.service;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * @author pwebb
+ * Tests for {@link DefaultRunningService}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DefaultRunningServiceTests {
 

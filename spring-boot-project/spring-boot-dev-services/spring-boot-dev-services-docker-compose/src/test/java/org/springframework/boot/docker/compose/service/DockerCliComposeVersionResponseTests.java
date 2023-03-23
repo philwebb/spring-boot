@@ -16,31 +16,22 @@
 
 package org.springframework.boot.docker.compose.service;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.core.io.ClassPathResource;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link DockerCliContextResponse} JSON parsing.
+ * Tests for {@link DockerCliComposeVersionResponse}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class DockerContextResponseJsonTests {
+class DockerCliComposeVersionResponseTests {
 
 	@Test
-	void deserializeJson() throws IOException {
-		String json = new ClassPathResource("docker-context.json", getClass())
-			.getContentAsString(StandardCharsets.UTF_8);
-		DockerCliContextResponse response = DockerJson.deserialize(json, DockerCliContextResponse.class);
-		DockerCliContextResponse expected = new DockerCliContextResponse("default", true, "unix:///var/run/docker.sock");
-		assertThat(response).isEqualTo(expected);
+	void test() {
+		fail("Not yet implemented");
 	}
 
 }

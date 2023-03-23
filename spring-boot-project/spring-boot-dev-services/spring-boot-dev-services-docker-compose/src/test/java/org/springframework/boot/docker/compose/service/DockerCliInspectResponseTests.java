@@ -27,14 +27,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.Config;
 import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.ExposedPort;
 import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.HostConfig;
-import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.NetworkSettings;
 import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.HostPort;
+import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.NetworkSettings;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerCliInspectResponse} JSON parsing.
+ * Tests for {@link DockerCliInspectResponse}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -62,8 +62,8 @@ class DockerCliInspectResponseTests {
 						Map.of("6379/tcp", new ExposedPort()),
 						List.of("PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 								"GOSU_VERSION=1.16", "REDIS_VERSION=7.0.8")),
-				new NetworkSettings(Map.of("6379/tcp",
-						List.of(new HostPort("0.0.0.0", "32770"), new HostPort("::", "32770")))),
+				new NetworkSettings(
+						Map.of("6379/tcp", List.of(new HostPort("0.0.0.0", "32770"), new HostPort("::", "32770")))),
 				new HostConfig("redis-docker_default"));
 		assertThat(response).isEqualTo(expected);
 	}

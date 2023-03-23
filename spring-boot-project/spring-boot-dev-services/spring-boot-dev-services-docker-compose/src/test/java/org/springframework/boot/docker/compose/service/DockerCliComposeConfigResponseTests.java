@@ -28,13 +28,13 @@ import org.springframework.core.io.ClassPathResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerCliComposeConfigResponse} JSON parsing.
+ * Tests for {@link DockerCliComposeConfigResponse}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class DockerComposeConfigResponseJsonTests {
+class DockerCliComposeConfigResponseTests {
 
 	@Test
 	void deserializeJson() throws IOException {
