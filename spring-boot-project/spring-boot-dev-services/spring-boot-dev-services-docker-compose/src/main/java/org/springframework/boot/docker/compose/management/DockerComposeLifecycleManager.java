@@ -22,11 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplicationShutdownHandlers;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.management.DockerComposeProperties.Stop;
+import org.springframework.boot.docker.compose.readiness.ServiceReadinessChecks;
 import org.springframework.boot.docker.compose.service.DockerCompose;
 import org.springframework.boot.docker.compose.service.DockerComposeFile;
 import org.springframework.boot.docker.compose.service.DockerComposeServices;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.log.LogMessage;
 
 /**
@@ -38,21 +40,37 @@ class DockerComposeLifecycleManager {
 
 	private static final Log logger = LogFactory.getLog(DockerComposeLifecycleManager.class);
 
+	private final ApplicationContext applicationContext;
+
+	private final SpringApplicationShutdownHandlers shutdownHandlers;
+
 	private final DockerComposeProperties properties;
 
 	private final File workingDirectory;
 
-	DockerComposeLifecycleManager(DockerComposeProperties properties) {
-		this(properties, new File("."));
+	private final ServiceReadinessChecks serviceReadinessChecks;
+
+	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
+			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties) {
+		this.applicationContext = applicationContext;
+		this.shutdownHandlers = shutdownHandlers;
+		this.properties = properties;
+		this.workingDirectory = new File(".");
+		this.serviceReadinessChecks = new ServiceReadinessChecks(applicationContext.getClassLoader(),
+				applicationContext.getEnvironment(), binder);
 	}
 
-	DockerComposeLifecycleManager(DockerComposeProperties properties, File workingDirectory) {
+	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
+			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
+			ServiceReadinessChecks serviceReadinessChecks, File workingDirectory) {
+		this.applicationContext = applicationContext;
+		this.shutdownHandlers = shutdownHandlers;
 		this.properties = properties;
 		this.workingDirectory = workingDirectory;
+		this.serviceReadinessChecks = serviceReadinessChecks;
 	}
 
-	void prepare(ConfigurableApplicationContext applicationContext,
-			SpringApplicationShutdownHandlers shutdownHandlers) {
+	void prepare() {
 		// FIXME if we're in a test exit we might want to exit
 		DockerComposeFile composeFile = (this.properties.getFile() != null)
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
@@ -61,19 +79,18 @@ class DockerComposeLifecycleManager {
 				this.properties.getProfiles().getActive());
 		DockerComposeServices services = dockerCompose.listServices();
 		if (services.isEmpty()) {
-			logger.warn(LogMessage.format("No servies defined in docker compose file '%s'", composeFile));
+			logger.warn(LogMessage.format("No services defined in docker compose file '%s'", composeFile));
 			return;
 		}
 		if (this.properties.getLifecycleManagement().shouldStart() && !services.hasRunningService()) {
 			services = this.properties.getStart().getCommand().applyTo(dockerCompose);
 			if (this.properties.getLifecycleManagement().shouldStop()) {
 				Stop stop = this.properties.getStop();
-				shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
+				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
 			}
 		}
-		// FIXME wait until ready
-		// FIXME fire an event to trigger bean registration
-		// applicationContext.publishEvent(null);
+		this.serviceReadinessChecks.wait(null); // FIXME
+		this.applicationContext.publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext));
 	}
 
 }

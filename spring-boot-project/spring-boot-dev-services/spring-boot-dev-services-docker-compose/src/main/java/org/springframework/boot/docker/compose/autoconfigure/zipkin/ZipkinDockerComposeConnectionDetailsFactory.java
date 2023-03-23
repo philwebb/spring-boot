@@ -17,10 +17,11 @@
 package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.interop.Port;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
+import org.springframework.boot.docker.compose.service.Port;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link ZipkinConnectionDetails}
@@ -55,7 +56,7 @@ class ZipkinDockerComposeConnectionDetailsFactory
 
 		private final Port mappedPort;
 
-		ZipkinDockerComposeConnectionDetails(RunningService source) {
+		ZipkinDockerComposeConnectionDetails(DockerComposeRunningService source) {
 			super(source);
 			this.host = source.host();
 			this.mappedPort = source.getMappedPort(ZIPKIN_PORT);

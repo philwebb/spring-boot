@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.devservices.xdockercompose.interop.command.JsonHelper;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

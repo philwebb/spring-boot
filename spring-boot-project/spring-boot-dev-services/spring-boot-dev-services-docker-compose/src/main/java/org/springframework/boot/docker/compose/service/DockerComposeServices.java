@@ -31,4 +31,8 @@ public interface DockerComposeServices {
 	 */
 	boolean hasRunningService();
 
+	// Each service is backed by DockerComposePsResponse
+
+	// If it's running, it also has a DockerInspectResponse
+
 }

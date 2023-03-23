@@ -20,9 +20,10 @@ import com.mongodb.ConnectionString;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link MongoConnectionDetails}
@@ -55,13 +56,13 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private final ConnectionString connectionString;
 
-		MongoDockerComposeConnectionDetails(RunningService service) {
+		MongoDockerComposeConnectionDetails(DockerComposeRunningService service) {
 			super(service);
 			this.connectionString = buildConnectionString(service);
 
 		}
 
-		private ConnectionString buildConnectionString(RunningService service) {
+		private ConnectionString buildConnectionString(DockerComposeRunningService service) {
 			MongoEnvironment environment = new MongoEnvironment(service.env());
 			StringBuilder builder = new StringBuilder("mongodb://");
 			if (environment.getUsername() != null) {

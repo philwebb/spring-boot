@@ -19,10 +19,11 @@ package org.springframework.boot.docker.compose.autoconfigure.postgres;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilder;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}
@@ -55,7 +56,7 @@ class PostgresDbR2dbcDockerComposeConnectionDetailsFactory
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		PostgresDbJdbcDockerComposeConnectionDetails(RunningService service) {
+		PostgresDbJdbcDockerComposeConnectionDetails(DockerComposeRunningService service) {
 			super(service);
 			PostgresEnvironment environment = new PostgresEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),

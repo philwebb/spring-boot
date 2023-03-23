@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerNotRunningException;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerNotRunningException;
 import org.springframework.boot.docker.compose.service.DockerCommand.Type;
 import org.springframework.core.log.LogMessage;
 

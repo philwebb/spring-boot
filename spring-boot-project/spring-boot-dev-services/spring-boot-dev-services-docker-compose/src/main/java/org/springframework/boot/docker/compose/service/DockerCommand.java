@@ -105,10 +105,10 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose ps} command.
 	 */
-	final static class ComposePs extends DockerCommand<List<DockerComposePsResponse>> {
+	final static class ComposePs extends DockerCommand<List<DockerComposeProcessStatusResponse>> {
 
 		ComposePs() {
-			super(Type.DOCKER_COMPOSE, DockerComposePsResponse.class, true, "ps", "--format=json");
+			super(Type.DOCKER_COMPOSE, DockerComposeProcessStatusResponse.class, true, "ps", "--format=json");
 		}
 
 	}
@@ -131,6 +131,17 @@ abstract sealed class DockerCommand<R> {
 
 		ComposeDown(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));
+		}
+
+	}
+
+	/**
+	 * The {@code docker compose start} command.
+	 */
+	final static class ComposeStart extends DockerCommand<Void> {
+
+		ComposeStart() {
+			super(Type.DOCKER_COMPOSE, Void.class, false, "start", "--no-color", "--quiet-pull", "--detach", "--wait");
 		}
 
 	}

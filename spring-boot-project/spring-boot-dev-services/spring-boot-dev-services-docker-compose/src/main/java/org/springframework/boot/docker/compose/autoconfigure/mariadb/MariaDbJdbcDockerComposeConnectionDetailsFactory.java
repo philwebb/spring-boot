@@ -17,10 +17,11 @@
 package org.springframework.boot.docker.compose.autoconfigure.mariadb;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
 import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrlBuilder;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
@@ -54,7 +55,7 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactory
 
 		private final String jdbcUrl;
 
-		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
+		MariaDbJdbcDockerComposeConnectionDetails(DockerComposeRunningService service) {
 			super(service);
 			this.environment = new MariaDbEnvironment(service.env());
 			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());

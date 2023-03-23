@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.devservices.dockercompose.interop.Port.Protocol;
 import org.springframework.boot.devservices.dockercompose.interop.ServiceMapper.DockerEnvironment;
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerContextOutput;
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerContextOutput;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -16,9 +16,15 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import org.springframework.context.ApplicationEvent;
+
 /**
  * @author pwebb
  */
-public class DockerComposeServicesReadyEvent {
+public class DockerComposeServicesReadyEvent extends ApplicationEvent {
+
+	DockerComposeServicesReadyEvent(Object source) {
+		super(source);
+	}
 
 }

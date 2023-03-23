@@ -101,23 +101,7 @@ class DockerComposeProperties {
 		return this.profiles;
 	}
 
-	static class Profiles {
-
-		/**
-		 * Docker compose profiles that should be active.
-		 */
-		private Set<String> active;
-
-		Set<String> getActive() {
-			return this.active;
-		}
-
-		void setActive(Set<String> active) {
-			this.active = active;
-		}
-
-	}
-
+	// FIXME Startup
 	static class Start {
 
 		/**
@@ -135,6 +119,7 @@ class DockerComposeProperties {
 
 	}
 
+	// FIXME Shutdown
 	static class Stop {
 
 		/**
@@ -161,6 +146,23 @@ class DockerComposeProperties {
 
 		void setTimeout(Duration timeout) {
 			this.timeout = timeout;
+		}
+
+	}
+
+	static class Profiles {
+
+		/**
+		 * Docker compose profiles that should be active.
+		 */
+		private Set<String> active;
+
+		Set<String> getActive() {
+			return this.active;
+		}
+
+		void setActive(Set<String> active) {
+			this.active = active;
 		}
 
 	}

@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.devservices.xdockercompose.interop.command.ComposeVersionOutput;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

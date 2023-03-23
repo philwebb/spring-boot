@@ -16,14 +16,11 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.service.connection;
 
-/**
- * @author pwebb
- */
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
 
 public interface DockerComposeConnectionSource {
 
-	RunningService getService();
+	DockerComposeRunningService getService();
 
 	// FIXME can provide more
 

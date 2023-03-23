@@ -36,7 +36,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		Binder binder = Binder.get(applicationContext.getEnvironment());
 		SpringApplicationShutdownHandlers shutdownHandlers = SpringApplication.getShutdownHandlers();
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
-		new DockerComposeLifecycleManager(properties).prepare(applicationContext, shutdownHandlers);
+		new DockerComposeLifecycleManager(applicationContext, binder, shutdownHandlers, properties);
 	}
 
 }

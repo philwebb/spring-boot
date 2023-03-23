@@ -22,7 +22,7 @@ package org.springframework.boot.docker.compose.autoconfigure.r2dbc;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
 
 public class ConnectionFactoryOptionsBuilder {
 
@@ -35,7 +35,8 @@ public class ConnectionFactoryOptionsBuilder {
 		this.sourcePort = sourcePort;
 	}
 
-	public ConnectionFactoryOptions build(RunningService service, String database, String user, String password) {
+	public ConnectionFactoryOptions build(DockerComposeRunningService service, String database, String user,
+			String password) {
 		return ConnectionFactoryOptions.builder()
 			.option(ConnectionFactoryOptions.DRIVER, this.driver)
 			.option(ConnectionFactoryOptions.HOST, service.host())

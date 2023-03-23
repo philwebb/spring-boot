@@ -29,7 +29,7 @@ class DockerCliTests {
 	@Test
 	void test() {
 		DockerCli cli = new DockerCli(new File("."));
-		List<DockerComposePsResponse> run = cli.run(new DockerCommand.ComposePs());
+		List<DockerComposeProcessStatusResponse> run = cli.run(new DockerCommand.ComposePs());
 		System.out.println(run);
 	}
 

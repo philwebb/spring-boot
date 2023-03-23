@@ -18,7 +18,8 @@ package org.springframework.boot.docker.compose.autoconfigure.service.connection
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.devservices.xdockercompose.interop.RunningService;
+import org.springframework.boot.docker.compose.service.DockerComposeRunningService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.util.Assert;
@@ -59,7 +60,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	}
 
 	private boolean accept(DockerComposeConnectionSource source) {
-		return hasRequiredClass() && this.name.equals(source.getService().image().image());
+		return hasRequiredClass() && this.name.equals(source.getService().name());
 	}
 
 	private boolean hasRequiredClass() {
@@ -77,7 +78,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
-	 * {@link RunningService}.
+	 * {@link DockerComposeRunningService}.
 	 */
 	protected static class DockerComposeConnectionDetails implements ConnectionDetails, OriginProvider {
 
@@ -85,9 +86,9 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 		/**
 		 * Create a new {@link DockerComposeConnectionDetails} instance.
-		 * @param runningService the source {@link RunningService}
+		 * @param runningService the source {@link DockerComposeRunningService}
 		 */
-		protected DockerComposeConnectionDetails(RunningService runningService) {
+		protected DockerComposeConnectionDetails(DockerComposeRunningService runningService) {
 			Assert.notNull(runningService, "RunningService must not be null");
 			this.origin = runningService.getOrigin();
 		}

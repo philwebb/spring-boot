@@ -26,7 +26,7 @@ import org.springframework.core.io.ClassPathResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerComposePsResponse} JSON parsing.
+ * Tests for {@link DockerComposeProcessStatusResponse} JSON parsing.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -38,8 +38,8 @@ class DockerComposePsResponseJsonTests {
 	void deserializeJson() throws IOException {
 		String json = new ClassPathResource("docker-compose-ps.json", getClass())
 			.getContentAsString(StandardCharsets.UTF_8);
-		DockerComposePsResponse response = DockerJson.deserialize(json, DockerComposePsResponse.class);
-		DockerComposePsResponse expected = new DockerComposePsResponse("f5af31dae7f6", "running");
+		DockerComposeProcessStatusResponse response = DockerJson.deserialize(json, DockerComposeProcessStatusResponse.class);
+		DockerComposeProcessStatusResponse expected = new DockerComposeProcessStatusResponse("f5af31dae7f6", "running");
 		assertThat(response).isEqualTo(expected);
 	}
 

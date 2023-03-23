@@ -28,11 +28,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.Config;
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.ExposedPort;
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.HostConfig;
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.NetworkSettings;
-import org.springframework.boot.devservices.dockercompose.interop.command.DockerInspectOutput.NetworkSettings.PortDto;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput.Config;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput.ExposedPort;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput.HostConfig;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput.NetworkSettings;
+import org.springframework.boot.devservices.xdockercompose.interop.command.DockerInspectOutput.NetworkSettings.PortDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
