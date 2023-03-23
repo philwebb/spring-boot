@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.certificate;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -22,6 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.ssl.SslStoreProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,14 +40,17 @@ class CertificateFileSslStoreProviderTests {
 	}
 
 	@Test
-	void fromSslWhenDisabledReturnsNull() {
-		assertThat(CertificateFileSslStoreProvider.from(new Ssl())).isNull();
+	void fromSslWithNoCertificatesReturnsStoreProviderWithNullStores() throws Exception {
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
+		SslStoreProvider storeProvider = CertificateFileSslStoreProvider.from(ssl);
+		assertThat(storeProvider).isNotNull();
+		assertThat(storeProvider.getKeyStore()).isNull();
+		assertThat(storeProvider.getTrustStore()).isNull();
 	}
 
 	@Test
 	void fromSslWithCertAndKeyReturnsStoreProvider() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setEnabled(true);
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		SslStoreProvider storeProvider = CertificateFileSslStoreProvider.from(ssl);
@@ -56,8 +61,7 @@ class CertificateFileSslStoreProviderTests {
 
 	@Test
 	void fromSslWithCertAndKeyAndTrustCertReturnsStoreProvider() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setEnabled(true);
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		ssl.setTrustCertificate("classpath:test-cert.pem");
@@ -69,8 +73,7 @@ class CertificateFileSslStoreProviderTests {
 
 	@Test
 	void fromSslWithCertAndKeyAndTrustCertAndTrustKeyReturnsStoreProvider() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setEnabled(true);
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		ssl.setTrustCertificate("classpath:test-cert.pem");
@@ -83,13 +86,12 @@ class CertificateFileSslStoreProviderTests {
 
 	@Test
 	void fromSslWithKeyAliasReturnsStoreProvider() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setEnabled(true);
-		ssl.setKeyAlias("test-alias");
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		ssl.setTrustCertificate("classpath:test-cert.pem");
 		ssl.setTrustCertificatePrivateKey("classpath:test-key.pem");
+		ssl.setKeyAlias("test-alias");
 		SslStoreProvider storeProvider = CertificateFileSslStoreProvider.from(ssl);
 		assertThat(storeProvider).isNotNull();
 		assertStoreContainsCertAndKey(storeProvider.getKeyStore(), KeyStore.getDefaultType(), "test-alias");
@@ -98,14 +100,13 @@ class CertificateFileSslStoreProviderTests {
 
 	@Test
 	void fromSslWithStoreTypeReturnsStoreProvider() throws Exception {
-		Ssl ssl = new Ssl();
-		ssl.setEnabled(true);
-		ssl.setKeyStoreType("PKCS12");
-		ssl.setTrustStoreType("PKCS12");
+		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		ssl.setTrustCertificate("classpath:test-cert.pem");
 		ssl.setTrustCertificatePrivateKey("classpath:test-key.pem");
+		ssl.setKeyStoreType("PKCS12");
+		ssl.setTrustStoreType("PKCS12");
 		SslStoreProvider storeProvider = CertificateFileSslStoreProvider.from(ssl);
 		assertThat(storeProvider).isNotNull();
 		assertStoreContainsCertAndKey(storeProvider.getKeyStore(), "PKCS12", "spring-boot-web");

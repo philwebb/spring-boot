@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.certificate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -32,9 +29,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
 
 /**
  * Parser for PKCS private key files in PEM format.
@@ -111,15 +105,14 @@ final class PrivateKeyParser {
 	}
 
 	/**
-	 * Load a private key from the specified resource.
-	 * @param resource the private key to parse
+	 * Parse a private key from the specified string.
+	 * @param key the private key to parse
 	 * @return the parsed private key
 	 */
-	static PrivateKey parse(String resource) {
+	static PrivateKey parse(String key) {
 		try {
-			String text = readText(resource);
 			for (PemParser pemParser : PEM_PARSERS) {
-				PrivateKey privateKey = pemParser.parse(text);
+				PrivateKey privateKey = pemParser.parse(key);
 				if (privateKey != null) {
 					return privateKey;
 				}
@@ -127,14 +120,7 @@ final class PrivateKeyParser {
 			throw new IllegalStateException("Unrecognized private key format");
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Error loading private key file " + resource, ex);
-		}
-	}
-
-	private static String readText(String resource) throws IOException {
-		URL url = ResourceUtils.getURL(resource);
-		try (Reader reader = new InputStreamReader(url.openStream())) {
-			return FileCopyUtils.copyToString(reader);
+			throw new IllegalStateException("Error loading private key file: " + ex.getMessage(), ex);
 		}
 	}
 

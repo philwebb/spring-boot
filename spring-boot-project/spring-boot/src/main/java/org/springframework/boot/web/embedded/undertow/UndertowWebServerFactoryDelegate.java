@@ -142,7 +142,6 @@ class UndertowWebServerFactoryDelegate {
 	}
 
 	Builder createBuilder(AbstractConfigurableWebServerFactory factory) {
-		Ssl ssl = factory.getSsl();
 		InetAddress address = factory.getAddress();
 		int port = factory.getPort();
 		Builder builder = Undertow.builder();
@@ -162,8 +161,9 @@ class UndertowWebServerFactoryDelegate {
 		if (http2 != null) {
 			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, http2.isEnabled());
 		}
+		Ssl ssl = factory.getSsl();
 		if (ssl != null && ssl.isEnabled()) {
-			new SslBuilderCustomizer(factory.getPort(), address, ssl, factory.getOrCreateSslStoreProvider())
+			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), factory.getSslBundle())
 				.customize(builder);
 		}
 		else {

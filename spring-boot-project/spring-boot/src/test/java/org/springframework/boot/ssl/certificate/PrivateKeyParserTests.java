@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.certificate;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.security.PrivateKey;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -31,32 +37,32 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class PrivateKeyParserTests {
 
 	@Test
-	void parsePkcs8KeyFile() {
-		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-key.pem");
+	void parsePkcs8KeyFile() throws Exception {
+		PrivateKey privateKey = PrivateKeyParser.parse(fromResource("classpath:test-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
 	}
 
 	@Test
-	void parsePkcs8KeyFileWithEcdsa() {
-		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-ec-key.pem");
+	void parsePkcs8KeyFileWithEcdsa() throws Exception {
+		PrivateKey privateKey = PrivateKeyParser.parse(fromResource("classpath:test-ec-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
 	}
 
 	@Test
-	void parseWithNonKeyFileWillThrowException() {
-		String path = "classpath:test-banner.txt";
-		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse("file://" + path))
-			.withMessageContaining(path);
+	void parseWithNonKeyTextWillThrowException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PrivateKeyParser.parse(fromResource("classpath:test-banner.txt")));
 	}
 
-	@Test
-	void parseWithInvalidPathWillThrowException() {
-		String path = "file:///bad/path/key.pem";
-		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path)).withMessageContaining(path);
+	private String fromResource(String resource) throws Exception {
+		URL url = ResourceUtils.getURL(resource);
+		try (Reader reader = new InputStreamReader(url.openStream())) {
+			return FileCopyUtils.copyToString(reader);
+		}
 	}
 
 }

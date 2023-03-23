@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -39,6 +40,7 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  * @since 2.0.0
  */
+@SuppressWarnings("removal")
 public abstract class AbstractConfigurableWebServerFactory implements ConfigurableWebServerFactory {
 
 	private int port = 8080;
@@ -50,6 +52,8 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	private Ssl ssl;
 
 	private SslStoreProvider sslStoreProvider;
+
+	private SslBundle sslBundle;
 
 	private Http2 http2;
 
@@ -139,6 +143,12 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		this.sslStoreProvider = sslStoreProvider;
 	}
 
+	@Override
+	public void setSslBundle(SslBundle sslBundle) {
+		this.sslBundle = sslBundle;
+
+	}
+
 	public Http2 getHttp2() {
 		return this.http2;
 	}
@@ -184,12 +194,17 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 * Return the provided {@link SslStoreProvider} or create one using {@link Ssl}
 	 * properties.
 	 * @return the {@code SslStoreProvider}
+	 * @deprecated since 3.1.0 for removal in 3.3.0 in favor of {@link #getSslBundle()}
 	 */
+	@Deprecated(since = "3.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public final SslStoreProvider getOrCreateSslStoreProvider() {
-		if (this.sslStoreProvider != null) {
-			return this.sslStoreProvider;
-		}
-		return SslStoreProviderFactory.from(this.ssl);
+		return null;
+	}
+
+	public final SslBundle getSslBundle() {
+		return ((this.sslBundle != null) ? this.sslBundle
+				: ServerSslBundleFactory.from(this.ssl, this.sslStoreProvider));
 	}
 
 	/**

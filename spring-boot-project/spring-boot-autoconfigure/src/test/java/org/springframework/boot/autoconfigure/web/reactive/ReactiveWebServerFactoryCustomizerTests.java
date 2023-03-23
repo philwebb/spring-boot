@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslDetails;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
@@ -36,16 +38,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Yunkun Huang
+ * @author Scott Frederick
  */
 class ReactiveWebServerFactoryCustomizerTests {
 
 	private final ServerProperties properties = new ServerProperties();
 
+	private final SslBundle sslBundle = new SslBundle(new SslDetails(), null);
+
 	private ReactiveWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
 	void setup() {
-		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties);
+		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties, this.sslBundle);
 	}
 
 	@Test
@@ -72,6 +77,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
 		then(factory).should().setSsl(ssl);
+		then(factory).should().setSslBundle(this.sslBundle);
 	}
 
 	@Test

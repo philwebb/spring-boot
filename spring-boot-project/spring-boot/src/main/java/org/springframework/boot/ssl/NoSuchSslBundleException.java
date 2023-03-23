@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl;
 
 /**
- * Creates an {@link SslStoreProvider} based on SSL configuration properties.
+ * Exception indicating that an {@link SslBundle} was referenced with a name that does not
+ * match any registered bundle.
  *
  * @author Scott Frederick
  * @since 3.1.0
  */
-public final class SslStoreProviderFactory {
+public class NoSuchSslBundleException extends RuntimeException {
 
-	private SslStoreProviderFactory() {
+	/**
+	 * Create a new {@code SslBundleNotFoundException} instance.
+	 * @param message the exception message
+	 */
+	public NoSuchSslBundleException(String message) {
+		super(message);
 	}
 
 	/**
-	 * Create an {@link SslStoreProvider} if the appropriate SSL properties are
-	 * configured.
-	 * @param ssl the SSL properties
-	 * @return an {@code SslStoreProvider} or {@code null}
+	 * Create a new {@code SslBundleNotFoundException} instance.
+	 * @param message the exception message
+	 * @param cause the exception cause
 	 */
-	public static SslStoreProvider from(Ssl ssl) {
-		SslStoreProvider sslStoreProvider = CertificateFileSslStoreProvider.from(ssl);
-		return ((sslStoreProvider != null) ? sslStoreProvider : JavaKeyStoreSslStoreProvider.from(ssl));
+	public NoSuchSslBundleException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }
