@@ -70,7 +70,7 @@ public abstract class DatabaseService {
 	}
 
 	protected int getMappedPortOrThrow(int port) {
-		ContainerPort mappedPort = this.service.ports().get(port);
+		XContainerPort mappedPort = this.service.ports().get(port);
 		if (mappedPort == null) {
 			throw new IllegalStateException("No mapped port for port %d found".formatted(port));
 		}

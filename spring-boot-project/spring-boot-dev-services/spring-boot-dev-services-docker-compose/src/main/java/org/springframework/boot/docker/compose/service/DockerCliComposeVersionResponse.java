@@ -17,14 +17,13 @@
 package org.springframework.boot.docker.compose.service;
 
 /**
- * Response from {@link DockerCommand.Context docker context}.
+ * Response from {@code docker compose version}.
  *
- * @param name the name of the context
- * @param current if the context is the current one
- * @param dockerEndpoint the endpoint of the docker daemon
+ * @param version docker compose version
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-record DockerContextResponse(String name, boolean current, String dockerEndpoint) {
+record DockerCliComposeVersionResponse(String version) {
+
 }

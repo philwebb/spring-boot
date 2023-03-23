@@ -24,30 +24,30 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.docker.compose.service.DockerInspectResponse.Config;
-import org.springframework.boot.docker.compose.service.DockerInspectResponse.ExposedPort;
-import org.springframework.boot.docker.compose.service.DockerInspectResponse.HostConfig;
-import org.springframework.boot.docker.compose.service.DockerInspectResponse.NetworkSettings;
-import org.springframework.boot.docker.compose.service.DockerInspectResponse.HostPort;
+import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.Config;
+import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.ExposedPort;
+import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.HostConfig;
+import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.NetworkSettings;
+import org.springframework.boot.docker.compose.service.DockerCliInspectResponse.HostPort;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerInspectResponse} JSON parsing.
+ * Tests for {@link DockerCliInspectResponse} JSON parsing.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class DockerInspectResponseTests {
+class DockerCliInspectResponseTests {
 
 	@Test
 	void deserializeJson() throws IOException {
 		String json = new ClassPathResource("docker-inspect.json", getClass())
 			.getContentAsString(StandardCharsets.UTF_8);
-		DockerInspectResponse response = DockerJson.deserialize(json, DockerInspectResponse.class);
-		DockerInspectResponse expected = new DockerInspectResponse(
+		DockerCliInspectResponse response = DockerJson.deserialize(json, DockerCliInspectResponse.class);
+		DockerCliInspectResponse expected = new DockerCliInspectResponse(
 				"f5af31dae7f665bd194ec7261bdc84e5df9c64753abb4a6cec6c33f7cf64c3fc",
 				new Config("redis:7.0",
 						linkedMapOf("com.docker.compose.config-hash",

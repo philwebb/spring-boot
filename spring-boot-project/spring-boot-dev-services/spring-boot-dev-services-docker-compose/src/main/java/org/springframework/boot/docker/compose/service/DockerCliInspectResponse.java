@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Response from {@link DockerCommand.Inspect docker inspect}.
+ * Response from {@link DockerCliCommand.Inspect docker inspect}.
  *
  * @param id the container id
  * @param config the config
@@ -30,8 +30,8 @@ import java.util.Map;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-record DockerInspectResponse(String id, DockerInspectResponse.Config config,
-		DockerInspectResponse.NetworkSettings networkSettings, DockerInspectResponse.HostConfig hostConfig) {
+record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config config,
+		DockerCliInspectResponse.NetworkSettings networkSettings, DockerCliInspectResponse.HostConfig hostConfig) {
 
 	/**
 	 * Configuration for the container that is portable between hosts.

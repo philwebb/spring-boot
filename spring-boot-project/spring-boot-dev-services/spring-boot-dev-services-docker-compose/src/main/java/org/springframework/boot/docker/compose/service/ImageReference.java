@@ -24,6 +24,7 @@ package org.springframework.boot.docker.compose.service;
  * @param image image
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
 // See https://docs.docker.com/compose/compose-file/#image

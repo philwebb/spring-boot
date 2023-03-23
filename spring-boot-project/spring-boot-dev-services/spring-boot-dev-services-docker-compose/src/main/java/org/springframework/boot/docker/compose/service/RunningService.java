@@ -20,11 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author pwebb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public interface RunningService {
 
 	// getOrigin from ComposeFile and Service Name
+
 	String name(); // Get from compose ps
 
 	ImageReference image();

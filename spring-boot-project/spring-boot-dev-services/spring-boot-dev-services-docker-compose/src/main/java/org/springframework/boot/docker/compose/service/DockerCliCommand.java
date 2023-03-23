@@ -28,7 +28,7 @@ import java.util.List;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-abstract sealed class DockerCommand<R> {
+abstract sealed class DockerCliCommand<R> {
 
 	private final Type type;
 
@@ -38,7 +38,7 @@ abstract sealed class DockerCommand<R> {
 
 	private final List<String> command;
 
-	private DockerCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
+	private DockerCliCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
 		this.type = type;
 		this.responseType = responseType;
 		this.listResponse = listResponse;
@@ -71,10 +71,10 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker context} command.
 	 */
-	final static class Context extends DockerCommand<List<DockerContextResponse>> {
+	final static class Context extends DockerCliCommand<List<DockerCliContextResponse>> {
 
 		Context() {
-			super(Type.DOCKER, DockerContextResponse.class, true, "context", "ls", "--format={{ json . }}");
+			super(Type.DOCKER, DockerCliContextResponse.class, true, "context", "ls", "--format={{ json . }}");
 		}
 
 	}
@@ -82,10 +82,10 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker inspect} command.
 	 */
-	final static class Inspect extends DockerCommand<List<DockerInspectResponse>> {
+	final static class Inspect extends DockerCliCommand<List<DockerCliInspectResponse>> {
 
 		Inspect(Collection<String> ids) {
-			super(Type.DOCKER, DockerInspectResponse.class, true,
+			super(Type.DOCKER, DockerCliInspectResponse.class, true,
 					join(List.of("inspect", "--format={{ json . }}"), ids));
 		}
 
@@ -94,10 +94,10 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose config} command.
 	 */
-	final static class ComposeConfig extends DockerCommand<DockerComposeConfigResponse> {
+	final static class ComposeConfig extends DockerCliCommand<DockerCliComposeConfigResponse> {
 
 		ComposeConfig() {
-			super(Type.DOCKER_COMPOSE, DockerComposeConfigResponse.class, false, "config", "--format=json");
+			super(Type.DOCKER_COMPOSE, DockerCliComposeConfigResponse.class, false, "config", "--format=json");
 		}
 
 	}
@@ -105,10 +105,10 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose ps} command.
 	 */
-	final static class ComposePs extends DockerCommand<List<DockerComposeProcessStatusResponse>> {
+	final static class ComposePs extends DockerCliCommand<List<DockerCliComposePsResponse>> {
 
 		ComposePs() {
-			super(Type.DOCKER_COMPOSE, DockerComposeProcessStatusResponse.class, true, "ps", "--format=json");
+			super(Type.DOCKER_COMPOSE, DockerCliComposePsResponse.class, true, "ps", "--format=json");
 		}
 
 	}
@@ -116,7 +116,7 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose up} command.
 	 */
-	final static class ComposeUp extends DockerCommand<Void> {
+	final static class ComposeUp extends DockerCliCommand<Void> {
 
 		ComposeUp() {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "up", "--no-color", "--quiet-pull", "--detach", "--wait");
@@ -127,7 +127,7 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose down} command.
 	 */
-	final static class ComposeDown extends DockerCommand<Void> {
+	final static class ComposeDown extends DockerCliCommand<Void> {
 
 		ComposeDown(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));
@@ -138,7 +138,7 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose start} command.
 	 */
-	final static class ComposeStart extends DockerCommand<Void> {
+	final static class ComposeStart extends DockerCliCommand<Void> {
 
 		ComposeStart() {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "start", "--no-color", "--quiet-pull", "--detach", "--wait");
@@ -149,7 +149,7 @@ abstract sealed class DockerCommand<R> {
 	/**
 	 * The {@code docker compose stop} command.
 	 */
-	final static class ComposeStop extends DockerCommand<Void> {
+	final static class ComposeStop extends DockerCliCommand<Void> {
 
 		ComposeStop(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));

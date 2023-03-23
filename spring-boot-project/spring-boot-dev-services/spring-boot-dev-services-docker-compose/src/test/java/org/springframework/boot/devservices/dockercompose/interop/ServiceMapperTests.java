@@ -69,7 +69,7 @@ class ServiceMapperTests {
 		ServiceMapper serviceMapper = new ServiceMapper(linuxEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect-bridge-network.json");
 		assertThat(service1.host()).isEqualTo("127.0.0.1");
-		assertThat(service1.ports()).isEqualTo(Map.of(6379, new ContainerPort(32770, Protocol.TCP)));
+		assertThat(service1.ports()).isEqualTo(Map.of(6379, new XContainerPort(32770, Protocol.TCP)));
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class ServiceMapperTests {
 		ServiceMapper serviceMapper = new ServiceMapper(windowsEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect-bridge-network.json");
 		assertThat(service1.host()).isEqualTo("127.0.0.1");
-		assertThat(service1.ports()).isEqualTo(Map.of(6379, new ContainerPort(32770, Protocol.TCP)));
+		assertThat(service1.ports()).isEqualTo(Map.of(6379, new XContainerPort(32770, Protocol.TCP)));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class ServiceMapperTests {
 		ServiceMapper serviceMapper = new ServiceMapper(macEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect-bridge-network.json");
 		assertThat(service1.host()).isEqualTo("127.0.0.1");
-		assertThat(service1.ports()).isEqualTo(Map.of(6379, new ContainerPort(32770, Protocol.TCP)));
+		assertThat(service1.ports()).isEqualTo(Map.of(6379, new XContainerPort(32770, Protocol.TCP)));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class ServiceMapperTests {
 		ServiceMapper serviceMapper = new ServiceMapper(wslEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect-bridge-network.json");
 		assertThat(service1.host()).isEqualTo("127.0.0.1");
-		assertThat(service1.ports()).isEqualTo(Map.of(6379, new ContainerPort(32770, Protocol.TCP)));
+		assertThat(service1.ports()).isEqualTo(Map.of(6379, new XContainerPort(32770, Protocol.TCP)));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class ServiceMapperTests {
 		ServiceMapper serviceMapper = new ServiceMapper(linuxEnvironment());
 		RunningService service1 = mapToSingleService(serviceMapper, "/docker/inspect-host-network.json");
 		assertThat(service1.host()).isEqualTo("127.0.0.1");
-		assertThat(service1.ports()).isEqualTo(Map.of(6379, new ContainerPort(6379, Protocol.TCP)));
+		assertThat(service1.ports()).isEqualTo(Map.of(6379, new XContainerPort(6379, Protocol.TCP)));
 	}
 
 	@Test

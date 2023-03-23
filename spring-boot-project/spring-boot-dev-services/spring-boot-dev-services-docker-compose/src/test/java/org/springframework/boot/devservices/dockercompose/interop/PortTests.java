@@ -24,7 +24,7 @@ import org.springframework.boot.devservices.dockercompose.interop.Port.Protocol;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ContainerPort}.
+ * Tests for {@link XContainerPort}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -50,28 +50,28 @@ class PortTests {
 
 	@Test
 	void testToString() {
-		assertThat(new ContainerPort(80, Protocol.TCP)).hasToString("80/tcp");
-		assertThat(new ContainerPort(51, Protocol.UDP)).hasToString("51/udp");
-		assertThat(new ContainerPort(12345, Protocol.OTHER)).hasToString("12345/other");
+		assertThat(new XContainerPort(80, Protocol.TCP)).hasToString("80/tcp");
+		assertThat(new XContainerPort(51, Protocol.UDP)).hasToString("51/udp");
+		assertThat(new XContainerPort(12345, Protocol.OTHER)).hasToString("12345/other");
 	}
 
 	@Test
 	void parsePortWithProtocolTcp() {
-		ContainerPort port = ContainerPort.parsePortWithProtocol("6379/tcp");
+		XContainerPort port = XContainerPort.parsePortWithProtocol("6379/tcp");
 		assertThat(port.number()).isEqualTo(6379);
 		assertThat(port.protocol()).isEqualTo(Protocol.TCP);
 	}
 
 	@Test
 	void parsePortWithProtocolUdp() {
-		ContainerPort port = ContainerPort.parsePortWithProtocol("6379/udp");
+		XContainerPort port = XContainerPort.parsePortWithProtocol("6379/udp");
 		assertThat(port.number()).isEqualTo(6379);
 		assertThat(port.protocol()).isEqualTo(Protocol.UDP);
 	}
 
 	@Test
 	void parsePortWithProtocolOther() {
-		ContainerPort port = ContainerPort.parsePortWithProtocol("6379/something");
+		XContainerPort port = XContainerPort.parsePortWithProtocol("6379/something");
 		assertThat(port.number()).isEqualTo(6379);
 		assertThat(port.protocol()).isEqualTo(Protocol.OTHER);
 	}

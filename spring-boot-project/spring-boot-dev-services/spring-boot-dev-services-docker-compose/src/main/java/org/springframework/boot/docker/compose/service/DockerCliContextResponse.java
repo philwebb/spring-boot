@@ -16,29 +16,15 @@
 
 package org.springframework.boot.docker.compose.service;
 
-import org.junit.jupiter.api.Test;
-
 /**
- * Tests for {@link ProcessRunner}.
+ * Response from {@link DockerCliCommand.Context docker context}.
  *
+ * @param name the name of the context
+ * @param current if the context is the current one
+ * @param dockerEndpoint the endpoint of the docker daemon
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ProcessRunnerTests {
-
-	private ProcessRunner processRunner = new ProcessRunner(null);
-
-	@Test
-	void test() {
-		this.processRunner.run("acommandthatwillneverexistihope");
-	}
-
-	@Test
-	void test2() {
-		System.out.println(System.getenv("PATH"));
-		System.out.println(System.getenv("path"));
-		System.out.println(this.processRunner.run("docker", "--version"));
-	}
-
+record DockerCliContextResponse(String name, boolean current, String dockerEndpoint) {
 }

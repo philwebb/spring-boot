@@ -26,7 +26,7 @@ import org.springframework.core.io.ClassPathResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerContextResponse} JSON parsing.
+ * Tests for {@link DockerCliContextResponse} JSON parsing.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -38,8 +38,8 @@ class DockerContextResponseJsonTests {
 	void deserializeJson() throws IOException {
 		String json = new ClassPathResource("docker-context.json", getClass())
 			.getContentAsString(StandardCharsets.UTF_8);
-		DockerContextResponse response = DockerJson.deserialize(json, DockerContextResponse.class);
-		DockerContextResponse expected = new DockerContextResponse("default", true, "unix:///var/run/docker.sock");
+		DockerCliContextResponse response = DockerJson.deserialize(json, DockerCliContextResponse.class);
+		DockerCliContextResponse expected = new DockerCliContextResponse("default", true, "unix:///var/run/docker.sock");
 		assertThat(response).isEqualTo(expected);
 	}
 

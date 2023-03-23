@@ -74,7 +74,7 @@ class TcpConnectServiceReadinessCheckTests {
 	@EnumSource(value = Protocol.class, names = "TCP", mode = Mode.EXCLUDE)
 	void onlyUsesTcpPorts(Protocol protocol) {
 		RunningService service = RunningServiceBuilder.create("service-1", "service:1")
-			.addPort(12345, new ContainerPort(12345, protocol))
+			.addPort(12345, new XContainerPort(12345, protocol))
 			.build();
 		this.readinessCheck.check(service);
 	}

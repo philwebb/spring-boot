@@ -16,6 +16,11 @@
 
 package org.springframework.boot.docker.compose.service;
 
+/**
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ */
 public class DockerOutputParseException extends DockerException {
 
 	public DockerOutputParseException(String json, Throwable cause) {

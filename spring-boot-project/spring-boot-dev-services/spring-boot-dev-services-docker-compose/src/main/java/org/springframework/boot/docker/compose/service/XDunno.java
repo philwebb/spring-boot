@@ -24,31 +24,31 @@ import java.util.stream.Collectors;
 /**
  * @author pwebb
  */
-public class Dunno {
+public class XDunno {
 
 	public void dunno() {
 		DockerCli cli = null;
-		List<DockerComposeProcessStatusResponse> processStatuses = null;
-		Map<String, DockerInspectResponse> inspected = inspectRunning(cli, processStatuses);
-		for (DockerComposeProcessStatusResponse processStatus : processStatuses) {
-			DockerInspectResponse inspect = inspected.get(processStatus.id());
+		List<DockerCliComposePsResponse> processStatuses = null;
+		Map<String, DockerCliInspectResponse> inspected = inspectRunning(cli, processStatuses);
+		for (DockerCliComposePsResponse processStatus : processStatuses) {
+			DockerCliInspectResponse inspect = inspected.get(processStatus.id());
 		}
 
 		System.out.println(inspected);
 	}
 
-	private Map<String, DockerInspectResponse> inspectRunning(DockerCli cli,
-			List<DockerComposeProcessStatusResponse> processStatuses) {
+	private Map<String, DockerCliInspectResponse> inspectRunning(DockerCli cli,
+			List<DockerCliComposePsResponse> processStatuses) {
 		List<String> running = processStatuses.stream()
 			.filter(this::isRunning)
-			.map(DockerComposeProcessStatusResponse::id)
+			.map(DockerCliComposePsResponse::id)
 			.toList();
-		return cli.run(new DockerCommand.Inspect(running))
+		return cli.run(new DockerCliCommand.Inspect(running))
 			.stream()
-			.collect(Collectors.toMap(DockerInspectResponse::id, Function.identity()));
+			.collect(Collectors.toMap(DockerCliInspectResponse::id, Function.identity()));
 	}
 
-	private boolean isRunning(DockerComposeProcessStatusResponse ps) {
+	private boolean isRunning(DockerCliComposePsResponse ps) {
 		return !"exited".equals(ps.state());
 	}
 

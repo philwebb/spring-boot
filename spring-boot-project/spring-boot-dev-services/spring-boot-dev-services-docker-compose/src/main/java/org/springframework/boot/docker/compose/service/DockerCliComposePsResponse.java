@@ -16,21 +16,17 @@
 
 package org.springframework.boot.docker.compose.service;
 
-import java.io.File;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 /**
- * @author pwebb
+ * Response from {@link DockerCliCommand.ComposePs docker compose ps}.
+ *
+ * @param id the container ID
+ * @param name the name of the service
+ * @param image the image reference
+ * @param state the state of the container
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class DockerCliTests {
-
-	@Test
-	void test() {
-		DockerCli cli = new DockerCli(new File("."));
-		List<DockerComposeProcessStatusResponse> run = cli.run(new DockerCommand.ComposePs());
-		System.out.println(run);
-	}
+record DockerCliComposePsResponse(String id, String name, String image, String state) {
 
 }

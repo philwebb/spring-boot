@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.devservices.xdockercompose.interop.command.DockerNotRunningException;
-import org.springframework.boot.docker.compose.service.DockerCommand.Type;
+import org.springframework.boot.docker.compose.service.DockerCliCommand.Type;
 import org.springframework.core.log.LogMessage;
 
 /**
@@ -80,9 +80,9 @@ class DockerCli {
 
 	private List<String> getDockerComposeCommand(ProcessRunner processRunner) {
 		try {
-			DockerComposeVersionResponse response = DockerJson.deserialize(
+			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker", "compose", "version", "--format", "json"),
-					DockerComposeVersionResponse.class);
+					DockerCliComposeVersionResponse.class);
 			this.logger.trace(LogMessage.format("Using docker compose $s", response.version()));
 			return List.of("docker", "compose");
 		}
@@ -90,9 +90,9 @@ class DockerCli {
 			// Ignore and try docker-compose
 		}
 		try {
-			DockerComposeVersionResponse response = DockerJson.deserialize(
+			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker-compose", "version", "--format", "json"),
-					DockerComposeVersionResponse.class);
+					DockerCliComposeVersionResponse.class);
 			this.logger.trace(LogMessage.format("Using docker-compose $s", response.version()));
 			return List.of("docker-compose");
 		}
@@ -102,7 +102,7 @@ class DockerCli {
 		}
 	}
 
-	<R> R run(DockerCommand<R> dockerCommand) {
+	<R> R run(DockerCliCommand<R> dockerCommand) {
 		List<String> command = createCommand(dockerCommand.getType());
 		command.addAll(dockerCommand.getCommand());
 		String json = this.processRunner.run(command.toArray(new String[0]));

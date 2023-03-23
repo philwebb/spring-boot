@@ -24,7 +24,9 @@ import java.util.List;
 import org.springframework.util.Assert;
 
 /**
- * @author pwebb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public final class DockerComposeFile {
 

@@ -22,13 +22,13 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.docker.compose.service.DockerComposeConfigResponse.Service;
+import org.springframework.boot.docker.compose.service.DockerCliComposeConfigResponse.Service;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DockerComposeConfigResponse} JSON parsing.
+ * Tests for {@link DockerCliComposeConfigResponse} JSON parsing.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -40,8 +40,8 @@ class DockerComposeConfigResponseJsonTests {
 	void deserializeJson() throws IOException {
 		String json = new ClassPathResource("docker-compose-config.json", getClass())
 			.getContentAsString(StandardCharsets.UTF_8);
-		DockerComposeConfigResponse response = DockerJson.deserialize(json, DockerComposeConfigResponse.class);
-		DockerComposeConfigResponse expected = new DockerComposeConfigResponse("redis-docker",
+		DockerCliComposeConfigResponse response = DockerJson.deserialize(json, DockerCliComposeConfigResponse.class);
+		DockerCliComposeConfigResponse expected = new DockerCliComposeConfigResponse("redis-docker",
 				Map.of("redis", new Service("redis:7.0")));
 		assertThat(response).isEqualTo(expected);
 	}

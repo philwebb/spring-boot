@@ -21,6 +21,7 @@ package org.springframework.boot.docker.compose.service;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
 public class DockerNotRunningException extends DockerException {

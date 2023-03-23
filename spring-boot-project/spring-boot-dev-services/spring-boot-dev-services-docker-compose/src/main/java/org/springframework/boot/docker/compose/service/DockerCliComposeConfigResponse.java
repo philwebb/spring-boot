@@ -19,7 +19,7 @@ package org.springframework.boot.docker.compose.service;
 import java.util.Map;
 
 /**
- * Response from {@link DockerCommand.ComposeConfig docker compose config}.
+ * Response from {@link DockerCliCommand.ComposeConfig docker compose config}.
  *
  * @param name project name
  * @param services services
@@ -27,7 +27,7 @@ import java.util.Map;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-record DockerComposeConfigResponse(String name, Map<String, DockerComposeConfigResponse.Service> services) {
+record DockerCliComposeConfigResponse(String name, Map<String, DockerCliComposeConfigResponse.Service> services) {
 
 	/**
 	 * Docker compose service.
