@@ -42,7 +42,8 @@ public interface DockerCompose {
 	List<RunningService> getRunningServices();
 
 	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		DockerCli cli = new DockerCli(null, file, activeProfiles);
+		return new DefaultDockerCompose(cli, hostname);
 	}
 
 }

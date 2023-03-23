@@ -36,6 +36,11 @@ public final class DockerComposeFile {
 	private DockerComposeFile(File file) {
 	}
 
+	@Override
+	public String toString() {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
 	public static DockerComposeFile find(File workingDirectory) {
 		Assert.notNull(workingDirectory, "WorkingDirectory must not be null");
 		Path basePath = workingDirectory.toPath();

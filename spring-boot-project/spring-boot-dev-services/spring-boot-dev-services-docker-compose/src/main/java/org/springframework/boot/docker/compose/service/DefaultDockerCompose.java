@@ -17,7 +17,12 @@
 package org.springframework.boot.docker.compose.service;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Default {@link DockerCompose} implementation backed by {@link DockerCli}.
@@ -28,86 +33,73 @@ import java.util.List;
  */
 class DefaultDockerCompose implements DockerCompose {
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.DockerCompose#up()
-	 */
+	private final DockerCli cli;
+
+	private final String hostname;
+
+	DefaultDockerCompose(DockerCli cli, String hostname) {
+		this.cli = cli;
+		this.hostname = hostname;
+	}
+
 	@Override
 	public void up() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		this.cli.run(new DockerCliCommand.ComposeUp());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.DockerCompose#down(java.time.
-	 * Duration)
-	 */
 	@Override
 	public void down(Duration timeout) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		this.cli.run(new DockerCliCommand.ComposeDown(timeout));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.DockerCompose#start()
-	 */
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		this.cli.run(new DockerCliCommand.ComposeStart());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.DockerCompose#stop(java.time.
-	 * Duration)
-	 */
 	@Override
 	public void stop(Duration timeout) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		this.cli.run(new DockerCliCommand.ComposeStop(timeout));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.springframework.boot.docker.compose.service.DockerCompose#hasDefinedServices()
-	 */
 	@Override
 	public boolean hasDefinedServices() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return !runComposePs().isEmpty();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.springframework.boot.docker.compose.service.DockerCompose#hasRunningServices()
-	 */
 	@Override
 	public boolean hasRunningServices() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return runComposePs().stream().anyMatch(this::isRunning);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.springframework.boot.docker.compose.service.DockerCompose#getRunningServices()
-	 */
 	@Override
 	public List<RunningService> getRunningServices() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		List<DockerCliComposePsResponse> runningPsResponses = runComposePs().stream().filter(this::isRunning).toList();
+		if (runningPsResponses.isEmpty()) {
+			return Collections.emptyList();
+		}
+		DockerComposeFile dockerComposeFile = this.cli.getDockerComposeFile();
+		List<RunningService> result = new ArrayList<>();
+		Map<String, DockerCliInspectResponse> inspected = inspect(runningPsResponses);
+		for (DockerCliComposePsResponse psResponse : runningPsResponses) {
+			DockerCliInspectResponse inspectResponse = inspected.get(psResponse.id());
+			result.add(new DefaultRunningService(dockerComposeFile, psResponse, inspectResponse, this.hostname));
+		}
+		return Collections.unmodifiableList(result);
+	}
+
+	private Map<String, DockerCliInspectResponse> inspect(List<DockerCliComposePsResponse> runningPsResponses) {
+		List<String> ids = runningPsResponses.stream().map(DockerCliComposePsResponse::id).toList();
+		List<DockerCliInspectResponse> inspectResponses = this.cli.run(new DockerCliCommand.Inspect(ids));
+		return inspectResponses.stream().collect(Collectors.toMap(DockerCliInspectResponse::id, Function.identity()));
+	}
+
+	private List<DockerCliComposePsResponse> runComposePs() {
+		return this.cli.run(new DockerCliCommand.ComposePs());
+	}
+
+	private boolean isRunning(DockerCliComposePsResponse psResponse) {
+		return !"exited".equals(psResponse.state());
 	}
 
 }

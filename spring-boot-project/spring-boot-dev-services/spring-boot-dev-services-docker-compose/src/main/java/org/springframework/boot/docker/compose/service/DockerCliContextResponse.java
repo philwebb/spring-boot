@@ -27,4 +27,5 @@ package org.springframework.boot.docker.compose.service;
  * @author Phillip Webb
  */
 record DockerCliContextResponse(String name, boolean current, String dockerEndpoint) {
+
 }

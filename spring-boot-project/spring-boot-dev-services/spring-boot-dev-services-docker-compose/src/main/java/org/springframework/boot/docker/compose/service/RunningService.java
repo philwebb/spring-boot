@@ -26,21 +26,17 @@ import java.util.Map;
  */
 public interface RunningService {
 
-	// getOrigin from ComposeFile and Service Name
-
-	String name(); // Get from compose ps
+	String name();
 
 	ImageReference image();
 
-	String host(); // A bunch of logic
+	String host();
 
-	Ports ports(); // from inspect output with a bunch of logic
+	Ports ports();
 
-	Map<String, String> env(); // from inspect env (processed)
+	Map<String, String> env();
 
-	Map<String, String> labels(); // from inspect
-
-	// FIXME toString
+	Map<String, String> labels();
 
 	interface Ports {
 

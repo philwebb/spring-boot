@@ -42,12 +42,14 @@ record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config confi
 	 * @param env a list of environment variables in the form {@code VAR=value}
 	 */
 	record Config(String image, Map<String, String> labels, Map<String, ExposedPort> exposedPorts, List<String> env) {
+
 	}
 
 	/**
 	 * Empty object used with {@link Config#exposedPorts()}.
 	 */
 	record ExposedPort() {
+
 	}
 
 	/**
@@ -56,6 +58,7 @@ record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config confi
 	 * @param networkMode the network mode to use for this container
 	 */
 	record HostConfig(String networkMode) {
+
 	}
 
 	/**
@@ -64,6 +67,7 @@ record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config confi
 	 * @param ports the mapping of container ports to host ports
 	 */
 	record NetworkSettings(Map<String, List<HostPort>> ports) {
+
 	}
 
 	/**
@@ -73,6 +77,7 @@ record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config confi
 	 * @param hostPort the host port
 	 */
 	record HostPort(String hostIp, String hostPort) {
+
 	}
 
 }

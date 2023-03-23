@@ -56,7 +56,6 @@ class DockerCli {
 		this.dockerComposeCommand = getDockerComposeCommand(this.processRunner);
 		this.dockerComposeFile = dockerComposeFile;
 		this.activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
-
 	}
 
 	private List<String> getDockerCommand(ProcessRunner processRunner) {
@@ -125,6 +124,10 @@ class DockerCli {
 				yield result;
 			}
 		};
+	}
+
+	DockerComposeFile getDockerComposeFile() {
+		return this.dockerComposeFile;
 	}
 
 }

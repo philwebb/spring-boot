@@ -16,10 +16,14 @@
 
 package org.springframework.boot.docker.compose.service;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Default {@link RunningService} implementation backed by {@link DockerCli} responses.
@@ -30,92 +34,86 @@ import org.springframework.boot.origin.OriginProvider;
  */
 class DefaultRunningService implements RunningService, OriginProvider {
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.origin.OriginProvider#getOrigin()
-	 */
+	private final Origin origin;
+
+	private final String name;
+
+	private final ImageReference image;
+
+	private final DefaultRunningServicePorts ports;
+
+	private final Map<String, String> labels;
+
+	private Map<String, String> env;
+
+	DefaultRunningService(DockerComposeFile composeFile, DockerCliComposePsResponse psResponse,
+			DockerCliInspectResponse inspectResponse, String hostname) {
+		this.origin = new DockerComposeOrigin(composeFile, psResponse.name());
+		this.name = psResponse.name();
+		this.image = ImageReference.parse(psResponse.image());
+		this.ports = new DefaultRunningServicePorts(inspectResponse);
+		this.env = envToMap(inspectResponse.config().env());
+		this.labels = Collections.unmodifiableMap(inspectResponse.config().labels());
+	}
+
+	private Map<String, String> envToMap(List<String> env) {
+		if (CollectionUtils.isEmpty(env)) {
+			return Collections.emptyMap();
+		}
+		Map<String, String> result = new LinkedHashMap<>();
+		env.stream().map(this::envItemToMapEntry).forEach((entry) -> result.put(entry.getKey(), entry.getValue()));
+		return Collections.unmodifiableMap(result);
+	}
+
+	private Map.Entry<String, String> envItemToMapEntry(String item) {
+		int index = item.indexOf('=');
+		if (index != -1) {
+			String key = item.substring(0, index);
+			String value = item.substring(index + 1);
+			return Map.entry(key, value);
+		}
+		return Map.entry(item, null);
+	}
+
 	@Override
 	public Origin getOrigin() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.origin;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.RunningService#name()
-	 */
 	@Override
 	public String name() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.name;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.RunningService#image()
-	 */
 	@Override
 	public ImageReference image() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.image;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.RunningService#host()
-	 */
 	@Override
 	public String host() {
-		// TODO Auto-generated method stub
+		// FIXME copy logic from ServiceMapper
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.RunningService#ports()
-	 */
 	@Override
 	public Ports ports() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.ports;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.RunningService#env()
-	 */
 	@Override
 	public Map<String, String> env() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.env;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.boot.docker.compose.service.RunningService#labels()
-	 */
 	@Override
 	public Map<String, String> labels() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.labels;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return this.name;
 	}
 
 }

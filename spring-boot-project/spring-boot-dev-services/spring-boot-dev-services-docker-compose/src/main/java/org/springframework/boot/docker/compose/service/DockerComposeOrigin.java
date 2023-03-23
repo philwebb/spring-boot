@@ -16,26 +16,22 @@
 
 package org.springframework.boot.docker.compose.service;
 
-import java.util.Map;
+import org.springframework.boot.origin.Origin;
 
 /**
- * Response from {@link DockerCliCommand.ComposeConfig docker compose config}.
+ * An origin which points to a service defined in docker compose.
  *
- * @param name project name
- * @param services services
+ * @param composeFile docker compose file
+ * @param serviceName name of the docker compose service
  * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @author Phillip Webb
+ * @since 3.1.0
  */
-record DockerCliComposeConfigResponse(String name, Map<String, DockerCliComposeConfigResponse.Service> services) {
+public record DockerComposeOrigin(DockerComposeFile composeFile, String serviceName) implements Origin {
 
-	/**
-	 * Docker compose service.
-	 *
-	 * @param image the image
-	 */
-	record Service(String image) {
-
+	@Override
+	public String toString() {
+		return "Docker compose service '%s' defined in '%s'".formatted(this.serviceName, this.composeFile);
 	}
 
 }
