@@ -16,13 +16,11 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.rabbit;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,25 +29,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class RabbitIntegrationTests extends AbstractIntegrationTests {
+class RabbitIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
-		RabbitConnectionDetails serviceConnection = runProvider(RabbitConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-rabbit-rabbitmq");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getVirtualHost()).isEqualTo("/");
-		assertThat(serviceConnection.getAddresses()).hasSize(1);
-		Address address = serviceConnection.getFirstAddress();
+		RabbitConnectionDetails connectionDetails = runProvider(RabbitConnectionDetails.class);
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
+		assertThat(connectionDetails.getAddresses()).hasSize(1);
+		Address address = connectionDetails.getFirstAddress();
 		assertThat(address.host()).isNotNull();
 		assertThat(address.port()).isGreaterThan(0);
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return RabbitIntegrationTests.class.getResourceAsStream("rabbitmq-compose.yaml");
 	}
 
 }

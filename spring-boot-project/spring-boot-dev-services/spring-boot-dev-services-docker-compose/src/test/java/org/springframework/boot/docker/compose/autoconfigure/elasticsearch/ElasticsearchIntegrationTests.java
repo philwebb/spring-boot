@@ -16,14 +16,12 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.elasticsearch;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,28 +30,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class ElasticsearchIntegrationTests extends AbstractIntegrationTests {
+class ElasticsearchIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
-		ElasticsearchConnectionDetails serviceConnection = runProvider(ElasticsearchConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-elasticsearch-elasticsearch");
-		assertThat(serviceConnection.getUsername()).isEqualTo("elastic");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getPathPrefix()).isNull();
-		assertThat(serviceConnection.getNodes()).hasSize(1);
-		Node node = serviceConnection.getNodes().get(0);
+		ElasticsearchConnectionDetails connectionDetails = runProvider(ElasticsearchConnectionDetails.class);
+		assertThat(connectionDetails.getUsername()).isEqualTo("elastic");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getPathPrefix()).isNull();
+		assertThat(connectionDetails.getNodes()).hasSize(1);
+		Node node = connectionDetails.getNodes().get(0);
 		assertThat(node.hostname()).isNotNull();
 		assertThat(node.port()).isGreaterThan(0);
 		assertThat(node.protocol()).isEqualTo(Protocol.HTTP);
 		assertThat(node.username()).isEqualTo("elastic");
 		assertThat(node.password()).isEqualTo("secret");
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return ElasticsearchIntegrationTests.class.getResourceAsStream("elasticsearch-compose.yaml");
 	}
 
 }

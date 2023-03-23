@@ -16,25 +16,26 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.elasticsearch;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.devservices.dockercompose.interop.DockerImageName;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.devservices.dockercompose.test.RunningServiceBuilder;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link ElasticsearchService}.
+ * Tests for {@link ElasticsearchDockerComposeConnectionDetailsFactory}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
+ * @author pwebb
  */
-class ElasticsearchServiceTests {
+class ElasticsearchDockerComposeConnectionDetailsFactoryTests {
+
+	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
+
+	// @formatter:off
+
+	/*
+
 
 	@Test
 	void usernameIsElastic() {
@@ -87,5 +88,10 @@ class ElasticsearchServiceTests {
 	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(9200, 19200).env(env).build();
 	}
+
+
+	 */
+
+	// @formatter:on
 
 }

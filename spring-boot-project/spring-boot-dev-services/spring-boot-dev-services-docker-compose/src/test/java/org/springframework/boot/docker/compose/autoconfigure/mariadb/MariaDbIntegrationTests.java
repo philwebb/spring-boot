@@ -16,13 +16,11 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.mariadb;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,30 +29,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class MariaDbIntegrationTests extends AbstractIntegrationTests {
+class MariaDbIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void shouldHaveJdbcServiceConnection() {
-		JdbcConnectionDetails serviceConnection = runProvider(JdbcConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mariadb-jdbc-database");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getJdbcUrl()).startsWith("jdbc:mariadb://").endsWith("/mydatabase");
+		JdbcConnectionDetails connectionDetails = runProvider(JdbcConnectionDetails.class);
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mariadb://").endsWith("/mydatabase");
 	}
 
 	@Test
 	void shouldHaveR2dbcServiceConnection() {
-		R2dbcConnectionDetails serviceConnection = runProvider(R2dbcConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mariadb-r2dbc-database");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:mariadb://").endsWith("/mydatabase");
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return MariaDbIntegrationTests.class.getResourceAsStream("mariadb-compose.yaml");
+		R2dbcConnectionDetails connectionDetails = runProvider(R2dbcConnectionDetails.class);
+		assertThat(connectionDetails.getConnectionFactoryOptions()).hasToString("");
+		// assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
+		// assertThat(serviceConnection.getPassword()).isEqualTo("secret");
+		// assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:mariadb://").endsWith("/mydatabase");
 	}
 
 }

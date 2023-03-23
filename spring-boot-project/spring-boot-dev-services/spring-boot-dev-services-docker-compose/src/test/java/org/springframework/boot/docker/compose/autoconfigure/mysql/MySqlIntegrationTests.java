@@ -16,12 +16,10 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.mysql;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,21 +28,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class MySqlIntegrationTests extends AbstractIntegrationTests {
+class MySqlIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void shouldHaveJdbcServiceConnection() {
-		JdbcConnectionDetails serviceConnection = runProvider(JdbcConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mysql-jdbc-database");
-		assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return MySqlIntegrationTests.class.getResourceAsStream("mysql-compose.yaml");
+		JdbcConnectionDetails connectionDetails = runProvider(JdbcConnectionDetails.class);
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");
 	}
 
 }

@@ -16,13 +16,11 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.redis;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,27 +29,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class RedisIntegrationTests extends AbstractIntegrationTests {
+class RedisIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
-		RedisConnectionDetails serviceConnection = runProvider(RedisConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-redis-redis");
-		assertThat(serviceConnection.getUsername()).isNull();
-		assertThat(serviceConnection.getPassword()).isNull();
-		assertThat(serviceConnection.getCluster()).isNull();
-		assertThat(serviceConnection.getSentinel()).isNull();
-		Standalone standalone = serviceConnection.getStandalone();
+		RedisConnectionDetails connectionDetails = runProvider(RedisConnectionDetails.class);
+		Standalone standalone = connectionDetails.getStandalone();
+		assertThat(connectionDetails.getUsername()).isNull();
+		assertThat(connectionDetails.getPassword()).isNull();
+		assertThat(connectionDetails.getCluster()).isNull();
+		assertThat(connectionDetails.getSentinel()).isNull();
 		assertThat(standalone).isNotNull();
 		assertThat(standalone.getDatabase()).isZero();
 		assertThat(standalone.getPort()).isGreaterThan(0);
 		assertThat(standalone.getHost()).isNotNull();
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return RedisIntegrationTests.class.getResourceAsStream("redis-compose.yaml");
 	}
 
 }

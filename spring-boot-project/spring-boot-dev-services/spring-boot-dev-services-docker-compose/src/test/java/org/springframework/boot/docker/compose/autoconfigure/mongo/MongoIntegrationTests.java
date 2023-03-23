@@ -16,12 +16,10 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.mongo;
 
-import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
-import org.springframework.boot.devservices.dockercompose.AbstractIntegrationTests;
+import org.springframework.boot.docker.compose.autoconfigure.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,27 +28,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class MongoIntegrationTests extends AbstractIntegrationTests {
+class MongoIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	@Test
 	void test() {
-		MongoConnectionDetails serviceConnection = runProvider(MongoConnectionDetails.class);
-		assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mongo-mongo");
-		assertThat(serviceConnection.getHost()).isNotNull();
-		assertThat(serviceConnection.getPort()).isGreaterThan(0);
-		assertThat(serviceConnection.getUsername()).isEqualTo("root");
-		assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		assertThat(serviceConnection.getDatabase()).isEqualTo("mydatabase");
-		assertThat(serviceConnection.getAuthenticationDatabase()).isEqualTo("admin");
-		assertThat(serviceConnection.getReplicaSetName()).isNull();
-		assertThat(serviceConnection.getAdditionalHosts()).hasDefinedServices();
-		assertThat(serviceConnection.getGridFs()).isNull();
-	}
-
-	@Override
-	protected InputStream getComposeContent() {
-		return MongoIntegrationTests.class.getResourceAsStream("mongodb-compose.yaml");
+		MongoConnectionDetails connectionDetails = runProvider(MongoConnectionDetails.class);
+		assertThat(connectionDetails.getConnectionString()).hasToString("");
+		assertThat(connectionDetails.getGridFs()).isNull();
+		// assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mongo-mongo");
+		// assertThat(serviceConnection.getHost()).isNotNull();
+		// assertThat(serviceConnection.getPort()).isGreaterThan(0);
+		// assertThat(serviceConnection.getUsername()).isEqualTo("root");
+		// assertThat(serviceConnection.getPassword()).isEqualTo("secret");
+		// assertThat(serviceConnection.getDatabase()).isEqualTo("mydatabase");
+		// assertThat(serviceConnection.getAuthenticationDatabase()).isEqualTo("admin");
+		// assertThat(serviceConnection.getReplicaSetName()).isNull();
+		// assertThat(serviceConnection.getAdditionalHosts()).hasDefinedServices();
 	}
 
 }

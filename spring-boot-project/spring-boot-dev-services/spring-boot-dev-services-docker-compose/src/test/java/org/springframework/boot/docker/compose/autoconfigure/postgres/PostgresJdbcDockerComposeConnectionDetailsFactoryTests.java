@@ -16,25 +16,26 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.postgres;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.devservices.dockercompose.interop.DockerImageName;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.devservices.dockercompose.test.RunningServiceBuilder;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link PostgresService}.
+ * Tests for {@link PostgresJdbcDockerComposeConnectionDetailsFactory}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
+ * @author pwebb
  */
-class PostgresServiceTests {
+class PostgresJdbcDockerComposeConnectionDetailsFactoryTests {
+
+	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
+
+	// @formatter:off
+
+	/*
+
 
 	@Test
 	void usernameUsesEnvVariable() {
@@ -100,5 +101,11 @@ class PostgresServiceTests {
 	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(5432, 54320).env(env).build();
 	}
+
+
+
+	 */
+
+	// @formatter:on
 
 }

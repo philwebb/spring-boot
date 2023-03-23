@@ -16,26 +16,27 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.redis;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.devservices.dockercompose.interop.DockerImageName;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.devservices.dockercompose.test.RunningServiceBuilder;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link RedisService}.
+ * Tests for {@link RedisDockerComposeConnectionDetailsFactory}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
+ * @author pwebb
  */
-class RedisServiceTests {
+class RedisDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
+
+	// @formatter:off
+
+	/*
+
+@Test
 	void getPort() {
 		RunningService service = createService(Collections.emptyMap());
 		RedisService redisService = new RedisService(service);
@@ -56,5 +57,11 @@ class RedisServiceTests {
 	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(6379, 16379).env(env).build();
 	}
+
+
+
+	 */
+
+	// @formatter:on
 
 }

@@ -16,24 +16,21 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.zipkin;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.devservices.dockercompose.interop.DockerImageName;
-import org.springframework.boot.devservices.dockercompose.interop.RunningService;
-import org.springframework.boot.devservices.dockercompose.test.RunningServiceBuilder;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import static org.assertj.core.api.Assertions.assertThat;
+class ZipkinDockerComposeConnectionDetailsFactoryTests {
 
-/**
- * Tests for {@link ZipkinService}.
- *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- */
-class ZipkinServiceTests {
+	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
+
+	// @formatter:off
+
+	/*
+
 
 	@Test
 	void getPort() {
@@ -56,5 +53,10 @@ class ZipkinServiceTests {
 	private RunningService createService(ImageReference image, Map<String, String> env) {
 		return RunningServiceBuilder.create("service-1", image).addTcpPort(9411, 19411).env(env).build();
 	}
+
+
+	 */
+
+	// @formatter:on
 
 }
