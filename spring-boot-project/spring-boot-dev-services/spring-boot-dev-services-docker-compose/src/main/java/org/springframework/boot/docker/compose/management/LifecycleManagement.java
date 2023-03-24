@@ -50,7 +50,7 @@ public enum LifecycleManagement {
 	}
 
 	/**
-	 * Returns whether docker compose should be started.
+	 * Return whether docker compose should be started.
 	 * @return whether docker compose should be started.
 	 */
 	boolean shouldStart() {
@@ -58,7 +58,7 @@ public enum LifecycleManagement {
 	}
 
 	/**
-	 * Returns whether docker compose should be stopped.
+	 * Return whether docker compose should be stopped.
 	 * @return whether docker compose should be stopped
 	 */
 	boolean shouldStop() {

@@ -50,6 +50,10 @@ public final class ReadinessTimeoutException extends RuntimeException {
 		return "Readiness timeout of %s reached while waiting for services %s".formatted(timeout, serviceNames);
 	}
 
+	/**
+	 * Return the timeout that was reached.
+	 * @return the timeout
+	 */
 	public Duration getTimeout() {
 		return this.timeout;
 	}

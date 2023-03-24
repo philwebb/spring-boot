@@ -19,6 +19,7 @@ package org.springframework.boot.docker.compose.readiness;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Binder;
 
 /**
  * Readiness configuration properties.
@@ -52,6 +53,15 @@ class ReadinessProperties {
 
 	Tcp getTcp() {
 		return this.tcp;
+	}
+
+	/**
+	 * Get the properties using the given binder.
+	 * @param binder the binder used to get the properties
+	 * @return a bound {@link ReadinessProperties} instance
+	 */
+	static ReadinessProperties get(Binder binder) {
+		return binder.bind(ReadinessProperties.NAME, ReadinessProperties.class).orElseGet(ReadinessProperties::new);
 	}
 
 	/**

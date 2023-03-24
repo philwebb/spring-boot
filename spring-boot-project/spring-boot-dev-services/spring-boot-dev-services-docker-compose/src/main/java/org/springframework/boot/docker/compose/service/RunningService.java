@@ -30,31 +30,31 @@ import java.util.Map;
 public interface RunningService {
 
 	/**
-	 * Returns the name of the service.
+	 * Return the name of the service.
 	 * @return the service name
 	 */
 	String name();
 
 	/**
-	 * Returns the image being used by the service.
+	 * Return the image being used by the service.
 	 * @return the service image
 	 */
 	ImageReference image();
 
 	/**
-	 * Returns the host that can be used to connect to the service.
+	 * Return the host that can be used to connect to the service.
 	 * @return the service host
 	 */
 	String host();
 
 	/**
-	 * Returns the ports that can be used to connect to the service.
+	 * Return the ports that can be used to connect to the service.
 	 * @return the service ports
 	 */
 	Ports ports();
 
 	/**
-	 * Returns the environment defined for the service.
+	 * Return the environment defined for the service.
 	 * @return the service env
 	 */
 	Map<String, String> env();

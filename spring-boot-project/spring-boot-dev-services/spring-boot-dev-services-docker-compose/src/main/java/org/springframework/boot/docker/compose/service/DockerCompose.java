@@ -79,8 +79,8 @@ public interface DockerCompose {
 	boolean hasRunningServices();
 
 	/**
-	 * Returns the running services for the active profile, or an empty list if no
-	 * services are running.
+	 * Return the running services for the active profile, or an empty list if no services
+	 * are running.
 	 * @return the list of running services
 	 */
 	List<RunningService> getRunningServices();

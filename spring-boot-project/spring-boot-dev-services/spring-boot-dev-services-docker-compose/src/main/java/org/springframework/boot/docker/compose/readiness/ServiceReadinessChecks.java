@@ -67,8 +67,7 @@ public class ServiceReadinessChecks {
 			.and(Environment.class, environment)
 			.and(Binder.class, binder);
 		this.clock = clock;
-		this.properties = binder.bind(ReadinessProperties.NAME, ReadinessProperties.class)
-			.orElseGet(ReadinessProperties::new);
+		this.properties = ReadinessProperties.get(binder);
 		this.checks = new ArrayList<>(loader.load(ServiceReadinessCheck.class, argumentResolver));
 		this.checks.add(new TcpConnectServiceReadinessCheck(this.properties.getTcp()));
 	}

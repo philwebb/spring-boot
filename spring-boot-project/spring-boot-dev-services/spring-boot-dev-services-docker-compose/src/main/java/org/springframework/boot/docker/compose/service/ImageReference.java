@@ -31,16 +31,16 @@ public final class ImageReference {
 
 	private final String reference;
 
-	private final String image;
+	private final String imageName;
 
 	ImageReference(String reference) {
 		this.reference = reference;
 		int lastSlashIndex = reference.lastIndexOf('/');
 		String imageTagDigest = (lastSlashIndex != -1) ? reference.substring(lastSlashIndex + 1) : reference;
 		int digestIndex = imageTagDigest.indexOf('@');
-		String imageAndTag = (digestIndex != -1) ? imageTagDigest.substring(0, digestIndex) : imageTagDigest;
-		int colon = imageAndTag.indexOf(':');
-		this.image = (colon != -1) ? imageAndTag.substring(0, colon) : imageAndTag;
+		String imageTag = (digestIndex != -1) ? imageTagDigest.substring(0, digestIndex) : imageTagDigest;
+		int colon = imageTag.indexOf(':');
+		this.imageName = (colon != -1) ? imageTag.substring(0, colon) : imageTag;
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public final class ImageReference {
 	 * reference of {@code my_private.registry:5000/redis:5} would return {@code redis}.
 	 * @return the referenced image
 	 */
-	public String getImage() {
-		return this.image;
+	public String getImageName() {
+		return this.imageName;
 	}
 
 	/**

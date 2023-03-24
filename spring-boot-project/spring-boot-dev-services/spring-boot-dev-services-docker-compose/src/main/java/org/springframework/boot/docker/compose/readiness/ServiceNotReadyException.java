@@ -35,11 +35,15 @@ public class ServiceNotReadyException extends RuntimeException {
 		this(service, message, null);
 	}
 
-	public ServiceNotReadyException(RunningService service, String message, Throwable cause) {
+	ServiceNotReadyException(RunningService service, String message, Throwable cause) {
 		super(message, cause);
 		this.service = service;
 	}
 
+	/**
+	 * Return the service that was not reeady.
+	 * @return the non-ready service
+	 */
 	public RunningService getService() {
 		return this.service;
 	}

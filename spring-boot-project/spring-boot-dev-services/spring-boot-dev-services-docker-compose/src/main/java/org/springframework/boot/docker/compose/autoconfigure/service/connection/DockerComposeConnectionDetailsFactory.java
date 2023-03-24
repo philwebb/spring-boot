@@ -65,7 +65,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 	private String getConnectionName(RunningService service) {
 		String connectionName = service.labels().get("org.springframework.boot.service-connection");
-		return (connectionName != null) ? connectionName : service.image().image();
+		return (connectionName != null) ? connectionName : service.image().getImageName();
 	}
 
 	private boolean hasRequiredClass() {
