@@ -23,8 +23,8 @@ import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrlBuilder;
-import org.springframework.boot.docker.compose.service.RunningService;
-import org.springframework.boot.docker.compose.service.RunningService.Ports;
+import org.springframework.boot.docker.compose.core.ConnectionPorts;
+import org.springframework.boot.docker.compose.core.RunningService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -83,7 +83,7 @@ class ConnectionFactoryOptionsBuilderTests {
 
 	private RunningService mockService(int mappedPort, Map<String, String> labels) {
 		RunningService service = mock(RunningService.class);
-		Ports ports = mock(Ports.class);
+		ConnectionPorts ports = mock(ConnectionPorts.class);
 		given(ports.get(1234)).willReturn(mappedPort);
 		given(service.host()).willReturn("myhost");
 		given(service.ports()).willReturn(ports);

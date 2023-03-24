@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilder;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}

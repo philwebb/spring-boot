@@ -19,7 +19,7 @@ package org.springframework.boot.docker.compose.autoconfigure.redis;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link RedisConnectionDetails}

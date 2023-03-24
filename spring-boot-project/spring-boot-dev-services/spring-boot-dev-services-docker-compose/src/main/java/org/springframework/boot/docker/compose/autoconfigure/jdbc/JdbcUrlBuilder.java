@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.jdbc;
 
-import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 

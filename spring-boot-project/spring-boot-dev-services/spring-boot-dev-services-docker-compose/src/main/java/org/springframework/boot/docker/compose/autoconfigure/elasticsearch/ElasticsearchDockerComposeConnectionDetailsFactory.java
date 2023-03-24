@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnect
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.autoconfigure.service.connection.DockerComposeConnectionSource;
-import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create

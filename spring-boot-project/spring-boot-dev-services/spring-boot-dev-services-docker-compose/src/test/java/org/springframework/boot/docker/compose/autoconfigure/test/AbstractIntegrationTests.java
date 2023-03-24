@@ -16,29 +16,7 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.io.TempDir;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationShutdownHandlers;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.devservices.dockercompose.interop.DockerComposeOrigin;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.mock.env.MockEnvironment;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Abstract base class for integration tests.
@@ -48,6 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledIfDockerUnavailable
 public abstract class AbstractIntegrationTests {
+
+	//// @formatter:off
+
+	/*
 
 	@TempDir
 	static Path tempDir;
@@ -113,5 +95,8 @@ public abstract class AbstractIntegrationTests {
 			Files.write(tempDir.resolve("compose.yaml"), content);
 		}
 	}
+
+	*/
+	// @formatter:on
 
 }

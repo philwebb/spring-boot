@@ -18,7 +18,7 @@ package org.springframework.boot.docker.compose.autoconfigure.service.connection
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
-import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.util.Assert;

@@ -18,8 +18,8 @@ package org.springframework.boot.docker.compose.autoconfigure.service.connection
 
 import java.util.List;
 
+import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.management.DockerComposeServicesReadyEvent;
-import org.springframework.boot.docker.compose.service.RunningService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 

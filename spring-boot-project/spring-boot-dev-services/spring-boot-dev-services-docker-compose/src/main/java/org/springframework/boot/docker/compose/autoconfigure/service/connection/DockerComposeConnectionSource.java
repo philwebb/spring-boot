@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.service.connection;
 
-import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.core.RunningService;
 
 public final class DockerComposeConnectionSource {
 
