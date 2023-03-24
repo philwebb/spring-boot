@@ -27,8 +27,8 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DockerComposeListener}.
@@ -50,7 +50,7 @@ class DockerComposeListenerTests {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(application, new String[0], context);
 		listener.onApplicationEvent(event);
 		assertThat(listener.getManager()).isNotNull();
-		verify(listener.getManager()).startup();
+		then(listener.getManager()).should().startup();
 	}
 
 	class TestDockerComposeListener extends DockerComposeListener {
@@ -75,7 +75,7 @@ class DockerComposeListenerTests {
 			return this.manager;
 		}
 
-		public DockerComposeLifecycleManager getManager() {
+		DockerComposeLifecycleManager getManager() {
 			return this.manager;
 		}
 

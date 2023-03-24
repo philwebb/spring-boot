@@ -21,6 +21,10 @@ import java.util.List;
 /**
  * Provides access to the ports that can be used to connect to a {@link RunningService}.
  *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 3.1.0
  * @see RunningService
  */
 public interface ConnectionPorts {

@@ -31,9 +31,9 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 3.1.0
  * @see #of(File)
  * @see #find(File)
- * @since 3.1.0
  */
 public final class DockerComposeFile {
 
@@ -52,11 +52,6 @@ public final class DockerComposeFile {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.file.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -66,6 +61,11 @@ public final class DockerComposeFile {
 		}
 		DockerComposeFile other = (DockerComposeFile) obj;
 		return this.file.equals(other.file);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.file.hashCode();
 	}
 
 	@Override

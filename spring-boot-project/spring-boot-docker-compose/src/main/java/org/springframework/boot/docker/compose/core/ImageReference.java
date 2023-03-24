@@ -44,11 +44,6 @@ public final class ImageReference {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.reference.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -58,6 +53,11 @@ public final class ImageReference {
 		}
 		ImageReference other = (ImageReference) obj;
 		return this.reference.equals(other.reference);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.reference.hashCode();
 	}
 
 	@Override

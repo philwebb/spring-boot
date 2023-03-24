@@ -74,12 +74,12 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		return Collections.unmodifiableMap(mappings);
 	}
 
-	public boolean isIpV4(HostPort hostPort) {
+	private boolean isIpV4(HostPort hostPort) {
 		String ip = (hostPort != null) ? hostPort.hostIp() : null;
 		return !StringUtils.hasLength(ip) || ip.contains(".");
 	}
 
-	public static int getPortNumber(HostPort hostPort) {
+	private static int getPortNumber(HostPort hostPort) {
 		return Integer.parseInt(hostPort.hostPort());
 	}
 
@@ -122,6 +122,12 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		return this.mappings;
 	}
 
+	/**
+	 * A container port consisting of a number and protocol.
+	 *
+	 * @param number the port number
+	 * @param protocol the protocol (e.g. tcp)
+	 */
 	static record ContainerPort(int number, String protocol) {
 
 		@Override
@@ -129,7 +135,7 @@ class DefaultConnectionPorts implements ConnectionPorts {
 			return "%d/%s".formatted(this.number, this.protocol);
 		}
 
-		public static ContainerPort parse(String value) {
+		static ContainerPort parse(String value) {
 			try {
 				String[] parts = value.split("/");
 				Assert.state(parts.length == 2, "Unable to split string");

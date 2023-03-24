@@ -43,11 +43,11 @@ class ReadinessProperties {
 	 */
 	private final Tcp tcp = new Tcp();
 
-	public Duration getTimeout() {
+	Duration getTimeout() {
 		return this.timeout;
 	}
 
-	public void setTimeout(Duration timeout) {
+	void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
@@ -79,19 +79,19 @@ class ReadinessProperties {
 		 */
 		private Duration readTimeout = Duration.ofMillis(200);
 
-		public Duration getConnectTimeout() {
+		Duration getConnectTimeout() {
 			return this.connectTimeout;
 		}
 
-		public void setConnectTimeout(Duration connectTimeout) {
+		void setConnectTimeout(Duration connectTimeout) {
 			this.connectTimeout = connectTimeout;
 		}
 
-		public Duration getReadTimeout() {
+		Duration getReadTimeout() {
 			return this.readTimeout;
 		}
 
-		public void setReadTimeout(Duration readTimeout) {
+		void setReadTimeout(Duration readTimeout) {
 			this.readTimeout = readTimeout;
 		}
 

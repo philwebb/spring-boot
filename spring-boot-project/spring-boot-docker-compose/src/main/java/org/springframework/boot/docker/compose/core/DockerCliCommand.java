@@ -25,6 +25,7 @@ import java.util.Objects;
 /**
  * Commands that can be executed by the {@link DockerCli}.
  *
+ * @param <R> the response type
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -64,11 +65,6 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(this.type, this.responseType, this.listResponse, this.command);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -86,6 +82,11 @@ abstract sealed class DockerCliCommand<R> {
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hash(this.type, this.responseType, this.listResponse, this.command);
+	}
+
+	@Override
 	public String toString() {
 		return "DockerCliCommand [type=%s, responseType=%s, listResponse=%s, command=%s]".formatted(this.type,
 				this.responseType, this.listResponse, this.command);
@@ -100,7 +101,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker context} command.
 	 */
-	final static class Context extends DockerCliCommand<List<DockerCliContextResponse>> {
+	static final class Context extends DockerCliCommand<List<DockerCliContextResponse>> {
 
 		Context() {
 			super(Type.DOCKER, DockerCliContextResponse.class, true, "context", "ls", "--format={{ json . }}");
@@ -111,7 +112,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker inspect} command.
 	 */
-	final static class Inspect extends DockerCliCommand<List<DockerCliInspectResponse>> {
+	static final class Inspect extends DockerCliCommand<List<DockerCliInspectResponse>> {
 
 		Inspect(Collection<String> ids) {
 			super(Type.DOCKER, DockerCliInspectResponse.class, true,
@@ -123,7 +124,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose config} command.
 	 */
-	final static class ComposeConfig extends DockerCliCommand<DockerCliComposeConfigResponse> {
+	static final class ComposeConfig extends DockerCliCommand<DockerCliComposeConfigResponse> {
 
 		ComposeConfig() {
 			super(Type.DOCKER_COMPOSE, DockerCliComposeConfigResponse.class, false, "config", "--format=json");
@@ -134,7 +135,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose ps} command.
 	 */
-	final static class ComposePs extends DockerCliCommand<List<DockerCliComposePsResponse>> {
+	static final class ComposePs extends DockerCliCommand<List<DockerCliComposePsResponse>> {
 
 		ComposePs() {
 			super(Type.DOCKER_COMPOSE, DockerCliComposePsResponse.class, true, "ps", "--format=json");
@@ -145,7 +146,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose up} command.
 	 */
-	final static class ComposeUp extends DockerCliCommand<Void> {
+	static final class ComposeUp extends DockerCliCommand<Void> {
 
 		ComposeUp() {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "up", "--no-color", "--quiet-pull", "--detach", "--wait");
@@ -156,7 +157,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose down} command.
 	 */
-	final static class ComposeDown extends DockerCliCommand<Void> {
+	static final class ComposeDown extends DockerCliCommand<Void> {
 
 		ComposeDown(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "down", "--timeout", Long.toString(timeout.toSeconds()));
@@ -167,7 +168,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose start} command.
 	 */
-	final static class ComposeStart extends DockerCliCommand<Void> {
+	static final class ComposeStart extends DockerCliCommand<Void> {
 
 		ComposeStart() {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "start", "--no-color", "--quiet-pull", "--detach", "--wait");
@@ -178,7 +179,7 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose stop} command.
 	 */
-	final static class ComposeStop extends DockerCliCommand<Void> {
+	static final class ComposeStop extends DockerCliCommand<Void> {
 
 		ComposeStop(Duration timeout) {
 			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));

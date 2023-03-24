@@ -38,9 +38,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServiceReadinessChecks}.
@@ -86,7 +86,7 @@ class ServiceReadinessChecksTests {
 		this.loader = spy(MockSpringFactoriesLoader.class);
 		createChecks();
 		ArgumentCaptor<ArgumentResolver> captor = ArgumentCaptor.forClass(ArgumentResolver.class);
-		verify(this.loader).load(eq(ServiceReadinessCheck.class), captor.capture());
+		then(this.loader).should().load(eq(ServiceReadinessCheck.class), captor.capture());
 		ArgumentResolver argumentResolver = captor.getValue();
 		assertThat(argumentResolver.resolve(ClassLoader.class)).isEqualTo(this.classLoader);
 		assertThat(argumentResolver.resolve(Environment.class)).isEqualTo(this.environment);
@@ -149,11 +149,11 @@ class ServiceReadinessChecksTests {
 
 		private final List<RunningService> checked = new ArrayList<>();
 
-		public MockServiceReadinessCheck() {
+		MockServiceReadinessCheck() {
 			this(null);
 		}
 
-		public MockServiceReadinessCheck(Integer failUntil) {
+		MockServiceReadinessCheck(Integer failUntil) {
 			this.failUntil = failUntil;
 		}
 

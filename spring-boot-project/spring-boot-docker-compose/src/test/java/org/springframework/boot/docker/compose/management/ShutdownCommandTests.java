@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ShutdownCommand}.
@@ -41,13 +41,13 @@ class ShutdownCommandTests {
 	@Test
 	void applyToWhenDown() {
 		ShutdownCommand.DOWN.applyTo(this.dockerCompose, this.duration);
-		verify(this.dockerCompose).down(this.duration);
+		then(this.dockerCompose).should().down(this.duration);
 	}
 
 	@Test
 	void applyToWhenStart() {
 		ShutdownCommand.STOP.applyTo(this.dockerCompose, this.duration);
-		verify(this.dockerCompose).stop(this.duration);
+		then(this.dockerCompose).should().stop(this.duration);
 	}
 
 }

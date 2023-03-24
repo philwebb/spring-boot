@@ -41,11 +41,6 @@ final class DockerHost {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.host.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -55,6 +50,11 @@ final class DockerHost {
 		}
 		DockerHost other = (DockerHost) obj;
 		return this.host.equals(other.host);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.host.hashCode();
 	}
 
 	@Override

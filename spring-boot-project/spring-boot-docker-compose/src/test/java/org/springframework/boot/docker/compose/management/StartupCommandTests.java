@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link StartupCommand}.
@@ -37,13 +37,13 @@ class StartupCommandTests {
 	@Test
 	void applyToWhenUp() {
 		StartupCommand.UP.applyTo(this.dockerCompose);
-		verify(this.dockerCompose).up();
+		then(this.dockerCompose).should().up();
 	}
 
 	@Test
 	void applyToWhenStart() {
 		StartupCommand.START.applyTo(this.dockerCompose);
-		verify(this.dockerCompose).start();
+		then(this.dockerCompose).should().start();
 	}
 
 }

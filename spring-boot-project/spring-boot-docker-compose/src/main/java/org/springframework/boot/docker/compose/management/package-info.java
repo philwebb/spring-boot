@@ -15,6 +15,6 @@
  */
 
 /**
- * Core interfaces and classes for working with docker compose.
+ * Lifecycle management for docker compose with the context of a Spring application.
  */
-package org.springframework.boot.docker.compose.core;
+package org.springframework.boot.docker.compose.management;

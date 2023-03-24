@@ -139,7 +139,7 @@ class ProcessRunner {
 				this.latch.await();
 				return new String(this.content.toByteArray(), StandardCharsets.UTF_8);
 			}
-			catch (InterruptedException e) {
+			catch (InterruptedException ex) {
 				return null;
 			}
 		}

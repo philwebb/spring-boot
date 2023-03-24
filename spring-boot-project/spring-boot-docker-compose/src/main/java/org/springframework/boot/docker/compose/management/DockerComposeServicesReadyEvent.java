@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationEvent;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 3.1.0
  */
 public class DockerComposeServicesReadyEvent extends ApplicationEvent {
 

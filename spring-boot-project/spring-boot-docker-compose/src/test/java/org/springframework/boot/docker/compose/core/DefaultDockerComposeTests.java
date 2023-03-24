@@ -30,9 +30,9 @@ import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.Net
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultDockerCompose}.
@@ -51,7 +51,7 @@ class DefaultDockerComposeTests {
 	void upRunsUpCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
 		compose.up();
-		verify(this.cli).run(new DockerCliCommand.ComposeUp());
+		then(this.cli).should().run(new DockerCliCommand.ComposeUp());
 	}
 
 	@Test
@@ -59,14 +59,14 @@ class DefaultDockerComposeTests {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
 		Duration timeout = Duration.ofSeconds(1);
 		compose.down(timeout);
-		verify(this.cli).run(new DockerCliCommand.ComposeDown(timeout));
+		then(this.cli).should().run(new DockerCliCommand.ComposeDown(timeout));
 	}
 
 	@Test
 	void startRunsStartCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
 		compose.start();
-		verify(this.cli).run(new DockerCliCommand.ComposeStart());
+		then(this.cli).should().run(new DockerCliCommand.ComposeStart());
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class DefaultDockerComposeTests {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
 		Duration timeout = Duration.ofSeconds(1);
 		compose.stop(timeout);
-		verify(this.cli).run(new DockerCliCommand.ComposeStop(timeout));
+		then(this.cli).should().run(new DockerCliCommand.ComposeStop(timeout));
 	}
 
 	@Test
