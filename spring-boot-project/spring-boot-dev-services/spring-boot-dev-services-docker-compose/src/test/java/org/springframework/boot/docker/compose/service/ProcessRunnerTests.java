@@ -16,9 +16,7 @@
 
 package org.springframework.boot.docker.compose.service;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Tests for {@link ProcessRunner}.
@@ -27,11 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
+@Disabled("Not yet implements")
 class ProcessRunnerTests {
-
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
 
 }

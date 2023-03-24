@@ -159,7 +159,7 @@ abstract sealed class DockerCliCommand<R> {
 	final static class ComposeDown extends DockerCliCommand<Void> {
 
 		ComposeDown(Duration timeout) {
-			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));
+			super(Type.DOCKER_COMPOSE, Void.class, false, "down", "--timeout", Long.toString(timeout.toSeconds()));
 		}
 
 	}

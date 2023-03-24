@@ -40,7 +40,7 @@ public final class DockerComposeFile {
 	private static final List<String> SEARCH_ORDER = List.of("compose.yaml", "compose.yml", "docker-compose.yaml",
 			"docker-compose.yml");
 
-	private File file;
+	private final File file;
 
 	private DockerComposeFile(File file) {
 		try {
@@ -91,7 +91,7 @@ public final class DockerComposeFile {
 		if (!base.exists()) {
 			return null;
 		}
-		Assert.state(base.isDirectory(), () -> "'%s' is not a directory".formatted(base));
+		Assert.isTrue(base.isDirectory(), () -> "'%s' is not a directory".formatted(base));
 		Path basePath = workingDirectory.toPath();
 		for (String candidate : SEARCH_ORDER) {
 			Path resolved = basePath.resolve(candidate);
@@ -109,8 +109,8 @@ public final class DockerComposeFile {
 	 */
 	public static DockerComposeFile of(File file) {
 		Assert.notNull(file, "File must not be null");
-		Assert.state(file.exists(), () -> "'%s' does not exist".formatted(file));
-		Assert.state(file.isFile(), () -> "'%s' is not a file".formatted(file));
+		Assert.isTrue(file.exists(), () -> "'%s' does not exist".formatted(file));
+		Assert.isTrue(file.isFile(), () -> "'%s' is not a file".formatted(file));
 		return new DockerComposeFile(file);
 	}
 

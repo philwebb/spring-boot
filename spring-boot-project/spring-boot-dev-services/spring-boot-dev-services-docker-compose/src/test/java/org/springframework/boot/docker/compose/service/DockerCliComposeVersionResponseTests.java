@@ -16,9 +16,14 @@
 
 package org.springframework.boot.docker.compose.service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.core.io.ClassPathResource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DockerCliComposeVersionResponse}.
@@ -30,8 +35,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 class DockerCliComposeVersionResponseTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void deserializeJson() throws IOException {
+		String json = new ClassPathResource("docker-compose-version.json", getClass())
+			.getContentAsString(StandardCharsets.UTF_8);
+		DockerCliComposeVersionResponse response = DockerJson.deserialize(json, DockerCliComposeVersionResponse.class);
+		DockerCliComposeVersionResponse expected = new DockerCliComposeVersionResponse("123");
+		assertThat(response).isEqualTo(expected);
 	}
 
 }

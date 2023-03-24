@@ -16,9 +16,12 @@
 
 package org.springframework.boot.docker.compose.service;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DockerCliCommand}.
@@ -30,8 +33,67 @@ import static org.junit.jupiter.api.Assertions.fail;
 class DockerCliCommandTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void context() {
+		DockerCliCommand<?> command = new DockerCliCommand.Context();
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER);
+		assertThat(command.getCommand()).containsExactly("context", "ls", "--format={{ json . }}");
+		assertThat(command.deserialize("[]")).isInstanceOf(List.class);
+	}
+
+	@Test
+	void inspect() {
+		DockerCliCommand<?> command = new DockerCliCommand.Inspect(List.of("123", "345"));
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER);
+		assertThat(command.getCommand()).containsExactly("inspect", "--format={{ json . }}", "123", "345");
+		assertThat(command.deserialize("[]")).isInstanceOf(List.class);
+	}
+
+	@Test
+	void composeConfig() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeConfig();
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand()).containsExactly("config", "--format=json");
+		assertThat(command.deserialize("{}")).isInstanceOf(DockerCliComposeConfigResponse.class);
+	}
+
+	@Test
+	void composePs() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposePs();
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand()).containsExactly("ps", "--format=json");
+		assertThat(command.deserialize("[]")).isInstanceOf(List.class);
+	}
+
+	@Test
+	void composeUp() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp();
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand()).containsExactly("up", "--no-color", "--quiet-pull", "--detach", "--wait");
+		assertThat(command.deserialize("[]")).isNull();
+	}
+
+	@Test
+	void composeDown() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeDown(Duration.ofSeconds(1));
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand()).containsExactly("down", "--timeout", "1");
+		assertThat(command.deserialize("[]")).isNull();
+	}
+
+	@Test
+	void composeStart() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart();
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand()).containsExactly("start", "--no-color", "--quiet-pull", "--detach", "--wait");
+		assertThat(command.deserialize("[]")).isNull();
+	}
+
+	@Test
+	void composeStop() {
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeStop(Duration.ofSeconds(1));
+		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
+		assertThat(command.getCommand()).containsExactly("stop", "--timeout", "1");
+		assertThat(command.deserialize("[]")).isNull();
 	}
 
 }
