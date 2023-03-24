@@ -16,19 +16,23 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.service.connection;
 
+import java.util.List;
+
+import org.springframework.boot.docker.compose.management.DockerComposeServicesReadyEvent;
 import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 
-public final class DockerComposeConnectionSource {
+/**
+ * @author pwebb
+ */
+class Dunno implements ApplicationListener<DockerComposeServicesReadyEvent> {
 
-	/**
-	 * @param runningService
-	 */
-	public DockerComposeConnectionSource(RunningService runningService) {
-		// TODO Auto-generated constructor stub
-	}
-
-	public RunningService getService() {
-		return null;
+	@Override
+	public void onApplicationEvent(DockerComposeServicesReadyEvent event) {
+		ApplicationContext applicationContext = event.getSource();
+		List<RunningService> runningServices = event.getRunningServices();
+		new Dunno2(applicationContext).dunno(runningServices);
 	}
 
 }
