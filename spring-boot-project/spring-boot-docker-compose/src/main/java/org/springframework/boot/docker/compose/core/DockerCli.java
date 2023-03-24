@@ -45,21 +45,21 @@ class DockerCli {
 
 	private final List<String> dockerComposeCommand;
 
-	private final DockerComposeFile dockerComposeFile;
+	private final DockerComposeFile composeFile;
 
 	private final Set<String> activeProfiles;
 
 	/**
 	 * Create a new {@link DockerCli} instance.
 	 * @param workingDirectory the working directory or {@code null}
-	 * @param dockerComposeFile the docker compose file to use
+	 * @param composeFile the docker compose file to use
 	 * @param activeProfiles the docker compose profiles to activate
 	 */
-	DockerCli(File workingDirectory, DockerComposeFile dockerComposeFile, Set<String> activeProfiles) {
+	DockerCli(File workingDirectory, DockerComposeFile composeFile, Set<String> activeProfiles) {
 		this.processRunner = new ProcessRunner(workingDirectory);
 		this.dockerCommand = getDockerCommand(this.processRunner);
 		this.dockerComposeCommand = getDockerComposeCommand(this.processRunner);
-		this.dockerComposeFile = dockerComposeFile;
+		this.composeFile = composeFile;
 		this.activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
 	}
 
@@ -125,8 +125,10 @@ class DockerCli {
 			case DOCKER -> new ArrayList<>(this.dockerCommand);
 			case DOCKER_COMPOSE -> {
 				List<String> result = new ArrayList<>(this.dockerComposeCommand);
-				result.add("--file");
-				result.add(this.dockerComposeFile.toString());
+				if (this.composeFile != null) {
+					result.add("--file");
+					result.add(this.composeFile.toString());
+				}
 				result.add("--ansi");
 				result.add("never");
 				for (String profile : this.activeProfiles) {
@@ -143,7 +145,7 @@ class DockerCli {
 	 * @return the docker compose file
 	 */
 	DockerComposeFile getDockerComposeFile() {
-		return this.dockerComposeFile;
+		return this.composeFile;
 	}
 
 }

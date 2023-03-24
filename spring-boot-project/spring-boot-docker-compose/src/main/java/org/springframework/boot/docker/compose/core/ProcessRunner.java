@@ -48,6 +48,13 @@ class ProcessRunner {
 
 	/**
 	 * Create a new {@link ProcessRunner} instance.
+	 */
+	ProcessRunner() {
+		this(null);
+	}
+
+	/**
+	 * Create a new {@link ProcessRunner} instance.
 	 * @param workingDirectory the working directory for the process
 	 */
 	ProcessRunner(File workingDirectory) {

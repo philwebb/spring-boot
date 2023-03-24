@@ -31,7 +31,8 @@ public record DockerComposeOrigin(DockerComposeFile composeFile, String serviceN
 
 	@Override
 	public String toString() {
-		return "Docker compose service '%s' defined in '%s'".formatted(this.serviceName, this.composeFile);
+		return "Docker compose service '%s' defined in '%s'".formatted(this.serviceName,
+				(this.composeFile != null) ? this.composeFile : "default compose file");
 	}
 
 }

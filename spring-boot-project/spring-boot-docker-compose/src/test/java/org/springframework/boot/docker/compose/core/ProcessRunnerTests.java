@@ -16,7 +16,12 @@
 
 package org.springframework.boot.docker.compose.core;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ProcessRunner}.
@@ -25,7 +30,32 @@ import org.junit.jupiter.api.Disabled;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled("Not yet implements")
+@DisabledIfProcessUnavailable("docker")
 class ProcessRunnerTests {
+
+	private ProcessRunner processRunner = new ProcessRunner();
+
+	@Test
+	void run() {
+		String out = this.processRunner.run("docker", "--version");
+		assertThat(out).isNotEmpty();
+	}
+
+	@Test
+	void runWhenProcessDoesNotStart() {
+		assertThatExceptionOfType(ProcessStartException.class)
+			.isThrownBy(() -> this.processRunner.run("iverymuchdontexist", "--version"));
+	}
+
+	@Test
+	void runWhenProcessReturnsNonZeroExitCode() {
+		assertThatExceptionOfType(ProcessExitException.class)
+			.isThrownBy(() -> this.processRunner.run("docker", "-thisdoesntwork"))
+			.satisfies(ex -> {
+				assertThat(ex.getExitCode()).isGreaterThan(0);
+				assertThat(ex.getStdOut()).isEmpty();
+				assertThat(ex.getStdErr()).isNotEmpty();
+			});
+	}
 
 }

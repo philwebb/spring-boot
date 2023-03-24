@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.core;
-
-import java.util.Collections;
-import java.util.List;
+package org.springframework.boot.testsupport.process;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link DockerCli}.
+ * Tests for {@link DisabledIfProcessUnavailable}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@DisabledIfProcessUnavailable({ "docker", "compose" })
-class DockerCliTests {
+@DisabledIfProcessUnavailable("iverymuchdontexist")
+class DisabledIfProcessUnavailableTests {
 
 	@Test
-	void runBasicCommand() {
-		DockerCli cli = new DockerCli(null, null, Collections.emptySet());
-		List<DockerCliContextResponse> context = cli.run(new DockerCliCommand.Context());
-		assertThat(context).isNotEmpty();
+	void test() {
+		fail("I should have been disabled");
 	}
 
 }
