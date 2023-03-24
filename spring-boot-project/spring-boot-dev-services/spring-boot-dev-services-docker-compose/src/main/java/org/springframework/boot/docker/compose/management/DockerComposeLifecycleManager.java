@@ -36,9 +36,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.log.LogMessage;
 
 /**
+ * Manages the lifecycle for docker compose services.
+ *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @see DockerComposeListener
  */
 class DockerComposeLifecycleManager {
 
@@ -76,7 +79,7 @@ class DockerComposeLifecycleManager {
 		this.serviceReadinessChecks = serviceReadinessChecks;
 	}
 
-	void prepare() {
+	void startup() {
 		// FIXME if we're in a test exit we might want to exit
 		DockerComposeFile composeFile = getComposeFile();
 		Set<String> activeProfiles = this.properties.getProfiles().getActive();
@@ -89,9 +92,9 @@ class DockerComposeLifecycleManager {
 		LifecycleManagement lifecycleManagement = this.properties.getLifecycleManagement();
 		Startup startup = this.properties.getStartup();
 		Shutdown shutdown = this.properties.getShutdown();
-		if (lifecycleManagement.shouldStart() && !dockerCompose.hasRunningServices()) {
+		if (lifecycleManagement.shouldStartup() && !dockerCompose.hasRunningServices()) {
 			startup.getCommand().applyTo(dockerCompose);
-			if (lifecycleManagement.shouldStop()) {
+			if (lifecycleManagement.shouldShutdown()) {
 				this.shutdownHandlers.add(() -> shutdown.getCommand().applyTo(dockerCompose, shutdown.getTimeout()));
 			}
 		}

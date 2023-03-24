@@ -18,10 +18,14 @@ package org.springframework.boot.docker.compose.management;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * @author pwebb
+ * Tests for {@link DockerComposeLifecycleManager}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DockerComposeLifecycleManagerTests {
 

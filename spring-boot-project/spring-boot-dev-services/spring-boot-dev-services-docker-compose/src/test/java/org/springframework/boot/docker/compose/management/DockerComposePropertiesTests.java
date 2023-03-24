@@ -16,18 +16,59 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import java.io.File;
+import java.time.Duration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author pwebb
+ * Tests for {@link DockerComposeProperties}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DockerComposePropertiesTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void getWhenNoPropertiesReturnsNew() {
+		Binder binder = new Binder(new MapConfigurationPropertySource());
+		DockerComposeProperties properties = DockerComposeProperties.get(binder);
+		assertThat(properties.getFile()).isNull();
+		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_AND_STOP);
+		assertThat(properties.getHost()).isNull();
+		assertThat(properties.getStartup().getCommand()).isEqualTo(StartupCommand.UP);
+		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutdownCommand.DOWN);
+		assertThat(properties.getShutdown().getTimeout()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(properties.getProfiles().getActive()).isEmpty();
+	}
+
+	@Test
+	void getWhenPropertiesReturnsBound() {
+		Map<String, String> source = new LinkedHashMap<>();
+		source.put("spring.docker.compose.file", "my-compose.yml");
+		source.put("spring.docker.compose.lifecycle-management", "start-only");
+		source.put("spring.docker.compose.host", "myhost");
+		source.put("spring.docker.compose.startup.command", "start");
+		source.put("spring.docker.compose.shutdown.command", "stop");
+		source.put("spring.docker.compose.shutdown.timeout", "5s");
+		source.put("spring.docker.compose.profiles.active", "myprofile");
+		Binder binder = new Binder(new MapConfigurationPropertySource(source));
+		DockerComposeProperties properties = DockerComposeProperties.get(binder);
+		assertThat(properties.getFile()).isEqualTo(new File("my-compose.yml"));
+		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_ONLY);
+		assertThat(properties.getHost()).isEqualTo("myhost");
+		assertThat(properties.getStartup().getCommand()).isEqualTo(StartupCommand.START);
+		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutdownCommand.STOP);
+		assertThat(properties.getShutdown().getTimeout()).isEqualTo(Duration.ofSeconds(5));
+		assertThat(properties.getProfiles().getActive()).containsExactly("myprofile");
 	}
 
 }

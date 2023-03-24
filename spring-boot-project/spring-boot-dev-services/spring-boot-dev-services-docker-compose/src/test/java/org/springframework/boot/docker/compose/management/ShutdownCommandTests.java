@@ -16,18 +16,38 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.docker.compose.service.DockerCompose;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author pwebb
+ * Tests for {@link ShutdownCommand}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ShutdownCommandTests {
 
+	private DockerCompose dockerCompose = mock(DockerCompose.class);
+
+	private Duration duration = Duration.ofSeconds(10);
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void applyToWhenDown() {
+		ShutdownCommand.DOWN.applyTo(this.dockerCompose, this.duration);
+		verify(this.dockerCompose).down(this.duration);
+	}
+
+	@Test
+	void applyToWhenStart() {
+		ShutdownCommand.STOP.applyTo(this.dockerCompose, this.duration);
+		verify(this.dockerCompose).stop(this.duration);
 	}
 
 }

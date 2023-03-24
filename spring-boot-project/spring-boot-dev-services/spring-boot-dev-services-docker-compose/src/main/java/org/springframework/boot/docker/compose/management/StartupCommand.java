@@ -21,12 +21,23 @@ import java.util.function.Consumer;
 import org.springframework.boot.docker.compose.service.DockerCompose;
 
 /**
- * @author pwebb
+ * Command used to startup docker compose.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 3.1.0
  */
 public enum StartupCommand {
 
+	/**
+	 * Startup using {@code docker compose up}.
+	 */
 	UP(DockerCompose::up),
 
+	/**
+	 * Startup using {@code docker compose start}.
+	 */
 	START(DockerCompose::start);
 
 	private final Consumer<DockerCompose> action;

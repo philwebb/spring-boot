@@ -18,16 +18,67 @@ package org.springframework.boot.docker.compose.management;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationShutdownHandlers;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.mock.env.MockEnvironment;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author pwebb
+ * Tests for {@link DockerComposeListener}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DockerComposeListenerTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void onApplicationPreparedEventCreatesAndStartsDockerComposeLifecycleManager() {
+		SpringApplicationShutdownHandlers shutdownHandlers = mock(SpringApplicationShutdownHandlers.class);
+		SpringApplication application = mock(SpringApplication.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		MockEnvironment environment = new MockEnvironment();
+		given(context.getEnvironment()).willReturn(environment);
+		TestDockerComposeListener listener = new TestDockerComposeListener(shutdownHandlers, context);
+		ApplicationPreparedEvent event = new ApplicationPreparedEvent(application, new String[0], context);
+		listener.onApplicationEvent(event);
+		assertThat(listener.getManager()).isNotNull();
+		verify(listener.getManager()).startup();
+	}
+
+	class TestDockerComposeListener extends DockerComposeListener {
+
+		private final ConfigurableApplicationContext context;
+
+		private DockerComposeLifecycleManager manager;
+
+		TestDockerComposeListener(SpringApplicationShutdownHandlers shutdownHandlers,
+				ConfigurableApplicationContext context) {
+			super(shutdownHandlers);
+			this.context = context;
+		}
+
+		@Override
+		protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(
+				ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties) {
+			this.manager = mock(DockerComposeLifecycleManager.class);
+			assertThat(applicationContext).isSameAs(this.context);
+			assertThat(binder).isNotNull();
+			assertThat(properties).isNotNull();
+			return this.manager;
+		}
+
+		public DockerComposeLifecycleManager getManager() {
+			return this.manager;
+		}
+
 	}
 
 }

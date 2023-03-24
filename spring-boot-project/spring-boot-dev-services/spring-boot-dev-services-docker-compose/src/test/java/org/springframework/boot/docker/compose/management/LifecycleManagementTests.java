@@ -18,16 +18,45 @@ package org.springframework.boot.docker.compose.management;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author pwebb
+ * Tests for {@link LifecycleManagement}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class LifecycleManagementTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void shouldStartupWhenNone() {
+		assertThat(LifecycleManagement.NONE.shouldStartup()).isFalse();
+	}
+
+	@Test
+	void shouldShutdownWhenNone() {
+		assertThat(LifecycleManagement.NONE.shouldShutdown()).isFalse();
+	}
+
+	@Test
+	void shouldStartupWhenStartOnly() {
+		assertThat(LifecycleManagement.START_ONLY.shouldStartup()).isTrue();
+	}
+
+	@Test
+	void shouldShutdownWhenStartOnly() {
+		assertThat(LifecycleManagement.START_ONLY.shouldShutdown()).isFalse();
+	}
+
+	@Test
+	void shouldStartupWhenStartAndStop() {
+		assertThat(LifecycleManagement.START_AND_STOP.shouldStartup()).isTrue();
+	}
+
+	@Test
+	void shouldShutdownWhenStartAndStop() {
+		assertThat(LifecycleManagement.START_AND_STOP.shouldShutdown()).isTrue();
 	}
 
 }

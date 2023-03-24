@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.management;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,7 +44,7 @@ class DockerComposeProperties {
 	/**
 	 * Docker compose lifecycle management.
 	 */
-	private LifecycleManagement lifecycleManagement;
+	private LifecycleManagement lifecycleManagement = LifecycleManagement.START_AND_STOP;
 
 	/**
 	 * Hostname or IP of the machine where the docker containers are started.
@@ -101,6 +102,13 @@ class DockerComposeProperties {
 		return this.profiles;
 	}
 
+	static DockerComposeProperties get(Binder binder) {
+		return binder.bind(NAME, DockerComposeProperties.class).orElseGet(DockerComposeProperties::new);
+	}
+
+	/**
+	 * Startup properties.
+	 */
 	static class Startup {
 
 		/**
@@ -118,12 +126,15 @@ class DockerComposeProperties {
 
 	}
 
+	/**
+	 * Shutdown properties.
+	 */
 	static class Shutdown {
 
 		/**
 		 * The command used to stop docker compose.
 		 */
-		private ShutdownCommand command = ShutdownCommand.STOP;
+		private ShutdownCommand command = ShutdownCommand.DOWN;
 
 		/**
 		 * The timeout for stopping docker compose. Use '0' for forced stop.
@@ -148,12 +159,15 @@ class DockerComposeProperties {
 
 	}
 
+	/**
+	 * Profiles properties.
+	 */
 	static class Profiles {
 
 		/**
 		 * Docker compose profiles that should be active.
 		 */
-		private Set<String> active;
+		private Set<String> active = new LinkedHashSet<>();
 
 		Set<String> getActive() {
 			return this.active;
@@ -163,10 +177,6 @@ class DockerComposeProperties {
 			this.active = active;
 		}
 
-	}
-
-	static DockerComposeProperties get(Binder binder) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

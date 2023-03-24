@@ -18,16 +18,32 @@ package org.springframework.boot.docker.compose.management;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.docker.compose.service.DockerCompose;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author pwebb
+ * Tests for {@link StartupCommand}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class StartupCommandTests {
 
+	private DockerCompose dockerCompose = mock(DockerCompose.class);
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void applyToWhenUp() {
+		StartupCommand.UP.applyTo(this.dockerCompose);
+		verify(this.dockerCompose).up();
+	}
+
+	@Test
+	void applyToWhenStart() {
+		StartupCommand.START.applyTo(this.dockerCompose);
+		verify(this.dockerCompose).start();
 	}
 
 }

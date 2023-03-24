@@ -21,6 +21,7 @@ package org.springframework.boot.docker.compose.management;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.1.0
  */
 public enum LifecycleManagement {
@@ -40,29 +41,29 @@ public enum LifecycleManagement {
 	 */
 	START_AND_STOP(true, true);
 
-	private final boolean start;
+	private final boolean startup;
 
-	private final boolean stop;
+	private final boolean shutdown;
 
-	LifecycleManagement(boolean start, boolean stop) {
-		this.start = start;
-		this.stop = stop;
+	LifecycleManagement(boolean startup, boolean shutdown) {
+		this.startup = startup;
+		this.shutdown = shutdown;
 	}
 
 	/**
 	 * Return whether docker compose should be started.
 	 * @return whether docker compose should be started.
 	 */
-	boolean shouldStart() {
-		return this.start;
+	boolean shouldStartup() {
+		return this.startup;
 	}
 
 	/**
 	 * Return whether docker compose should be stopped.
 	 * @return whether docker compose should be stopped
 	 */
-	boolean shouldStop() {
-		return this.stop;
+	boolean shouldShutdown() {
+		return this.shutdown;
 	}
 
 }

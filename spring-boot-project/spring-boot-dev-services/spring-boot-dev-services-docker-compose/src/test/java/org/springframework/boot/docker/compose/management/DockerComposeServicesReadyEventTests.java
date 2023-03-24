@@ -16,18 +16,40 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.context.ApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * @author pwebb
+ * Tests for {@link DockerComposeServicesReadyEvent}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DockerComposeServicesReadyEventTests {
 
+	private ApplicationContext applicationContext = mock(ApplicationContext.class);
+
+	private List<RunningService> runningServices = List.of(mock(RunningService.class));
+
+	private DockerComposeServicesReadyEvent event = new DockerComposeServicesReadyEvent(this.applicationContext,
+			this.runningServices);
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void getSourceReturnsSource() {
+		assertThat(this.event.getSource()).isSameAs(this.applicationContext);
+	}
+
+	@Test
+	void getRunningServicesReturnsRunningServices() {
+		assertThat(this.event.getRunningServices()).isSameAs(this.runningServices);
 	}
 
 }

@@ -18,16 +18,40 @@ package org.springframework.boot.docker.compose.management;
 
 import java.util.List;
 
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * @author pwebb
+ * {@link ApplicationEvent} published when docker compose {@link RunningService} instance
+ * are available. This even is published from the {@link ApplicationPreparedEvent} that
+ * performs the docker compose startup.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class DockerComposeServicesReadyEvent extends ApplicationEvent {
 
-	DockerComposeServicesReadyEvent(Object source, List<RunningService> runningServices) {
+	private final List<RunningService> runningServices;
+
+	DockerComposeServicesReadyEvent(ApplicationContext source, List<RunningService> runningServices) {
 		super(source);
+		this.runningServices = runningServices;
+	}
+
+	@Override
+	public ApplicationContext getSource() {
+		return (ApplicationContext) super.getSource();
+	}
+
+	/**
+	 * Return the relevant docker compose services that are running.
+	 * @return the running services
+	 */
+	public List<RunningService> getRunningServices() {
+		return this.runningServices;
 	}
 
 }

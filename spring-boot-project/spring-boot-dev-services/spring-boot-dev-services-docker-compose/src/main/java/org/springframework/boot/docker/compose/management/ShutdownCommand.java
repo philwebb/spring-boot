@@ -22,12 +22,23 @@ import java.util.function.BiConsumer;
 import org.springframework.boot.docker.compose.service.DockerCompose;
 
 /**
- * @author pwebb
+ * Command used to shutdown docker compose.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @since 3.1.0
  */
 public enum ShutdownCommand {
 
+	/**
+	 * Shutdown using {@code docker compose down}.
+	 */
 	DOWN(DockerCompose::down),
 
+	/**
+	 * Shutdown using {@code docker compose stop}.
+	 */
 	STOP(DockerCompose::stop);
 
 	private final BiConsumer<DockerCompose, Duration> action;
