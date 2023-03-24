@@ -1,0 +1,3 @@
+# See org.springframework.boot.devservices.dockercompose.DockerComposeDevServiceProviderTests.loadRunningServicePropertyExtractorsThroughSpringFactories
+org.springframework.boot.devservices.dockercompose.RunningServicePropertyExtractor=\
+  org.springframework.boot.devservices.dockercompose.DockerComposeDevServiceProviderTests.TestRunningServicePropertyExtractor
