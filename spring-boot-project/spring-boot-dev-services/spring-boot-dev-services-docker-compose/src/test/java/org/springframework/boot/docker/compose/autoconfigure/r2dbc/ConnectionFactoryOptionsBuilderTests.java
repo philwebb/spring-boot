@@ -16,18 +16,79 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.r2dbc;
 
+import java.util.Collections;
+import java.util.Map;
+
+import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.docker.compose.autoconfigure.jdbc.JdbcUrlBuilder;
+import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.service.RunningService.Ports;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
- * @author pwebb
+ * Tests for {@link ConnectionFactoryOptionsBuilder}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ConnectionFactoryOptionsBuilderTests {
 
+	private ConnectionFactoryOptionsBuilder builder = new ConnectionFactoryOptionsBuilder("mydb", 1234);
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void createWhenDriverProtocolIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new JdbcUrlBuilder(null, 123))
+			.withMessage("DriverProtocol must not be null");
+	}
+
+	@Test
+	void buildBuildsOptions() {
+		RunningService service = mockService(456);
+		ConnectionFactoryOptions options = this.builder.build(service, "mydb", "user", "pass");
+		assertThat(options).hasToString(
+				"ConnectionFactoryOptions{options={database=mydb, host=myhost, driver=mydb, password=REDACTED, port=456, user=user}}");
+	}
+
+	@Test
+	void buildWhenHasParamsLabelBuildsOptions() {
+		RunningService service = mockService(456, Map.of("org.springframework.boot.r2dbc.parameters", "foo=bar"));
+		ConnectionFactoryOptions options = this.builder.build(service, "mydb", "user", "pass");
+		assertThat(options).hasToString(
+				"ConnectionFactoryOptions{options={foo=bar, database=mydb, host=myhost, driver=mydb, password=REDACTED, port=456, user=user}}");
+	}
+
+	@Test
+	void buildWhenServiceIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(null, "mydb", "user", "pass"))
+			.withMessage("Service must not be null");
+	}
+
+	@Test
+	void buildWhenDatabaseIsNullThrowsException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> this.builder.build(mockService(456), null, "user", "pass"))
+			.withMessage("Database must not be null");
+	}
+
+	private RunningService mockService(int mappedPort) {
+		return mockService(mappedPort, Collections.emptyMap());
+	}
+
+	private RunningService mockService(int mappedPort, Map<String, String> labels) {
+		RunningService service = mock(RunningService.class);
+		Ports ports = mock(Ports.class);
+		given(ports.get(1234)).willReturn(mappedPort);
+		given(service.host()).willReturn("myhost");
+		given(service.ports()).willReturn(ports);
+		given(service.labels()).willReturn(labels);
+		return service;
 	}
 
 }

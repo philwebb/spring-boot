@@ -16,18 +16,74 @@
 
 package org.springframework.boot.docker.compose.autoconfigure.jdbc;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.boot.docker.compose.service.RunningService.Ports;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
- * @author pwebb
+ * Tests for {@link JdbcUrlBuilder}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class JdbcUrlBuilderTests {
 
+	private JdbcUrlBuilder builder = new JdbcUrlBuilder("mydb", 1234);
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void createWhenDriverProtocolIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new JdbcUrlBuilder(null, 123))
+			.withMessage("DriverProtocol must not be null");
+	}
+
+	@Test
+	void buildBuildsUrl() {
+		RunningService service = mockService(456);
+		String url = this.builder.build(service, "mydb");
+		assertThat(url).isEqualTo("jdbc:mydb://myhost:456/mydb");
+	}
+
+	@Test
+	void buildWhenHasParamsLabelBuildsUrl() {
+		RunningService service = mockService(456, Map.of("org.springframework.boot.jdbc.parameters", "foo=bar"));
+		String url = this.builder.build(service, "mydb");
+		assertThat(url).isEqualTo("jdbc:mydb://myhost:456/mydb?foo=bar");
+	}
+
+	@Test
+	void buildWhenServiceIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(null, "mydb"))
+			.withMessage("Service must not be null");
+	}
+
+	@Test
+	void buildWhenDatabaseIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(mockService(456), null))
+			.withMessage("Database must not be null");
+	}
+
+	private RunningService mockService(int mappedPort) {
+		return mockService(mappedPort, Collections.emptyMap());
+	}
+
+	private RunningService mockService(int mappedPort, Map<String, String> labels) {
+		RunningService service = mock(RunningService.class);
+		Ports ports = mock(Ports.class);
+		given(ports.get(1234)).willReturn(mappedPort);
+		given(service.host()).willReturn("myhost");
+		given(service.ports()).willReturn(ports);
+		given(service.labels()).willReturn(labels);
+		return service;
 	}
 
 }

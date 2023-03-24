@@ -17,28 +17,53 @@
 package org.springframework.boot.docker.compose.autoconfigure.jdbc;
 
 import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
+ * Utility used to build a JDBC URL for a {@link RunningService}.
+ *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 3.1.0
  */
 public class JdbcUrlBuilder {
 
-	private final String protocol;
+	private static final String PARAMETERS_LABEL = "org.springframework.boot.jdbc.parameters";
 
-	private final int sourcePort;
+	private final String driverProtocol;
 
-	public JdbcUrlBuilder(String protocol, int sourcePort) {
-		this.protocol = protocol;
-		this.sourcePort = sourcePort;
+	private final int containerPort;
+
+	/**
+	 * Create a new {@link JdbcUrlBuilder} instance.
+	 * @param driverProtocol the driver protocol
+	 * @param containerPort the source container port
+	 */
+	public JdbcUrlBuilder(String driverProtocol, int containerPort) {
+		Assert.notNull(driverProtocol, "DriverProtocol must not be null");
+		this.driverProtocol = driverProtocol;
+		this.containerPort = containerPort;
 	}
 
+	/**
+	 * Build a JDBC URL for the given {@link RunningService} and database.
+	 * @param service the running service
+	 * @param database the database to connect to
+	 * @return a new JDBC URL
+	 */
 	public String build(RunningService service, String database) {
-		return null;
+		Assert.notNull(service, "Service must not be null");
+		Assert.notNull(database, "Database must not be null");
+		String parameters = getParameters(service);
+		return "jdbc:%s://%s:%d/%s%s".formatted(this.driverProtocol, service.host(),
+				service.ports().get(this.containerPort), database, parameters);
 	}
 
-	// FIXME String parameters =
-	// source.labels().getOrDefault("org.springframework.boot.jdbc.parameters", "");
+	private String getParameters(RunningService service) {
+		String parameters = service.labels().get(PARAMETERS_LABEL);
+		return (StringUtils.hasLength(parameters)) ? "?" + parameters : "";
+	}
 
 }

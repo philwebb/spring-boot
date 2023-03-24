@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devservices.dockercompose;
+package org.springframework.boot.docker.compose.autoconfigure.test;
 
 import java.io.IOException;
 import java.io.InputStream;
