@@ -16,18 +16,47 @@
 
 package org.springframework.boot.docker.compose.readiness;
 
+import java.time.Duration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author pwebb
+ * Tests for {@link ReadinessProperties}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ReadinessPropertiesTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void getWhenNoPropertiesReturnsNewInstance() {
+		Binder binder = new Binder(new MapConfigurationPropertySource());
+		ReadinessProperties properties = ReadinessProperties.get(binder);
+		assertThat(properties.getTimeout()).isEqualTo(Duration.ofSeconds(30));
+		assertThat(properties.getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(200));
+		assertThat(properties.getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(200));
+	}
+
+	@Test
+	void getWhenPropertiesReturnsBoundInstance() {
+		Map<String, String> source = new LinkedHashMap<>();
+		source.put("spring.docker.compose.readiness.timeout", "10s");
+		source.put("spring.docker.compose.readiness.tcp.connect-timeout", "400ms");
+		source.put("spring.docker.compose.readiness.tcp.read-timeout", "500ms");
+		Binder binder = new Binder(new MapConfigurationPropertySource(source));
+		ReadinessProperties properties = ReadinessProperties.get(binder);
+		assertThat(properties.getTimeout()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(properties.getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(400));
+		assertThat(properties.getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(500));
+
 	}
 
 }

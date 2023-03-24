@@ -22,6 +22,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,32 +46,37 @@ import org.springframework.core.log.LogMessage;
  */
 public class ServiceReadinessChecks {
 
-	private static final String DISABLE_LABEL = "org.springframework.boot.readiness-check.disable";
-
 	private static final Log logger = LogFactory.getLog(ServiceReadinessChecks.class);
+
+	private static final String DISABLE_LABEL = "org.springframework.boot.readiness-check.disable";
 
 	private static final Duration SLEEP_BETWEEN_READINESS_TRIES = Duration.ofSeconds(1);
 
 	private final Clock clock;
+
+	private final Consumer<Duration> sleep;
 
 	private final ReadinessProperties properties;
 
 	private final List<ServiceReadinessCheck> checks;
 
 	public ServiceReadinessChecks(ClassLoader classLoader, Environment environment, Binder binder) {
-		this(Clock.systemUTC(), SpringFactoriesLoader.forDefaultResourceLocation(classLoader), classLoader, environment,
-				binder);
+		this(Clock.systemUTC(), ServiceReadinessChecks::sleep,
+				SpringFactoriesLoader.forDefaultResourceLocation(classLoader), classLoader, environment, binder,
+				TcpConnectServiceReadinessCheck::new);
 	}
 
-	ServiceReadinessChecks(Clock clock, SpringFactoriesLoader loader, ClassLoader classLoader, Environment environment,
-			Binder binder) {
+	ServiceReadinessChecks(Clock clock, Consumer<Duration> sleep, SpringFactoriesLoader loader, ClassLoader classLoader,
+			Environment environment, Binder binder,
+			Function<ReadinessProperties.Tcp, ServiceReadinessCheck> tcpCheckFactory) {
 		ArgumentResolver argumentResolver = ArgumentResolver.of(ClassLoader.class, classLoader)
 			.and(Environment.class, environment)
 			.and(Binder.class, binder);
 		this.clock = clock;
+		this.sleep = sleep;
 		this.properties = ReadinessProperties.get(binder);
 		this.checks = new ArrayList<>(loader.load(ServiceReadinessCheck.class, argumentResolver));
-		this.checks.add(new TcpConnectServiceReadinessCheck(this.properties.getTcp()));
+		this.checks.add(tcpCheckFactory.apply(this.properties.getTcp()));
 	}
 
 	/**
@@ -88,7 +95,7 @@ public class ServiceReadinessChecks {
 			if (elapsed.compareTo(timeout) > 0) {
 				throw new ReadinessTimeoutException(timeout, exceptions);
 			}
-			sleep(SLEEP_BETWEEN_READINESS_TRIES);
+			this.sleep.accept(SLEEP_BETWEEN_READINESS_TRIES);
 		}
 	}
 

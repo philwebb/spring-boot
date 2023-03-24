@@ -16,18 +16,159 @@
 
 package org.springframework.boot.docker.compose.readiness;
 
-import org.junit.jupiter.api.Test;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.docker.compose.service.RunningService;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
+import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
+import org.springframework.mock.env.MockEnvironment;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
- * @author pwebb
+ * Tests for {@link ServiceReadinessChecks}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ServiceReadinessChecksTests {
 
+	private Clock clock;
+
+	Instant now = Instant.now();
+
+	private MockSpringFactoriesLoader loader;
+
+	private ClassLoader classLoader;
+
+	private MockEnvironment environment;
+
+	private Binder binder;
+
+	private RunningService runningService;
+
+	private List<RunningService> runningServices;
+
+	private MockServiceReadinessCheck mockTcpCheck = new MockServiceReadinessCheck();
+
+	@BeforeEach
+	void setup() {
+		this.clock = mock(Clock.class);
+		given(this.clock.instant()).willAnswer((args) -> this.now);
+		this.loader = new MockSpringFactoriesLoader();
+		this.classLoader = getClass().getClassLoader();
+		this.environment = new MockEnvironment();
+		this.binder = Binder.get(this.environment);
+		this.runningService = mock(RunningService.class);
+		this.runningServices = List.of(this.runningService);
+	}
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void loadCanResolveArguments() {
+		this.loader = spy(MockSpringFactoriesLoader.class);
+		createChecks();
+		ArgumentCaptor<ArgumentResolver> captor = ArgumentCaptor.forClass(ArgumentResolver.class);
+		verify(this.loader).load(eq(ServiceReadinessCheck.class), captor.capture());
+		ArgumentResolver argumentResolver = captor.getValue();
+		assertThat(argumentResolver.resolve(ClassLoader.class)).isEqualTo(this.classLoader);
+		assertThat(argumentResolver.resolve(Environment.class)).isEqualTo(this.environment);
+		assertThat(argumentResolver.resolve(Binder.class)).isEqualTo(this.binder);
+	}
+
+	@Test
+	void waitUntilReadyWhenImmediatelyReady() {
+		MockServiceReadinessCheck check = new MockServiceReadinessCheck();
+		this.loader.addInstance(ServiceReadinessCheck.class, check);
+		createChecks().waitUntilReady(this.runningServices);
+		assertThat(check.getChecked()).contains(this.runningService);
+		assertThat(this.mockTcpCheck.getChecked()).contains(this.runningService);
+	}
+
+	@Test
+	void waitUntilReadyWhenTakesTimeToBeReady() {
+		MockServiceReadinessCheck check = new MockServiceReadinessCheck(2);
+		this.loader.addInstance(ServiceReadinessCheck.class, check);
+		createChecks().waitUntilReady(this.runningServices);
+		assertThat(check.getChecked()).hasSize(2).contains(this.runningService);
+		assertThat(this.mockTcpCheck.getChecked()).contains(this.runningService);
+	}
+
+	@Test
+	void waitUntilReadyWhenTimeout() {
+		MockServiceReadinessCheck check = new MockServiceReadinessCheck(Integer.MAX_VALUE);
+		this.loader.addInstance(ServiceReadinessCheck.class, check);
+		assertThatExceptionOfType(ReadinessTimeoutException.class)
+			.isThrownBy(() -> createChecks().waitUntilReady(this.runningServices))
+			.satisfies((ex) -> assertThat(ex.getSuppressed()).hasSize(1));
+		assertThat(check.getChecked()).hasSizeGreaterThan(10);
+	}
+
+	@Test
+	void waitForWhenServiceHasDisableLabelDoesNotCheck() {
+		given(this.runningService.labels()).willReturn(Map.of("org.springframework.boot.readiness-check.disable", ""));
+		MockServiceReadinessCheck check = new MockServiceReadinessCheck();
+		this.loader.addInstance(ServiceReadinessCheck.class, check);
+		createChecks().waitUntilReady(this.runningServices);
+		assertThat(check.getChecked()).isEmpty();
+		assertThat(this.mockTcpCheck.getChecked()).isEmpty();
+	}
+
+	void sleep(Duration duration) {
+		this.now = this.now.plus(duration);
+	}
+
+	private ServiceReadinessChecks createChecks() {
+		return new ServiceReadinessChecks(this.clock, this::sleep, this.loader, this.classLoader, this.environment,
+				this.binder, (properties) -> this.mockTcpCheck);
+	}
+
+	/**
+	 * Mock {@link ServiceReadinessCheck}.
+	 */
+	static class MockServiceReadinessCheck implements ServiceReadinessCheck {
+
+		private final Integer failUntil;
+
+		private final List<RunningService> checked = new ArrayList<>();
+
+		public MockServiceReadinessCheck() {
+			this(null);
+		}
+
+		public MockServiceReadinessCheck(Integer failUntil) {
+			this.failUntil = failUntil;
+		}
+
+		@Override
+		public void check(RunningService service) throws ServiceNotReadyException {
+			this.checked.add(service);
+			if (this.failUntil != null && this.checked.size() < this.failUntil) {
+				throw new ServiceNotReadyException(service, "Waiting");
+			}
+		}
+
+		List<RunningService> getChecked() {
+			return this.checked;
+		}
+
 	}
 
 }

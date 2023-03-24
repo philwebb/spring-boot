@@ -18,16 +18,25 @@ package org.springframework.boot.docker.compose.readiness;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.docker.compose.service.RunningService;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * @author pwebb
+ * Tests for {@link ServiceNotReadyException}.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ServiceNotReadyExceptionTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void getServiceReturnsService() {
+		RunningService service = mock(RunningService.class);
+		ServiceNotReadyException exception = new ServiceNotReadyException(service, "fail");
+		assertThat(exception.getService()).isEqualTo(service);
 	}
 
 }

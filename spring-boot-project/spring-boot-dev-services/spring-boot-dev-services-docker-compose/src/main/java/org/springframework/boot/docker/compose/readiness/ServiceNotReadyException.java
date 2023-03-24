@@ -31,7 +31,7 @@ public class ServiceNotReadyException extends RuntimeException {
 
 	private final RunningService service;
 
-	public ServiceNotReadyException(RunningService service, String message) {
+	ServiceNotReadyException(RunningService service, String message) {
 		this(service, message, null);
 	}
 
