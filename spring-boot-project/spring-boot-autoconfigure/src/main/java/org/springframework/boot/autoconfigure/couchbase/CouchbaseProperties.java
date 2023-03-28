@@ -148,8 +148,8 @@ public class CouchbaseProperties {
 	public static class Ssl {
 
 		/**
-		 * Whether to enable SSL support. Enabled automatically if a "keyStore" is
-		 * provided unless specified otherwise.
+		 * Whether to enable SSL support. Enabled automatically if a "keyStore" or
+		 * "bundle" is provided unless specified otherwise.
 		 */
 		private Boolean enabled;
 
@@ -163,8 +163,14 @@ public class CouchbaseProperties {
 		 */
 		private String keyStorePassword;
 
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
 		public Boolean getEnabled() {
-			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.keyStore);
+			return (this.enabled != null) ? this.enabled
+					: StringUtils.hasText(this.keyStore) || StringUtils.hasText(this.bundle);
 		}
 
 		public void setEnabled(Boolean enabled) {
@@ -185,6 +191,14 @@ public class CouchbaseProperties {
 
 		public void setKeyStorePassword(String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
 		}
 
 	}
