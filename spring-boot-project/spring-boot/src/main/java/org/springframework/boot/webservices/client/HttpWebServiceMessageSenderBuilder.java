@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -40,6 +41,8 @@ public class HttpWebServiceMessageSenderBuilder {
 
 	private Duration readTimeout;
 
+	private SslBundle sslBundle;
+
 	private Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactory;
 
 	/**
@@ -59,6 +62,16 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	public HttpWebServiceMessageSenderBuilder setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
+		return this;
+	}
+
+	/**
+	 * Set an {@link SslBundle} that will be used to configure a secure connection.
+	 * @param sslBundle the SSL bundle
+	 * @return a new builder instance
+	 */
+	public HttpWebServiceMessageSenderBuilder sslBundle(SslBundle sslBundle) {
+		this.sslBundle = sslBundle;
 		return this;
 	}
 
@@ -100,7 +113,7 @@ public class HttpWebServiceMessageSenderBuilder {
 
 	private ClientHttpRequestFactory getRequestFactory() {
 		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(this.connectTimeout,
-				this.readTimeout, null);
+				this.readTimeout, null, this.sslBundle);
 		return (this.requestFactory != null) ? this.requestFactory.apply(settings)
 				: ClientHttpRequestFactories.get(settings);
 	}
