@@ -37,6 +37,11 @@ class DockerComposeProperties {
 	static final String NAME = "spring.docker.compose";
 
 	/**
+	 * Whether docker compose support is enabled.
+	 */
+	private boolean enabled = true;
+
+	/**
 	 * Path to a specific docker compose configuration file.
 	 */
 	private File file;
@@ -65,6 +70,16 @@ class DockerComposeProperties {
 	 * Profiles configuration.
 	 */
 	private final Profiles profiles = new Profiles();
+
+	private final Skip skip = new Skip();
+
+	boolean isEnabled() {
+		return this.enabled;
+	}
+
+	void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	File getFile() {
 		return this.file;
@@ -100,6 +115,10 @@ class DockerComposeProperties {
 
 	Profiles getProfiles() {
 		return this.profiles;
+	}
+
+	Skip getSkip() {
+		return this.skip;
 	}
 
 	static DockerComposeProperties get(Binder binder) {
@@ -175,6 +194,26 @@ class DockerComposeProperties {
 
 		void setActive(Set<String> active) {
 			this.active = active;
+		}
+
+	}
+
+	/**
+	 * Skip options.
+	 */
+	static class Skip {
+
+		/**
+		 * Whether to skip in tests.
+		 */
+		private boolean inTests = true;
+
+		boolean isInTests() {
+			return this.inTests;
+		}
+
+		void setInTests(boolean inTests) {
+			this.inTests = inTests;
 		}
 
 	}

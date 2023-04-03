@@ -49,41 +49,50 @@ class DockerComposeLifecycleManager {
 
 	private static final Object IGNORE_LABEL = "org.springframework.boot.ignore";
 
+	private final File workingDirectory;
+
 	private final ApplicationContext applicationContext;
+
+	private final ClassLoader classLoader;
 
 	private final SpringApplicationShutdownHandlers shutdownHandlers;
 
 	private final DockerComposeProperties properties;
 
-	private final File workingDirectory;
+	private final DockerComposeSkipCheck skipCheck;
 
 	private final ServiceReadinessChecks serviceReadinessChecks;
 
 	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties) {
-		this.applicationContext = applicationContext;
-		this.shutdownHandlers = shutdownHandlers;
-		this.properties = properties;
-		this.workingDirectory = new File(".");
-		this.serviceReadinessChecks = new ServiceReadinessChecks(applicationContext.getClassLoader(),
-				applicationContext.getEnvironment(), binder);
+		this(null, applicationContext, binder, shutdownHandlers, properties, new DockerComposeSkipCheck(), null);
 	}
 
-	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
+	DockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext, Binder binder,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
-			ServiceReadinessChecks serviceReadinessChecks, File workingDirectory) {
+			DockerComposeSkipCheck skipCheck, ServiceReadinessChecks serviceReadinessChecks) {
+		this.workingDirectory = workingDirectory;
 		this.applicationContext = applicationContext;
+		this.classLoader = applicationContext.getClassLoader();
 		this.shutdownHandlers = shutdownHandlers;
 		this.properties = properties;
-		this.workingDirectory = workingDirectory;
-		this.serviceReadinessChecks = serviceReadinessChecks;
+		this.skipCheck = skipCheck;
+		this.serviceReadinessChecks = (serviceReadinessChecks != null) ? serviceReadinessChecks
+				: new ServiceReadinessChecks(this.classLoader, applicationContext.getEnvironment(), binder);
 	}
 
 	void startup() {
-		// FIXME if we're in a test exit we might want to exit
+		if (!this.properties.isEnabled()) {
+			logger.trace("Docker compose support not enabled");
+			return;
+		}
+		if (this.skipCheck.shouldSkip(this.classLoader, logger, this.properties.getSkip())) {
+			logger.trace("Docker compose support skipped");
+			return;
+		}
 		DockerComposeFile composeFile = getComposeFile();
 		Set<String> activeProfiles = this.properties.getProfiles().getActive();
-		DockerCompose dockerCompose = DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles);
+		DockerCompose dockerCompose = getDockerCompose(composeFile, activeProfiles);
 		if (!dockerCompose.hasDefinedServices()) {
 			logger.warn(LogMessage.format("No services defined in docker compose file '%s' with active profiles %s",
 					composeFile, activeProfiles));
@@ -106,11 +115,15 @@ class DockerComposeLifecycleManager {
 		this.applicationContext.publishEvent(event);
 	}
 
-	private DockerComposeFile getComposeFile() {
+	protected DockerComposeFile getComposeFile() {
 		DockerComposeFile composeFile = (this.properties.getFile() != null)
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
 		logger.info(LogMessage.format("Found docker compose file '%s'", composeFile));
 		return composeFile;
+	}
+
+	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
+		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles);
 	}
 
 	private boolean isIgnored(RunningService service) {
