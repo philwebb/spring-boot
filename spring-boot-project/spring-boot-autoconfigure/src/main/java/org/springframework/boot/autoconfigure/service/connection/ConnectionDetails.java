@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.service.connection;
 
+import java.util.function.Supplier;
+
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.origin.OriginProvider;
 
 /**
@@ -31,5 +36,13 @@ import org.springframework.boot.origin.OriginProvider;
  * @since 3.1.0
  */
 public interface ConnectionDetails {
+
+	@SuppressWarnings("unchecked")
+	default <T> void register(BeanDefinitionRegistry registry, String beanName) {
+		Class<T> beanType = (Class<T>) getClass();
+		Supplier<T> beanSupplier = () -> (T) this;
+		BeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		registry.registerBeanDefinition(beanName, beanDefinition);
+	}
 
 }
