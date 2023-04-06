@@ -33,6 +33,8 @@ import org.springframework.boot.docker.compose.management.DockerComposePropertie
 import org.springframework.boot.docker.compose.management.DockerComposeProperties.Startup;
 import org.springframework.boot.docker.compose.readiness.ServiceReadinessChecks;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.log.LogMessage;
 
 /**
@@ -59,23 +61,29 @@ class DockerComposeLifecycleManager {
 
 	private final DockerComposeProperties properties;
 
+	private final Set<ApplicationListener<?>> eventListeners;
+
 	private final DockerComposeSkipCheck skipCheck;
 
 	private final ServiceReadinessChecks serviceReadinessChecks;
 
 	DockerComposeLifecycleManager(ApplicationContext applicationContext, Binder binder,
-			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties) {
-		this(null, applicationContext, binder, shutdownHandlers, properties, new DockerComposeSkipCheck(), null);
+			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
+			Set<ApplicationListener<?>> eventListeners) {
+		this(null, applicationContext, binder, shutdownHandlers, properties, eventListeners,
+				new DockerComposeSkipCheck(), null);
 	}
 
 	DockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext, Binder binder,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
-			DockerComposeSkipCheck skipCheck, ServiceReadinessChecks serviceReadinessChecks) {
+			Set<ApplicationListener<?>> eventListeners, DockerComposeSkipCheck skipCheck,
+			ServiceReadinessChecks serviceReadinessChecks) {
 		this.workingDirectory = workingDirectory;
 		this.applicationContext = applicationContext;
 		this.classLoader = applicationContext.getClassLoader();
 		this.shutdownHandlers = shutdownHandlers;
 		this.properties = properties;
+		this.eventListeners = eventListeners;
 		this.skipCheck = skipCheck;
 		this.serviceReadinessChecks = (serviceReadinessChecks != null) ? serviceReadinessChecks
 				: new ServiceReadinessChecks(this.classLoader, applicationContext.getEnvironment(), binder);
@@ -110,9 +118,7 @@ class DockerComposeLifecycleManager {
 		List<RunningService> runningServices = new ArrayList<>(dockerCompose.getRunningServices());
 		runningServices.removeIf(this::isIgnored);
 		this.serviceReadinessChecks.waitUntilReady(runningServices);
-		DockerComposeServicesReadyEvent event = new DockerComposeServicesReadyEvent(this.applicationContext,
-				runningServices);
-		this.applicationContext.publishEvent(event);
+		publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext, runningServices));
 	}
 
 	protected DockerComposeFile getComposeFile() {
@@ -128,6 +134,17 @@ class DockerComposeLifecycleManager {
 
 	private boolean isIgnored(RunningService service) {
 		return service.labels().containsKey(IGNORE_LABEL);
+	}
+
+	/**
+	 * Publish a {@link DockerComposeServicesReadyEvent} directly to the event listeners
+	 * since we cannot call {@link ApplicationContext#publishEvent} this early.
+	 * @param event the event to publish
+	 */
+	private void publishEvent(DockerComposeServicesReadyEvent event) {
+		SimpleApplicationEventMulticaster multicaster = new SimpleApplicationEventMulticaster();
+		this.eventListeners.forEach(multicaster::addApplicationListener);
+		multicaster.multicastEvent(event);
 	}
 
 }

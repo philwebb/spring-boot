@@ -15,6 +15,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional("io.r2dbc:r2dbc-spi")
 	optional("org.mongodb:mongodb-driver-core")
 	optional("org.springframework.data:spring-data-r2dbc")
 

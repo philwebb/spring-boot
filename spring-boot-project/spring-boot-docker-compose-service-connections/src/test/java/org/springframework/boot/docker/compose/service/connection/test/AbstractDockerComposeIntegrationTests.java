@@ -16,15 +16,45 @@
 
 package org.springframework.boot.docker.compose.service.connection.test;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
- * @author pwebb
+ * Abstract base class for integration tests.
+ *
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
-public class AbstractDockerComposeIntegrationTests {
+@DisabledIfProcessUnavailable({ "docker", "compose" })
+public abstract class AbstractDockerComposeIntegrationTests {
 
-	protected final <T extends ConnectionDetails> T runProvider(Class<T> type) {
-		return null;
+	private final Resource composeResource;
+
+	protected AbstractDockerComposeIntegrationTests(String composeResource) {
+		this.composeResource = new ClassPathResource(composeResource, getClass());
+	}
+
+	protected final <T extends ConnectionDetails> T run(Class<T> type) {
+		SpringApplication application = new SpringApplication(Config.class);
+		Map<String, Object> properties = new LinkedHashMap<>();
+		properties.put("spring.docker.compose.skip.in-tests", "false");
+		properties.put("spring.docker.compose.file",
+				ThrowingSupplier.of(this.composeResource::getFile).get().getAbsolutePath());
+		application.setDefaultProperties(properties);
+		return application.run().getBean(type);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class Config {
+
 	}
 
 }

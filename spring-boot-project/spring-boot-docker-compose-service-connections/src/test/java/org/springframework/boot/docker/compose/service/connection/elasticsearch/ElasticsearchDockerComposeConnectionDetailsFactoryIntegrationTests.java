@@ -26,17 +26,21 @@ import org.springframework.boot.docker.compose.service.connection.test.AbstractD
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Docker compose integration tests for Elasticsearch.
+ * Integration tests for {@link ElasticsearchDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ElasticsearchDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+
+	ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests() {
+		super("elasticsearch-compose.yaml");
+	}
 
 	@Test
-	void test() {
-		ElasticsearchConnectionDetails connectionDetails = runProvider(ElasticsearchConnectionDetails.class);
+	void runCreatesConnectionDetails() {
+		ElasticsearchConnectionDetails connectionDetails = run(ElasticsearchConnectionDetails.class);
 		assertThat(connectionDetails.getUsername()).isEqualTo("elastic");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getPathPrefix()).isNull();

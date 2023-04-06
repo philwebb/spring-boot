@@ -14,32 +14,39 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.mysql;
+package org.springframework.boot.docker.compose.service.connection.rabbit;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Docker compose integration tests for MySQL.
+ * Integration tests for {@link RabbitDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled
-class MySqlDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+
+	RabbitDockerComposeConnectionDetailsFactoryIntegrationTests() {
+		super("rabbit-compose.yaml");
+	}
 
 	@Test
-	void shouldHaveJdbcServiceConnection() {
-		JdbcConnectionDetails connectionDetails = runProvider(JdbcConnectionDetails.class);
+	void runCreatesConnectionDetails() {
+		RabbitConnectionDetails connectionDetails = run(RabbitConnectionDetails.class);
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");
+		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");
+		assertThat(connectionDetails.getAddresses()).hasSize(1);
+		Address address = connectionDetails.getFirstAddress();
+		assertThat(address.host()).isNotNull();
+		assertThat(address.port()).isGreaterThan(0);
 	}
 
 }

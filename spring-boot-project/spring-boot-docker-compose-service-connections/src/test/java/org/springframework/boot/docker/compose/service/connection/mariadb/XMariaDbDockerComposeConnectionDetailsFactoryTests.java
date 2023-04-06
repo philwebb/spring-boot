@@ -22,14 +22,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link MariaDbDockerComposeConnectionDetailsFactoryTests}.
+ * Tests for {@link XMariaDbDockerComposeConnectionDetailsFactoryTests}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 @Disabled
-class MariaDbDockerComposeConnectionDetailsFactoryTests {
+class XMariaDbDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

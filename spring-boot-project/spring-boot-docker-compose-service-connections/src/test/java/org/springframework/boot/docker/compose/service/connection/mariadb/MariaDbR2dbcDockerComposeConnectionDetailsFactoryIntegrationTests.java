@@ -14,42 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.postgres;
+package org.springframework.boot.docker.compose.service.connection.mariadb;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Docker compose integration tests for PostgreSQL.
+ * Integration tests for {@link MariaDbR2dbcDockerComposeConnectionDetailsFactory}
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled
-class PostgresDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class MariaDbR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
-	@Test
-	void shouldHaveJdbcServiceConnection() {
-		JdbcConnectionDetails connectionDetails = runProvider(JdbcConnectionDetails.class);
-		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
-		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
+	MariaDbR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
+		super("mariadb-compose.yaml");
 	}
 
 	@Test
-	void shouldHaveR2dbcServiceConnection() {
-		R2dbcConnectionDetails connectionDetails = runProvider(R2dbcConnectionDetails.class);
+	void runCreatesConnectionDetails() {
+		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
 		assertThat(connectionDetails.getConnectionFactoryOptions()).hasToString("");
 		// assertThat(serviceConnection.getUsername()).isEqualTo("myuser");
 		// assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		// assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:postgresql://").endsWith("/mydatabase");
+		// assertThat(serviceConnection.getR2dbcUrl()).startsWith("r2dbc:mariadb://").endsWith("/mydatabase");
 	}
 
 }

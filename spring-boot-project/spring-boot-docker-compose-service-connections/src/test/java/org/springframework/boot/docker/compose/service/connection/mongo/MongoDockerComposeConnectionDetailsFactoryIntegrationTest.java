@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docker.compose.service.connection.mongo;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
@@ -25,18 +24,21 @@ import org.springframework.boot.docker.compose.service.connection.test.AbstractD
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Docker compose integration tests for Mongo.
+ * Integration tests for {@link MongoDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled
-class MongoDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class MongoDockerComposeConnectionDetailsFactoryIntegrationTest extends AbstractDockerComposeIntegrationTests {
+
+	MongoDockerComposeConnectionDetailsFactoryIntegrationTest() {
+		super("mongo-compose.yaml");
+	}
 
 	@Test
-	void test() {
-		MongoConnectionDetails connectionDetails = runProvider(MongoConnectionDetails.class);
+	void runCreatesConnectionDetails() {
+		MongoConnectionDetails connectionDetails = run(MongoConnectionDetails.class);
 		assertThat(connectionDetails.getConnectionString()).hasToString("");
 		assertThat(connectionDetails.getGridFs()).isNull();
 		// assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mongo-mongo");

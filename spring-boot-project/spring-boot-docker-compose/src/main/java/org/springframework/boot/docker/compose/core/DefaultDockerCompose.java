@@ -64,7 +64,7 @@ class DefaultDockerCompose implements DockerCompose {
 
 	@Override
 	public boolean hasDefinedServices() {
-		return !runComposePs().isEmpty();
+		return !this.cli.run(new DockerCliCommand.ComposeConfig()).services().isEmpty();
 	}
 
 	@Override

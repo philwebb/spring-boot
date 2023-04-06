@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import java.util.Set;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -47,12 +49,15 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		ConfigurableApplicationContext applicationContext = event.getApplicationContext();
 		Binder binder = Binder.get(applicationContext.getEnvironment());
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
-		createDockerComposeLifecycleManager(applicationContext, binder, properties).startup();
+		Set<ApplicationListener<?>> eventListeners = event.getSpringApplication().getListeners();
+		createDockerComposeLifecycleManager(applicationContext, binder, properties, eventListeners).startup();
 	}
 
 	protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(
-			ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties) {
-		return new DockerComposeLifecycleManager(applicationContext, binder, this.shutdownHandlers, properties);
+			ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties,
+			Set<ApplicationListener<?>> eventListeners) {
+		return new DockerComposeLifecycleManager(applicationContext, binder, this.shutdownHandlers, properties,
+				eventListeners);
 	}
 
 }

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Phillip Webb
  */
 @Disabled
-class ZipkinDockerComposeConnectionDetailsFactoryTests {
+class XZipkinDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

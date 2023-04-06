@@ -63,7 +63,7 @@ class MariaDbEnvironmentTests {
 	@Test
 	void createWhenHasNoDatabaseThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new MariaDbEnvironment(Map.of("MARIADB_PASSWORD", "secret")))
-			.withMessage("No MARIADB_DATABASE database defined");
+			.withMessage("No MARIADB_DATABASE defined");
 	}
 
 	@Test

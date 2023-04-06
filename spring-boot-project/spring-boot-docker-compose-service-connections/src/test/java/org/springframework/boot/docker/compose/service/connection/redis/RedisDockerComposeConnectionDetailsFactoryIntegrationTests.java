@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docker.compose.service.connection.redis;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
@@ -26,18 +25,21 @@ import org.springframework.boot.docker.compose.service.connection.test.AbstractD
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Docker compose integration tests for Redis.
+ * Integration test for {@link RedisDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@Disabled
-class RedisDockerComposeIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class RedisDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+
+	RedisDockerComposeConnectionDetailsFactoryIntegrationTests() {
+		super("redis-compose.yaml");
+	}
 
 	@Test
-	void test() {
-		RedisConnectionDetails connectionDetails = runProvider(RedisConnectionDetails.class);
+	void runCreatesConnectionDetails() {
+		RedisConnectionDetails connectionDetails = run(RedisConnectionDetails.class);
 		Standalone standalone = connectionDetails.getStandalone();
 		assertThat(connectionDetails.getUsername()).isNull();
 		assertThat(connectionDetails.getPassword()).isNull();

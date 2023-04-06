@@ -36,7 +36,7 @@ class ZipkinDockerComposeConnectionDetailsFactory
 
 	ZipkinDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
 		super("zipkin", classLoader,
-				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinServiceConnection");
+				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
 	}
 
 	@Override

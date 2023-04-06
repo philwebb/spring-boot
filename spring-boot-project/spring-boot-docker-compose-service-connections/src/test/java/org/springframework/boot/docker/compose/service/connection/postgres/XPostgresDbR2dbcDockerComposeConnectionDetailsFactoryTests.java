@@ -22,14 +22,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link PostgresDbR2dbcDockerComposeConnectionDetailsFactory}.
+ * Tests for {@link PostgresR2dbcDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 @Disabled
-class PostgresDbR2dbcDockerComposeConnectionDetailsFactoryTests {
+class XPostgresDbR2dbcDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

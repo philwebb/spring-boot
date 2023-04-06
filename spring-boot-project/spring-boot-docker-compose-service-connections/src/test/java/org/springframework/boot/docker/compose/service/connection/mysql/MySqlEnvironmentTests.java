@@ -49,7 +49,7 @@ class MySqlEnvironmentTests {
 	@Test
 	void createWhenHasNoDatabaseThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new MySqlEnvironment(Map.of("MYSQL_PASSWORD", "secret")))
-			.withMessage("No MYSQL_DATABASE database defined");
+			.withMessage("No MYSQL_DATABASE defined");
 	}
 
 	@Test

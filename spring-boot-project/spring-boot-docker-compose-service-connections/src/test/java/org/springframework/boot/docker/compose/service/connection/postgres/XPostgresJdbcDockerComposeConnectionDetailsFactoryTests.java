@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Phillip Webb
  */
 @Disabled
-class PostgresJdbcDockerComposeConnectionDetailsFactoryTests {
+class XPostgresJdbcDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

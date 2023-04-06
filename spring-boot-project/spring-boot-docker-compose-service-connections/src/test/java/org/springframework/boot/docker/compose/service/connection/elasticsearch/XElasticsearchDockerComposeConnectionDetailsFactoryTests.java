@@ -16,9 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.elasticsearch;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -29,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ElasticsearchDockerComposeConnectionDetailsFactoryTests {
+@Disabled
+class XElasticsearchDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

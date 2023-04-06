@@ -32,10 +32,10 @@ import org.springframework.boot.docker.compose.service.connection.r2dbc.Connecti
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MySqlDbR2dbcDockerComposeConnectionDetailsFactory
+class MySqlR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	MySqlDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
+	MySqlR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
 		super("mysql", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 

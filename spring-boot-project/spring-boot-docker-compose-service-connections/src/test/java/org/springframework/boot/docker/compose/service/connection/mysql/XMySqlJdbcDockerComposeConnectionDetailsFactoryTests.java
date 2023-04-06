@@ -22,14 +22,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Test for {@link MySqlDbR2dbcDockerComposeConnectionDetailsFactory}.
+ * Test for {@link MySqlJdbcDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 @Disabled
-class MySqlDbR2dbcDockerComposeConnectionDetailsFactoryTests {
+class XMySqlJdbcDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

@@ -48,7 +48,7 @@ class MySqlJdbcDockerComposeConnectionDetailsFactory
 	static class MySqlJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mariadb", 3306);
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("mysql", 3306);
 
 		private final MySqlEnvironment environment;
 

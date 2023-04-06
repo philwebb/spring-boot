@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Phillip Webb
  */
 @Disabled
-class RabbitDockerComposeConnectionDetailsFactoryTests {
+class XRabbitDockerComposeConnectionDetailsFactoryTests {
 
 	@Test
 	void test() {

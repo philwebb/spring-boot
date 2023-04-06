@@ -32,10 +32,10 @@ import org.springframework.boot.docker.compose.service.connection.r2dbc.Connecti
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class PostgresDbR2dbcDockerComposeConnectionDetailsFactory
+class PostgresR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	PostgresDbR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
+	PostgresR2dbcDockerComposeConnectionDetailsFactory(ClassLoader classLoader) {
 		super("postgres", classLoader, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
