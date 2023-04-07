@@ -16,12 +16,15 @@
 
 package org.springframework.boot.docker.compose.management;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -67,7 +70,8 @@ class DockerComposeListenerTests {
 
 		@Override
 		protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(
-				ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties) {
+				ConfigurableApplicationContext applicationContext, Binder binder, DockerComposeProperties properties,
+				Set<ApplicationListener<?>> eventListeners) {
 			this.manager = mock(DockerComposeLifecycleManager.class);
 			assertThat(applicationContext).isSameAs(this.context);
 			assertThat(binder).isNotNull();
