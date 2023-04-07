@@ -41,13 +41,13 @@ class MySqlR2dbcDockerComposeConnectionDetailsFactory
 
 	@Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new MariaDbJdbcDockerComposeConnectionDetails(source.getRunningService());
+		return new MySqlJdbcDockerComposeConnectionDetails(source.getRunningService());
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@code mysql} {@link RunningService}.
 	 */
-	static class MariaDbJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class MySqlJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements R2dbcConnectionDetails {
 
 		private static final ConnectionFactoryOptionsBuilder connectionFactoryOptionsBuilder = new ConnectionFactoryOptionsBuilder(
@@ -55,7 +55,7 @@ class MySqlR2dbcDockerComposeConnectionDetailsFactory
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		MariaDbJdbcDockerComposeConnectionDetails(RunningService service) {
+		MySqlJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			MySqlEnvironment environment = new MySqlEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),

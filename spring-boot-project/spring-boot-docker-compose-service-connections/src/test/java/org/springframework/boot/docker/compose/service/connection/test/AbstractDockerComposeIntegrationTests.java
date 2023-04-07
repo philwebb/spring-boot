@@ -19,6 +19,8 @@ package org.springframework.boot.docker.compose.service.connection.test;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterAll;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
@@ -37,6 +39,11 @@ import org.springframework.util.function.ThrowingSupplier;
 public abstract class AbstractDockerComposeIntegrationTests {
 
 	private final Resource composeResource;
+
+	@AfterAll
+	static void shutdown() {
+		((Runnable) SpringApplication.getShutdownHandlers()).run();
+	}
 
 	protected AbstractDockerComposeIntegrationTests(String composeResource) {
 		this.composeResource = new ClassPathResource(composeResource, getClass());

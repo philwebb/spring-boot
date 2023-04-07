@@ -39,17 +39,9 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTest extends Abstract
 	@Test
 	void runCreatesConnectionDetails() {
 		MongoConnectionDetails connectionDetails = run(MongoConnectionDetails.class);
-		assertThat(connectionDetails.getConnectionString()).hasToString("");
+		assertThat(connectionDetails.getConnectionString().toString()).startsWith("mongodb://root:secret@")
+			.endsWith(":64304/mydatabase");
 		assertThat(connectionDetails.getGridFs()).isNull();
-		// assertThat(serviceConnection.getName()).isEqualTo("docker-compose-mongo-mongo");
-		// assertThat(serviceConnection.getHost()).isNotNull();
-		// assertThat(serviceConnection.getPort()).isGreaterThan(0);
-		// assertThat(serviceConnection.getUsername()).isEqualTo("root");
-		// assertThat(serviceConnection.getPassword()).isEqualTo("secret");
-		// assertThat(serviceConnection.getDatabase()).isEqualTo("mydatabase");
-		// assertThat(serviceConnection.getAuthenticationDatabase()).isEqualTo("admin");
-		// assertThat(serviceConnection.getReplicaSetName()).isNull();
-		// assertThat(serviceConnection.getAdditionalHosts()).hasDefinedServices();
 	}
 
 }
