@@ -1186,6 +1186,7 @@ bom {
 				"spring-boot-buildpack-platform",
 				"spring-boot-configuration-metadata",
 				"spring-boot-configuration-processor",
+				"spring-boot-dev-services-docker-compose",
 				"spring-boot-devtools",
 				"spring-boot-jarmode-layertools",
 				"spring-boot-loader",
