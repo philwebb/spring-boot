@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
@@ -86,6 +87,7 @@ import static org.mockito.Mockito.times;
  * @author Robert Thornton
  * @author Eddú Meléndez
  * @author Scott Frederick
+ * @author Jonatan Ivanov
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
@@ -112,6 +114,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setConversionService((ConfigurableConversionService) conversionService);
 		this.initializationContext = new LoggingInitializationContext(this.environment);
 		StatusPrinter.setPrintStream(System.out);
+		MDC.clear();
 	}
 
 	@AfterEach
@@ -352,6 +355,140 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world")).contains("XINFOX");
+	}
+
+	@Test
+	void testCorrelationPatternPropertyWithDefaultJavaConfiguration(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "test-app");
+		this.environment.setProperty("logging.pattern.correlation",
+				"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, null, logFile);
+		MDC.setContextMap(Map.of("traceId", "123", "spanId", "321"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO [test-app,123,321] %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO [test-app,123,321] %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testMissingTracingInformationFromCorrelationPatternPropertyWithDefaultJavaConfiguration(
+			CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "test-app");
+		this.environment.setProperty("logging.pattern.correlation",
+				"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO [test-app,,] %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO [test-app,,] %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testEmptyCorrelationInformationFromCorrelationPatternPropertyWithDefaultJavaConfiguration(
+			CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.correlation",
+				"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO [,,] %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO [,,] %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testEmptyCorrelationPatternPropertyWithDefaultJavaConfiguration(CapturedOutput output) {
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testCorrelationPatternPropertyWithDefaultFileConfiguration(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "test-app");
+		this.environment.setProperty("logging.pattern.correlation",
+				"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, "classpath:logback-include-base.xml", logFile);
+		MDC.setContextMap(Map.of("traceId", "123", "spanId", "321"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO [test-app,123,321] %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO [test-app,123,321] %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testMissingTracingInformationFromCorrelationPatternPropertyWithDefaultFileConfiguration(
+			CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "test-app");
+		this.environment.setProperty("logging.pattern.correlation",
+				"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, "classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO [test-app,,] %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO [test-app,,] %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testEmptyCorrelationInformationFromCorrelationPatternPropertyWithDefaultFileConfiguration(
+			CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.correlation",
+				"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, "classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO [,,] %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO [,,] %d ".formatted(ProcessHandle.current().pid()));
+	}
+
+	@Test
+	void testEmptyCorrelationPatternPropertyWithDefaultFileConfiguration(CapturedOutput output) {
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, "classpath:logback-include-base.xml", logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains("  INFO %d ".formatted(ProcessHandle.current().pid()));
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains("  INFO %d ".formatted(ProcessHandle.current().pid()));
 	}
 
 	@Test

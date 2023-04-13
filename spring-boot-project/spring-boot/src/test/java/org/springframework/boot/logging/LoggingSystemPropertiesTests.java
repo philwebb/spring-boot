@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  */
 class LoggingSystemPropertiesTests {
 
@@ -108,6 +109,15 @@ class LoggingSystemPropertiesTests {
 	void fileLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
+	}
+
+	@Test
+	void correlationPatternIsSet() {
+		new LoggingSystemProperties(
+				new MockEnvironment().withProperty("logging.pattern.correlation", "correlation pattern"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_CORRELATION_PATTERN))
+			.isEqualTo("correlation pattern");
 	}
 
 	private Environment environment(String key, Object value) {

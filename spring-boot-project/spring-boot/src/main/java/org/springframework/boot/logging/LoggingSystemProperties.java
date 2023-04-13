@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Robert Thornton
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  * @since 2.0.0
  */
 public class LoggingSystemProperties {
@@ -94,6 +95,11 @@ public class LoggingSystemProperties {
 	 * The name of the System property that contains the log level pattern.
 	 */
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
+
+	/**
+	 * The name of the System property that contains the correlation pattern.
+	 */
+	public static final String LOG_CORRELATION_PATTERN = "LOG_CORRELATION_PATTERN";
 
 	/**
 	 * The name of the System property that contains the log date-format pattern.
@@ -155,6 +161,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
 		setSystemProperty(resolver, FILE_LOG_THRESHOLD, "logging.threshold.file");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
+		setSystemProperty(resolver, LOG_CORRELATION_PATTERN, "logging.pattern.correlation");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
