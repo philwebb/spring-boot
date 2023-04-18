@@ -31,4 +31,14 @@ public final class SslKeyReference {
 		return null;
 	}
 
+	/**
+	 * @param keyAlias
+	 * @param keyPassword
+	 * @return
+	 */
+	public static SslKeyReference of(String keyAlias, String keyPassword) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
 }

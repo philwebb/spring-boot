@@ -35,23 +35,23 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 
 	private final SslBundle delegate;
 
-	public CertificateFileSslStoreProvider(SslBundle delegate) {
+	private CertificateFileSslStoreProvider(SslBundle delegate) {
 		this.delegate = delegate;
 	}
 
 	@Override
 	public KeyStore getKeyStore() throws Exception {
-		return this.delegate.getKeyStores().getKeyStore();
+		return this.delegate.getStores().getKeyStore();
 	}
 
 	@Override
 	public KeyStore getTrustStore() throws Exception {
-		return this.delegate.getKeyStores().getTrustStore();
+		return this.delegate.getStores().getTrustStore();
 	}
 
 	@Override
 	public String getKeyPassword() {
-		return this.delegate.getKeyStores().getKeyPassword();
+		return this.delegate.getKey().getPassword();
 	}
 
 	/**
