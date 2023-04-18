@@ -310,6 +310,28 @@ public class Ssl {
 	}
 
 	/**
+	 * Returns if SSL is enabled for the given instance.
+	 * @param ssl the {@link Ssl SSL} instance or {@code null}
+	 * @return {@code true} is SSL is enabled
+	 * @since 3.1.0
+	 */
+	public static boolean isEnabled(Ssl ssl) {
+		return (ssl != null) && ssl.isEnabled();
+	}
+
+	/**
+	 * Factory method to create an {@link Ssl} instance for a specific bundle name.
+	 * @param bundle the name of the bundle
+	 * @return a new {@link Ssl} instance with the bundle set
+	 * @since 3.1.0
+	 */
+	public static Ssl forBundle(String bundle) {
+		Ssl ssl = new Ssl();
+		ssl.setBundle(bundle);
+		return ssl;
+	}
+
+	/**
 	 * Client authentication types.
 	 */
 	public enum ClientAuth {

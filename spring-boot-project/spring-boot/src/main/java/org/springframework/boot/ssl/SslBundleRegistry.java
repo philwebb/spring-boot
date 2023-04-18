@@ -16,46 +16,19 @@
 
 package org.springframework.boot.ssl;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
-import org.springframework.util.Assert;
-
 /**
- * {@link SslBundles} backed by a mutable collection that allows bundles to be registered.
+ * Interface that can be used to register an {@link SslBundle} for a given name.
  *
  * @author Scott Frederick
  * @since 3.1.0
  */
-public class SslBundleRegistry implements SslBundles {
-
-	private final HashMap<String, SslBundle> bundles = new LinkedHashMap<>();
+public interface SslBundleRegistry {
 
 	/**
 	 * Register a named {@link SslBundle}.
 	 * @param name the bundle name
 	 * @param bundle the bundle
 	 */
-	public void registerBundle(String name, SslBundle bundle) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(bundle, "Bundle must not be null");
-		this.bundles.put(name, bundle);
-	}
-
-	/**
-	 * Return the named {@link SslBundle}.
-	 * @param name the bundle name
-	 * @return the bundle
-	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
-	 */
-	@Override
-	public SslBundle getBundle(String name) {
-		Assert.notNull(name, "Name must not be null");
-		SslBundle sslBundle = this.bundles.get(name);
-		if (sslBundle == null) {
-			throw new NoSuchSslBundleException("SSL bundle name '" + name + "' is not valid");
-		}
-		return sslBundle;
-	}
+	void registerBundle(String name, SslBundle bundle);
 
 }

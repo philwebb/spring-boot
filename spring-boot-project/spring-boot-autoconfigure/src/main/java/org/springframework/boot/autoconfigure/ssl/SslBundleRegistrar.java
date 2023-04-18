@@ -20,7 +20,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 
 /**
- * Interface to be implemented by types that register {@link SslBundle}s with an
+ * Interface to be implemented by types that register {@link SslBundle} instances with an
  * {@link SslBundleRegistry}.
  *
  * @author Scott Frederick

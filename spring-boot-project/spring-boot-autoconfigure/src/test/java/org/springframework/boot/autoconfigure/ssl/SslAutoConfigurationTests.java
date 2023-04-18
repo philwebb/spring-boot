@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,8 +27,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.ssl.SslDetails;
-import org.springframework.boot.ssl.SslStoreProvider;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SslAutoConfiguration}.
  *
  * @author Scott Frederick
+ * @author Phillip Webb
  */
 class SslAutoConfigurationTests {
 
@@ -51,89 +51,63 @@ class SslAutoConfigurationTests {
 
 	@Test
 	void sslBundlesCreatedWithCertificates() {
-		this.contextRunner.withPropertyValues("spring.ssl.certificate.first.certificate=cert1.pem",
-				"spring.ssl.certificate.first.certificate-private-key=key1.pem",
-				"spring.ssl.certificate.first.key-alias=alias1", "spring.ssl.certificate.first.key-password=secret1",
-				"spring.ssl.certificate.first.key-store-type=JKS",
-				"spring.ssl.certificate.first.trust-store-type=PKCS12",
-				"spring.ssl.certificate.second.certificate=cert2.pem",
-				"spring.ssl.certificate.second.certificate-private-key=key2.pem",
-				"spring.ssl.certificate.second.trust-certificate=ca.pem",
-				"spring.ssl.certificate.second.trust-certificate-private-key=ca-key.pem",
-				"spring.ssl.certificate.second.key-alias=alias2", "spring.ssl.certificate.second.key-password=secret2",
-				"spring.ssl.certificate.second.key-store-type=PKCS12",
-				"spring.ssl.certificate.second.trust-store-type=JKS")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(SslBundles.class);
-				SslBundles bundles = context.getBean(SslBundles.class);
-				SslBundle first = bundles.getBundle("first");
-				assertThat(first).isNotNull();
-				assertThat(first.getKeyStores()).isNotNull();
-				assertThat(first.getManagers()).isNotNull();
-				assertThat(first.getDetails().getKeyAlias()).isEqualTo("alias1");
-				assertThat(first.getDetails().getKeyPassword()).isEqualTo("secret1");
-				assertThat(first.getDetails().getKeyStoreType()).isEqualTo("JKS");
-				assertThat(first.getDetails().getTrustStoreType()).isEqualTo("PKCS12");
-				SslBundle second = bundles.getBundle("second");
-				assertThat(second).isNotNull();
-				assertThat(second.getKeyStores()).isNotNull();
-				assertThat(second.getManagers()).isNotNull();
-				assertThat(second.getDetails().getKeyAlias()).isEqualTo("alias2");
-				assertThat(second.getDetails().getKeyPassword()).isEqualTo("secret2");
-				assertThat(second.getDetails().getKeyStoreType()).isEqualTo("PKCS12");
-				assertThat(second.getDetails().getTrustStoreType()).isEqualTo("JKS");
-			});
-	}
-
-	@Test
-	void sslBundlesCreatedWithJavaKeyStores() {
-		this.contextRunner.withPropertyValues("spring.ssl.keystore.first.key-store=first.p12",
-				"spring.ssl.keystore.first.trust-store=first-ca.p12", "spring.ssl.keystore.first.key-alias=alias1",
-				"spring.ssl.keystore.first.key-password=secret1", "spring.ssl.keystore.first.key-store-type=JKS",
-				"spring.ssl.keystore.first.trust-store-type=PKCS12", "spring.ssl.keystore.second.key-store=second.p12",
-				"spring.ssl.keystore.second.trust-store=second-ca.p12", "spring.ssl.keystore.second.key-alias=alias2",
-				"spring.ssl.keystore.second.key-password=secret2", "spring.ssl.keystore.second.key-store-type=PKCS12",
-				"spring.ssl.keystore.second.trust-store-type=JKS")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(SslBundles.class);
-				SslBundles bundles = context.getBean(SslBundles.class);
-				SslBundle first = bundles.getBundle("first");
-				assertThat(first).isNotNull();
-				assertThat(first.getKeyStores()).isNotNull();
-				assertThat(first.getManagers()).isNotNull();
-				assertThat(first.getDetails().getKeyAlias()).isEqualTo("alias1");
-				assertThat(first.getDetails().getKeyPassword()).isEqualTo("secret1");
-				assertThat(first.getDetails().getKeyStoreType()).isEqualTo("JKS");
-				assertThat(first.getDetails().getTrustStoreType()).isEqualTo("PKCS12");
-				SslBundle second = bundles.getBundle("second");
-				assertThat(second).isNotNull();
-				assertThat(second.getKeyStores()).isNotNull();
-				assertThat(second.getManagers()).isNotNull();
-				assertThat(second.getDetails().getKeyAlias()).isEqualTo("alias2");
-				assertThat(second.getDetails().getKeyPassword()).isEqualTo("secret2");
-				assertThat(second.getDetails().getKeyStoreType()).isEqualTo("PKCS12");
-				assertThat(second.getDetails().getTrustStoreType()).isEqualTo("JKS");
-			});
+		List<String> propertyValues = new ArrayList<>();
+		propertyValues.add("spring.ssl.bundle.pem.first.key.alias=alias1");
+		propertyValues.add("spring.ssl.bundle.pem.first.key.password=secret1");
+		propertyValues.add("spring.ssl.bundle.pem.first.keystore.certificate=cert1.pem");
+		propertyValues.add("spring.ssl.bundle.pem.first.keystore.private-key=key1.pem");
+		propertyValues.add("spring.ssl.bundle.pem.first.keystore.type=JKS");
+		propertyValues.add("spring.ssl.bundle.pem.first.truststore.type=PKCS12");
+		propertyValues.add("spring.ssl.bundle.pem.second.key.alias=alias2");
+		propertyValues.add("spring.ssl.bundle.pem.second.key.password=secret2");
+		propertyValues.add("spring.ssl.bundle.pem.second.keystore.certificate=cert2.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.keystore.private-key=key2.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.keystore.type=PKCS12");
+		propertyValues.add("spring.ssl.bundle.pem.second.truststore.certificate=ca.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.truststore.private-key=ca-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.second.truststore.type=JKS");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			assertThat(context).hasSingleBean(SslBundles.class);
+			SslBundles bundles = context.getBean(SslBundles.class);
+			SslBundle first = bundles.getBundle("first");
+			assertThat(first).isNotNull();
+			assertThat(first.getStores()).isNotNull();
+			assertThat(first.getManagers()).isNotNull();
+			assertThat(first.getKey().getAlias()).isEqualTo("alias1");
+			assertThat(first.getKey().getPassword()).isEqualTo("secret1");
+			assertThat(first.getStores()).extracting("keyStoreDetails").extracting("type").isEqualTo("JKS");
+			assertThat(first.getStores()).extracting("trustStoreDetails").extracting("type").isEqualTo("PKCS12");
+			SslBundle second = bundles.getBundle("second");
+			assertThat(second).isNotNull();
+			assertThat(second.getStores()).isNotNull();
+			assertThat(second.getManagers()).isNotNull();
+			assertThat(second.getKey().getAlias()).isEqualTo("alias2");
+			assertThat(second.getKey().getPassword()).isEqualTo("secret2");
+			assertThat(second.getStores()).extracting("keyStoreDetails").extracting("type").isEqualTo("PKCS12");
+			assertThat(second.getStores()).extracting("trustStoreDetails").extracting("type").isEqualTo("JKS");
+		});
 	}
 
 	@Test
 	void sslBundlesCreatedWithCustomSslBundle() {
+		List<String> propertyValues = new ArrayList<>();
+		propertyValues.add("custom.ssl.key.alias=alias1");
+		propertyValues.add("custom.ssl.key.password=secret1");
+		propertyValues.add("custom.ssl.keystore.type=JKS");
+		propertyValues.add("custom.ssl.truststore.type=PKCS12");
 		this.contextRunner.withUserConfiguration(CustomSslBundleConfiguration.class)
-			.withPropertyValues("custom.ssl.key-alias=alias1", "custom.ssl.key-password=secret1",
-					"custom.ssl.key-store-type=JKS", "custom.ssl.trust-store-type=PKCS12")
+			.withPropertyValues(propertyValues.toArray(String[]::new))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SslBundles.class);
 				SslBundles bundles = context.getBean(SslBundles.class);
 				SslBundle first = bundles.getBundle("custom");
 				assertThat(first).isNotNull();
-				assertThat(first.getKeyStores()).isNotNull();
-				assertThat(first.getKeyStores().getKeyStore()).isNotNull();
-				assertThat(first.getKeyStores().getTrustStore()).isNotNull();
+				assertThat(first.getStores()).isNotNull();
 				assertThat(first.getManagers()).isNotNull();
-				assertThat(first.getDetails().getKeyAlias()).isEqualTo("alias1");
-				assertThat(first.getDetails().getKeyPassword()).isEqualTo("secret1");
-				assertThat(first.getDetails().getKeyStoreType()).isEqualTo("JKS");
-				assertThat(first.getDetails().getTrustStoreType()).isEqualTo("PKCS12");
+				assertThat(first.getKey().getAlias()).isEqualTo("alias1");
+				assertThat(first.getKey().getPassword()).isEqualTo("secret1");
+				assertThat(first.getStores()).extracting("keyStoreDetails").extracting("type").isEqualTo("JKS");
+				assertThat(first.getStores()).extracting("trustStoreDetails").extracting("type").isEqualTo("PKCS12");
 			});
 	}
 
@@ -149,7 +123,7 @@ class SslAutoConfigurationTests {
 	}
 
 	@ConfigurationProperties("custom.ssl")
-	static class CustomSslProperties extends SslDetails {
+	static class CustomSslProperties extends PemSslBundleProperties {
 
 	}
 
@@ -163,22 +137,7 @@ class SslAutoConfigurationTests {
 
 		@Override
 		public void registerBundles(SslBundleRegistry registry) {
-			SslBundle bundle = new SslBundle(this.properties, new CustomSslStoreProvider());
-			registry.registerBundle("custom", bundle);
-		}
-
-	}
-
-	static class CustomSslStoreProvider implements SslStoreProvider {
-
-		@Override
-		public KeyStore getKeyStore() throws Exception {
-			return KeyStore.getInstance("PKCS12");
-		}
-
-		@Override
-		public KeyStore getTrustStore() throws Exception {
-			return KeyStore.getInstance("PKCS12");
+			registry.registerBundle("custom", PropertiesSslBundle.get(this.properties));
 		}
 
 	}

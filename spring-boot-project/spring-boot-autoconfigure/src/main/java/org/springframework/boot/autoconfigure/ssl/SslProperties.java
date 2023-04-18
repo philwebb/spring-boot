@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
-import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
 
 /**
  * Properties for centralized SSL trust material configuration.
@@ -34,23 +32,39 @@ import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
 public class SslProperties {
 
 	/**
-	 * PEM-encoded SSL trust material.
+	 * SSL bundles.
 	 */
-	@NestedConfigurationProperty
-	private final Map<String, CertificateFileSslDetails> certificate = new LinkedHashMap<>();
+	private final Bundles bundle = new Bundles();
 
-	/**
-	 * Java keystore SSL trust material.
-	 */
-	@NestedConfigurationProperty
-	private final Map<String, JavaKeyStoreSslDetails> keystore = new LinkedHashMap<>();
-
-	public Map<String, CertificateFileSslDetails> getCertificate() {
-		return this.certificate;
+	public Bundles getBundle() {
+		return this.bundle;
 	}
 
-	public Map<String, JavaKeyStoreSslDetails> getKeystore() {
-		return this.keystore;
+	/**
+	 * Properties to define SSL Bundles.
+	 */
+	public static class Bundles {
+
+		/**
+		 * PEM-encoded SSL trust material.
+		 */
+		@NestedConfigurationProperty
+		private final Map<String, PemSslBundleProperties> pem = new LinkedHashMap<>();
+
+		/**
+		 * Java keystore SSL trust material.
+		 */
+		@NestedConfigurationProperty
+		private final Map<String, JksSslBundleProperties> jks = new LinkedHashMap<>();
+
+		public Map<String, PemSslBundleProperties> getPem() {
+			return this.pem;
+		}
+
+		public Map<String, JksSslBundleProperties> getJks() {
+			return this.jks;
+		}
+
 	}
 
 }

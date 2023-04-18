@@ -33,12 +33,15 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslDetails;
+import org.springframework.boot.ssl.SslKeyReference;
+import org.springframework.boot.ssl.SslOptions;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.SslConfigurationValidator;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -52,15 +55,15 @@ import org.springframework.util.ObjectUtils;
  */
 class SslServerCustomizer implements JettyServerCustomizer {
 
+	private final Http2 http2;
+
 	private final InetSocketAddress address;
 
 	private final ClientAuth clientAuth;
 
 	private final SslBundle sslBundle;
 
-	private final Http2 http2;
-
-	SslServerCustomizer(InetSocketAddress address, ClientAuth clientAuth, SslBundle sslBundle, Http2 http2) {
+	SslServerCustomizer(Http2 http2, InetSocketAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
 		this.address = address;
 		this.clientAuth = clientAuth;
 		this.sslBundle = sslBundle;
@@ -71,41 +74,40 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	public void customize(Server server) {
 		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
 		sslContextFactory.setEndpointIdentificationAlgorithm(null);
-		configureSsl(sslContextFactory, this.clientAuth, this.sslBundle);
-		ServerConnector connector = createConnector(server, sslContextFactory, this.address,
-				this.sslBundle.getDetails());
+		configureSsl(sslContextFactory, this.clientAuth);
+		ServerConnector connector = createConnector(server, sslContextFactory);
 		server.setConnectors(new Connector[] { connector });
 	}
 
-	private ServerConnector createConnector(Server server, SslContextFactory.Server sslContextFactory,
-			InetSocketAddress address, SslDetails ssl) {
+	private ServerConnector createConnector(Server server, SslContextFactory.Server sslContextFactory) {
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSendServerVersion(false);
 		config.setSecureScheme("https");
-		config.setSecurePort(address.getPort());
+		config.setSecurePort(this.address.getPort());
 		config.addCustomizer(new SecureRequestCustomizer());
-		ServerConnector connector = createServerConnector(server, sslContextFactory, config, ssl);
-		connector.setPort(address.getPort());
-		connector.setHost(address.getHostString());
+		ServerConnector connector = createServerConnector(server, sslContextFactory, config);
+		connector.setPort(this.address.getPort());
+		connector.setHost(this.address.getHostString());
 		return connector;
 	}
 
 	private ServerConnector createServerConnector(Server server, SslContextFactory.Server sslContextFactory,
-			HttpConfiguration config, SslDetails ssl) {
+			HttpConfiguration config) {
 		if (this.http2 == null || !this.http2.isEnabled()) {
-			return createHttp11ServerConnector(server, config, sslContextFactory, ssl);
+			return createHttp11ServerConnector(server, config, sslContextFactory);
 		}
 		Assert.state(isJettyAlpnPresent(),
 				() -> "An 'org.eclipse.jetty:jetty-alpn-*-server' dependency is required for HTTP/2 support.");
 		Assert.state(isJettyHttp2Present(),
 				() -> "The 'org.eclipse.jetty.http2:http2-server' dependency is required for HTTP/2 support.");
-		return createHttp2ServerConnector(server, config, sslContextFactory, ssl);
+		return createHttp2ServerConnector(server, config, sslContextFactory);
 	}
 
 	private ServerConnector createHttp11ServerConnector(Server server, HttpConfiguration config,
-			SslContextFactory.Server sslContextFactory, SslDetails ssl) {
+			SslContextFactory.Server sslContextFactory) {
+		String keyAlais = this.sslBundle.getKey().getAlias();
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
-		return new SslValidatingServerConnector(server, sslContextFactory, ssl.getKeyAlias(),
+		return new SslValidatingServerConnector(server, sslContextFactory, keyAlais,
 				createSslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()), connectionFactory);
 	}
 
@@ -135,7 +137,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private ServerConnector createHttp2ServerConnector(Server server, HttpConfiguration config,
-			SslContextFactory.Server sslContextFactory, SslDetails ssl) {
+			SslContextFactory.Server sslContextFactory) {
 		HttpConnectionFactory http = new HttpConnectionFactory(config);
 		HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(config);
 		ALPNServerConnectionFactory alpn = createAlpnServerConnectionFactory();
@@ -143,9 +145,9 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		if (isConscryptPresent()) {
 			sslContextFactory.setProvider("Conscrypt");
 		}
+		String keyAlias = this.sslBundle.getKey().getAlias();
 		SslConnectionFactory connectionFactory = createSslConnectionFactory(sslContextFactory, alpn.getProtocol());
-		return new SslValidatingServerConnector(server, sslContextFactory, ssl.getKeyAlias(), connectionFactory, alpn,
-				h2, http);
+		return new SslValidatingServerConnector(server, sslContextFactory, keyAlias, connectionFactory, alpn, h2, http);
 	}
 
 	private ALPNServerConnectionFactory createAlpnServerConnectionFactory() {
@@ -167,33 +169,33 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	 * Configure the SSL connection.
 	 * @param factory the Jetty {@link Server SslContextFactory.Server}.
 	 * @param clientAuth the client authentication mode
-	 * @param sslBundle the SSL trust material
 	 */
-	protected void configureSsl(SslContextFactory.Server factory, ClientAuth clientAuth, SslBundle sslBundle) {
-		SslDetails ssl = sslBundle.getDetails();
-		factory.setProtocol(ssl.getProtocol());
+	protected void configureSsl(SslContextFactory.Server factory, ClientAuth clientAuth) {
+		SslKeyReference key = this.sslBundle.getKey();
+		SslOptions options = this.sslBundle.getOptions();
+		SslStoreBundle stores = this.sslBundle.getStores();
+		factory.setProtocol(this.sslBundle.getProtocol());
 		configureSslClientAuth(factory, clientAuth);
-		configureSslPasswords(factory, sslBundle);
-		factory.setCertAlias(ssl.getKeyAlias());
-		if (!ObjectUtils.isEmpty(ssl.getCiphers())) {
-			factory.setIncludeCipherSuites(ssl.getCiphers());
+		if (stores.getKeyStorePassword() != null) {
+			factory.setKeyStorePassword(stores.getKeyStorePassword());
+		}
+		factory.setCertAlias(key.getAlias());
+		if (!ObjectUtils.isEmpty(options.getCiphers())) {
+			factory.setIncludeCipherSuites(options.getCiphers().toArray(String[]::new));
 			factory.setExcludeCipherSuites();
 		}
-		if (ssl.getEnabledProtocols() != null) {
-			factory.setIncludeProtocols(ssl.getEnabledProtocols());
+		if (!CollectionUtils.isEmpty(options.getEnabledProtocols())) {
+			factory.setIncludeProtocols(options.getEnabledProtocols().toArray(String[]::new));
 		}
-		if (sslBundle != null) {
-			try {
-				String keyPassword = sslBundle.getKeyStores().getKeyPassword();
-				if (keyPassword != null) {
-					factory.setKeyManagerPassword(keyPassword);
-				}
-				factory.setKeyStore(sslBundle.getKeyStores().getKeyStore());
-				factory.setTrustStore(sslBundle.getKeyStores().getTrustStore());
+		try {
+			if (key.getPassword() != null) {
+				factory.setKeyManagerPassword(key.getPassword());
 			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Unable to set SSL store: " + ex.getMessage(), ex);
-			}
+			factory.setKeyStore(stores.getKeyStore());
+			factory.setTrustStore(stores.getTrustStore());
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to set SSL store: " + ex.getMessage(), ex);
 		}
 	}
 
@@ -204,15 +206,6 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 		else if (clientAuth == ClientAuth.WANT) {
 			factory.setWantClientAuth(true);
-		}
-	}
-
-	private void configureSslPasswords(SslContextFactory.Server factory, SslBundle sslBundle) {
-		if (sslBundle.getKeyStores().getKeyStorePassword() != null) {
-			factory.setKeyStorePassword(sslBundle.getKeyStores().getKeyStorePassword());
-		}
-		if (sslBundle.getKeyStores().getKeyPassword() != null) {
-			factory.setKeyManagerPassword(sslBundle.getKeyStores().getKeyPassword());
 		}
 	}
 

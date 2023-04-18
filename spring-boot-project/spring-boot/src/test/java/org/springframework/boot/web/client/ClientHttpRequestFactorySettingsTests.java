@@ -21,9 +21,9 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ClientHttpRequestFactorySettings}.
@@ -75,7 +75,7 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withSslBundleReturnsInstanceWithUpdatedSslBundle() {
-		SslBundle sslBundle = new SslBundle(new SslDetails(), null);
+		SslBundle sslBundle = mock(SslBundle.class);
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(sslBundle);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();

@@ -22,12 +22,13 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for SSL bundles.
+ * {@link EnableAutoConfiguration Auto-configuration} for SSL.
  *
  * @author Scott Frederick
  * @since 3.1.0
@@ -37,16 +38,16 @@ import org.springframework.context.annotation.Bean;
 public class SslAutoConfiguration {
 
 	@Bean
-	public SslPropertiesSslBundleRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
-		return new SslPropertiesSslBundleRegistrar(sslProperties);
+	public SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
+		return new SslPropertiesBundleRegistrar(sslProperties);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(SslBundles.class)
-	public SslBundleRegistry sslBundleRegistry(List<SslBundleRegistrar> sslBundleRegistrars) {
-		SslBundleRegistry bundleRegistry = new SslBundleRegistry();
-		sslBundleRegistrars.forEach((registrar) -> registrar.registerBundles(bundleRegistry));
-		return bundleRegistry;
+	@ConditionalOnMissingBean({ SslBundleRegistry.class, SslBundles.class })
+	public DefaultSslBundleRegistry sslBundleRegistry(List<SslBundleRegistrar> sslBundleRegistrars) {
+		DefaultSslBundleRegistry registry = new DefaultSslBundleRegistry();
+		sslBundleRegistrars.forEach((registrar) -> registrar.registerBundles(registry));
+		return registry;
 	}
 
 }

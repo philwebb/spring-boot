@@ -16,71 +16,150 @@
 
 package org.springframework.boot.ssl;
 
-import java.security.KeyStore;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.springframework.util.StringUtils;
+
 /**
- * A bundle of trust material that can be used for managing SSL connections.
+ * A bundle of trust material that can be used to establish an SSL connection.
  *
  * @author Scott Frederick
  * @since 3.1.0
  */
-public class SslBundle {
+public interface SslBundle {
 
-	private final SslDetails sslDetails;
+	/**
+	 * The default protocol to use.
+	 */
+	String DEFAULT_PROTOCOL = "TLS";
 
-	private final SslKeyStores keyStores;
-
-	private final SslManagers managers;
-
-	public SslBundle(SslDetails sslDetails, SslStoreProvider sslStoreProvider) {
-		this.sslDetails = sslDetails;
-		this.keyStores = new SslKeyStores(sslStoreProvider, sslDetails.getKeyPassword());
-		this.managers = new SslManagers(this.keyStores, sslDetails.getKeyAlias());
+	/**
+	 * Return the protocol to use when establishing the connection. Values should be
+	 * supported by {@link SSLContext#getInstance(String)} Defaults to
+	 * {@value #DEFAULT_PROTOCOL}.
+	 * @return the SSL protocol
+	 * @see SSLContext#getInstance(String)
+	 */
+	default String getProtocol() {
+		return DEFAULT_PROTOCOL;
 	}
 
 	/**
-	 * Return the SSL bundle configuration.
-	 * @return the properties
+	 * Return a reference the key that should be used for this bundle or
+	 * {@link SslKeyReference#NONE}.
+	 * @return a reference to the SSL key that should be used
 	 */
-	public SslDetails getDetails() {
-		return this.sslDetails;
+	SslKeyReference getKey();
+
+	/**
+	 * Return the {@link SslStoreBundle} that can be used to access this bundle's key and
+	 * trust stores.
+	 * @return the {@code SslKeyStores} instance for this bundle
+	 */
+	SslStoreBundle getStores();
+
+	/**
+	 * Return the {@link SslManagerBundle} that can be used to access this bundle's
+	 * {@link KeyManager key} and {@link TrustManager trust} managers.
+	 * @return the {@code SslManagers} instance for this bundle
+	 */
+	SslManagerBundle getManagers();
+
+	/**
+	 * Return {@link SslOptions} that should be applied when establishing the SSL
+	 * connection.
+	 * @return the options that should be applied
+	 */
+	SslOptions getOptions();
+
+	/**
+	 * Factory method to create a new {@link SSLContext} for this bundle.
+	 * @return a new {@link SSLContext} instance
+	 */
+	default SSLContext createSslContext() {
+		return getManagers().createSslContext(getProtocol());
 	}
 
 	/**
-	 * Return an {@link SslKeyStores} that can be used to access this bundle's
-	 * {@link KeyStore}s.
-	 * @return the {@code SslKeyStores}
+	 * Factory method to create a new {@link SslBundle} instance.
+	 * @param stores the stores or {@code null}
+	 * @return a new {@link SslBundle} instance
 	 */
-	public SslKeyStores getKeyStores() {
-		return this.keyStores;
+	static SslBundle of(SslStoreBundle stores) {
+		return of(null, stores, null);
 	}
 
 	/**
-	 * Return an {@link SslManagers} that can be used to access this bundle's
-	 * {@link KeyManager}s and {@link TrustManager}s.
-	 * @return the {@code SslManagers}
+	 * Factory method to create a new {@link SslBundle} instance.
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @return a new {@link SslBundle} instance
 	 */
-	public SslManagers getManagers() {
-		return this.managers;
+	static SslBundle of(String key, SslStoreBundle stores) {
+		return of(SslKeyReference.of(key), stores, null);
 	}
 
 	/**
-	 * Return the {@link SSLContext}.
-	 * @return the SSL context
+	 * Factory method to create a new {@link SslBundle} instance.
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @return a new {@link SslBundle} instance
 	 */
-	public SSLContext getSslContext() {
-		try {
-			SSLContext sslContext = SSLContext.getInstance("TLS");
-			sslContext.init(this.managers.getKeyManagers(), this.managers.getTrustManagers(), null);
-			return sslContext;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not load SSL context: " + ex.getMessage(), ex);
-		}
+	static SslBundle of(SslKeyReference key, SslStoreBundle stores) {
+		return of(key, stores, null);
+	}
+
+	/**
+	 * Factory method to create a new {@link SslBundle} instance.
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @param options the options or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
+	static SslBundle of(SslKeyReference key, SslStoreBundle stores, SslOptions options) {
+		return of(null, key, stores, options);
+	}
+
+	/**
+	 * Factory method to create a new {@link SslBundle} instance.
+	 * @param protocol the protocol or {@code null}
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @param options the options or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
+	static SslBundle of(String protocol, SslKeyReference key, SslStoreBundle stores, SslOptions options) {
+		SslManagerBundle managers = SslManagerBundle.from(stores, key);
+		return new SslBundle() {
+
+			@Override
+			public String getProtocol() {
+				return (!StringUtils.hasText(protocol)) ? DEFAULT_PROTOCOL : protocol;
+			}
+
+			@Override
+			public SslKeyReference getKey() {
+				return (key != null) ? key : SslKeyReference.NONE;
+			}
+
+			@Override
+			public SslStoreBundle getStores() {
+				return (stores != null) ? stores : SslStoreBundle.NONE;
+			}
+
+			@Override
+			public SslOptions getOptions() {
+				return (options != null) ? options : SslOptions.NONE;
+			}
+
+			@Override
+			public SslManagerBundle getManagers() {
+				return managers;
+			}
+
+		};
 	}
 
 }

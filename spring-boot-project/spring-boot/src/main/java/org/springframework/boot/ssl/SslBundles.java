@@ -17,7 +17,7 @@
 package org.springframework.boot.ssl;
 
 /**
- * Configured {@link SslBundle}s that can be retrieved by name.
+ * A managed set of {@link SslBundle} instances that can be retrieved by name.
  *
  * @author Scott Frederick
  * @since 3.1.0
@@ -26,10 +26,10 @@ public interface SslBundles {
 
 	/**
 	 * Return an {@link SslBundle} with the provided name.
-	 * @param name the bundle name
+	 * @param bundleName the bundle name
 	 * @return the bundle
 	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
 	 */
-	SslBundle getBundle(String name);
+	SslBundle getBundle(String bundleName) throws NoSuchSslBundleException;
 
 }

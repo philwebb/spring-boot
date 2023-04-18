@@ -19,7 +19,7 @@ package org.springframework.boot.web.server;
 import java.net.InetAddress;
 import java.util.Set;
 
-import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 
 /**
  * A configurable {@link WebServerFactory}.
@@ -62,17 +62,18 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	 * Sets a provider that will be used to obtain SSL stores.
 	 * @param sslStoreProvider the SSL store provider
 	 * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
-	 * {@link #setSslBundle(SslBundle)}
+	 * {@link #setSslBundles(SslBundles)}
 	 */
 	@Deprecated(since = "3.1.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 	/**
-	 * Sets the SSL bundle that can be used to configure SSL connections.
-	 * @param sslBundle the SSL bundles
+	 * Sets the SSL bundles that can be used to configure SSL connections.
+	 * @param sslBundles the SSL bundles
+	 * @since 3.1.0
 	 */
-	void setSslBundle(SslBundle sslBundle);
+	void setSslBundles(SslBundles sslBundles);
 
 	/**
 	 * Sets the HTTP/2 configuration that will be applied to the server.

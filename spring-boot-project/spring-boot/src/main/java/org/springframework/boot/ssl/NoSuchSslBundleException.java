@@ -25,21 +25,34 @@ package org.springframework.boot.ssl;
  */
 public class NoSuchSslBundleException extends RuntimeException {
 
+	private final String bundleName;
+
 	/**
 	 * Create a new {@code SslBundleNotFoundException} instance.
+	 * @param bundleName the name of the bundle that could not be found
 	 * @param message the exception message
 	 */
-	public NoSuchSslBundleException(String message) {
-		super(message);
+	public NoSuchSslBundleException(String bundleName, String message) {
+		this(bundleName, message, null);
 	}
 
 	/**
 	 * Create a new {@code SslBundleNotFoundException} instance.
+	 * @param bundleName the name of the bundle that could not be found
 	 * @param message the exception message
 	 * @param cause the exception cause
 	 */
-	public NoSuchSslBundleException(String message, Throwable cause) {
+	public NoSuchSslBundleException(String bundleName, String message, Throwable cause) {
 		super(message, cause);
+		this.bundleName = bundleName;
+	}
+
+	/**
+	 * Return the name of the bundle that was not found.
+	 * @return the bundle name
+	 */
+	public String getBundleName() {
+		return this.bundleName;
 	}
 
 }

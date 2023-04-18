@@ -45,6 +45,21 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 			null, null);
 
 	/**
+	 * Create a new {@link ClientHttpRequestFactorySettings} instance.
+	 * @param connectTimeout the connection timeout
+	 * @param readTimeout the read timeout
+	 * @param bufferRequestBody the bugger request body
+	 * @param sslBundle the ssl bundle
+	 * @since 3.1.0
+	 */
+	public ClientHttpRequestFactorySettings {
+	}
+
+	public ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, Boolean bufferRequestBody) {
+		this(connectTimeout, readTimeout, bufferRequestBody, null);
+	}
+
+	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
 	 * connect timeout setting .
 	 * @param connectTimeout the new connect timeout setting
@@ -83,6 +98,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 * bundle setting.
 	 * @param sslBundle the new SSL bundle setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 * @since 3.1.0
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
 		return new ClientHttpRequestFactorySettings(this.connectTimeout, this.readTimeout, this.bufferRequestBody,

@@ -18,14 +18,16 @@ package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
 
+import org.springframework.boot.ssl.SslBundle;
+
 /**
  * Interface to provide SSL key stores for an {@link WebServer} to use. Can be used when
  * file based key stores cannot be used.
  *
  * @author Phillip Webb
  * @since 2.0.0
- * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
- * {@link org.springframework.boot.ssl.SslStoreProvider}
+ * @deprecated since 3.1.0 for removal in 3.3.0 in favor of registering an
+ * {@link SslBundle}.
  */
 @Deprecated(since = "3.1.0", forRemoval = true)
 public interface SslStoreProvider {

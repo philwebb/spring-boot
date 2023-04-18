@@ -18,7 +18,7 @@ package org.springframework.boot.rsocket.server;
 
 import java.net.InetAddress;
 
-import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.unit.DataSize;
@@ -69,7 +69,7 @@ public interface ConfigurableRSocketServerFactory {
 	 * Sets a provider that will be used to obtain SSL stores.
 	 * @param sslStoreProvider the SSL store provider
 	 * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
-	 * {@link #setSslBundle(SslBundle)}
+	 * {@link #setSslBundles(SslBundles)}
 	 */
 	@SuppressWarnings("removal")
 	@Deprecated(since = "3.1.0", forRemoval = true)
@@ -77,8 +77,9 @@ public interface ConfigurableRSocketServerFactory {
 
 	/**
 	 * Sets an SSL bundle that can be used to get SSL configuration.
-	 * @param sslBundle the SSL bundle
+	 * @param sslBundles the SSL bundles
+	 * @since 3.1.0
 	 */
-	void setSslBundle(SslBundle sslBundle);
+	void setSslBundles(SslBundles sslBundles);
 
 }
