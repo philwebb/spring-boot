@@ -24,21 +24,21 @@ public interface SslDetails {
 	/**
 	 * @return
 	 */
-	String[] getEnabledProtocols();
-
-	/**
-	 * @return
-	 */
 	String[] getCiphers();
 
 	/**
 	 * @return
 	 */
-	String getProtocol();
+	String[] getEnabledProtocols();
 
 	/**
 	 * @return
 	 */
 	String getKeyAlias();
+
+	/**
+	 * @return
+	 */
+	String getProtocol();
 
 }

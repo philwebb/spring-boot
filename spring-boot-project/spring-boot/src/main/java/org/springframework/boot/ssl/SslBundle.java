@@ -16,31 +16,47 @@
 
 package org.springframework.boot.ssl;
 
+import java.security.KeyStore;
+
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+
+import org.springframework.boot.sslx.SslKeyStores;
+import org.springframework.boot.sslx.SslManagers;
 
 /**
- * @author pwebb
+ * A bundle of trust material that can be used for managing SSL connections.
+ *
+ * @author Scott Frederick
+ * @since 3.1.0
  */
 public interface SslBundle {
 
 	/**
-	 * @return
-	 */
-	SSLContext getSslContext();
-
-	/**
-	 * @return
+	 * Return the SSL bundle configuration.
+	 * @return the properties
 	 */
 	SslDetails getDetails();
 
 	/**
-	 * @return
+	 * Return an {@link SslKeyStores} that can be used to access this bundle's
+	 * {@link KeyStore}s.
+	 * @return the {@code SslKeyStores}
+	 */
+	SslKeyStores getKeyStores();
+
+	/**
+	 * Return an {@link SslManagers} that can be used to access this bundle's
+	 * {@link KeyManager}s and {@link TrustManager}s.
+	 * @return the {@code SslManagers}
 	 */
 	SslManagers getManagers();
 
 	/**
-	 * @return
+	 * Return the {@link SSLContext}.
+	 * @return the SSL context
 	 */
-	SslKeyStores getKeyStores();
+	SSLContext getSslContext();
 
 }
