@@ -16,6 +16,8 @@
 
 package org.springframework.boot.ssl;
 
+import org.springframework.util.Assert;
+
 /**
  * A reference to a single key obtained via {@link SslStores}.
  *
@@ -23,22 +25,41 @@ package org.springframework.boot.ssl;
  */
 public final class SslKeyReference {
 
-	public String getAlias() {
-		return null;
-	}
+	private final String alias;
 
-	public String getPassword() {
-		return null;
+	private final String password;
+
+	private SslKeyReference(String alias, String password) {
+		Assert.hasText(alias, "Alias must not be empty");
+		this.alias = alias;
+		this.password = password;
 	}
 
 	/**
-	 * @param keyAlias
-	 * @param keyPassword
-	 * @return
+	 * Return the alias of the key.
+	 * @return the key alias
 	 */
-	public static SslKeyReference of(String keyAlias, String keyPassword) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	public String getAlias() {
+		return this.alias;
+	}
+
+	/**
+	 * Return the password that should be used to access the key or {@code null} if no
+	 * password is required.
+	 * @return the key password
+	 */
+	public String getPassword() {
+		return this.password;
+	}
+
+	/**
+	 * Create a new {@link SslKeyReference} instance.
+	 * @param alias the alias of the key
+	 * @param password the password used to access the key or {@code null}
+	 * @return a new {@link SslKeyReference} instance
+	 */
+	public static SslKeyReference of(String alias, String password) {
+		return new SslKeyReference(alias, password);
 	}
 
 }

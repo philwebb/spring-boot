@@ -22,11 +22,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.springframework.boot.sslx.SslBundle;
-
 /**
  * Provides access to key and trust managers and manager factories. Instances are usually
- * created {@link #from(SslStores) from SslStores}.
+ * created {@link #from(SslStores, SslKeyReference) from SslStores}.
  *
  * @author Scott Frederick
  * @since 3.1.0
@@ -36,28 +34,32 @@ import org.springframework.boot.sslx.SslBundle;
 public interface SslManagers {
 
 	/**
+	 * Return the {@code KeyManager} instances used to establish identity.
+	 * @return the key managers
+	 */
+	default KeyManager[] getKeyManagers() {
+		return getKeyManagerFactory().getKeyManagers();
+	}
+
+	/**
 	 * Return the {@code KeyManagerFactory} used to establish identity.
 	 * @return the key manager factory
 	 */
 	KeyManagerFactory getKeyManagerFactory();
 
 	/**
-	 * Return the {@code KeyManager} instances used to establish identity.
-	 * @return the key managers
+	 * Return the {@link TrustManager} instances used to establish trust.
+	 * @return the trust managers
 	 */
-	KeyManager[] getKeyManagers();
+	default TrustManager[] getTrustManagers() {
+		return getTrustManagerFactory().getTrustManagers();
+	}
 
 	/**
 	 * Return the {@link TrustManagerFactory} used to establish trust.
 	 * @return the trust manager factory
 	 */
 	TrustManagerFactory getTrustManagerFactory();
-
-	/**
-	 * Return the {@link TrustManager} instances used to establish trust.
-	 * @return the trust managers
-	 */
-	TrustManager[] getTrustManagers();
 
 	/**
 	 * Create a new {@link SSLContext} for the {@link #getKeyManagers() key managers} and
@@ -77,8 +79,8 @@ public interface SslManagers {
 		}
 	}
 
-	static SslManagers from(SslStores stores) {
-		return null;
+	static SslManagers from(SslStores stores, SslKeyReference key) {
+		return new DefaultSslManagers(stores, key);
 	}
 
 }

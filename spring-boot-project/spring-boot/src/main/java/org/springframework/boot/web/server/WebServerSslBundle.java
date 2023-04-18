@@ -26,6 +26,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStores;
 
 /**
+ * @author Scott Frederick
  * @author Phillip Webb
  */
 public class WebServerSslBundle implements SslBundle {
@@ -42,7 +43,7 @@ public class WebServerSslBundle implements SslBundle {
 		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : ssl.getKeyPassword();
 		this.key = SslKeyReference.of(ssl.getKeyAlias(), keyPassword);
 		this.stores = null;
-		this.managers = SslManagers.from(this.stores);
+		this.managers = SslManagers.from(this.stores, this.key);
 		Set<String> enabledProtocols = (ssl.getEnabledProtocols() != null) ? Set.of(ssl.getEnabledProtocols())
 				: Collections.emptySet();
 		Set<String> ciphers = (ssl.getCiphers() != null) ? Set.of(ssl.getCiphers()) : Collections.emptySet();

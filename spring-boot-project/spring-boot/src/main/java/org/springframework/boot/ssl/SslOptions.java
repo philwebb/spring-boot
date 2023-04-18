@@ -30,15 +30,17 @@ import javax.net.ssl.SSLEngine;
 public interface SslOptions {
 
 	/**
-	 * Return the ciphers that can be used. The cipher names in this set should be
-	 * compatible with those supported by {@link SSLEngine#getSupportedCipherSuites()}.
+	 * Return the ciphers that can be used or an empty set. The cipher names in this set
+	 * should be compatible with those supported by
+	 * {@link SSLEngine#getSupportedCipherSuites()}.
 	 * @return the ciphers that can be used
 	 */
 	Set<String> getCiphers();
 
 	/**
-	 * Return the protocols that should be enabled. The protocols names in this set should
-	 * be compatible with those supported by {@link SSLEngine#getSupportedProtocols()}.
+	 * Return the protocols that should be enabled or an empty set. The protocols names in
+	 * this set should be compatible with those supported by
+	 * {@link SSLEngine#getSupportedProtocols()}.
 	 * @return the protocols to enable
 	 */
 	Set<String> getEnabledProtocols();
