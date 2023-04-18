@@ -34,12 +34,12 @@ public interface SslDetails {
 	/**
 	 * @return
 	 */
-	String getKeyAlias();
+	String getProtocol();
 
 	/**
 	 * @return
 	 */
-	String getProtocol();
+	String getKeyAlias();
 
 	/**
 	 * @return
