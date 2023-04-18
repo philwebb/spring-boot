@@ -41,9 +41,4 @@ public interface SslDetails {
 	 */
 	String getKeyAlias();
 
-	/**
-	 * @return
-	 */
-	String getKeyPassword();
-
 }

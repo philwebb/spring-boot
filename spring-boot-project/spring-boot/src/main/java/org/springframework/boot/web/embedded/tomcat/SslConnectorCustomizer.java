@@ -78,8 +78,8 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		if (sslBundle.getKeyStores().getKeyStorePassword() != null) {
 			certificate.setCertificateKeystorePassword(sslBundle.getKeyStores().getKeyStorePassword());
 		}
-		if (ssl.getKeyPassword() != null) {
-			certificate.setCertificateKeyPassword(ssl.getKeyPassword());
+		if (sslBundle.getKeyStores().getKeyPassword() != null) {
+			certificate.setCertificateKeyPassword(sslBundle.getKeyStores().getKeyPassword());
 		}
 		if (ssl.getKeyAlias() != null) {
 			certificate.setCertificateKeyAlias(ssl.getKeyAlias());
