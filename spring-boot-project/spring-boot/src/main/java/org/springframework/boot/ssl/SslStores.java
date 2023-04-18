@@ -16,20 +16,35 @@
 
 package org.springframework.boot.ssl;
 
+import java.security.KeyStore;
+
 /**
- * A managed set of {@link SslBundle} instances that can be retrieved by name.
+ * Provides access to key and trust stores generated from a source of trust material.
  *
  * @author Scott Frederick
  * @since 3.1.0
+ * @see SslBundle#getStores()
  */
-public interface SslBundles {
+public interface SslStores {
+
+	// FIXME deal with SslStoreProvider
 
 	/**
-	 * Return an {@link SslBundle} with the provided name.
-	 * @param bundleName the bundle name
-	 * @return the bundle
-	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
+	 * Return a key store generated from the trust material or {@code null}.
+	 * @return the key store
 	 */
-	SslBundle getBundle(String bundleName) throws NoSuchSslBundleException;
+	KeyStore getKeyStore();
+
+	/**
+	 * Return the password for the key in the key store or {@code null}.
+	 * @return the key password
+	 */
+	String getKeyStorePassword();
+
+	/**
+	 * Return a trust store generated from the trust material or {@code null}.
+	 * @return the trust store
+	 */
+	KeyStore getTrustStore();
 
 }

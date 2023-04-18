@@ -16,28 +16,69 @@
 
 package org.springframework.boot.ssl;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.springframework.boot.sslx.SslBundle;
+
 /**
- * @author pwebb
+ * Provides access to key and trust managers and manager factories. Instances are usually
+ * created {@link #from(SslStores) from SslStores}.
+ *
+ * @author Scott Frederick
+ * @since 3.1.0
+ * @see SslStores
+ * @see SslBundle#getManagers()
  */
 public interface SslManagers {
 
 	/**
-	 * @return
+	 * Return the {@code KeyManagerFactory} used to establish identity.
+	 * @return the key manager factory
 	 */
-	TrustManager[] getTrustManagers();
+	KeyManagerFactory getKeyManagerFactory();
 
 	/**
-	 * @return
+	 * Return the {@code KeyManager} instances used to establish identity.
+	 * @return the key managers
+	 */
+	KeyManager[] getKeyManagers();
+
+	/**
+	 * Return the {@link TrustManagerFactory} used to establish trust.
+	 * @return the trust manager factory
 	 */
 	TrustManagerFactory getTrustManagerFactory();
 
 	/**
-	 * @return
+	 * Return the {@link TrustManager} instances used to establish trust.
+	 * @return the trust managers
 	 */
-	KeyManagerFactory getKeyManagerFactory();
+	TrustManager[] getTrustManagers();
+
+	/**
+	 * Create a new {@link SSLContext} for the {@link #getKeyManagers() key managers} and
+	 * {@link #getTrustManagers() trust managers} managed by this instance.
+	 * @param protocol the standard name of the SSL protocol. See
+	 * {@link SSLContext#getInstance(String)}
+	 * @return a new {@link SSLContext} instance
+	 */
+	default SSLContext createSslContext(String protocol) {
+		try {
+			SSLContext sslContext = SSLContext.getInstance(protocol);
+			sslContext.init(getKeyManagers(), getTrustManagers(), null);
+			return sslContext;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Could not load SSL context: " + ex.getMessage(), ex);
+		}
+	}
+
+	static SslManagers from(SslStores stores) {
+		return null;
+	}
 
 }

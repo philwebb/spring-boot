@@ -25,6 +25,8 @@ import java.security.UnrecoverableKeyException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.SslStoreProvider;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 
 import static org.assertj.core.api.Assertions.assertThat;

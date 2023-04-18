@@ -16,20 +16,31 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.Set;
+
+import javax.net.ssl.SSLEngine;
+
 /**
- * A managed set of {@link SslBundle} instances that can be retrieved by name.
+ * Configuration options that should be applied when establishing an SSL connection.
  *
  * @author Scott Frederick
  * @since 3.1.0
+ * @see SslBundle#getOptions()
  */
-public interface SslBundles {
+public interface SslOptions {
 
 	/**
-	 * Return an {@link SslBundle} with the provided name.
-	 * @param bundleName the bundle name
-	 * @return the bundle
-	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
+	 * Return the ciphers that can be used. The cipher names in this set should be
+	 * compatible with those supported by {@link SSLEngine#getSupportedCipherSuites()}.
+	 * @return the ciphers that can be used
 	 */
-	SslBundle getBundle(String bundleName) throws NoSuchSslBundleException;
+	Set<String> getCiphers();
+
+	/**
+	 * Return the protocols that should be enabled. The protocols names in this set should
+	 * be compatible with those supported by {@link SSLEngine#getSupportedProtocols()}.
+	 * @return the protocols to enable
+	 */
+	Set<String> getEnabledProtocols();
 
 }

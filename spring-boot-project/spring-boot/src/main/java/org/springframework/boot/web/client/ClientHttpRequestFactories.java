@@ -38,7 +38,7 @@ import org.apache.hc.core5.http.io.SocketConfig;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslDetails;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -46,6 +46,7 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -167,9 +168,13 @@ public final class ClientHttpRequestFactories {
 				connectionManagerBuilder.setDefaultSocketConfig(socketConfig);
 			}
 			if (sslBundle != null) {
-				SslDetails sslDetails = sslBundle.getDetails();
-				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.getSslContext(),
-						sslDetails.getEnabledProtocols(), sslDetails.getCiphers(), new DefaultHostnameVerifier());
+				SslOptions options = sslBundle.getOptions();
+				String[] enabledProtocols = (!CollectionUtils.isEmpty(options.getEnabledProtocols()))
+						? options.getEnabledProtocols().toArray(String[]::new) : null;
+				String[] ciphers = (!CollectionUtils.isEmpty(options.getCiphers()))
+						? options.getCiphers().toArray(String[]::new) : null;
+				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.createSslContext(),
+						enabledProtocols, ciphers, new DefaultHostnameVerifier());
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
 			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
@@ -195,7 +200,7 @@ public final class ClientHttpRequestFactories {
 
 		private static OkHttp3ClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
 			if (sslBundle != null) {
-				SSLSocketFactory socketFactory = sslBundle.getSslContext().getSocketFactory();
+				SSLSocketFactory socketFactory = sslBundle.createSslContext().getSocketFactory();
 				TrustManager[] trustManagers = sslBundle.getManagers().getTrustManagers();
 				Assert.state(trustManagers.length == 1,
 						"Trust material must be provided in the SSL bundle for OkHttp3ClientHttpRequestFactory");

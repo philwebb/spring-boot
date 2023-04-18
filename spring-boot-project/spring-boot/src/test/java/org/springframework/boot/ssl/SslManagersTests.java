@@ -25,8 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
 import org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider;
-import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
-import org.springframework.boot.ssl.keystore.JavaKeyStoreSslStoreProvider;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

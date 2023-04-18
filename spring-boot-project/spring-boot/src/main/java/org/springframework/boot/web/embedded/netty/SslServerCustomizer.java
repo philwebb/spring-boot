@@ -16,8 +16,6 @@
 
 package org.springframework.boot.web.embedded.netty;
 
-import java.util.Arrays;
-
 import io.netty.handler.ssl.ClientAuth;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.Http2SslContextSpec;
@@ -25,9 +23,10 @@ import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.AbstractProtocolSslContextSpec;
 
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslDetails;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link NettyServerCustomizer} that configures SSL for the given Reactor Netty server
@@ -39,9 +38,7 @@ import org.springframework.boot.web.server.Ssl;
  * @author Cyril Dangerville
  * @author Scott Frederick
  * @since 2.0.0
- * @deprecated this class is meant for Spring Boot internal use only.
  */
-@Deprecated(since = "2.0.0", forRemoval = false)
 public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private final Http2 http2;
@@ -63,27 +60,23 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	protected AbstractProtocolSslContextSpec<?> createSslContextSpec() {
-		AbstractProtocolSslContextSpec<?> sslContextSpec;
-		if (this.http2 != null && this.http2.isEnabled()) {
-			sslContextSpec = Http2SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory());
-		}
-		else {
-			sslContextSpec = Http11SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory());
-		}
+		AbstractProtocolSslContextSpec<?> sslContextSpec = (this.http2 != null && this.http2.isEnabled())
+				? Http2SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory())
+				: Http11SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory());
 		sslContextSpec.configure((builder) -> {
-			SslDetails ssl = this.sslBundle.getDetails();
 			builder.trustManager(this.sslBundle.getManagers().getTrustManagerFactory());
-			if (ssl.getEnabledProtocols() != null) {
-				builder.protocols(ssl.getEnabledProtocols());
+			SslOptions options = this.sslBundle.getOptions();
+			if (!CollectionUtils.isEmpty(options.getEnabledProtocols())) {
+				builder.protocols(options.getEnabledProtocols());
 			}
-			if (ssl.getCiphers() != null) {
-				builder.ciphers(Arrays.asList(ssl.getCiphers()));
+			if (!CollectionUtils.isEmpty(options.getCiphers())) {
+				builder.ciphers(options.getCiphers());
 			}
-			if (this.clientAuth == Ssl.ClientAuth.NEED) {
-				builder.clientAuth(ClientAuth.REQUIRE);
-			}
-			else if (this.clientAuth == Ssl.ClientAuth.WANT) {
-				builder.clientAuth(ClientAuth.OPTIONAL);
+			switch (this.clientAuth) {
+				case NEED -> builder.clientAuth(ClientAuth.REQUIRE);
+				case WANT -> builder.clientAuth(ClientAuth.OPTIONAL);
+				case NONE -> {
+				}
 			}
 		});
 		return sslContextSpec;

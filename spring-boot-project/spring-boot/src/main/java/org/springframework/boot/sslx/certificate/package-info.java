@@ -17,4 +17,4 @@
 /**
  * SSL trust material provider for PEM-encoded certificates.
  */
-package org.springframework.boot.ssl.certificate;
+package org.springframework.boot.sslx.certificate;

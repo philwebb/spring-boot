@@ -22,7 +22,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
-import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
 
 /**
  * Properties for centralized SSL trust material configuration.

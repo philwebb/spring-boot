@@ -14,31 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl;
-
 /**
- * @author pwebb
+ * SSL trust material provider for Java KeyStores.
  */
-public interface SslDetails {
-
-	/**
-	 * @return
-	 */
-	String[] getCiphers();
-
-	/**
-	 * @return
-	 */
-	String[] getEnabledProtocols();
-
-	/**
-	 * @return
-	 */
-	String getKeyAlias();
-
-	/**
-	 * @return
-	 */
-	String getProtocol();
-
-}
+package org.springframework.boot.sslx.keystore;

@@ -40,6 +40,7 @@ import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.ServerSslBundleFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
@@ -187,10 +188,9 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
 	}
 
-	@SuppressWarnings("deprecation")
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		org.springframework.boot.web.embedded.netty.SslServerCustomizer sslServerCustomizer = new org.springframework.boot.web.embedded.netty.SslServerCustomizer(
-				null, this.ssl.getClientAuth(), getSslBundle());
+		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(null, this.ssl.getClientAuth(),
+				getSslBundle());
 		return sslServerCustomizer.apply(httpServer);
 	}
 
@@ -219,7 +219,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return new InetSocketAddress(this.port);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static final class TcpSslServerCustomizer
 			extends org.springframework.boot.web.embedded.netty.SslServerCustomizer {
 

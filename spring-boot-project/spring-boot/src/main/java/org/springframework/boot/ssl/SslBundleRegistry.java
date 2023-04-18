@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.ssl;
+
 /**
- * SSL trust material provider for Java KeyStores.
+ * Interface that can be used to register an {@link SslBundle} for a given name.
+ *
+ * @author Scott Frederick
+ * @since 3.1.0
  */
-package org.springframework.boot.ssl.keystore;
+public interface SslBundleRegistry {
+
+	/**
+	 * Register a named {@link SslBundle}.
+	 * @param name the bundle name
+	 * @param bundle the bundle
+	 */
+	void registerSslBundle(String name, SslBundle bundle);
+
+}

@@ -16,31 +16,21 @@
 
 package org.springframework.boot.ssl;
 
-import java.security.KeyStore;
-
 /**
- * @author pwebb
+ * Default {@link SslBundleRegistry} implementation.
+ *
+ * @author Scott Frederick
+ * @since 3.1.0
  */
-public interface SslKeyStores {
+public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
-	/**
-	 * @return
-	 */
-	String getKeyPassword();
+	@Override
+	public void registerSslBundle(String name, SslBundle bundle) {
+	}
 
-	/**
-	 * @return
-	 */
-	KeyStore getKeyStore();
-
-	/**
-	 * @return
-	 */
-	KeyStore getTrustStore();
-
-	/**
-	 * @return
-	 */
-	String getKeyStorePassword();
+	@Override
+	public SslBundle getBundle(String bundleName) throws NoSuchSslBundleException {
+		return null;
+	}
 
 }

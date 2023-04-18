@@ -26,8 +26,9 @@ import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslDetails;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link UndertowBuilderCustomizer} that configures SSL on the given builder instance.
@@ -56,15 +57,15 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	@Override
 	public void customize(Undertow.Builder builder) {
-		SSLContext sslContext = this.sslBundle.getSslContext();
+		SslOptions options = this.sslBundle.getOptions();
+		SSLContext sslContext = this.sslBundle.createSslContext();
 		builder.addHttpsListener(this.port, getListenAddress(), sslContext);
-		SslDetails ssl = this.sslBundle.getDetails();
 		builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, getSslClientAuthMode(this.clientAuth));
-		if (ssl.getEnabledProtocols() != null) {
-			builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS, Sequence.of(ssl.getEnabledProtocols()));
+		if (!CollectionUtils.isEmpty(options.getEnabledProtocols())) {
+			builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS, Sequence.of(options.getEnabledProtocols()));
 		}
-		if (ssl.getCiphers() != null) {
-			builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES, Sequence.of(ssl.getCiphers()));
+		if (!CollectionUtils.isEmpty(options.getCiphers())) {
+			builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES, Sequence.of(options.getCiphers()));
 		}
 	}
 

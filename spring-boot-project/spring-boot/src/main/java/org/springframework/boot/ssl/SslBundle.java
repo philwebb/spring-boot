@@ -16,14 +16,9 @@
 
 package org.springframework.boot.ssl;
 
-import java.security.KeyStore;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
-import org.springframework.boot.sslx.SslKeyStores;
-import org.springframework.boot.sslx.SslManagers;
 
 /**
  * A bundle of trust material that can be used for managing SSL connections.
@@ -34,29 +29,54 @@ import org.springframework.boot.sslx.SslManagers;
 public interface SslBundle {
 
 	/**
-	 * Return the SSL bundle configuration.
-	 * @return the properties
+	 * The default protocol to use.
 	 */
-	SslDetails getDetails();
+	String DEFAULT_PROTOCOL = "TLS";
 
 	/**
-	 * Return an {@link SslKeyStores} that can be used to access this bundle's
-	 * {@link KeyStore}s.
-	 * @return the {@code SslKeyStores}
+	 * Return the protocol to use when establishing the connection. Values should be
+	 * supported by {@link SSLContext#getInstance(String)} Defaults to
+	 * {@value #DEFAULT_PROTOCOL}.
+	 * @return the SSL protocol
+	 * @see SSLContext#getInstance(String)
 	 */
-	SslKeyStores getKeyStores();
+	default String getProtocol() {
+		return DEFAULT_PROTOCOL;
+	}
 
 	/**
-	 * Return an {@link SslManagers} that can be used to access this bundle's
-	 * {@link KeyManager}s and {@link TrustManager}s.
-	 * @return the {@code SslManagers}
+	 * Return a reference the key that should be used for this bundle.
+	 * @return a reference to the SSL key that should be used
+	 */
+	SslKeyReference getKey();
+
+	/**
+	 * Return the {@link SslStores} that can be used to access this bundle's key and trust
+	 * stores.
+	 * @return the {@code SslKeyStores} instance for this bundle
+	 */
+	SslStores getStores();
+
+	/**
+	 * Return the {@link SslManagers} that can be used to access this bundle's
+	 * {@link KeyManager key} and {@link TrustManager trust} managers.
+	 * @return the {@code SslManagers} instance for this bundle
 	 */
 	SslManagers getManagers();
 
 	/**
-	 * Return the {@link SSLContext}.
-	 * @return the SSL context
+	 * Return {@link SslOptions} that should be applied when establishing the SSL
+	 * connection.
+	 * @return the options that should be applied
 	 */
-	SSLContext getSslContext();
+	SslOptions getOptions();
+
+	/**
+	 * Create a new {@link SSLContext} for this bundle.
+	 * @return a new {@link SSLContext} instance
+	 */
+	default SSLContext createSslContext() {
+		return getManagers().createSslContext(getProtocol());
+	}
 
 }

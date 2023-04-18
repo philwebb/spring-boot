@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-/**
- * Support for configuring SSL trust material.
- */
 package org.springframework.boot.ssl;
+
+/**
+ * A reference to a single key obtained via {@link SslStores}.
+ *
+ * @author Phillip Webb
+ */
+public final class SslKeyReference {
+
+	public String getAlias() {
+		return null;
+	}
+
+	public String getPassword() {
+		return null;
+	}
+
+}

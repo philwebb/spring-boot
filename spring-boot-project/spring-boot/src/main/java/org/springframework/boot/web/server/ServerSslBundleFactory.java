@@ -22,8 +22,8 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslDetails;
 import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
 import org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider;
-import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
-import org.springframework.boot.ssl.keystore.JavaKeyStoreSslStoreProvider;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
+import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
 
 /**
  * Creates an {@link SslBundle} based on server SSL configuration properties.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.certificate;
+package org.springframework.boot.sslx.certificate;
 
 import org.springframework.boot.ssl.SslDetails;
 

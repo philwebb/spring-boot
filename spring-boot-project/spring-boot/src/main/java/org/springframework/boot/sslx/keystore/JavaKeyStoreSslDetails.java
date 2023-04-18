@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.keystore;
+package org.springframework.boot.sslx.keystore;
 
 import org.springframework.boot.ssl.SslDetails;
 
