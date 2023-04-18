@@ -14,7 +14,36 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.ssl;
+
 /**
- * Support for configuring SSL trust material.
+ * @author pwebb
  */
-package org.springframework.boot.sslx;
+public interface SslDetails {
+
+	/**
+	 * @return
+	 */
+	String[] getEnabledProtocols();
+
+	/**
+	 * @return
+	 */
+	String[] getCiphers();
+
+	/**
+	 * @return
+	 */
+	String getKeyAlias();
+
+	/**
+	 * @return
+	 */
+	String getProtocol();
+
+	/**
+	 * @return
+	 */
+	String getKeyPassword();
+
+}

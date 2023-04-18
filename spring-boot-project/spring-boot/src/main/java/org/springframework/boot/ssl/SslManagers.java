@@ -14,7 +14,30 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.ssl;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
 /**
- * Support for configuring SSL trust material.
+ * @author pwebb
  */
-package org.springframework.boot.sslx;
+public interface SslManagers {
+
+	/**
+	 * @return
+	 */
+	TrustManager[] getTrustManagers();
+
+	/**
+	 * @return
+	 */
+	TrustManagerFactory getTrustManagerFactory();
+
+	/**
+	 * @return
+	 */
+	KeyManagerFactory getKeyManagerFactory();
+
+}

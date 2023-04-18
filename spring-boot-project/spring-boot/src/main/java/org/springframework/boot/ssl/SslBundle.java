@@ -14,7 +14,33 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.ssl;
+
+import javax.net.ssl.SSLContext;
+
 /**
- * Support for configuring SSL trust material.
+ * @author pwebb
  */
-package org.springframework.boot.sslx;
+public interface SslBundle {
+
+	/**
+	 * @return
+	 */
+	SSLContext getSslContext();
+
+	/**
+	 * @return
+	 */
+	SslDetails getDetails();
+
+	/**
+	 * @return
+	 */
+	SslManagers getManagers();
+
+	/**
+	 * @return
+	 */
+	SslKeyStores getKeyStores();
+
+}

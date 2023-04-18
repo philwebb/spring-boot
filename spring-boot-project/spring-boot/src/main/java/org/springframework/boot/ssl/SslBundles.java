@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.ssl;
+
 /**
- * Support for configuring SSL trust material.
+ * @author pwebb
  */
-package org.springframework.boot.sslx;
+public interface SslBundles {
+
+	/**
+	 * @param bundle
+	 * @return
+	 */
+	SslBundle getBundle(String bundle);
+
+}

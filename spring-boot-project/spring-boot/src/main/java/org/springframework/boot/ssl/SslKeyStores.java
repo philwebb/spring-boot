@@ -14,7 +14,33 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.ssl;
+
+import java.security.KeyStore;
+
 /**
- * Support for configuring SSL trust material.
+ * @author pwebb
  */
-package org.springframework.boot.sslx;
+public interface SslKeyStores {
+
+	/**
+	 * @return
+	 */
+	String getKeyPassword();
+
+	/**
+	 * @return
+	 */
+	KeyStore getKeyStore();
+
+	/**
+	 * @return
+	 */
+	KeyStore getTrustStore();
+
+	/**
+	 * @return
+	 */
+	String getKeyStorePassword();
+
+}

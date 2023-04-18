@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl;
+package org.springframework.boot.sslx;
 
 /**
  * Exception indicating that an {@link SslBundle} was referenced with a name that does not

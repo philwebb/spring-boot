@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl;
+package org.springframework.boot.sslx;
 
 /**
  * Centralized SSL trust material configuration.
