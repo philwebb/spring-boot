@@ -23,34 +23,22 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
-public final class SslKeyReference {
+public interface SslKeyReference {
 
-	private final String alias;
-
-	private final String password;
-
-	private SslKeyReference(String alias, String password) {
-		Assert.hasText(alias, "Alias must not be empty");
-		this.alias = alias;
-		this.password = password;
-	}
+	SslKeyReference NONE = of(null, null);
 
 	/**
 	 * Return the alias of the key.
 	 * @return the key alias
 	 */
-	public String getAlias() {
-		return this.alias;
-	}
+	String getAlias();
 
 	/**
 	 * Return the password that should be used to access the key or {@code null} if no
 	 * password is required.
 	 * @return the key password
 	 */
-	public String getPassword() {
-		return this.password;
-	}
+	String getPassword();
 
 	/**
 	 * Create a new {@link SslKeyReference} instance.
@@ -58,8 +46,21 @@ public final class SslKeyReference {
 	 * @param password the password used to access the key or {@code null}
 	 * @return a new {@link SslKeyReference} instance
 	 */
-	public static SslKeyReference of(String alias, String password) {
-		return new SslKeyReference(alias, password);
+	static SslKeyReference of(String alias, String password) {
+		Assert.hasText(alias, "Alias must not be empty");
+		return new SslKeyReference() {
+
+			@Override
+			public String getAlias() {
+				return alias;
+			}
+
+			@Override
+			public String getPassword() {
+				return password;
+			}
+
+		};
 	}
 
 }

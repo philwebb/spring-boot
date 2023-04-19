@@ -80,6 +80,13 @@ public interface SslManagerBundle {
 		}
 	}
 
+	/**
+	 * Create a new {@link SslManagerBundle} backed by the given {@link SslBundle} and
+	 * {@link SslKeyReference}.
+	 * @param storeBundle the SSL store bundle
+	 * @param key the key reference
+	 * @return a new {@link SslManagerBundle} instance
+	 */
 	static SslManagerBundle from(SslStoreBundle storeBundle, SslKeyReference key) {
 		return new DefaultSslManagerBundle(storeBundle, key);
 	}

@@ -16,6 +16,11 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.util.Assert;
+
 /**
  * Default {@link SslBundleRegistry} implementation.
  *
@@ -24,13 +29,24 @@ package org.springframework.boot.ssl;
  */
 public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
+	private final Map<String, SslBundle> bundles = new ConcurrentHashMap<>();
+
 	@Override
-	public void registerSslBundle(String name, SslBundle bundle) {
+	public void registerBundle(String name, SslBundle bundle) {
+		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(bundle, "Bundle must not be null");
+		SslBundle previous = this.bundles.putIfAbsent(name, bundle);
+		Assert.state(previous == null, () -> "Cannot replace existing SSL bundle '%s'".formatted(name));
 	}
 
 	@Override
-	public SslBundle getBundle(String bundleName) throws NoSuchSslBundleException {
-		return null;
+	public SslBundle getBundle(String name) {
+		Assert.notNull(name, "Name must not be null");
+		SslBundle bundle = this.bundles.get(name);
+		if (bundle == null) {
+			throw new NoSuchSslBundleException(name, "SSL bundle name '" + name + "' is not valid");
+		}
+		return bundle;
 	}
 
 }

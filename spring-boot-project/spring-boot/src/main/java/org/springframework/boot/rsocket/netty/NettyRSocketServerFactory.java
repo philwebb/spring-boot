@@ -40,10 +40,11 @@ import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
-import org.springframework.boot.web.server.ServerSslBundleFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.WebServerSslBundle;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
@@ -78,6 +79,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private SslStoreProvider sslStoreProvider;
 
+	private SslBundles sslBundles;
+
 	@Override
 	public void setPort(int port) {
 		this.port = port;
@@ -109,8 +112,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	@Override
-	public void setSslBundle(SslBundle sslBundle) {
-		this.sslBundle = sslBundle;
+	public void setSslBundles(SslBundles sslBundles) {
+		this.sslBundles = sslBundles;
 	}
 
 	/**
@@ -188,7 +191,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
 		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(null, this.ssl.getClientAuth(),
-				getSslBundle());
+				WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider));
 		return sslServerCustomizer.apply(httpServer);
 	}
 
@@ -198,16 +201,10 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (this.ssl != null && this.ssl.isEnabled()) {
-			TcpSslServerCustomizer sslServerCustomizer = new TcpSslServerCustomizer(this.ssl.getClientAuth(),
-					getSslBundle());
-			tcpServer = sslServerCustomizer.apply(tcpServer);
+			SslBundle sslBundle = WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider);
+			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), sslBundle).apply(tcpServer);
 		}
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
-	}
-
-	private SslBundle getSslBundle() {
-		return ((this.sslBundle != null) ? this.sslBundle
-				: ServerSslBundleFactory.from(this.ssl, this.sslStoreProvider));
 	}
 
 	private InetSocketAddress getListenAddress() {

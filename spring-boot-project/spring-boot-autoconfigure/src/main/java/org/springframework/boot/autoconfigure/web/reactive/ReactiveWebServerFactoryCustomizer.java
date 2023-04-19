@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
@@ -37,16 +37,15 @@ public class ReactiveWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	private final SslBundle sslBundle;
+	private final SslBundles sslBundles;
 
 	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
-		this.sslBundle = null;
+		this(serverProperties, null);
 	}
 
-	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties, SslBundle sslBundle) {
+	public ReactiveWebServerFactoryCustomizer(ServerProperties serverProperties, SslBundles sslBundles) {
 		this.serverProperties = serverProperties;
-		this.sslBundle = sslBundle;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
@@ -63,7 +62,7 @@ public class ReactiveWebServerFactoryCustomizer
 		map.from(this.serverProperties::getCompression).to(factory::setCompression);
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
-		factory.setSslBundle(this.sslBundle);
+		map.from(() -> this.sslBundles).to(factory::setSslBundles);
 	}
 
 }

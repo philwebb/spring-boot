@@ -24,12 +24,14 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
@@ -141,7 +143,7 @@ class UndertowWebServerFactoryDelegate {
 		return this.useForwardHeaders;
 	}
 
-	Builder createBuilder(AbstractConfigurableWebServerFactory factory) {
+	Builder createBuilder(AbstractConfigurableWebServerFactory factory, Supplier<SslBundle> sslBundleSupplier) {
 		InetAddress address = factory.getAddress();
 		int port = factory.getPort();
 		Builder builder = Undertow.builder();
@@ -163,7 +165,7 @@ class UndertowWebServerFactoryDelegate {
 		}
 		Ssl ssl = factory.getSsl();
 		if (ssl != null && ssl.isEnabled()) {
-			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), factory.getSslBundle())
+			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), sslBundleSupplier.get())
 				.customize(builder);
 		}
 		else {

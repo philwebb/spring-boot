@@ -16,6 +16,7 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.net.ssl.SSLEngine;
@@ -28,6 +29,8 @@ import javax.net.ssl.SSLEngine;
  * @see SslBundle#getOptions()
  */
 public interface SslOptions {
+
+	SslOptions NONE = of(Collections.emptySet(), Collections.emptySet());
 
 	/**
 	 * Return the ciphers that can be used or an empty set. The cipher names in this set
@@ -44,5 +47,29 @@ public interface SslOptions {
 	 * @return the protocols to enable
 	 */
 	Set<String> getEnabledProtocols();
+
+	static SslOptions of(String[] enabledProtocols, String[] ciphers) {
+		return of(asSet(enabledProtocols), asSet(ciphers));
+	}
+
+	static SslOptions of(Set<String> enabledProtocols, Set<String> ciphers) {
+		return new SslOptions() {
+
+			@Override
+			public Set<String> getEnabledProtocols() {
+				return (enabledProtocols != null) ? enabledProtocols : Collections.emptySet();
+			}
+
+			@Override
+			public Set<String> getCiphers() {
+				return (ciphers != null) ? ciphers : Collections.emptySet();
+			}
+		};
+
+	}
+
+	private static Set<String> asSet(String[] array) {
+		return (array != null) ? Set.of(array) : null;
+	}
 
 }

@@ -36,10 +36,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.WebListenerRegistrar;
@@ -80,7 +78,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
 			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers, ObjectProvider<SslBundles> sslBundles) {
 		return new ServletWebServerFactoryCustomizer(serverProperties, webListenerRegistrars.orderedStream().toList(),
-				cookieSameSiteSuppliers.orderedStream().toList(), getSslBundle(sslBundles, serverProperties));
+				cookieSameSiteSuppliers.orderedStream().toList(), sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -88,17 +86,6 @@ public class ServletWebServerFactoryAutoConfiguration {
 	public TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
 		return new TomcatServletWebServerFactoryCustomizer(serverProperties);
-	}
-
-	private SslBundle getSslBundle(ObjectProvider<SslBundles> sslBundles, ServerProperties properties) {
-		SslBundles registry = sslBundles.getIfAvailable();
-		if (registry != null) {
-			Ssl ssl = properties.getSsl();
-			if (ssl != null && ssl.isEnabled() && ssl.getBundle() != null) {
-				return registry.getBundle(ssl.getBundle());
-			}
-		}
-		return null;
 	}
 
 	@Configuration(proxyBeanMethods = false)

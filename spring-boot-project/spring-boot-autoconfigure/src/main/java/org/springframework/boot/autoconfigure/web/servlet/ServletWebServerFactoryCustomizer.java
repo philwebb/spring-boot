@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.WebListenerRegistrar;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -49,7 +49,7 @@ public class ServletWebServerFactoryCustomizer
 
 	private final List<CookieSameSiteSupplier> cookieSameSiteSuppliers;
 
-	private final SslBundle sslBundle;
+	private final SslBundles sslBundles;
 
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this(serverProperties, Collections.emptyList());
@@ -62,11 +62,11 @@ public class ServletWebServerFactoryCustomizer
 
 	ServletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			List<WebListenerRegistrar> webListenerRegistrars, List<CookieSameSiteSupplier> cookieSameSiteSuppliers,
-			SslBundle sslBundle) {
+			SslBundles sslBundles) {
 		this.serverProperties = serverProperties;
 		this.webListenerRegistrars = webListenerRegistrars;
 		this.cookieSameSiteSuppliers = cookieSameSiteSuppliers;
-		this.sslBundle = sslBundle;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
@@ -90,15 +90,11 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
-		for (WebListenerRegistrar registrar : this.webListenerRegistrars) {
-			registrar.register(factory);
-		}
-		if (!CollectionUtils.isEmpty(this.cookieSameSiteSuppliers)) {
-			factory.setCookieSameSiteSuppliers(this.cookieSameSiteSuppliers);
-		}
-		if (this.sslBundle != null) {
-			factory.setSslBundle(this.sslBundle);
-		}
+		map.from(() -> this.sslBundles).to(factory::setSslBundles);
+		map.from(() -> this.cookieSameSiteSuppliers)
+			.whenNot(CollectionUtils::isEmpty)
+			.to(factory::setCookieSameSiteSuppliers);
+		this.webListenerRegistrars.forEach((registrar) -> registrar.register(factory));
 	}
 
 }

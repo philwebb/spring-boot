@@ -17,10 +17,9 @@
 package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
-import java.util.Collections;
-import java.util.Set;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslKeyReference;
 import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -33,7 +32,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Scott Frederick
  * @author Phillip Webb
  */
-class WebServerSslBundle implements SslBundle {
+public class WebServerSslBundle implements SslBundle {
 
 	private final SslKeyReference key;
 
@@ -44,27 +43,13 @@ class WebServerSslBundle implements SslBundle {
 	private final SslOptions options;
 
 	@SuppressWarnings({ "removal", "deprecation" })
-	WebServerSslBundle(Ssl ssl, SslStoreProvider sslStoreProvider) {
+	private WebServerSslBundle(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : ssl.getKeyPassword();
 		this.key = SslKeyReference.of(ssl.getKeyAlias(), keyPassword);
 		this.stores = (sslStoreProvider != null) ? new SslStoreProviderBundleAdapter(sslStoreProvider)
 				: createStoreBundle(ssl);
 		this.managers = SslManagerBundle.from(this.stores, this.key);
-		Set<String> enabledProtocols = (ssl.getEnabledProtocols() != null) ? Set.of(ssl.getEnabledProtocols())
-				: Collections.emptySet();
-		Set<String> ciphers = (ssl.getCiphers() != null) ? Set.of(ssl.getCiphers()) : Collections.emptySet();
-		this.options = new SslOptions() {
-
-			@Override
-			public Set<String> getEnabledProtocols() {
-				return enabledProtocols;
-			}
-
-			@Override
-			public Set<String> getCiphers() {
-				return ciphers;
-			}
-		};
+		this.options = SslOptions.of(ssl.getEnabledProtocols(), ssl.getCiphers());
 	}
 
 	private static SslStoreBundle createStoreBundle(Ssl ssl) {
@@ -77,7 +62,7 @@ class WebServerSslBundle implements SslBundle {
 		return SslStoreBundle.NONE;
 	}
 
-	private static boolean hasCertificateProperties(Ssl ssl) {
+	static boolean hasCertificateProperties(Ssl ssl) {
 		return ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null;
 	}
 
@@ -119,6 +104,32 @@ class WebServerSslBundle implements SslBundle {
 	@Override
 	public SslOptions getOptions() {
 		return this.options;
+	}
+
+	public static SslBundle get(SslBundles sslBundles, Ssl ssl, SslStoreProvider sslStoreProvider) {
+		return null;
+	}
+
+	//
+	// private SslBundle getSslBundle(ObjectProvider<SslBundles> sslBundles,
+	// RSocketProperties properties) {
+	// SslBundles registry = sslBundles.getIfAvailable();
+	// if (registry != null) {
+	// Ssl ssl = properties.getServer().getSsl();
+	// if (ssl != null && ssl.isEnabled() && ssl.getBundle() != null) {
+	// return registry.getBundle(ssl.getBundle());
+	// }
+	// }
+	// return null;
+	// }
+	//
+	/**
+	 * @param ssl
+	 * @return
+	 */
+	static SslBundle certificate(Ssl ssl) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 	/**

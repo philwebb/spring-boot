@@ -27,6 +27,9 @@ import java.security.KeyStore;
  */
 public interface SslStoreBundle {
 
+	/**
+	 * {@link SslStoreBundle} that returns {@code null} for each method.
+	 */
 	SslStoreBundle NONE = new SslStoreBundle() {
 
 		@Override

@@ -37,9 +37,7 @@ import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.netty.NettyRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -98,20 +96,9 @@ public class RSocketServerAutoConfiguration {
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);
 			map.from(properties.getServer().getSsl()).to(factory::setSsl);
-			factory.setSslBundle(getSslBundle(sslBundles, properties));
+			factory.setSslBundles(sslBundles.getIfAvailable());
 			factory.setRSocketServerCustomizers(customizers.orderedStream().toList());
 			return factory;
-		}
-
-		private SslBundle getSslBundle(ObjectProvider<SslBundles> sslBundles, RSocketProperties properties) {
-			SslBundles registry = sslBundles.getIfAvailable();
-			if (registry != null) {
-				Ssl ssl = properties.getServer().getSsl();
-				if (ssl != null && ssl.isEnabled() && ssl.getBundle() != null) {
-					return registry.getBundle(ssl.getBundle());
-				}
-			}
-			return null;
 		}
 
 		@Bean

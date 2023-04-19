@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.connection.SslSettings;
 import org.bson.UuidRepresentation;
 
 import org.springframework.boot.ssl.SslBundle;
@@ -58,13 +59,15 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 		settingsBuilder.uuidRepresentation(this.uuidRepresentation);
 		settingsBuilder.applyConnectionString(this.connectionString);
 		if (this.ssl.isEnabled()) {
-			settingsBuilder.applyToSslSettings((settings) -> {
-				settings.enabled(this.ssl.isEnabled());
-				if (this.ssl.getBundle() != null) {
-					SslBundle sslBundle = this.sslBundles.getBundle(this.ssl.getBundle());
-					settings.context(sslBundle.getSslContext());
-				}
-			});
+			settingsBuilder.applyToSslSettings(this::configureSsl);
+		}
+	}
+
+	private void configureSsl(SslSettings.Builder settings) {
+		settings.enabled(true);
+		if (this.ssl.getBundle() != null) {
+			SslBundle sslBundle = this.sslBundles.getBundle(this.ssl.getBundle());
+			settings.context(sslBundle.createSslContext());
 		}
 	}
 

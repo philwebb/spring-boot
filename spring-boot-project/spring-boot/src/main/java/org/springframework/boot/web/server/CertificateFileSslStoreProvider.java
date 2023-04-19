@@ -19,6 +19,7 @@ package org.springframework.boot.web.server;
 import java.security.KeyStore;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 
 /**
  * An {@link SslStoreProvider} that creates key and trust stores from certificate and
@@ -26,8 +27,8 @@ import org.springframework.boot.ssl.SslBundle;
  *
  * @author Scott Frederick
  * @since 2.7.0
- * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
- * {@link org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider}
+ * @deprecated since 3.1.0 for removal in 3.3.0, in favor of registering a
+ * {@link SslBundle} backed by a {@link PemSslStoreBundle}.
  */
 @Deprecated(since = "3.1.0", forRemoval = true)
 @SuppressWarnings({ "deprecation", "removal" })
@@ -61,9 +62,8 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	 * @return an {@code SslStoreProvider} or {@code null}
 	 */
 	public static SslStoreProvider from(Ssl ssl) {
-		if (ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null) {
-			SslBundle sslBundle = ServerSslBundleFactory.from(ssl);
-			return new CertificateFileSslStoreProvider(sslBundle);
+		if (ssl != null && ssl.isEnabled() && WebServerSslBundle.hasCertificateProperties(ssl)) {
+			return new CertificateFileSslStoreProvider(WebServerSslBundle.certificate(ssl));
 		}
 		return null;
 	}

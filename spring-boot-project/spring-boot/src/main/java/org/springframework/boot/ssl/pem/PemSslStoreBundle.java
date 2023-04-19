@@ -79,12 +79,12 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 */
 	private KeyStore createKeyStore(String name, StoreDetails details) {
 		try {
-			Assert.notNull(details.certificateContent(), "CertificateContent must not be null");
+			Assert.notNull(details.certificate(), "CertificateContent must not be null");
 			String type = (!StringUtils.hasText(details.type())) ? details.type() : KeyStore.getDefaultType();
 			KeyStore store = KeyStore.getInstance(type);
 			store.load(null);
-			String certificateContent = PemContent.load(details.certificateContent());
-			String privateKeyContent = PemContent.load(details.privateKeyContent());
+			String certificateContent = PemContent.load(details.certificate());
+			String privateKeyContent = PemContent.load(details.privateKey());
 			X509Certificate[] certificates = PemCertificateParser.parse(certificateContent.toString());
 			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent.toString());
 			addCertificates(store, certificates, privateKey);
@@ -113,15 +113,15 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 *
 	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
 	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
-	 * @param certificateContent the certificate content (either the PEM content itself or
+	 * @param certificate the certificate content (either the PEM content itself or
 	 * something that can be loaded by {@link ResourceUtils#getURL})
-	 * @param privateKeyContent the private key content (either the PEM content itself or
+	 * @param privateKey the private key content (either the PEM content itself or
 	 * something that can be loaded by {@link ResourceUtils#getURL})
 	 */
-	public static record StoreDetails(String type, String certificateContent, String privateKeyContent) {
+	public static record StoreDetails(String type, String certificate, String privateKey) {
 
 		boolean isEmpty() {
-			return isEmpty(this.type) && isEmpty(this.certificateContent) && isEmpty(this.privateKeyContent);
+			return isEmpty(this.type) && isEmpty(this.certificate) && isEmpty(this.privateKey);
 		}
 
 		private boolean isEmpty(String value) {

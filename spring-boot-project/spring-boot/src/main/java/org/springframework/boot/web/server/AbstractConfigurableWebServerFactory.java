@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.util.Assert;
 
 /**
@@ -53,7 +54,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	private SslStoreProvider sslStoreProvider;
 
-	private SslBundle sslBundle;
+	private SslBundles sslBundles;
 
 	private Http2 http2;
 
@@ -144,9 +145,8 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	}
 
 	@Override
-	public void setSslBundle(SslBundle sslBundle) {
-		this.sslBundle = sslBundle;
-
+	public void setSslBundles(SslBundles sslBundles) {
+		this.sslBundles = sslBundles;
 	}
 
 	public Http2 getHttp2() {
@@ -199,12 +199,18 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	@Deprecated(since = "3.1.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	public final SslStoreProvider getOrCreateSslStoreProvider() {
-		return null;
+		if (this.sslStoreProvider != null) {
+			return this.sslStoreProvider;
+		}
+		return CertificateFileSslStoreProvider.from(this.ssl);
 	}
 
-	public final SslBundle getSslBundle() {
-		return ((this.sslBundle != null) ? this.sslBundle
-				: ServerSslBundleFactory.from(this.ssl, this.sslStoreProvider));
+	/**
+	 * Return the {@link SslBundle} that should be used with this server.
+	 * @return the SSL bundle
+	 */
+	protected final SslBundle getSslBundle() {
+		return WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider);
 	}
 
 	/**

@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.util.Set;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 
 /**
  * A configurable {@link WebServerFactory}.
@@ -69,10 +70,10 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 	/**
-	 * Sets the SSL bundle that can be used to configure SSL connections.
-	 * @param sslBundle the SSL bundles
+	 * Sets the SSL bundles that can be used to configure SSL connections.
+	 * @param sslBundles the SSL bundles
 	 */
-	void setSslBundle(SslBundle sslBundle);
+	void setSslBundles(SslBundles sslBundles);
 
 	/**
 	 * Sets the HTTP/2 configuration that will be applied to the server.

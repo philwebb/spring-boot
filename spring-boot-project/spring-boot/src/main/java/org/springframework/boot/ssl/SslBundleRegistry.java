@@ -29,6 +29,6 @@ public interface SslBundleRegistry {
 	 * @param name the bundle name
 	 * @param bundle the bundle
 	 */
-	void registerSslBundle(String name, SslBundle bundle);
+	void registerBundle(String name, SslBundle bundle);
 
 }

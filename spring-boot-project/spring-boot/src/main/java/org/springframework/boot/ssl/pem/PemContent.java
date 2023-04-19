@@ -25,7 +25,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
- * @author pwebb
+ * @author Scott Frederick
+ * @author Phillip Webb
  */
 class PemContent {
 

@@ -45,7 +45,8 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Return a reference the key that should be used for this bundle.
+	 * Return a reference the key that should be used for this bundle or
+	 * {@link SslKeyReference#NONE}.
 	 * @return a reference to the SSL key that should be used
 	 */
 	SslKeyReference getKey();

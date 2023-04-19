@@ -32,9 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -67,7 +65,7 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	@Bean
 	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<SslBundles> sslBundles) {
-		return new ReactiveWebServerFactoryCustomizer(serverProperties, getSslBundle(sslBundles, serverProperties));
+		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -82,17 +80,6 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	@ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
 	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
 		return new ForwardedHeaderTransformer();
-	}
-
-	private SslBundle getSslBundle(ObjectProvider<SslBundles> sslBundles, ServerProperties properties) {
-		SslBundles registry = sslBundles.getIfAvailable();
-		if (registry != null) {
-			Ssl ssl = properties.getSsl();
-			if (ssl != null && ssl.isEnabled() && ssl.getBundle() != null) {
-				return registry.getBundle(ssl.getBundle());
-			}
-		}
-		return null;
 	}
 
 	/**
