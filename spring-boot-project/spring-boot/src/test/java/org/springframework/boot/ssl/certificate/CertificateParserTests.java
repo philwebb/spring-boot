@@ -29,7 +29,7 @@ import org.springframework.util.ResourceUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CertificateParser}.
+ * Tests for {@link PemCertificateParser}.
  *
  * @author Scott Frederick
  */
@@ -37,7 +37,7 @@ class CertificateParserTests {
 
 	@Test
 	void parseCertificate() throws Exception {
-		X509Certificate[] certificates = CertificateParser.parse(fromResource("classpath:test-cert.pem"));
+		X509Certificate[] certificates = PemCertificateParser.parse(fromResource("classpath:test-cert.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(1);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
@@ -45,7 +45,7 @@ class CertificateParserTests {
 
 	@Test
 	void parseCertificateChain() throws Exception {
-		X509Certificate[] certificates = CertificateParser.parse(fromResource("classpath:test-cert-chain.pem"));
+		X509Certificate[] certificates = PemCertificateParser.parse(fromResource("classpath:test-cert-chain.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");

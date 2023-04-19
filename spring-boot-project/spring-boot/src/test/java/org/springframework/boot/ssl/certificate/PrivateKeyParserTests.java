@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link PrivateKeyParser}.
+ * Tests for {@link PemPrivateKeyParser}.
  *
  * @author Scott Frederick
  */
@@ -38,7 +38,7 @@ class PrivateKeyParserTests {
 
 	@Test
 	void parsePkcs8KeyFile() throws Exception {
-		PrivateKey privateKey = PrivateKeyParser.parse(fromResource("classpath:test-key.pem"));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(fromResource("classpath:test-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
@@ -46,7 +46,7 @@ class PrivateKeyParserTests {
 
 	@Test
 	void parsePkcs8KeyFileWithEcdsa() throws Exception {
-		PrivateKey privateKey = PrivateKeyParser.parse(fromResource("classpath:test-ec-key.pem"));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(fromResource("classpath:test-ec-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
@@ -55,7 +55,7 @@ class PrivateKeyParserTests {
 	@Test
 	void parseWithNonKeyTextWillThrowException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> PrivateKeyParser.parse(fromResource("classpath:test-banner.txt")));
+			.isThrownBy(() -> PemPrivateKeyParser.parse(fromResource("classpath:test-banner.txt")));
 	}
 
 	private String fromResource(String resource) throws Exception {

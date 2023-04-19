@@ -16,14 +16,18 @@
 
 package org.springframework.boot.web.server;
 
+import java.security.KeyStore;
 import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslKeyReference;
-import org.springframework.boot.ssl.SslManagers;
+import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
-import org.springframework.boot.ssl.SslStores;
+import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * @author Scott Frederick
@@ -33,17 +37,19 @@ public class WebServerSslBundle implements SslBundle {
 
 	private final SslKeyReference key;
 
-	private final SslStores stores;
+	private final SslStoreBundle stores;
 
-	private final SslManagers managers;
+	private final SslManagerBundle managers;
 
 	private final SslOptions options;
 
-	private WebServerSslBundle(Ssl ssl, SslStoreProvider sslStoreProvider) {
+	@SuppressWarnings({ "removal", "deprecation" })
+	WebServerSslBundle(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : ssl.getKeyPassword();
 		this.key = SslKeyReference.of(ssl.getKeyAlias(), keyPassword);
-		this.stores = null;
-		this.managers = SslManagers.from(this.stores, this.key);
+		this.stores = (sslStoreProvider != null) ? new SslStoreProviderBundleAdapter(sslStoreProvider)
+				: createStoreBundle(ssl);
+		this.managers = SslManagerBundle.from(this.stores, this.key);
 		Set<String> enabledProtocols = (ssl.getEnabledProtocols() != null) ? Set.of(ssl.getEnabledProtocols())
 				: Collections.emptySet();
 		Set<String> ciphers = (ssl.getCiphers() != null) ? Set.of(ssl.getCiphers()) : Collections.emptySet();
@@ -61,24 +67,87 @@ public class WebServerSslBundle implements SslBundle {
 		};
 	}
 
+	private static SslStoreBundle createStoreBundle(Ssl ssl) {
+		if (hasCertificateProperties(ssl)) {
+			return createPemStoreBundle(ssl);
+		}
+		if (hasJavaKeyStoreProperties(ssl)) {
+			return createJksStoreBundle(ssl);
+		}
+		return SslStoreBundle.NONE;
+	}
+
+	private static boolean hasCertificateProperties(Ssl ssl) {
+		return ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null;
+	}
+
+	private static SslStoreBundle createPemStoreBundle(Ssl ssl) {
+		PemSslStoreBundle.StoreDetails keyStoreDetails = new PemSslStoreBundle.StoreDetails(ssl.getKeyStoreType(),
+				ssl.getCertificate(), ssl.getCertificatePrivateKey());
+		PemSslStoreBundle.StoreDetails trustStoreDetails = new PemSslStoreBundle.StoreDetails(ssl.getTrustStoreType(),
+				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey());
+		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
+	}
+
+	private static boolean hasJavaKeyStoreProperties(Ssl ssl) {
+		return ssl.getKeyStore() != null || (ssl.getKeyStoreType() != null && ssl.getKeyStoreType().equals("PKCS11"));
+	}
+
+	private static SslStoreBundle createJksStoreBundle(Ssl ssl) {
+		JksSslStoreBundle.StoreDetails keyStoreDetails = new JksSslStoreBundle.StoreDetails(ssl.getKeyStoreType(),
+				ssl.getKeyStoreProvider(), ssl.getKeyStore(), ssl.getKeyStorePassword());
+		JksSslStoreBundle.StoreDetails trustStoreDetails = new JksSslStoreBundle.StoreDetails(ssl.getTrustStoreType(),
+				ssl.getTrustStoreProvider(), ssl.getTrustStore(), ssl.getTrustStorePassword());
+		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+	}
+
 	@Override
 	public SslKeyReference getKey() {
 		return this.key;
 	}
 
 	@Override
-	public SslStores getStores() {
+	public SslStoreBundle getStores() {
 		return this.stores;
 	}
 
 	@Override
-	public SslManagers getManagers() {
+	public SslManagerBundle getManagers() {
 		return this.managers;
 	}
 
 	@Override
 	public SslOptions getOptions() {
 		return this.options;
+	}
+
+	/**
+	 * Class to adapt a {@link SslStoreProvider} into a {@link SslStoreBundle}.
+	 */
+	@SuppressWarnings({ "removal", "deprecation" })
+	private static class SslStoreProviderBundleAdapter implements SslStoreBundle {
+
+		private final SslStoreProvider sslStoreProvider;
+
+		SslStoreProviderBundleAdapter(SslStoreProvider sslStoreProvider) {
+			this.sslStoreProvider = sslStoreProvider;
+		}
+
+		@Override
+		public KeyStore getKeyStore() {
+			return ThrowingSupplier.of(this.sslStoreProvider::getKeyStore).get();
+		}
+
+		@Override
+		public String getKeyStorePassword() {
+			return null;
+		}
+
+		@Override
+		public KeyStore getTrustStore() {
+			return ThrowingSupplier.of(this.sslStoreProvider::getTrustStore).get();
+		}
+
 	}
 
 }

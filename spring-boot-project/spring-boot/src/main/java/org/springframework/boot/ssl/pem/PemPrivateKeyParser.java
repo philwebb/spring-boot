@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sslx.certificate;
+package org.springframework.boot.ssl.pem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Scott Frederick
  * @author Phillip Webb
  */
-final class PrivateKeyParser {
+final class PemPrivateKeyParser {
 
 	private static final String PKCS1_HEADER = "-+BEGIN\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
@@ -55,8 +55,8 @@ final class PrivateKeyParser {
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, "RSA", PrivateKeyParser::createKeySpecForPkcs1));
-		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, "EC", PrivateKeyParser::createKeySpecForEc));
+		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, "RSA", PemPrivateKeyParser::createKeySpecForPkcs1));
+		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, "EC", PemPrivateKeyParser::createKeySpecForEc));
 		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, "RSA", PKCS8EncodedKeySpec::new));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
@@ -76,7 +76,7 @@ final class PrivateKeyParser {
 	 */
 	private static final int[] EC_PARAMETERS = { 0x2b, 0x81, 0x04, 0x00, 0x22 };
 
-	private PrivateKeyParser() {
+	private PemPrivateKeyParser() {
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs1(byte[] bytes) {
@@ -110,6 +110,9 @@ final class PrivateKeyParser {
 	 * @return the parsed private key
 	 */
 	static PrivateKey parse(String key) {
+		if (key == null) {
+			return null;
+		}
 		try {
 			for (PemParser pemParser : PEM_PARSERS) {
 				PrivateKey privateKey = pemParser.parse(key);

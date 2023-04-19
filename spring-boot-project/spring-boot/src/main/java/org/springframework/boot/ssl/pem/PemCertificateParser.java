@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sslx.certificate;
+package org.springframework.boot.ssl.pem;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * @author Scott Frederick
  * @author Phillip Webb
  */
-final class CertificateParser {
+final class PemCertificateParser {
 
 	private static final String HEADER = "-+BEGIN\\s+.*CERTIFICATE[^-]*-+(?:\\s|\\r|\\n)+";
 
@@ -43,7 +43,7 @@ final class CertificateParser {
 
 	private static final Pattern PATTERN = Pattern.compile(HEADER + BASE64_TEXT + FOOTER, Pattern.CASE_INSENSITIVE);
 
-	private CertificateParser() {
+	private PemCertificateParser() {
 	}
 
 	/**
@@ -52,10 +52,13 @@ final class CertificateParser {
 	 * @return the parsed certificates
 	 */
 	static X509Certificate[] parse(String certificates) {
+		if (certificates == null) {
+			return null;
+		}
 		CertificateFactory factory = getCertificateFactory();
 		List<X509Certificate> certs = new ArrayList<>();
 		readCertificates(certificates, factory, certs::add);
-		return certs.toArray(new X509Certificate[0]);
+		return (!certs.isEmpty()) ? certs.toArray(X509Certificate[]::new) : null;
 	}
 
 	private static CertificateFactory getCertificateFactory() {

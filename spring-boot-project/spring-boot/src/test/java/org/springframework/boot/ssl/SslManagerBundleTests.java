@@ -32,12 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link SslManagers}.
+ * Tests for {@link SslManagerBundle}.
  *
  * @author Scott Frederick
  */
 @ExtendWith(MockitoExtension.class)
-class SslManagersTests {
+class SslManagerBundleTests {
 
 	@Mock
 	private SslStoreProvider storeProvider;
@@ -46,7 +46,7 @@ class SslManagersTests {
 	void getFactoriesWhenKeyStoreIsReturnsManagers() throws Exception {
 		given(this.storeProvider.getKeyStore()).willReturn(null);
 		given(this.storeProvider.getTrustStore()).willReturn(null);
-		SslManagers managers = createSslManagers(this.storeProvider, null, null);
+		SslManagerBundle managers = createSslManagers(this.storeProvider, null, null);
 		assertThat(managers.getKeyManagerFactory()).isNotNull();
 		assertThat(managers.getKeyManagers()).isNotNull();
 		assertThat(managers.getTrustManagerFactory()).isNotNull();
@@ -59,7 +59,7 @@ class SslManagersTests {
 		ssl.setCertificate("classpath:test-cert.pem");
 		ssl.setCertificatePrivateKey("classpath:test-key.pem");
 		ssl.setKeyAlias("spring-boot");
-		SslManagers managers = createSslManagers(CertificateFileSslStoreProvider.from(ssl), null, ssl.getKeyAlias());
+		SslManagerBundle managers = createSslManagers(CertificateFileSslStoreProvider.from(ssl), null, ssl.getKeyAlias());
 		KeyManager[] keyManagers = managers.getKeyManagerFactory().getKeyManagers();
 		Class<?> wrapper = Class.forName("org.springframework.boot.ssl.SslManagers$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isInstanceOf(wrapper);
@@ -70,16 +70,16 @@ class SslManagersTests {
 		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
-		SslManagers managers = createSslManagers(JavaKeyStoreSslStoreProvider.from(ssl), ssl.getKeyPassword(), null);
+		SslManagerBundle managers = createSslManagers(JavaKeyStoreSslStoreProvider.from(ssl), ssl.getKeyPassword(), null);
 		KeyManager[] keyManagers = managers.getKeyManagerFactory().getKeyManagers();
 		Class<?> wrapper = Class.forName("org.springframework.boot.ssl.SslManagers$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(wrapper);
 	}
 
-	private static SslManagers createSslManagers(SslStoreProvider sslStoreProvider, String keyPassword,
+	private static SslManagerBundle createSslManagers(SslStoreProvider sslStoreProvider, String keyPassword,
 			String keyAlias) {
 		SslKeyStores keyStores = new SslKeyStores(sslStoreProvider, keyPassword);
-		return new SslManagers(keyStores, keyAlias);
+		return new SslManagerBundle(keyStores, keyAlias);
 	}
 
 }

@@ -19,15 +19,32 @@ package org.springframework.boot.ssl;
 import java.security.KeyStore;
 
 /**
- * Provides access to key and trust stores generated from a source of trust material.
+ * A bundle of key and trust stores that can be used to establish an SSL connection.
  *
  * @author Scott Frederick
  * @since 3.1.0
  * @see SslBundle#getStores()
  */
-public interface SslStores {
+public interface SslStoreBundle {
 
-	// FIXME deal with SslStoreProvider
+	SslStoreBundle NONE = new SslStoreBundle() {
+
+		@Override
+		public KeyStore getTrustStore() {
+			return null;
+		}
+
+		@Override
+		public String getKeyStorePassword() {
+			return null;
+		}
+
+		@Override
+		public KeyStore getKeyStore() {
+			return null;
+		}
+
+	};
 
 	/**
 	 * Return a key store generated from the trust material or {@code null}.

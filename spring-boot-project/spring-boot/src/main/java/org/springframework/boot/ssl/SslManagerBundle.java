@@ -23,15 +23,16 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Provides access to key and trust managers and manager factories. Instances are usually
- * created {@link #from(SslStores, SslKeyReference) from SslStores}.
+ * A bundle of key and trust managers that can be used to establish an SSL connection.
+ * Instances are usually created {@link #from(SslStoreBundle, SslKeyReference) from} an
+ * {@link SslStoreBundle}.
  *
  * @author Scott Frederick
  * @since 3.1.0
- * @see SslStores
+ * @see SslStoreBundle
  * @see SslBundle#getManagers()
  */
-public interface SslManagers {
+public interface SslManagerBundle {
 
 	/**
 	 * Return the {@code KeyManager} instances used to establish identity.
@@ -79,8 +80,8 @@ public interface SslManagers {
 		}
 	}
 
-	static SslManagers from(SslStores stores, SslKeyReference key) {
-		return new DefaultSslManagers(stores, key);
+	static SslManagerBundle from(SslStoreBundle storeBundle, SslKeyReference key) {
+		return new DefaultSslManagerBundle(storeBundle, key);
 	}
 
 }

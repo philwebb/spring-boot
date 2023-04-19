@@ -19,7 +19,7 @@ package org.springframework.boot.ssl;
 import org.springframework.util.Assert;
 
 /**
- * A reference to a single key obtained via {@link SslStores}.
+ * A reference to a single key obtained via {@link SslStoreBundle}.
  *
  * @author Phillip Webb
  */

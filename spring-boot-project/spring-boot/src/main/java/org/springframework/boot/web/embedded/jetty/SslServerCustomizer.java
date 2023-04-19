@@ -35,7 +35,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslKeyReference;
 import org.springframework.boot.ssl.SslOptions;
-import org.springframework.boot.ssl.SslStores;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.SslConfigurationValidator;
@@ -173,7 +173,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	protected void configureSsl(SslContextFactory.Server factory, ClientAuth clientAuth) {
 		SslKeyReference key = this.sslBundle.getKey();
 		SslOptions options = this.sslBundle.getOptions();
-		SslStores stores = this.sslBundle.getStores();
+		SslStoreBundle stores = this.sslBundle.getStores();
 		factory.setProtocol(this.sslBundle.getProtocol());
 		configureSslClientAuth(factory, clientAuth);
 		if (stores.getKeyStorePassword() != null) {

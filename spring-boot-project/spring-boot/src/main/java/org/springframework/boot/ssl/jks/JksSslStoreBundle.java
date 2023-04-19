@@ -25,30 +25,30 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 
-import org.springframework.boot.ssl.SslStores;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link SslStores} backed by a Java keystore.
+ * {@link SslStoreBundle} backed by a Java keystore.
  *
  * @author Scott Frederick
  * @author Phillip Webb
  * @since 3.1.0
  */
-public class JksSslStores implements SslStores {
+public class JksSslStoreBundle implements SslStoreBundle {
 
 	private final StoreDetails keyStoreDetails;
 
 	private final StoreDetails trustStoreDetails;
 
 	/**
-	 * Create a new {@link JksSslStores} implementation.
+	 * Create a new {@link JksSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	public JksSslStores(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
+	public JksSslStoreBundle(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
 		Assert.notNull(keyStoreDetails, "KeyStoreDetails must not be null");
 		Assert.notNull(trustStoreDetails, "TrustStoreDetails must not be null");
 		this.keyStoreDetails = keyStoreDetails;
@@ -75,7 +75,7 @@ public class JksSslStores implements SslStores {
 			return null;
 		}
 		try {
-			String type = (details.type() != null) ? details.type() : "JKS";
+			String type = (!StringUtils.hasText(details.type())) ? details.type() : KeyStore.getDefaultType();
 			char[] password = (details.password() != null) ? details.password().toCharArray() : null;
 			String location = details.location();
 			KeyStore store = getKeyStoreInstance(type, details.provider());
@@ -88,7 +88,7 @@ public class JksSslStores implements SslStores {
 			return store;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create %s store".formatted(name), ex);
+			throw new IllegalStateException("Unable to create %s store: %s".formatted(name, ex.getMessage()), ex);
 		}
 	}
 
@@ -122,8 +122,10 @@ public class JksSslStores implements SslStores {
 	}
 
 	/**
+	 * Details for an individual trust or key store.
+	 *
 	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
-	 * {@code null} value will use {@code JKS}.
+	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
 	 * @param provider the name of the key store provider
 	 * @param location the location of the key store file or {@code null} if using a
 	 * {@code PKCS11} hardware store

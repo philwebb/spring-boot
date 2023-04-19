@@ -27,7 +27,7 @@ import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslKeyReference;
 import org.springframework.boot.ssl.SslOptions;
-import org.springframework.boot.ssl.SslStores;
+import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -68,7 +68,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	 */
 	void configureSsl(AbstractHttp11JsseProtocol<?> protocol) {
 		SslKeyReference key = this.sslBundle.getKey();
-		SslStores stores = this.sslBundle.getStores();
+		SslStoreBundle stores = this.sslBundle.getStores();
 		SslOptions options = this.sslBundle.getOptions();
 		protocol.setSSLEnabled(true);
 		SSLHostConfig sslHostConfig = new SSLHostConfig();
@@ -122,7 +122,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
 				"SslStoreProvider can only be used with Http11NioProtocol");
 		try {
-			SslStores stores = this.sslBundle.getStores();
+			SslStoreBundle stores = this.sslBundle.getStores();
 			if (stores.getKeyStore() != null) {
 				certificate.setCertificateKeystore(stores.getKeyStore());
 			}

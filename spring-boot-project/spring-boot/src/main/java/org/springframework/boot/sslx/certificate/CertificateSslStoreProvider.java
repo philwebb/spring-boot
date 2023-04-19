@@ -27,6 +27,8 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 import org.springframework.boot.ssl.SslStoreProvider;
+import org.springframework.boot.ssl.pem.PemCertificateParser;
+import org.springframework.boot.ssl.pem.PemPrivateKeyParser;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
@@ -81,8 +83,8 @@ public abstract class CertificateSslStoreProvider implements SslStoreProvider {
 		try {
 			KeyStore keyStore = KeyStore.getInstance((storeType != null) ? storeType : KeyStore.getDefaultType());
 			keyStore.load(null);
-			X509Certificate[] certificates = CertificateParser.parse(certificate);
-			PrivateKey key = (privateKey != null) ? PrivateKeyParser.parse(privateKey) : null;
+			X509Certificate[] certificates = PemCertificateParser.parse(certificate);
+			PrivateKey key = (privateKey != null) ? PemPrivateKeyParser.parse(privateKey) : null;
 			try {
 				addCertificates(keyStore, certificates, key, keyAlias);
 			}

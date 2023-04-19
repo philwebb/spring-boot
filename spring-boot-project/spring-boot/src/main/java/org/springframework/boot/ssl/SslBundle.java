@@ -21,7 +21,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 /**
- * A bundle of trust material that can be used for managing SSL connections.
+ * A bundle of trust material that can be used to establish an SSL connection.
  *
  * @author Scott Frederick
  * @since 3.1.0
@@ -51,18 +51,18 @@ public interface SslBundle {
 	SslKeyReference getKey();
 
 	/**
-	 * Return the {@link SslStores} that can be used to access this bundle's key and trust
-	 * stores.
+	 * Return the {@link SslStoreBundle} that can be used to access this bundle's key and
+	 * trust stores.
 	 * @return the {@code SslKeyStores} instance for this bundle
 	 */
-	SslStores getStores();
+	SslStoreBundle getStores();
 
 	/**
-	 * Return the {@link SslManagers} that can be used to access this bundle's
+	 * Return the {@link SslManagerBundle} that can be used to access this bundle's
 	 * {@link KeyManager key} and {@link TrustManager trust} managers.
 	 * @return the {@code SslManagers} instance for this bundle
 	 */
-	SslManagers getManagers();
+	SslManagerBundle getManagers();
 
 	/**
 	 * Return {@link SslOptions} that should be applied when establishing the SSL

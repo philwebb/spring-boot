@@ -32,91 +32,25 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.KeyManagerFactorySpi;
 import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509ExtendedKeyManager;
 
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 /**
- * Default implementation of {@link SslManagers}.
+ * {@link KeyManagerFactory} that allows a configurable key alias to be used. Due to the
+ * fact that the actual calls to retrieve the key by alias are done at request time the
+ * approach is to wrap the actual key managers with a {@link AliasX509ExtendedKeyManager}.
+ * The actual SPI has to be wrapped as well due to the fact that
+ * {@link KeyManagerFactory#getKeyManagers()} is final.
  *
  * @author Scott Frederick
- * @see SslManagers#from(SslStores, SslKeyReference)
  */
-class DefaultSslManagers implements SslManagers {
+final class AliasKeyManagerFactory extends KeyManagerFactory {
 
-	private final SslStores keyStores;
-
-	private final SslKeyReference key;
-
-	DefaultSslManagers(SslStores keyStores, SslKeyReference key) {
-		this.keyStores = keyStores;
-		this.key = key;
+	AliasKeyManagerFactory(String alias, String algorithm) throws NoSuchAlgorithmException {
+		this(KeyManagerFactory.getInstance(algorithm), alias, algorithm);
 	}
 
-	@Override
-	public KeyManagerFactory getKeyManagerFactory() {
-		try {
-			KeyStore store = this.keyStores.getKeyStore();
-			String alias = this.key.getAlias();
-			validateKeyAlias(store, alias);
-			KeyManagerFactory factory = (alias == null)
-					? KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
-					: new AliasKeyManagerFactory(alias, KeyManagerFactory.getDefaultAlgorithm());
-			String password = (this.key.getPassword() != null) ? this.key.getPassword()
-					: this.keyStores.getKeyStorePassword();
-			factory.init(store, (password != null) ? password.toCharArray() : null);
-			return factory;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not load key manager factory: " + ex.getMessage(), ex);
-		}
-	}
-
-	private void validateKeyAlias(KeyStore store, String alias) {
-		if (StringUtils.hasLength(alias) && store != null) {
-			try {
-				Assert.state(store.containsAlias(alias),
-						() -> String.format("Keystore does not contain specified alias '%s'", alias));
-			}
-			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
-			}
-		}
-	}
-
-	@Override
-	public TrustManagerFactory getTrustManagerFactory() {
-		try {
-			KeyStore store = this.keyStores.getTrustStore();
-			TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			factory.init(store);
-			return factory;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not load trust manager factory: " + ex.getMessage(), ex);
-		}
-	}
-
-	/**
-	 * {@link KeyManagerFactory} that allows a configurable key alias to be used. Due to
-	 * the fact that the actual calls to retrieve the key by alias are done at request
-	 * time the approach is to wrap the actual key managers with a
-	 * {@link AliasX509ExtendedKeyManager}. The actual SPI has to be wrapped as well due
-	 * to the fact that {@link KeyManagerFactory#getKeyManagers()} is final.
-	 */
-	private static final class AliasKeyManagerFactory extends KeyManagerFactory {
-
-		private AliasKeyManagerFactory(String alias, String algorithm) throws NoSuchAlgorithmException {
-			this(KeyManagerFactory.getInstance(algorithm), alias, algorithm);
-		}
-
-		private AliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
-			super(new AliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
-		}
-
+	private AliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
+		super(new AliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
 	}
 
 	/**
@@ -154,7 +88,7 @@ class DefaultSslManagers implements SslManagers {
 				.toArray(KeyManager[]::new);
 		}
 
-		private AliasX509ExtendedKeyManager wrap(X509ExtendedKeyManager keyManager) {
+		private AliasKeyManagerFactory.AliasX509ExtendedKeyManager wrap(X509ExtendedKeyManager keyManager) {
 			return new AliasX509ExtendedKeyManager(keyManager, this.alias);
 		}
 
@@ -163,7 +97,7 @@ class DefaultSslManagers implements SslManagers {
 	/**
 	 * {@link X509ExtendedKeyManager} that allows a configurable key alias to be used.
 	 */
-	private static final class AliasX509ExtendedKeyManager extends X509ExtendedKeyManager {
+	static final class AliasX509ExtendedKeyManager extends X509ExtendedKeyManager {
 
 		private final X509ExtendedKeyManager delegate;
 
