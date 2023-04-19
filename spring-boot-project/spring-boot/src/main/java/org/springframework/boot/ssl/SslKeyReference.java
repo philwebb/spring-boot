@@ -16,8 +16,6 @@
 
 package org.springframework.boot.ssl;
 
-import org.springframework.util.Assert;
-
 /**
  * A reference to a single key obtained via {@link SslStoreBundle}.
  *
@@ -56,7 +54,6 @@ public interface SslKeyReference {
 	 * @return a new {@link SslKeyReference} instance
 	 */
 	static SslKeyReference of(String alias, String password) {
-		Assert.hasText(alias, "Alias must not be empty");
 		return new SslKeyReference() {
 
 			@Override

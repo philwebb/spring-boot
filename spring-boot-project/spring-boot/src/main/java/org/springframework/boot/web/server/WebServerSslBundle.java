@@ -131,7 +131,8 @@ public class WebServerSslBundle implements SslBundle {
 	@SuppressWarnings("deprecation")
 	public static SslBundle get(Ssl ssl, SslBundles sslBundles, SslStoreProvider sslStoreProvider) {
 		Assert.state(Ssl.isEnabled(ssl), "SSL is not enabled");
-		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : ssl.getKeyPassword();
+		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
+		keyPassword = (keyPassword != null) ? keyPassword : ssl.getKeyPassword();
 		if (sslStoreProvider != null) {
 			SslStoreBundle stores = new SslStoreProviderBundleAdapter(sslStoreProvider);
 			return new WebServerSslBundle(keyPassword, ssl, stores);

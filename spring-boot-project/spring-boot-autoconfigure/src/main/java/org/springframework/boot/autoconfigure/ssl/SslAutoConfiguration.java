@@ -38,8 +38,8 @@ import org.springframework.context.annotation.Bean;
 public class SslAutoConfiguration {
 
 	@Bean
-	public PropertiesSslBundleRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
-		return new PropertiesSslBundleRegistrar(sslProperties);
+	public SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
+		return new SslPropertiesBundleRegistrar(sslProperties);
 	}
 
 	@Bean

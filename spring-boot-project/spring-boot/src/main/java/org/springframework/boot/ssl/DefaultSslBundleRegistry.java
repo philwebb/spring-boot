@@ -51,7 +51,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		Assert.notNull(name, "Name must not be null");
 		SslBundle bundle = this.bundles.get(name);
 		if (bundle == null) {
-			throw new NoSuchSslBundleException(name, "SSL bundle name '" + name + "' is not valid");
+			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
 		}
 		return bundle;
 	}

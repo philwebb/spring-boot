@@ -16,7 +16,9 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.net.ssl.SSLEngine;
@@ -55,7 +57,7 @@ public interface SslOptions {
 	 * @return a new {@link SslOptions} instance
 	 */
 	static SslOptions of(String[] ciphers, String[] enabledProtocols) {
-		return of(asSet(enabledProtocols), asSet(ciphers));
+		return of(asSet(ciphers), asSet(enabledProtocols));
 	}
 
 	/**
@@ -82,7 +84,7 @@ public interface SslOptions {
 	}
 
 	private static Set<String> asSet(String[] array) {
-		return (array != null) ? Set.of(array) : null;
+		return (array != null) ? Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(array))) : null;
 	}
 
 }

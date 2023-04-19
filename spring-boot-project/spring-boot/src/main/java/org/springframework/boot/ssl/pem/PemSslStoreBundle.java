@@ -36,11 +36,6 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private static final String DEFAULT_KEY_ALIAS = "ssl";
 
-	// FIXME should we use null
-	private static final String KEY_PASSWORD = "";
-
-	private static final char[] KEY_PASSWORD_CHARS = KEY_PASSWORD.toCharArray();
-
 	private final PemSslStoreDetails keyStoreDetails;
 
 	private final PemSslStoreDetails trustStoreDetails;
@@ -76,7 +71,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public String getKeyStorePassword() {
-		return KEY_PASSWORD;
+		return null;
 	}
 
 	@Override
@@ -113,7 +108,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			throws KeyStoreException {
 		String alias = (this.keyAlias != null) ? this.keyAlias : DEFAULT_KEY_ALIAS;
 		if (privateKey != null) {
-			keyStore.setKeyEntry(alias, privateKey, KEY_PASSWORD_CHARS, certificates);
+			keyStore.setKeyEntry(alias, privateKey, null, certificates);
 		}
 		else {
 			for (int index = 0; index < certificates.length; index++) {
