@@ -121,7 +121,8 @@ class WebServerSslBundleTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void whenFromCustomSslStoreProvider() throws Exception {
 		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
 		KeyStore keyStore = loadStore();

@@ -38,8 +38,9 @@ import org.springframework.util.function.ThrowingSupplier;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @since 3.1.0
  */
-public class WebServerSslBundle implements SslBundle {
+public final class WebServerSslBundle implements SslBundle {
 
 	private final SslKeyReference key;
 
@@ -94,8 +95,6 @@ public class WebServerSslBundle implements SslBundle {
 
 	/**
 	 * Get the {@link SslBundle} that should be used for the given {@link Ssl} instance.
-	 * @param sslBundles the bundles that should be used when {@link Ssl#getBundle()} is
-	 * set
 	 * @param ssl the source ssl instance
 	 * @return a {@link SslBundle} instance
 	 * @throws NoSuchSslBundleException if a bundle lookup fails
@@ -127,8 +126,8 @@ public class WebServerSslBundle implements SslBundle {
 	 * @throws NoSuchSslBundleException if a bundle lookup fails
 	 * @deprecated since 3.1.0 for removal in 3.3.0 along with {@link SslStoreProvider}
 	 */
-	@Deprecated
-	@SuppressWarnings("deprecation")
+	@Deprecated(since = "3.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public static SslBundle get(Ssl ssl, SslBundles sslBundles, SslStoreProvider sslStoreProvider) {
 		Assert.state(Ssl.isEnabled(ssl), "SSL is not enabled");
 		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
@@ -178,7 +177,7 @@ public class WebServerSslBundle implements SslBundle {
 	/**
 	 * Class to adapt a {@link SslStoreProvider} into a {@link SslStoreBundle}.
 	 */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("removal")
 	private static class SslStoreProviderBundleAdapter implements SslStoreBundle {
 
 		private final SslStoreProvider sslStoreProvider;

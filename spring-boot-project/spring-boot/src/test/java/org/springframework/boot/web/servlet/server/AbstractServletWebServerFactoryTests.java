@@ -667,7 +667,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.1.0", forRemoval = true)
 	void sslWithCustomSslStoreProvider() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);

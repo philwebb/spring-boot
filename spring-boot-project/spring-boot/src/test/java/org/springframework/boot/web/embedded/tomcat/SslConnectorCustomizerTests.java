@@ -133,7 +133,7 @@ class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.1.0", forRemoval = true)
 	void customizeWhenSslStoreProviderProvidesOnlyKeyStoreShouldUseDefaultTruststore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -155,7 +155,7 @@ class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.1.0", forRemoval = true)
 	void customizeWhenSslStoreProviderProvidesOnlyTrustStoreShouldUseDefaultKeystore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -173,7 +173,7 @@ class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	@Deprecated
+	@Deprecated(since = "3.1.0", forRemoval = true)
 	void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(CapturedOutput output) throws Exception {
 		System.setProperty("javax.net.ssl.trustStorePassword", "trustStoreSecret");
 		Ssl ssl = new Ssl();

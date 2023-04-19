@@ -63,8 +63,9 @@ public interface SslManagerBundle {
 	TrustManagerFactory getTrustManagerFactory();
 
 	/**
-	 * Create a new {@link SSLContext} for the {@link #getKeyManagers() key managers} and
-	 * {@link #getTrustManagers() trust managers} managed by this instance.
+	 * Factory method to create a new {@link SSLContext} for the {@link #getKeyManagers()
+	 * key managers} and {@link #getTrustManagers() trust managers} managed by this
+	 * instance.
 	 * @param protocol the standard name of the SSL protocol. See
 	 * {@link SSLContext#getInstance(String)}
 	 * @return a new {@link SSLContext} instance
@@ -81,8 +82,8 @@ public interface SslManagerBundle {
 	}
 
 	/**
-	 * Create a new {@link SslManagerBundle} backed by the given {@link SslBundle} and
-	 * {@link SslKeyReference}.
+	 * Factory method to create a new {@link SslManagerBundle} backed by the given
+	 * {@link SslBundle} and {@link SslKeyReference}.
 	 * @param storeBundle the SSL store bundle
 	 * @param key the key reference
 	 * @return a new {@link SslManagerBundle} instance

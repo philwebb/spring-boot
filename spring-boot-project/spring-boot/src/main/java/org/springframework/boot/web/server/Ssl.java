@@ -320,8 +320,9 @@ public class Ssl {
 	}
 
 	/**
-	 * @param string
-	 * @return
+	 * Factory method to create an {@link Ssl} instance for a specific bundle name.
+	 * @param bundle the name of the bundle
+	 * @return a new {@link Ssl} instance with the bundle set
 	 * @since 3.1.0
 	 */
 	public static Ssl forBundle(String bundle) {

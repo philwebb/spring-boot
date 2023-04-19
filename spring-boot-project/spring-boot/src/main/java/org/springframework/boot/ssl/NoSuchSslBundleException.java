@@ -25,7 +25,7 @@ package org.springframework.boot.ssl;
  */
 public class NoSuchSslBundleException extends RuntimeException {
 
-	private String bundleName;
+	private final String bundleName;
 
 	/**
 	 * Create a new {@code SslBundleNotFoundException} instance.

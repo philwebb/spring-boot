@@ -79,10 +79,6 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		return createKeyStore("trust", this.trustStoreDetails);
 	}
 
-	/**
-	 * Create a new {@link KeyStore} populated with the certificate and optional private
-	 * privateKey.
-	 */
 	private KeyStore createKeyStore(String name, PemSslStoreDetails details) {
 		if (details == null || details.isEmpty()) {
 			return null;

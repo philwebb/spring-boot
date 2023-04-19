@@ -32,11 +32,14 @@ import org.springframework.util.ResourceUtils;
  * @author Scott Frederick
  * @author Phillip Webb
  */
-class PemContent {
+final class PemContent {
 
 	private static final Pattern PEM_HEADER = Pattern.compile("-+BEGIN\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern PEM_FOOTER = Pattern.compile("-+END\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
+
+	private PemContent() {
+	}
 
 	static String load(String content) {
 		if (content == null || isPemContent(content)) {

@@ -51,7 +51,7 @@ public interface SslStoreBundle {
 	KeyStore getTrustStore();
 
 	/**
-	 * Create a new {@link SslStoreBundle}
+	 * Factory method to create a new {@link SslStoreBundle} instance.
 	 * @param keyStore the key store or {@code null}
 	 * @param keyStorePassword the key store password or {@code null}
 	 * @param trustStore the trust store or {@code null}

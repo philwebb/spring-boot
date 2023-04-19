@@ -32,6 +32,9 @@ import javax.net.ssl.SSLEngine;
  */
 public interface SslOptions {
 
+	/**
+	 * {@link SslOptions} that returns no values.
+	 */
 	SslOptions NONE = of(Collections.emptySet(), Collections.emptySet());
 
 	/**

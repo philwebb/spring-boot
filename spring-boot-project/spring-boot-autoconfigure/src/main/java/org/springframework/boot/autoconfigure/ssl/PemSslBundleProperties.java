@@ -46,6 +46,9 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		return this.truststore;
 	}
 
+	/**
+	 * Store properties.
+	 */
 	public static class Store {
 
 		/**

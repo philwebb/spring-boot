@@ -75,7 +75,7 @@ public interface SslBundle {
 	SslOptions getOptions();
 
 	/**
-	 * Create a new {@link SSLContext} for this bundle.
+	 * Factory method to create a new {@link SSLContext} for this bundle.
 	 * @return a new {@link SSLContext} instance
 	 */
 	default SSLContext createSslContext() {
@@ -83,7 +83,7 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Create a new {@link SslBundle} instance.
+	 * Factory method to create a new {@link SslBundle} instance.
 	 * @param stores the stores or {@code null}
 	 * @return a new {@link SslBundle} instance
 	 */
@@ -92,7 +92,7 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Create a new {@link SslBundle} instance.
+	 * Factory method to create a new {@link SslBundle} instance.
 	 * @param key the key or {@code null}
 	 * @param stores the stores or {@code null}
 	 * @return a new {@link SslBundle} instance
@@ -102,7 +102,7 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Create a new {@link SslBundle} instance.
+	 * Factory method to create a new {@link SslBundle} instance.
 	 * @param key the key or {@code null}
 	 * @param stores the stores or {@code null}
 	 * @return a new {@link SslBundle} instance
@@ -112,7 +112,7 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Create a new {@link SslBundle} instance.
+	 * Factory method to create a new {@link SslBundle} instance.
 	 * @param key the key or {@code null}
 	 * @param stores the stores or {@code null}
 	 * @param options the options or {@code null}
@@ -123,7 +123,7 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Create a new {@link SslBundle} instance.
+	 * Factory method to create a new {@link SslBundle} instance.
 	 * @param protocol the protocol or {@code null}
 	 * @param key the key or {@code null}
 	 * @param stores the stores or {@code null}

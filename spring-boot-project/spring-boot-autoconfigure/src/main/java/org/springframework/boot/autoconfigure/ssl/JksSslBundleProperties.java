@@ -23,9 +23,10 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @since 3.1.0
  * @see JksSslStoreBundle
  */
-class JksSslBundleProperties extends SslBundleProperties {
+public class JksSslBundleProperties extends SslBundleProperties {
 
 	/**
 	 * Keystore properties.
@@ -45,7 +46,10 @@ class JksSslBundleProperties extends SslBundleProperties {
 		return this.truststore;
 	}
 
-	static class Store {
+	/**
+	 * Store properties.
+	 */
+	public static class Store {
 
 		/**
 		 * Type of the store to create, e.g. JKS.

@@ -35,7 +35,7 @@ import org.springframework.boot.ssl.pem.PemSslStoreDetails;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public class PropertiesSslBundle implements SslBundle {
+public final class PropertiesSslBundle implements SslBundle {
 
 	private final String protocol;
 

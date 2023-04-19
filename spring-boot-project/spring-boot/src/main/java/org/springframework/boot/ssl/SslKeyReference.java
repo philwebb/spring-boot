@@ -20,9 +20,13 @@ package org.springframework.boot.ssl;
  * A reference to a single key obtained via {@link SslStoreBundle}.
  *
  * @author Phillip Webb
+ * @since 3.1.0
  */
 public interface SslKeyReference {
 
+	/**
+	 * {@link SslKeyReference} that returns no values.
+	 */
 	SslKeyReference NONE = of(null, null);
 
 	/**
@@ -39,7 +43,7 @@ public interface SslKeyReference {
 	String getPassword();
 
 	/**
-	 * Create a new {@link SslKeyReference} instance.
+	 * Factory method to create a new {@link SslKeyReference} instance.
 	 * @param alias the alias of the key
 	 * @return a new {@link SslKeyReference} instance
 	 */
@@ -48,7 +52,7 @@ public interface SslKeyReference {
 	}
 
 	/**
-	 * Create a new {@link SslKeyReference} instance.
+	 * Factory method to create a new {@link SslKeyReference} instance.
 	 * @param alias the alias of the key
 	 * @param password the password used to access the key or {@code null}
 	 * @return a new {@link SslKeyReference} instance

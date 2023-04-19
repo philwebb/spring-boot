@@ -15,6 +15,6 @@
  */
 
 /**
- * Management of trust material that can be used to establish an SSL connection
+ * Management of trust material that can be used to establish an SSL connection.
  */
 package org.springframework.boot.ssl;

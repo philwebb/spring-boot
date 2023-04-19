@@ -48,9 +48,9 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 			KeyStore store = this.storeBundle.getKeyStore();
 			String alias = this.key.getAlias();
 			validateAlias(store, alias);
-			KeyManagerFactory factory = (alias == null)
-					? KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
-					: new AliasKeyManagerFactory(alias, KeyManagerFactory.getDefaultAlgorithm());
+			KeyManagerFactory factory = (alias != null)
+					? new AliasKeyManagerFactory(alias, KeyManagerFactory.getDefaultAlgorithm())
+					: KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			String password = (this.key.getPassword() != null) ? this.key.getPassword()
 					: this.storeBundle.getKeyStorePassword();
 			factory.init(store, (password != null) ? password.toCharArray() : null);
