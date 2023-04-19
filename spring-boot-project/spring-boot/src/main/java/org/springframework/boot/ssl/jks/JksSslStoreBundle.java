@@ -77,7 +77,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		try {
 			String type = (!StringUtils.hasText(details.type())) ? details.type() : KeyStore.getDefaultType();
 			char[] password = (details.password() != null) ? details.password().toCharArray() : null;
-			String location = details.content();
+			String location = details.location();
 			KeyStore store = getKeyStoreInstance(type, details.provider());
 			if (isHardwareKeystoreType(type)) {
 				loadHardwareKeyStore(store, location, password);
@@ -127,14 +127,14 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
 	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
 	 * @param provider the name of the key store provider
-	 * @param content the location of the key store file or {@code null} if using a
+	 * @param location the location of the key store file or {@code null} if using a
 	 * {@code PKCS11} hardware store
 	 * @param password the password used to unlock the store or {@code null}
 	 */
-	public static record StoreDetails(String type, String provider, String content, String password) {
+	public static record StoreDetails(String type, String provider, String location, String password) {
 
 		boolean isEmpty() {
-			return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.content);
+			return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.location);
 		}
 
 		private boolean isEmpty(String value) {

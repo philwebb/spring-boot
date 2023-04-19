@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.util.Map;
+import java.util.function.Function;
+
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
-import org.springframework.boot.autoconfigure.ssl.SslProperties.Bundles;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.SslKeyReference;
@@ -28,33 +30,36 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 
 /**
- * A {@link SslBundleRegistrar} that registers SSL bundles based on configuration
- * properties.
+ * A {@link SslBundleRegistrar} that registers SSL bundles based
+ * {@link SslProperties#getBundle() configuration properties}.
  *
  * @author Scott Frederick
  * @author Phillip Webb
  */
-class SslPropertiesBundlesRegistrar implements SslBundleRegistrar {
+class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 
-	private final Bundles properties;
+	private final SslProperties.Bundles properties;
 
-	SslPropertiesBundlesRegistrar(SslProperties.Bundles properties) {
-		this.properties = properties;
+	PropertiesSslBundleRegistrar(SslProperties properties) {
+		this.properties = properties.getBundle();
 	}
 
 	@Override
 	public void registerBundles(SslBundleRegistry registry) {
-		this.properties.getPem()
-			.forEach((bundleName, bundleProperties) -> registry.registerBundle(bundleName, asBundle(bundleProperties)));
-		this.properties.getJks()
-			.forEach((bundleName, bundleProperties) -> registry.registerBundle(bundleName, asBundle(bundleProperties)));
+		registerBundles(registry, this.properties.getPem(), this::asSslStoreBundle);
+		registerBundles(registry, this.properties.getJks(), this::asSslStoreBundle);
 	}
 
-	private SslBundle asBundle(PemSslBundleProperties properties) {
-		return new PropertiesSslBundle(properties, asSslStoreBundle(properties));
+	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
+			Function<P, SslStoreBundle> storeBundleAdapter) {
+		properties.forEach((bundleName, bundleProperties) -> {
+			SslStoreBundle storeBundle = storeBundleAdapter.apply(bundleProperties);
+			SslBundle bundle = new PropertiesSslBundle(bundleProperties, storeBundle);
+			registry.registerBundle(bundleName, bundle);
+		});
 	}
 
-	private PemSslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
+	private SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
 		PemSslStoreBundle.StoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
 		PemSslStoreBundle.StoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
 		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
@@ -65,11 +70,7 @@ class SslPropertiesBundlesRegistrar implements SslBundleRegistrar {
 				properties.getPrivateKey());
 	}
 
-	private SslBundle asBundle(JksSslBundleProperties properties) {
-		return new PropertiesSslBundle(properties, asSslStoreBundle(properties));
-	}
-
-	private JksSslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {
+	private SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {
 		JksSslStoreBundle.StoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
 		JksSslStoreBundle.StoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
 		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
@@ -77,7 +78,7 @@ class SslPropertiesBundlesRegistrar implements SslBundleRegistrar {
 
 	private JksSslStoreBundle.StoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
 		return new JksSslStoreBundle.StoreDetails(properties.getType(), properties.getProvider(),
-				properties.getContent(), properties.getPassword());
+				properties.getLocation(), properties.getPassword());
 	}
 
 	/**

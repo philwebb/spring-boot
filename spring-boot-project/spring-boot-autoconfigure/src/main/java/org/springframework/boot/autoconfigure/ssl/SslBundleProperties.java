@@ -63,12 +63,12 @@ public abstract class SslBundleProperties {
 		/**
 		 * Supported SSL ciphers.
 		 */
-		Set<String> ciphers;
+		private Set<String> ciphers;
 
 		/**
 		 * Enabled SSL protocols.
 		 */
-		Set<String> enabledProtocols;
+		private Set<String> enabledProtocols;
 
 		public Set<String> getCiphers() {
 			return this.ciphers;

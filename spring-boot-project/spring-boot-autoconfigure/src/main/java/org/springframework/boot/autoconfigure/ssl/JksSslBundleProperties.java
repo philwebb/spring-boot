@@ -30,12 +30,12 @@ class JksSslBundleProperties extends SslBundleProperties {
 	/**
 	 * Keystore properties.
 	 */
-	private Store keystore = new Store();
+	private final Store keystore = new Store();
 
 	/**
 	 * Truststore properties.
 	 */
-	private Store truststore = new Store();
+	private final Store truststore = new Store();
 
 	public Store getKeystore() {
 		return this.keystore;
@@ -50,22 +50,22 @@ class JksSslBundleProperties extends SslBundleProperties {
 		/**
 		 * Type of the store to create, e.g. JKS.
 		 */
-		String type;
+		private String type;
 
 		/**
 		 * Provider for the store.
 		 */
-		String provider;
+		private String provider;
 
 		/**
 		 * Location of the resource containing the store content.
 		 */
-		String content;
+		private String location;
 
 		/**
 		 * Password used to access the store.
 		 */
-		String password;
+		private String password;
 
 		public String getType() {
 			return this.type;
@@ -83,12 +83,12 @@ class JksSslBundleProperties extends SslBundleProperties {
 			this.provider = provider;
 		}
 
-		public String getContent() {
-			return this.content;
+		public String getLocation() {
+			return this.location;
 		}
 
-		public void setContent(String content) {
-			this.content = content;
+		public void setLocation(String location) {
+			this.location = location;
 		}
 
 		public String getPassword() {

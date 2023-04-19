@@ -21,7 +21,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 
 @WebServlet("/test-multipart")
-@MultipartConfig(content = "test", maxFileSize = 1024, maxRequestSize = 2048, fileSizeThreshold = 512)
+@MultipartConfig(location = "test", maxFileSize = 1024, maxRequestSize = 2048, fileSizeThreshold = 512)
 public class TestMultipartServlet extends HttpServlet {
 
 }

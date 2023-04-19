@@ -28,7 +28,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for SSL bundles.
+ * {@link EnableAutoConfiguration Auto-configuration} for SSL.
  *
  * @author Scott Frederick
  * @since 3.1.0
@@ -38,8 +38,8 @@ import org.springframework.context.annotation.Bean;
 public class SslAutoConfiguration {
 
 	@Bean
-	public SslPropertiesBundlesRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
-		return new SslPropertiesBundlesRegistrar(sslProperties.getBundle());
+	public PropertiesSslBundleRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
+		return new PropertiesSslBundleRegistrar(sslProperties);
 	}
 
 	@Bean
