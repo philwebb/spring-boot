@@ -93,8 +93,7 @@ class SslServerCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, null);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth(),
-					ServerSslBundleFactory.from(ssl)))
+			.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth()))
 			.withMessageContaining("KeyStore location must not be empty or null");
 	}
 

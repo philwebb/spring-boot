@@ -112,8 +112,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InOrder;
 
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
-import org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider;
+import org.springframework.boot.ssl.pem.CertificateFileSslDetails;
+import org.springframework.boot.ssl.pem.CertificateFileSslStoreProvider;
 import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
 import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
 import org.springframework.boot.system.ApplicationHome;

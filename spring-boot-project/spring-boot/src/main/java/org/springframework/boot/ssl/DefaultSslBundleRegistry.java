@@ -31,6 +31,13 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 	private final Map<String, SslBundle> bundles = new ConcurrentHashMap<>();
 
+	public DefaultSslBundleRegistry() {
+	}
+
+	public DefaultSslBundleRegistry(String name, SslBundle bundle) {
+		registerBundle(name, bundle);
+	}
+
 	@Override
 	public void registerBundle(String name, SslBundle bundle) {
 		Assert.notNull(name, "Name must not be null");

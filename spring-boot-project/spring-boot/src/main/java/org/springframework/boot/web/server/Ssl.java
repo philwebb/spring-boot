@@ -320,6 +320,17 @@ public class Ssl {
 	}
 
 	/**
+	 * @param string
+	 * @return
+	 * @since 3.1.0
+	 */
+	public static Ssl forBundle(String bundle) {
+		Ssl ssl = new Ssl();
+		ssl.setBundle(bundle);
+		return ssl;
+	}
+
+	/**
 	 * Client authentication types.
 	 */
 	public enum ClientAuth {

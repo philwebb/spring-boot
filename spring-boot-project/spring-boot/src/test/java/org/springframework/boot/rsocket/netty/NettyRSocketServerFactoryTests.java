@@ -44,11 +44,10 @@ import reactor.test.StepVerifier;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServer.Transport;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
-import org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider;
-import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
-import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
@@ -280,13 +279,11 @@ class NettyRSocketServerFactoryTests {
 	private void testBasicSslWithKeyStoreFromBundle(String keyStore, String keyPassword, Transport transport) {
 		NettyRSocketServerFactory factory = getFactory();
 		factory.setTransport(transport);
-		Ssl ssl = new Ssl();
-		factory.setSsl(ssl);
-		JavaKeyStoreSslDetails jksSsl = new JavaKeyStoreSslDetails();
-		jksSsl.setKeyStore(keyStore);
-		jksSsl.setKeyPassword(keyPassword);
-		SslBundle sslBundle = new SslBundle(jksSsl, JavaKeyStoreSslStoreProvider.from(jksSsl));
-		factory.setSslBundle(sslBundle);
+		JksSslStoreBundle.StoreDetails keyStoreDetails = new JksSslStoreBundle.StoreDetails(keyStore);
+		JksSslStoreBundle.StoreDetails trustStoreDetails = null;
+		SslBundle sslBundle = SslBundle.of(keyPassword, new JksSslStoreBundle(keyStoreDetails, trustStoreDetails));
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(new DefaultSslBundleRegistry("test", sslBundle));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		this.server.start();
 		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()
@@ -298,15 +295,12 @@ class NettyRSocketServerFactoryTests {
 			String trustCertificate, Transport transport) {
 		NettyRSocketServerFactory factory = getFactory();
 		factory.setTransport(transport);
-		Ssl ssl = new Ssl();
-		ssl.setKeyStorePassword("");
-		factory.setSsl(ssl);
-		CertificateFileSslDetails jksSsl = new CertificateFileSslDetails();
-		jksSsl.setCertificate(certificate);
-		jksSsl.setCertificatePrivateKey(certificatePrivateKey);
-		jksSsl.setTrustCertificate(trustCertificate);
-		SslBundle sslBundle = new SslBundle(jksSsl, CertificateFileSslStoreProvider.from(jksSsl));
-		factory.setSslBundle(sslBundle);
+		PemSslStoreBundle.StoreDetails keyStoreDetails = new PemSslStoreBundle.StoreDetails(certificate,
+				certificatePrivateKey);
+		PemSslStoreBundle.StoreDetails trustStoreDetails = new PemSslStoreBundle.StoreDetails(trustCertificate);
+		SslBundle sslBundle = SslBundle.of(new PemSslStoreBundle(keyStoreDetails, trustStoreDetails));
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(new DefaultSslBundleRegistry("test", sslBundle));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		this.server.start();
 		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()

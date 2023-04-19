@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.certificate;
+package org.springframework.boot.ssl.pem;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,11 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class CertificateParserTests {
+class PemCertificateParserTests {
 
 	@Test
 	void parseCertificate() throws Exception {
-		X509Certificate[] certificates = PemCertificateParser.parse(fromResource("classpath:test-cert.pem"));
+		X509Certificate[] certificates = PemCertificateParser.parse(read("test-cert.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(1);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
@@ -45,18 +43,15 @@ class CertificateParserTests {
 
 	@Test
 	void parseCertificateChain() throws Exception {
-		X509Certificate[] certificates = PemCertificateParser.parse(fromResource("classpath:test-cert-chain.pem"));
+		X509Certificate[] certificates = PemCertificateParser.parse(read("test-cert-chain.pem"));
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}
 
-	private String fromResource(String resource) throws Exception {
-		URL url = ResourceUtils.getURL(resource);
-		try (Reader reader = new InputStreamReader(url.openStream())) {
-			return FileCopyUtils.copyToString(reader);
-		}
+	private String read(String path) throws IOException {
+		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
 	}
 
 }

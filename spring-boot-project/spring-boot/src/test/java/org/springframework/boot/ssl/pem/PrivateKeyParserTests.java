@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.certificate;
+package org.springframework.boot.ssl.pem;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -38,7 +36,7 @@ class PrivateKeyParserTests {
 
 	@Test
 	void parsePkcs8KeyFile() throws Exception {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(fromResource("classpath:test-key.pem"));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("test-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
@@ -46,7 +44,7 @@ class PrivateKeyParserTests {
 
 	@Test
 	void parsePkcs8KeyFileWithEcdsa() throws Exception {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(fromResource("classpath:test-ec-key.pem"));
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("test-ec-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
@@ -54,15 +52,11 @@ class PrivateKeyParserTests {
 
 	@Test
 	void parseWithNonKeyTextWillThrowException() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> PemPrivateKeyParser.parse(fromResource("classpath:test-banner.txt")));
+		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("test-banner.txt")));
 	}
 
-	private String fromResource(String resource) throws Exception {
-		URL url = ResourceUtils.getURL(resource);
-		try (Reader reader = new InputStreamReader(url.openStream())) {
-			return FileCopyUtils.copyToString(reader);
-		}
+	private String read(String path) throws IOException {
+		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
 	}
 
 }

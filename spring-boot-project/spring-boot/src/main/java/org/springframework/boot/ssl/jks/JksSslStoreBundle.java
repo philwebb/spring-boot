@@ -49,8 +49,6 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public JksSslStoreBundle(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
-		Assert.notNull(keyStoreDetails, "KeyStoreDetails must not be null");
-		Assert.notNull(trustStoreDetails, "TrustStoreDetails must not be null");
 		this.keyStoreDetails = keyStoreDetails;
 		this.trustStoreDetails = trustStoreDetails;
 	}
@@ -71,7 +69,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	private KeyStore createKeyStore(String name, StoreDetails details) {
-		if (details.isEmpty()) {
+		if (details == null || details.isEmpty()) {
 			return null;
 		}
 		try {
@@ -132,6 +130,10 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param password the password used to unlock the store or {@code null}
 	 */
 	public static record StoreDetails(String type, String provider, String location, String password) {
+
+		public StoreDetails(String location) {
+			this(null, null, location, null);
+		}
 
 		boolean isEmpty() {
 			return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.location);

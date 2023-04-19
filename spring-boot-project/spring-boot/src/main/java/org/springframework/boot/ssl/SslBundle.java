@@ -80,4 +80,20 @@ public interface SslBundle {
 		return getManagers().createSslContext(getProtocol());
 	}
 
+	static SslBundle of(SslStoreBundle stores) {
+		return null;
+	}
+
+	static SslBundle of(String key, SslStoreBundle stores) {
+		return null;
+	}
+
+	static SslBundle of(SslKeyReference key, SslStoreBundle stores) {
+		return null;
+	}
+
+	static SslBundle of(SslKeyReference key, SslStoreBundle stores, SslOptions options) {
+		return null;
+	}
+
 }

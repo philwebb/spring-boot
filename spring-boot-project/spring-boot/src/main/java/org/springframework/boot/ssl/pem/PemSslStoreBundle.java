@@ -48,6 +48,15 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
+	 * @param keyStoreDetails the key store details
+	 * @param trustStoreDetails the trust store details
+	 */
+	public PemSslStoreBundle(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
+		this(null, keyStoreDetails, trustStoreDetails);
+	}
+
+	/**
+	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyAlias the key alias to use or {@code null} to use a default alias
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
@@ -121,6 +130,14 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * something that can be loaded by {@link ResourceUtils#getURL})
 	 */
 	public static record StoreDetails(String type, String certificate, String privateKey) {
+
+		public StoreDetails(String certificate) {
+			this(null, certificate, null);
+		}
+
+		public StoreDetails(String certificate, String privateKey) {
+			this(null, certificate, privateKey);
+		}
 
 		boolean isEmpty() {
 			return isEmpty(this.type) && isEmpty(this.certificate) && isEmpty(this.privateKey);

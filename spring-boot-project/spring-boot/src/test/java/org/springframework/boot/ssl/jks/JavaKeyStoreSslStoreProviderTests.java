@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ssl.keystore;
+package org.springframework.boot.ssl.jks;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;

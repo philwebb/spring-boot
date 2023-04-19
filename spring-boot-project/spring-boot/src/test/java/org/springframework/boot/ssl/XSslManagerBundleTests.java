@@ -23,8 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.ssl.certificate.CertificateFileSslDetails;
-import org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider;
+import org.springframework.boot.ssl.pem.CertificateFileSslDetails;
+import org.springframework.boot.ssl.pem.CertificateFileSslStoreProvider;
 import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
 import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
 
@@ -37,7 +37,7 @@ import static org.mockito.BDDMockito.given;
  * @author Scott Frederick
  */
 @ExtendWith(MockitoExtension.class)
-class SslManagerBundleTests {
+class XSslManagerBundleTests {
 
 	@Mock
 	private SslStoreProvider storeProvider;
