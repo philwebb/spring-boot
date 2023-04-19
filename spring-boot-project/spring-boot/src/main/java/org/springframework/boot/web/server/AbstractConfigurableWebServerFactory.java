@@ -209,8 +209,9 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 * Return the {@link SslBundle} that should be used with this server.
 	 * @return the SSL bundle
 	 */
+	@SuppressWarnings("deprecation")
 	protected final SslBundle getSslBundle() {
-		return WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider);
+		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
 	}
 
 	/**

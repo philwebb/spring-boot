@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Scott Frederick
  */
-class PrivateKeyParserTests {
+class PemPrivateKeyParserTests {
 
 	@Test
 	void parsePkcs8KeyFile() throws Exception {

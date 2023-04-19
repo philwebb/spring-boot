@@ -39,7 +39,7 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 
 	DefaultSslManagerBundle(SslStoreBundle storeBundle, SslKeyReference key) {
 		this.storeBundle = (storeBundle != null) ? storeBundle : SslStoreBundle.NONE;
-		this.key = key;
+		this.key = (key != null) ? key : SslKeyReference.NONE;
 	}
 
 	@Override

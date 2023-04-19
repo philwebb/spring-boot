@@ -30,24 +30,7 @@ public interface SslStoreBundle {
 	/**
 	 * {@link SslStoreBundle} that returns {@code null} for each method.
 	 */
-	SslStoreBundle NONE = new SslStoreBundle() {
-
-		@Override
-		public KeyStore getTrustStore() {
-			return null;
-		}
-
-		@Override
-		public String getKeyStorePassword() {
-			return null;
-		}
-
-		@Override
-		public KeyStore getKeyStore() {
-			return null;
-		}
-
-	};
+	SslStoreBundle NONE = of(null, null, null);
 
 	/**
 	 * Return a key store generated from the trust material or {@code null}.
@@ -66,5 +49,33 @@ public interface SslStoreBundle {
 	 * @return the trust store
 	 */
 	KeyStore getTrustStore();
+
+	/**
+	 * Create a new {@link SslStoreBundle}
+	 * @param keyStore the key store or {@code null}
+	 * @param keyStorePassword the key store password or {@code null}
+	 * @param trustStore the trust store or {@code null}
+	 * @return a new {@link SslStoreBundle} instance
+	 */
+	static SslStoreBundle of(KeyStore keyStore, String keyStorePassword, KeyStore trustStore) {
+		return new SslStoreBundle() {
+
+			@Override
+			public KeyStore getTrustStore() {
+				return keyStore;
+			}
+
+			@Override
+			public String getKeyStorePassword() {
+				return keyStorePassword;
+			}
+
+			@Override
+			public KeyStore getKeyStore() {
+				return trustStore;
+			}
+
+		};
+	}
 
 }

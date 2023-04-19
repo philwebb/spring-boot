@@ -20,61 +20,42 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
+ * Utility to load PEM content.
+ *
  * @author Scott Frederick
  * @author Phillip Webb
  */
 class PemContent {
 
-	private String readText(String resource) {
-		if (resource == null) {
-			return null;
+	private static final Pattern PEM_HEADER = Pattern.compile("-+BEGIN\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
+
+	private static final Pattern PEM_FOOTER = Pattern.compile("-+END\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
+
+	static String load(String content) {
+		if (content == null || isPemContent(content)) {
+			return content;
 		}
 		try {
-			URL url = ResourceUtils.getURL(resource);
-			try (Reader reader = new InputStreamReader(url.openStream())) {
+			URL url = ResourceUtils.getURL(content);
+			try (Reader reader = new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)) {
 				return FileCopyUtils.copyToString(reader);
 			}
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(
-					"Error reading certificate or key from file '" + resource + "':" + ex.getMessage(), ex);
+					"Error reading certificate or key from file '" + content + "':" + ex.getMessage(), ex);
 		}
 	}
 
-	/**
-	 * @param certificateContent
-	 */
-	public static String load(String certificateContent) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private static boolean isPemContent(String content) {
+		return content != null && PEM_HEADER.matcher(content).find() && PEM_FOOTER.matcher(content).find();
 	}
-
-	/**
-	 * @param privateKeyContent
-	 * @return
-	 */
-	public static PemContent ofOptional(String privateKeyContent) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/*
-	 * * @param certificate the certificate
-	 *
-	 * @param privateKey the private key, or {@code null} if no private key is required
-	 *
-	 * @param storeType the {@code KeyStore} type to create, or {@code null} to create the
-	 * system default type
-	 *
-	 * @param keyAlias the alias to use when adding keys to the {@code KeyStore}
-	 *
-	 * @return the {@code KeyStore}
-	 *
-	 */
 
 }

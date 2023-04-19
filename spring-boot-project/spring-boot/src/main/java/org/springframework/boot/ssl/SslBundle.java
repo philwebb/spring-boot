@@ -20,6 +20,8 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.springframework.util.StringUtils;
+
 /**
  * A bundle of trust material that can be used to establish an SSL connection.
  *
@@ -80,20 +82,84 @@ public interface SslBundle {
 		return getManagers().createSslContext(getProtocol());
 	}
 
+	/**
+	 * Create a new {@link SslBundle} instance.
+	 * @param stores the stores or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
 	static SslBundle of(SslStoreBundle stores) {
-		return null;
+		return of(null, stores, null);
 	}
 
+	/**
+	 * Create a new {@link SslBundle} instance.
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
 	static SslBundle of(String key, SslStoreBundle stores) {
-		return null;
+		return of(SslKeyReference.of(key), stores, null);
 	}
 
+	/**
+	 * Create a new {@link SslBundle} instance.
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
 	static SslBundle of(SslKeyReference key, SslStoreBundle stores) {
-		return null;
+		return of(key, stores, null);
 	}
 
+	/**
+	 * Create a new {@link SslBundle} instance.
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @param options the options or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
 	static SslBundle of(SslKeyReference key, SslStoreBundle stores, SslOptions options) {
-		return null;
+		return of(null, key, stores, options);
+	}
+
+	/**
+	 * Create a new {@link SslBundle} instance.
+	 * @param protocol the protocol or {@code null}
+	 * @param key the key or {@code null}
+	 * @param stores the stores or {@code null}
+	 * @param options the options or {@code null}
+	 * @return a new {@link SslBundle} instance
+	 */
+	static SslBundle of(String protocol, SslKeyReference key, SslStoreBundle stores, SslOptions options) {
+		SslManagerBundle managers = SslManagerBundle.from(stores, key);
+		return new SslBundle() {
+
+			@Override
+			public String getProtocol() {
+				return (!StringUtils.hasText(protocol)) ? DEFAULT_PROTOCOL : protocol;
+			}
+
+			@Override
+			public SslKeyReference getKey() {
+				return (key != null) ? key : SslKeyReference.NONE;
+			}
+
+			@Override
+			public SslStoreBundle getStores() {
+				return (stores != null) ? stores : SslStoreBundle.NONE;
+			}
+
+			@Override
+			public SslOptions getOptions() {
+				return (options != null) ? options : SslOptions.NONE;
+			}
+
+			@Override
+			public SslManagerBundle getManagers() {
+				return managers;
+			}
+
+		};
 	}
 
 }

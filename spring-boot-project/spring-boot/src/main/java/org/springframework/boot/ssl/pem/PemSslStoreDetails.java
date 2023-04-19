@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 public record PemSslStoreDetails(String type, String certificate, String privateKey) {
 
 	/**
-	 * Return a new {@link PemSslStoreDetails} instance with an new private key.
+	 * Return a new {@link PemSslStoreDetails} instance with a new private key.
 	 * @param privateKey the new private key
 	 * @return a new {@link PemSslStoreDetails} instance
 	 */

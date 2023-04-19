@@ -115,7 +115,7 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 
 		@Override
 		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
-			return (this.alias != null) ? this.alias : this.delegate.chooseEngineServerAlias(s, principals, sslEngine);
+			return this.alias;
 		}
 
 		@Override

@@ -43,6 +43,15 @@ public interface SslKeyReference {
 	/**
 	 * Create a new {@link SslKeyReference} instance.
 	 * @param alias the alias of the key
+	 * @return a new {@link SslKeyReference} instance
+	 */
+	static SslKeyReference of(String alias) {
+		return of(alias, null);
+	}
+
+	/**
+	 * Create a new {@link SslKeyReference} instance.
+	 * @param alias the alias of the key
 	 * @param password the password used to access the key or {@code null}
 	 * @return a new {@link SslKeyReference} instance
 	 */

@@ -34,17 +34,18 @@ import org.springframework.util.StringUtils;
  */
 public class PemSslStoreBundle implements SslStoreBundle {
 
-	private static final String DEFAULT_KEY_ALIAS = "key";
+	private static final String DEFAULT_KEY_ALIAS = "ssl";
 
+	// FIXME should we use null
 	private static final String KEY_PASSWORD = "";
 
 	private static final char[] KEY_PASSWORD_CHARS = KEY_PASSWORD.toCharArray();
 
-	private final String keyAlias;
-
 	private final PemSslStoreDetails keyStoreDetails;
 
 	private final PemSslStoreDetails trustStoreDetails;
+
+	private final String keyAlias;
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
@@ -52,19 +53,17 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails) {
-		this(null, keyStoreDetails, trustStoreDetails);
+		this(keyStoreDetails, trustStoreDetails, null);
 	}
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
-	 * @param keyAlias the key alias to use or {@code null} to use a default alias
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
+	 * @param keyAlias the key alias to use or {@code null} to use a default alias
 	 */
-	public PemSslStoreBundle(String keyAlias, PemSslStoreDetails keyStoreDetails,
-			PemSslStoreDetails trustStoreDetails) {
-		Assert.notNull(keyStoreDetails, "KeyStoreDetails must not be null");
-		Assert.notNull(trustStoreDetails, "TrustStoreDetails must not be null");
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
+			String keyAlias) {
 		this.keyAlias = keyAlias;
 		this.keyStoreDetails = keyStoreDetails;
 		this.trustStoreDetails = trustStoreDetails;
@@ -90,15 +89,18 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * privateKey.
 	 */
 	private KeyStore createKeyStore(String name, PemSslStoreDetails details) {
+		if (details == null || details.isEmpty()) {
+			return null;
+		}
 		try {
 			Assert.notNull(details.certificate(), "CertificateContent must not be null");
-			String type = (!StringUtils.hasText(details.type())) ? details.type() : KeyStore.getDefaultType();
+			String type = (!StringUtils.hasText(details.type())) ? KeyStore.getDefaultType() : details.type();
 			KeyStore store = KeyStore.getInstance(type);
 			store.load(null);
 			String certificateContent = PemContent.load(details.certificate());
 			String privateKeyContent = PemContent.load(details.privateKey());
-			X509Certificate[] certificates = PemCertificateParser.parse(certificateContent.toString());
-			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent.toString());
+			X509Certificate[] certificates = PemCertificateParser.parse(certificateContent);
+			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent);
 			addCertificates(store, certificates, privateKey);
 			return store;
 		}

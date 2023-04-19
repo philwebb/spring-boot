@@ -35,6 +35,15 @@ import org.springframework.util.StringUtils;
  */
 public record JksSslStoreDetails(String type, String provider, String location, String password) {
 
+	/**
+	 * Return a new {@link JksSslStoreDetails} instance with a new password.
+	 * @param password the new password
+	 * @return a new {@link JksSslStoreDetails} instance
+	 */
+	public JksSslStoreDetails withPassword(String password) {
+		return new JksSslStoreDetails(this.type, this.provider, this.location, password);
+	}
+
 	boolean isEmpty() {
 		return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.location);
 	}

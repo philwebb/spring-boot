@@ -64,7 +64,7 @@ class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 	private SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
 		PemSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
 		PemSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
-		return new PemSslStoreBundle(properties.getKey().getAlias(), keyStoreDetails, trustStoreDetails);
+		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, properties.getKey().getAlias());
 	}
 
 	private PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
