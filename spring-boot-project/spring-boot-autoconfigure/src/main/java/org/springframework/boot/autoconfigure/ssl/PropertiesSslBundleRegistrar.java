@@ -27,7 +27,9 @@ import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 
 /**
  * A {@link SslBundleRegistrar} that registers SSL bundles based
@@ -60,25 +62,24 @@ class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 	}
 
 	private SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
-		PemSslStoreBundle.StoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
-		PemSslStoreBundle.StoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
+		PemSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
+		PemSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
 		return new PemSslStoreBundle(properties.getKey().getAlias(), keyStoreDetails, trustStoreDetails);
 	}
 
-	private PemSslStoreBundle.StoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreBundle.StoreDetails(properties.getType(), properties.getCertificate(),
-				properties.getPrivateKey());
+	private PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
+		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey());
 	}
 
 	private SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {
-		JksSslStoreBundle.StoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
-		JksSslStoreBundle.StoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
+		JksSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
+		JksSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
 		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
 	}
 
-	private JksSslStoreBundle.StoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
-		return new JksSslStoreBundle.StoreDetails(properties.getType(), properties.getProvider(),
-				properties.getLocation(), properties.getPassword());
+	private JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {
+		return new JksSslStoreDetails(properties.getType(), properties.getProvider(), properties.getLocation(),
+				properties.getPassword());
 	}
 
 	/**

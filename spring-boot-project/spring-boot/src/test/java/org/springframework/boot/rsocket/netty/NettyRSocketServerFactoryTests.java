@@ -47,7 +47,9 @@ import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
@@ -279,8 +281,8 @@ class NettyRSocketServerFactoryTests {
 	private void testBasicSslWithKeyStoreFromBundle(String keyStore, String keyPassword, Transport transport) {
 		NettyRSocketServerFactory factory = getFactory();
 		factory.setTransport(transport);
-		JksSslStoreBundle.StoreDetails keyStoreDetails = new JksSslStoreBundle.StoreDetails(keyStore);
-		JksSslStoreBundle.StoreDetails trustStoreDetails = null;
+		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(keyStore);
+		JksSslStoreDetails trustStoreDetails = null;
 		SslBundle sslBundle = SslBundle.of(keyPassword, new JksSslStoreBundle(keyStoreDetails, trustStoreDetails));
 		factory.setSsl(Ssl.forBundle("test"));
 		factory.setSslBundles(new DefaultSslBundleRegistry("test", sslBundle));
@@ -295,9 +297,9 @@ class NettyRSocketServerFactoryTests {
 			String trustCertificate, Transport transport) {
 		NettyRSocketServerFactory factory = getFactory();
 		factory.setTransport(transport);
-		PemSslStoreBundle.StoreDetails keyStoreDetails = new PemSslStoreBundle.StoreDetails(certificate,
-				certificatePrivateKey);
-		PemSslStoreBundle.StoreDetails trustStoreDetails = new PemSslStoreBundle.StoreDetails(trustCertificate);
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(certificate)
+			.withPrivateKey(certificatePrivateKey);
+		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(trustCertificate);
 		SslBundle sslBundle = SslBundle.of(new PemSslStoreBundle(keyStoreDetails, trustStoreDetails));
 		factory.setSsl(Ssl.forBundle("test"));
 		factory.setSslBundles(new DefaultSslBundleRegistry("test", sslBundle));

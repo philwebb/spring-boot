@@ -26,7 +26,9 @@ import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingSupplier;
@@ -55,17 +57,17 @@ public class WebServerSslBundle implements SslBundle {
 	}
 
 	private static SslStoreBundle createPemStoreBundle(Ssl ssl) {
-		PemSslStoreBundle.StoreDetails keyStoreDetails = new PemSslStoreBundle.StoreDetails(ssl.getKeyStoreType(),
-				ssl.getCertificate(), ssl.getCertificatePrivateKey());
-		PemSslStoreBundle.StoreDetails trustStoreDetails = new PemSslStoreBundle.StoreDetails(ssl.getTrustStoreType(),
+		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails(ssl.getKeyStoreType(), ssl.getCertificate(),
+				ssl.getCertificatePrivateKey());
+		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
 				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey());
 		return new PemSslStoreBundle(ssl.getKeyAlias(), keyStoreDetails, trustStoreDetails);
 	}
 
 	private static SslStoreBundle createJksStoreBundle(Ssl ssl) {
-		JksSslStoreBundle.StoreDetails keyStoreDetails = new JksSslStoreBundle.StoreDetails(ssl.getKeyStoreType(),
-				ssl.getKeyStoreProvider(), ssl.getKeyStore(), ssl.getKeyStorePassword());
-		JksSslStoreBundle.StoreDetails trustStoreDetails = new JksSslStoreBundle.StoreDetails(ssl.getTrustStoreType(),
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
+				ssl.getKeyStore(), ssl.getKeyStorePassword());
+		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(ssl.getTrustStoreType(),
 				ssl.getTrustStoreProvider(), ssl.getTrustStore(), ssl.getTrustStorePassword());
 		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
 	}

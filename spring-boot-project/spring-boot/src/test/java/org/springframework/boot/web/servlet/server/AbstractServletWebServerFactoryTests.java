@@ -115,7 +115,7 @@ import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
-import org.springframework.boot.ssl.jks.JksSslStoreBundle.StoreDetails;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.CertificateFileSslDetails;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
@@ -763,14 +763,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	private SslBundle createJksSslBundle(String keyStore, String trustStore) {
-		JksSslStoreBundle.StoreDetails keyStoreDetails = getJksStoreDetails(keyStore);
-		JksSslStoreBundle.StoreDetails trustStoreDetails = getJksStoreDetails(trustStore);
+		JksSslStoreDetails keyStoreDetails = getJksStoreDetails(keyStore);
+		JksSslStoreDetails trustStoreDetails = getJksStoreDetails(trustStore);
 		SslStoreBundle stores = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
 		return SslBundle.of(stores);
 	}
 
-	private JksSslStoreBundle.StoreDetails getJksStoreDetails(String location) {
-		return new StoreDetails(getStoreType(location), null, location, "secret");
+	private JksSslStoreDetails getJksStoreDetails(String location) {
+		return new JksSslStoreDetails(getStoreType(location), null, location, "secret");
 	}
 
 	private SslBundle createCertSslBundle(String cert, String privateKey) {

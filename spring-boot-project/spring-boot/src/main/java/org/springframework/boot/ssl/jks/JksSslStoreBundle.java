@@ -39,16 +39,16 @@ import org.springframework.util.StringUtils;
  */
 public class JksSslStoreBundle implements SslStoreBundle {
 
-	private final StoreDetails keyStoreDetails;
+	private final JksSslStoreDetails keyStoreDetails;
 
-	private final StoreDetails trustStoreDetails;
+	private final JksSslStoreDetails trustStoreDetails;
 
 	/**
 	 * Create a new {@link JksSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	public JksSslStoreBundle(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
+	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
 		this.keyStoreDetails = keyStoreDetails;
 		this.trustStoreDetails = trustStoreDetails;
 	}
@@ -68,7 +68,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		return createKeyStore("trust", this.trustStoreDetails);
 	}
 
-	private KeyStore createKeyStore(String name, StoreDetails details) {
+	private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
@@ -117,32 +117,6 @@ public class JksSslStoreBundle implements SslStoreBundle {
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load store from '" + location + "'", ex);
 		}
-	}
-
-	/**
-	 * Details for an individual trust or key store.
-	 *
-	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
-	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
-	 * @param provider the name of the key store provider
-	 * @param location the location of the key store file or {@code null} if using a
-	 * {@code PKCS11} hardware store
-	 * @param password the password used to unlock the store or {@code null}
-	 */
-	public static record StoreDetails(String type, String provider, String location, String password) {
-
-		public StoreDetails(String location) {
-			this(null, null, location, null);
-		}
-
-		boolean isEmpty() {
-			return isEmpty(this.type) && isEmpty(this.provider) && isEmpty(this.location);
-		}
-
-		private boolean isEmpty(String value) {
-			return !StringUtils.hasText(value);
-		}
-
 	}
 
 }

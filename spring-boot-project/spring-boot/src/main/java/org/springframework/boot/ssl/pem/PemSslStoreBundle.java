@@ -23,13 +23,13 @@ import java.security.cert.X509Certificate;
 
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link SslStoreBundle} backed by PEM-encoded certificates and private keys.
  *
  * @author Scott Frederick
+ * @author Phillip Webb
  * @since 3.1.0
  */
 public class PemSslStoreBundle implements SslStoreBundle {
@@ -42,16 +42,16 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private final String keyAlias;
 
-	private final StoreDetails keyStoreDetails;
+	private final PemSslStoreDetails keyStoreDetails;
 
-	private final StoreDetails trustStoreDetails;
+	private final PemSslStoreDetails trustStoreDetails;
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	public PemSslStoreBundle(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails) {
 		this(null, keyStoreDetails, trustStoreDetails);
 	}
 
@@ -61,7 +61,8 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	public PemSslStoreBundle(String keyAlias, StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
+	public PemSslStoreBundle(String keyAlias, PemSslStoreDetails keyStoreDetails,
+			PemSslStoreDetails trustStoreDetails) {
 		Assert.notNull(keyStoreDetails, "KeyStoreDetails must not be null");
 		Assert.notNull(trustStoreDetails, "TrustStoreDetails must not be null");
 		this.keyAlias = keyAlias;
@@ -88,7 +89,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * Create a new {@link KeyStore} populated with the certificate and optional private
 	 * privateKey.
 	 */
-	private KeyStore createKeyStore(String name, StoreDetails details) {
+	private KeyStore createKeyStore(String name, PemSslStoreDetails details) {
 		try {
 			Assert.notNull(details.certificate(), "CertificateContent must not be null");
 			String type = (!StringUtils.hasText(details.type())) ? details.type() : KeyStore.getDefaultType();
@@ -117,36 +118,6 @@ public class PemSslStoreBundle implements SslStoreBundle {
 				keyStore.setCertificateEntry(alias + "-" + index, certificates[index]);
 			}
 		}
-	}
-
-	/**
-	 * Details for an individual trust or key store.
-	 *
-	 * @param type the key store type, for example {@code JKS} or {@code PKCS11}. A
-	 * {@code null} value will use {@link KeyStore#getDefaultType()}).
-	 * @param certificate the certificate content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
-	 * @param privateKey the private key content (either the PEM content itself or
-	 * something that can be loaded by {@link ResourceUtils#getURL})
-	 */
-	public static record StoreDetails(String type, String certificate, String privateKey) {
-
-		public StoreDetails(String certificate) {
-			this(null, certificate, null);
-		}
-
-		public StoreDetails(String certificate, String privateKey) {
-			this(null, certificate, privateKey);
-		}
-
-		boolean isEmpty() {
-			return isEmpty(this.type) && isEmpty(this.certificate) && isEmpty(this.privateKey);
-		}
-
-		private boolean isEmpty(String value) {
-			return !StringUtils.hasText(value);
-		}
-
 	}
 
 }
