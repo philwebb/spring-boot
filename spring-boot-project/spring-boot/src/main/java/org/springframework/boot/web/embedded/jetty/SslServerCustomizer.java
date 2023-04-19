@@ -55,15 +55,15 @@ import org.springframework.util.ObjectUtils;
  */
 class SslServerCustomizer implements JettyServerCustomizer {
 
+	private final Http2 http2;
+
 	private final InetSocketAddress address;
 
 	private final ClientAuth clientAuth;
 
 	private final SslBundle sslBundle;
 
-	private final Http2 http2;
-
-	SslServerCustomizer(InetSocketAddress address, ClientAuth clientAuth, SslBundle sslBundle, Http2 http2) {
+	SslServerCustomizer(Http2 http2, InetSocketAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
 		this.address = address;
 		this.clientAuth = clientAuth;
 		this.sslBundle = sslBundle;

@@ -26,7 +26,7 @@ import org.springframework.boot.ssl.SslBundle;
  *
  * @author Phillip Webb
  * @since 2.0.0
- * @deprecated since 3.1.0 for removal in 3.3.0, in favor of registering an
+ * @deprecated since 3.1.0 for removal in 3.3.0 in favor of registering an
  * {@link SslBundle}.
  */
 @Deprecated(since = "3.1.0", forRemoval = true)

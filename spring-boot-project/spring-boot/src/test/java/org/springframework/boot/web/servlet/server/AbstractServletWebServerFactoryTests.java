@@ -111,11 +111,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InOrder;
 
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle.StoreDetails;
 import org.springframework.boot.ssl.pem.CertificateFileSslDetails;
-import org.springframework.boot.ssl.pem.CertificateFileSslStoreProvider;
-import org.springframework.boot.sslx.keystore.JavaKeyStoreSslDetails;
-import org.springframework.boot.sslx.keystore.JavaKeyStoreSslStoreProvider;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -123,6 +124,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
+import org.springframework.boot.web.server.CertificateFileSslStoreProvider;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
@@ -567,8 +569,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	void pkcs12KeyStoreAndTrustStoreFromBundle() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(new Ssl());
-		factory.setSslBundle(createJksSslBundle("classpath:test.p12", "classpath:test.p12"));
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(
+				new DefaultSslBundleRegistry("test", createJksSslBundle("classpath:test.p12", "classpath:test.p12")));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -585,8 +588,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	void pemKeyStoreAndTrustStoreFromBundle() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(new Ssl());
-		factory.setSslBundle(createCertSslBundle("classpath:test-cert.pem", "classpath:test-key.pem"));
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(new DefaultSslBundleRegistry("test",
+				createCertSslBundle("classpath:test-cert.pem", "classpath:test-key.pem")));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -663,6 +667,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@Deprecated
 	void sslWithCustomSslStoreProvider() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
@@ -758,14 +763,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	private SslBundle createJksSslBundle(String keyStore, String trustStore) {
-		JavaKeyStoreSslDetails ssl = new JavaKeyStoreSslDetails();
-		ssl.setKeyStore(keyStore);
-		ssl.setKeyStorePassword("secret");
-		ssl.setKeyStoreType(getStoreType(keyStore));
-		ssl.setTrustStore(trustStore);
-		ssl.setTrustStorePassword("secret");
-		ssl.setTrustStoreType(getStoreType(trustStore));
-		return new SslBundle(ssl, JavaKeyStoreSslStoreProvider.from(ssl));
+		JksSslStoreBundle.StoreDetails keyStoreDetails = getJksStoreDetails(keyStore);
+		JksSslStoreBundle.StoreDetails trustStoreDetails = getJksStoreDetails(trustStore);
+		SslStoreBundle stores = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return SslBundle.of(stores);
+	}
+
+	private JksSslStoreBundle.StoreDetails getJksStoreDetails(String location) {
+		return new StoreDetails(getStoreType(location), null, location, "secret");
 	}
 
 	private SslBundle createCertSslBundle(String cert, String privateKey) {

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Scott Frederick
  */
-class ServerSslBundleFactoryTests {
+class XServerSslBundleFactoryTests {
 
 	@Test
 	void createBundleWithSslDisabled() {
