@@ -78,8 +78,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private SslStoreProvider sslStoreProvider;
 
-	private SslBundle sslBundle;
-
 	@Override
 	public void setPort(int port) {
 		this.port = port;

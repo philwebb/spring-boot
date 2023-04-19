@@ -33,7 +33,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Scott Frederick
  * @author Phillip Webb
  */
-public class WebServerSslBundle implements SslBundle {
+class WebServerSslBundle implements SslBundle {
 
 	private final SslKeyReference key;
 

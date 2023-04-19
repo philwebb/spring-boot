@@ -19,6 +19,7 @@ package org.springframework.boot.rsocket.server;
 import java.net.InetAddress;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.unit.DataSize;
@@ -77,8 +78,8 @@ public interface ConfigurableRSocketServerFactory {
 
 	/**
 	 * Sets an SSL bundle that can be used to get SSL configuration.
-	 * @param sslBundle the SSL bundle
+	 * @param sslBundles the SSL bundles
 	 */
-	void setSslBundle(SslBundle sslBundle);
+	void setSslBundles(SslBundles sslBundles);
 
 }
