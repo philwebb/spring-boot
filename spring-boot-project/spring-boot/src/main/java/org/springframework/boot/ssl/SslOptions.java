@@ -48,22 +48,35 @@ public interface SslOptions {
 	 */
 	Set<String> getEnabledProtocols();
 
-	static SslOptions of(String[] enabledProtocols, String[] ciphers) {
+	/**
+	 * Factory method to create a new {@link SslOptions} instance.
+	 * @param ciphers the ciphers
+	 * @param enabledProtocols the enabled protocols
+	 * @return a new {@link SslOptions} instance
+	 */
+	static SslOptions of(String[] ciphers, String[] enabledProtocols) {
 		return of(asSet(enabledProtocols), asSet(ciphers));
 	}
 
-	static SslOptions of(Set<String> enabledProtocols, Set<String> ciphers) {
+	/**
+	 * Factory method to create a new {@link SslOptions} instance.
+	 * @param ciphers the ciphers
+	 * @param enabledProtocols the enabled protocols
+	 * @return a new {@link SslOptions} instance
+	 */
+	static SslOptions of(Set<String> ciphers, Set<String> enabledProtocols) {
 		return new SslOptions() {
+
+			@Override
+			public Set<String> getCiphers() {
+				return (ciphers != null) ? ciphers : Collections.emptySet();
+			}
 
 			@Override
 			public Set<String> getEnabledProtocols() {
 				return (enabledProtocols != null) ? enabledProtocols : Collections.emptySet();
 			}
 
-			@Override
-			public Set<String> getCiphers() {
-				return (ciphers != null) ? ciphers : Collections.emptySet();
-			}
 		};
 
 	}

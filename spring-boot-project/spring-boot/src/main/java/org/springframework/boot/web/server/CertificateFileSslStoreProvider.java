@@ -62,10 +62,8 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	 * @return an {@code SslStoreProvider} or {@code null}
 	 */
 	public static SslStoreProvider from(Ssl ssl) {
-		if (ssl != null && ssl.isEnabled() && WebServerSslBundle.hasCertificateProperties(ssl)) {
-			return new CertificateFileSslStoreProvider(WebServerSslBundle.certificate(ssl));
-		}
-		return null;
+		SslBundle delegate = WebServerSslBundle.createCertificateFileSslStoreProviderDelegate(ssl);
+		return (delegate != null) ? new CertificateFileSslStoreProvider(delegate) : null;
 	}
 
 }

@@ -32,6 +32,7 @@ import reactor.netty.resources.LoopResources;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.Shutdown;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -166,7 +167,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		else {
 			server = server.bindAddress(this::getListenAddress);
 		}
-		if (getSsl() != null && getSsl().isEnabled()) {
+		if (Ssl.isEnabled(getSsl())) {
 			server = customizeSslConfiguration(server);
 		}
 		if (getCompression() != null && getCompression().getEnabled()) {
@@ -177,11 +178,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return applyCustomizers(server);
 	}
 
-	@SuppressWarnings("deprecation")
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(),
-				getSslBundle());
-		return sslServerCustomizer.apply(httpServer);
+		return new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(), getSslBundle()).apply(httpServer);
 	}
 
 	private HttpProtocol[] listProtocols() {

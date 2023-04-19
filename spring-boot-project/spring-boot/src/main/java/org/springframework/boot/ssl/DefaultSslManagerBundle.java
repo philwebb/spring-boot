@@ -47,7 +47,7 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 		try {
 			KeyStore store = this.storeBundle.getKeyStore();
 			String alias = this.key.getAlias();
-			validateKeyAlias(store, alias);
+			validateAlias(store, alias);
 			KeyManagerFactory factory = (alias == null)
 					? KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
 					: new AliasKeyManagerFactory(alias, KeyManagerFactory.getDefaultAlgorithm());
@@ -61,7 +61,7 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 		}
 	}
 
-	private void validateKeyAlias(KeyStore store, String alias) {
+	private void validateAlias(KeyStore store, String alias) {
 		if (StringUtils.hasLength(alias) && store != null) {
 			try {
 				Assert.state(store.containsAlias(alias),

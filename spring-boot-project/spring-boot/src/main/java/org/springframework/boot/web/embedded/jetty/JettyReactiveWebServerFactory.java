@@ -43,6 +43,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.Shutdown;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -179,7 +180,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		contextHandler.addServlet(servletHolder, "/");
 		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger.info("Server initialized with port: " + port);
-		if (getSsl() != null && getSsl().isEnabled()) {
+		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {

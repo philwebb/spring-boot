@@ -34,26 +34,28 @@ import org.springframework.util.StringUtils;
  */
 public class PemSslStoreBundle implements SslStoreBundle {
 
-	private static final String DEFAULT_KEY_ALIAS = "spring-boot";
+	private static final String DEFAULT_KEY_ALIAS = "key";
 
 	private static final String KEY_PASSWORD = "";
 
 	private static final char[] KEY_PASSWORD_CHARS = KEY_PASSWORD.toCharArray();
 
+	private final String keyAlias;
+
 	private final StoreDetails keyStoreDetails;
 
 	private final StoreDetails trustStoreDetails;
 
-	private String alias;
-
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
+	 * @param keyAlias the key alias to use or {@code null} to use a default alias
 	 * @param keyStoreDetails the key store details
 	 * @param trustStoreDetails the trust store details
 	 */
-	public PemSslStoreBundle(StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
+	public PemSslStoreBundle(String keyAlias, StoreDetails keyStoreDetails, StoreDetails trustStoreDetails) {
 		Assert.notNull(keyStoreDetails, "KeyStoreDetails must not be null");
 		Assert.notNull(trustStoreDetails, "TrustStoreDetails must not be null");
+		this.keyAlias = keyAlias;
 		this.keyStoreDetails = keyStoreDetails;
 		this.trustStoreDetails = trustStoreDetails;
 	}
@@ -97,7 +99,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey)
 			throws KeyStoreException {
-		String alias = (this.alias != null) ? this.alias : DEFAULT_KEY_ALIAS;
+		String alias = (this.keyAlias != null) ? this.keyAlias : DEFAULT_KEY_ALIAS;
 		if (privateKey != null) {
 			keyStore.setKeyEntry(alias, privateKey, KEY_PASSWORD_CHARS, certificates);
 		}

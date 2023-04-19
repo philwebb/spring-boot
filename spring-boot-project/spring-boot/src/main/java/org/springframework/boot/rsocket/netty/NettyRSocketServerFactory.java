@@ -183,7 +183,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		if (this.resourceFactory != null) {
 			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		if (this.ssl != null && this.ssl.isEnabled()) {
+		if (Ssl.isEnabled(this.ssl)) {
 			httpServer = customizeSslConfiguration(httpServer);
 		}
 		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
@@ -200,7 +200,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		if (this.resourceFactory != null) {
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		if (this.ssl != null && this.ssl.isEnabled()) {
+		if (Ssl.isEnabled(this.ssl)) {
 			SslBundle sslBundle = WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider);
 			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), sslBundle).apply(tcpServer);
 		}

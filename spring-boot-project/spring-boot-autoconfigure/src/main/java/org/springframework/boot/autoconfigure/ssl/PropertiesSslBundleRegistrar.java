@@ -62,7 +62,7 @@ class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 	private SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
 		PemSslStoreBundle.StoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
 		PemSslStoreBundle.StoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
-		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return new PemSslStoreBundle(properties.getKey().getAlias(), keyStoreDetails, trustStoreDetails);
 	}
 
 	private PemSslStoreBundle.StoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
@@ -86,6 +86,8 @@ class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 	 */
 	static class PropertiesSslBundle implements SslBundle {
 
+		private final String protocol;
+
 		private final SslKeyReference key;
 
 		private final SslStoreBundle stores;
@@ -95,6 +97,7 @@ class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 		private final SslOptions options;
 
 		PropertiesSslBundle(SslBundleProperties properties, SslStoreBundle stores) {
+			this.protocol = properties.getProtocol();
 			this.key = asSslKeyReference(properties.getKey());
 			this.stores = null;
 			this.managers = SslManagerBundle.from(this.stores, this.key);
@@ -106,8 +109,13 @@ class PropertiesSslBundleRegistrar implements SslBundleRegistrar {
 		}
 
 		private static SslOptions asSslOptions(SslBundleProperties.Options properties) {
-			return (properties != null) ? SslOptions.of(properties.getEnabledProtocols(), properties.getCiphers())
+			return (properties != null) ? SslOptions.of(properties.getCiphers(), properties.getEnabledProtocols())
 					: SslOptions.NONE;
+		}
+
+		@Override
+		public String getProtocol() {
+			return this.protocol;
 		}
 
 		@Override

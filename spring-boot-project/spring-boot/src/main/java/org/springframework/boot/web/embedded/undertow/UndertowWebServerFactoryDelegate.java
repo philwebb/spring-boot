@@ -164,7 +164,7 @@ class UndertowWebServerFactoryDelegate {
 			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, http2.isEnabled());
 		}
 		Ssl ssl = factory.getSsl();
-		if (ssl != null && ssl.isEnabled()) {
+		if (Ssl.isEnabled(ssl)) {
 			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), sslBundleSupplier.get())
 				.customize(builder);
 		}

@@ -18,19 +18,22 @@ package org.springframework.boot.autoconfigure.ssl;
 
 import java.util.Set;
 
+import org.springframework.boot.ssl.SslBundle;
+
 /**
  * Base class for SSL Bundle properties.
  *
  * @author Scott Frederick
  * @author Phillip Webb
  * @since 3.1.0
+ * @see SslBundle
  */
 public abstract class SslBundleProperties {
 
 	/**
 	 * SSL Protocol to use.
 	 */
-	private String protocol = "TLS";
+	private String protocol = SslBundle.DEFAULT_PROTOCOL;
 
 	/**
 	 * Options for the SLL connection.
