@@ -49,7 +49,7 @@ final class AliasKeyManagerFactory extends KeyManagerFactory {
 		this(KeyManagerFactory.getInstance(algorithm), alias, algorithm);
 	}
 
-	private AliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
+	AliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
 		super(new AliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
 	}
 
