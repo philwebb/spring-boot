@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Scott Frederick
  */
 @MockPkcs11Security
-class JavaKeyStoreSslStoreProviderTests {
+class XJavaKeyStoreSslStoreProviderTests {
 
 	@Test
 	void fromSslWhenNullReturnsNull() {

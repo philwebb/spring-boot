@@ -190,9 +190,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(null, this.ssl.getClientAuth(),
-				WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider));
-		return sslServerCustomizer.apply(httpServer);
+		return new SslServerCustomizer(null, this.ssl.getClientAuth(), getSslBundle()).apply(httpServer);
 	}
 
 	private ServerTransport<CloseableChannel> createTcpTransport() {
@@ -201,10 +199,14 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (Ssl.isEnabled(this.ssl)) {
-			SslBundle sslBundle = WebServerSslBundle.get(this.sslBundles, this.ssl, this.sslStoreProvider);
-			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), sslBundle).apply(tcpServer);
+			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), getSslBundle()).apply(tcpServer);
 		}
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
+	}
+
+	@SuppressWarnings("deprecation")
+	private SslBundle getSslBundle() {
+		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
 	}
 
 	private InetSocketAddress getListenAddress() {

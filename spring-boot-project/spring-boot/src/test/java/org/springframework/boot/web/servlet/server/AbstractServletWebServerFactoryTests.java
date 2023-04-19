@@ -116,7 +116,8 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
-import org.springframework.boot.ssl.pem.CertificateFileSslDetails;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -124,7 +125,6 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
-import org.springframework.boot.web.server.CertificateFileSslStoreProvider;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
@@ -590,7 +590,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		addTestTxtFile(factory);
 		factory.setSsl(Ssl.forBundle("test"));
 		factory.setSslBundles(new DefaultSslBundleRegistry("test",
-				createCertSslBundle("classpath:test-cert.pem", "classpath:test-key.pem")));
+				createPemSslBundle("classpath:test-cert.pem", "classpath:test-key.pem")));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -773,12 +773,11 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return new JksSslStoreDetails(getStoreType(location), null, location, "secret");
 	}
 
-	private SslBundle createCertSslBundle(String cert, String privateKey) {
-		CertificateFileSslDetails ssl = new CertificateFileSslDetails();
-		ssl.setCertificate(cert);
-		ssl.setCertificatePrivateKey(privateKey);
-		ssl.setTrustCertificate(cert);
-		return new SslBundle(ssl, CertificateFileSslStoreProvider.from(ssl));
+	private SslBundle createPemSslBundle(String cert, String privateKey) {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(cert).withPrivateKey(privateKey);
+		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(cert);
+		SslStoreBundle stores = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return SslBundle.of(stores);
 	}
 
 	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols, String[] ciphers) throws Exception {
