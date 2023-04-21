@@ -212,7 +212,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
-		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
+		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain alias 'test-alias-404'");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
