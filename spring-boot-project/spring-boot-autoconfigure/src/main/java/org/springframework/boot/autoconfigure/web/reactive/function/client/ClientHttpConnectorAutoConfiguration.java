@@ -17,10 +17,13 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -37,10 +40,12 @@ import org.springframework.web.reactive.function.client.WebClient;
  * HTTP client library.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.1.0
  */
 @AutoConfiguration
 @ConditionalOnClass(WebClient.class)
+@AutoConfigureAfter(SslAutoConfiguration.class)
 @Import({ ClientHttpConnectorFactoryConfiguration.ReactorNetty.class,
 		ClientHttpConnectorFactoryConfiguration.JettyClient.class,
 		ClientHttpConnectorFactoryConfiguration.HttpClient5.class,
@@ -60,6 +65,14 @@ public class ClientHttpConnectorAutoConfiguration {
 	@ConditionalOnBean(ClientHttpConnector.class)
 	public WebClientCustomizer webClientHttpConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
 		return (builder) -> builder.clientConnector(clientHttpConnector);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(WebClientSsl.class)
+	@ConditionalOnBean(SslBundles.class)
+	AutoConfiguredWebClientSsl webClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory,
+			SslBundles sslBundles) {
+		return new AutoConfiguredWebClientSsl(null, null);
 	}
 
 }

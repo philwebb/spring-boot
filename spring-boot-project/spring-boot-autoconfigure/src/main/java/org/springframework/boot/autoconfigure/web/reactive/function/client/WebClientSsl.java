@@ -18,14 +18,14 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.util.function.Consumer;
 
+import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Injectable bean that can be used to {@link WebClient.Builder#apply apply} SSL
- * configuration to a
- * {@link org.springframework.web.reactive.function.client.WebClient.Builder
+ * Interface that can be used to {@link WebClient.Builder#apply apply} SSL configuration
+ * to a {@link org.springframework.web.reactive.function.client.WebClient.Builder
  * WebClient.Builder}.
  * <p>
  * Typically used as follows: <pre class="code">
@@ -40,14 +40,27 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public class WebClientSsl {
+public interface WebClientSsl {
 
-	public Consumer<WebClient.Builder> fromBundle(String bundleName) {
-		return null;
-	}
+	/**
+	 * Return a {@link Consumer} that will apply SSL configuration for the named
+	 * {@link SslBundle} to a
+	 * {@link org.springframework.web.reactive.function.client.WebClient.Builder
+	 * WebClient.Builder}.
+	 * @param bundleName the name of the SSL bundle to apply
+	 * @return a {@link Consumer} to apply the configuration
+	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
+	 */
+	Consumer<WebClient.Builder> fromBundle(String bundleName) throws NoSuchSslBundleException;
 
-	public Consumer<WebClient.Builder> fromBundle(SslBundle bundle) {
-		return null;
-	}
+	/**
+	 * Return a {@link Consumer} that will apply SSL configuration for the
+	 * {@link SslBundle} to a
+	 * {@link org.springframework.web.reactive.function.client.WebClient.Builder
+	 * WebClient.Builder}.
+	 * @param bundle the SSL bundle to apply
+	 * @return a {@link Consumer} to apply the configuration
+	 */
+	Consumer<WebClient.Builder> fromBundle(SslBundle bundle);
 
 }
