@@ -63,10 +63,10 @@ class WebServerSslBundleTests {
 		ssl.setClientAuth(Ssl.ClientAuth.NONE);
 		ssl.setCiphers(new String[] { "ONE", "TWO", "THREE" });
 		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
-		ssl.setProtocol("TLSv1.1");
+		ssl.setProtocol("TestProtocol");
 		SslBundle bundle = WebServerSslBundle.get(ssl);
 		assertThat(bundle).isNotNull();
-		assertThat(bundle.getProtocol()).isEqualTo("TLS");
+		assertThat(bundle.getProtocol()).isEqualTo("TestProtocol");
 		SslBundleKey key = bundle.getKey();
 		assertThat(key.getPassword()).isEqualTo("password");
 		assertThat(key.getAlias()).isEqualTo("alias");
