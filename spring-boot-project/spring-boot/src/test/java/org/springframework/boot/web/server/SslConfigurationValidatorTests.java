@@ -67,7 +67,7 @@ class SslConfigurationValidatorTests {
 	void validateKeyAliasWhenAliasNotFoundShouldThrowException() {
 		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
 			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
+			.hasMessage("Keystore does not contain alias '" + INVALID_ALIAS + "'");
 	}
 
 	@Test
