@@ -16,9 +16,22 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLException;
+
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.nio.AsyncClientConnectionManager;
+import org.apache.hc.core5.http.nio.ssl.BasicClientTlsStrategy;
+import org.apache.hc.core5.net.NamedEndpoint;
+import org.apache.hc.core5.reactor.ssl.SSLSessionVerifier;
+import org.apache.hc.core5.reactor.ssl.TlsDetails;
+
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
-import org.springframework.util.Assert;
 
 /**
  * {@link ClientHttpConnectorFactory} for {@link HttpComponentsClientHttpConnector}.
@@ -30,8 +43,31 @@ class HttpComponentsClientHttpConnectorFactory
 
 	@Override
 	public HttpComponentsClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
-		Assert.state(sslBundle == null, "HttpComponentsClientHttpConnectorFactory does not support SSL");
-		return new HttpComponentsClientHttpConnector();
+		HttpAsyncClientBuilder builder = HttpAsyncClients.custom();
+		if (sslBundle != null) {
+			SslOptions options = sslBundle.getOptions();
+			SSLContext sslContext = sslBundle.createSslContext();
+			SSLSessionVerifier sessionVerifier = new SSLSessionVerifier() {
+
+				@Override
+				public TlsDetails verify(NamedEndpoint endpoint, SSLEngine sslEngine) throws SSLException {
+					if (options.getCiphers() != null) {
+						sslEngine.setEnabledCipherSuites(options.getCiphers().toArray(String[]::new));
+					}
+					if (options.getEnabledProtocols() != null) {
+						sslEngine.setEnabledProtocols(options.getEnabledProtocols().toArray(String[]::new));
+					}
+					return null;
+				}
+
+			};
+			BasicClientTlsStrategy tlsStrategy = new BasicClientTlsStrategy(sslContext, sessionVerifier);
+			AsyncClientConnectionManager connectionManager = PoolingAsyncClientConnectionManagerBuilder.create()
+				.setTlsStrategy(tlsStrategy)
+				.build();
+			builder.setConnectionManager(connectionManager);
+		}
+		return new HttpComponentsClientHttpConnector(builder.build());
 	}
 
 }

@@ -22,10 +22,10 @@ import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
-import org.springframework.util.Assert;
 
 /**
  * {@link ClientHttpConnectorFactory} for {@link JdkClientHttpConnector}.
@@ -42,8 +42,19 @@ class JettyClientHttpConnectorFactory implements ClientHttpConnectorFactory<Jett
 
 	@Override
 	public JettyClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
-		Assert.state(sslBundle == null, "HttpComponentsClientHttpConnectorFactory does not support SSL");
 		SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+		if (sslBundle != null) {
+			SslOptions options = sslBundle.getOptions();
+			if (options.getCiphers() != null) {
+				sslContextFactory.setIncludeCipherSuites(options.getCiphers().toArray(String[]::new));
+				sslContextFactory.setExcludeCipherSuites();
+			}
+			if (options.getEnabledProtocols() != null) {
+				sslContextFactory.setIncludeProtocols(options.getEnabledProtocols().toArray(String[]::new));
+				sslContextFactory.setExcludeProtocols();
+			}
+			sslContextFactory.setSslContext(sslBundle.createSslContext());
+		}
 		ClientConnector connector = new ClientConnector();
 		connector.setSslContextFactory(sslContextFactory);
 		HttpClientTransportOverHTTP transport = new HttpClientTransportOverHTTP(connector);
