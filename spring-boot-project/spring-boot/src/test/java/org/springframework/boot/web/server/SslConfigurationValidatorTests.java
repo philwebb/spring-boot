@@ -31,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Chris Bono
  */
-
+@SuppressWarnings("removal")
+@Deprecated(since = "3.1.0", forRemoval = true)
 class SslConfigurationValidatorTests {
 
 	private static final String VALID_ALIAS = "test-alias";
