@@ -402,7 +402,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
 		assertThatIllegalStateException().isThrownBy(() -> testBasicSslWithKeyStore(null, null))
-			.withMessageContaining("KeyStore location must not be empty or null");
+			.withMessageContaining("SSL is enabled but no trust material is configured");
 	}
 
 	@Test
