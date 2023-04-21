@@ -68,7 +68,7 @@ public interface ConfigurableRSocketServerFactory {
 	/**
 	 * Sets a provider that will be used to obtain SSL stores.
 	 * @param sslStoreProvider the SSL store provider
-	 * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
+	 * @deprecated since 3.1.0 for removal in 3.3.0 in favor of
 	 * {@link #setSslBundles(SslBundles)}
 	 */
 	@SuppressWarnings("removal")
