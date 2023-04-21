@@ -18,10 +18,6 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
-import org.eclipse.jetty.io.ClientConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -60,10 +56,8 @@ class ClientHttpConnectorConfiguration {
 		@Lazy
 		ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
-			ReactorNettyHttpClientMapper mapper = mapperProvider.orderedStream()
-				.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
-				.orElse((client) -> client);
-			return new ReactorClientHttpConnector(reactorResourceFactory, mapper::configure);
+			return new ReactorNettyClientHttpConnectorFactory(reactorResourceFactory, mapperProvider)
+				.createClientHttpConnector();
 		}
 
 	}
@@ -82,12 +76,7 @@ class ClientHttpConnectorConfiguration {
 		@Bean
 		@Lazy
 		JettyClientHttpConnector jettyClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
-			SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-			ClientConnector connector = new ClientConnector();
-			connector.setSslContextFactory(sslContextFactory);
-			HttpClientTransportOverHTTP transport = new HttpClientTransportOverHTTP(connector);
-			HttpClient httpClient = new HttpClient(transport);
-			return new JettyClientHttpConnector(httpClient, jettyResourceFactory);
+			return new JettyClientHttpConnectorFactory(jettyResourceFactory).createClientHttpConnector();
 		}
 
 	}
@@ -100,7 +89,7 @@ class ClientHttpConnectorConfiguration {
 		@Bean
 		@Lazy
 		HttpComponentsClientHttpConnector httpComponentsClientHttpConnector() {
-			return new HttpComponentsClientHttpConnector();
+			return new HttpComponentsClientHttpConnectorFactory().createClientHttpConnector();
 		}
 
 	}
@@ -113,7 +102,7 @@ class ClientHttpConnectorConfiguration {
 		@Bean
 		@Lazy
 		JdkClientHttpConnector jdkClientHttpConnector() {
-			return new JdkClientHttpConnector();
+			return new JdkClientHttpConnectorFactory().createClientHttpConnector();
 		}
 
 	}
