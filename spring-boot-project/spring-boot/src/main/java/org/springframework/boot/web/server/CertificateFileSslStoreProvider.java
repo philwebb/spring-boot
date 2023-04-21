@@ -30,7 +30,7 @@ import org.springframework.boot.ssl.pem.PemSslStoreBundle;
  * @deprecated since 3.1.0 for removal in 3.3.0, in favor of registering a
  * {@link SslBundle} backed by a {@link PemSslStoreBundle}.
  */
-@Deprecated
+@Deprecated(since = "3.1.0", forRemoval = true)
 @SuppressWarnings({ "deprecation", "removal" })
 public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 
