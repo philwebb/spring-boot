@@ -17,14 +17,10 @@
 package org.springframework.boot.ssl;
 
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of {@link SslManagerBundle}.
@@ -47,8 +43,8 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 	public KeyManagerFactory getKeyManagerFactory() {
 		try {
 			KeyStore store = this.storeBundle.getKeyStore();
+			this.key.assertContainsAlias(store);
 			String alias = this.key.getAlias();
-			validateAlias(store, alias);
 			String algorithm = KeyManagerFactory.getDefaultAlgorithm();
 			KeyManagerFactory factory = getKeyManagerFactoryInstance(algorithm);
 			factory = (alias != null) ? new AliasKeyManagerFactory(factory, alias, algorithm) : factory;
@@ -62,19 +58,6 @@ class DefaultSslManagerBundle implements SslManagerBundle {
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load key manager factory: " + ex.getMessage(), ex);
-		}
-	}
-
-	private void validateAlias(KeyStore store, String alias) {
-		if (StringUtils.hasLength(alias) && store != null) {
-			try {
-				Assert.state(store.containsAlias(alias),
-						() -> String.format("Keystore does not contain alias '%s'", alias));
-			}
-			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
-			}
 		}
 	}
 

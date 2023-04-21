@@ -16,6 +16,12 @@
 
 package org.springframework.boot.ssl;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 /**
  * A reference to a single key obtained via {@link SslBundle}.
  *
@@ -41,6 +47,24 @@ public interface SslBundleKey {
 	 * @return the key alias
 	 */
 	String getAlias();
+
+	/**
+	 * Assert that the alias is contained in the given keystore.
+	 * @param keyStore the keystore to check
+	 */
+	default void assertContainsAlias(KeyStore keyStore) {
+		String alias = getAlias();
+		if (StringUtils.hasLength(alias) && keyStore != null) {
+			try {
+				Assert.state(keyStore.containsAlias(alias),
+						() -> String.format("Keystore does not contain alias '%s'", alias));
+			}
+			catch (KeyStoreException ex) {
+				throw new IllegalStateException(
+						String.format("Could not determine if keystore contains alias '%s'", alias), ex);
+			}
+		}
+	}
 
 	/**
 	 * Factory method to create a new {@link SslBundleKey} instance.

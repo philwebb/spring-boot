@@ -105,7 +105,6 @@ public interface SslManagerBundle {
 			}
 
 		};
-
 	}
 
 	/**
