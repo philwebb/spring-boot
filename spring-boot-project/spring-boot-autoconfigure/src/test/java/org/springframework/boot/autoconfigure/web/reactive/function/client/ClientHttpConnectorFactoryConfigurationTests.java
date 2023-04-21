@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Brian Clozel
  */
-class ClientHttpConnectorConfigurationTests {
+class ClientHttpConnectorFactoryConfigurationTests {
 
 	@Test
 	void jettyClientHttpConnectorAppliesJettyResourceFactory() {
@@ -50,7 +50,8 @@ class ClientHttpConnectorConfigurationTests {
 		jettyResourceFactory.setExecutor(executor);
 		jettyResourceFactory.setByteBufferPool(byteBufferPool);
 		jettyResourceFactory.setScheduler(scheduler);
-		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);
+		JettyClientHttpConnectorFactory connectorFactory = getJettyClientHttpConnectorFactory(jettyResourceFactory);
+		JettyClientHttpConnector connector = connectorFactory.createClientHttpConnector();
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient.getExecutor()).isSameAs(executor);
 		assertThat(httpClient.getByteBufferPool()).isSameAs(byteBufferPool);
@@ -61,15 +62,17 @@ class ClientHttpConnectorConfigurationTests {
 	void JettyResourceFactoryHasSslContextFactory() {
 		// gh-16810
 		JettyResourceFactory jettyResourceFactory = new JettyResourceFactory();
-		JettyClientHttpConnector connector = getClientHttpConnector(jettyResourceFactory);
+		JettyClientHttpConnectorFactory connectorFactory = getJettyClientHttpConnectorFactory(jettyResourceFactory);
+		JettyClientHttpConnector connector = connectorFactory.createClientHttpConnector();
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient.getSslContextFactory()).isNotNull();
 	}
 
-	private JettyClientHttpConnector getClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
+	private JettyClientHttpConnectorFactory getJettyClientHttpConnectorFactory(
+			JettyResourceFactory jettyResourceFactory) {
 		ClientHttpConnectorFactoryConfiguration.JettyClient jettyClient = new ClientHttpConnectorFactoryConfiguration.JettyClient();
 		// We shouldn't usually call this method directly since it's on a non-proxy config
-		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnector", jettyResourceFactory);
+		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnectorFactory", jettyResourceFactory);
 	}
 
 	@Test
@@ -78,7 +81,7 @@ class ClientHttpConnectorConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorFactoryConfiguration.ReactorNetty.class))
 			.withUserConfiguration(CustomHttpClientMapper.class)
 			.run((context) -> {
-				context.getBean("reactorClientHttpConnector");
+				context.getBean(ReactorClientHttpConnectorFactory.class).createClientHttpConnector();
 				assertThat(CustomHttpClientMapper.called).isTrue();
 			});
 	}

@@ -48,9 +48,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ClientHttpConnectorAutoConfiguration {
 
 	@Bean
+	@Lazy
 	@ConditionalOnMissingBean(ClientHttpConnector.class)
 	ClientHttpConnector webClientHttpConnector(ClientHttpConnectorFactory<?> clientHttpConnectorFactory) {
-		return new LazyClientHttpConnector(clientHttpConnectorFactory::createClientHttpConnector);
+		return clientHttpConnectorFactory.createClientHttpConnector();
 	}
 
 	@Bean
