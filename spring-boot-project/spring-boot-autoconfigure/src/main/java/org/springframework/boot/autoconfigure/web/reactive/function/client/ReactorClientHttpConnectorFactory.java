@@ -17,8 +17,10 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.util.Assert;
 
 /**
  * {@link ClientHttpConnectorFactory} for {@link ReactorClientHttpConnectorFactory}.
@@ -38,7 +40,8 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 	}
 
 	@Override
-	public ReactorClientHttpConnector createClientHttpConnector() {
+	public ReactorClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
+		Assert.state(sslBundle == null, "HttpComponentsClientHttpConnectorFactory does not support SSL");
 		ReactorNettyHttpClientMapper mapper = this.mapperProvider.orderedStream()
 			.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
 			.orElse((client) -> client);

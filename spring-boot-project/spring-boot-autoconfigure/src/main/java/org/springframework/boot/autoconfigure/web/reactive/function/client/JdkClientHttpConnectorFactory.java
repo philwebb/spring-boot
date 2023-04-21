@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
+import org.springframework.util.Assert;
 
 /**
  * {@link ClientHttpConnectorFactory} for {@link JettyClientHttpConnector}.
@@ -27,7 +29,8 @@ import org.springframework.http.client.reactive.JettyClientHttpConnector;
 class JdkClientHttpConnectorFactory implements ClientHttpConnectorFactory<JdkClientHttpConnector> {
 
 	@Override
-	public JdkClientHttpConnector createClientHttpConnector() {
+	public JdkClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
+		Assert.state(sslBundle == null, "HttpComponentsClientHttpConnectorFactory does not support SSL");
 		return new JdkClientHttpConnector();
 	}
 

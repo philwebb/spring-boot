@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 
 /**
@@ -24,8 +25,13 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  * @param <T> the {@link ClientHttpConnector} type
  * @author Phillip Webb
  */
+@FunctionalInterface
 interface ClientHttpConnectorFactory<T extends ClientHttpConnector> {
 
-	T createClientHttpConnector();
+	default T createClientHttpConnector() {
+		return createClientHttpConnector(null);
+	}
+
+	T createClientHttpConnector(SslBundle sslBundle);
 
 }

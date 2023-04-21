@@ -162,7 +162,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 		@Bean
 		ClientHttpConnectorFactory<?> customConnector() {
-			return () -> mock(ClientHttpConnector.class);
+			return (sslBundle) -> mock(ClientHttpConnector.class);
 		}
 
 	}
