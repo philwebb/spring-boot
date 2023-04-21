@@ -16,9 +16,15 @@
 
 package org.springframework.boot.ssl;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SslBundleKey}.
@@ -46,6 +52,24 @@ class SslBundleKeyTests {
 		SslBundleKey keyReference = SslBundleKey.of("password", "alias");
 		assertThat(keyReference.getPassword()).isEqualTo("password");
 		assertThat(keyReference.getAlias()).isEqualTo("alias");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenHasAliasNotInStoreThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willReturn(false);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Keystore does not contain alias 'alias'");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenHasAliasNotDeterminedInStoreThrowsException() throws Exception {
+		KeyStore keyStore = mock(KeyStore.class);
+		given(keyStore.containsAlias("alias")).willThrow(KeyStoreException.class);
+		SslBundleKey key = SslBundleKey.of("secret", "alias");
+		assertThatIllegalStateException().isThrownBy(() -> key.assertContainsAlias(keyStore))
+			.withMessage("Could not determine if keystore contains alias 'alias'");
 	}
 
 }
