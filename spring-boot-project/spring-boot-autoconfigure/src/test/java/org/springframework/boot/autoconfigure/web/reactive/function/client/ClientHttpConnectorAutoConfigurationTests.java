@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.assertj.core.api.ObjectAssert;
 import org.eclipse.jetty.reactive.client.ReactiveRequest;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClient;
@@ -35,6 +36,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -52,11 +54,10 @@ class ClientHttpConnectorAutoConfigurationTests {
 	void whenReactorIsAvailableThenReactorBeansAreDefined() {
 		this.contextRunner.run((context) -> {
 			BeanDefinition customizerDefinition = context.getBeanFactory()
-				.getBeanDefinition("clientConnectorCustomizer");
+				.getBeanDefinition("webClientHttpConnectorCustomizer");
 			assertThat(customizerDefinition.isLazyInit()).isTrue();
-			BeanDefinition connectorDefinition = context.getBeanFactory()
-				.getBeanDefinition("reactorClientHttpConnector");
-			assertThat(connectorDefinition.isLazyInit()).isTrue();
+			assertThat(context).hasBean("reactorClientHttpConnectorFactory");
+			assertThat(context).getBean(ClientHttpConnector.class).isInstanceOf(LazyClientHttpConnector.class);
 			assertThat(context).hasSingleBean(ReactorResourceFactory.class);
 		});
 	}
@@ -65,11 +66,11 @@ class ClientHttpConnectorAutoConfigurationTests {
 	void whenReactorIsUnavailableThenJettyBeansAreDefined() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class)).run((context) -> {
 			BeanDefinition customizerDefinition = context.getBeanFactory()
-				.getBeanDefinition("clientConnectorCustomizer");
+				.getBeanDefinition("webClientHttpConnectorCustomizer");
 			assertThat(customizerDefinition.isLazyInit()).isTrue();
-			BeanDefinition connectorDefinition = context.getBeanFactory().getBeanDefinition("jettyClientHttpConnector");
-			assertThat(connectorDefinition.isLazyInit()).isTrue();
 			assertThat(context).hasBean("jettyClientResourceFactory");
+			assertThat(context).hasBean("jettyClientHttpConnectorFactory");
+			assertThat(context).getBean(ClientHttpConnector.class).isInstanceOf(LazyClientHttpConnector.class);
 		});
 	}
 
@@ -78,11 +79,10 @@ class ClientHttpConnectorAutoConfigurationTests {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(HttpClient.class, ReactiveRequest.class))
 			.run((context) -> {
 				BeanDefinition customizerDefinition = context.getBeanFactory()
-					.getBeanDefinition("clientConnectorCustomizer");
+					.getBeanDefinition("webClientHttpConnectorCustomizer");
 				assertThat(customizerDefinition.isLazyInit()).isTrue();
-				BeanDefinition connectorDefinition = context.getBeanFactory()
-					.getBeanDefinition("httpComponentsClientHttpConnector");
-				assertThat(connectorDefinition.isLazyInit()).isTrue();
+				assertThat(context).hasBean("httpComponentsClientHttpConnectorFactory");
+				assertThat(context).getBean(ClientHttpConnector.class).isInstanceOf(LazyClientHttpConnector.class);
 			});
 	}
 
@@ -92,11 +92,10 @@ class ClientHttpConnectorAutoConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(HttpClient.class, ReactiveRequest.class, HttpAsyncClients.class))
 			.run((context) -> {
 				BeanDefinition customizerDefinition = context.getBeanFactory()
-					.getBeanDefinition("clientConnectorCustomizer");
+					.getBeanDefinition("webClientHttpConnectorCustomizer");
 				assertThat(customizerDefinition.isLazyInit()).isTrue();
-				BeanDefinition connectorDefinition = context.getBeanFactory()
-					.getBeanDefinition("jdkClientHttpConnector");
-				assertThat(connectorDefinition.isLazyInit()).isTrue();
+				assertThat(context).hasBean("jdkClientHttpConnectorFactory");
+				assertThat(context).getBean(ClientHttpConnector.class).isInstanceOf(LazyClientHttpConnector.class);
 			});
 	}
 
@@ -104,18 +103,29 @@ class ClientHttpConnectorAutoConfigurationTests {
 	void shouldCreateHttpClientBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(ReactorResourceFactory.class);
-			assertThat(context).hasSingleBean(ReactorClientHttpConnector.class);
+			assertThat(context).hasSingleBean(ClientHttpConnector.class);
 			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
 			WebClient.Builder builder = mock(WebClient.Builder.class);
 			clientCustomizer.customize(builder);
-			then(builder).should().clientConnector(any(ReactorClientHttpConnector.class));
+			then(builder).should().clientConnector(assertArg(this::lazilyCreatesReactorClientHttpConnector));
 		});
 	}
 
 	@Test
 	void shouldNotOverrideCustomClientConnector() {
 		this.contextRunner.withUserConfiguration(CustomClientHttpConnectorConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(ClientHttpConnector.class)
+			assertThat(context).hasSingleBean(ClientHttpConnector.class).hasBean("customConnector");
+			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
+			WebClient.Builder builder = mock(WebClient.Builder.class);
+			clientCustomizer.customize(builder);
+			then(builder).should().clientConnector(any(ClientHttpConnector.class));
+		});
+	}
+
+	@Test
+	void shouldNotOverrideCustomClientConnectorFactory() {
+		this.contextRunner.withUserConfiguration(CustomClientHttpConnectorFactoryConfig.class).run((context) -> {
+			assertThat(context).hasSingleBean(ClientHttpConnectorFactory.class)
 				.hasBean("customConnector")
 				.doesNotHaveBean(ReactorResourceFactory.class);
 			WebClientCustomizer clientCustomizer = context.getBean(WebClientCustomizer.class);
@@ -133,12 +143,27 @@ class ClientHttpConnectorAutoConfigurationTests {
 				.hasBean("customReactorResourceFactory"));
 	}
 
+	private ObjectAssert<ClientHttpConnector> lazilyCreatesReactorClientHttpConnector(ClientHttpConnector connector) {
+		return assertThat(((LazyClientHttpConnector) connector).getClientHttpConnector())
+			.isInstanceOf(ReactorClientHttpConnector.class);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomClientHttpConnectorConfig {
 
 		@Bean
 		ClientHttpConnector customConnector() {
 			return mock(ClientHttpConnector.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomClientHttpConnectorFactoryConfig {
+
+		@Bean
+		ClientHttpConnectorFactory<?> customConnector() {
+			return mock(ClientHttpConnectorFactory.class);
 		}
 
 	}

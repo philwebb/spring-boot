@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -40,15 +41,23 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @AutoConfiguration
 @ConditionalOnClass(WebClient.class)
-@Import({ ClientHttpConnectorConfiguration.ReactorNetty.class, ClientHttpConnectorConfiguration.JettyClient.class,
-		ClientHttpConnectorConfiguration.HttpClient5.class, ClientHttpConnectorConfiguration.JdkClient.class })
+@Import({ ClientHttpConnectorFactoryConfiguration.ReactorNetty.class,
+		ClientHttpConnectorFactoryConfiguration.JettyClient.class,
+		ClientHttpConnectorFactoryConfiguration.HttpClient5.class,
+		ClientHttpConnectorFactoryConfiguration.JdkClient.class })
 public class ClientHttpConnectorAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	ClientHttpConnector webClientHttpConnector(ClientHttpConnectorFactory<?> clientHttpConnectorFactory) {
+		return new LazyClientHttpConnector(clientHttpConnectorFactory::createClientHttpConnector);
+	}
 
 	@Bean
 	@Lazy
 	@Order(0)
 	@ConditionalOnBean(ClientHttpConnector.class)
-	public WebClientCustomizer clientConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
+	public WebClientCustomizer webClientHttpConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
 		return (builder) -> builder.clientConnector(clientHttpConnector);
 	}
 

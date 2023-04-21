@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ClientHttpConnectorConfiguration}.
+ * Tests for {@link ClientHttpConnectorFactoryConfiguration}.
  *
  * @author Phillip Webb
  * @author Brian Clozel
@@ -67,7 +67,7 @@ class ClientHttpConnectorConfigurationTests {
 	}
 
 	private JettyClientHttpConnector getClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
-		ClientHttpConnectorConfiguration.JettyClient jettyClient = new ClientHttpConnectorConfiguration.JettyClient();
+		ClientHttpConnectorFactoryConfiguration.JettyClient jettyClient = new ClientHttpConnectorFactoryConfiguration.JettyClient();
 		// We shouldn't usually call this method directly since it's on a non-proxy config
 		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnector", jettyResourceFactory);
 	}
@@ -75,7 +75,7 @@ class ClientHttpConnectorConfigurationTests {
 	@Test
 	void shouldApplyHttpClientMapper() {
 		new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.ReactorNetty.class))
+			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorFactoryConfiguration.ReactorNetty.class))
 			.withUserConfiguration(CustomHttpClientMapper.class)
 			.run((context) -> {
 				context.getBean("reactorClientHttpConnector");

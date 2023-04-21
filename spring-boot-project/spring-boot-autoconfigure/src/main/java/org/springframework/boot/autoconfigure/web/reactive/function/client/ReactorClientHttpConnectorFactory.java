@@ -21,17 +21,17 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 
 /**
- * {@link ClientHttpConnectorFactory} for {@link ReactorNettyClientHttpConnectorFactory}.
+ * {@link ClientHttpConnectorFactory} for {@link ReactorClientHttpConnectorFactory}.
  *
  * @author Phillip Webb
  */
-class ReactorNettyClientHttpConnectorFactory implements ClientHttpConnectorFactory<ReactorClientHttpConnector> {
+class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<ReactorClientHttpConnector> {
 
 	private final ReactorResourceFactory reactorResourceFactory;
 
 	private final ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider;
 
-	ReactorNettyClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory,
+	ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory,
 			ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
 		this.reactorResourceFactory = reactorResourceFactory;
 		this.mapperProvider = mapperProvider;
