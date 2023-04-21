@@ -465,8 +465,7 @@ For instance, the following configuration changes the timeout to open a new `Buc
 	      timeouts:
 	        connect: "3s"
 	      ssl:
-	        key-store: "/location/of/keystore.jks"
-	        key-store-password: "secret"
+	        bundle: "example"
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
