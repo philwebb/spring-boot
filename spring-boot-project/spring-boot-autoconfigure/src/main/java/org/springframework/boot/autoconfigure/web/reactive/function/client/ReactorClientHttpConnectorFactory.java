@@ -16,11 +16,21 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import org.springframework.beans.factory.ObjectProvider;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import javax.net.ssl.SSLException;
+
+import io.netty.handler.ssl.SslContextBuilder;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.SslProvider.SslContextSpec;
+
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslManagerBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
-import org.springframework.util.Assert;
+import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * {@link ClientHttpConnectorFactory} for {@link ReactorClientHttpConnectorFactory}.
@@ -31,21 +41,56 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 
 	private final ReactorResourceFactory reactorResourceFactory;
 
-	private final ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider;
+	private final Supplier<Stream<ReactorNettyHttpClientMapper>> mappers;
+
+	ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory) {
+		this(reactorResourceFactory, Stream::empty);
+	}
 
 	ReactorClientHttpConnectorFactory(ReactorResourceFactory reactorResourceFactory,
-			ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
+			Supplier<Stream<ReactorNettyHttpClientMapper>> mappers) {
 		this.reactorResourceFactory = reactorResourceFactory;
-		this.mapperProvider = mapperProvider;
+		this.mappers = mappers;
 	}
 
 	@Override
 	public ReactorClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
-		Assert.state(sslBundle == null, "HttpComponentsClientHttpConnectorFactory does not support SSL");
-		ReactorNettyHttpClientMapper mapper = this.mapperProvider.orderedStream()
+		ReactorNettyHttpClientMapper mapper = this.mappers.get()
 			.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
 			.orElse((client) -> client);
+		if (sslBundle != null) {
+			mapper = new SslConfigurer(sslBundle)::configure;
+		}
 		return new ReactorClientHttpConnector(this.reactorResourceFactory, mapper::configure);
+
+	}
+
+	/**
+	 * Configures the Netty {@link HttpClient} with SSL.
+	 */
+	private static class SslConfigurer {
+
+		private final SslBundle sslBundle;
+
+		SslConfigurer(SslBundle sslBundle) {
+			this.sslBundle = sslBundle;
+		}
+
+		HttpClient configure(HttpClient httpClient) {
+			return httpClient.secure(ThrowingConsumer.of(this::customizeSsl).throwing(IllegalStateException::new));
+		}
+
+		private void customizeSsl(SslContextSpec spec) throws SSLException {
+			SslOptions options = this.sslBundle.getOptions();
+			SslManagerBundle managers = this.sslBundle.getManagers();
+			SslContextBuilder builder = SslContextBuilder.forClient()
+				.keyManager(managers.getKeyManagerFactory())
+				.trustManager(managers.getTrustManagerFactory())
+				.ciphers(options.getCiphers())
+				.protocols(options.getEnabledProtocols());
+			spec.sslContext(builder.build());
+		}
+
 	}
 
 }

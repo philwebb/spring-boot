@@ -49,7 +49,7 @@ class ClientHttpConnectorFactoryConfiguration {
 		ReactorClientHttpConnectorFactory reactorClientHttpConnectorFactory(
 				ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
-			return new ReactorClientHttpConnectorFactory(reactorResourceFactory, mapperProvider);
+			return new ReactorClientHttpConnectorFactory(reactorResourceFactory, mapperProvider::orderedStream);
 		}
 
 	}
