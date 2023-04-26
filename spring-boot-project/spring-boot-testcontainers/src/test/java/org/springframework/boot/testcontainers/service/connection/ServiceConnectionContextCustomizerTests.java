@@ -22,7 +22,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -56,7 +55,7 @@ class ServiceConnectionContextCustomizerTests {
 
 	private Origin origin;
 
-	private JdbcDatabaseContainer<?> container;
+	private PostgreSQLContainer<?> container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -71,8 +70,8 @@ class ServiceConnectionContextCustomizerTests {
 		this.container = mock(PostgreSQLContainer.class);
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "myname", "type", new Class<?>[0]));
-		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, this.container,
-				this.annotation);
+		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
+				this.container::getDockerImageName, this.annotation, () -> this.container);
 		this.factories = mock(ConnectionDetailsFactories.class);
 	}
 
@@ -85,7 +84,7 @@ class ServiceConnectionContextCustomizerTests {
 		given(context.getBeanFactory()).willReturn(beanFactory);
 		MergedContextConfiguration mergedConfig = mock(MergedContextConfiguration.class);
 		JdbcConnectionDetails connectionDetails = new TestJdbcConnectionDetails();
-		given(this.factories.getConnectionDetails(this.source))
+		given(this.factories.getConnectionDetails(this.source, true))
 			.willReturn(Map.of(JdbcConnectionDetails.class, connectionDetails));
 		customizer.customizeContext(context, mergedConfig);
 		ArgumentCaptor<BeanDefinition> beanDefinitionCaptor = ArgumentCaptor.forClass(BeanDefinition.class);

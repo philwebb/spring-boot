@@ -65,7 +65,9 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		}
 	}
 
-	private ContainerConnectionSource<?> createSource(Field field, MergedAnnotation<ServiceConnection> annotation) {
+	@SuppressWarnings("unchecked")
+	private <C extends Container<?>> ContainerConnectionSource<?> createSource(Field field,
+			MergedAnnotation<ServiceConnection> annotation) {
 		Assert.state(Modifier.isStatic(field.getModifiers()),
 				() -> "@ServiceConnection field '%s' must be static".formatted(field.getName()));
 		String beanNameSuffix = StringUtils.capitalize(ClassUtils.getShortNameAsProperty(field.getDeclaringClass()))
@@ -74,8 +76,10 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		Object fieldValue = getFieldValue(field);
 		Assert.state(fieldValue instanceof Container, () -> "Field '%s' in %s must be a %s".formatted(field.getName(),
 				field.getDeclaringClass().getName(), Container.class.getName()));
-		Container<?> container = (Container<?>) fieldValue;
-		return new ContainerConnectionSource<>(beanNameSuffix, origin, container, annotation);
+		Class<C> containerType = (Class<C>) fieldValue.getClass();
+		C container = (C) fieldValue;
+		return new ContainerConnectionSource<>(beanNameSuffix, origin, containerType, container::getDockerImageName,
+				annotation, () -> container);
 	}
 
 	private Object getFieldValue(Field field) {

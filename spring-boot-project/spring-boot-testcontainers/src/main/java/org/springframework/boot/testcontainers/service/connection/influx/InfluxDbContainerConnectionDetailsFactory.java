@@ -46,29 +46,26 @@ class InfluxDbContainerConnectionDetailsFactory
 	/**
 	 * {@link InfluxDbConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class InfluxDbContainerConnectionDetails extends ContainerConnectionDetails
-			implements InfluxDbConnectionDetails {
-
-		private final InfluxDBContainer<?> container;
+	private static final class InfluxDbContainerConnectionDetails
+			extends ContainerConnectionDetails<InfluxDBContainer<?>> implements InfluxDbConnectionDetails {
 
 		private InfluxDbContainerConnectionDetails(ContainerConnectionSource<InfluxDBContainer<?>> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public String getUsername() {
-			return this.container.getUsername();
+			return getContainer().getUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.container.getPassword();
+			return getContainer().getPassword();
 		}
 
 		@Override
 		public URI getUrl() {
-			return URI.create(this.container.getUrl());
+			return URI.create(getContainer().getUrl());
 		}
 
 	}

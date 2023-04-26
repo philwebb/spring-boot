@@ -53,8 +53,9 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
-			new ContainerConnectionSourcesRegistrar(beanFactory, this.connectionDetailsFactories, this.sources)
-				.registerBeanDefinitions(registry);
+			ContainerConnectionSourceRegistrar registrar = new ContainerConnectionSourceRegistrar(beanFactory,
+					this.connectionDetailsFactories);
+			registrar.registerBeanDefinitions(registry, this.sources);
 		}
 	}
 

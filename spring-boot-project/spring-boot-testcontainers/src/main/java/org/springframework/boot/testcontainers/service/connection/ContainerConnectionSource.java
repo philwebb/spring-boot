@@ -17,6 +17,7 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,62 +46,63 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private static final Log logger = LogFactory.getLog(ContainerConnectionSource.class);
 
-	private final String beanNameSuffix;
-
 	private final Origin origin;
 
-	private final C container;
+	private final Class<C> containerType;
 
-	private final String acceptedConnectionName;
+	private final String connectionName;
 
-	private final Set<Class<?>> acceptedConnectionDetailsTypes;
+	private final Set<Class<?>> connectionDetailsTypes;
 
-	ContainerConnectionSource(String beanNameSuffix, Origin origin, C container,
-			MergedAnnotation<ServiceConnection> annotation) {
+	private final String beanNameSuffix;
+
+	private final Supplier<C> containerSupplier;
+
+	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType,
+			Supplier<String> containerName, MergedAnnotation<ServiceConnection> annotation,
+			Supplier<C> containerSupplier) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
-		this.container = container;
-		this.acceptedConnectionName = getConnectionName(container, annotation.getString("name"));
-		this.acceptedConnectionDetailsTypes = Set.of(annotation.getClassArray("type"));
+		this.containerType = containerType;
+		this.connectionName = getConnectionName(annotation.getString("name"), containerName);
+		this.connectionDetailsTypes = Set.of(annotation.getClassArray("type"));
+		this.containerSupplier = containerSupplier;
 	}
 
-	ContainerConnectionSource(String beanNameSuffix, Origin origin, C container, ServiceConnection annotation) {
+	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType,
+			Supplier<String> containerName, ServiceConnection annotation, Supplier<C> containerSupplier) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
-		this.container = container;
-		this.acceptedConnectionName = getConnectionName(container, annotation.name());
-		this.acceptedConnectionDetailsTypes = Set.of(annotation.type());
+		this.containerType = containerType;
+		this.connectionName = getConnectionName(annotation.name(), containerName);
+		this.connectionDetailsTypes = Set.of(annotation.type());
+		this.containerSupplier = containerSupplier;
 	}
 
-	private static String getConnectionName(Container<?> container, String connectionName) {
-		if (StringUtils.hasLength(connectionName)) {
-			return connectionName;
+	private static String getConnectionName(String declaredName, Supplier<String> containerName) {
+		if (StringUtils.hasLength(declaredName)) {
+			return declaredName;
 		}
-		try {
-			DockerImageName imageName = DockerImageName.parse(container.getDockerImageName());
-			imageName.assertValid();
-			return imageName.getRepository();
-		}
-		catch (IllegalArgumentException ex) {
-			return container.getDockerImageName();
-		}
+		DockerImageName imageName = DockerImageName.parse(containerName.get());
+		imageName.assertValid();
+		return imageName.getRepository();
 	}
 
 	boolean accepts(String connectionName, Class<?> connectionDetailsType, Class<?> containerType) {
-		if (!containerType.isInstance(this.container)) {
+		if (!containerType.isAssignableFrom(this.containerType)) {
 			logger.trace(LogMessage.of(() -> "%s not accepted as %s is not an instance of %s".formatted(this,
-					this.container.getClass().getName(), containerType.getName())));
+					this.containerType.getName(), containerType.getName())));
 			return false;
 		}
-		if (StringUtils.hasLength(connectionName) && !connectionName.equalsIgnoreCase(this.acceptedConnectionName)) {
+		if (StringUtils.hasLength(connectionName) && !connectionName.equalsIgnoreCase(this.connectionName)) {
 			logger.trace(LogMessage.of(() -> "%s not accepted as connection names '%s' and '%s' do not match"
-				.formatted(this, connectionName, this.acceptedConnectionName)));
+				.formatted(this, connectionName, this.connectionName)));
 			return false;
 		}
-		if (!this.acceptedConnectionDetailsTypes.isEmpty() && this.acceptedConnectionDetailsTypes.stream()
+		if (!this.connectionDetailsTypes.isEmpty() && this.connectionDetailsTypes.stream()
 			.noneMatch((candidate) -> candidate.isAssignableFrom(connectionDetailsType))) {
 			logger.trace(LogMessage.of(() -> "%s not accepted as connection details type %s not in %s".formatted(this,
-					connectionDetailsType, this.acceptedConnectionDetailsTypes)));
+					connectionDetailsType, this.connectionDetailsTypes)));
 			return false;
 		}
 		logger.trace(LogMessage
@@ -113,17 +115,13 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.beanNameSuffix;
 	}
 
+	Supplier<C> getContainerSupplier() {
+		return this.containerSupplier;
+	}
+
 	@Override
 	public Origin getOrigin() {
 		return this.origin;
-	}
-
-	/**
-	 * Return the {@link Container} that implements the service being connected to.
-	 * @return the {@link Container} providing the service
-	 */
-	public C getContainer() {
-		return this.container;
 	}
 
 	@Override

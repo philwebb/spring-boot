@@ -18,8 +18,8 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -32,7 +32,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.core.log.LogMessage;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -45,38 +44,28 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ContainerConnectionSourcesRegistrar {
+class ContainerConnectionSourceRegistrar {
 
-	private static final Log logger = LogFactory.getLog(ContainerConnectionSourcesRegistrar.class);
+	private static final Log logger = LogFactory.getLog(ContainerConnectionSourceRegistrar.class);
 
 	private final ListableBeanFactory beanFactory;
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	private final List<ContainerConnectionSource<?>> sources;
-
-	ContainerConnectionSourcesRegistrar(ListableBeanFactory beanFactory,
-			ConnectionDetailsFactories connectionDetailsFactories, List<ContainerConnectionSource<?>> sources) {
+	ContainerConnectionSourceRegistrar(ListableBeanFactory beanFactory,
+			ConnectionDetailsFactories connectionDetailsFactories) {
 		this.beanFactory = beanFactory;
 		this.connectionDetailsFactories = connectionDetailsFactories;
-		this.sources = sources;
 	}
 
-	void registerBeanDefinitions(BeanDefinitionRegistry registry) {
-		this.sources.forEach((source) -> registerBeanDefinition(registry, source));
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, Collection<ContainerConnectionSource<?>> sources) {
+		sources.forEach((source) -> registerBeanDefinitions(registry, source));
 	}
 
-	private void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
-		getConnectionDetails(source)
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
+		this.connectionDetailsFactories.getConnectionDetails(source, true)
 			.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
 					connectionDetailsType, connectionDetails));
-	}
-
-	private <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source) {
-		Map<Class<?>, ConnectionDetails> connectionDetails = this.connectionDetailsFactories
-			.getConnectionDetails(source);
-		Assert.state(!connectionDetails.isEmpty(), () -> "No connection details created for %s".formatted(source));
-		return connectionDetails;
 	}
 
 	@SuppressWarnings("unchecked")

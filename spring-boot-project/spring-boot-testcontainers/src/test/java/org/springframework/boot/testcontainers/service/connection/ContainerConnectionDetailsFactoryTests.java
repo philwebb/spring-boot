@@ -46,7 +46,7 @@ class ContainerConnectionDetailsFactoryTests {
 
 	private Origin origin;
 
-	private JdbcDatabaseContainer<?> container;
+	private PostgreSQLContainer<?> container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -59,8 +59,8 @@ class ContainerConnectionDetailsFactoryTests {
 		this.container = mock(PostgreSQLContainer.class);
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "myname", "type", new Class<?>[0]));
-		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, this.container,
-				this.annotation);
+		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
+				this.container::getDockerImageName, this.annotation, () -> this.container);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class ContainerConnectionDetailsFactoryTests {
 	void getConnectionDetailsWhenContainerTypeDoesNotMatchReturnsNull() {
 		ElasticsearchContainer container = mock(ElasticsearchContainer.class);
 		ContainerConnectionSource<?> source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin,
-				container, this.annotation);
+				ElasticsearchContainer.class, container::getDockerImageName, this.annotation, () -> container);
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		ConnectionDetails connectionDetails = getConnectionDetails(factory, source);
 		assertThat(connectionDetails).isNull();
@@ -127,10 +127,10 @@ class ContainerConnectionDetailsFactoryTests {
 			return new TestContainerConnectionDetails(source);
 		}
 
-		static class TestContainerConnectionDetails extends ContainerConnectionDetails
-				implements JdbcConnectionDetails {
+		private static final class TestContainerConnectionDetails
+				extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements JdbcConnectionDetails {
 
-			TestContainerConnectionDetails(ContainerConnectionSource<?> source) {
+			private TestContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 				super(source);
 			}
 

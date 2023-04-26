@@ -94,7 +94,7 @@ class ServiceConnectionAutoConfigurationTests {
 
 		@Bean
 		@ServiceConnection
-		RedisContainer redisContainer() {
+		static RedisContainer redisContainer() {
 			return new RedisContainer();
 		}
 
@@ -104,7 +104,7 @@ class ServiceConnectionAutoConfigurationTests {
 	static class UserConfiguration {
 
 		@Bean
-		RedisConnectionDetails redisConnectionDetails() {
+		static RedisConnectionDetails redisConnectionDetails() {
 			return mock(RedisConnectionDetails.class);
 		}
 
