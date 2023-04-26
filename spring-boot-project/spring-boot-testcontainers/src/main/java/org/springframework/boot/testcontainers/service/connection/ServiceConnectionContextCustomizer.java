@@ -16,7 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -35,15 +35,15 @@ import org.springframework.test.context.MergedContextConfiguration;
  */
 class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
-	private final List<ContainerConnectionSource<?>> sources;
+	private final Set<ContainerConnectionSource<?>> sources;
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
+	ServiceConnectionContextCustomizer(Set<ContainerConnectionSource<?>> sources) {
 		this(sources, new ConnectionDetailsFactories());
 	}
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
+	ServiceConnectionContextCustomizer(Set<ContainerConnectionSource<?>> sources,
 			ConnectionDetailsFactories connectionDetailsFactories) {
 		this.sources = sources;
 		this.connectionDetailsFactories = connectionDetailsFactories;
@@ -53,13 +53,31 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
-			new ContainerConnectionSourcesRegistrar(beanFactory, this.connectionDetailsFactories, this.sources)
-				.registerBeanDefinitions(registry);
+			ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory,
+					this.connectionDetailsFactories);
+			registrar.registerBeanDefinitions(registry, this.sources);
 		}
 	}
 
-	List<ContainerConnectionSource<?>> getSources() {
+	Set<ContainerConnectionSource<?>> getSources() {
 		return this.sources;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ServiceConnectionContextCustomizer other = (ServiceConnectionContextCustomizer) obj;
+		return this.sources.equals(other.sources);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.sources.hashCode();
 	}
 
 }

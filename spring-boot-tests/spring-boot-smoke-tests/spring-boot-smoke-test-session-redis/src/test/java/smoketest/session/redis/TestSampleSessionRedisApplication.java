@@ -17,24 +17,22 @@
 package smoketest.session.redis;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.ImportTestcontainers;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
-import org.springframework.context.annotation.Bean;
 
-@TestConfiguration(proxyBeanMethods = false)
 public class TestSampleSessionRedisApplication {
 
-	@Bean
-	@ServiceConnection
-	RedisContainer redisContainer() {
-		return new RedisContainer();
+	public static void main(String[] args) {
+		SpringApplication.from(SampleSessionRedisApplication::main).with(Testcontainers.class).run(args);
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.from(SampleSessionRedisApplication::main)
-			.with(TestSampleSessionRedisApplication.class)
-			.run(args);
+	@ImportTestcontainers
+	static class Testcontainers {
+
+		@ServiceConnection
+		private static RedisContainer redis = new RedisContainer();
+
 	}
 
 }
