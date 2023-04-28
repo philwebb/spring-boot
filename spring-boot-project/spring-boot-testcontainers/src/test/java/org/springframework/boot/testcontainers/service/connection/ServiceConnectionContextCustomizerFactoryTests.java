@@ -76,18 +76,18 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	}
 
 	@Test
-	void createContextCustomizerCreatesCustomizerSourceWithSensibleBeanNameSuffix() {
+	void createContextCustomizerCreatesCustomizerSourceWithBeanNameSuffix() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
-		ContainerConnectionSource<?> source = customizer.getSources().get(0);
-		assertThat(source.getBeanNameSuffix()).isEqualTo("SingleServiceConnectionService1");
+		ContainerConnectionSource<?> source = customizer.getSources().iterator().next();
+		assertThat(source.getBeanNameSuffix()).isEqualTo("test");
 	}
 
 	@Test
 	void createContextCustomizerCreatesCustomizerSourceWithSensibleOrigin() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
-		ContainerConnectionSource<?> source = customizer.getSources().get(0);
+		ContainerConnectionSource<?> source = customizer.getSources().iterator().next();
 		assertThat(source.getOrigin())
 			.hasToString("ServiceConnectionContextCustomizerFactoryTests.SingleServiceConnection.service1");
 	}
@@ -96,7 +96,7 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	void createContextCustomizerCreatesCustomizerSourceWithSensibleToString() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
-		ContainerConnectionSource<?> source = customizer.getSources().get(0);
+		ContainerConnectionSource<?> source = customizer.getSources().iterator().next();
 		assertThat(source).hasToString(
 				"@ServiceConnection source for ServiceConnectionContextCustomizerFactoryTests.SingleServiceConnection.service1");
 	}
@@ -118,13 +118,13 @@ class ServiceConnectionContextCustomizerFactoryTests {
 		private static Container<?> service1 = new MockContainer();
 
 		@ServiceConnection
-		private static Container<?> service2 = new MockContainer();
+		private static Container<?> service2 = new MockContainer2();
 
 		@Nested
 		class NestedClass {
 
 			@ServiceConnection
-			private static Container<?> service3 = new MockContainer();
+			private static Container<?> service3 = new MockContainer3();
 
 		}
 
@@ -161,6 +161,14 @@ class ServiceConnectionContextCustomizerFactoryTests {
 		public String getDockerImageName() {
 			return this.dockerImageName;
 		}
+
+	}
+
+	static class MockContainer2 extends MockContainer {
+
+	}
+
+	static class MockContainer3 extends MockContainer {
 
 	}
 

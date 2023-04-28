@@ -16,8 +16,8 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,6 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.test.context.MergedContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -65,7 +64,7 @@ class ServiceConnectionContextCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		this.beanNameSuffix = "MyBean";
+		this.beanNameSuffix = "test";
 		this.origin = mock(Origin.class);
 		this.container = mock(PostgreSQLContainer.class);
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
@@ -77,7 +76,7 @@ class ServiceConnectionContextCustomizerTests {
 
 	@Test
 	void customizeContextRegistersServiceConnections() {
-		ServiceConnectionContextCustomizer customizer = new ServiceConnectionContextCustomizer(List.of(this.source),
+		ServiceConnectionContextCustomizer customizer = new ServiceConnectionContextCustomizer(Set.of(this.source),
 				this.factories);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		DefaultListableBeanFactory beanFactory = spy(new DefaultListableBeanFactory());
@@ -89,22 +88,10 @@ class ServiceConnectionContextCustomizerTests {
 		customizer.customizeContext(context, mergedConfig);
 		ArgumentCaptor<BeanDefinition> beanDefinitionCaptor = ArgumentCaptor.forClass(BeanDefinition.class);
 		then(beanFactory).should()
-			.registerBeanDefinition(eq("testJdbcConnectionDetailsForMyBean"), beanDefinitionCaptor.capture());
+			.registerBeanDefinition(eq("testJdbcConnectionDetailsForTest"), beanDefinitionCaptor.capture());
 		RootBeanDefinition beanDefinition = (RootBeanDefinition) beanDefinitionCaptor.getValue();
 		assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
 		assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
-	}
-
-	@Test
-	void customizeContextWhenFactoriesHasNoConnectionDetailsThrowsException() {
-		ServiceConnectionContextCustomizer customizer = new ServiceConnectionContextCustomizer(List.of(this.source),
-				this.factories);
-		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
-		DefaultListableBeanFactory beanFactory = spy(new DefaultListableBeanFactory());
-		given(context.getBeanFactory()).willReturn(beanFactory);
-		MergedContextConfiguration mergedConfig = mock(MergedContextConfiguration.class);
-		assertThatIllegalStateException().isThrownBy(() -> customizer.customizeContext(context, mergedConfig))
-			.withMessageStartingWith("No connection details created for @ServiceConnection source");
 	}
 
 	/**

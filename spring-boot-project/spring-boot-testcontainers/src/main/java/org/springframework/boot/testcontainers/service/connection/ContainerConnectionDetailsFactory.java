@@ -82,7 +82,7 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 			Class<?>[] generics = resolveGenerics();
 			Class<?> connectionDetailsType = generics[0];
 			Class<?> containerType = generics[1];
-			if (source.accepts(this.connectionName, connectionDetailsType, containerType)) {
+			if (source.matches(this.connectionName, connectionDetailsType, containerType)) {
 				return getContainerConnectionDetails(source);
 			}
 		}

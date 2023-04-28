@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.testcontainers.ImportTestcontainers;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
@@ -46,7 +47,7 @@ class ServiceConnectionAutoConfigurationTests {
 	@Test
 	void whenNoExistingBeansRegistersServiceConnection() {
 		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-			applicationContext.register(WithNoExtraAutoConfiguration.class, ContainerConfiguration.class);
+			applicationContext.register(WithNoExtraAutoConfiguration.class, Testcontainers.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
 			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
@@ -57,7 +58,7 @@ class ServiceConnectionAutoConfigurationTests {
 	@Test
 	void whenHasExistingAutoConfigurationRegistersReplacement() {
 		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-			applicationContext.register(WithRedisAutoConfiguration.class, ContainerConfiguration.class);
+			applicationContext.register(WithRedisAutoConfiguration.class, Testcontainers.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
 			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
@@ -69,7 +70,7 @@ class ServiceConnectionAutoConfigurationTests {
 	void whenHasUserConfigurationDoesNotRegisterReplacement() {
 		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
 			applicationContext.register(UserConfiguration.class, WithRedisAutoConfiguration.class,
-					ContainerConfiguration.class);
+					Testcontainers.class);
 			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 			applicationContext.refresh();
 			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
@@ -89,18 +90,15 @@ class ServiceConnectionAutoConfigurationTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	static class ContainerConfiguration {
+	@ImportTestcontainers
+	static class Testcontainers {
 
-		@Bean
 		@ServiceConnection
-		static RedisContainer redisContainer() {
-			return new RedisContainer();
-		}
+		static RedisContainer redisContainer = new RedisContainer();
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@Configuration
 	static class UserConfiguration {
 
 		@Bean

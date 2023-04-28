@@ -68,7 +68,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = ElasticsearchContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "othername";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "othername";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "myname";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "postgres";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -127,7 +127,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -136,7 +136,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test

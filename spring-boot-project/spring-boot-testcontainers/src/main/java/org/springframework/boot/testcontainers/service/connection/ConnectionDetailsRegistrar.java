@@ -37,23 +37,22 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Class used to register bean definitions from a list of
+ * Class used to register {@link ConnectionDetails} bean definitions from
  * {@link ContainerConnectionSource} instances.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ContainerConnectionSourceRegistrar {
+class ConnectionDetailsRegistrar {
 
-	private static final Log logger = LogFactory.getLog(ContainerConnectionSourceRegistrar.class);
+	private static final Log logger = LogFactory.getLog(ConnectionDetailsRegistrar.class);
 
 	private final ListableBeanFactory beanFactory;
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	ContainerConnectionSourceRegistrar(ListableBeanFactory beanFactory,
-			ConnectionDetailsFactories connectionDetailsFactories) {
+	ConnectionDetailsRegistrar(ListableBeanFactory beanFactory, ConnectionDetailsFactories connectionDetailsFactories) {
 		this.beanFactory = beanFactory;
 		this.connectionDetailsFactories = connectionDetailsFactories;
 	}
