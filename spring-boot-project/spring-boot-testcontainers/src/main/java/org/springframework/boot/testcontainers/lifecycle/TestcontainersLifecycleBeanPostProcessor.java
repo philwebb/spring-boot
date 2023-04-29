@@ -16,14 +16,27 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.testcontainers.containers.ContainerState;
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link BeanPostProcessor} to manage the lifecycle of {@link Startable startable
  * containers}.
+ * <p>
+ * As well as starting containers, this {@link BeanPostProcessor} will also ensure that
+ * all containers are started as early as possible in the
+ * {@link ConfigurableListableBeanFactory#preInstantiateSingletons() pre-instantiate
+ * singletons} phase.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -31,12 +44,36 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  */
 class TestcontainersLifecycleBeanPostProcessor implements BeanPostProcessor {
 
+	private static final Log logger = LogFactory.getLog(TestcontainersLifecycleBeanPostProcessor.class);
+
+	private final ConfigurableApplicationContext applicationContext;
+
+	private AtomicBoolean initializedContainers = new AtomicBoolean();
+
+	TestcontainersLifecycleBeanPostProcessor(ConfigurableApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof Startable startable) {
 			startable.start();
 		}
+		if (this.applicationContext.getBeanFactory().isConfigurationFrozen()) {
+			initializeContainers();
+		}
 		return bean;
+	}
+
+	private void initializeContainers() {
+		if (this.initializedContainers.compareAndSet(false, true)) {
+			ConfigurableListableBeanFactory beanFactory = this.applicationContext.getBeanFactory();
+			String[] beanNames = beanFactory.getBeanNamesForType(ContainerState.class, false, false);
+			for (String beanName : beanNames) {
+				logger.debug(LogMessage.format("Initializing container bean '%s'", beanName));
+				beanFactory.getBean(beanName);
+			}
+		}
 	}
 
 }

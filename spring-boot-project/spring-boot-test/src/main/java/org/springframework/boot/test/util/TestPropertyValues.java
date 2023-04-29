@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -39,6 +40,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * Test utilities for adding properties. Properties can be applied to a Spring
@@ -67,6 +69,12 @@ public final class TestPropertyValues {
 	 */
 	public TestPropertyValues and(String... pairs) {
 		return and(Arrays.stream(pairs), Pair::parse);
+	}
+
+	public TestPropertyValues and(String name, ThrowingSupplier<?> valueSupplier) {
+		Map<String, Object> properties = new LinkedHashMap<>(this.properties);
+		properties.put(name, new SuppliedValue(valueSupplier));
+		return new TestPropertyValues(properties);
 	}
 
 	/**
@@ -203,13 +211,19 @@ public final class TestPropertyValues {
 		if (sources.contains(name)) {
 			PropertySource<?> propertySource = sources.get(name);
 			if (propertySource.getClass() == type.getSourceClass()) {
-				((Map<String, Object>) propertySource.getSource()).putAll(this.properties);
+				addToMap((Map<String, Object>) propertySource.getSource());
 				return;
 			}
 		}
-		Map<String, Object> source = new LinkedHashMap<>(this.properties);
+		Map<String, Object> source = new LinkedHashMap<>(this.properties.size());
+		addToMap(source);
 		sources.addFirst((type.equals(Type.MAP) ? new MapPropertySource(name, source)
 				: new SystemEnvironmentPropertySource(name, source)));
+	}
+
+	private void addToMap(Map<String, Object> map) {
+		this.properties.forEach((name, value) -> map.put(name,
+				(value instanceof SuppliedValue suppliedValue) ? suppliedValue.supplier().get() : value));
 	}
 
 	/**
@@ -222,6 +236,10 @@ public final class TestPropertyValues {
 	 */
 	public static TestPropertyValues of(String... pairs) {
 		return of(Stream.of(pairs));
+	}
+
+	public static TestPropertyValues of(String name, ThrowingSupplier<?> valueSupplier) {
+		return empty().and(name, valueSupplier);
 	}
 
 	/**
@@ -407,6 +425,13 @@ public final class TestPropertyValues {
 			}
 			return (String) System.getProperties().setProperty(name, value);
 		}
+
+	}
+
+	/**
+	 * Holds a value that is supplied when actually added to the {@link Environment}.
+	 */
+	private static record SuppliedValue(Supplier<?> supplier) {
 
 	}
 

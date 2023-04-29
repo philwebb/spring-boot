@@ -33,7 +33,8 @@ public class TestcontainersLifecycleApplicationContextInitializer
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.getBeanFactory().addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor());
+		applicationContext.getBeanFactory()
+			.addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor(applicationContext));
 	}
 
 }

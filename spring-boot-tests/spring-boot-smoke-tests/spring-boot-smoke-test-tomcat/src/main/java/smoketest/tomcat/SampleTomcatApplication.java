@@ -48,6 +48,8 @@ public class SampleTomcatApplication {
 	}
 
 	public static void main(String[] args) {
+		SpringApplication application = new SpringApplication();
+		application.setAddCommandLineProperties(false);
 		SpringApplication.run(SampleTomcatApplication.class, args);
 	}
 

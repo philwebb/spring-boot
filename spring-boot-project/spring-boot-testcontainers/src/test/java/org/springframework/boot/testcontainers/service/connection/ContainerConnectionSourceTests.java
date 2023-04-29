@@ -46,7 +46,7 @@ class ContainerConnectionSourceTests {
 
 	private Origin origin;
 
-	private JdbcDatabaseContainer<?> container;
+	private PostgreSQLContainer<?> container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -59,8 +59,8 @@ class ContainerConnectionSourceTests {
 		this.container = mock(PostgreSQLContainer.class);
 		given(this.container.getDockerImageName()).willReturn("postgres");
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", "", "type", new Class<?>[0]));
-		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, this.container,
-				this.annotation);
+		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
+				this.container::getDockerImageName, this.annotation, () -> this.container);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = ElasticsearchContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "othername";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "othername";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "myname";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = "postgres";
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -127,7 +127,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isFalse();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isFalse();
 	}
 
 	@Test
@@ -136,7 +136,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class ContainerConnectionSourceTests {
 		String connectionName = null;
 		Class<?> connectionDetailsType = JdbcConnectionDetails.class;
 		Class<?> containerType = JdbcDatabaseContainer.class;
-		assertThat(this.source.accepts(connectionName, connectionDetailsType, containerType)).isTrue();
+		assertThat(this.source.matches(connectionName, connectionDetailsType, containerType)).isTrue();
 	}
 
 	@Test
@@ -158,8 +158,8 @@ class ContainerConnectionSourceTests {
 	}
 
 	@Test
-	void getContainerReturnsContainer() {
-		assertThat(this.source.getContainer()).isSameAs(this.container);
+	void getContainerSupplierReturnsSupplierForContainer() {
+		assertThat(this.source.getContainerSupplier().get()).isSameAs(this.container);
 	}
 
 	@Test
@@ -169,15 +169,15 @@ class ContainerConnectionSourceTests {
 
 	private void setupSourceAnnotatedWithName(String name) {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", name, "type", new Class<?>[0]));
-		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, this.container,
-				this.annotation);
+		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
+				this.container::getDockerImageName, this.annotation, () -> this.container);
 	}
 
 	private void setupSourceAnnotatedWithType(Class<?> type) {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "", "type", new Class<?>[] { type }));
-		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, this.container,
-				this.annotation);
+		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
+				this.container::getDockerImageName, this.annotation, () -> this.container);
 	}
 
 }
