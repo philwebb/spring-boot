@@ -53,6 +53,9 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
+		if (ClassUtils.isPresent("org.slf4j.MDC", this.classLoader)) {
+			new MappedDiagnosticContextInitializer().initialize(initializationContext);
+		}
 		if (StringUtils.hasLength(configLocation)) {
 			initializeWithSpecificConfig(initializationContext, configLocation, logFile);
 			return;

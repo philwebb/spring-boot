@@ -69,6 +69,7 @@ class DefaultLogbackConfiguration {
 
 	private void defaults(LogbackConfigurator config) {
 		config.conversionRule("clr", ColorConverter.class);
+		config.conversionRule("correlationId", CorrelationIdConverter.class);
 		config.conversionRule("pad", ValuePaddingConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);

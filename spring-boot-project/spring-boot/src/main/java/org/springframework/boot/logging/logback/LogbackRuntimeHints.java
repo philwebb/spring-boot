@@ -59,7 +59,8 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 
 	private void registerHintsForSpringBootConverters(ReflectionHints reflection) {
 		registerForPublicConstructorInvocation(reflection, ColorConverter.class,
-				ExtendedWhitespaceThrowableProxyConverter.class, WhitespaceThrowableProxyConverter.class);
+				ExtendedWhitespaceThrowableProxyConverter.class, WhitespaceThrowableProxyConverter.class,
+				CorrelationIdConverter.class);
 	}
 
 	private void registerForPublicConstructorInvocation(ReflectionHints reflection, Class<?>... classes) {
