@@ -169,8 +169,7 @@
       "name": "logging.pattern.correlation",
       "type": "java.lang.String",
       "description": "Appender pattern for log correlation. Supported only with the default Logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.dateformat",

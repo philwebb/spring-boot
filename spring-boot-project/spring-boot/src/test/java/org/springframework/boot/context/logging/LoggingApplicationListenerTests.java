@@ -92,6 +92,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Ben Hale
  * @author Fahim Farook
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("log4j*.jar")

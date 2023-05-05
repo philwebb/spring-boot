@@ -22,6 +22,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
@@ -109,7 +110,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	@Override
 	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
-		return new LogbackLoggingSystemProperties(environment);
+		return new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	@Override
@@ -223,7 +224,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		Environment environment = initializationContext.getEnvironment();
 		// Apply system properties directly in case the same JVM runs multiple apps
-		new LogbackLoggingSystemProperties(environment, context::putProperty).apply(logFile);
+		new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), context::putProperty)
+			.apply(logFile);
 		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
 				: new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(logFile).apply(configurator);
@@ -423,6 +425,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			.getObject(key);
 		context.removeObject(key);
 		return contribution;
+	}
+
+	private Function<String, String> getDefaultValueResolver(Environment environment) {
+		return (name) -> {
+			if (LoggingSystemProperties.LOG_CORRELATION_PATTERN.equals(name)
+					&& environment.getProperty("logging.mdc.expect-correlation-id", Boolean.class, false)) {
+				return "%correlationId";
+			}
+			return null;
+		};
 	}
 
 	/**

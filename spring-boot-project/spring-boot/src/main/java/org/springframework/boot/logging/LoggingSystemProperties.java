@@ -19,6 +19,7 @@ package org.springframework.boot.logging;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -114,6 +115,8 @@ public class LoggingSystemProperties {
 
 	private final Environment environment;
 
+	private final Function<String, String> defaultValueResolver;
+
 	private final BiConsumer<String, String> setter;
 
 	/**
@@ -121,20 +124,34 @@ public class LoggingSystemProperties {
 	 * @param environment the source environment
 	 */
 	public LoggingSystemProperties(Environment environment) {
-		this(environment, systemPropertySetter);
+		this(environment, null);
 	}
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
-	 * @param setter setter used to apply the property
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
 	 * @since 2.4.2
 	 */
 	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
+		this(environment, null, setter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param defaultValueResolver function used to resolve default values or {@code null}
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
+	 * @since 3.1.0
+	 */
+	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
+			BiConsumer<String, String> setter) {
 		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(setter, "Setter must not be null");
 		this.environment = environment;
-		this.setter = setter;
+		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
+		this.setter = (setter != null) ? setter : systemPropertySetter;
 	}
 
 	protected Charset getDefaultCharset() {
@@ -185,6 +202,7 @@ public class LoggingSystemProperties {
 	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName,
 			String defaultValue) {
 		String value = resolver.getProperty(propertyName);
+		value = (value != null) ? value : this.defaultValueResolver.apply(systemPropertyName);
 		value = (value != null) ? value : defaultValue;
 		setSystemProperty(systemPropertyName, value);
 	}
