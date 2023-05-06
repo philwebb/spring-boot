@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -60,9 +62,9 @@ public class CorrelationIdFormatter {
 	 * Default {@link CorrelationIdFormatter} used when no pattern is specified.
 	 */
 	public static final CorrelationIdFormatter DEFAULT = CorrelationIdFormatter
-		.of("-,applicationCorrelationId,traceId|32,spanId|16");
+		.of("-,[applicationCorrelationId],traceId(32),spanId(16)");
 
-	public static final Function<String, String> EMPTY_CONTEXT = (key) -> null;
+	public static final Function<String, String> EMPTY_RESOLVER = (name) -> null;
 
 	private final Style style;
 
@@ -74,26 +76,26 @@ public class CorrelationIdFormatter {
 	}
 
 	/**
-	 * Format a correlation from the values in the given context.
-	 * @param context the context providing named values
+	 * Format a correlation from the values in the given resolver.
+	 * @param resolver the resolver used to resolve named values
 	 * @return a formatted correlation id
 	 */
-	public String format(Function<String, String> context) {
+	public String format(Function<String, String> resolver) {
 		StringBuilder result = new StringBuilder();
-		formatTo(context, result);
+		formatTo(resolver, result);
 		return result.toString();
 	}
 
 	/**
-	 * Format a correlation from the values in the given context and append it to the
+	 * Format a correlation from the values in the given resolver and append it to the
 	 * given {@link Appendable}.
-	 * @param context the context providing named values
+	 * @param resolver the resolver used to resolve named values
 	 * @param appendable the appendable for the formatted correlation id
 	 */
-	public void formatTo(Function<String, String> context, Appendable appendable) {
-		context = (context != null) ? context : CorrelationIdFormatter.EMPTY_CONTEXT;
+	public void formatTo(Function<String, String> resolver, Appendable appendable) {
+		resolver = (resolver != null) ? resolver : CorrelationIdFormatter.EMPTY_RESOLVER;
 		try {
-			this.style.formatTo(context, this.namedItems, appendable);
+			this.style.formatTo(resolver, this.namedItems, appendable);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -180,8 +182,8 @@ public class CorrelationIdFormatter {
 			this.code = code;
 		}
 
-		abstract void formatTo(Function<String, String> context, List<NamedItem> namedItems,
-				Appendable appendable) throws IOException;
+		abstract void formatTo(Function<String, String> resolver, List<NamedItem> namedItems, Appendable appendable)
+				throws IOException;
 
 		static Style forCode(String code) {
 			Optional<Style> result = Arrays.stream(values())
@@ -195,19 +197,27 @@ public class CorrelationIdFormatter {
 	/**
 	 * A single named item.
 	 */
-	private static record NamedItem(String name, int length) {
+	private static record NamedItem(String name, boolean optional, int length) {
+
+		private static final Pattern regex = Pattern.compile("^([\\w\\[\\]]+)(?:\\((.*)\\))?$");
 
 		@Override
 		public String toString() {
-			return (length() > 0) ? "%s|%s".formatted(name(), length()) : name();
+			String result = (!optional()) ? this.name : "[%s]".formatted(this.name);
+			return (length() != 0) ? "%s(%s)".formatted(result, length()) : result;
+
 		}
 
 		public static NamedItem of(String pattern) {
 			try {
-				String[] split = pattern.split("\\|");
-				Assert.state(split.length == 1 || split.length == 2, "Pattern must only have single '|'");
-				return (split.length != 1) ? new NamedItem(split[0], Integer.parseInt(split[1]))
-						: new NamedItem(split[0], 0);
+				Matcher matcher = regex.matcher(pattern);
+				Assert.state(matcher.matches(), () -> "Malformed pattern '%s".formatted(pattern));
+				String name = matcher.group(1);
+				String options = matcher.group(2);
+				boolean optional = name.contains("[") || name.contains("]");
+				name = (!optional) ? name : name.replace("[", "").replace("]", "");
+				int length = (options != null) ? Integer.parseInt(options) : 0;
+				return new NamedItem(name, optional, length);
 			}
 			catch (RuntimeException ex) {
 				throw new IllegalStateException("Malformed pattern '%s'".formatted(pattern), ex);

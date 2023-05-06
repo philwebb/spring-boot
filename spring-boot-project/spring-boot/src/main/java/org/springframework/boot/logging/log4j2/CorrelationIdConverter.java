@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.function.Function;
+
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.pattern.ConverterKeys;
@@ -23,6 +25,7 @@ import org.apache.logging.log4j.core.pattern.LogEventPatternConverter;
 import org.apache.logging.log4j.core.pattern.MdcPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.util.PerformanceSensitive;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.logging.CorrelationIdFormatter;
@@ -51,7 +54,13 @@ public class CorrelationIdConverter extends LogEventPatternConverter {
 	@Override
 	public void format(LogEvent event, StringBuilder toAppendTo) {
 		ReadOnlyStringMap contextData = event.getContextData();
-		this.formatter.formatTo((contextData != null) ? contextData::getValue : null, toAppendTo);
+		PropertiesUtil properties = PropertiesUtil.getProperties();
+		Function<String, String> resolver = (name) -> {
+			String value = (contextData != null) ? contextData.getValue(name) : null;
+			value = (value != null) ? value : properties.getStringProperty(name);
+			return value;
+		};
+		this.formatter.formatTo(resolver, toAppendTo);
 	}
 
 	/**

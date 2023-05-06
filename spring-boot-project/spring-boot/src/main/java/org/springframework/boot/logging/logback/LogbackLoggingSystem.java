@@ -187,6 +187,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, logFile)) {
 			super.initialize(initializationContext, configLocation, logFile);
 		}
+		loggerContext.putObject(Environment.class.getName(), initializationContext.getEnvironment());
 		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {

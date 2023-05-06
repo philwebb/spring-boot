@@ -89,7 +89,7 @@ class CorrelationIdFormatterTests {
 
 	@Test
 	void formatWhenHasCustomPattern() {
-		CorrelationIdFormatter formatter = CorrelationIdFormatter.of("-,a,b|4,c|2");
+		CorrelationIdFormatter formatter = CorrelationIdFormatter.of("-,a,b(4),c(2)");
 		Map<String, String> context = new HashMap<>();
 		context.put("a", "spring");
 		context.put("b", "boot");
@@ -137,22 +137,20 @@ class CorrelationIdFormatterTests {
 
 	@Test
 	void ofWhenNamedItemLengthIsNotNumber() {
-		assertThatIllegalStateException().isThrownBy(() -> CorrelationIdFormatter.of("-,name|bad"))
-			.withMessage("Malformed pattern 'name|bad'")
+		assertThatIllegalStateException().isThrownBy(() -> CorrelationIdFormatter.of("-,name(bad)"))
+			.withMessage("Malformed pattern 'name(bad)'")
 			.withCauseInstanceOf(NumberFormatException.class);
 	}
 
 	@Test
-	void ofWhenNamedItemHasTooManyBars() {
+	void ofWhenNamedItemIsMalformed() {
 		assertThatIllegalStateException().isThrownBy(() -> CorrelationIdFormatter.of("-,name||123"))
-			.withMessage("Malformed pattern 'name||123'")
-			.havingCause()
-			.withMessage("Pattern must only have single '|'");
+			.withMessage("Malformed pattern 'name||123'");
 	}
 
 	@Test
 	void ofWhenHasWhitespace() {
-		CorrelationIdFormatter formatter = CorrelationIdFormatter.of(" - , a,  b|4,  c|2");
+		CorrelationIdFormatter formatter = CorrelationIdFormatter.of(" - , a,  b(4),  c(2)");
 		Map<String, String> context = new HashMap<>();
 		context.put("a", "spring");
 		context.put("b", "boot");
@@ -163,7 +161,7 @@ class CorrelationIdFormatterTests {
 
 	@Test
 	void toStringReturnsPatternString() {
-		assertThat(CorrelationIdFormatter.DEFAULT).hasToString("-,applicationCorrelationId,traceId|32,spanId|16");
+		assertThat(CorrelationIdFormatter.DEFAULT).hasToString("-,[applicationCorrelationId],traceId(32),spanId(16)");
 	}
 
 }

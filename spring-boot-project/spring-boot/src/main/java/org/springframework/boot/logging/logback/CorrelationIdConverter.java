@@ -23,6 +23,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.DynamicConverter;
 
 import org.springframework.boot.logging.CorrelationIdFormatter;
+import org.springframework.core.env.Environment;
 
 /**
  * Logback {@link DynamicConverter} to convert a {@link CorrelationIdFormatter} pattern
@@ -55,7 +56,14 @@ public class CorrelationIdConverter extends DynamicConverter<ILoggingEvent> {
 			return "";
 		}
 		Map<String, String> mdc = event.getMDCPropertyMap();
-		return this.formatter.format((mdc != null) ? mdc::get : null);
+		Environment environment = (Environment) getContext().getObject(Environment.class.getName());
+		return this.formatter.format((name) -> {
+			String value = (mdc != null) ? mdc.get(name) : null;
+			if (value == null) {
+				value = (environment != null) ? environment.getProperty(name) : null;
+			}
+			return value;
+		});
 	}
 
 }
