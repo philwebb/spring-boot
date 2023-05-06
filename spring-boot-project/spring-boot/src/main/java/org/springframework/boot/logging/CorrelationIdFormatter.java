@@ -51,8 +51,11 @@ import org.springframework.util.StringUtils;
  * The following styles are currently supported by the formatter:
  * <ul>
  * <li>'-' - Formats the correlation ID as a dash separated value contained in square
- * brackets with a trailing slash. Missing named items that have a defined length will be
- * replaced '#' characters.</li>
+ * brackets with a trailing space. Missing named items that have a defined length will be
+ * replaced '.' characters.</li>
+ * <li>'|' - Formats the correlation ID as a '|' separated value contained in square
+ * brackets with a trailing space. Missing named items that have a defined length will be
+ * replaced blank characters.</li>
  * </ul>
  *
  * @author Phillip Webb
@@ -68,11 +71,21 @@ public class CorrelationIdFormatter {
 		.toList();
 
 	/**
+	 * {@link CorrelationIdFormatter} using the '-' style with default named items.
+	 */
+	public static final CorrelationIdFormatter DASHED = CorrelationIdFormatter.of("-");
+
+	/**
+	 * {@link CorrelationIdFormatter} using the '|' style with default named items.
+	 */
+	public static final CorrelationIdFormatter BARS = CorrelationIdFormatter.of("-");
+
+	/**
 	 * Default {@link CorrelationIdFormatter} used when no pattern is specified.
 	 */
-	public static final CorrelationIdFormatter DEFAULT = CorrelationIdFormatter.of("-");
+	public static final CorrelationIdFormatter DEFAULT = DASHED;
 
-	public static final Function<String, String> EMPTY_RESOLVER = (name) -> null;
+	private static final Function<String, String> EMPTY_RESOLVER = (name) -> null;
 
 	private final Style style;
 
@@ -230,7 +243,6 @@ public class CorrelationIdFormatter {
 		public String toString() {
 			String result = (!optional()) ? this.name : "[%s]".formatted(this.name);
 			return (length() != 0) ? "%s(%s)".formatted(result, length()) : result;
-
 		}
 
 		public static NamedItem of(String pattern) {
