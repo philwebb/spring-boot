@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -61,11 +62,15 @@ import org.springframework.util.StringUtils;
  */
 public class CorrelationIdFormatter {
 
+	private static final List<NamedItem> DEFAULT_NAMED_ITEMS = Stream
+		.of("[spring.application.correlation-id]", "traceId(32)", "spanId(16)")
+		.map(NamedItem::of)
+		.toList();
+
 	/**
 	 * Default {@link CorrelationIdFormatter} used when no pattern is specified.
 	 */
-	public static final CorrelationIdFormatter DEFAULT = CorrelationIdFormatter
-		.of("-,[spring.application.correlation-id],traceId(32),spanId(16)");
+	public static final CorrelationIdFormatter DEFAULT = CorrelationIdFormatter.of("-");
 
 	public static final Function<String, String> EMPTY_RESOLVER = (name) -> null;
 
@@ -150,6 +155,9 @@ public class CorrelationIdFormatter {
 		}
 		Iterator<String> iterator = pattern.iterator();
 		Style style = Style.forCode(iterator.next().trim());
+		if (!iterator.hasNext()) {
+			return new CorrelationIdFormatter(style, DEFAULT_NAMED_ITEMS);
+		}
 		List<NamedItem> namedItems = new ArrayList<>(pattern.size() - 1);
 		while (iterator.hasNext()) {
 			namedItems.add(NamedItem.of(iterator.next().trim()));
