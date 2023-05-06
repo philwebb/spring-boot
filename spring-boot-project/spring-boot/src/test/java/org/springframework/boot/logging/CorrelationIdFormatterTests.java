@@ -36,7 +36,7 @@ class CorrelationIdFormatterTests {
 	@Test
 	void defaultFormatWhenHasApplicationCorrelationId() {
 		Map<String, String> context = new HashMap<>();
-		context.put("applicationCorrelationId", "0123456789012345");
+		context.put("spring.application.correlation-id", "0123456789012345");
 		context.put("traceId", "01234567890123456789012345678901");
 		context.put("spanId", "0123456789012345");
 		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
@@ -107,7 +107,7 @@ class CorrelationIdFormatterTests {
 	@Test
 	void formatWhenOnlyResolvesOptional() {
 		Map<String, String> context = new HashMap<>();
-		context.put("applicationCorrelationId", "0123456789012345");
+		context.put("spring.application.correlation-id", "0123456789012345");
 		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
 		assertThat(formatted).isEqualTo("[                                                                ] ");
 		context.put("traceId", "0123456789012345678901234567");
@@ -155,12 +155,6 @@ class CorrelationIdFormatterTests {
 	}
 
 	@Test
-	void ofWhenNamedItemIsMalformed() {
-		assertThatIllegalStateException().isThrownBy(() -> CorrelationIdFormatter.of("-,name||123"))
-			.withMessage("Malformed pattern 'name||123'");
-	}
-
-	@Test
 	void ofWhenHasWhitespace() {
 		CorrelationIdFormatter formatter = CorrelationIdFormatter.of(" - , a,  b(4),  c(2)");
 		Map<String, String> context = new HashMap<>();
@@ -173,7 +167,8 @@ class CorrelationIdFormatterTests {
 
 	@Test
 	void toStringReturnsPatternString() {
-		assertThat(CorrelationIdFormatter.DEFAULT).hasToString("-,[applicationCorrelationId],traceId(32),spanId(16)");
+		assertThat(CorrelationIdFormatter.DEFAULT)
+			.hasToString("-,[spring.application.correlation-id],traceId(32),spanId(16)");
 	}
 
 }

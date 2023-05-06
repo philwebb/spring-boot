@@ -65,7 +65,7 @@ public class CorrelationIdFormatter {
 	 * Default {@link CorrelationIdFormatter} used when no pattern is specified.
 	 */
 	public static final CorrelationIdFormatter DEFAULT = CorrelationIdFormatter
-		.of("-,[applicationCorrelationId],traceId(32),spanId(16)");
+		.of("-,[spring.application.correlation-id],traceId(32),spanId(16)");
 
 	public static final Function<String, String> EMPTY_RESOLVER = (name) -> null;
 
@@ -216,7 +216,7 @@ public class CorrelationIdFormatter {
 	 */
 	private static record NamedItem(String name, boolean optional, int length) {
 
-		private static final Pattern regex = Pattern.compile("^([\\w\\[\\]]+)(?:\\((.*)\\))?$");
+		private static final Pattern regex = Pattern.compile("^(.+?)(?:\\((.*)\\))?$");
 
 		@Override
 		public String toString() {
