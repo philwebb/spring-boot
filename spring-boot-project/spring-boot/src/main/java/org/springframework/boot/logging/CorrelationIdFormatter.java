@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -65,20 +64,17 @@ import org.springframework.util.StringUtils;
  */
 public class CorrelationIdFormatter {
 
-	private static final List<NamedItem> DEFAULT_NAMED_ITEMS = Stream
-		.of("[spring.application.correlation-id]", "traceId(32)", "spanId(16)")
-		.map(NamedItem::of)
-		.toList();
+	private static final String DEFAULT_NAMED_ITEMS = "[spring.application.correlation-id],traceId(32),spanId(16)";
 
 	/**
 	 * {@link CorrelationIdFormatter} using the '-' style with default named items.
 	 */
-	public static final CorrelationIdFormatter DASHED = CorrelationIdFormatter.of("-");
+	public static final CorrelationIdFormatter DASHED = CorrelationIdFormatter.of("-," + DEFAULT_NAMED_ITEMS);
 
 	/**
 	 * {@link CorrelationIdFormatter} using the '|' style with default named items.
 	 */
-	public static final CorrelationIdFormatter BARS = CorrelationIdFormatter.of("-");
+	public static final CorrelationIdFormatter BARS = CorrelationIdFormatter.of("|," + DEFAULT_NAMED_ITEMS);
 
 	/**
 	 * Default {@link CorrelationIdFormatter} used when no pattern is specified.
@@ -168,8 +164,11 @@ public class CorrelationIdFormatter {
 		}
 		Iterator<String> iterator = pattern.iterator();
 		Style style = Style.forCode(iterator.next().trim());
-		if (!iterator.hasNext()) {
-			return new CorrelationIdFormatter(style, DEFAULT_NAMED_ITEMS);
+		if (pattern.size() == 1) {
+			return switch (style) {
+				case DASHED -> DASHED;
+				case BARS -> BARS;
+			};
 		}
 		List<NamedItem> namedItems = new ArrayList<>(pattern.size() - 1);
 		while (iterator.hasNext()) {
@@ -183,7 +182,7 @@ public class CorrelationIdFormatter {
 	 */
 	private enum Style {
 
-		DEFAULT("-") {
+		DASHED("-") {
 
 			@Override
 			void formatTo(Appendable appendable, Map<NamedItem, String> resolved, boolean blankOutValues)
@@ -199,16 +198,47 @@ public class CorrelationIdFormatter {
 						continue;
 					}
 					if (namedItem.length() > 0) {
-						value = (!StringUtils.hasText(value)) ? ".".repeat(namedItem.length) : value;
+						value = (!StringUtils.hasLength(value)) ? ".".repeat(namedItem.length) : value;
 						padding += namedItem.length() - ((value != null) ? value.length() : 0);
 					}
-					if (StringUtils.hasText(value)) {
+					if (StringUtils.hasLength(value)) {
 						appendable.append((!first) ? "-" : "");
 						appendable.append(value);
 						first = false;
 					}
 				}
 				appendable.append((padding > 0) ? " ".repeat(padding) : "");
+				appendable.append("] ");
+			}
+
+		},
+
+		BARS("|") {
+
+			@Override
+			void formatTo(Appendable appendable, Map<NamedItem, String> resolved, boolean blankOutValues)
+					throws IOException {
+				appendable.append("[");
+				boolean first = true;
+				for (Map.Entry<NamedItem, String> entry : resolved.entrySet()) {
+					NamedItem namedItem = entry.getKey();
+					String value = entry.getValue();
+					value = (value != null) ? value : "";
+					if (blankOutValues) {
+						value = " ".repeat(value.length());
+					}
+					if (namedItem.length() > 0) {
+						int shortfall = namedItem.length() - value.length();
+						if (shortfall > 0) {
+							value = value + " ".repeat(shortfall);
+						}
+					}
+					if (StringUtils.hasLength(value)) {
+						appendable.append((!first) ? "|" : "");
+						appendable.append(value);
+						first = false;
+					}
+				}
 				appendable.append("] ");
 			}
 

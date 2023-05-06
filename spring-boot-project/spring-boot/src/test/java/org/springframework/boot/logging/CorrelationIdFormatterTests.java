@@ -34,61 +34,139 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class CorrelationIdFormatterTests {
 
 	@Test
-	void defaultFormatWhenHasApplicationCorrelationId() {
+	void formatWithDashedWhenHasApplicationCorrelationId() {
 		Map<String, String> context = new HashMap<>();
 		context.put("spring.application.correlation-id", "0123456789012345");
 		context.put("traceId", "01234567890123456789012345678901");
 		context.put("spanId", "0123456789012345");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		String formatted = CorrelationIdFormatter.DASHED.format(context::get);
 		assertThat(formatted).isEqualTo("[0123456789012345-01234567890123456789012345678901-0123456789012345] ");
 	}
 
 	@Test
-	void defaultFormatWhenDoesNotHaveApplicationCorrelationId() {
+	void formatWithDashedWhenDoesNotHaveApplicationCorrelationId() {
 		Map<String, String> context = new HashMap<>();
 		context.put("traceId", "01234567890123456789012345678901");
 		context.put("spanId", "0123456789012345");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		String formatted = CorrelationIdFormatter.DASHED.format(context::get);
 		assertThat(formatted).isEqualTo("[01234567890123456789012345678901-0123456789012345] ");
 	}
 
 	@Test
-	void defaultFormatWhenHasMissingSpanId() {
+	void formatWithDashedWhenHasMissingSpanId() {
 		Map<String, String> context = new HashMap<>();
 		context.put("traceId", "01234567890123456789012345678901");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		String formatted = CorrelationIdFormatter.DASHED.format(context::get);
 		assertThat(formatted).isEqualTo("[01234567890123456789012345678901-................] ");
 	}
 
 	@Test
-	void defaultFormatWhenHasShortTraceId() {
+	void formatWithDashedWhenHasShortTraceId() {
 		Map<String, String> context = new HashMap<>();
 		context.put("traceId", "0123456789012345678901234567");
 		context.put("spanId", "0123456789012345");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		String formatted = CorrelationIdFormatter.DASHED.format(context::get);
 		assertThat(formatted).isEqualTo("[0123456789012345678901234567-0123456789012345    ] ");
 	}
 
 	@Test
-	void defaultFormatWhenHasShortTraceIdAndLongSpanId() {
+	void formatWithDashedWhenHasShortTraceIdAndLongSpanId() {
 		Map<String, String> context = new HashMap<>();
 		context.put("traceId", "0123456789012345678901234567");
 		context.put("spanId", "012345678901234567");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		String formatted = CorrelationIdFormatter.DASHED.format(context::get);
 		assertThat(formatted).isEqualTo("[0123456789012345678901234567-012345678901234567  ] ");
 	}
 
 	@Test
-	void defaultFormatWhenHasLongSpanId() {
+	void formatWithDashedWhenHasLongSpanId() {
 		Map<String, String> context = new HashMap<>();
 		context.put("traceId", "01234567890123456789012345678901");
 		context.put("spanId", "0123456789012345678901");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		String formatted = CorrelationIdFormatter.DASHED.format(context::get);
 		assertThat(formatted).isEqualTo("[01234567890123456789012345678901-0123456789012345678901] ");
 	}
 
 	@Test
-	void formatWhenHasCustomPattern() {
+	void formatWithDashedWhenOnlyResolvesOptional() {
+		Map<String, String> context = new HashMap<>();
+		context.put("spring.application.correlation-id", "0123456789012345");
+		String formatted1 = CorrelationIdFormatter.DEFAULT.format(context::get);
+		context.put("traceId", "01234567890123456789012345678901");
+		context.put("spanId", "0123456789012345");
+		String formatted2 = CorrelationIdFormatter.DEFAULT.format(context::get);
+		assertThat(formatted1).isEqualTo("[                                                                  ] ");
+		assertThat(formatted2).isEqualTo("[0123456789012345-01234567890123456789012345678901-0123456789012345] ");
+	}
+
+	@Test
+	void formatWithBarsWhenHasApplicationCorrelationId() {
+		Map<String, String> context = new HashMap<>();
+		context.put("spring.application.correlation-id", "0123456789012345");
+		context.put("traceId", "01234567890123456789012345678901");
+		context.put("spanId", "0123456789012345");
+		String formatted = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted).isEqualTo("[0123456789012345|01234567890123456789012345678901|0123456789012345] ");
+	}
+
+	@Test
+	void formatWithBarsWhenDoesNotHaveApplicationCorrelationId() {
+		Map<String, String> context = new HashMap<>();
+		context.put("traceId", "01234567890123456789012345678901");
+		context.put("spanId", "0123456789012345");
+		String formatted = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted).isEqualTo("[01234567890123456789012345678901|0123456789012345] ");
+	}
+
+	@Test
+	void formatWithBarsWhenHasMissingSpanId() {
+		Map<String, String> context = new HashMap<>();
+		context.put("traceId", "01234567890123456789012345678901");
+		String formatted = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted).isEqualTo("[01234567890123456789012345678901|                ] ");
+	}
+
+	@Test
+	void formatWithBarsWhenHasShortTraceId() {
+		Map<String, String> context = new HashMap<>();
+		context.put("traceId", "0123456789012345678901234567");
+		context.put("spanId", "0123456789012345");
+		String formatted = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted).isEqualTo("[0123456789012345678901234567-0123456789012345    ] ");
+	}
+
+	@Test
+	void formatWithBarsWhenHasShortTraceIdAndLongSpanId() {
+		Map<String, String> context = new HashMap<>();
+		context.put("traceId", "0123456789012345678901234567");
+		context.put("spanId", "012345678901234567");
+		String formatted = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted).isEqualTo("[0123456789012345678901234567    |012345678901234567] ");
+	}
+
+	@Test
+	void formatWithBarsWhenHasLongSpanId() {
+		Map<String, String> context = new HashMap<>();
+		context.put("traceId", "01234567890123456789012345678901");
+		context.put("spanId", "0123456789012345678901");
+		String formatted = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted).isEqualTo("[01234567890123456789012345678901|0123456789012345678901] ");
+	}
+
+	@Test
+	void formatWithBarsWhenOnlyResolvesOptional() {
+		Map<String, String> context = new HashMap<>();
+		context.put("spring.application.correlation-id", "0123456789012345");
+		String formatted1 = CorrelationIdFormatter.BARS.format(context::get);
+		context.put("traceId", "01234567890123456789012345678901");
+		context.put("spanId", "0123456789012345");
+		String formatted2 = CorrelationIdFormatter.BARS.format(context::get);
+		assertThat(formatted1).isEqualTo("[                |                                |                ] ");
+		assertThat(formatted2).isEqualTo("[0123456789012345|01234567890123456789012345678901|0123456789012345] ");
+	}
+
+	@Test
+	void formatWithCustomPattern() {
 		CorrelationIdFormatter formatter = CorrelationIdFormatter.of("-,a,b(4),c(2)");
 		Map<String, String> context = new HashMap<>();
 		context.put("a", "spring");
@@ -100,20 +178,8 @@ class CorrelationIdFormatterTests {
 
 	@Test
 	void formatWhenContextIsNullUsesEmptyContext() {
-		String formatted = CorrelationIdFormatter.DEFAULT.format(null);
+		String formatted = CorrelationIdFormatter.DASHED.format(null);
 		assertThat(formatted).isEqualTo("[                                                ] ");
-	}
-
-	@Test
-	void formatWhenOnlyResolvesOptional() {
-		Map<String, String> context = new HashMap<>();
-		context.put("spring.application.correlation-id", "0123456789012345");
-		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
-		assertThat(formatted).isEqualTo("[                                                                ] ");
-		context.put("traceId", "0123456789012345678901234567");
-		context.put("spanId", "0123456789012345");
-		formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
-		assertThat(formatted).isEqualTo("[0123456789012345-0123456789012345678901234567-0123456789012345    ] ");
 	}
 
 	@Test
