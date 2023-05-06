@@ -193,16 +193,19 @@ public class CorrelationIdFormatter {
 				for (Map.Entry<NamedItem, String> entry : resolved.entrySet()) {
 					NamedItem namedItem = entry.getKey();
 					String value = entry.getValue();
+					value = (value != null) ? value : "";
 					if (blankOutValues) {
-						padding += (!StringUtils.hasLength(value)) ? namedItem.length() : value.length();
-						continue;
+						value = " ".repeat(value.length());
 					}
 					if (namedItem.length() > 0) {
-						value = (!StringUtils.hasLength(value)) ? ".".repeat(namedItem.length) : value;
-						padding += namedItem.length() - ((value != null) ? value.length() : 0);
+						String fill = (!blankOutValues) ? "." : " ";
+						value = (!value.isEmpty()) ? value : fill.repeat(namedItem.length());
+						padding += namedItem.length() - value.length();
 					}
 					if (StringUtils.hasLength(value)) {
-						appendable.append((!first) ? "-" : "");
+						if (!first) {
+							appendable.append((!blankOutValues) ? "-" : " ");
+						}
 						appendable.append(value);
 						first = false;
 					}
