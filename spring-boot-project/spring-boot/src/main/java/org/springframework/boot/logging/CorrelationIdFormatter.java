@@ -23,7 +23,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -95,11 +98,20 @@ public class CorrelationIdFormatter {
 	public void formatTo(Function<String, String> resolver, Appendable appendable) {
 		resolver = (resolver != null) ? resolver : CorrelationIdFormatter.EMPTY_RESOLVER;
 		try {
-			this.style.formatTo(resolver, this.namedItems, appendable);
+			Map<NamedItem, String> resolved = new LinkedHashMap<>(this.namedItems.size());
+			for (NamedItem namedItem : this.namedItems) {
+				resolved.put(namedItem, resolver.apply(namedItem.name()));
+			}
+			boolean blankOutValues = !resolved.entrySet().stream().anyMatch(this::resolvedNonOptionalValue);
+			this.style.formatTo(appendable, resolved, blankOutValues);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	private boolean resolvedNonOptionalValue(Entry<NamedItem, String> entry) {
+		return !entry.getKey().optional() && StringUtils.hasText(entry.getValue());
 	}
 
 	@Override
@@ -153,15 +165,20 @@ public class CorrelationIdFormatter {
 		DEFAULT("-") {
 
 			@Override
-			void formatTo(Function<String, String> context, List<NamedItem> namedItems, Appendable appendable)
+			void formatTo(Appendable appendable, Map<NamedItem, String> resolved, boolean blankOutValues)
 					throws IOException {
 				int padding = 0;
 				boolean first = true;
 				appendable.append("[");
-				for (NamedItem namedItem : namedItems) {
-					String value = context.apply(namedItem.name());
+				for (Map.Entry<NamedItem, String> entry : resolved.entrySet()) {
+					NamedItem namedItem = entry.getKey();
+					String value = entry.getValue();
+					if (blankOutValues) {
+						padding += (!StringUtils.hasLength(value)) ? namedItem.length() : value.length();
+						continue;
+					}
 					if (namedItem.length() > 0) {
-						value = (!StringUtils.hasText(value)) ? "#".repeat(namedItem.length) : value;
+						value = (!StringUtils.hasText(value)) ? ".".repeat(namedItem.length) : value;
 						padding += namedItem.length() - ((value != null) ? value.length() : 0);
 					}
 					if (StringUtils.hasText(value)) {
@@ -182,7 +199,7 @@ public class CorrelationIdFormatter {
 			this.code = code;
 		}
 
-		abstract void formatTo(Function<String, String> resolver, List<NamedItem> namedItems, Appendable appendable)
+		abstract void formatTo(Appendable appendable, Map<NamedItem, String> resolved, boolean blankOutValues)
 				throws IOException;
 
 		static Style forCode(String code) {

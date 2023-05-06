@@ -57,7 +57,7 @@ class CorrelationIdFormatterTests {
 		Map<String, String> context = new HashMap<>();
 		context.put("traceId", "01234567890123456789012345678901");
 		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
-		assertThat(formatted).isEqualTo("[01234567890123456789012345678901-################] ");
+		assertThat(formatted).isEqualTo("[01234567890123456789012345678901-................] ");
 	}
 
 	@Test
@@ -101,7 +101,19 @@ class CorrelationIdFormatterTests {
 	@Test
 	void formatWhenContextIsNullUsesEmptyContext() {
 		String formatted = CorrelationIdFormatter.DEFAULT.format(null);
-		assertThat(formatted).isEqualTo("[################################-################] ");
+		assertThat(formatted).isEqualTo("[                                                ] ");
+	}
+
+	@Test
+	void formatWhenOnlyResolvesOptional() {
+		Map<String, String> context = new HashMap<>();
+		context.put("applicationCorrelationId", "0123456789012345");
+		String formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		assertThat(formatted).isEqualTo("[                                                                ] ");
+		context.put("traceId", "0123456789012345678901234567");
+		context.put("spanId", "0123456789012345");
+		formatted = CorrelationIdFormatter.DEFAULT.format(context::get);
+		assertThat(formatted).isEqualTo("[0123456789012345-0123456789012345678901234567-0123456789012345    ] ");
 	}
 
 	@Test
