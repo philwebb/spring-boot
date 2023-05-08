@@ -16,53 +16,86 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.logging.CorrelationIdFormatter;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link EnvironmentPostProcessor} to add correlation pattern to the logging.
+ * {@link EnvironmentPostProcessor} to add a {@link PropertySource} to support log
+ * correlation IDs.
+ * <p>
+ * Support for following properties are added:
+ * <ul>
+ * <li>{@value LoggingSystem#EXPECT_CORRELATION_ID_PROPERTY} for {@link LoggingSystem}
+ * support.</li>
+ * <li>{@value CorrelationIdFormatter#APPLICATION_PROPERTY} for
+ * {@link CorrelationIdFormatter} support.</li>
+ * </ul>
  *
  * @author Jonatan Ivanov
+ * @author Phillip Webb
  */
 class LogCorrelationEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-	private static final String CORRELATION_PATTERN_KEY = "logging.pattern.correlation";
-
-	private static final String CORRELATION_PATTERN_DEFAULT_VALUE = "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]";
-
-	private static final String TRACER_CLASS_NAME = "io.micrometer.tracing.Tracer";
-
-	private static final String TRACING_ENABLED_KEY = "management.tracing.enabled";
-
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		if (shouldSetCorrelationPattern(environment, application.getClassLoader())) {
-			Map<String, Object> properties = Map.of(CORRELATION_PATTERN_KEY, CORRELATION_PATTERN_DEFAULT_VALUE);
-			environment.getPropertySources().addLast(new MapPropertySource("extraLoggingProperties", properties));
+		if (ClassUtils.isPresent("io.micrometer.tracing.Tracer", application.getClassLoader())) {
+			environment.getPropertySources().addLast(new LogCorrelationPropertySource(this, environment));
 		}
 	}
 
-	private boolean shouldSetCorrelationPattern(ConfigurableEnvironment environment, ClassLoader classLoader) {
-		return isTracerPresent(classLoader) && isTracingEnabled(environment)
-				&& getCorrelationPattern(environment) == null;
-	}
+	/**
+	 * Log correlation {@link PropertySource}.
+	 */
+	private static class LogCorrelationPropertySource extends PropertySource<Object> {
 
-	private boolean isTracerPresent(ClassLoader classLoader) {
-		return ClassUtils.isPresent(TRACER_CLASS_NAME, classLoader);
-	}
+		private static final String NAME = "logCorrelation";
 
-	private boolean isTracingEnabled(ConfigurableEnvironment environment) {
-		String tracingEnabledProperty = environment.getProperty(TRACING_ENABLED_KEY);
-		return tracingEnabledProperty == null || Boolean.parseBoolean(tracingEnabledProperty);
-	}
+		private final Environment environment;
 
-	private String getCorrelationPattern(ConfigurableEnvironment environment) {
-		return environment.getProperty(CORRELATION_PATTERN_KEY);
+		private final Map<String, String> hashes = new HashMap<>();
+
+		LogCorrelationPropertySource(Object source, Environment environment) {
+			super(NAME, source);
+			this.environment = environment;
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			if (name.equals(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY)) {
+				return this.environment.getProperty("management.tracing.enabled", Boolean.class, Boolean.TRUE);
+			}
+			if (name.equals(CorrelationIdFormatter.APPLICATION_PROPERTY)) {
+				String applicationName = this.environment.getProperty("spring.application.name");
+				return this.hashes.computeIfAbsent(applicationName, this::computeHash);
+			}
+			return null;
+		}
+
+		private String computeHash(String input) {
+			try {
+				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+				byte[] bytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+				String hex = HexFormat.of().formatHex(bytes);
+				return hex.substring(0, 10);
+			}
+			catch (NoSuchAlgorithmException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
 	}
 
 }

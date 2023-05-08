@@ -486,6 +486,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		loggerContext.setExternalContext(null);
 	}
 
+	@Override
+	protected String getDefaultLogCorrelationPattern() {
+		return "%correlationId";
+	}
+
 	/**
 	 * Get the Spring {@link Environment} attached to the given {@link LoggerContext} or
 	 * {@code null} if no environment is available.
