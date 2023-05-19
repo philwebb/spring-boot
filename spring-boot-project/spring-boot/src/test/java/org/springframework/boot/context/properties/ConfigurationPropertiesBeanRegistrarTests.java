@@ -25,7 +25,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -91,6 +91,11 @@ class ConfigurationPropertiesBeanRegistrarTests {
 			assertThat(definition).isExactlyInstanceOf(RootBeanDefinition.class);
 			assertThat(definition.hasAttribute(BindMethod.class.getName())).isTrue();
 			assertThat(definition.getAttribute(BindMethod.class.getName())).isEqualTo(bindMethod);
+			@SuppressWarnings({ "deprecation", "removal" })
+			Class<?> deprecatedBindMethod = org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod.class;
+			assertThat(definition.hasAttribute(deprecatedBindMethod.getName())).isTrue();
+			assertThat(((Enum<?>) definition.getAttribute(deprecatedBindMethod.getName())).name())
+				.isEqualTo(bindMethod.name());
 		};
 	}
 

@@ -22,7 +22,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -93,10 +93,18 @@ final class ConfigurationPropertiesBeanRegistrar {
 		BindMethod bindMethod = BindMethod.get(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);
+		configureDeprecatedAttribute(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
 			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
 		}
 		return definition;
+	}
+
+	@SuppressWarnings({ "deprecation", "removal" })
+	private void configureDeprecatedAttribute(RootBeanDefinition definition, BindMethod bindMethod) {
+		definition.setAttribute(
+				org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod.class.getName(),
+				org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod.from(bindMethod));
 	}
 
 }

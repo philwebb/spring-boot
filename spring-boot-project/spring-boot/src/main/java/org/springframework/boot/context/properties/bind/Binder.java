@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +65,7 @@ public class Binder {
 
 	private final BindHandler defaultBindHandler;
 
-	private final List<DataObjectBinder> dataObjectBinders;
+	private final Map<BindMethod, DataObjectBinder> dataObjectBinders;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -194,7 +195,10 @@ public class Binder {
 		}
 		ValueObjectBinder valueObjectBinder = new ValueObjectBinder(constructorProvider);
 		JavaBeanBinder javaBeanBinder = JavaBeanBinder.INSTANCE;
-		this.dataObjectBinders = Collections.unmodifiableList(Arrays.asList(valueObjectBinder, javaBeanBinder));
+		Map<BindMethod, DataObjectBinder> dataObjectBinders = new LinkedHashMap<>();
+		dataObjectBinders.put(BindMethod.VALUE_OBJECT, valueObjectBinder);
+		dataObjectBinders.put(BindMethod.JAVA_BEAN, javaBeanBinder);
+		this.dataObjectBinders = Collections.unmodifiableMap(dataObjectBinders);
 	}
 
 	/**
@@ -365,7 +369,7 @@ public class Binder {
 	}
 
 	private Object create(Bindable<?> target, Context context) {
-		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
+		for (DataObjectBinder dataObjectBinder : dataObjectBinders(target)) {
 			Object instance = dataObjectBinder.create(target, context);
 			if (instance != null) {
 				return instance;
@@ -472,14 +476,24 @@ public class Binder {
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
 		return context.withDataObject(type, () -> {
-			for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
-				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
-				if (instance != null) {
-					return instance;
+			for (DataObjectBinder dataObjectBinder : dataObjectBinders(target)) {
+				if (dataObjectBinder != null) {
+					Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
+					if (instance != null) {
+						return instance;
+					}
 				}
 			}
 			return null;
 		});
+	}
+
+	private Iterable<DataObjectBinder> dataObjectBinders(Bindable<?> target) {
+		BindMethod bindMethod = target.getBindMethod();
+		if (bindMethod != null) {
+			return List.of(this.dataObjectBinders.get(bindMethod));
+		}
+		return this.dataObjectBinders.values();
 	}
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {
