@@ -24,6 +24,8 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -42,32 +44,41 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 	@Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(ConfigurationProperties.class);
-		List<Class<?>> types = new ArrayList<>();
+		List<Bindable<?>> bindables = new ArrayList<>();
 		for (String beanName : beanNames) {
 			Class<?> beanType = beanFactory.getType(beanName, false);
+			BindMethod bindMethod = beanFactory.containsBeanDefinition(beanName)
+					? (BindMethod) beanFactory.getBeanDefinition(beanName).getAttribute(BindMethod.class.getName())
+					: null;
 			if (beanType != null) {
-				types.add(ClassUtils.getUserClass(beanType));
+				bindables.add(Bindable.of(ClassUtils.getUserClass(beanType))
+					.withBindMethod((bindMethod != null) ? bindMethod : BindMethod.JAVA_BEAN));
 			}
 		}
-		if (!CollectionUtils.isEmpty(types)) {
-			return new ConfigurationPropertiesReflectionHintsContribution(types);
+		if (!CollectionUtils.isEmpty(bindables)) {
+			return new ConfigurationPropertiesReflectionHintsContribution(bindables);
 		}
 		return null;
 	}
 
-	private static final class ConfigurationPropertiesReflectionHintsContribution
+	static final class ConfigurationPropertiesReflectionHintsContribution
 			implements BeanFactoryInitializationAotContribution {
 
-		private final Iterable<Class<?>> types;
+		private final Iterable<Bindable<?>> bindables;
 
-		private ConfigurationPropertiesReflectionHintsContribution(Iterable<Class<?>> types) {
-			this.types = types;
+		private ConfigurationPropertiesReflectionHintsContribution(Iterable<Bindable<?>> types) {
+			this.bindables = types;
 		}
 
 		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
-			BindableRuntimeHintsRegistrar.forTypes(this.types).registerHints(generationContext.getRuntimeHints());
+			BindableRuntimeHintsRegistrar.forBindables(this.bindables)
+				.registerHints(generationContext.getRuntimeHints());
+		}
+
+		Iterable<Bindable<?>> getTypes() {
+			return this.bindables;
 		}
 
 	}

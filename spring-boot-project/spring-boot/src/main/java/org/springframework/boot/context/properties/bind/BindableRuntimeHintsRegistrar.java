@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import kotlin.jvm.JvmClassMappingKt;
@@ -62,14 +63,24 @@ import org.springframework.util.ReflectionUtils;
  */
 public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
-	private final Class<?>[] types;
+	private final Bindable<?>[] bindables;
 
 	/**
 	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified types.
 	 * @param types the types to process
 	 */
 	protected BindableRuntimeHintsRegistrar(Class<?>... types) {
-		this.types = types;
+		this(Stream.of(types).map(Bindable::of).toArray(Bindable[]::new));
+	}
+
+	/**
+	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified bindable
+	 * types.
+	 * @param bindables the bindable types to process
+	 * @since 3.0.8
+	 */
+	protected BindableRuntimeHintsRegistrar(Bindable<?>... bindables) {
+		this.bindables = bindables;
 	}
 
 	@Override
@@ -83,8 +94,8 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 */
 	public void registerHints(RuntimeHints hints) {
 		Set<Class<?>> compiledWithoutParameters = new HashSet<>();
-		for (Class<?> type : this.types) {
-			new Processor(type, compiledWithoutParameters).process(hints.reflection());
+		for (Bindable<?> bindable : this.bindables) {
+			new Processor(bindable, compiledWithoutParameters).process(hints.reflection());
 		}
 		if (!compiledWithoutParameters.isEmpty()) {
 			throw new MissingParametersCompilerArgumentException(compiledWithoutParameters);
@@ -107,6 +118,27 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
 	 */
 	public static BindableRuntimeHintsRegistrar forTypes(Class<?>... types) {
+		return new BindableRuntimeHintsRegistrar(types);
+	}
+
+	/**
+	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified types.
+	 * @param types the types to process
+	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
+	 * @since 3.0.8
+	 */
+	public static BindableRuntimeHintsRegistrar forBindables(Iterable<Bindable<?>> types) {
+		Assert.notNull(types, "Types must not be null");
+		return forBindables(StreamSupport.stream(types.spliterator(), false).toArray(Bindable[]::new));
+	}
+
+	/**
+	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified types.
+	 * @param types the types to process
+	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
+	 * @since 3.0.8
+	 */
+	public static BindableRuntimeHintsRegistrar forBindables(Bindable<?>... types) {
 		return new BindableRuntimeHintsRegistrar(types);
 	}
 
@@ -136,15 +168,16 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Set<Class<?>> compiledWithoutParameters;
 
-		Processor(Class<?> type, Set<Class<?>> compiledWithoutParameters) {
+		Processor(Bindable<?> type, Set<Class<?>> compiledWithoutParameters) {
 			this(type, false, new HashSet<>(), compiledWithoutParameters);
 		}
 
-		private Processor(Class<?> type, boolean nestedType, Set<Class<?>> seen,
+		private Processor(Bindable<?> type, boolean nestedType, Set<Class<?>> seen,
 				Set<Class<?>> compiledWithoutParameters) {
-			this.type = type;
-			this.bindConstructor = BindConstructorProvider.DEFAULT.getBindConstructor(Bindable.of(type), nestedType);
-			this.bean = JavaBeanBinder.BeanProperties.of(Bindable.of(type));
+			this.type = type.getType().getRawClass();
+			this.bindConstructor = (type.getBindMethod() != BindMethod.JAVA_BEAN)
+					? BindConstructorProvider.DEFAULT.getBindConstructor(type.getType().resolve(), nestedType) : null;
+			this.bean = JavaBeanBinder.BeanProperties.of(type);
 			this.seen = seen;
 			this.compiledWithoutParameters = compiledWithoutParameters;
 		}
@@ -235,7 +268,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void processNested(Class<?> type, ReflectionHints hints) {
-			new Processor(type, true, this.seen, this.compiledWithoutParameters).process(hints);
+			new Processor(Bindable.of(type), true, this.seen, this.compiledWithoutParameters).process(hints);
 		}
 
 		private Class<?> getComponentClass(ResolvableType type) {
