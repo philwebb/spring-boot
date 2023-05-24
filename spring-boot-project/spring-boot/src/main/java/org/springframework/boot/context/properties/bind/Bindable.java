@@ -131,6 +131,7 @@ public final class Bindable<T> {
 	 * Returns the {@link BindMethod method} to be used to bind this bindable, or
 	 * {@code null} if no specific binding method is required.
 	 * @return the bind method or {@code null}
+	 * @since 3.0.8
 	 */
 	public BindMethod getBindMethod() {
 		return this.bindMethod;
@@ -234,6 +235,7 @@ public final class Bindable<T> {
 	 * have an existing or supplied value.
 	 * @param bindMethod the method to use to bind the bindable
 	 * @return an updated {@link Bindable}
+	 * @since 3.0.8
 	 */
 	public Bindable<T> withBindMethod(BindMethod bindMethod) {
 		Assert.state(bindMethod != BindMethod.VALUE_OBJECT || this.value == null,

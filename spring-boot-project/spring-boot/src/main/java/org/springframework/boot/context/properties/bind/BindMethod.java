@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.lang.reflect.Constructor;
-
 /**
  * Configuration property binding methods.
  *
@@ -35,18 +33,5 @@ public enum BindMethod {
 	 * Value object using constructor binding.
 	 */
 	VALUE_OBJECT;
-
-	/**
-	 * Returns the {@link BindMethod} to be used to bind to the given {@code type}.
-	 * @param type the type
-	 * @return the bind method
-	 */
-	public static BindMethod get(Class<?> type) {
-		return get(BindConstructorProvider.DEFAULT.getBindConstructor(type, false));
-	}
-
-	private static BindMethod get(Constructor<?> bindConstructor) {
-		return (bindConstructor != null) ? VALUE_OBJECT : JAVA_BEAN;
-	}
 
 }

@@ -90,21 +90,13 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		BindMethod bindMethod = BindMethod.get(type);
+		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);
-		configureDeprecatedAttribute(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
 			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
 		}
 		return definition;
-	}
-
-	@SuppressWarnings({ "deprecation", "removal" })
-	private void configureDeprecatedAttribute(RootBeanDefinition definition, BindMethod bindMethod) {
-		definition.setAttribute(
-				org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod.class.getName(),
-				org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod.from(bindMethod));
 	}
 
 }

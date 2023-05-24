@@ -61,6 +61,12 @@ import org.springframework.validation.annotation.Validated;
  */
 public final class ConfigurationPropertiesBean {
 
+	private static final org.springframework.boot.context.properties.bind.BindMethod JAVA_BEAN_BIND_METHOD = //
+			org.springframework.boot.context.properties.bind.BindMethod.JAVA_BEAN;
+
+	private static final org.springframework.boot.context.properties.bind.BindMethod VALUE_OBJECT_BIND_METHOD = //
+			org.springframework.boot.context.properties.bind.BindMethod.VALUE_OBJECT;
+
 	private final String name;
 
 	private final Object instance;
@@ -105,10 +111,7 @@ public final class ConfigurationPropertiesBean {
 	 */
 	@Deprecated(since = "3.0.8", forRemoval = true)
 	public BindMethod getBindMethod() {
-		if (this.bindTarget.getBindMethod() != null) {
-			return BindMethod.from(this.bindTarget.getBindMethod());
-		}
-		return BindMethod.get(this.bindTarget);
+		return BindMethod.from(this.bindTarget.getBindMethod());
 	}
 
 	/**
@@ -209,16 +212,16 @@ public final class ConfigurationPropertiesBean {
 		if (bindTarget == null) {
 			return null;
 		}
-		org.springframework.boot.context.properties.bind.BindMethod bindMethod = BindMethodAttribute
-			.get(applicationContext, beanName);
-		if (bindMethod == null && factoryMethod != null) {
-			bindMethod = org.springframework.boot.context.properties.bind.BindMethod.JAVA_BEAN;
+		bindTarget = bindTarget.withBindMethod(BindMethodAttribute.get(applicationContext, beanName));
+		if (bindTarget.getBindMethod() == null && factoryMethod != null) {
+			bindTarget = bindTarget.withBindMethod(JAVA_BEAN_BIND_METHOD);
 		}
-		if (bindTarget != null
-				&& bindMethod != org.springframework.boot.context.properties.bind.BindMethod.VALUE_OBJECT) {
+		if (bindTarget.getBindMethod() == null) {
+			bindTarget = bindTarget.withBindMethod(deduceBindMethod(bindTarget));
+		}
+		if (bindTarget.getBindMethod() != VALUE_OBJECT_BIND_METHOD) {
 			bindTarget = bindTarget.withExistingValue(bean);
 		}
-		bindTarget = bindTarget.withBindMethod(bindMethod);
 		return create(beanName, bean, bindTarget);
 	}
 
@@ -269,10 +272,9 @@ public final class ConfigurationPropertiesBean {
 
 	static ConfigurationPropertiesBean forValueObject(Class<?> beanType, String beanName) {
 		Bindable<Object> bindTarget = createBindTarget(null, beanType, null);
-		ConfigurationPropertiesBean propertiesBean = create(beanName, null, bindTarget);
-		Assert.state(propertiesBean != null && propertiesBean.getBindMethod() == BindMethod.VALUE_OBJECT,
+		Assert.state(bindTarget != null && deduceBindMethod(bindTarget) == VALUE_OBJECT_BIND_METHOD,
 				() -> "Bean '" + beanName + "' is not a @ConfigurationProperties value object");
-		return propertiesBean;
+		return create(beanName, null, bindTarget.withBindMethod(VALUE_OBJECT_BIND_METHOD));
 	}
 
 	private static Bindable<Object> createBindTarget(Object bean, Class<?> beanType, Method factoryMethod) {
@@ -318,6 +320,29 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	/**
+	 * Deduce the {@code BindMethod} that should be used for the given type.
+	 * @param type the source type
+	 * @return the bind method to use
+	 */
+	static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(Class<?> type) {
+		return deduceBindMethod(BindConstructorProvider.DEFAULT.getBindConstructor(type, false));
+	}
+
+	/**
+	 * Deduce the {@code BindMethod} that should be used for the given {@link Bindable}.
+	 * @param bindable the source bindable
+	 * @return the bind method to use
+	 */
+	static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(Bindable<Object> bindable) {
+		return deduceBindMethod(BindConstructorProvider.DEFAULT.getBindConstructor(bindable, false));
+	}
+
+	private static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(
+			Constructor<?> bindConstructor) {
+		return (bindConstructor != null) ? VALUE_OBJECT_BIND_METHOD : JAVA_BEAN_BIND_METHOD;
+	}
+
+	/**
 	 * The binding method that is used for the bean.
 	 *
 	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of
@@ -336,16 +361,10 @@ public final class ConfigurationPropertiesBean {
 		 */
 		VALUE_OBJECT;
 
-		static BindMethod get(Bindable<?> bindable) {
-			return get(BindConstructorProvider.DEFAULT.getBindConstructor(bindable, false));
-		}
-
-		private static BindMethod get(Constructor<?> bindConstructor) {
-			return (bindConstructor != null) ? VALUE_OBJECT : JAVA_BEAN;
-		}
-
 		static BindMethod from(org.springframework.boot.context.properties.bind.BindMethod bindMethod) {
-			Assert.notNull(bindMethod, "BindMethod must not be null");
+			if (bindMethod == null) {
+				return null;
+			}
 			return switch (bindMethod) {
 				case VALUE_OBJECT -> BindMethod.VALUE_OBJECT;
 				case JAVA_BEAN -> BindMethod.JAVA_BEAN;
