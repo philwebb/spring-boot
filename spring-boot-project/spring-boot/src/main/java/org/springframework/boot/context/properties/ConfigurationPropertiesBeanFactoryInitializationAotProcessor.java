@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link BeanFactoryInitializationAotProcessor} that contributes runtime hints for
@@ -47,27 +46,24 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		List<Bindable<?>> bindables = new ArrayList<>();
 		for (String beanName : beanNames) {
 			Class<?> beanType = beanFactory.getType(beanName, false);
-			BindMethod bindMethod = beanFactory.containsBeanDefinition(beanName)
-					? (BindMethod) beanFactory.getBeanDefinition(beanName).getAttribute(BindMethod.class.getName())
-					: null;
 			if (beanType != null) {
+				BindMethod bindMethod = beanFactory.containsBeanDefinition(beanName)
+						? (BindMethod) beanFactory.getBeanDefinition(beanName).getAttribute(BindMethod.class.getName())
+						: null;
 				bindables.add(Bindable.of(ClassUtils.getUserClass(beanType))
 					.withBindMethod((bindMethod != null) ? bindMethod : BindMethod.JAVA_BEAN));
 			}
 		}
-		if (!CollectionUtils.isEmpty(bindables)) {
-			return new ConfigurationPropertiesReflectionHintsContribution(bindables);
-		}
-		return null;
+		return (!bindables.isEmpty()) ? new ConfigurationPropertiesReflectionHintsContribution(bindables) : null;
 	}
 
 	static final class ConfigurationPropertiesReflectionHintsContribution
 			implements BeanFactoryInitializationAotContribution {
 
-		private final Iterable<Bindable<?>> bindables;
+		private final List<Bindable<?>> bindables;
 
-		private ConfigurationPropertiesReflectionHintsContribution(Iterable<Bindable<?>> types) {
-			this.bindables = types;
+		private ConfigurationPropertiesReflectionHintsContribution(List<Bindable<?>> bindables) {
+			this.bindables = bindables;
 		}
 
 		@Override
@@ -77,7 +73,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 				.registerHints(generationContext.getRuntimeHints());
 		}
 
-		Iterable<Bindable<?>> getTypes() {
+		Iterable<Bindable<?>> getBindables() {
 			return this.bindables;
 		}
 

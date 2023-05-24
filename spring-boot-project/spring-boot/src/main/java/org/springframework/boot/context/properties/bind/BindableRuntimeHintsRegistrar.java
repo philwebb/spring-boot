@@ -168,16 +168,17 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Set<Class<?>> compiledWithoutParameters;
 
-		Processor(Bindable<?> type, Set<Class<?>> compiledWithoutParameters) {
-			this(type, false, new HashSet<>(), compiledWithoutParameters);
+		Processor(Bindable<?> bindable, Set<Class<?>> compiledWithoutParameters) {
+			this(bindable, false, new HashSet<>(), compiledWithoutParameters);
 		}
 
-		private Processor(Bindable<?> type, boolean nestedType, Set<Class<?>> seen,
+		private Processor(Bindable<?> bindable, boolean nestedType, Set<Class<?>> seen,
 				Set<Class<?>> compiledWithoutParameters) {
-			this.type = type.getType().getRawClass();
-			this.bindConstructor = (type.getBindMethod() != BindMethod.JAVA_BEAN)
-					? BindConstructorProvider.DEFAULT.getBindConstructor(type.getType().resolve(), nestedType) : null;
-			this.bean = JavaBeanBinder.BeanProperties.of(type);
+			this.type = bindable.getType().getRawClass();
+			this.bindConstructor = (bindable.getBindMethod() != BindMethod.JAVA_BEAN)
+					? BindConstructorProvider.DEFAULT.getBindConstructor(bindable.getType().resolve(), nestedType)
+					: null;
+			this.bean = JavaBeanBinder.BeanProperties.of(bindable);
 			this.seen = seen;
 			this.compiledWithoutParameters = compiledWithoutParameters;
 		}

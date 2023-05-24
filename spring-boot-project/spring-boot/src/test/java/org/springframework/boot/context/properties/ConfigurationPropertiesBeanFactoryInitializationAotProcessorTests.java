@@ -66,7 +66,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("test", new SampleProperties());
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(beanFactory);
-		assertThat(contribution.getTypes()).singleElement().satisfies((bindable) -> {
+		assertThat(contribution.getBindables()).singleElement().satisfies((bindable) -> {
 			assertThat(bindable.getType().getRawClass()).isEqualTo(SampleProperties.class);
 			assertThat(bindable.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 		});
@@ -79,7 +79,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void javaBeanConfigurationPropertiesBindAsJavaBean() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				JavaBeanPropertiesConfiguration.class);
-		assertThat(contribution.getTypes()).singleElement().satisfies((bindable) -> {
+		assertThat(contribution.getBindables()).singleElement().satisfies((bindable) -> {
 			assertThat(bindable.getType().getRawClass()).isEqualTo(JavaBeanProperties.class);
 			assertThat(bindable.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 		});
@@ -92,7 +92,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void constructorBindingConfigurationPropertiesBindAsValueObject() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				ConstructorBindingPropertiesConfiguration.class);
-		assertThat(contribution.getTypes()).singleElement().satisfies((bindable) -> {
+		assertThat(contribution.getBindables()).singleElement().satisfies((bindable) -> {
 			assertThat(bindable.getType().getRawClass()).isEqualTo(ConstructorBindingProperties.class);
 			assertThat(bindable.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
 		});
@@ -105,7 +105,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void possibleConstructorBindingPropertiesDefinedThroughBeanMethodBindAsJavaBean() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				PossibleConstructorBindingPropertiesDefinedThroughBeanMethodConfiguration.class);
-		assertThat(contribution.getTypes()).singleElement().satisfies((bindable) -> {
+		assertThat(contribution.getBindables()).singleElement().satisfies((bindable) -> {
 			assertThat(bindable.getType().getRawClass()).isEqualTo(PossibleConstructorBindingProperties.class);
 			assertThat(bindable.getBindMethod()).isEqualTo(BindMethod.JAVA_BEAN);
 		});
@@ -118,7 +118,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void possibleConstructorBindingPropertiesDefinedThroughEnabledAnnotationBindAsValueObject() {
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(
 				PossibleConstructorBindingPropertiesDefinedThroughEnableAnnotationConfiguration.class);
-		assertThat(contribution.getTypes()).singleElement().satisfies((bindable) -> {
+		assertThat(contribution.getBindables()).singleElement().satisfies((bindable) -> {
 			assertThat(bindable.getType().getRawClass()).isEqualTo(PossibleConstructorBindingProperties.class);
 			assertThat(bindable.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
 		});
