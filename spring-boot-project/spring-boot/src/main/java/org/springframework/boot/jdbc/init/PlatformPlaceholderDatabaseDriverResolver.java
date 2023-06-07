@@ -128,13 +128,8 @@ public class PlatformPlaceholderDatabaseDriverResolver {
 	}
 
 	private String determinePlatform(DataSource dataSource) {
-		DatabaseDriver databaseDriver = getDatabaseDriver(dataSource);
-		Assert.state(databaseDriver != DatabaseDriver.UNKNOWN, "Unable to detect database type");
+		DatabaseDriver databaseDriver = DatabaseDriver.fromDataSource(dataSource, IllegalStateException::new);
 		return this.driverMappings.getOrDefault(databaseDriver, databaseDriver.getId());
-	}
-
-	DatabaseDriver getDatabaseDriver(DataSource dataSource) {
-		return DatabaseDriver.fromDataSource(dataSource);
 	}
 
 }

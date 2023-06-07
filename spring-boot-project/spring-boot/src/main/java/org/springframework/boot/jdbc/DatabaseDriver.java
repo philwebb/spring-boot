@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.function.BiFunction;
 
 import javax.sql.DataSource;
 
@@ -300,6 +301,41 @@ public enum DatabaseDriver {
 	}
 
 	/**
+	 * Find a {@link DatabaseDriver} for the given {@code DataSource}.
+	 * @param dataSource data source to inspect
+	 * @return the database driver of {@link #UNKNOWN} if not found
+	 * @since 2.6.0
+	 */
+	public static DatabaseDriver fromDataSource(DataSource dataSource) {
+		return fromDataSource(dataSource, null);
+	}
+
+	/**
+	 * Find a {@link DatabaseDriver} for the given {@code DataSource}.
+	 * @param dataSource data source to inspect
+	 * @param exceptionWrapper optional function used to create the wrapped exception to
+	 * throw if not database can be detected
+	 * @return the database driver of {@link #UNKNOWN} if not found
+	 * @since 2.7.13
+	 */
+	public static DatabaseDriver fromDataSource(DataSource dataSource,
+			BiFunction<String, Exception, RuntimeException> exceptionWrapper) {
+		try {
+			String productName = JdbcUtils.commonDatabaseName(
+					JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));
+			return DatabaseDriver.fromProductName(productName);
+		}
+		catch (Exception ex) {
+			RuntimeException wrappedException = (exceptionWrapper != null)
+					? exceptionWrapper.apply("Unable to detect database type", ex) : null;
+			if (wrappedException != null) {
+				throw wrappedException;
+			}
+			return DatabaseDriver.UNKNOWN;
+		}
+	}
+
+	/**
 	 * Find a {@link DatabaseDriver} for the given product name.
 	 * @param productName product name
 	 * @return the database driver or {@link #UNKNOWN} if not found
@@ -313,23 +349,6 @@ public enum DatabaseDriver {
 			}
 		}
 		return UNKNOWN;
-	}
-
-	/**
-	 * Find a {@link DatabaseDriver} for the given {@code DataSource}.
-	 * @param dataSource data source to inspect
-	 * @return the database driver of {@link #UNKNOWN} if not found
-	 * @since 2.6.0
-	 */
-	public static DatabaseDriver fromDataSource(DataSource dataSource) {
-		try {
-			String productName = JdbcUtils.commonDatabaseName(
-					JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));
-			return DatabaseDriver.fromProductName(productName);
-		}
-		catch (Exception ex) {
-			return DatabaseDriver.UNKNOWN;
-		}
 	}
 
 }
