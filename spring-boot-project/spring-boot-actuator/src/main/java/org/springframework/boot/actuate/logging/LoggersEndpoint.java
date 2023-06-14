@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingSystem;
@@ -126,8 +127,12 @@ public class LoggersEndpoint {
 
 		private String configuredLevel;
 
-		public LoggerLevels(LogLevel configuredLevel) {
-			this.configuredLevel = getName(configuredLevel);
+		public LoggerLevels(LevelConfiguration levelConfiguration) {
+			this.configuredLevel = getName(levelConfiguration);
+		}
+
+		final String getName(LevelConfiguration configuration) {
+			return (configuration != null) ? configuration.getName() : null;
 		}
 
 		protected final String getName(LogLevel level) {
