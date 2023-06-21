@@ -19,6 +19,7 @@ package org.springframework.boot.logging;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -36,6 +37,7 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Robert Thornton
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  * @since 2.0.0
  */
 public class LoggingSystemProperties {
@@ -96,6 +98,11 @@ public class LoggingSystemProperties {
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
 	/**
+	 * The name of the System property that contains the correlation pattern.
+	 */
+	public static final String LOG_CORRELATION_PATTERN = "LOG_CORRELATION_PATTERN";
+
+	/**
 	 * The name of the System property that contains the log date-format pattern.
 	 */
 	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
@@ -108,6 +115,8 @@ public class LoggingSystemProperties {
 
 	private final Environment environment;
 
+	private final Function<String, String> defaultValueResolver;
+
 	private final BiConsumer<String, String> setter;
 
 	/**
@@ -115,20 +124,34 @@ public class LoggingSystemProperties {
 	 * @param environment the source environment
 	 */
 	public LoggingSystemProperties(Environment environment) {
-		this(environment, systemPropertySetter);
+		this(environment, null);
 	}
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
-	 * @param setter setter used to apply the property
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
 	 * @since 2.4.2
 	 */
 	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
+		this(environment, null, setter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param defaultValueResolver function used to resolve default values or {@code null}
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
+	 * @since 3.2.0
+	 */
+	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
+			BiConsumer<String, String> setter) {
 		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(setter, "Setter must not be null");
 		this.environment = environment;
-		this.setter = setter;
+		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
+		this.setter = (setter != null) ? setter : systemPropertySetter;
 	}
 
 	protected Charset getDefaultCharset() {
@@ -155,6 +178,7 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
 		setSystemProperty(resolver, FILE_LOG_THRESHOLD, "logging.threshold.file");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
+		setSystemProperty(resolver, LOG_CORRELATION_PATTERN, "logging.pattern.correlation");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
@@ -178,6 +202,7 @@ public class LoggingSystemProperties {
 	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName,
 			String defaultValue) {
 		String value = resolver.getProperty(propertyName);
+		value = (value != null) ? value : this.defaultValueResolver.apply(systemPropertyName);
 		value = (value != null) ? value : defaultValue;
 		setSystemProperty(systemPropertyName, value);
 	}

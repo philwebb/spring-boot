@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -174,7 +175,35 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	protected final void applySystemProperties(Environment environment, LogFile logFile) {
-		new LoggingSystemProperties(environment).apply(logFile);
+		new LoggingSystemProperties(environment, getDefaultValueResolver(environment), null).apply(logFile);
+	}
+
+	/**
+	 * Return the default value resolver to use when resolving system properties.
+	 * @param environment the environment
+	 * @return the default value resolver
+	 * @since 3.2.0
+	 */
+	protected Function<String, String> getDefaultValueResolver(Environment environment) {
+		String defaultLogCorrelationPattern = getDefaultLogCorrelationPattern();
+		return (name) -> {
+			if (StringUtils.hasLength(defaultLogCorrelationPattern)
+					&& LoggingSystemProperties.LOG_CORRELATION_PATTERN.equals(name)
+					&& environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false)) {
+				return defaultLogCorrelationPattern;
+			}
+			return null;
+		};
+	}
+
+	/**
+	 * Return the default log correlation pattern or {@code null} if log correlation
+	 * patterns are not supported.
+	 * @return the default log correlation pattern
+	 * @since 3.2.0
+	 */
+	protected String getDefaultLogCorrelationPattern() {
+		return null;
 	}
 
 	/**

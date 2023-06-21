@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  */
 class LoggingSystemPropertiesTests {
 
@@ -45,6 +47,7 @@ class LoggingSystemPropertiesTests {
 	void captureSystemPropertyNames() {
 		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
 		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
+		System.getProperties().remove(LoggingSystemProperties.LOG_CORRELATION_PATTERN);
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
@@ -108,6 +111,25 @@ class LoggingSystemPropertiesTests {
 	void fileLogPatternCanReferencePid() {
 		new LoggingSystemProperties(environment("logging.pattern.file", "${PID:unknown}")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).matches("[0-9]+");
+	}
+
+	@Test
+	void correlationPatternIsSet() {
+		new LoggingSystemProperties(
+				new MockEnvironment().withProperty("logging.pattern.correlation", "correlation pattern"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_CORRELATION_PATTERN))
+			.isEqualTo("correlation pattern");
+	}
+
+	@Test
+	void defaultValueResolverIsUsed() {
+		MockEnvironment environment = new MockEnvironment();
+		Map<String, String> defaultValues = Map.of(LoggingSystemProperties.LOG_CORRELATION_PATTERN,
+				"default correlation pattern");
+		new LoggingSystemProperties(environment, defaultValues::get, null).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_CORRELATION_PATTERN))
+			.isEqualTo("default correlation pattern");
 	}
 
 	private Environment environment(String key, Object value) {
