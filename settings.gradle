@@ -58,6 +58,7 @@ include "spring-boot-project:spring-boot-tools:spring-boot-configuration-process
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"
 include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"
+include "spring-boot-project:spring-boot-tools:spring-boot-loader"
 include "spring-boot-project:spring-boot-tools:spring-boot-legacy-loader"
 include "spring-boot-project:spring-boot-tools:spring-boot-legacy-loader-tools"
 include "spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
