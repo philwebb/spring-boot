@@ -82,7 +82,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
-	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-legacy-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-testcontainers"))

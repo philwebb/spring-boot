@@ -32,7 +32,7 @@ import org.gradle.api.file.FileTreeElement;
 import org.springframework.util.StreamUtils;
 
 /**
- * Internal utility used to copy entries from the {@code spring-boot-loader.jar}.
+ * Internal utility used to copy entries from the {@code spring-boot-legacy-loader.jar}.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -49,7 +49,7 @@ class LoaderZipEntries {
 	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenEntries written = new WrittenEntries();
 		try (ZipInputStream loaderJar = new ZipInputStream(
-				getClass().getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
+				getClass().getResourceAsStream("/META-INF/loader/spring-boot-legacy-loader.jar"))) {
 			java.util.zip.ZipEntry entry = loaderJar.getNextEntry();
 			while (entry != null) {
 				if (entry.isDirectory() && !entry.getName().equals("META-INF/")) {
