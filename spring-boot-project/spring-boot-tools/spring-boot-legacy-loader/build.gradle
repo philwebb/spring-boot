@@ -4,7 +4,7 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
-description = "Spring Boot Loader"
+description = "Spring Boot Legacy Loader"
 
 dependencies {
 	compileOnly("org.springframework:spring-core")

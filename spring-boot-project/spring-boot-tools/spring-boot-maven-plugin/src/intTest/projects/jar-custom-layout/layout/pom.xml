@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-loader-tools</artifactId>
+			<artifactId>spring-boot-legacy-loader-tools</artifactId>
 			<version>@project.version@</version>
 		</dependency>
 	</dependencies>
