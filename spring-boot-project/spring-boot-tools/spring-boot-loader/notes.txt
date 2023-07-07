@@ -1,0 +1,59 @@
+ZipFileSystem / ZipFileSystemProvider
+
+Support "jar" scheme
+Calls path.get on scheme specific part, not including !/path
+
+BasicFileAttributes on the path must be `isRegularFile`
+
+ZipFileSystem.readFullyAt synchronized is used on ch to lock unless File
+SeekableByteChannel is the thing that provides the data
+
+We should be able to create `SeekableByteChannel` backed by `FileChannel` using the file channel read(buff,pos) method
+Not sure how close should work
+
+useTempFile (env map config) and tempFileCreationThreshold (10Mb) determine when a temp file is created
+We probably don't need to worry since we're not writing to the zip
+
+I don't think we can/should try to use `ZipFileSystem` to back our own implementation.
+
+
+ClassLoading
+
+Looks like mostly done in:
+jdk.internal.loader.URLClassPath
+
+There's a JarLoader inner class that deals with JARs
+Ends up calling getEntry
+
+Ours will call:
+
+            URLConnection uc = (new URL(getBaseURL(), "#runtime")).openConnection();
+            uc.setRequestProperty(USER_AGENT_JAVA_VERSION, JAVA_VERSION);
+            JarFile jarFile = ((JarURLConnection)uc).getJarFile();
+
+(not optimizable)
+
+
+URLS:
+
+sun.net.www.protocol.jar.Handler
+
+checkNestedProtocol is interesting
+
+parseURL sets the file part which is itself a URL
+
+
+JarURLConnection does the loading I think
+JarURLConnection.jarFileURL in the URL for the actual jar file (often file:...)
+
+Not sure what '#runtime' is about but UCP sets it
+
+sun.net.www.protocol.jar.JarURLConnection does the loading work
+
+Delegates to JarFileFactory
+	Don't understand get vs getOrCreate
+
+URLJarFile
+
+
+
