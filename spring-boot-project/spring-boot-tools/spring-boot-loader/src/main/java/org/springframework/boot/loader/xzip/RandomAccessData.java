@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.zip;
+package org.springframework.boot.loader.xzip;
 
 import java.io.EOFException;
 import java.io.IOException;

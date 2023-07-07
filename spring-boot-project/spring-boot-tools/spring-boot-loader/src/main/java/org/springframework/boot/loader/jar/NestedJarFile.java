@@ -19,7 +19,6 @@ package org.springframework.boot.loader.jar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.SeekableByteChannel;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -30,10 +29,12 @@ import java.util.zip.ZipEntry;
  */
 class NestedJarFile extends java.util.jar.JarFile {
 
-	NestedJarFile(File containerJar, SeekableByteChannel nestedJar) throws IOException {
+	NestedJarFile(File containerJar, String nestedEntryName) throws IOException {
 		super(containerJar);
 		// NestedJarFile(File file, boolean verify, int mode, Runtime.Version version)
 		// throws IOException {
+
+		// FIXME needs to deal with directories as well as nested jars
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,20 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.IOException;
+
 /**
- * Utilities for dealing with bytes from ZIP files.
- *
- * @author Phillip Webb
+ * @author pwebb
  */
-final class Bytes {
+public class DunnnoFileHeader {
 
-	private Bytes() {
-	}
-
-	static long littleEndianValue(byte[] bytes, int offset, int length) {
-		long value = 0;
-		for (int i = length - 1; i >= 0; i--) {
-			value = ((value << 8) | (bytes[offset + i] & 0xFF));
-		}
-		return value;
+	/**
+	 * @param offset
+	 * @return
+	 */
+	public static FileHeader from(long offset) throws IOException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

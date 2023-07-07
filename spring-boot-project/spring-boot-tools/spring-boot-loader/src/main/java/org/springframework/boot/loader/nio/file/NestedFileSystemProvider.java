@@ -18,6 +18,8 @@ package org.springframework.boot.loader.nio.file;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.AccessMode;
 import java.nio.file.CopyOption;
@@ -34,19 +36,40 @@ import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author pwebb
  */
-public class NestedJarFileSystemProvider extends FileSystemProvider {
+public class NestedFileSystemProvider extends FileSystemProvider {
+
+	@Override
+	public FileSystem newFileSystem(Path path, Map<String, ?> env) throws IOException {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	@Override
+	public FileChannel newFileChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs)
+			throws IOException {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	@Override
+	public AsynchronousFileChannel newAsynchronousFileChannel(Path path, Set<? extends OpenOption> options,
+			ExecutorService executor, FileAttribute<?>... attrs) throws IOException {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
 
 	@Override
 	public String getScheme() {
-		return "nestedjar";
+		return "nested";
 	}
 
 	@Override
 	public FileSystem newFileSystem(URI uri, Map<String, ?> env) throws IOException {
+		// open connection and get the nested entry
+		// get or open zip for entries
+		// either point at correct part of file or create a virtual FS
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
@@ -131,5 +154,8 @@ public class NestedJarFileSystemProvider extends FileSystemProvider {
 	public void setAttribute(Path path, String attribute, Object value, LinkOption... options) throws IOException {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
+
+	// FIXME will need to create a virtual zip file for folders and a file slice for
+	// nested uncompressed jars
 
 }

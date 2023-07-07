@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.zip;
+package org.springframework.boot.loader.xzip;
 
 import java.io.EOFException;
 import java.io.File;
@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import org.springframework.boot.loader.xzip.RandomAccessData;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.zip;
+package org.springframework.boot.loader.xzip;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +26,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.boot.loader.xzip.CentralDirectoryEndRecord;
+import org.springframework.boot.loader.xzip.CentralDirectoryFileHeader;
+import org.springframework.boot.loader.xzip.CentralDirectoryParser;
+import org.springframework.boot.loader.xzip.CentralDirectoryVisitor;
+import org.springframework.boot.loader.xzip.RandomAccessData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

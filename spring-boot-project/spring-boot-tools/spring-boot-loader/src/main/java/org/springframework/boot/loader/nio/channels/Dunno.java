@@ -14,33 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.jar;
+package org.springframework.boot.loader.nio.channels;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.jar.JarFile;
+import java.nio.ByteBuffer;
 
 /**
  * @author pwebb
  */
-class JarUrlConnection extends java.net.JarURLConnection {
+public interface Dunno {
 
-	protected JarUrlConnection(URL url) throws MalformedURLException {
-		super(url);
-	}
-
-	@Override
-	public JarFile getJarFile() throws IOException {
-		// get the file URL
-		// if it's a file use regular jar
-		// if it's a nested use nested jar
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	@Override
-	public void connect() throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
+	int read(ByteBuffer dst, long position) throws IOException;
 
 }
