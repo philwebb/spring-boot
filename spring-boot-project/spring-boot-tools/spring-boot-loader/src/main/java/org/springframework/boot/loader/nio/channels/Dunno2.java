@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.nestedjar;
+package org.springframework.boot.loader.nio.channels;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import java.nio.ByteBuffer;
 
 /**
- * {@link URLStreamHandler} to support.
- *
  * @author pwebb
  */
-public class Handler extends URLStreamHandler {
+public class Dunno2 implements Dunno {
 
-	// NOTE: in order to be found as a URL protocol handler, this class must be public,
-	// must be named Handler and must be in a package ending '.nestedjar'
+	private ByteBuffer src;
+
+	public Dunno2(ByteBuffer byteBuffer) {
+		this.src = byteBuffer;
+	}
 
 	@Override
-	protected URLConnection openConnection(URL u) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	public int read(ByteBuffer dst, long position) throws IOException {
+		int length = 0;
+		int offset = 0;
+		dst.put(dst.position(), this.src, offset, length);
+		return 0;
 	}
 
 }

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.zip;
+package org.springframework.boot.loader.xzip;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.loader.xzip.StringSequence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

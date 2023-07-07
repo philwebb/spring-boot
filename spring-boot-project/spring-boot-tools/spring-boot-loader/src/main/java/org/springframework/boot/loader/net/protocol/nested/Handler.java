@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.jar;
+package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.jar.JarFile;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /**
+ * {@link URLStreamHandler} to support.
+ *
  * @author pwebb
  */
-class JarUrlConnection extends java.net.JarURLConnection {
+public class Handler extends URLStreamHandler {
 
-	protected JarUrlConnection(URL url) throws MalformedURLException {
-		super(url);
-	}
-
-	@Override
-	public JarFile getJarFile() throws IOException {
-		// get the file URL
-		// if it's a file use regular jar
-		// if it's a nested use nested jar
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
+	// NOTE: in order to be found as a URL protocol handler, this class must be public,
+	// must be named Handler and must be in a package ending '.nestedjar'
 
 	@Override
-	public void connect() throws IOException {
+	protected URLConnection openConnection(URL u) throws IOException {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 

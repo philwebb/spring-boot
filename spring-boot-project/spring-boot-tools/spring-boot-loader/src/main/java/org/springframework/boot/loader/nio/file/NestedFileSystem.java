@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * @author pwebb
  */
-public class NestedJarFileSystem extends FileSystem {
+public class NestedFileSystem extends FileSystem {
 
 	@Override
 	public FileSystemProvider provider() {

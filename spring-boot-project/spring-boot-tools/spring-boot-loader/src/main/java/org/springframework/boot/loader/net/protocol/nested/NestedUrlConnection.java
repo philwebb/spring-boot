@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.nestedjar;
+package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.SeekableByteChannel;
 
 /**
- * A URL Connection providing the raw content of a nested JAR as a
- * {@link SeekableByteChannel}.
+ * A URL Connection...
  * <p>
  * The syntax of a nested JAR URL is: <pre>
  * nestedjar:&lt;path&gt;!{entry}
@@ -31,7 +29,7 @@ import java.nio.channels.SeekableByteChannel;
  * <p>
  * for example:
  * <p>
- * {@code nestedjar:/home/example/my.jar!BOOT-INF/lib/my-nested.jar}
+ * {@code nested:/home/example/my.jar!BOOT-INF/lib/my-nested.jar}
  * <p>
  * The path must refer to a container jar file on the file system. The entry refers to the
  * uncompressed entry within the container jar that contains the nested jar. The entry
@@ -39,9 +37,9 @@ import java.nio.channels.SeekableByteChannel;
  *
  * @author Phillip Webb
  */
-public class NestedJarUrlConnection extends URLConnection {
+public class NestedUrlConnection extends URLConnection {
 
-	protected NestedJarUrlConnection(URL url) {
+	protected NestedUrlConnection(URL url) {
 		super(url);
 	}
 
@@ -50,8 +48,6 @@ public class NestedJarUrlConnection extends URLConnection {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
-	public SeekableByteChannel getByteChannel() {
-		return null;
-	}
+	// don't do much other than expose paths
 
 }

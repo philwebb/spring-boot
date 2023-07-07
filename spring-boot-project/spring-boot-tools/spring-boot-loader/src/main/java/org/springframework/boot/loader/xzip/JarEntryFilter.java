@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.zip;
+package org.springframework.boot.loader.xzip;
 
 /**
- * Callback visitor triggered by {@link CentralDirectoryParser}.
+ * Interface that can be used to filter and optionally rename jar entries.
  *
  * @author Phillip Webb
  */
-interface CentralDirectoryVisitor {
+interface JarEntryFilter {
 
-	void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData);
-
-	void visitFileHeader(CentralDirectoryFileHeader fileHeader, long dataOffset);
-
-	void visitEnd();
+	/**
+	 * Apply the jar entry filter.
+	 * @param name the current entry name. This may be different that the original entry
+	 * name if a previous filter has been applied
+	 * @return the new name of the entry or {@code null} if the entry should not be
+	 * included.
+	 */
+	AsciiBytes apply(AsciiBytes name);
 
 }
