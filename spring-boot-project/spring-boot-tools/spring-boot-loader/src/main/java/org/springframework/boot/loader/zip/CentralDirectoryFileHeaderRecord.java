@@ -17,12 +17,13 @@
 package org.springframework.boot.loader.zip;
 
 /**
- * @author pwebb
+ * A ZIP File "Central directory file header record" (CDFH).
+ *
+ * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Dmytro Nosan
+ * @see <a href="https://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */
-enum CompressionMethod {
-
-	STORED,
-
-	DEFLATED
+class CentralDirectoryFileHeaderRecord {
 
 }

@@ -17,19 +17,34 @@
 package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * @author pwebb
  */
-public class DunnnoFileHeader {
+class FileChannelDataBlock implements DataBlock {
 
-	/**
-	 * @param offset
-	 * @return
-	 */
-	public static FileHeader from(long offset) throws IOException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	// FIXME needs to support slice
+
+	private final FileChannel fileChannel;
+
+	FileChannelDataBlock(FileChannel fileChannel) {
+		this.fileChannel = fileChannel;
+	}
+
+	@Override
+	public long size() throws IOException {
+		return this.fileChannel.size();
+	}
+
+	@Override
+	public int read(ByteBuffer dst, long position) throws IOException {
+		return this.fileChannel.read(dst, position);
+	}
+
+	public void close() throws IOException {
+		this.fileChannel.close();
 	}
 
 }
