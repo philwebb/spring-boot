@@ -24,7 +24,6 @@ import java.nio.ByteOrder;
  * A Zip64 end of central directory record.
  *
  * @author Phillip Webb
- * @param pos the position where this record begins in the source {@link DataBlock}
  * @param sizeOfZip64EndOfCentralDirectoryRecord the size of zip64 end of central
  * directory record
  * @param versionMadeBy the version that made the zip
@@ -43,17 +42,14 @@ import java.nio.ByteOrder;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.14 of the Zip File Format Specification</a>
  */
-public record Zip64EndOfCentralDirectoryRecord(long pos, long sizeOfZip64EndOfCentralDirectoryRecord,
-		short versionMadeBy, short versionNeededToExtract, int numberOfThisDisk, int diskWhereCentralDirectoryStarts,
+record Zip64EndOfCentralDirectoryRecord(long sizeOfZip64EndOfCentralDirectoryRecord, short versionMadeBy,
+		short versionNeededToExtract, int numberOfThisDisk, int diskWhereCentralDirectoryStarts,
 		long numberOfCentralDirectoryEntriesOnThisDisk, long totalNumberOfCentralDirectoryEntries,
 		long sizeOfCentralDirectory, long offsetToStartOfCentralDirectory) {
 
 	private static final int SIGNATURE = 0x06054b50;
 
 	private static final int MINIMUM_SIZE = 56;
-
-	static void load(FileChannelDataBlock block, Zip64EndOfCentralDirectoryLocator locator) {
-	}
 
 	static Zip64EndOfCentralDirectoryRecord load(DataBlock dataBlock, Zip64EndOfCentralDirectoryLocator locator)
 			throws IOException {
@@ -66,10 +62,10 @@ public record Zip64EndOfCentralDirectoryRecord(long pos, long sizeOfZip64EndOfCe
 		dataBlock.readFully(buffer, pos);
 		buffer.rewind();
 		if (buffer.getInt() != SIGNATURE) {
-			throw new IOException("Zip64 End Of Central Directory Record not found at position " + pos
+			throw new IOException("Zip64 'End Of Central Directory Record' not found at position " + pos
 					+ ". Zip file is corrupt or includes prefixed bytes which are not supported with Zip64 files");
 		}
-		return new Zip64EndOfCentralDirectoryRecord(pos, buffer.getLong(), buffer.getShort(), buffer.getShort(),
+		return new Zip64EndOfCentralDirectoryRecord(buffer.getLong(), buffer.getShort(), buffer.getShort(),
 				buffer.getInt(), buffer.getInt(), buffer.getLong(), buffer.getLong(), buffer.getLong(),
 				buffer.getLong());
 	}

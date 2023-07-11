@@ -57,7 +57,7 @@ public interface DataBlock {
 	 * @throws EOFException if an attempt is made to read past the end of the block
 	 * @throws IOException on I/O error
 	 */
-	default void readFully(ByteBuffer dst, long position) throws EOFException, IOException {
+	default void readFully(ByteBuffer dst, long position) throws IOException {
 		do {
 			int count = read(dst, position);
 			if (count <= 0) {
