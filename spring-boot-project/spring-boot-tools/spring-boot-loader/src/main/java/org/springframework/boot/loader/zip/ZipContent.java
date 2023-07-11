@@ -16,23 +16,39 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Provides access to {@link FileHeader file headers} contained in a zip file.
+ * Provides raw access to content from a regular or nested zip file. This class performs
+ * the low level parsing of a zip file and provide access to raw entry data that it
+ * contains. Unlike {@link java.util.zip.ZipFile}, this implementation can load content
+ * from a zip file nested inside another file as long as the entry is not compressed.
+ * <p>
+ * In order to reduce memory consumption, this implementation stores only the the hash
+ * code of the entry name, the central directory offset and the original position. Entries
+ * are stored internally in {@code hashCode} order so that a binary search can be used to
+ * quickly find an entry by name or determine if the zip file doesn't have a given entry.
+ * <p>
+ * {@link ZipContent} for a typical Spring Boot application JAR will have somewhere in the
+ * region of 10,500 entries which should consume about 122K.
+ * <p>
+ * {@link ZipContent} results are cached and it is assumed that zip content will not
+ * change once loaded. Only UTF-8 strings are supported by this parser.
+ * <p>
+ * To release {@link ZipContent} resources, the {@link #close()} method should be called
+ * explicitly or by try-with-resources.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 3.2.0
  */
-public abstract sealed class FileHeaders implements Iterable<FileHeader> {
+public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private static final char NO_SUFFIX = 0;
 
@@ -40,34 +56,37 @@ public abstract sealed class FileHeaders implements Iterable<FileHeader> {
 
 	protected static final int ENTRY_CACHE_SIZE = 25;
 
-	private static final Map<Location, FileHeaders> fileHeadersCache = new HashMap<>();
+	private static final Map<Source, ZipContent> cache = new HashMap<>();
 
 	private final int[] nameHashCode;
 
-	private final int[] originalPosition;
+	private final int[] centralDirectoryOffset;
 
-	private final Map<Integer, FileHeader> fileHeaderCache = Collections
-		.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
+	private final int[] position;
 
-			@Override
-			protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
-				return size() >= ENTRY_CACHE_SIZE;
-			}
-
-		});
-
-	protected FileHeaders(int size) {
+	protected ZipContent(int size) {
 		this.nameHashCode = new int[size];
-		this.originalPosition = new int[size];
+		this.centralDirectoryOffset = new int[size];
+		this.position = new int[size];
 	}
 
-	@Override
-	public Iterator<FileHeader> iterator() {
+	public DataBlock getData() {
 		return null;
 	}
 
+	@Override
+	public Iterator<Entry> iterator() {
+		return null;
+	}
+
+	@Override
+	public void close() throws IOException {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
 	FileHeader get(CharSequence name) {
-		int nameHashCode = 0;
+		int nameHashCode = 0; // FIXME JDK does interesting trick to save two lookups
+		// See ZipCoder.hash...
 		FileHeader fileHeader = get(nameHashCode, name, NO_SUFFIX);
 		if (fileHeader == null) {
 			// FIXME udpate hash code
@@ -101,13 +120,13 @@ public abstract sealed class FileHeaders implements Iterable<FileHeader> {
 
 	private FileHeader getByIndex(int index) {
 		try {
-			FileHeader fileHeader = this.fileHeaderCache.get(index);
+			FileHeader fileHeader = this.entryCache.get(index);
 			if (fileHeader != null) {
 				return fileHeader;
 			}
-			long centralDirectoryOffset = getCentralDirectoryOffset(index);
+			long centralDirectoryOffset = this.centralDirectoryOffset[index];
 			fileHeader = DunnnoFileHeader.from(centralDirectoryOffset);
-			this.fileHeaderCache.put(index, fileHeader);
+			this.entryCache.put(index, fileHeader);
 			return fileHeader;
 		}
 		catch (IOException ex) {
@@ -143,13 +162,10 @@ public abstract sealed class FileHeaders implements Iterable<FileHeader> {
 		}
 	}
 
-	protected abstract long getCentralDirectoryOffset(int index);
-
-	protected abstract void setCentralDirectoryOffset(int index, long centralDirectoryOffset);
-
-	protected void swap(int i, int j) {
+	private void swap(int i, int j) {
 		swap(this.nameHashCode, i, j);
-		swap(this.originalPosition, i, j);
+		swap(this.centralDirectoryOffset, i, j);
+		swap(this.position, i, j);
 	}
 
 	protected static void swap(int[] array, int i, int j) {
@@ -158,81 +174,25 @@ public abstract sealed class FileHeaders implements Iterable<FileHeader> {
 		array[j] = temp;
 	}
 
-	public static FileHeaders from(Path zip) {
-		return from(zip, null);
+	public static ZipContent from(Path zip) {
+		return from(new Source(zip.toAbsolutePath(), null));
 	}
 
-	public static FileHeaders from(Path zip, String nestedEntryName) {
+	public static ZipContent from(Path containerZip, String nestedEntryName) {
+		return from(new Source(containerZip.toAbsolutePath(), nestedEntryName));
+	}
+
+	private static ZipContent from(Source source) {
 		return null;
 	}
 
-	private static record Location(Path zip, String nestedEntryName) {
+	private static record Source(Path path, String nestedEntryName) {
 
 	}
 
-	/**
-	 * {@link FileHeaders} implementation for zip files that use 32 bit offsets.
-	 */
-	private static final class Zip32 extends FileHeaders {
+	public interface Entry {
 
-		private final int[] centralDirectoryOffset;
-
-		protected Zip32(int size) {
-			super(size);
-			this.centralDirectoryOffset = new int[size];
-		}
-
-		@Override
-		protected long getCentralDirectoryOffset(int index) {
-			return this.centralDirectoryOffset[index];
-		}
-
-		@Override
-		protected void setCentralDirectoryOffset(int index, long centralDirectoryOffset) {
-			this.centralDirectoryOffset[index] = (int) centralDirectoryOffset;
-		}
-
-		@Override
-		protected void swap(int i, int j) {
-			super.swap(i, j);
-			swap(this.centralDirectoryOffset, i, j);
-		}
-
-	}
-
-	/**
-	 * {@link FileHeaders} implementation for zip files that use 64 bit offsets.
-	 */
-	private static final class Zip64 extends FileHeaders {
-
-		private final long[] centralDirectoryOffset;
-
-		protected Zip64(int size) {
-			super(size);
-			this.centralDirectoryOffset = new long[size];
-		}
-
-		@Override
-		protected long getCentralDirectoryOffset(int index) {
-			return this.centralDirectoryOffset[index];
-		}
-
-		@Override
-		protected void setCentralDirectoryOffset(int index, long centralDirectoryOffset) {
-			this.centralDirectoryOffset[index] = centralDirectoryOffset;
-		}
-
-		@Override
-		protected void swap(int i, int j) {
-			super.swap(i, j);
-			swap(this.centralDirectoryOffset, i, j);
-		}
-
-		private static void swap(long[] array, int i, int j) {
-			long temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
-		}
+		DataBlock getData();
 
 	}
 
