@@ -25,7 +25,6 @@ import java.nio.ByteOrder;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @param pos the position where this record begins in the source {@link DataBlock}
  * @param numberOfThisDisk the number of the disk with the start of the zip64 end of
  * central directory
  * @param offsetToZip64EndOfCentralDirectoryRecord the relative offset of the zip64 end of
@@ -34,7 +33,7 @@ import java.nio.ByteOrder;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.15 of the Zip File Format Specification</a>
  */
-record Zip64EndOfCentralDirectoryLocator(long pos, int numberOfThisDisk, long offsetToZip64EndOfCentralDirectoryRecord,
+record Zip64EndOfCentralDirectoryLocator(int numberOfThisDisk, long offsetToZip64EndOfCentralDirectoryRecord,
 		int totalNumberOfDisks) {
 
 	private static final int SIGNATURE = 0x07064b50;
@@ -62,7 +61,7 @@ record Zip64EndOfCentralDirectoryLocator(long pos, int numberOfThisDisk, long of
 		if (buffer.getInt() != SIGNATURE) {
 			return null;
 		}
-		return new Zip64EndOfCentralDirectoryLocator(pos, buffer.getInt(), buffer.getLong(), buffer.getInt());
+		return new Zip64EndOfCentralDirectoryLocator(buffer.getInt(), buffer.getLong(), buffer.getInt());
 	}
 
 }

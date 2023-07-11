@@ -85,7 +85,7 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 			long totalRead = dataBlock.size() - endPos;
 			if (totalRead > MAXIMUM_SIZE) {
 				throw new IOException(
-						"Unable to find ZIP central directory records after reading " + totalRead + " bytes");
+						"Zip 'End Of Central Directory Record' not found after reading " + totalRead + " bytes");
 			}
 			long startPos = endPos - buffer.limit();
 			if (startPos < 0) {
@@ -99,7 +99,7 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 			}
 			endPos = endPos - BUFFER_SIZE + MINIMUM_SIZE;
 		}
-		throw new IOException("Unable to find ZIP central directory records after reading entire data block");
+		throw new IOException("Zip 'End Of Central Directory Record' not found after reading entire data block");
 	}
 
 	private static int findInBuffer(ByteBuffer buffer) {

@@ -21,10 +21,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * A ZIP File "Central directory file header record" (CDFH).
+ * A ZIP File "Local file header record" (LFH).
  *
- * @author Phillip Webb
- * @param versionMadeBy the version that made the zip
  * @param versionNeededToExtract the version needed to extract the zip
  * @param generalPurposeBitFlag the general purpose bit flag
  * @param compressionMethod the compression method used for this entry
@@ -35,35 +33,27 @@ import java.nio.ByteOrder;
  * @param uncompressedSize the size of the entry when uncompressed
  * @param fileNameLength the file name length
  * @param extraFieldLength the extra field length
- * @param fileCommentLength the comment length
- * @param diskNumberStart the disk number where the entry starts
- * @param internalFileAttributes the internal file attributes
- * @param externalFileAttributes the external file attributes
- * @param offsetToLocalHeader the relative offset to the local file header
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
- * 4.3.12 of the Zip File Format Specification</a>
+ * 4.7.3 of the Zip File Format Specification</a>
  */
-record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract, short generalPurposeBitFlag,
-		short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32, int compressedSize,
-		int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
-		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
+record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeBitFlag, short compressionMethod,
+		short lastModFileTime, short lastModFileDate, int crc32, int compressedSize, int uncompressedSize,
+		short fileNameLength, short extraFieldLength) {
 
-	private static final int SIGNATURE = 0x02014b50;
+	private static final int SIGNATURE = 0x04034b50;
 
-	private static final int MINIMUM_SIZE = 46;
+	private static final int MINIMUM_SIZE = 30;
 
-	CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+	LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		dataBlock.readFully(buffer, pos);
 		buffer.rewind();
 		if (buffer.getInt() != SIGNATURE) {
-			throw new IOException("Zip 'Central Directory File Header Record' not found at position " + pos);
+			throw new IOException("Zip 'Local File Header Record' not found at position " + pos);
 		}
-		return new CentralDirectoryFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getInt(), buffer.getInt(),
-				buffer.getInt(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getInt(), buffer.getInt());
+		return new LocalFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
+				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getShort(),
+				buffer.getShort());
 	}
-
 }

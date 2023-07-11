@@ -16,35 +16,144 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
- * @author pwebb
+ * Reference counted {@link DataBlock} implementation backed by a {@link FileChannel} with
+ * support for slicing.
+ *
+ * @author Phillip Webb
  */
-class FileChannelDataBlock implements DataBlock {
+class FileChannelDataBlock implements DataBlock, Closeable {
 
-	// FIXME needs to support slice
+	private final Object lock = new Object();
 
-	private final FileChannel fileChannel;
+	private volatile int referenceCount;
 
-	FileChannelDataBlock(FileChannel fileChannel) {
-		this.fileChannel = fileChannel;
+	private volatile FileChannel fileChannel;
+
+	private final Opener opener;
+
+	private final Closer closer;
+
+	private final long offset;
+
+	private final long size;
+
+	FileChannelDataBlock(Opener opener, Closer closer) throws IOException {
+		this(opener, closer, 0, -1);
+	}
+
+	private FileChannelDataBlock(Opener opener, Closer closer, long offset, long size) throws IOException {
+		this.referenceCount = 1;
+		this.fileChannel = opener.open();
+		this.opener = opener;
+		this.closer = closer;
+		this.offset = offset;
+		this.size = (size != -1) ? size : this.fileChannel.size();
 	}
 
 	@Override
 	public long size() throws IOException {
-		return this.fileChannel.size();
+		return this.size;
 	}
 
 	@Override
 	public int read(ByteBuffer dst, long position) throws IOException {
-		return this.fileChannel.read(dst, position);
+		if (position < 0) {
+			throw new IllegalArgumentException("Position must not be negative");
+		}
+		ensureOpen();
+		int remaining = (int) (this.size - position);
+		if (remaining <= 0) {
+			return -1;
+		}
+		int originalDestinationLimit = -1;
+		if (dst.remaining() > remaining) {
+			originalDestinationLimit = dst.limit();
+			dst.limit(remaining);
+		}
+		int result = this.fileChannel.read(dst, this.offset + position);
+		if (originalDestinationLimit != -1) {
+			dst.limit(originalDestinationLimit);
+		}
+		return result;
 	}
 
+	FileChannelDataBlock openSlice(long offset, long size) throws IOException {
+		if (offset < 0) {
+			throw new IllegalArgumentException("Offset must not be negative");
+		}
+		if (size < 0 || offset + size > this.size) {
+			throw new IllegalArgumentException("Size must not be negative and must be within bounds");
+		}
+		return new FileChannelDataBlock(this::openDuplicate, this::closeDuplicate, this.offset + offset, size);
+	}
+
+	private FileChannel openDuplicate() throws IOException {
+		open();
+		return this.fileChannel;
+	}
+
+	private void closeDuplicate(FileChannel fileChannel) throws IOException {
+		close();
+	}
+
+	private void ensureOpen() throws ClosedChannelException {
+		synchronized (this.lock) {
+			if (this.referenceCount == 0) {
+				throw new ClosedChannelException();
+			}
+		}
+	}
+
+	void open() throws IOException {
+		synchronized (this.lock) {
+			if (this.referenceCount == 0) {
+				this.fileChannel = this.opener.open();
+			}
+			this.referenceCount++;
+		}
+	}
+
+	@Override
 	public void close() throws IOException {
-		this.fileChannel.close();
+		synchronized (this.lock) {
+			if (this.referenceCount == 0) {
+				return;
+			}
+			this.referenceCount--;
+			if (this.referenceCount == 0) {
+				this.closer.close(this.fileChannel);
+				this.fileChannel = null;
+			}
+		}
+	}
+
+	static FileChannelDataBlock open(Path path) throws IOException {
+		if (!Files.isRegularFile(path)) {
+			throw new IllegalArgumentException(path + " must be a regular file");
+		}
+		return new FileChannelDataBlock(() -> FileChannel.open(path, StandardOpenOption.READ), FileChannel::close);
+	}
+
+	interface Opener {
+
+		FileChannel open() throws IOException;
+
+	}
+
+	interface Closer {
+
+		void close(FileChannel channel) throws IOException;
+
 	}
 
 }

@@ -18,11 +18,13 @@ package org.springframework.boot.loader.zip;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provides raw access to content from a regular or nested zip file. This class performs
@@ -31,15 +33,16 @@ import java.util.Map;
  * from a zip file nested inside another file as long as the entry is not compressed.
  * <p>
  * In order to reduce memory consumption, this implementation stores only the the hash
- * code of the entry name, the central directory offset and the original position. Entries
- * are stored internally in {@code hashCode} order so that a binary search can be used to
- * quickly find an entry by name or determine if the zip file doesn't have a given entry.
+ * code of the entry names, the central directory offsets and the original positions.
+ * Entries are stored internally in {@code hashCode} order so that a binary search can be
+ * used to quickly find an entry by name or determine if the zip file doesn't have a given
+ * entry.
  * <p>
  * {@link ZipContent} for a typical Spring Boot application JAR will have somewhere in the
  * region of 10,500 entries which should consume about 122K.
  * <p>
  * {@link ZipContent} results are cached and it is assumed that zip content will not
- * change once loaded. Only UTF-8 strings are supported by this parser.
+ * change once loaded. Only entries with UTF-8 strings are supported by this parser.
  * <p>
  * To release {@link ZipContent} resources, the {@link #close()} method should be called
  * explicitly or by try-with-resources.
@@ -56,38 +59,74 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	protected static final int ENTRY_CACHE_SIZE = 25;
 
-	private static final Map<Source, ZipContent> cache = new HashMap<>();
+	private static final Map<Source, ZipContent> cache = new ConcurrentHashMap<>();
 
-	private final int[] nameHashCode;
+	private Source source;
 
-	private final int[] centralDirectoryOffset;
+	private int references;
 
-	private final int[] position;
+	private int[] nameHashCode;
 
-	protected ZipContent(int size) {
-		this.nameHashCode = new int[size];
-		this.centralDirectoryOffset = new int[size];
-		this.position = new int[size];
+	private int[] centralDirectoryOffset;
+
+	private int[] position;
+
+	private final Object lock = new Object();
+
+	private volatile FileChannelDataBlock dataBlock;
+
+	private ZipContent(int numberOfEntries) {
+		this.nameHashCode = new int[numberOfEntries];
+		this.centralDirectoryOffset = new int[numberOfEntries];
+		this.position = new int[numberOfEntries];
 	}
 
+	/**
+	 * @param source
+	 */
+	public ZipContent(Source source) {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * Return the data block containing the zip data. This may be smaller than the
+	 * original file since additional bytes are permitted at the front of a zip file.
+	 * @return the zip data
+	 */
 	public DataBlock getData() {
 		return null;
 	}
 
+	/**
+	 * Iterate entries in the order that they were written to the zip file.
+	 *
+	 * @see Iterable#iterator()
+	 */
 	@Override
 	public Iterator<Entry> iterator() {
 		return null;
 	}
 
-	@Override
-	public void close() throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private ZipContent open() {
+		synchronized (this.lock) {
+			return this;
+		}
 	}
 
-	FileHeader get(CharSequence name) {
+	/**
+	 * Close this jar file, releasing the underlying file if this was the last reference.
+	 * @see java.io.Closeable#close()
+	 */
+	@Override
+	public void close() throws IOException {
+		synchronized (this.lock) {
+		}
+	}
+
+	Entry get(CharSequence name) {
 		int nameHashCode = 0; // FIXME JDK does interesting trick to save two lookups
 		// See ZipCoder.hash...
-		FileHeader fileHeader = get(nameHashCode, name, NO_SUFFIX);
+		Entry fileHeader = get(nameHashCode, name, NO_SUFFIX);
 		if (fileHeader == null) {
 			// FIXME udpate hash code
 			fileHeader = get(nameHashCode, name, SLASH);
@@ -95,12 +134,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return null;
 	}
 
-	private FileHeader get(int nameHashCode, CharSequence name, char suffix) {
+	private Entry get(int nameHashCode, CharSequence name, char suffix) {
 		int index = getFirstIndex(nameHashCode);
 		while (index >= 0 && index < this.nameHashCode.length && this.nameHashCode[index] == nameHashCode) {
-			FileHeader candidagte = getByIndex(index);
-			if (candidagte.hasName(name, suffix)) {
-				return candidagte;
+			Entry candidate = getByIndex(index);
+			if (candidate.hasName(name, suffix)) {
+				return candidate;
 			}
 			index++;
 		}
@@ -118,15 +157,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return index;
 	}
 
-	private FileHeader getByIndex(int index) {
+	private Entry getByIndex(int index) {
 		try {
-			FileHeader fileHeader = this.entryCache.get(index);
-			if (fileHeader != null) {
-				return fileHeader;
-			}
 			long centralDirectoryOffset = this.centralDirectoryOffset[index];
-			fileHeader = DunnnoFileHeader.from(centralDirectoryOffset);
-			this.entryCache.put(index, fileHeader);
+			Entry fileHeader = null;// ; DunnnoFileHeader.from(centralDirectoryOffset);
 			return fileHeader;
 		}
 		catch (IOException ex) {
@@ -174,25 +208,62 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		array[j] = temp;
 	}
 
-	public static ZipContent from(Path zip) {
+	public static ZipContent from(Path zip) throws IOException {
 		return from(new Source(zip.toAbsolutePath(), null));
 	}
 
-	public static ZipContent from(Path containerZip, String nestedEntryName) {
+	public static ZipContent from(Path containerZip, String nestedEntryName) throws IOException {
 		return from(new Source(containerZip.toAbsolutePath(), nestedEntryName));
 	}
 
-	private static ZipContent from(Source source) {
-		return null;
+	private static ZipContent from(Source source) throws IOException {
+		ZipContent zipContent = cache.get(source);
+		if (zipContent != null) {
+			return zipContent.open();
+		}
+		zipContent = ZipContent.load(source);
+		ZipContent previouslyCached = cache.putIfAbsent(source, zipContent);
+		if (previouslyCached != null) { // Someone else got to it
+			zipContent.close();
+			return previouslyCached.open();
+		}
+		return zipContent;
+	}
+
+	/**
+	 * @param source
+	 * @return
+	 */
+	private static ZipContent load(Source source) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 	private static record Source(Path path, String nestedEntryName) {
 
+		FileChannelDataBlock openDataBlock() throws IOException {
+			FileChannel.open(this.path, StandardOpenOption.READ);
+
+			ZipContent.from(this.path);
+			// get the entry. Make sure it's not compressed, get the offset
+			// create a new block with some slice
+
+			return null;
+		}
+
 	}
 
-	public interface Entry {
+	public class Entry {
 
-		DataBlock getData();
+		/**
+		 * @param name
+		 * @param suffix
+		 * @return
+		 */
+		public boolean hasName(CharSequence name, char suffix) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Auto-generated method stub");
+		}
 
 	}
 
