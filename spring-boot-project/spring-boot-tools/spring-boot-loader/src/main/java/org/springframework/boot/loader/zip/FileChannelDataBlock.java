@@ -33,11 +33,9 @@ import java.nio.file.StandardOpenOption;
  */
 class FileChannelDataBlock implements DataBlock, Closeable {
 
-	private final Object lock = new Object();
+	private volatile FileChannel fileChannel;
 
 	private volatile int referenceCount;
-
-	private volatile FileChannel fileChannel;
 
 	private final Opener opener;
 
@@ -47,13 +45,15 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 
 	private final long size;
 
+	private final Object lock = new Object();
+
 	FileChannelDataBlock(Opener opener, Closer closer) throws IOException {
 		this(opener, closer, 0, -1);
 	}
 
 	private FileChannelDataBlock(Opener opener, Closer closer, long offset, long size) throws IOException {
-		this.referenceCount = 1;
 		this.fileChannel = opener.open();
+		this.referenceCount = 1;
 		this.opener = opener;
 		this.closer = closer;
 		this.offset = offset;
@@ -87,6 +87,14 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		return result;
 	}
 
+	/**
+	 * Open a new {@link FileChannelDataBlock} slice providing access to a subset of the
+	 * data. The caller is responsible for closing resulting {@link FileChannelDataBlock}.
+	 * @param offset the start offset for the slice relative to this block
+	 * @param size the size of the new slice
+	 * @return a new {@link FileChannelDataBlock} instance
+	 * @throws IOException on I/O error
+	 */
 	FileChannelDataBlock openSlice(long offset, long size) throws IOException {
 		if (offset < 0) {
 			throw new IllegalArgumentException("Offset must not be negative");
@@ -114,6 +122,11 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		}
 	}
 
+	/**
+	 * Open a connection to this block, increasing the reference count and re-opening the
+	 * underlying file channel if necessary.
+	 * @throws IOException on I/O error
+	 */
 	void open() throws IOException {
 		synchronized (this.lock) {
 			if (this.referenceCount == 0) {
@@ -123,6 +136,11 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		}
 	}
 
+	/**
+	 * Close a connection to this block, decreasing the reference count and closing the
+	 * underlying file channel if necessary.
+	 * @throws IOException on I/O error
+	 */
 	@Override
 	public void close() throws IOException {
 		synchronized (this.lock) {
@@ -137,6 +155,12 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		}
 	}
 
+	/**
+	 * Opens a new {@link FileChannelDataBlock} backed by the given file.
+	 * @param path the path of the file to open
+	 * @return a new file channel instance
+	 * @throws IOException on I/O error
+	 */
 	static FileChannelDataBlock open(Path path) throws IOException {
 		if (!Files.isRegularFile(path)) {
 			throw new IllegalArgumentException(path + " must be a regular file");
@@ -144,14 +168,31 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		return new FileChannelDataBlock(() -> FileChannel.open(path, StandardOpenOption.READ), FileChannel::close);
 	}
 
+	/**
+	 * Strategy interface used to handle opening of a {@link FileChannel}.
+	 */
 	interface Opener {
 
+		/**
+		 * Opens the file channel.
+		 * @return the file channel instance
+		 * @throws IOException on I/O error
+		 * @see FileChannel#open(Path, java.nio.file.OpenOption...)
+		 */
 		FileChannel open() throws IOException;
 
 	}
 
+	/**
+	 * Strategy interface used to handle closing of a {@link FileChannel}.
+	 */
 	interface Closer {
 
+		/**
+		 * Close the file channel.
+		 * @param channel the file channel to close
+		 * @throws IOException on I/O error
+		 */
 		void close(FileChannel channel) throws IOException;
 
 	}

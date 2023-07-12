@@ -200,7 +200,7 @@ class FileChannelDataBlockTests {
 		slice.open();
 		assertThat(block).extracting("referenceCount").isEqualTo(1);
 		assertThat(slice).extracting("referenceCount").isEqualTo(1);
-		block.close();
+		slice.close();
 		assertThat(block).extracting("referenceCount").isEqualTo(0);
 		assertThat(slice).extracting("referenceCount").isEqualTo(0);
 		assertThat(opener.calls).isEqualTo(2);
