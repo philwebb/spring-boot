@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.xzip.TestJarCreator;
+import org.springframework.boot.loader.TestJarCreator;
 
 /**
  * @author Phillip Webb
@@ -50,7 +50,7 @@ class EndOfCentralDirectoryRecordTests {
 
 	@Test
 	void test() throws IOException {
-		EndOfCentralDirectoryRecord.find(this.dataBlock);
+		EndOfCentralDirectoryRecord.load(this.dataBlock);
 	}
 
 }

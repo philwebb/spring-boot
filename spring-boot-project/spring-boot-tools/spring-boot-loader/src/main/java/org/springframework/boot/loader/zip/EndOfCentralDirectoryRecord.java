@@ -59,7 +59,7 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 	 * @return the record size
 	 */
 	long size() {
-		return MAXIMUM_SIZE + this.commentLength;
+		return MINIMUM_SIZE + this.commentLength;
 	}
 
 	/**
@@ -70,7 +70,7 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 	 * @return a new {@link EndOfCentralDirectoryRecord} instance
 	 * @throws IOException if the {@link EndOfCentralDirectoryRecord} cannot be read
 	 */
-	static EndOfCentralDirectoryRecord find(DataBlock dataBlock) throws IOException {
+	static EndOfCentralDirectoryRecord load(DataBlock dataBlock) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		long pos = find(dataBlock, buffer);

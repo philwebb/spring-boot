@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.xzip;
+package org.springframework.boot.loader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

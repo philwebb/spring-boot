@@ -41,7 +41,7 @@ public class NotSureTests {
 			writeZip64Jar(out);
 		}
 		FileChannelDataBlock block = new FileChannelDataBlock(FileChannel.open(file.toPath(), StandardOpenOption.READ));
-		EndOfCentralDirectoryRecord endOfCentralDirectoryRecord = EndOfCentralDirectoryRecord.find(block);
+		EndOfCentralDirectoryRecord endOfCentralDirectoryRecord = EndOfCentralDirectoryRecord.load(block);
 		Zip64EndOfCentralDirectoryLocator locator = Zip64EndOfCentralDirectoryLocator.find(block,
 				endOfCentralDirectoryRecord);
 		System.out.println(locator);
