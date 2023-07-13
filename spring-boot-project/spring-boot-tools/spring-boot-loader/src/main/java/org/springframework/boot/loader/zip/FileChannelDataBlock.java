@@ -24,6 +24,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.function.Supplier;
 
 import org.springframework.boot.loader.log.DebugLogger;
 
@@ -96,6 +97,20 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 	}
 
 	/**
+	 * Return a version of this instance with front matter removed. Note that this method
+	 * does not increment the reference count.
+	 * @param pos the new start position
+	 * @return a {@link FileChannelDataBlock} with front matter removed
+	 * @throws IOException on I/O error
+	 */
+	FileChannelDataBlock removeFrontMatter(long pos) throws IOException {
+		if (pos <= 0) {
+			return this;
+		}
+		return new FileChannelDataBlock(this.path, this.opener, this.closer, this.offset + pos, this.size - pos);
+	}
+
+	/**
 	 * Open a new {@link FileChannelDataBlock} slice providing access to a subset of the
 	 * data. The caller is responsible for closing resulting {@link FileChannelDataBlock}.
 	 * @param offset the start offset for the slice relative to this block
@@ -124,10 +139,14 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		close();
 	}
 
-	private void ensureOpen() throws ClosedChannelException {
+	void ensureOpen() throws ClosedChannelException {
+		ensureOpen(ClosedChannelException::new);
+	}
+
+	<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
 		synchronized (this.lock) {
 			if (this.referenceCount == 0) {
-				throw new ClosedChannelException();
+				throw exceptionSupplier.get();
 			}
 		}
 	}

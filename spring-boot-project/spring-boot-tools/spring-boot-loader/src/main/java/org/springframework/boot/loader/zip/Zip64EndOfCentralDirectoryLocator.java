@@ -27,6 +27,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @param pos the position where this record begins in the source {@link DataBlock}
  * @param numberOfThisDisk the number of the disk with the start of the zip64 end of
  * central directory
  * @param offsetToZip64EndOfCentralDirectoryRecord the relative offset of the zip64 end of
@@ -35,7 +36,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.15 of the Zip File Format Specification</a>
  */
-record Zip64EndOfCentralDirectoryLocator(int numberOfThisDisk, long offsetToZip64EndOfCentralDirectoryRecord,
+record Zip64EndOfCentralDirectoryLocator(long pos, int numberOfThisDisk, long offsetToZip64EndOfCentralDirectoryRecord,
 		int totalNumberOfDisks) {
 
 	private static final DebugLogger debug = DebugLogger.get(Zip64EndOfCentralDirectoryLocator.class);
@@ -70,7 +71,7 @@ record Zip64EndOfCentralDirectoryLocator(int numberOfThisDisk, long offsetToZip6
 			return null;
 		}
 		debug.log("Found Zip64EndOfCentralDirectoryLocator at position %s", pos);
-		return new Zip64EndOfCentralDirectoryLocator(signature, buffer.getLong(), signature);
+		return new Zip64EndOfCentralDirectoryLocator(pos, signature, buffer.getLong(), signature);
 	}
 
 }

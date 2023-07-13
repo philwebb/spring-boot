@@ -26,6 +26,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * A ZIP File "Central directory file header record" (CDFH).
  *
  * @author Phillip Webb
+ * @param pos the position where this record begins in the source {@link DataBlock}
  * @param versionMadeBy the version that made the zip
  * @param versionNeededToExtract the version needed to extract the zip
  * @param generalPurposeBitFlag the general purpose bit flag
@@ -35,7 +36,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @param crc32 the CRC32 checksum
  * @param compressedSize the size of the entry when compressed
  * @param uncompressedSize the size of the entry when uncompressed
- * @param fileNameLength the file name length
+ * @param fileNameSize the file name size in bytes
  * @param extraFieldLength the extra field length
  * @param fileCommentLength the comment length
  * @param diskNumberStart the disk number where the entry starts
@@ -45,9 +46,9 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.12 of the Zip File Format Specification</a>
  */
-record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract, short generalPurposeBitFlag,
-		short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32, int compressedSize,
-		int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
+record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short versionNeededToExtract,
+		short generalPurposeBitFlag, short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32,
+		int compressedSize, int uncompressedSize, short fileNameSize, short extraFieldLength, short fileCommentLength,
 		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
 
 	private static final DebugLogger debug = DebugLogger.get(CentralDirectoryFileHeaderRecord.class);
@@ -56,7 +57,15 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 
 	private static final int MINIMUM_SIZE = 46;
 
-	CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+	long size() {
+		return -1; // FIXME
+	}
+
+	long fileNamePos() {
+		return this.pos + MINIMUM_SIZE;
+	}
+
+	static CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		debug.log("Loading CentralDirectoryFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -67,7 +76,7 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 			debug.log("Found incorrect CentralDirectoryFileHeaderRecord signature %s at position %s", signature, pos);
 			throw new IOException("Zip 'Central Directory File Header Record' not found at position " + pos);
 		}
-		return new CentralDirectoryFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
+		return new CentralDirectoryFileHeaderRecord(pos, buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getShort(), buffer.getShort(), signature, signature, signature,
 				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				signature, signature);
