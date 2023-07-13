@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * A ZIP File "Local file header record" (LFH).
  *
@@ -40,11 +42,14 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 		short lastModFileTime, short lastModFileDate, int crc32, int compressedSize, int uncompressedSize,
 		short fileNameLength, short extraFieldLength) {
 
+	private static final DebugLogger debug = DebugLogger.get(LocalFileHeaderRecord.class);
+
 	private static final int SIGNATURE = 0x04034b50;
 
 	private static final int MINIMUM_SIZE = 30;
 
 	LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+		debug.log("Loading LocalFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		dataBlock.readFully(buffer, pos);

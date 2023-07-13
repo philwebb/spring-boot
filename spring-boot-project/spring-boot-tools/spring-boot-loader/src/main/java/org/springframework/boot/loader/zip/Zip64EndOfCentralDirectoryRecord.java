@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * A Zip64 end of central directory record.
  *
@@ -47,6 +49,8 @@ record Zip64EndOfCentralDirectoryRecord(long sizeOfZip64EndOfCentralDirectoryRec
 		long numberOfCentralDirectoryEntriesOnThisDisk, long totalNumberOfCentralDirectoryEntries,
 		long sizeOfCentralDirectory, long offsetToStartOfCentralDirectory) {
 
+	private static final DebugLogger debug = DebugLogger.get(Zip64EndOfCentralDirectoryRecord.class);
+
 	private static final int SIGNATURE = 0x06054b50;
 
 	private static final int MINIMUM_SIZE = 56;
@@ -59,15 +63,17 @@ record Zip64EndOfCentralDirectoryRecord(long sizeOfZip64EndOfCentralDirectoryRec
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		long pos = locator.offsetToZip64EndOfCentralDirectoryRecord();
+		debug.log("Loading Zip64EndOfCentralDirectoryRecord from position %s", pos);
 		dataBlock.readFully(buffer, pos);
 		buffer.rewind();
-		if (buffer.getInt() != SIGNATURE) {
+		int signature = buffer.getInt();
+		if (signature != SIGNATURE) {
+			debug.log("Found incorrect Zip64EndOfCentralDirectoryRecord signature %s at position %s", signature, pos);
 			throw new IOException("Zip64 'End Of Central Directory Record' not found at position " + pos
 					+ ". Zip file is corrupt or includes prefixed bytes which are not supported with Zip64 files");
 		}
-		return new Zip64EndOfCentralDirectoryRecord(buffer.getLong(), buffer.getShort(), buffer.getShort(),
-				buffer.getInt(), buffer.getInt(), buffer.getLong(), buffer.getLong(), buffer.getLong(),
-				buffer.getLong());
+		return new Zip64EndOfCentralDirectoryRecord(buffer.getLong(), buffer.getShort(), buffer.getShort(), signature,
+				signature, buffer.getLong(), buffer.getLong(), buffer.getLong(), buffer.getLong());
 	}
 
 }

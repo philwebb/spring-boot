@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * A Zip64 end of central directory locator.
  *
@@ -36,6 +38,8 @@ import java.nio.ByteOrder;
 record Zip64EndOfCentralDirectoryLocator(int numberOfThisDisk, long offsetToZip64EndOfCentralDirectoryRecord,
 		int totalNumberOfDisks) {
 
+	private static final DebugLogger debug = DebugLogger.get(Zip64EndOfCentralDirectoryLocator.class);
+
 	private static final int SIGNATURE = 0x07064b50;
 
 	static final int SIZE = 20;
@@ -50,18 +54,23 @@ record Zip64EndOfCentralDirectoryLocator(int numberOfThisDisk, long offsetToZip6
 	 */
 	static Zip64EndOfCentralDirectoryLocator find(DataBlock dataBlock,
 			EndOfCentralDirectoryRecord endOfCentralDirectoryRecord) throws IOException {
+		debug.log("Finding Zip64EndOfCentralDirectoryLocator from EOCD %s", endOfCentralDirectoryRecord);
 		long pos = endOfCentralDirectoryRecord.pos() - SIZE;
 		if (pos < 0) {
+			debug.log("No Zip64EndOfCentralDirectoryLocator due to negative position %s", pos);
 			return null;
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		dataBlock.read(buffer, pos);
 		buffer.rewind();
-		if (buffer.getInt() != SIGNATURE) {
+		int signature = buffer.getInt();
+		if (signature != SIGNATURE) {
+			debug.log("Found incorrect Zip64EndOfCentralDirectoryLocator signature %s at position %s", signature, pos);
 			return null;
 		}
-		return new Zip64EndOfCentralDirectoryLocator(buffer.getInt(), buffer.getLong(), buffer.getInt());
+		debug.log("Found Zip64EndOfCentralDirectoryLocator at position %s", pos);
+		return new Zip64EndOfCentralDirectoryLocator(signature, buffer.getLong(), signature);
 	}
 
 }
