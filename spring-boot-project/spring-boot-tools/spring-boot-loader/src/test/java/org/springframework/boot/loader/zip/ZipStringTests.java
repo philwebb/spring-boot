@@ -18,6 +18,8 @@ package org.springframework.boot.loader.zip;
 
 import java.nio.charset.StandardCharsets;
 
+import org.assertj.core.api.AbstractBooleanAssert;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -33,62 +35,121 @@ class ZipStringTests {
 
 	@ParameterizedTest
 	@EnumSource
-	void hashCodeGeneratesCorrectHashCode(SourceType sourceType) throws Exception {
-		testHashCode(sourceType, true, "abcABC123xyz!");
-		testHashCode(sourceType, false, "abcABC123xyz!");
+	void hashGeneratesCorrectHashCode(HashSourceType sourceType) throws Exception {
+		testHash(sourceType, true, "abcABC123xyz!");
+		testHash(sourceType, false, "abcABC123xyz!");
 	}
 
 	@ParameterizedTest
 	@EnumSource
-	void hashCodeWhenHasSpecialCharsGeneratesCorrectHashCode(SourceType sourceType) throws Exception {
-		testHashCode(sourceType, true, "special/\u00EB.dat");
+	void hashWhenHasSpecialCharsGeneratesCorrectHashCode(HashSourceType sourceType) throws Exception {
+		testHash(sourceType, true, "special/\u00EB.dat");
 	}
 
 	@ParameterizedTest
 	@EnumSource
-	void hashCodeWhenHasCyrillicCharsGeneratesCorrectHashCode(SourceType sourceType) throws Exception {
-		testHashCode(sourceType, true, "\u0432\u0435\u0441\u043D\u0430");
+	void hashWhenHasCyrillicCharsGeneratesCorrectHashCode(HashSourceType sourceType) throws Exception {
+		testHash(sourceType, true, "\u0432\u0435\u0441\u043D\u0430");
 	}
 
 	@ParameterizedTest
 	@EnumSource
-	void hashCodeWhenHasEmojiGeneratesCorrectHashCode(SourceType sourceType) throws Exception {
-		testHashCode(sourceType, true, "\ud83d\udca9");
+	void hashWhenHasEmojiGeneratesCorrectHashCode(HashSourceType sourceType) throws Exception {
+		testHash(sourceType, true, "\ud83d\udca9");
 	}
 
 	@ParameterizedTest
 	@EnumSource
-	void hashCodeWhenOnlyDifferenceIsEndSlashGeneratesSameHashCode(SourceType sourceType) throws Exception {
-		testHashCode(sourceType, "", true, "/".hashCode());
-		testHashCode(sourceType, "/", true, "/".hashCode());
-		testHashCode(sourceType, "a/b", true, "a/b/".hashCode());
-		testHashCode(sourceType, "a/b/", true, "a/b/".hashCode());
+	void hashWhenOnlyDifferenceIsEndSlashGeneratesSameHashCode(HashSourceType sourceType) throws Exception {
+		testHash(sourceType, "", true, "/".hashCode());
+		testHash(sourceType, "/", true, "/".hashCode());
+		testHash(sourceType, "a/b", true, "a/b/".hashCode());
+		testHash(sourceType, "a/b/", true, "a/b/".hashCode());
 	}
 
-	void testHashCode(SourceType sourceType, boolean addEndSlash, String source) throws Exception {
+	void testHash(HashSourceType sourceType, boolean addEndSlash, String source) throws Exception {
 		String expected = (addEndSlash && !source.endsWith("/")) ? source + "/" : source;
-		testHashCode(sourceType, source, addEndSlash, expected.hashCode());
+		testHash(sourceType, source, addEndSlash, expected.hashCode());
 	}
 
-	void testHashCode(SourceType sourceType, String source, boolean addEndSlash, int expected) throws Exception {
+	void testHash(HashSourceType sourceType, String source, boolean addEndSlash, int expected) throws Exception {
 		switch (sourceType) {
 			case STRING -> {
-				assertThat(ZipString.hashCode(source, addEndSlash)).isEqualTo(expected);
+				assertThat(ZipString.hash(source, addEndSlash)).isEqualTo(expected);
 			}
 			case CHAR_SEQUENCE -> {
 				CharSequence charSequence = new StringBuilder(source);
-				assertThat(ZipString.hashCode(charSequence, addEndSlash)).isEqualTo(expected);
+				assertThat(ZipString.hash(charSequence, addEndSlash)).isEqualTo(expected);
 			}
 			case DATA_BLOCK -> {
 				ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
-				assertThat(ZipString.hashCode(dataBlock, 0, (int) dataBlock.size(), addEndSlash)).isEqualTo(expected);
+				assertThat(ZipString.hash(dataBlock, 0, (int) dataBlock.size(), addEndSlash)).isEqualTo(expected);
 
 			}
 		}
-
 	}
 
-	enum SourceType {
+	@Test
+	void matchesWhenExactMatchReturnsTrue() throws Exception {
+		assertMatches("one/two/three", "one/two/three", false).isTrue();
+	}
+
+	@Test
+	void matchesWhenNotMatchWithSameLengthReturnsFalse() throws Exception {
+		assertMatches("one/two/three", "one/too/three", false).isFalse();
+	}
+
+	@Test
+	void matchesWhenExactMatchWithSpecialCharsReturnsTrue() throws Exception {
+		assertMatches("special/\u00EB.dat", "special/\u00EB.dat", false).isTrue();
+	}
+
+	@Test
+	void matchesWhenExactMatchWithCyrillicCharsReturnsTrue() throws Exception {
+		assertMatches("\u0432\u0435\u0441\u043D\u0430", "\u0432\u0435\u0441\u043D\u0430", false).isTrue();
+	}
+
+	@Test
+	void matchesWhenNoMatchWithCyrillicCharsReturnsFalse() throws Exception {
+		assertMatches("\u0432\u0435\u0441\u043D\u0430", "\u0432\u0435\u0441\u043D\u043D", false).isFalse();
+	}
+
+	@Test
+	void matchesWhenExactMatchWithEmojiCharsReturnsTrue() throws Exception {
+		assertMatches("\ud83d\udca9", "\ud83d\udca9", false).isTrue();
+	}
+
+	@Test
+	void matchesWhenExactMatchWithIgnoreSlashReturnsTrue() throws Exception {
+		assertMatches("one/two/three/", "one/two/three", true).isTrue();
+		assertMatches("one/two/three", "one/two/three/", true).isTrue();
+	}
+
+	@Test
+	void matchesWhenMismatchWithIgnoreSlashReturnsFalse() throws Exception {
+		assertMatches("one/two/three/", "one/too/three", true).isFalse();
+		assertMatches("one/two/three", "one/too/three/", true).isFalse();
+		assertMatches("one/two/three//", "one/two/three", true).isFalse();
+		assertMatches("one/two/three", "one/two/three//", true).isFalse();
+	}
+
+	@Test
+	void matchesWhenDataBlockShorterThenCharSequenceReturnsFalse() throws Exception {
+		assertMatches("one/two/thre", "one/two/three", false).isFalse();
+	}
+
+	@Test
+	void matchesWhenCharSequenceShorterThanDataBlockReturnsFalse() throws Exception {
+		assertMatches("one/two/three", "one/two/thre", false).isFalse();
+	}
+
+	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean ignoreEndSlash)
+			throws Exception {
+		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
+		return assertThat(ZipString.matches(dataBlock, 0, (int) dataBlock.size(), charSequence, ignoreEndSlash));
+	}
+
+	enum HashSourceType {
 
 		STRING, CHAR_SEQUENCE, DATA_BLOCK
 

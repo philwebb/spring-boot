@@ -27,17 +27,17 @@ import org.springframework.boot.loader.log.DebugLogger;
  *
  * @author Phillip Webb
  * @param pos the position where this record begins in the source {@link DataBlock}
- * @param numberOfThisDisk the number of this disk (or 0xffff for ZIP64)
+ * @param numberOfThisDisk the number of this disk (or 0xffff for Zip64)
  * @param diskWhereCentralDirectoryStarts the disk where central directory starts (or
- * 0xffff for ZIP64)
+ * 0xffff for Zip64)
  * @param numberOfCentralDirectoryEntriesOnThisDisk the number of central directory
- * entries on this disk (or 0xffff for ZIP64)
+ * entries on this disk (or 0xffff for Zip64)
  * @param totalNumberOfCentralDirectoryEntries the total number of central directory
- * entries (or 0xffff for ZIP64)
+ * entries (or 0xffff for Zip64)
  * @param sizeOfCentralDirectory the size of central directory (bytes) (or 0xffffffff for
- * ZIP64)
+ * Zip64)
  * @param offsetToStartOfCentralDirectory the offset of start of central directory,
- * relative to start of archive (or 0xffffffff for ZIP64)
+ * relative to start of archive (or 0xffffffff for Zip64)
  * @param commentLength the length of the comment field
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.16 of the Zip File Format Specification</a>
