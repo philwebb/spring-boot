@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * Reference counted {@link DataBlock} implementation backed by a {@link FileChannel} with
  * support for slicing.
@@ -33,9 +35,13 @@ import java.nio.file.StandardOpenOption;
  */
 class FileChannelDataBlock implements DataBlock, Closeable {
 
+	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
+
 	private volatile FileChannel fileChannel;
 
 	private volatile int referenceCount;
+
+	private final Path path;
 
 	private final Opener opener;
 
@@ -47,17 +53,19 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 
 	private final Object lock = new Object();
 
-	FileChannelDataBlock(Opener opener, Closer closer) throws IOException {
-		this(opener, closer, 0, -1);
+	FileChannelDataBlock(Path path, Opener opener, Closer closer) throws IOException {
+		this(path, opener, closer, 0, -1);
 	}
 
-	private FileChannelDataBlock(Opener opener, Closer closer, long offset, long size) throws IOException {
+	private FileChannelDataBlock(Path path, Opener opener, Closer closer, long offset, long size) throws IOException {
+		this.path = path;
 		this.fileChannel = opener.open();
 		this.referenceCount = 1;
 		this.opener = opener;
 		this.closer = closer;
 		this.offset = offset;
 		this.size = (size != -1) ? size : this.fileChannel.size();
+		debug.log("Created new FileChannelDataBlock '%s' at %s with size %s", path, offset, size);
 	}
 
 	@Override
@@ -102,7 +110,9 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		if (size < 0 || offset + size > this.size) {
 			throw new IllegalArgumentException("Size must not be negative and must be within bounds");
 		}
-		return new FileChannelDataBlock(this::openDuplicate, this::closeDuplicate, this.offset + offset, size);
+		debug.log("Openning slice from %s at %s with size %s", this.path, offset, size);
+		return new FileChannelDataBlock(this.path, this::openDuplicate, this::closeDuplicate, this.offset + offset,
+				size);
 	}
 
 	private FileChannel openDuplicate() throws IOException {
@@ -130,9 +140,12 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 	void open() throws IOException {
 		synchronized (this.lock) {
 			if (this.referenceCount == 0) {
+				debug.log("Reopening '%s'", this.path);
 				this.fileChannel = this.opener.open();
 			}
 			this.referenceCount++;
+			debug.log("Reference count for '%s' (%s,%s) incremented to %s", this.path, this.offset, this.size,
+					this.referenceCount);
 		}
 	}
 
@@ -149,9 +162,12 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 			}
 			this.referenceCount--;
 			if (this.referenceCount == 0) {
+				debug.log("Closing '%s'", this.path);
 				this.closer.close(this.fileChannel);
 				this.fileChannel = null;
 			}
+			debug.log("Reference count for '%s' (%s,%s) decremented to %s", this.path, this.offset, this.size,
+					this.referenceCount);
 		}
 	}
 
@@ -165,7 +181,8 @@ class FileChannelDataBlock implements DataBlock, Closeable {
 		if (!Files.isRegularFile(path)) {
 			throw new IllegalArgumentException(path + " must be a regular file");
 		}
-		return new FileChannelDataBlock(() -> FileChannel.open(path, StandardOpenOption.READ), FileChannel::close);
+		return new FileChannelDataBlock(path, () -> FileChannel.open(path, StandardOpenOption.READ),
+				FileChannel::close);
 	}
 
 	/**

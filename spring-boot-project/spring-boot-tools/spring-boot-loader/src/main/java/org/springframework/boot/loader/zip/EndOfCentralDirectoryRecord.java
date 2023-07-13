@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * A ZIP File "End of central directory record" (EOCD).
  *
@@ -43,6 +45,8 @@ import java.nio.ByteOrder;
 record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskWhereCentralDirectoryStarts,
 		short numberOfCentralDirectoryEntriesOnThisDisk, short totalNumberOfCentralDirectoryEntries,
 		int sizeOfCentralDirectory, int offsetToStartOfCentralDirectory, short commentLength) {
+
+	private static final DebugLogger debug = DebugLogger.get(EndOfCentralDirectoryRecord.class);
 
 	private static final int SIGNATURE = 0x06054b50;
 
@@ -80,6 +84,7 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 
 	private static long find(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
 		long endPos = dataBlock.size();
+		debug.log("Finding EndOfCentralDirectoryRecord starting at end position %s", endPos);
 		while (endPos > 0) {
 			buffer.clear();
 			long totalRead = dataBlock.size() - endPos;
@@ -92,9 +97,11 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 				buffer.limit((int) startPos + buffer.limit());
 				startPos = 0;
 			}
+			debug.log("Finding EndOfCentralDirectoryRecord from %s with limit %s", startPos, buffer.limit());
 			dataBlock.readFully(buffer, startPos);
 			int offset = findInBuffer(buffer);
 			if (offset >= 0) {
+				debug.log("Found EndOfCentralDirectoryRecord at %s + %s", startPos, offset);
 				return startPos + offset;
 			}
 			endPos = endPos - BUFFER_SIZE + MINIMUM_SIZE;

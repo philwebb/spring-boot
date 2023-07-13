@@ -16,9 +16,35 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 /**
- * @author pwebb
+ * {@link DataBlock} backed by a byte array that can be used for testing.
+ *
+ * @author Phillip Webb
  */
-public class Utf8Encoding {
+class ByteArrayDataBlock implements DataBlock {
+
+	private byte[] bytes;
+
+	ByteArrayDataBlock(byte... bytes) {
+		this.bytes = bytes;
+	}
+
+	@Override
+	public long size() throws IOException {
+		return this.bytes.length;
+	}
+
+	@Override
+	public int read(ByteBuffer dst, long position) throws IOException {
+		int length = this.bytes.length - (int) position;
+		if (length > dst.remaining()) {
+			length = dst.remaining();
+		}
+		dst.put(this.bytes, (int) position, length);
+		return length;
+	}
 
 }

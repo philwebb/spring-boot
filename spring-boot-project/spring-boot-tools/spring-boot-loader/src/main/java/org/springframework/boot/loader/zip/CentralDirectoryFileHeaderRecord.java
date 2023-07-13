@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * A ZIP File "Central directory file header record" (CDFH).
  *
@@ -48,22 +50,27 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 		int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
 		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
 
+	private static final DebugLogger debug = DebugLogger.get(CentralDirectoryFileHeaderRecord.class);
+
 	private static final int SIGNATURE = 0x02014b50;
 
 	private static final int MINIMUM_SIZE = 46;
 
 	CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+		debug.log("Loading CentralDirectoryFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		dataBlock.readFully(buffer, pos);
 		buffer.rewind();
-		if (buffer.getInt() != SIGNATURE) {
+		int signature = buffer.getInt();
+		if (signature != SIGNATURE) {
+			debug.log("Found incorrect CentralDirectoryFileHeaderRecord signature %s at position %s", signature, pos);
 			throw new IOException("Zip 'Central Directory File Header Record' not found at position " + pos);
 		}
 		return new CentralDirectoryFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getInt(), buffer.getInt(),
-				buffer.getInt(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getInt(), buffer.getInt());
+				buffer.getShort(), buffer.getShort(), buffer.getShort(), signature, signature, signature,
+				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
+				signature, signature);
 	}
 
 }

@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.boot.loader.log.DebugLogger;
+
 /**
  * Provides raw access to content from a regular or nested zip file. This class performs
  * the low level parsing of a zip file and provide access to raw entry data that it
@@ -50,6 +52,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 3.2.0
  */
 public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
+
+	private static final DebugLogger debug = DebugLogger.get(ZipContent.class);
 
 	private static final char NO_SUFFIX = 0;
 
