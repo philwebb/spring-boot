@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.log.DebugLogger;
 
@@ -158,7 +160,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private boolean hasName(CentralDirectoryFileHeaderRecord centralDirectoryFileHeaderRecord, CharSequence name) {
 		try {
 			long pos = centralDirectoryFileHeaderRecord.fileNamePos();
-			short size = centralDirectoryFileHeaderRecord.fileNameSize();
+			short size = centralDirectoryFileHeaderRecord.fileNameLength();
 			return ZipString.matches(this.data, pos, size, name, true);
 		}
 		catch (IOException ex) {
@@ -258,7 +260,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		}
 
 		private void add(CentralDirectoryFileHeaderRecord record) throws IOException {
-			this.nameHash[this.cursor] = ZipString.hash(this.data, record.fileNamePos(), record.fileNameSize(), true);
+			this.nameHash[this.cursor] = ZipString.hash(this.data, record.fileNamePos(), record.fileNameLength(), true);
 			this.relativeCentralDirectoryOffset[this.cursor] = (int) record.pos();
 			this.index[this.cursor] = this.cursor;
 			this.cursor++;
@@ -392,6 +394,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		Entry(CentralDirectoryFileHeaderRecord record) {
 			this.record = record;
+		}
+
+		<E extends ZipEntry> E as(Function<String, E> factory) {
+			return null;
 		}
 
 	}

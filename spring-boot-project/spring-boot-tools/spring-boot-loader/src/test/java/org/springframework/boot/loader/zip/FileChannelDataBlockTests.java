@@ -142,7 +142,7 @@ class FileChannelDataBlockTests {
 	void openAndCloseHandleReferenceCounting() throws IOException {
 		TestOpener opener = new TestOpener();
 		TestCloser closer = new TestCloser();
-		FileChannelDataBlock block = new FileChannelDataBlock(opener, closer);
+		FileChannelDataBlock block = new FileChannelDataBlock(null, opener, closer);
 		assertThat(block).extracting("referenceCount").isEqualTo(1);
 		assertThat(opener.calls).isEqualTo(1);
 		assertThat(closer.calls).isEqualTo(0);
@@ -176,7 +176,7 @@ class FileChannelDataBlockTests {
 	void openAndCloseSliceHandleReferenceCounting() throws IOException {
 		TestOpener opener = new TestOpener();
 		TestCloser closer = new TestCloser();
-		FileChannelDataBlock block = new FileChannelDataBlock(opener, closer);
+		FileChannelDataBlock block = new FileChannelDataBlock(null, opener, closer);
 		assertThat(block).extracting("referenceCount").isEqualTo(1);
 		assertThat(opener.calls).isEqualTo(1);
 		assertThat(closer.calls).isEqualTo(0);
