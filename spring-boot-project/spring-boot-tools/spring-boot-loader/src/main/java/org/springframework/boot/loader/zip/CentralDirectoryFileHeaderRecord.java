@@ -36,7 +36,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @param crc32 the CRC32 checksum
  * @param compressedSize the size of the entry when compressed
  * @param uncompressedSize the size of the entry when uncompressed
- * @param fileNameSize the file name size in bytes
+ * @param fileNameLength the file name length
  * @param extraFieldLength the extra field length
  * @param fileCommentLength the comment length
  * @param diskNumberStart the disk number where the entry starts
@@ -48,7 +48,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  */
 record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short versionNeededToExtract,
 		short generalPurposeBitFlag, short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32,
-		int compressedSize, int uncompressedSize, short fileNameSize, short extraFieldLength, short fileCommentLength,
+		int compressedSize, int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
 		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
 
 	private static final DebugLogger debug = DebugLogger.get(CentralDirectoryFileHeaderRecord.class);
@@ -58,7 +58,7 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 	private static final int MINIMUM_SIZE = 46;
 
 	long size() {
-		return -1; // FIXME
+		return MINIMUM_SIZE + fileNameLength() + extraFieldLength() + fileCommentLength();
 	}
 
 	long fileNamePos() {
