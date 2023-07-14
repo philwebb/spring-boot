@@ -50,7 +50,7 @@ record Zip64EndOfCentralDirectoryRecord(long size, long sizeOfZip64EndOfCentralD
 
 	private static final DebugLogger debug = DebugLogger.get(Zip64EndOfCentralDirectoryRecord.class);
 
-	private static final int SIGNATURE = 0x06054b50;
+	private static final int SIGNATURE = 0x06064b50;
 
 	private static final int MINIMUM_SIZE = 56;
 
@@ -73,7 +73,8 @@ record Zip64EndOfCentralDirectoryRecord(long size, long sizeOfZip64EndOfCentralD
 					+ ". Zip file is corrupt or includes prefixed bytes which are not supported with Zip64 files");
 		}
 		return new Zip64EndOfCentralDirectoryRecord(size, buffer.getLong(), buffer.getShort(), buffer.getShort(),
-				signature, signature, buffer.getLong(), buffer.getLong(), buffer.getLong(), buffer.getLong());
+				buffer.getInt(), buffer.getInt(), buffer.getLong(), buffer.getLong(), buffer.getLong(),
+				buffer.getLong());
 	}
 
 }

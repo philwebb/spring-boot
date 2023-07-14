@@ -57,10 +57,18 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 
 	private static final int MINIMUM_SIZE = 46;
 
+	/**
+	 * Return the size of this record.
+	 * @return the record size
+	 */
 	long size() {
 		return MINIMUM_SIZE + fileNameLength() + extraFieldLength() + fileCommentLength();
 	}
 
+	/**
+	 * Return the start position of the file name.
+	 * @return the file name start position
+	 */
 	long fileNamePos() {
 		return this.pos + MINIMUM_SIZE;
 	}
@@ -77,9 +85,9 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 			throw new IOException("Zip 'Central Directory File Header Record' not found at position " + pos);
 		}
 		return new CentralDirectoryFileHeaderRecord(pos, buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getShort(), buffer.getShort(), signature, signature, signature,
-				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				signature, signature);
+				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getInt(), buffer.getInt(),
+				buffer.getInt(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
+				buffer.getShort(), buffer.getInt(), buffer.getInt());
 	}
 
 }

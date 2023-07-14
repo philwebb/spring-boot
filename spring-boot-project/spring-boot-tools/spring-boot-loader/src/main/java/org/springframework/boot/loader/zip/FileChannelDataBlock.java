@@ -16,7 +16,6 @@
 
 package org.springframework.boot.loader.zip;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
@@ -34,7 +33,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  *
  * @author Phillip Webb
  */
-class FileChannelDataBlock implements DataBlock, Closeable {
+class FileChannelDataBlock implements CloseableDataBlock {
 
 	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
 

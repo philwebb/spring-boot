@@ -67,6 +67,14 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 	}
 
 	/**
+	 * Return the start position of the comment
+	 * @return the comment start position
+	 */
+	long commentPos() {
+		return pos() + MINIMUM_SIZE;
+	}
+
+	/**
 	 * Create a new {@link EndOfCentralDirectoryRecord} instance from the specified
 	 * {@link DataBlock} by searching backwards from the end until a valid record is
 	 * located.
