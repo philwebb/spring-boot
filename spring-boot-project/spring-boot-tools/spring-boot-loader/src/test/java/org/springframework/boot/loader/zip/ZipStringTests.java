@@ -67,9 +67,9 @@ class ZipStringTests {
 		testHash(sourceType, "a/b/", true, "a/b/".hashCode());
 	}
 
-	void testHash(HashSourceType sourceType, boolean addEndSlash, String source) throws Exception {
-		String expected = (addEndSlash && !source.endsWith("/")) ? source + "/" : source;
-		testHash(sourceType, source, addEndSlash, expected.hashCode());
+	void testHash(HashSourceType sourceType, boolean addSlash, String source) throws Exception {
+		String expected = (addSlash && !source.endsWith("/")) ? source + "/" : source;
+		testHash(sourceType, source, addSlash, expected.hashCode());
 	}
 
 	void testHash(HashSourceType sourceType, String source, boolean addEndSlash, int expected) throws Exception {
@@ -120,13 +120,10 @@ class ZipStringTests {
 	}
 
 	@Test
-	void matchesWhenExactMatchWithIgnoreSlashReturnsTrue() throws Exception {
+	void matchesWithAddSlash() throws Exception {
+		assertMatches("META-INF/MANFIFEST.MF", "META-INF/MANFIFEST.MF", true).isTrue();
 		assertMatches("one/two/three/", "one/two/three", true).isTrue();
-		assertMatches("one/two/three", "one/two/three/", true).isTrue();
-	}
-
-	@Test
-	void matchesWhenMismatchWithIgnoreSlashReturnsFalse() throws Exception {
+		assertMatches("one/two/three", "one/two/three/", true).isFalse();
 		assertMatches("one/two/three/", "one/too/three", true).isFalse();
 		assertMatches("one/two/three", "one/too/three/", true).isFalse();
 		assertMatches("one/two/three//", "one/two/three", true).isFalse();
@@ -143,10 +140,10 @@ class ZipStringTests {
 		assertMatches("one/two/three", "one/two/thre", false).isFalse();
 	}
 
-	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean ignoreEndSlash)
+	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean addSlash)
 			throws Exception {
 		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
-		return assertThat(ZipString.matches(dataBlock, 0, (int) dataBlock.size(), charSequence, ignoreEndSlash));
+		return assertThat(ZipString.matches(dataBlock, 0, (int) dataBlock.size(), charSequence, addSlash));
 	}
 
 	enum HashSourceType {

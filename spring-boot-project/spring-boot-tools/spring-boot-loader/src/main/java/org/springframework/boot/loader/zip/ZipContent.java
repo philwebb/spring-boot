@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.log.DebugLogger;
@@ -45,7 +47,8 @@ import org.springframework.boot.loader.log.DebugLogger;
  * region of 10,500 entries which should consume about 122K.
  * <p>
  * {@link ZipContent} results are cached and it is assumed that zip content will not
- * change once loaded.
+ * change once loaded. Entries and Strings are not cached and will be recreated on each
+ * access which may produce a lot of garbage.
  * <p>
  * To release {@link ZipContent} resources, the {@link #close()} method should be called
  * explicitly or by try-with-resources.
@@ -64,16 +67,22 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final long centralDirectoryPos;
 
+	private final long commentPos;
+
+	private final long commentLength;
+
 	private final int[] nameHash;
 
 	private final int[] relativeCentralDirectoryOffset;
 
 	private final int[] position;
 
-	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, int[] nameHash,
-			int[] relativeCentralDirectoryOffset, int[] position) {
+	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
+			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position) {
 		this.data = data;
 		this.centralDirectoryPos = centralDirectoryPos;
+		this.commentPos = commentPos;
+		this.commentLength = commentLength;
 		this.nameHash = nameHash;
 		this.relativeCentralDirectoryOffset = relativeCentralDirectoryOffset;
 		this.position = position;
@@ -83,10 +92,20 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * Return the data block containing the zip data. For container zip files, this may be
 	 * smaller than the original file since additional bytes are permitted at the front of
 	 * a zip file. For nested zip files, this will be only the contents of the nest zip.
+	 * <p>
+	 * Data contents must not be accessed after calling {@link ZipContent#close()} .
 	 * @return the zip data
 	 */
 	public DataBlock getData() {
 		return this.data;
+	}
+
+	/**
+	 * Return a {@link Stream} of all the {@link Entry entries}.
+	 * @return a stream of entries
+	 */
+	public Stream<Entry> stream() {
+		return StreamSupport.stream(spliterator(), false);
 	}
 
 	/**
@@ -121,6 +140,11 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	@Override
 	public void close() throws IOException {
 		this.data.close();
+	}
+
+	String getComment() {
+		ensureOpen();
+		return ZipString.readString(this.data, this.commentPos, this.commentLength);
 	}
 
 	Entry getEntry(CharSequence name) {
@@ -261,12 +285,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private void add(CentralDirectoryFileHeaderRecord record) throws IOException {
 			this.nameHash[this.cursor] = ZipString.hash(this.data, record.fileNamePos(), record.fileNameLength(), true);
-			this.relativeCentralDirectoryOffset[this.cursor] = (int) record.pos();
+			this.relativeCentralDirectoryOffset[this.cursor] = (int) (record.pos() - this.centralDirectoryPos);
 			this.index[this.cursor] = this.cursor;
 			this.cursor++;
 		}
 
-		private ZipContent finish() {
+		private ZipContent finish(long commentPos, long commentLength) {
 			int size = this.nameHash.length;
 			if (this.cursor != size) {
 				throw new IllegalStateException(
@@ -277,7 +301,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			for (int i = 0; i < size; i++) {
 				positions[this.index[i]] = i;
 			}
-			return new ZipContent(this.data, this.centralDirectoryPos, this.nameHash,
+			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameHash,
 					this.relativeCentralDirectoryOffset, positions);
 		}
 
@@ -336,13 +360,13 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 					throw new IllegalStateException("Too many zip entries in " + source);
 				}
 				Loader loader = new Loader(data, centralDirectoryPos, (int) numberOfEntries);
-				long pos = 0;
+				long pos = centralDirectoryPos;
 				for (int i = 0; i < numberOfEntries; i++) {
 					CentralDirectoryFileHeaderRecord record = CentralDirectoryFileHeaderRecord.load(data, pos);
 					loader.add(record);
 					pos += record.size();
 				}
-				return loader.finish();
+				return loader.finish(zipEocd.commentPos(), zipEocd.commentLength());
 			}
 			catch (IOException | RuntimeException ex) {
 				data.close();
@@ -388,15 +412,59 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	}
 
+	/**
+	 * A single zip content entry.
+	 */
 	public class Entry {
 
 		private final CentralDirectoryFileHeaderRecord record;
+
+		private String name;
 
 		Entry(CentralDirectoryFileHeaderRecord record) {
 			this.record = record;
 		}
 
-		<E extends ZipEntry> E as(Function<String, E> factory) {
+		public String getName() {
+			String name = this.name;
+			if (name == null) {
+				name = ZipString.readString(ZipContent.this.data, this.record.fileNamePos(),
+						this.record.fileNameLength());
+				this.name = name;
+			}
+			return name;
+		}
+
+		/**
+		 * Open a new {@link DataBlock} providing access to raw contents of the entry.
+		 * <p>
+		 * To release resources, the {@link #close()} method of the data block should be
+		 * called explicitly or by try-with-resources.
+		 * @return the contents of the entry
+		 * @throws IOException on I/O error
+		 */
+		public CloseableDataBlock openContent() throws IOException {
+			int localHeaderPos = this.record.offsetToLocalHeader();
+			checkNotZip64Extended(localHeaderPos);
+			LocalFileHeaderRecord localHeader = LocalFileHeaderRecord.load(ZipContent.this.data, localHeaderPos);
+			int size = this.record.compressedSize();
+			checkNotZip64Extended(size);
+			return ZipContent.this.data.openSlice(localHeaderPos + localHeader.size(), size);
+		}
+
+		private void checkNotZip64Extended(int value) throws IOException {
+			if (value == 0xFFFFFFFF) {
+				throw new IOException("Zip64 extended information extra fields are not supported");
+			}
+		}
+
+		/**
+		 * Adapt the raw entry into a {@link ZipEntry} or {@link ZipEntry} subclass.
+		 * @param <E> the entry type
+		 * @param factory the factory used to create the {@link ZipEntry}
+		 * @return a fully populated zip entry
+		 */
+		public <E extends ZipEntry> E as(Function<String, E> factory) {
 			return null;
 		}
 

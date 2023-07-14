@@ -48,7 +48,15 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 
 	private static final int MINIMUM_SIZE = 30;
 
-	LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+	/**
+	 * Return the size of this record.
+	 * @return the record size
+	 */
+	long size() {
+		return MINIMUM_SIZE + fileNameLength() + extraFieldLength();
+	}
+
+	static LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		debug.log("Loading LocalFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);

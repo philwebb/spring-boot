@@ -71,7 +71,7 @@ record Zip64EndOfCentralDirectoryLocator(long pos, int numberOfThisDisk, long of
 			return null;
 		}
 		debug.log("Found Zip64EndOfCentralDirectoryLocator at position %s", pos);
-		return new Zip64EndOfCentralDirectoryLocator(pos, signature, buffer.getLong(), signature);
+		return new Zip64EndOfCentralDirectoryLocator(pos, buffer.getInt(), buffer.getLong(), buffer.getInt());
 	}
 
 }

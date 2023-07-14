@@ -18,7 +18,10 @@ package org.springframework.boot.loader.zip;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.boot.loader.log.DebugLogger;
 
@@ -75,23 +78,23 @@ class ZipString {
 	 * Return a hash for bytes read from a {@link DataBlock}, optionally appending '/'.
 	 * @param dataBlock the source data block
 	 * @param pos the position in the data block where the string starts
-	 * @param size the number of bytes to read from the block
+	 * @param len the number of bytes to read from the block
 	 * @param addEndSlash if slash should be added to the string if it's not already
 	 * present
 	 * @return the hash
 	 * @throws IOException on I/O error
 	 */
-	static int hash(DataBlock dataBlock, long pos, int size, boolean addEndSlash) throws IOException {
-		if (size == 0) {
+	static int hash(DataBlock dataBlock, long pos, int len, boolean addEndSlash) throws IOException {
+		if (len == 0) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(size < BUFFER_SIZE ? size : BUFFER_SIZE);
+		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		int hash = 0;
 		char lastChar = 0;
-		while (size > 0) {
+		while (len > 0) {
 			int count = readInBuffer(dataBlock, pos, buffer);
-			size -= count;
+			len -= count;
 			pos += count;
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
@@ -109,7 +112,7 @@ class ZipString {
 			}
 		}
 		hash = (addEndSlash && lastChar != '/') ? 31 * hash + '/' : hash;
-		debug.log("%s calculated for datablock position %s size %s (addEndSlash=%s)", hash, pos, size, addEndSlash);
+		debug.log("%s calculated for datablock position %s size %s (addEndSlash=%s)", hash, pos, len, addEndSlash);
 		return hash;
 	}
 
@@ -118,24 +121,23 @@ class ZipString {
 	 * {@link CharSequence}.
 	 * @param dataBlock the source data block
 	 * @param pos the position in the data block where the string starts
-	 * @param size the number of bytes to read from the block
+	 * @param len the number of bytes to read from the block
 	 * @param charSequence the char sequence with which to compare
-	 * @param ignoreEndSlash if end slashes should be ignored
+	 * @param addSlash also accept {@code charSequence + '/'} when it doesn't already end
+	 * with one
 	 * @return true if the contents are considered equal
 	 * @throws IOException on I/O error
 	 */
-	static boolean matches(DataBlock dataBlock, long pos, int size, CharSequence charSequence, boolean ignoreEndSlash)
+	static boolean matches(DataBlock dataBlock, long pos, int len, CharSequence charSequence, boolean addSlash)
 			throws IOException {
-		int lastCharSequenceIndex = charSequence.length() - 1;
-		if (ignoreEndSlash && lastCharSequenceIndex >= 0 && charSequence.charAt(lastCharSequenceIndex) == '/') {
-			lastCharSequenceIndex--;
-		}
-		ByteBuffer buffer = ByteBuffer.allocate(size < BUFFER_SIZE ? size : BUFFER_SIZE);
-		byte[] bytes = buffer.array();
+		addSlash = addSlash && !endsWith(charSequence, '/');
 		int charSequenceIndex = 0;
-		while (size > 0) {
+		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
+		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
+		byte[] bytes = buffer.array();
+		while (len > 0) {
 			int count = readInBuffer(dataBlock, pos, buffer);
-			size -= count;
+			len -= count;
 			pos += count;
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
@@ -143,26 +145,56 @@ class ZipString {
 				byteIndex += codePointSize;
 				if (codePoint <= 0xFFFF) {
 					char ch = (char) (codePoint & 0xFFFF);
-					if (ignoreEndSlash && ch == '/' && size == 0 && byteIndex == count) {
-						continue;
-					}
-					if (charSequenceIndex > lastCharSequenceIndex || charSequence.charAt(charSequenceIndex++) != ch) {
+					if (charSequenceIndex >= maxCharSequenceLength
+							|| getChar(charSequence, charSequenceIndex++) != ch) {
 						return false;
 					}
 				}
 				else {
-					if (charSequenceIndex > lastCharSequenceIndex
-							|| charSequence.charAt(charSequenceIndex++) != Character.highSurrogate(codePoint)) {
+					char ch = Character.highSurrogate(codePoint);
+					if (charSequenceIndex >= maxCharSequenceLength
+							|| getChar(charSequence, charSequenceIndex++) != ch) {
 						return false;
 					}
-					if (charSequenceIndex > lastCharSequenceIndex
-							|| charSequence.charAt(charSequenceIndex++) != Character.lowSurrogate(codePoint)) {
+					ch = Character.lowSurrogate(codePoint);
+					if (charSequenceIndex >= maxCharSequenceLength
+							|| getChar(charSequence, charSequenceIndex++) != ch) {
 						return false;
 					}
 				}
 			}
 		}
-		return true;
+		return charSequenceIndex >= charSequence.length();
+	}
+
+	private static boolean endsWith(CharSequence charSequence, char ch) {
+		return charSequence.length() > 0 && charSequence.charAt(charSequence.length() - 1) == ch;
+	}
+
+	private static char getChar(CharSequence charSequence, int index) {
+		return (index != charSequence.length()) ? charSequence.charAt(index) : '/';
+	}
+
+	/**
+	 * Read a string value from the given data block.
+	 * @param data the source data
+	 * @param pos the position to read from
+	 * @param len the number of bytes to read
+	 * @return the contents as a string
+	 */
+	static String readString(FileChannelDataBlock data, long pos, long len) {
+		try {
+			if (len > Integer.MAX_VALUE) {
+				throw new IllegalStateException("String is too long to read");
+			}
+			ByteBuffer buffer = ByteBuffer.allocate((int) len);
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+			data.readFully(buffer, pos);
+			return new String(buffer.array(), StandardCharsets.UTF_8);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer) throws IOException, EOFException {
