@@ -114,6 +114,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	@Override
 	public Iterator<Entry> iterator() {
+		ensureOpen();
 		return new EntryIterator();
 	}
 
@@ -148,6 +149,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	Entry getEntry(CharSequence name) {
+		ensureOpen();
 		int nameHash = ZipString.hash(name, true);
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
@@ -251,6 +253,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		@Override
 		public Entry next() {
+			ensureOpen();
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}

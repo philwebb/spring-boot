@@ -24,8 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -115,13 +119,17 @@ class ZipContentTests {
 	}
 
 	@Test
-	void iteratorWhenClosedThrowsException() {
-
+	void iteratorWhenClosedThrowsException() throws IOException {
+		this.zipContent.close();
+		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.iterator())
+			.withMessage("Zip content has been closed");
 	}
 
 	@Test
-	void iteratorWhenClosedLaterThrowsException() {
-
+	void iteratorWhenClosedLaterThrowsException() throws IOException {
+		Iterator<Entry> iterator = this.zipContent.iterator();
+		this.zipContent.close();
+		assertThatIllegalStateException().isThrownBy(() -> iterator.next()).withMessage("Zip content has been closed");
 	}
 
 	@Test
@@ -307,51 +315,47 @@ class ZipContentTests {
 		return bytes.toByteArray();
 	}
 
-	// @formatter:off
-//
-//	@Test
-//	void jarFileEntryWithEpochTimeOfZeroShouldNotFail() throws Exception {
-//		File file = createJarFileWithEpochTimeOfZero();
-//		try (JarFile jar = new JarFile(file)) {
-//			Enumeration<java.util.jar.JarEntry> entries = jar.entries();
-//			JarEntry entry = entries.nextElement();
-//			assertThat(entry.getLastModifiedTime().toInstant()).isEqualTo(Instant.EPOCH);
-//			assertThat(entry.getName()).isEqualTo("1.dat");
-//		}
-//	}
-//
-//	private File createJarFileWithEpochTimeOfZero() throws Exception {
-//		File jarFile = new File(this.tempDir, "temp.jar");
-//		FileOutputStream fileOutputStream = new FileOutputStream(jarFile);
-//		String comment = "outer";
-//		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
-//			jarOutputStream.setComment(comment);
-//			JarEntry entry = new JarEntry("1.dat");
-//			entry.setLastModifiedTime(FileTime.from(Instant.EPOCH));
-//			jarOutputStream.putNextEntry(entry);
-//			jarOutputStream.write(new byte[] { (byte) 1 });
-//			jarOutputStream.closeEntry();
-//		}
-//
-//		byte[] data = Files.readAllBytes(jarFile.toPath());
-//		int headerPosition = data.length - ZipFile.ENDHDR - comment.getBytes().length;
-//		int centralHeaderPosition = (int) Bytes.littleEndianValue(data, headerPosition + ZipFile.ENDOFF, 1);
-//		int localHeaderPosition = (int) Bytes.littleEndianValue(data, centralHeaderPosition + ZipFile.CENOFF, 1);
-//		writeTimeBlock(data, centralHeaderPosition + ZipFile.CENTIM, 0);
-//		writeTimeBlock(data, localHeaderPosition + ZipFile.LOCTIM, 0);
-//
-//		File jar = new File(this.tempDir, "zerotimed.jar");
-//		Files.write(jar.toPath(), data);
-//		return jar;
-//	}
-//
-//	private static void writeTimeBlock(byte[] data, int pos, int value) {
-//		data[pos] = (byte) (value & 0xff);
-//		data[pos + 1] = (byte) ((value >> 8) & 0xff);
-//		data[pos + 2] = (byte) ((value >> 16) & 0xff);
-//		data[pos + 3] = (byte) ((value >> 24) & 0xff);
-//	}
-	// @formatter:on
+	@Test
+	void entryWithEpochTimeOfZeroShouldNotFail() throws Exception {
+		File file = createZipFileWithEpochTimeOfZero();
+		try (ZipContent zip = ZipContent.open(file.toPath())) {
+			ZipEntry entry = zip.iterator().next().as(ZipEntry::new);
+			assertThat(entry.getLastModifiedTime().toInstant()).isEqualTo(Instant.EPOCH);
+			assertThat(entry.getName()).isEqualTo("1.dat");
+		}
+	}
+
+	private File createZipFileWithEpochTimeOfZero() throws Exception {
+		File file = new File(this.tempDir, "temp.zip");
+		String comment = "outer";
+		try (ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file))) {
+			zipOutput.setComment(comment);
+			ZipEntry entry = new ZipEntry("1.dat");
+			entry.setLastModifiedTime(FileTime.from(Instant.EPOCH));
+			zipOutput.putNextEntry(entry);
+			zipOutput.write(new byte[] { (byte) 1 });
+			zipOutput.closeEntry();
+		}
+		ByteBuffer data = ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		int endOfCentralDirectoryRecordPos = data.remaining() - ZipFile.ENDHDR - comment.getBytes().length;
+		data.position(endOfCentralDirectoryRecordPos + ZipFile.ENDOFF);
+		int startOfCentralDirectoryOffset = data.getInt();
+		data.position(startOfCentralDirectoryOffset + ZipFile.CENOFF);
+		int localHeaderPosition = data.getInt();
+		writeTimeBlock(data.array(), startOfCentralDirectoryOffset + ZipFile.CENTIM, 0);
+		writeTimeBlock(data.array(), localHeaderPosition + ZipFile.LOCTIM, 0);
+		File zerotimedFile = new File(this.tempDir, "zerotimed.zip");
+		Files.write(zerotimedFile.toPath(), data.array());
+		return zerotimedFile;
+	}
+
+	private static void writeTimeBlock(byte[] data, int pos, int value) {
+		data[pos] = (byte) (value & 0xff);
+		data[pos + 1] = (byte) ((value >> 8) & 0xff);
+		data[pos + 2] = (byte) ((value >> 16) & 0xff);
+		data[pos + 3] = (byte) ((value >> 24) & 0xff);
+	}
 
 	private void assertHasExpectedEntries(Iterator<Entry> entries) {
 		assertThat(entries.next().getName()).isEqualTo("META-INF/");
