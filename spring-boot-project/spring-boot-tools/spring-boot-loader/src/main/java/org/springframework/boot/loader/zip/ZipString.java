@@ -182,7 +182,7 @@ class ZipString {
 	 * @param len the number of bytes to read
 	 * @return the contents as a string
 	 */
-	static String readString(FileChannelDataBlock data, long pos, long len) {
+	static String readString(DataBlock data, long pos, long len) {
 		try {
 			if (len > Integer.MAX_VALUE) {
 				throw new IllegalStateException("String is too long to read");

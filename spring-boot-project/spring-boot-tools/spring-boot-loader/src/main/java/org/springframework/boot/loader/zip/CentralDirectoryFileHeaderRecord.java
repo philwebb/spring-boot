@@ -19,6 +19,12 @@ package org.springframework.boot.loader.zip;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.ValueRange;
+import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.log.DebugLogger;
 
@@ -71,6 +77,58 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 	 */
 	long fileNamePos() {
 		return this.pos + MINIMUM_SIZE;
+	}
+
+	/**
+	 * Copy values from this block to the given {@link ZipEntry}.
+	 * @param dataBlock the source data block
+	 * @param zipEntry the destination zip entry
+	 * @throws IOException on I/O error
+	 */
+	void copyTo(DataBlock dataBlock, ZipEntry zipEntry) throws IOException {
+		int fileNameLength = fileNameLength() & 0xFFFF;
+		int extraLength = extraFieldLength() & 0xFFFF;
+		int commentLength = fileCommentLength() & 0xFFFF;
+		zipEntry.setMethod(compressionMethod() & 0xFFFF);
+		zipEntry.setTime(decodeMsDosFormatDateTime(lastModFileDate(), lastModFileTime()));
+		zipEntry.setCrc(crc32() & 0xFFFFFFFFL);
+		zipEntry.setCompressedSize(compressedSize() & 0xFFFFFFFFL);
+		zipEntry.setSize(uncompressedSize() & 0xFFFFFFFFL);
+		if (extraLength > 0) {
+			long pos = pos() + MINIMUM_SIZE + fileNameLength;
+			ByteBuffer buffer = ByteBuffer.allocate(extraLength);
+			dataBlock.readFully(buffer, pos);
+			zipEntry.setExtra(buffer.array());
+		}
+		if ((fileCommentLength() & 0xFFFF) > 0) {
+			long pos = pos() + MINIMUM_SIZE + fileNameLength + extraLength;
+			zipEntry.setComment(ZipString.readString(dataBlock, pos, commentLength));
+		}
+	}
+
+	/**
+	 * Decode MS-DOS Date Time details. See <a href=
+	 * "https://docs.microsoft.com/en-gb/windows/desktop/api/winbase/nf-winbase-dosdatetimetofiletime">
+	 * Microsoft's documentation</a> for more details of the format.
+	 * @param datetime the date and time
+	 * @return the date and time as milliseconds since the epoch
+	 */
+	private long decodeMsDosFormatDateTime(short date, short time) {
+		int year = getChronoValue(((date >> 9) & 0x7f) + 1980, ChronoField.YEAR);
+		int month = getChronoValue((date >> 5) & 0x0f, ChronoField.MONTH_OF_YEAR);
+		int day = getChronoValue(date & 0x1f, ChronoField.DAY_OF_MONTH);
+		int hour = getChronoValue((time >> 11) & 0x1f, ChronoField.HOUR_OF_DAY);
+		int minute = getChronoValue((time >> 5) & 0x3f, ChronoField.MINUTE_OF_HOUR);
+		int second = getChronoValue((time << 1) & 0x3e, ChronoField.SECOND_OF_MINUTE);
+		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault())
+			.toInstant()
+			.truncatedTo(ChronoUnit.SECONDS)
+			.toEpochMilli();
+	}
+
+	private static int getChronoValue(long value, ChronoField field) {
+		ValueRange range = field.range();
+		return Math.toIntExact(Math.min(Math.max(value, range.getMinimum()), range.getMaximum()));
 	}
 
 	static CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
