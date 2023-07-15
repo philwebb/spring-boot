@@ -405,7 +405,21 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private static FileChannelDataBlock openDataBlock(Source source) throws IOException {
 			if (source.isNested()) {
-				throw new IllegalStateException("Not yet implemented");
+				try (ZipContent container = open(source.path())) {
+					Entry entry = container.getEntry(source.nestedEntryName());
+					if (entry == null) {
+						throw new IOException("Nested entry '%s' not found in container zip '%s'"
+							.formatted(source.nestedEntryName(), source.path()));
+					}
+					if (entry.getName().endsWith("/")) {
+						throw new IllegalStateException("Not yet implemented");
+					}
+					if (entry.record.compressionMethod() != ZipEntry.STORED) {
+						throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
+							.formatted(source.nestedEntryName(), source.path()));
+					}
+					return entry.openSlice();
+				}
 			}
 			return FileChannelDataBlock.open(source.path());
 		}
@@ -444,6 +458,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		 * @throws IOException on I/O error
 		 */
 		public CloseableDataBlock openContent() throws IOException {
+			return openSlice();
+		}
+
+		FileChannelDataBlock openSlice() throws IOException {
 			int localHeaderPos = this.record.offsetToLocalHeader();
 			checkNotZip64Extended(localHeaderPos);
 			LocalFileHeaderRecord localHeader = LocalFileHeaderRecord.load(ZipContent.this.data, localHeaderPos);
@@ -465,7 +483,14 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		 * @return a fully populated zip entry
 		 */
 		public <E extends ZipEntry> E as(Function<String, E> factory) {
-			return null;
+			try {
+				E result = factory.apply(getName());
+				this.record.copyTo(ZipContent.this.data, result);
+				return result;
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
 
 	}

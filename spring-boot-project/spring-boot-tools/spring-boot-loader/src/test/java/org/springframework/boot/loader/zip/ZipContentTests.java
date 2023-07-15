@@ -148,6 +148,31 @@ class ZipContentTests {
 	}
 
 	@Test
+	void getEntryAsCreatesCompatibleEntries() throws IOException {
+		try (ZipFile zipFile = new ZipFile(this.file)) {
+			Iterator<? extends ZipEntry> expected = zipFile.entries().asIterator();
+			Iterator<Entry> actual = this.zipContent.iterator();
+			while (expected.hasNext()) {
+				assertThatFieldsAreEqual(actual.next().as(ZipEntry::new), expected.next());
+			}
+		}
+	}
+
+	private void assertThatFieldsAreEqual(ZipEntry actual, ZipEntry expected) {
+		assertThat(actual.getName()).isEqualTo(expected.getName());
+		assertThat(actual.getTime()).isEqualTo(expected.getTime());
+		assertThat(actual.getLastModifiedTime()).isEqualTo(expected.getLastModifiedTime());
+		assertThat(actual.getLastAccessTime()).isEqualTo(expected.getLastAccessTime());
+		assertThat(actual.getCreationTime()).isEqualTo(expected.getCreationTime());
+		assertThat(actual.getSize()).isEqualTo(expected.getSize());
+		assertThat(actual.getCompressedSize()).isEqualTo(expected.getCompressedSize());
+		assertThat(actual.getCrc()).isEqualTo(expected.getCrc());
+		assertThat(actual.getMethod()).isEqualTo(expected.getMethod());
+		assertThat(actual.getExtra()).isEqualTo(expected.getExtra());
+		assertThat(actual.getComment()).isEqualTo(expected.getComment());
+	}
+
+	@Test
 	void sizeReturnsNumberOfEntries() {
 		assertThat(this.zipContent.size()).isEqualTo(12);
 	}
@@ -160,8 +185,18 @@ class ZipContentTests {
 	}
 
 	@Test
-	void nestedJarFileReturnsNestedaJar() {
-		fail("FIXME");
+	void nestedJarFileReturnsNestedaJar() throws IOException {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "nested.jar")) {
+			assertThat(nested.size()).isEqualTo(5);
+			assertThat(nested.getComment()).isEqualTo("nested");
+			Iterator<Entry> iterator = nested.iterator();
+			assertThat(iterator.next().getName()).isEqualTo("META-INF/");
+			assertThat(iterator.next().getName()).isEqualTo("META-INF/MANIFEST.MF");
+			assertThat(iterator.next().getName()).isEqualTo("3.dat");
+			assertThat(iterator.next().getName()).isEqualTo("4.dat");
+			assertThat(iterator.next().getName()).isEqualTo("\u00E4.dat");
+			assertThat(iterator.hasNext()).isFalse();
+		}
 	}
 
 	@Test
@@ -191,8 +226,7 @@ class ZipContentTests {
 			for (int i = 0; i < entries.size(); i++) {
 				Entry entry = entries.get(i);
 				try (CloseableDataBlock dataBlock = entry.openContent()) {
-					InputStream entryInput = asInflaterInputStream(dataBlock);
-					assertThat(entryInput).hasContent("Entry " + (i + 1));
+					assertThat(asInflaterInputStream(dataBlock)).hasContent("Entry " + (i + 1));
 				}
 			}
 		}
@@ -232,39 +266,34 @@ class ZipContentTests {
 		}
 	}
 
-	// @formatter:off
-
-//
-//	@Test
-//	void nestedZip64JarCanBeRead() throws Exception {
-//		File outer = new File(this.tempDir, "outer.jar");
-//		try (JarOutputStream jarOutput = new JarOutputStream(new FileOutputStream(outer))) {
-//			JarEntry nestedEntry = new JarEntry("nested-zip64.jar");
-//			byte[] contents = zip64Bytes();
-//			nestedEntry.setSize(contents.length);
-//			nestedEntry.setCompressedSize(contents.length);
-//			CRC32 crc32 = new CRC32();
-//			crc32.update(contents);
-//			nestedEntry.setCrc(crc32.getValue());
-//			nestedEntry.setMethod(ZipEntry.STORED);
-//			jarOutput.putNextEntry(nestedEntry);
-//			jarOutput.write(contents);
-//			jarOutput.closeEntry();
-//		}
-//		try (JarFile outerJarFile = new JarFile(outer)) {
-//			try (JarFile nestedZip64JarFile = outerJarFile
-//				.getNestedJarFile(outerJarFile.getJarEntry("nested-zip64.jar"))) {
-//				List<JarEntry> entries = Collections.list(nestedZip64JarFile.entries());
-//				assertThat(entries).hasSize(65537);
-//				for (int i = 0; i < entries.size(); i++) {
-//					JarEntry entry = entries.get(i);
-//					InputStream entryInput = nestedZip64JarFile.getInputStream(entry);
-//					assertThat(entryInput).hasContent("Entry " + (i + 1));
-//				}
-//			}
-//		}
-//	}
-	// @formatter:on
+	@Test
+	@Disabled
+	void nestedZip64CanBeRead() throws Exception {
+		File containerFile = new File(this.tempDir, "outer.zip");
+		try (ZipOutputStream jarOutput = new ZipOutputStream(new FileOutputStream(containerFile))) {
+			ZipEntry nestedEntry = new ZipEntry("nested-zip64.zip");
+			byte[] contents = zip64Bytes();
+			nestedEntry.setSize(contents.length);
+			nestedEntry.setCompressedSize(contents.length);
+			CRC32 crc32 = new CRC32();
+			crc32.update(contents);
+			nestedEntry.setCrc(crc32.getValue());
+			nestedEntry.setMethod(ZipEntry.STORED);
+			jarOutput.putNextEntry(nestedEntry);
+			jarOutput.write(contents);
+			jarOutput.closeEntry();
+		}
+		try (ZipContent nestedZip = ZipContent.open(containerFile.toPath(), "nested-zip64.zip")) {
+			List<Entry> entries = nestedZip.stream().toList();
+			assertThat(entries).hasSize(65537);
+			for (int i = 0; i < entries.size(); i++) {
+				Entry entry = entries.get(i);
+				try (CloseableDataBlock content = entry.openContent()) {
+					assertThat(asInflaterInputStream(content)).hasContent("Entry " + (i + 1));
+				}
+			}
+		}
+	}
 
 	private byte[] zip64Bytes() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
