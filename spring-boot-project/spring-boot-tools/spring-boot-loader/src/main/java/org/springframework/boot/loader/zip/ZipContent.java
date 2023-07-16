@@ -80,10 +80,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final int[] position;
 
-	private final String prefix;
-
-	private final BitSet prefixFiltered;
-
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
 			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position) {
 		this.data = data;
@@ -93,20 +89,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.nameHash = nameHash;
 		this.relativeCentralDirectoryOffset = relativeCentralDirectoryOffset;
 		this.position = position;
-		this.prefix = null;
-		this.prefixFiltered = null;
-	}
-
-	private ZipContent(ZipContent container, String prefix) {
-		this.data = container.data;
-		this.centralDirectoryPos = container.centralDirectoryPos;
-		this.commentPos = container.commentPos;
-		this.commentLength = container.commentLength;
-		this.nameHash = container.nameHash;
-		this.relativeCentralDirectoryOffset = container.relativeCentralDirectoryOffset;
-		this.position = container.position;
-		this.prefix = prefix;
-		this.prefixFiltered = new BitSet(this.nameHash.length);
 	}
 
 	/**
@@ -118,9 +100,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @return the zip data
 	 */
 	public DataBlock getData() {
-		if (this.prefix != null) {
-			throw new IllegalStateException("Not yet implemented");
-		}
 		return this.data;
 	}
 
@@ -183,15 +162,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	Entry getEntry(CharSequence name) {
 		ensureOpen();
-		int initialHash = (this.prefix != null) ? this.prefix.hashCode() : 0;
-		int nameHash = ZipString.hash(initialHash, name, true);
+		int nameHash = ZipString.hash(name, true);
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
-			if (!isPrefixFiltered(index)) {
-				CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(index);
-				if (hasName(candidate, name)) {
-					return new Entry(candidate);
-				}
+			CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(index);
+			if (hasName(candidate, name)) {
+				return new Entry(candidate);
 			}
 			index++;
 		}
@@ -207,10 +183,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			index--;
 		}
 		return index;
-	}
-
-	boolean isPrefixFiltered(int index, boolean check) {
-		return this.prefixFiltered != null && this.prefixFiltered.get(index);
 	}
 
 	private CentralDirectoryFileHeaderRecord loadCentralDirectoryFileHeaderRecord(int index) {
@@ -269,7 +241,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			return zipContent;
 		}
 		debug.log("Loading zip content from %s", source);
-		zipContent = Loader.open(source);
+		zipContent = Loader.load(source);
 		ZipContent previouslyCached = cache.putIfAbsent(source, zipContent);
 		if (previouslyCached != null) {
 			debug.log("Closing and zip content from %s since cache was populated from another thread", source);
@@ -299,7 +271,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	private final class EntryIterator implements Iterator<Entry> {
 
-		private int cursor = advanceCursor(-1);
+		private int cursor = 0;
 
 		@Override
 		public boolean hasNext() {
@@ -313,12 +285,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				throw new NoSuchElementException();
 			}
 			int index = ZipContent.this.position[this.cursor];
-			this.cursor = advanceCursor(this.cursor);
+			this.cursor++;
 			return new Entry(loadCentralDirectoryFileHeaderRecord(index));
-		}
-
-		private static int advanceCursor(int cursor) {
-			return cursor + 1;
 		}
 
 	}
@@ -411,32 +379,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			array[j] = temp;
 		}
 
-		static ZipContent open(Source source) throws IOException {
-			if (!source.isNested()) {
-				debug.log("Loading non-nested source '%s'", source.path());
-				return load(source, FileChannelDataBlock.open(source.path()));
-			}
-			ZipContent container = ZipContent.open(source.path());
-			try {
-				Entry nestedEntry = getNestedEntry(container, source);
-				if (nestedEntry.isDirectory()) {
-					debug.log("Using existing container zip '%s' as nested zip with prefix filter '%s'", source.path(),
-							nestedEntry.getName());
-					return new ZipContent(container, nestedEntry.getName());
-				}
-				debug.log("Opening nested zip content '%s' from container zip '%s'", nestedEntry.getName(),
-						source.path());
-				FileChannelDataBlock data = nestedEntry.openSlice();
-				container.close();
-				return load(source, data);
-			}
-			catch (Exception ex) {
-				container.close();
-				throw ex;
-			}
-		}
-
-		private static ZipContent load(Source source, FileChannelDataBlock data) throws IOException {
+		static ZipContent load(Source source) throws IOException {
+			FileChannelDataBlock data = openDataBlock(source);
 			try {
 				EndOfCentralDirectoryRecord zipEocd = EndOfCentralDirectoryRecord.load(data);
 				Zip64EndOfCentralDirectoryLocator zip64Locator = Zip64EndOfCentralDirectoryLocator.find(data, zipEocd);
@@ -493,17 +437,25 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			return result;
 		}
 
-		private static Entry getNestedEntry(ZipContent container, Source source) throws IOException {
-			Entry entry = container.getEntry(source.nestedEntryName());
-			if (entry == null) {
-				throw new IOException("Nested entry '%s' not found in container zip '%s'"
-					.formatted(source.nestedEntryName(), source.path()));
+		private static FileChannelDataBlock openDataBlock(Source source) throws IOException {
+			if (source.isNested()) {
+				try (ZipContent container = open(source.path())) {
+					Entry entry = container.getEntry(source.nestedEntryName());
+					if (entry == null) {
+						throw new IOException("Nested entry '%s' not found in container zip '%s'"
+							.formatted(source.nestedEntryName(), source.path()));
+					}
+					if (entry.getName().endsWith("/")) {
+						throw new IllegalStateException("Not yet implemented");
+					}
+					if (entry.record.compressionMethod() != ZipEntry.STORED) {
+						throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
+							.formatted(source.nestedEntryName(), source.path()));
+					}
+					return entry.openSlice();
+				}
 			}
-			if (entry.isDirectory() && entry.record.compressionMethod() != ZipEntry.STORED) {
-				throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
-					.formatted(source.nestedEntryName(), source.path()));
-			}
-			return entry;
+			return FileChannelDataBlock.open(source.path());
 		}
 
 	}
