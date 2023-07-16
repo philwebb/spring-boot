@@ -54,6 +54,18 @@ class ZipString {
 	 * @return the hash
 	 */
 	static int hash(CharSequence charSequence, boolean addEndSlash) {
+		return hash(0, charSequence, addEndSlash);
+	}
+
+	/**
+	 * Return a hash for a char sequence, optionally appending '/'.
+	 * @param initialHash the initial hash value
+	 * @param charSequence the source char sequence
+	 * @param addEndSlash if slash should be added to the string if it's not already
+	 * present
+	 * @return the hash
+	 */
+	static int hash(int initialHash, CharSequence charSequence, boolean addEndSlash) {
 		if (charSequence == null || charSequence.length() == 0) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
