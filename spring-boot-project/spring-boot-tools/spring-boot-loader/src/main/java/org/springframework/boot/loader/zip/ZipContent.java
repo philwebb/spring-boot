@@ -19,8 +19,10 @@ package org.springframework.boot.loader.zip;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.ref.Cleaner.Cleanable;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -50,8 +52,9 @@ import org.springframework.boot.loader.log.DebugLogger;
  * change once loaded. Entries and Strings are not cached and will be recreated on each
  * access which may produce a lot of garbage.
  * <p>
- * To release {@link ZipContent} resources, the {@link #close()} method should be called
- * explicitly or by try-with-resources.
+ * This implementation does not use {@link Cleanable} so care must be taken to release
+ * {@link ZipContent} resources. The {@link #close()} method should be called explicitly
+ * or by try-with-resources.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -128,7 +131,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
-	 * Open a connection to the underling data block.
+	 * Open another connection to the underling data block.
 	 */
 	private void open() throws IOException {
 		this.data.open();
@@ -143,11 +146,20 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.data.close();
 	}
 
-	String getComment() {
+	/**
+	 * Return the zip comment, if any.
+	 * @return the comment or {@code null}
+	 */
+	public String getComment() {
 		ensureOpen();
 		return ZipString.readString(this.data, this.commentPos, this.commentLength);
 	}
 
+	/**
+	 * Return the entry with the given name.
+	 * @param name the name of the entry to find
+	 * @return the entry or {@code null}
+	 */
 	Entry getEntry(CharSequence name) {
 		ensureOpen();
 		int nameHash = ZipString.hash(name, true);
@@ -198,10 +210,25 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.data.ensureOpen(() -> new IllegalStateException("Zip content has been closed"));
 	}
 
+	/**
+	 * Open {@link ZipContent} from the specified path. The resulting {@link ZipContent}
+	 * <em>must</em> be {@link #close() closed} by the called.
+	 * @param zip the zip path
+	 * @return a {@link ZipContent} instance
+	 * @throws IOException on I/O error
+	 */
 	public static ZipContent open(Path zip) throws IOException {
 		return open(new Source(zip.toAbsolutePath(), null));
 	}
 
+	/**
+	 * Open nested {@link ZipContent} from the specified path. The resulting
+	 * {@link ZipContent} <em>must</em> be {@link #close() closed} by the called.
+	 * @param containerZip the container zip path
+	 * @param nestedEntryName the nested entry name to open
+	 * @return a {@link ZipContent} instance
+	 * @throws IOException on I/O error
+	 */
 	public static ZipContent open(Path containerZip, String nestedEntryName) throws IOException {
 		return open(new Source(containerZip.toAbsolutePath(), nestedEntryName));
 	}
@@ -264,6 +291,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	}
 
+	/**
+	 * Internal class used to load the zip content create a new {@link ZipContent}
+	 * instance.
+	 */
 	private static class Loader {
 
 		private final FileChannelDataBlock data;
@@ -442,6 +473,18 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			this.record = record;
 		}
 
+		/**
+		 * Return {@code true} if this is a directory entry.
+		 * @return if the entry is a directory
+		 */
+		public boolean isDirectory() {
+			return getName().endsWith("/");
+		}
+
+		/**
+		 * Return the name of this entry.
+		 * @return the entry name
+		 */
 		public String getName() {
 			String name = this.name;
 			if (name == null) {
@@ -464,6 +507,13 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			return openSlice();
 		}
 
+		/**
+		 * Open a new {@link FileChannelDataBlock} slice providing access to the raw
+		 * contents of the entry. The caller is expected to {@link #clone()} the block
+		 * when finished.
+		 * @return a {@link FileChannelDataBlock} slice
+		 * @throws IOException on I/O error
+		 */
 		FileChannelDataBlock openSlice() throws IOException {
 			int localHeaderPos = this.record.offsetToLocalHeader();
 			checkNotZip64Extended(localHeaderPos);
