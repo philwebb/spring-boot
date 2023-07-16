@@ -229,4 +229,10 @@ class ZipString {
 		return codePoint;
 	}
 
+	private enum ComparasonType {
+
+		EQUALS, EQUALS_ADDING_SLASH, STARTS_WITH
+
+	}
+
 }
