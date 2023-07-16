@@ -92,6 +92,30 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
+	 * Split the zip based based the named directory entry. This method will return two
+	 * new {@link ZipContent} instances, one containing the included entries and one
+	 * containing the remaining entries. Included entries will named with the directory
+	 * prefix removed. The caller is responsible for {@link #close() closing} the returned
+	 * instance, this {@link ZipContent} will be closed after split and should not be used
+	 * again.
+	 * @param directoryName the name of the directory that should be split off
+	 * @return the split zip content
+	 */
+	public Split split(String directoryName) {
+		Entry entry = getEntry(directoryName);
+		if (entry == null || !entry.isDirectory()) {
+			throw new IllegalStateException("No directory entry '%s' found".formatted(directoryName));
+		}
+		BitSet included = new BitSet(size());
+		BitSet remainder = new BitSet(size());
+		for (int i = 0; i < this.nameHash.length; i++) {
+			CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
+
+		}
+		return null;
+	}
+
+	/**
 	 * Return the data block containing the zip data. For container zip files, this may be
 	 * smaller than the original file since additional bytes are permitted at the front of
 	 * a zip file. For nested zip files, this will be only the contents of the nest zip.
@@ -544,6 +568,22 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
+		}
+
+	}
+
+	/**
+	 * Split {@link ZipContent}.
+	 *
+	 * @param included the subcontent split from the zip
+	 * @param remainder the remaining zip content after the subcontent has been filtered
+	 */
+	public static record Split(ZipContent included, ZipContent remainder) implements Closeable {
+
+		@Override
+		public void close() throws IOException {
+			this.included.close();
+			this.remainder.close();
 		}
 
 	}
