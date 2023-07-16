@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.assertj.core.api.AbstractBooleanAssert;
@@ -140,10 +141,35 @@ class ZipStringTests {
 		assertMatches("one/two/three", "one/two/thre", false).isFalse();
 	}
 
+	@Test
+	void startsWithWhenStartsWith() throws Exception {
+		assertStartsWith("one/two", "one/").isTrue();
+	}
+
+	@Test
+	void startsWithWhenExact() throws Exception {
+		assertStartsWith("one/", "one/").isTrue();
+	}
+
+	@Test
+	void startsWithWhenTooShort() throws Exception {
+		assertStartsWith("one/two", "one/two/three/").isFalse();
+	}
+
+	@Test
+	void startsWithWhenDoesNotStartWith() throws Exception {
+		assertStartsWith("one/three/", "one/two/").isFalse();
+	}
+
 	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean addSlash)
 			throws Exception {
 		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
 		return assertThat(ZipString.matches(dataBlock, 0, (int) dataBlock.size(), charSequence, addSlash));
+	}
+
+	private AbstractBooleanAssert<?> assertStartsWith(String source, CharSequence charSequence) throws IOException {
+		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
+		return assertThat(ZipString.startsWith(dataBlock, 0, (int) dataBlock.size(), charSequence));
 	}
 
 	enum HashSourceType {

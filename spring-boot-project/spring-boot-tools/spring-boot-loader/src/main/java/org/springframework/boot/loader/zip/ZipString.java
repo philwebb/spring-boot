@@ -167,6 +167,57 @@ class ZipString {
 		return charSequenceIndex >= charSequence.length();
 	}
 
+	/**
+	 * Returns if the bytes read from a {@link DataBlock} starts with the given
+	 * {@link CharSequence}.
+	 * @param dataBlock the source data block
+	 * @param pos the position in the data block where the string starts
+	 * @param len the number of bytes to read from the block
+	 * @param charSequence the required starting chars
+	 * @return {@code -1} if the data block does not start with the char sequence, or a
+	 * positive number indicating the number of bytes that contain the starting chars
+	 * @throws IOException on I/O error
+	 */
+	static boolean startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) throws IOException {
+		if (charSequence.isEmpty()) {
+			return true;
+		}
+		int charSequenceIndex = 0;
+		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
+		byte[] bytes = buffer.array();
+		while (len > 0) {
+			int count = readInBuffer(dataBlock, pos, buffer);
+			len -= count;
+			pos += count;
+			for (int byteIndex = 0; byteIndex < count;) {
+				int codePointSize = getCodePointSize(bytes, byteIndex);
+				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
+				if (codePoint <= 0xFFFF) {
+					char ch = (char) (codePoint & 0xFFFF);
+					if (getChar(charSequence, charSequenceIndex++) != ch) {
+						return false;
+					}
+				}
+				else {
+					char ch = Character.highSurrogate(codePoint);
+					if (getChar(charSequence, charSequenceIndex++) != ch) {
+						return false;
+					}
+					ch = Character.lowSurrogate(codePoint);
+					if (charSequenceIndex >= charSequence.length()
+							|| getChar(charSequence, charSequenceIndex++) != ch) {
+						return false;
+					}
+				}
+				if (charSequenceIndex >= charSequence.length()) {
+					return true;
+				}
+				byteIndex += codePointSize;
+			}
+		}
+		return (charSequenceIndex >= charSequence.length());
+	}
+
 	private static boolean endsWith(CharSequence charSequence, char ch) {
 		return charSequence.length() > 0 && charSequence.charAt(charSequence.length() - 1) == ch;
 	}
@@ -227,12 +278,6 @@ class ZipString {
 			codePoint = (codePoint << 6) + (bytes[i + j] & SUBSEQUENT_BYTE_BITMASK);
 		}
 		return codePoint;
-	}
-
-	private enum ComparasonType {
-
-		EQUALS, EQUALS_ADDING_SLASH, STARTS_WITH
-
 	}
 
 }

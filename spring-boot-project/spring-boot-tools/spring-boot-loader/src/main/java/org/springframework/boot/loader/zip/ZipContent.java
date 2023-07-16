@@ -100,8 +100,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * again.
 	 * @param directoryName the name of the directory that should be split off
 	 * @return the split zip content
+	 * @throws IOException on I/O error
 	 */
-	public Split split(String directoryName) {
+	public Split split(String directoryName) throws IOException {
 		Entry entry = getEntry(directoryName);
 		if (entry == null || !entry.isDirectory()) {
 			throw new IllegalStateException("No directory entry '%s' found".formatted(directoryName));
@@ -110,6 +111,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		BitSet remainder = new BitSet(size());
 		for (int i = 0; i < this.nameHash.length; i++) {
 			CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
+			int startsWith = ZipString.startsWith(this.data, headerRecord.fileNamePos(), headerRecord.fileNameLength(),
+					entry.getName());
 
 		}
 		return null;
