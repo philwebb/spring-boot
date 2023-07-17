@@ -55,7 +55,6 @@ import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link ZipContent}.
@@ -208,19 +207,41 @@ class ZipContentTests {
 	}
 
 	@Test
-	void nestedJarDirectoryReturnsNestedJar() {
-		fail("FIXME");
-	}
-
-	@Test
 	void splitCreatesSplitJars() throws IOException {
 		try (ZipContent.Split split = this.zipContent.split("d")) {
 			ZipContent included = split.included();
 			ZipContent remainder = split.remainder();
 			assertThat(included.getEntry("9.dat")).isNotNull();
 			assertThat(included.stream().map(Entry::getName)).containsExactly("9.dat");
+			assertThat(remainder.getEntry("d/")).isNull();
 			assertThat(remainder.getEntry("d/9.dat")).isNull();
-			assertThat(remainder.stream().map(Entry::getName)).doesNotContain("d/9.dat").hasSize(6);
+			assertThat(remainder.stream().map(Entry::getName)).doesNotContain("d/")
+				.doesNotContain("d/9.dat")
+				.hasSize(10);
+		}
+	}
+
+	@Test
+	void getDataWhenSplitReturnsVirtualZipDataBlock() throws IOException {
+		try (ZipContent.Split split = this.zipContent.split("d")) {
+			File includedFile = new File(this.tempDir, "included.zip");
+			write(includedFile, split.included().getData());
+			try (ZipFile included = new ZipFile(includedFile)) {
+				assertThat(included.size()).isEqualTo(1);
+				assertThat(included.getEntry("9.dat")).isNotNull();
+				try (InputStream in = included.getInputStream(included.getEntry("9.dat"))) {
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					in.transferTo(out);
+					assertThat(out.toString(StandardCharsets.UTF_8)).isEqualTo("9");
+				}
+			}
+			File remainderFile = new File(this.tempDir, "remainder.zip");
+			write(remainderFile, split.remainder().getData());
+			try (ZipFile remainder = new ZipFile(remainderFile)) {
+				assertThat(remainder.size()).isEqualTo(10);
+				assertThat(remainder.getEntry("d/")).isNull();
+				assertThat(remainder.getEntry("d/9.dat")).isNull();
+			}
 		}
 	}
 
@@ -391,6 +412,13 @@ class ZipContentTests {
 		dataBlock.readFully(buffer, 0);
 		ByteArrayInputStream in = new ByteArrayInputStream(buffer.array());
 		return new InflaterInputStream(in, new Inflater(true));
+	}
+
+	private void write(File file, DataBlock dataBlock) throws IOException {
+		ByteBuffer buffer = ByteBuffer.allocate((int) dataBlock.size());
+		dataBlock.readFully(buffer, 0);
+		Files.write(file.toPath(), buffer.array());
+
 	}
 
 }
