@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * {@link DataBlock} backed by a byte array that can be used for testing.
+ * {@link DataBlock} backed by a byte array .
  *
  * @author Phillip Webb
  */

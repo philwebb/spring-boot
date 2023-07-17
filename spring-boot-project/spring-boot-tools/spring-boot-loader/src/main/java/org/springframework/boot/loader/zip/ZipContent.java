@@ -20,6 +20,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner.Cleanable;
+import java.lang.ref.SoftReference;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -85,6 +86,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private final String prefix;
 
 	private final Map<String, Split> splitCache = new ConcurrentHashMap<>();
+
+	private SoftReference<DataBlock> virtualData;
 
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
 			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position) {
@@ -171,12 +174,32 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * <p>
 	 * Data contents must not be accessed after calling {@link ZipContent#close()} .
 	 * @return the zip data
+	 * @throws IOException on I/O error
 	 */
-	public DataBlock getData() {
-		if (this.filter != null) {
-			throw new IllegalStateException();
+	public DataBlock getData() throws IOException {
+		return (this.filter != null) ? getVirtualData() : this.data;
+	}
+
+	private DataBlock getVirtualData() throws IOException {
+		DataBlock virtualData = (this.virtualData != null) ? this.virtualData.get() : null;
+		if (virtualData != null) {
+			return virtualData;
 		}
-		return this.data;
+		virtualData = createVirtualData();
+		this.virtualData = new SoftReference<>(virtualData);
+		return virtualData;
+	}
+
+	private DataBlock createVirtualData() throws IOException {
+		CentralDirectoryFileHeaderRecord[] records = new CentralDirectoryFileHeaderRecord[size()];
+		for (int i = 0; i < this.position.length; i++) {
+			if (this.filter.get(i)) {
+				CentralDirectoryFileHeaderRecord record = CentralDirectoryFileHeaderRecord.load(this.data,
+						this.centralDirectoryPos + this.relativeCentralDirectoryOffset[i]);
+				records[this.position[i]] = record;
+			}
+		}
+		return new VirtualZipDataBlock(this.data, this.prefix, records);
 	}
 
 	/**
@@ -203,7 +226,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	public int size() {
 		ensureOpen();
-		return this.nameHash.length;
+		return (this.filter != null) ? this.filter.cardinality() : this.nameHash.length;
 	}
 
 	/**
