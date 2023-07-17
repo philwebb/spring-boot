@@ -57,20 +57,14 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 
 	private static final int BUFFER_SIZE = 256;
 
+	static final int COMMENT_OFFSET = MINIMUM_SIZE;
+
 	/**
 	 * Return the size of this record.
 	 * @return the record size
 	 */
 	long size() {
 		return MINIMUM_SIZE + this.commentLength;
-	}
-
-	/**
-	 * Return the start position of the comment
-	 * @return the comment start position
-	 */
-	long commentOffset() {
-		return MINIMUM_SIZE;
 	}
 
 	/**
@@ -84,12 +78,12 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 	static Located load(DataBlock dataBlock) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		long pos = find(dataBlock, buffer);
+		long pos = locate(dataBlock, buffer);
 		return new Located(pos, new EndOfCentralDirectoryRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getShort()));
 	}
 
-	private static long find(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
+	private static long locate(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
 		long endPos = dataBlock.size();
 		debug.log("Finding EndOfCentralDirectoryRecord starting at end position %s", endPos);
 		while (endPos > 0) {
@@ -130,7 +124,7 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 	 * A located {@link EndOfCentralDirectoryRecord}.
 	 *
 	 * @param pos the position of the record
-	 * @param record the record
+	 * @param endOfCentralDirectoryRecord the located end of central directory record
 	 */
 	static record Located(long pos, EndOfCentralDirectoryRecord endOfCentralDirectoryRecord) {
 

@@ -49,29 +49,19 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 	private static final int MINIMUM_SIZE = 30;
 
 	/**
-	 * @param i
-	 * @return
-	 */
-	public LocalFileHeaderRecord withExtraFieldLength(int i) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
-	 * @param size
-	 * @return
-	 */
-	public LocalFileHeaderRecord withFileNameLength(long size) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
 	 * Return the size of this record.
 	 * @return the record size
 	 */
 	long size() {
 		return MINIMUM_SIZE + fileNameLength() + extraFieldLength();
+	}
+
+	LocalFileHeaderRecord withExtraFieldLength(int i) {
+		return this;
+	}
+
+	LocalFileHeaderRecord withFileNameLength(long size) {
+		return this;
 	}
 
 	byte[] toByteArray(long fileNameLength) {

@@ -74,12 +74,12 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	}
 
 	@Override
-	public int read(ByteBuffer dst, long position) throws IOException {
-		if (position < 0) {
+	public int read(ByteBuffer dst, long pos) throws IOException {
+		if (pos < 0) {
 			throw new IllegalArgumentException("Position must not be negative");
 		}
 		ensureOpen();
-		int remaining = (int) (this.size - position);
+		int remaining = (int) (this.size - pos);
 		if (remaining <= 0) {
 			return -1;
 		}
@@ -88,7 +88,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			originalDestinationLimit = dst.limit();
 			dst.limit(remaining);
 		}
-		int result = this.fileChannel.read(dst, this.offset + position);
+		int result = this.fileChannel.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}

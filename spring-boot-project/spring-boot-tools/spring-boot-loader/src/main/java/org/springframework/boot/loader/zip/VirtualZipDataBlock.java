@@ -31,12 +31,12 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 
 	private final FileChannelDataBlock data;
 
-	VirtualZipDataBlock(FileChannelDataBlock data, String prefix, CentralDirectoryFileHeaderRecord[] centralRecords)
+	VirtualZipDataBlock(FileChannelDataBlock data, String namePrefix, CentralDirectoryFileHeaderRecord[] centralRecords)
 			throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
 		List<DataBlock> endParts = new ArrayList<>();
-		int prefixLen = (prefix != null) ? prefix.getBytes(StandardCharsets.UTF_8).length : 0;
+		int prefixLen = (namePrefix != null) ? namePrefix.getBytes(StandardCharsets.UTF_8).length : 0;
 		for (CentralDirectoryFileHeaderRecord central : centralRecords) {
 			DataBlock name = new DataPart(central.fileNamePos() + prefixLen, central.fileNameLength() - prefixLen);
 			LocalFileHeaderRecord local = LocalFileHeaderRecord.load(this.data, central.offsetToLocalHeader());
@@ -100,8 +100,8 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 		}
 
 		@Override
-		public int read(ByteBuffer dst, long position) throws IOException {
-			int remaining = (int) (this.size - position);
+		public int read(ByteBuffer dst, long pos) throws IOException {
+			int remaining = (int) (this.size - pos);
 			if (remaining <= 0) {
 				return -1;
 			}
@@ -110,7 +110,7 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 				originalDestinationLimit = dst.limit();
 				dst.limit(remaining);
 			}
-			int result = VirtualZipDataBlock.this.data.read(dst, this.offset + position);
+			int result = VirtualZipDataBlock.this.data.read(dst, this.offset + pos);
 			if (originalDestinationLimit != -1) {
 				dst.limit(originalDestinationLimit);
 			}

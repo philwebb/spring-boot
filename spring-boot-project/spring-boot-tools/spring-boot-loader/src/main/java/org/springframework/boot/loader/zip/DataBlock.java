@@ -22,9 +22,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 /**
- * Provides read access to a block of data contained in a zip file.
+ * Provides read access to a block of data contained somewhere in a zip file.
  *
  * @author Phillip Webb
+ * @since 3.2.0
  */
 public interface DataBlock {
 
@@ -39,31 +40,31 @@ public interface DataBlock {
 	 * Read a sequence of bytes from this channel into the given buffer, starting at the
 	 * given block position.
 	 * @param dst the buffer into which bytes are to be transferred
-	 * @param position The position within the block at which the transfer is to begin.
+	 * @param pos The position within the block at which the transfer is to begin.
 	 * @return the number of bytes read, possibly zero, or {@code -1} if the given
 	 * position is greater than or equal to the block size
 	 * @throws IOException on I/O error
 	 * @see #readFully(ByteBuffer, long)
 	 * @see FileChannel#read(ByteBuffer, long)
 	 */
-	int read(ByteBuffer dst, long position) throws IOException;
+	int read(ByteBuffer dst, long pos) throws IOException;
 
 	/**
 	 * Fully read a sequence of bytes from this channel into the given buffer, starting at
 	 * the given block position and filling {@link ByteBuffer#remaining() remaining} bytes
 	 * in the buffer.
 	 * @param dst The buffer into which bytes are to be transferred
-	 * @param position The position within the block at which the transfer is to begin.
+	 * @param pos The position within the block at which the transfer is to begin.
 	 * @throws EOFException if an attempt is made to read past the end of the block
 	 * @throws IOException on I/O error
 	 */
-	default void readFully(ByteBuffer dst, long position) throws IOException {
+	default void readFully(ByteBuffer dst, long pos) throws IOException {
 		do {
-			int count = read(dst, position);
+			int count = read(dst, pos);
 			if (count <= 0) {
 				throw new EOFException();
 			}
-			position += count;
+			pos += count;
 		}
 		while (dst.hasRemaining());
 	}
