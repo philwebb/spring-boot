@@ -79,6 +79,9 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 		return this.pos + MINIMUM_SIZE;
 	}
 
+	public CentralDirectoryFileHeaderRecord virtual() {
+	}
+
 	/**
 	 * Copy values from this block to the given {@link ZipEntry}.
 	 * @param dataBlock the source data block

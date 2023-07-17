@@ -211,8 +211,10 @@ class ZipContentTests {
 		try (ZipContent.Split split = this.zipContent.split("d")) {
 			ZipContent included = split.included();
 			ZipContent remainder = split.remainder();
+			assertThat(included.size()).isEqualTo(1);
 			assertThat(included.getEntry("9.dat")).isNotNull();
 			assertThat(included.stream().map(Entry::getName)).containsExactly("9.dat");
+			assertThat(remainder.size()).isEqualTo(10);
 			assertThat(remainder.getEntry("d/")).isNull();
 			assertThat(remainder.getEntry("d/9.dat")).isNull();
 			assertThat(remainder.stream().map(Entry::getName)).doesNotContain("d/")

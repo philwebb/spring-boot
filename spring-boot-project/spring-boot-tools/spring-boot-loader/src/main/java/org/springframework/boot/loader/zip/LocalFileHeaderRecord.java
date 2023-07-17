@@ -36,7 +36,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @param fileNameLength the file name length
  * @param extraFieldLength the extra field length
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
- * 4.7.3 of the Zip File Format Specification</a>
+ * 4.3.7 of the Zip File Format Specification</a>
  */
 record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeBitFlag, short compressionMethod,
 		short lastModFileTime, short lastModFileDate, int crc32, int compressedSize, int uncompressedSize,
@@ -49,11 +49,33 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 	private static final int MINIMUM_SIZE = 30;
 
 	/**
+	 * @param i
+	 * @return
+	 */
+	public LocalFileHeaderRecord withExtraFieldLength(int i) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	/**
+	 * @param size
+	 * @return
+	 */
+	public LocalFileHeaderRecord withFileNameLength(long size) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	/**
 	 * Return the size of this record.
 	 * @return the record size
 	 */
 	long size() {
 		return MINIMUM_SIZE + fileNameLength() + extraFieldLength();
+	}
+
+	byte[] toByteArray(long fileNameLength) {
+		return null;
 	}
 
 	static LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
