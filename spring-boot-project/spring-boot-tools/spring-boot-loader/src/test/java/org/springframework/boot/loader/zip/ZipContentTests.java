@@ -213,6 +213,18 @@ class ZipContentTests {
 	}
 
 	@Test
+	void splitCreatesSplitJars() throws IOException {
+		try (ZipContent.Split split = this.zipContent.split("d")) {
+			ZipContent included = split.included();
+			ZipContent remainder = split.remainder();
+			assertThat(included.getEntry("9.dat")).isNotNull();
+			assertThat(included.stream().map(Entry::getName)).containsExactly("9.dat");
+			assertThat(remainder.getEntry("d/9.dat")).isNull();
+			assertThat(remainder.stream().map(Entry::getName)).doesNotContain("d/9.dat").hasSize(6);
+		}
+	}
+
+	@Test
 	void loadWhenHasFrontMatterOpensZip() throws IOException {
 		File fileWithFrontMatter = new File(this.tempDir, "withfrontmatter.jar");
 		FileOutputStream outputStream = new FileOutputStream(fileWithFrontMatter);

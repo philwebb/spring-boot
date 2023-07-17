@@ -54,12 +54,24 @@ class ZipString {
 	 * @return the hash
 	 */
 	static int hash(CharSequence charSequence, boolean addEndSlash) {
+		return hash(0, charSequence, addEndSlash);
+	}
+
+	/**
+	 * Return a hash for a char sequence, optionally appending '/'.
+	 * @param initialHash the initial hash value
+	 * @param charSequence the source char sequence
+	 * @param addEndSlash if slash should be added to the string if it's not already
+	 * present
+	 * @return the hash
+	 */
+	static int hash(int initialHash, CharSequence charSequence, boolean addEndSlash) {
 		if (charSequence == null || charSequence.length() == 0) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
 		boolean endsWithSlash = charSequence.charAt(charSequence.length() - 1) == '/';
-		int hash = 0;
-		if (charSequence instanceof String) {
+		int hash = initialHash;
+		if (charSequence instanceof String && initialHash == 0) {
 			// We're compatible with String.hashCode and it might be already calculated
 			hash = charSequence.hashCode();
 		}
@@ -130,41 +142,8 @@ class ZipString {
 	 */
 	static boolean matches(DataBlock dataBlock, long pos, int len, CharSequence charSequence, boolean addSlash)
 			throws IOException {
-		addSlash = addSlash && !endsWith(charSequence, '/');
-		int charSequenceIndex = 0;
-		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
-		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
-		byte[] bytes = buffer.array();
-		while (len > 0) {
-			int count = readInBuffer(dataBlock, pos, buffer);
-			len -= count;
-			pos += count;
-			for (int byteIndex = 0; byteIndex < count;) {
-				int codePointSize = getCodePointSize(bytes, byteIndex);
-				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
-				byteIndex += codePointSize;
-				if (codePoint <= 0xFFFF) {
-					char ch = (char) (codePoint & 0xFFFF);
-					if (charSequenceIndex >= maxCharSequenceLength
-							|| getChar(charSequence, charSequenceIndex++) != ch) {
-						return false;
-					}
-				}
-				else {
-					char ch = Character.highSurrogate(codePoint);
-					if (charSequenceIndex >= maxCharSequenceLength
-							|| getChar(charSequence, charSequenceIndex++) != ch) {
-						return false;
-					}
-					ch = Character.lowSurrogate(codePoint);
-					if (charSequenceIndex >= maxCharSequenceLength
-							|| getChar(charSequence, charSequenceIndex++) != ch) {
-						return false;
-					}
-				}
-			}
-		}
-		return charSequenceIndex >= charSequence.length();
+		return compare(dataBlock, pos, len, charSequence,
+				(!addSlash) ? CompareType.MATCHES : CompareType.MATCHES_ADDING_SLASH);
 	}
 
 	/**
@@ -179,10 +158,17 @@ class ZipString {
 	 * @throws IOException on I/O error
 	 */
 	static boolean startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) throws IOException {
+		return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
+	}
+
+	private static boolean compare(DataBlock dataBlock, long pos, int len, CharSequence charSequence,
+			CompareType compareType) throws IOException {
 		if (charSequence.isEmpty()) {
 			return true;
 		}
+		boolean addSlash = compareType == CompareType.MATCHES_ADDING_SLASH && !endsWith(charSequence, '/');
 		int charSequenceIndex = 0;
+		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
 		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		while (len > 0) {
@@ -194,13 +180,15 @@ class ZipString {
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
 				if (codePoint <= 0xFFFF) {
 					char ch = (char) (codePoint & 0xFFFF);
-					if (getChar(charSequence, charSequenceIndex++) != ch) {
+					if (charSequenceIndex >= maxCharSequenceLength
+							|| getChar(charSequence, charSequenceIndex++) != ch) {
 						return false;
 					}
 				}
 				else {
 					char ch = Character.highSurrogate(codePoint);
-					if (getChar(charSequence, charSequenceIndex++) != ch) {
+					if (charSequenceIndex >= maxCharSequenceLength
+							|| getChar(charSequence, charSequenceIndex++) != ch) {
 						return false;
 					}
 					ch = Character.lowSurrogate(codePoint);
@@ -209,7 +197,7 @@ class ZipString {
 						return false;
 					}
 				}
-				if (charSequenceIndex >= charSequence.length()) {
+				if (compareType == CompareType.STARTS_WITH && charSequenceIndex >= charSequence.length()) {
 					return true;
 				}
 				byteIndex += codePointSize;
@@ -278,6 +266,12 @@ class ZipString {
 			codePoint = (codePoint << 6) + (bytes[i + j] & SUBSEQUENT_BYTE_BITMASK);
 		}
 		return codePoint;
+	}
+
+	private enum CompareType {
+
+		MATCHES, MATCHES_ADDING_SLASH, STARTS_WITH
+
 	}
 
 }
