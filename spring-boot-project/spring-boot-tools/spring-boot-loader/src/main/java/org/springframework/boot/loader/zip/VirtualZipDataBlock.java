@@ -22,62 +22,66 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 /**
+ * {@link DataBlock} that creates a virtual zip.
+ *
  * @author Phillip Webb
  */
 class VirtualZipDataBlock extends VirtualDataBlock {
 
 	private final FileChannelDataBlock data;
 
-	VirtualZipDataBlock(FileChannelDataBlock data, String namePrefix, CentralDirectoryFileHeaderRecord[] centralRecords)
-			throws IOException {
+	VirtualZipDataBlock(FileChannelDataBlock data, String namePrefix, CentralDirectoryFileHeaderRecord[] centralRecords,
+			long[] centralRecordPositions) throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
-		List<DataBlock> endParts = new ArrayList<>();
+		List<DataBlock> centralParts = new ArrayList<>();
 		int prefixLen = (namePrefix != null) ? namePrefix.getBytes(StandardCharsets.UTF_8).length : 0;
-		for (CentralDirectoryFileHeaderRecord central : centralRecords) {
-			DataBlock name = new DataPart(central.fileNamePos() + prefixLen, central.fileNameLength() - prefixLen);
-			LocalFileHeaderRecord local = LocalFileHeaderRecord.load(this.data, central.offsetToLocalHeader());
-			LocalFileHeaderRecord virtualLocal = local.withFileNameLength(name.size()).withExtraFieldLength(0);
-			CentralDirectoryFileHeaderRecord virtualCentral = central;
-			DataBlock updatedLocal = new ByteArrayDataBlock(local.withUpdatedLengths(name.size(), 0).toByteArray());
-			DataBlock contentPart = new DataPart(central.offsetToLocalHeader() + local.size(),
-					central.compressedSize());
-
+		int offset = 0;
+		int sizeOfCentralDirectory = 0;
+		for (int i = 0; i < centralRecords.length; i++) {
+			CentralDirectoryFileHeaderRecord centralRecord = centralRecords[i];
+			long centralRecordPos = centralRecordPositions[i];
+			DataBlock name = new DataPart(
+					centralRecordPos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + prefixLen,
+					centralRecord.fileNameLength() & 0xFFFF - prefixLen);
+			LocalFileHeaderRecord localRecord = LocalFileHeaderRecord.load(this.data,
+					centralRecord.offsetToLocalHeader());
+			DataBlock content = new DataPart(centralRecord.offsetToLocalHeader() + localRecord.size(),
+					centralRecord.compressedSize());
+			sizeOfCentralDirectory += addToCentral(centralParts, centralRecord, centralRecordPos, name, offset);
+			offset += addToLocal(parts, localRecord, name, content);
 		}
+		parts.addAll(centralParts);
+		EndOfCentralDirectoryRecord eocd = new EndOfCentralDirectoryRecord((short) centralRecords.length,
+				sizeOfCentralDirectory, offset);
+		parts.add(new ByteArrayDataBlock(eocd.asByteArray()));
 		setParts(parts);
 	}
 
-	private List<DataBlock> createParts(CentralDirectoryFileHeaderRecord[] centralDirectoryRecords) throws IOException {
-		long size = 0;
-		for (CentralDirectoryFileHeaderRecord central : centralDirectoryRecords) {
-			LocalFileHeaderRecord local = LocalFileHeaderRecord.load(this.data, central.offsetToLocalHeader());
-			DataPart localPart = new DataPart(central.offsetToLocalHeader(), local.size() + central.uncompressedSize());
-			size += localPart.size();
-		}
-		return null;
+	private long addToCentral(List<DataBlock> parts, CentralDirectoryFileHeaderRecord originalRecord,
+			long originalRecordPos, DataBlock name, int offsetToLocalHeader) throws IOException {
+		CentralDirectoryFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF))
+			.withOffsetToLocalHeader(offsetToLocalHeader);
+		int originalExtraFieldLength = originalRecord.extraFieldLength() & 0xFFFF;
+		int originalFileCommentLength = originalRecord.fileCommentLength() & 0xFFFF;
+		DataBlock extraFieldAndComment = new DataPart(
+				originalRecordPos + originalRecord.size() - originalExtraFieldLength - originalFileCommentLength,
+				originalExtraFieldLength + originalFileCommentLength);
+		parts.add(new ByteArrayDataBlock(record.asByteArray()));
+		parts.add(name);
+		parts.add(extraFieldAndComment);
+		return record.size();
 	}
 
-	private List<DataBlock> createRenamedParts(String prefix,
-			CentralDirectoryFileHeaderRecord[] centralDirectoryRecords) throws IOException {
-
-		List<DataBlock> parts = new ArrayList<>();
-		List<DataBlock> centralParts = new ArrayList<>();
-		long localSize = 0;
-		for (CentralDirectoryFileHeaderRecord central : centralDirectoryRecords) {
-
-			localSize += addLocal(parts, localPart, name, content);
-		}
-		return null;
-	}
-
-	private long addLocal(List<DataBlock> parts, DataBlock header, DataPart name, DataPart content) throws IOException {
-		parts.add(header);
+	private long addToLocal(List<DataBlock> parts, LocalFileHeaderRecord originalRecord, DataBlock name,
+			DataBlock content) throws IOException {
+		LocalFileHeaderRecord record = originalRecord.withExtraFieldLength((short) 0)
+			.withFileNameLength((short) (name.size() & 0xFFFF));
+		parts.add(new ByteArrayDataBlock(record.asByteArray()));
 		parts.add(name);
 		parts.add(content);
-		return header.size() + name.size() + content.size();
+		return record.size() + content.size();
 	}
 
 	/**
@@ -108,7 +112,7 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 			int originalDestinationLimit = -1;
 			if (dst.remaining() > remaining) {
 				originalDestinationLimit = dst.limit();
-				dst.limit(remaining);
+				dst.limit(dst.position() + remaining);
 			}
 			int result = VirtualZipDataBlock.this.data.read(dst, this.offset + pos);
 			if (originalDestinationLimit != -1) {

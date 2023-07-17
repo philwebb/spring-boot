@@ -45,6 +45,12 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 		short numberOfCentralDirectoryEntriesOnThisDisk, short totalNumberOfCentralDirectoryEntries,
 		int sizeOfCentralDirectory, int offsetToStartOfCentralDirectory, short commentLength) {
 
+	EndOfCentralDirectoryRecord(short totalNumberOfCentralDirectoryEntries, int sizeOfCentralDirectory,
+			int offsetToStartOfCentralDirectory) {
+		this((short) 0, (short) 0, totalNumberOfCentralDirectoryEntries, totalNumberOfCentralDirectoryEntries,
+				sizeOfCentralDirectory, offsetToStartOfCentralDirectory, (short) 0);
+	}
+
 	private static final DebugLogger debug = DebugLogger.get(EndOfCentralDirectoryRecord.class);
 
 	private static final int SIGNATURE = 0x06054b50;
@@ -65,6 +71,20 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 	 */
 	long size() {
 		return MINIMUM_SIZE + this.commentLength;
+	}
+
+	byte[] asByteArray() {
+		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.putInt(SIGNATURE);
+		buffer.putShort(this.numberOfThisDisk);
+		buffer.putShort(this.diskWhereCentralDirectoryStarts);
+		buffer.putShort(this.numberOfCentralDirectoryEntriesOnThisDisk);
+		buffer.putShort(this.totalNumberOfCentralDirectoryEntries);
+		buffer.putInt(this.sizeOfCentralDirectory);
+		buffer.putInt(this.offsetToStartOfCentralDirectory);
+		buffer.putShort(this.commentLength);
+		return buffer.array();
 	}
 
 	/**

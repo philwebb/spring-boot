@@ -83,7 +83,11 @@ class ZipContentTests {
 	@AfterEach
 	void tearDown() throws Exception {
 		if (this.zipContent != null) {
-			this.zipContent.close();
+			try {
+				this.zipContent.close();
+			}
+			catch (IllegalStateException ex) {
+			}
 		}
 	}
 
@@ -94,7 +98,6 @@ class ZipContentTests {
 
 	@Test
 	void getCommentWhenClosedThrowsException() throws IOException {
-		this.zipContent.close();
 		this.zipContent.close();
 		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.getComment())
 			.withMessage("Zip content has been closed");
@@ -234,7 +237,7 @@ class ZipContentTests {
 				try (InputStream in = included.getInputStream(included.getEntry("9.dat"))) {
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 					in.transferTo(out);
-					assertThat(out.toString(StandardCharsets.UTF_8)).isEqualTo("9");
+					assertThat(out.toByteArray()).containsExactly(0x09);
 				}
 			}
 			File remainderFile = new File(this.tempDir, "remainder.zip");
