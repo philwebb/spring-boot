@@ -38,12 +38,12 @@ class ByteArrayDataBlock implements DataBlock {
 	}
 
 	@Override
-	public int read(ByteBuffer dst, long position) throws IOException {
-		int length = this.bytes.length - (int) position;
+	public int read(ByteBuffer dst, long pos) throws IOException {
+		int length = this.bytes.length - (int) pos;
 		if (length > dst.remaining()) {
 			length = dst.remaining();
 		}
-		dst.put(this.bytes, (int) position, length);
+		dst.put(this.bytes, (int) pos, length);
 		return length;
 	}
 

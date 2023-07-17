@@ -59,20 +59,20 @@ class VirtualDataBlock implements DataBlock {
 	}
 
 	@Override
-	public int read(ByteBuffer dst, long position) throws IOException {
-		if (position < 0 || position >= this.size) {
+	public int read(ByteBuffer dst, long pos) throws IOException {
+		if (pos < 0 || pos >= this.size) {
 			return -1;
 		}
 		long offset = 0;
 		int result = 0;
 		for (DataBlock part : this.parts) {
-			while (position >= offset && position < offset + part.size()) {
-				int count = part.read(dst, position - offset);
+			while (pos >= offset && pos < offset + part.size()) {
+				int count = part.read(dst, pos - offset);
 				if (count <= 0 || !dst.hasRemaining()) {
 					return result + count;
 				}
 				result += count;
-				position += count;
+				pos += count;
 			}
 			offset += part.size();
 		}

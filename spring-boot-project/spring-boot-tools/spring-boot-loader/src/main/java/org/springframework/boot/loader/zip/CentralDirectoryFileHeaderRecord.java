@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.ZoneId;
@@ -62,6 +63,8 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 
 	private static final int MINIMUM_SIZE = 46;
 
+	static final int FILE_NAME_OFFSET = MINIMUM_SIZE;
+
 	/**
 	 * Return the size of this record.
 	 * @return the record size
@@ -71,16 +74,9 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	}
 
 	/**
-	 * Return the offset of the file name.
-	 * @return the file name offset relative to the position of this record
-	 */
-	long fileNameOffset() {
-		return MINIMUM_SIZE;
-	}
-
-	/**
 	 * Copy values from this block to the given {@link ZipEntry}.
 	 * @param dataBlock the source data block
+	 * @param pos the position of this {@link CentralDirectoryFileHeaderRecord}
 	 * @param zipEntry the destination zip entry
 	 * @throws IOException on I/O error
 	 */
@@ -128,6 +124,15 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	private static int getChronoValue(long value, ChronoField field) {
 		ValueRange range = field.range();
 		return Math.toIntExact(Math.min(Math.max(value, range.getMinimum()), range.getMaximum()));
+	}
+
+	static CentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) {
+		try {
+			return load(dataBlock, pos);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	static CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
