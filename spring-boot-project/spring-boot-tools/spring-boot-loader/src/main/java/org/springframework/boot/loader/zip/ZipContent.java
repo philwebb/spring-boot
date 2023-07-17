@@ -145,8 +145,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		BitSet remainderFilter = new BitSet(size);
 		for (int i = 0; i < this.nameHash.length; i++) {
 			if (i != entry.getIndex()) {
-				long pos = this.centralDirectoryPos + this.relativeCentralDirectoryOffset[i];
-				CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
+				long pos = getCentralDirectoryFileHeaderRecordPos(i);
+				CentralDirectoryFileHeaderRecord headerRecord = CentralDirectoryFileHeaderRecord.load(this.data, pos);
 				boolean startsWithPrefix = ZipString.startsWith(this.data, pos + headerRecord.fileNameOffset(),
 						headerRecord.fileNameLength(), prefix) != -1;
 				includedFilter.set(i, startsWithPrefix);
@@ -195,9 +195,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		CentralDirectoryFileHeaderRecord[] records = new CentralDirectoryFileHeaderRecord[size()];
 		for (int i = 0; i < this.position.length; i++) {
 			if (this.filter.get(i)) {
-				CentralDirectoryFileHeaderRecord record = CentralDirectoryFileHeaderRecord.load(this.data,
-						this.centralDirectoryPos + this.relativeCentralDirectoryOffset[i]);
-				records[this.position[i]] = record;
+				long pos = getCentralDirectoryFileHeaderRecordPos(i);
+				records[this.position[i]] = CentralDirectoryFileHeaderRecord.load(this.data, pos);
 			}
 		}
 		return new VirtualZipDataBlock(this.data, this.prefix, records);
@@ -267,8 +266,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
 			if (!isFiltered(index)) {
-				long pos = this.centralDirectoryPos + this.relativeCentralDirectoryOffset[index];
-				CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(index);
+				long pos = getCentralDirectoryFileHeaderRecordPos(index);
+				CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(pos);
 				if (hasName(pos, candidate, name)) {
 					return new Entry(index, candidate);
 				}
@@ -293,9 +292,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return index;
 	}
 
-	private CentralDirectoryFileHeaderRecord loadCentralDirectoryFileHeaderRecord(int index) {
+	private long getCentralDirectoryFileHeaderRecordPos(int index) {
+		return this.centralDirectoryPos + this.relativeCentralDirectoryOffset[index];
+	}
+
+	private CentralDirectoryFileHeaderRecord loadCentralDirectoryFileHeaderRecord(long pos) {
 		try {
-			long pos = this.centralDirectoryPos + this.relativeCentralDirectoryOffset[index];
 			return CentralDirectoryFileHeaderRecord.load(this.data, pos);
 		}
 		catch (IOException ex) {
@@ -402,7 +404,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			}
 			int index = ZipContent.this.position[this.cursor];
 			this.cursor = nextCursor(this.cursor);
-			return new Entry(index, loadCentralDirectoryFileHeaderRecord(index));
+			long pos = getCentralDirectoryFileHeaderRecordPos(index);
+			return new Entry(index, loadCentralDirectoryFileHeaderRecord(pos));
 		}
 
 		private int nextCursor(int cursor) {
@@ -624,7 +627,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		public String getName() {
 			String name = this.name;
 			if (name == null) {
-				name = ZipString.readString(ZipContent.this.data, pos() + this.record.fileNameOffset(),
+				name = ZipString.readString(ZipContent.this.data,
+						getCentralDirectoryFileHeaderRecordPos(this.index) + this.record.fileNameOffset(),
 						this.record.fileNameLength());
 				if (ZipContent.this.prefix != null) {
 					name = name.substring(ZipContent.this.prefix.length());
@@ -677,16 +681,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		public <E extends ZipEntry> E as(Function<String, E> factory) {
 			try {
 				E result = factory.apply(getName());
-				this.record.copyTo(ZipContent.this.data, pos(), result);
+				this.record.copyTo(ZipContent.this.data, getCentralDirectoryFileHeaderRecordPos(this.index), result);
 				return result;
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
-		}
-
-		private long pos() {
-			return ZipContent.this.centralDirectoryPos + ZipContent.this.relativeCentralDirectoryOffset[this.index];
 		}
 
 	}
