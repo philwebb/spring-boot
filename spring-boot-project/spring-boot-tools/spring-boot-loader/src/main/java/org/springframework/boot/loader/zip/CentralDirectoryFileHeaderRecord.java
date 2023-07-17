@@ -72,7 +72,7 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 
 	/**
 	 * Return the offset of the file name.
-	 * @return the file name start position
+	 * @return the file name offset relative to the position of this record
 	 */
 	long fileNameOffset() {
 		return MINIMUM_SIZE;

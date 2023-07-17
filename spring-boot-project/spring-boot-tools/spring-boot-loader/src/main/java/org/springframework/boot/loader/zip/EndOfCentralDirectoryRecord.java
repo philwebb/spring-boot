@@ -26,7 +26,6 @@ import org.springframework.boot.loader.log.DebugLogger;
  * A ZIP File "End of central directory record" (EOCD).
  *
  * @author Phillip Webb
- * @param pos the position where this record begins in the source {@link DataBlock}
  * @param numberOfThisDisk the number of this disk (or 0xffff for Zip64)
  * @param diskWhereCentralDirectoryStarts the disk where central directory starts (or
  * 0xffff for Zip64)
@@ -42,7 +41,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.16 of the Zip File Format Specification</a>
  */
-record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskWhereCentralDirectoryStarts,
+record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentralDirectoryStarts,
 		short numberOfCentralDirectoryEntriesOnThisDisk, short totalNumberOfCentralDirectoryEntries,
 		int sizeOfCentralDirectory, int offsetToStartOfCentralDirectory, short commentLength) {
 
@@ -70,8 +69,8 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 	 * Return the start position of the comment
 	 * @return the comment start position
 	 */
-	long commentPos() {
-		return pos() + MINIMUM_SIZE;
+	long commentOffset() {
+		return MINIMUM_SIZE;
 	}
 
 	/**
@@ -79,15 +78,15 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 	 * {@link DataBlock} by searching backwards from the end until a valid record is
 	 * located.
 	 * @param dataBlock the source data block
-	 * @return a new {@link EndOfCentralDirectoryRecord} instance
+	 * @return the {@link Located located} {@link EndOfCentralDirectoryRecord}
 	 * @throws IOException if the {@link EndOfCentralDirectoryRecord} cannot be read
 	 */
-	static EndOfCentralDirectoryRecord load(DataBlock dataBlock) throws IOException {
+	static Located load(DataBlock dataBlock) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		long pos = find(dataBlock, buffer);
-		return new EndOfCentralDirectoryRecord(pos, buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getShort());
+		return new Located(pos, new EndOfCentralDirectoryRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
+				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getShort()));
 	}
 
 	private static long find(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
@@ -125,6 +124,16 @@ record EndOfCentralDirectoryRecord(long pos, short numberOfThisDisk, short diskW
 			}
 		}
 		return -1;
+	}
+
+	/**
+	 * A located {@link EndOfCentralDirectoryRecord}.
+	 *
+	 * @param pos the position of the record
+	 * @param record the record
+	 */
+	static record Located(long pos, EndOfCentralDirectoryRecord endOfCentralDirectoryRecord) {
+
 	}
 
 }
