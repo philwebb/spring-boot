@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 /**
  * @author Phillip Webb
  */
@@ -53,8 +55,6 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 		for (CentralDirectoryFileHeaderRecord central : centralDirectoryRecords) {
 			LocalFileHeaderRecord local = LocalFileHeaderRecord.load(this.data, central.offsetToLocalHeader());
 			DataPart localPart = new DataPart(central.offsetToLocalHeader(), local.size() + central.uncompressedSize());
-			central.with
-
 			size += localPart.size();
 		}
 		return null;

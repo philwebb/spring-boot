@@ -146,7 +146,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		for (int i = 0; i < this.nameHash.length; i++) {
 			if (i != entry.getIndex()) {
 				CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
-				boolean startsWithPrefix = ZipString.startsWith(this.data, headerRecord.fileNamePos(),
+				boolean startsWithPrefix = ZipString.startsWith(this.data, headerRecord.fileNameOffset(),
 						headerRecord.fileNameLength(), prefix) != -1;
 				includedFilter.set(i, startsWithPrefix);
 				remainderFilter.set(i, !startsWithPrefix);
@@ -303,7 +303,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private boolean hasName(CentralDirectoryFileHeaderRecord centralDirectoryFileHeaderRecord, CharSequence name) {
 		try {
-			long pos = centralDirectoryFileHeaderRecord.fileNamePos();
+			long pos = centralDirectoryFileHeaderRecord.fileNameOffset();
 			short size = centralDirectoryFileHeaderRecord.fileNameLength();
 			if (this.prefix != null) {
 				int startsWith = ZipString.startsWith(this.data, pos, size, this.prefix);
@@ -440,9 +440,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			this.index = new int[numberOfEntries];
 		}
 
-		private void add(CentralDirectoryFileHeaderRecord record) throws IOException {
-			this.nameHash[this.cursor] = ZipString.hash(this.data, record.fileNamePos(), record.fileNameLength(), true);
-			this.relativeCentralDirectoryOffset[this.cursor] = (int) (record.pos() - this.centralDirectoryPos);
+		private void add(CentralDirectoryFileHeaderRecord record, long pos) throws IOException {
+			int hash = ZipString.hash(this.data, record.fileNameOffset(), record.fileNameLength(), true);
+			this.nameHash[this.cursor] = hash;
+			this.relativeCentralDirectoryOffset[this.cursor] = (int) (pos - this.centralDirectoryPos);
 			this.index[this.cursor] = this.cursor;
 			this.cursor++;
 		}
@@ -521,7 +522,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				long pos = centralDirectoryPos;
 				for (int i = 0; i < numberOfEntries; i++) {
 					CentralDirectoryFileHeaderRecord record = CentralDirectoryFileHeaderRecord.load(data, pos);
-					loader.add(record);
+					loader.add(record, pos);
 					pos += record.size();
 				}
 				return loader.finish(zipEocd.commentPos(), zipEocd.commentLength());
@@ -619,7 +620,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		public String getName() {
 			String name = this.name;
 			if (name == null) {
-				name = ZipString.readString(ZipContent.this.data, this.record.fileNamePos(),
+				name = ZipString.readString(ZipContent.this.data, this.record.fileNameOffset(),
 						this.record.fileNameLength());
 				if (ZipContent.this.prefix != null) {
 					name = name.substring(ZipContent.this.prefix.length());
@@ -672,7 +673,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		public <E extends ZipEntry> E as(Function<String, E> factory) {
 			try {
 				E result = factory.apply(getName());
-				this.record.copyTo(ZipContent.this.data, result);
+				long pos = ZipContent.this.centralDirectoryPos
+						+ ZipContent.this.relativeCentralDirectoryOffset[this.index];
+				this.record.copyTo(ZipContent.this.data, pos, result);
 				return result;
 			}
 			catch (IOException ex) {

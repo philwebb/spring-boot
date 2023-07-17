@@ -32,7 +32,6 @@ import org.springframework.boot.loader.log.DebugLogger;
  * A ZIP File "Central directory file header record" (CDFH).
  *
  * @author Phillip Webb
- * @param pos the position where this record begins in the source {@link DataBlock}
  * @param versionMadeBy the version that made the zip
  * @param versionNeededToExtract the version needed to extract the zip
  * @param generalPurposeBitFlag the general purpose bit flag
@@ -52,9 +51,9 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.12 of the Zip File Format Specification</a>
  */
-record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short versionNeededToExtract,
-		short generalPurposeBitFlag, short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32,
-		int compressedSize, int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
+record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract, short generalPurposeBitFlag,
+		short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32, int compressedSize,
+		int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
 		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
 
 	private static final DebugLogger debug = DebugLogger.get(CentralDirectoryFileHeaderRecord.class);
@@ -72,14 +71,11 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 	}
 
 	/**
-	 * Return the start position of the file name.
+	 * Return the offset of the file name.
 	 * @return the file name start position
 	 */
-	long fileNamePos() {
-		return this.pos + MINIMUM_SIZE;
-	}
-
-	public CentralDirectoryFileHeaderRecord virtual() {
+	long fileNameOffset() {
+		return MINIMUM_SIZE;
 	}
 
 	/**
@@ -88,7 +84,7 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 	 * @param zipEntry the destination zip entry
 	 * @throws IOException on I/O error
 	 */
-	void copyTo(DataBlock dataBlock, ZipEntry zipEntry) throws IOException {
+	void copyTo(DataBlock dataBlock, long pos, ZipEntry zipEntry) throws IOException {
 		int fileNameLength = fileNameLength() & 0xFFFF;
 		int extraLength = extraFieldLength() & 0xFFFF;
 		int commentLength = fileCommentLength() & 0xFFFF;
@@ -98,14 +94,14 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 		zipEntry.setCompressedSize(compressedSize() & 0xFFFFFFFFL);
 		zipEntry.setSize(uncompressedSize() & 0xFFFFFFFFL);
 		if (extraLength > 0) {
-			long pos = pos() + MINIMUM_SIZE + fileNameLength;
+			long extraPos = pos + MINIMUM_SIZE + fileNameLength;
 			ByteBuffer buffer = ByteBuffer.allocate(extraLength);
-			dataBlock.readFully(buffer, pos);
+			dataBlock.readFully(buffer, extraPos);
 			zipEntry.setExtra(buffer.array());
 		}
 		if ((fileCommentLength() & 0xFFFF) > 0) {
-			long pos = pos() + MINIMUM_SIZE + fileNameLength + extraLength;
-			zipEntry.setComment(ZipString.readString(dataBlock, pos, commentLength));
+			long commentPos = MINIMUM_SIZE + fileNameLength + extraLength;
+			zipEntry.setComment(ZipString.readString(dataBlock, commentPos, commentLength));
 		}
 	}
 
@@ -145,7 +141,7 @@ record CentralDirectoryFileHeaderRecord(long pos, short versionMadeBy, short ver
 			debug.log("Found incorrect CentralDirectoryFileHeaderRecord signature %s at position %s", signature, pos);
 			throw new IOException("Zip 'Central Directory File Header Record' not found at position " + pos);
 		}
-		return new CentralDirectoryFileHeaderRecord(pos, buffer.getShort(), buffer.getShort(), buffer.getShort(),
+		return new CentralDirectoryFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getInt(), buffer.getInt(),
 				buffer.getInt(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getInt(), buffer.getInt());
