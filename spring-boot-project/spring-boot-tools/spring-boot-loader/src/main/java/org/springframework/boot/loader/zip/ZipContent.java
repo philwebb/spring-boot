@@ -54,7 +54,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * <p>
  * This implementation does not use {@link Cleanable} so care must be taken to release
  * {@link ZipContent} resources. The {@link #close()} method should be called explicitly
- * or by try-with-resources.
+ * or by try-with-resources. Care must be take to only call close once.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -128,9 +128,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		if (entry == null || !entry.isDirectory()) {
 			throw new IllegalStateException("No directory entry '%s' found".formatted(directoryName));
 		}
-		Split split = this.splitCache.get(entry.getName());
+		String prefix = entry.getName();
+		Split split = this.splitCache.get(prefix);
 		if (split != null) {
-			debug.log("Opening existing cached split zip for %s", entry.getName());
+			debug.log("Opening existing cached split zip for %s", prefix);
 			split.open();
 			close();
 			return split;
@@ -140,18 +141,20 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		BitSet includedFilter = new BitSet(size);
 		BitSet remainderFilter = new BitSet(size);
 		for (int i = 0; i < this.nameHash.length; i++) {
-			CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
-			BitSet filter = (ZipString.startsWith(this.data, headerRecord.fileNamePos(), headerRecord.fileNameLength(),
-					entry.getName())) ? includedFilter : remainderFilter;
-			filter.set(i);
+			if (i != entry.getIndex()) {
+				CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
+				boolean startsWithPrefix = ZipString.startsWith(this.data, headerRecord.fileNamePos(),
+						headerRecord.fileNameLength(), prefix) != -1;
+				includedFilter.set(i, startsWithPrefix);
+				remainderFilter.set(i, !startsWithPrefix);
+			}
 		}
-		ZipContent included = new ZipContent(this, includedFilter, entry.getName());
-		ZipContent remainder = new ZipContent(this, remainderFilter, entry.getName());
+		ZipContent included = new ZipContent(this, includedFilter, prefix);
+		ZipContent remainder = new ZipContent(this, remainderFilter, null);
 		split = new Split(included, remainder);
-		Split previouslySplit = this.splitCache.putIfAbsent(entry.getName(), split);
+		Split previouslySplit = this.splitCache.putIfAbsent(prefix, split);
 		if (previouslySplit != null) {
-			debug.log("Closing split zip content from %s since cache was populated from another thread",
-					entry.getName());
+			debug.log("Closing split zip content from %s since cache was populated from another thread", prefix);
 			split.close();
 			previouslySplit.open();
 			close();
@@ -170,6 +173,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @return the zip data
 	 */
 	public DataBlock getData() {
+		if (this.filter != null) {
+			throw new IllegalStateException();
+		}
 		return this.data;
 	}
 
@@ -239,7 +245,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			if (!isFiltered(index)) {
 				CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(index);
 				if (hasName(candidate, name)) {
-					return new Entry(candidate);
+					return new Entry(index, candidate);
 				}
 			}
 			index++;
@@ -276,6 +282,14 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		try {
 			long pos = centralDirectoryFileHeaderRecord.fileNamePos();
 			short size = centralDirectoryFileHeaderRecord.fileNameLength();
+			if (this.prefix != null) {
+				int startsWith = ZipString.startsWith(this.data, pos, size, this.prefix);
+				if (startsWith == -1) {
+					return false;
+				}
+				pos += startsWith;
+				size -= startsWith;
+			}
 			return ZipString.matches(this.data, pos, size, name, true);
 		}
 		catch (IOException ex) {
@@ -363,7 +377,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			}
 			int index = ZipContent.this.position[this.cursor];
 			this.cursor = nextCursor(this.cursor);
-			return new Entry(loadCentralDirectoryFileHeaderRecord(index));
+			return new Entry(index, loadCentralDirectoryFileHeaderRecord(index));
 		}
 
 		private int nextCursor(int cursor) {
@@ -552,12 +566,19 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	public class Entry {
 
+		private final int index;
+
 		private final CentralDirectoryFileHeaderRecord record;
 
 		private String name;
 
-		Entry(CentralDirectoryFileHeaderRecord record) {
+		Entry(int index, CentralDirectoryFileHeaderRecord record) {
+			this.index = index;
 			this.record = record;
+		}
+
+		int getIndex() {
+			return this.index;
 		}
 
 		/**
@@ -577,6 +598,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			if (name == null) {
 				name = ZipString.readString(ZipContent.this.data, this.record.fileNamePos(),
 						this.record.fileNameLength());
+				if (ZipContent.this.prefix != null) {
+					name = name.substring(ZipContent.this.prefix.length());
+				}
 				this.name = name;
 			}
 			return name;

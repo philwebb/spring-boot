@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.assertj.core.api.AbstractBooleanAssert;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -143,22 +144,22 @@ class ZipStringTests {
 
 	@Test
 	void startsWithWhenStartsWith() throws Exception {
-		assertStartsWith("one/two", "one/").isTrue();
+		assertStartsWith("one/two", "one/").isEqualTo(4);
 	}
 
 	@Test
 	void startsWithWhenExact() throws Exception {
-		assertStartsWith("one/", "one/").isTrue();
+		assertStartsWith("one/", "one/").isEqualTo(4);
 	}
 
 	@Test
 	void startsWithWhenTooShort() throws Exception {
-		assertStartsWith("one/two", "one/two/three/").isFalse();
+		assertStartsWith("one/two", "one/two/three/").isEqualTo(-1);
 	}
 
 	@Test
 	void startsWithWhenDoesNotStartWith() throws Exception {
-		assertStartsWith("one/three/", "one/two/").isFalse();
+		assertStartsWith("one/three/", "one/two/").isEqualTo(-1);
 	}
 
 	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean addSlash)
@@ -167,7 +168,7 @@ class ZipStringTests {
 		return assertThat(ZipString.matches(dataBlock, 0, (int) dataBlock.size(), charSequence, addSlash));
 	}
 
-	private AbstractBooleanAssert<?> assertStartsWith(String source, CharSequence charSequence) throws IOException {
+	private AbstractIntegerAssert<?> assertStartsWith(String source, CharSequence charSequence) throws IOException {
 		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
 		return assertThat(ZipString.startsWith(dataBlock, 0, (int) dataBlock.size(), charSequence));
 	}

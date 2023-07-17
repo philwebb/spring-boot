@@ -143,7 +143,7 @@ class ZipString {
 	static boolean matches(DataBlock dataBlock, long pos, int len, CharSequence charSequence, boolean addSlash)
 			throws IOException {
 		return compare(dataBlock, pos, len, charSequence,
-				(!addSlash) ? CompareType.MATCHES : CompareType.MATCHES_ADDING_SLASH);
+				(!addSlash) ? CompareType.MATCHES : CompareType.MATCHES_ADDING_SLASH) != -1;
 	}
 
 	/**
@@ -157,18 +157,19 @@ class ZipString {
 	 * positive number indicating the number of bytes that contain the starting chars
 	 * @throws IOException on I/O error
 	 */
-	static boolean startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) throws IOException {
+	static int startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) throws IOException {
 		return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
 	}
 
-	private static boolean compare(DataBlock dataBlock, long pos, int len, CharSequence charSequence,
+	private static int compare(DataBlock dataBlock, long pos, int len, CharSequence charSequence,
 			CompareType compareType) throws IOException {
 		if (charSequence.isEmpty()) {
-			return true;
+			return 0;
 		}
 		boolean addSlash = compareType == CompareType.MATCHES_ADDING_SLASH && !endsWith(charSequence, '/');
 		int charSequenceIndex = 0;
 		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
+		int result = 0;
 		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		while (len > 0) {
@@ -178,32 +179,33 @@ class ZipString {
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
+				result += codePointSize;
 				if (codePoint <= 0xFFFF) {
 					char ch = (char) (codePoint & 0xFFFF);
 					if (charSequenceIndex >= maxCharSequenceLength
 							|| getChar(charSequence, charSequenceIndex++) != ch) {
-						return false;
+						return -1;
 					}
 				}
 				else {
 					char ch = Character.highSurrogate(codePoint);
 					if (charSequenceIndex >= maxCharSequenceLength
 							|| getChar(charSequence, charSequenceIndex++) != ch) {
-						return false;
+						return -1;
 					}
 					ch = Character.lowSurrogate(codePoint);
 					if (charSequenceIndex >= charSequence.length()
 							|| getChar(charSequence, charSequenceIndex++) != ch) {
-						return false;
+						return -1;
 					}
 				}
 				if (compareType == CompareType.STARTS_WITH && charSequenceIndex >= charSequence.length()) {
-					return true;
+					return result;
 				}
 				byteIndex += codePointSize;
 			}
 		}
-		return (charSequenceIndex >= charSequence.length());
+		return (charSequenceIndex >= charSequence.length()) ? result : -1;
 	}
 
 	private static boolean endsWith(CharSequence charSequence, char ch) {
