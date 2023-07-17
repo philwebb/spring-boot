@@ -80,6 +80,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final int[] position;
 
+	private final BitSet filter;
+
+	private final String prefix;
+
+	private final Map<String, Split> splitCache = new ConcurrentHashMap<>();
+
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
 			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position) {
 		this.data = data;
@@ -89,6 +95,21 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.nameHash = nameHash;
 		this.relativeCentralDirectoryOffset = relativeCentralDirectoryOffset;
 		this.position = position;
+		this.filter = null;
+		this.prefix = null;
+	}
+
+	private ZipContent(ZipContent zipContent, BitSet filter, String prefix) throws IOException {
+		this.data = zipContent.data;
+		this.centralDirectoryPos = zipContent.centralDirectoryPos;
+		this.commentPos = zipContent.commentPos;
+		this.commentLength = zipContent.commentLength;
+		this.nameHash = zipContent.nameHash;
+		this.relativeCentralDirectoryOffset = zipContent.relativeCentralDirectoryOffset;
+		this.position = zipContent.position;
+		this.filter = filter;
+		this.prefix = prefix;
+		open();
 	}
 
 	/**
@@ -107,15 +128,37 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		if (entry == null || !entry.isDirectory()) {
 			throw new IllegalStateException("No directory entry '%s' found".formatted(directoryName));
 		}
-		BitSet included = new BitSet(size());
-		BitSet remainder = new BitSet(size());
+		Split split = this.splitCache.get(entry.getName());
+		if (split != null) {
+			debug.log("Opening existing cached split zip for %s", entry.getName());
+			split.open();
+			close();
+			return split;
+		}
+		debug.log("Splitting zip content by %s", directoryName);
+		int size = size();
+		BitSet includedFilter = new BitSet(size);
+		BitSet remainderFilter = new BitSet(size);
 		for (int i = 0; i < this.nameHash.length; i++) {
 			CentralDirectoryFileHeaderRecord headerRecord = loadCentralDirectoryFileHeaderRecord(i);
-			int startsWith = ZipString.startsWith(this.data, headerRecord.fileNamePos(), headerRecord.fileNameLength(),
-					entry.getName());
-
+			BitSet filter = (ZipString.startsWith(this.data, headerRecord.fileNamePos(), headerRecord.fileNameLength(),
+					entry.getName())) ? includedFilter : remainderFilter;
+			filter.set(i);
 		}
-		return null;
+		ZipContent included = new ZipContent(this, includedFilter, entry.getName());
+		ZipContent remainder = new ZipContent(this, remainderFilter, entry.getName());
+		split = new Split(included, remainder);
+		Split previouslySplit = this.splitCache.putIfAbsent(entry.getName(), split);
+		if (previouslySplit != null) {
+			debug.log("Closing split zip content from %s since cache was populated from another thread",
+					entry.getName());
+			split.close();
+			previouslySplit.open();
+			close();
+			return previouslySplit;
+		}
+		close();
+		return split;
 	}
 
 	/**
@@ -187,18 +230,25 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @param name the name of the entry to find
 	 * @return the entry or {@code null}
 	 */
-	Entry getEntry(CharSequence name) {
+	public Entry getEntry(CharSequence name) {
 		ensureOpen();
-		int nameHash = ZipString.hash(name, true);
+		int initialHash = (this.prefix != null) ? this.prefix.hashCode() : 0;
+		int nameHash = ZipString.hash(initialHash, name, true);
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
-			CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(index);
-			if (hasName(candidate, name)) {
-				return new Entry(candidate);
+			if (!isFiltered(index)) {
+				CentralDirectoryFileHeaderRecord candidate = loadCentralDirectoryFileHeaderRecord(index);
+				if (hasName(candidate, name)) {
+					return new Entry(candidate);
+				}
 			}
 			index++;
 		}
 		return null;
+	}
+
+	private boolean isFiltered(int index) {
+		return this.filter != null && !this.filter.get(index);
 	}
 
 	private int getFirstIndex(int nameHash) {
@@ -271,7 +321,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		zipContent = Loader.load(source);
 		ZipContent previouslyCached = cache.putIfAbsent(source, zipContent);
 		if (previouslyCached != null) {
-			debug.log("Closing and zip content from %s since cache was populated from another thread", source);
+			debug.log("Closing zip content from %s since cache was populated from another thread", source);
 			zipContent.close();
 			previouslyCached.open();
 			return previouslyCached;
@@ -298,7 +348,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	private final class EntryIterator implements Iterator<Entry> {
 
-		private int cursor = 0;
+		private int cursor = nextCursor(-1);
 
 		@Override
 		public boolean hasNext() {
@@ -312,8 +362,17 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				throw new NoSuchElementException();
 			}
 			int index = ZipContent.this.position[this.cursor];
-			this.cursor++;
+			this.cursor = nextCursor(this.cursor);
 			return new Entry(loadCentralDirectoryFileHeaderRecord(index));
+		}
+
+		private int nextCursor(int cursor) {
+			while (true) {
+				cursor++;
+				if (cursor >= ZipContent.this.position.length || !isFiltered(ZipContent.this.position[cursor])) {
+					return cursor;
+				}
+			}
 		}
 
 	}
@@ -367,7 +426,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		}
 
 		private void sort(int left, int right) {
-			// Quick sort algorithm, uses nameHashCode as the source but sorts all arrays
+			// Quick sort algorithm, uses nameHashCode as the source but sorts all
+			// arrays
 			if (left < right) {
 				int pivot = this.nameHash[left + (right - left) / 2];
 				int i = left;
@@ -583,10 +643,15 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	public static record Split(ZipContent included, ZipContent remainder) implements Closeable {
 
+		void open() throws IOException {
+			included().open();
+			remainder().open();
+		}
+
 		@Override
 		public void close() throws IOException {
-			this.included.close();
-			this.remainder.close();
+			included().close();
+			remainder().close();
 		}
 
 	}
