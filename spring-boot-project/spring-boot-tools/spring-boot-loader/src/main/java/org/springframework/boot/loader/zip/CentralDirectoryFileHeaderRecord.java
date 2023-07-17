@@ -126,6 +126,45 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 		return Math.toIntExact(Math.min(Math.max(value, range.getMinimum()), range.getMaximum()));
 	}
 
+	CentralDirectoryFileHeaderRecord withFileNameLength(short fileNameLength) {
+		return (this.fileNameLength != fileNameLength) ? new CentralDirectoryFileHeaderRecord(this.versionMadeBy,
+				this.versionNeededToExtract, this.generalPurposeBitFlag, this.compressionMethod, this.lastModFileTime,
+				this.lastModFileDate, this.crc32, this.compressedSize, this.uncompressedSize, fileNameLength,
+				this.extraFieldLength, this.fileCommentLength, this.diskNumberStart, this.internalFileAttributes,
+				this.externalFileAttributes, this.offsetToLocalHeader) : this;
+	}
+
+	CentralDirectoryFileHeaderRecord withOffsetToLocalHeader(int offsetToLocalHeader) {
+		return (this.offsetToLocalHeader != offsetToLocalHeader) ? new CentralDirectoryFileHeaderRecord(
+				this.versionMadeBy, this.versionNeededToExtract, this.generalPurposeBitFlag, this.compressionMethod,
+				this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize, this.uncompressedSize,
+				this.fileNameLength, this.extraFieldLength, this.fileCommentLength, this.diskNumberStart,
+				this.internalFileAttributes, this.externalFileAttributes, offsetToLocalHeader) : this;
+	}
+
+	byte[] asByteArray() {
+		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.putInt(SIGNATURE);
+		buffer.putShort(this.versionMadeBy);
+		buffer.putShort(this.versionNeededToExtract);
+		buffer.putShort(this.generalPurposeBitFlag);
+		buffer.putShort(this.compressionMethod);
+		buffer.putShort(this.lastModFileTime);
+		buffer.putShort(this.lastModFileDate);
+		buffer.putInt(this.crc32);
+		buffer.putInt(this.compressedSize);
+		buffer.putInt(this.uncompressedSize);
+		buffer.putShort(this.fileNameLength);
+		buffer.putShort(this.extraFieldLength);
+		buffer.putShort(this.fileCommentLength);
+		buffer.putShort(this.diskNumberStart);
+		buffer.putShort(this.internalFileAttributes);
+		buffer.putInt(this.externalFileAttributes);
+		buffer.putInt(this.offsetToLocalHeader);
+		return buffer.array();
+	}
+
 	static CentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) {
 		try {
 			return load(dataBlock, pos);

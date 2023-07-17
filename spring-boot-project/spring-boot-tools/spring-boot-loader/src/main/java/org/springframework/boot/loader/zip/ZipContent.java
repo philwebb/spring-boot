@@ -197,14 +197,15 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private DataBlock createVirtualData() throws IOException {
 		CentralDirectoryFileHeaderRecord[] centralRecords = new CentralDirectoryFileHeaderRecord[size()];
-		for (int i = 0; i < this.position.length; i++) {
-			if (this.filter.get(i)) {
-				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(this.data,
-						getCentralDirectoryFileHeaderRecordPos(i));
-				centralRecords[this.position[i]] = centralRecord;
-			}
+		long[] centralRecordPositions = new long[centralRecords.length];
+		int i = 0;
+		for (Entry entry : this) {
+			long pos = getCentralDirectoryFileHeaderRecordPos(entry.getIndex());
+			centralRecordPositions[i] = pos;
+			centralRecords[i] = CentralDirectoryFileHeaderRecord.load(this.data, pos);
+			i++;
 		}
-		return new VirtualZipDataBlock(this.data, this.namePrefix, centralRecords);
+		return new VirtualZipDataBlock(this.data, this.namePrefix, centralRecords, centralRecordPositions);
 	}
 
 	/**
@@ -529,7 +530,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 					: eocd.offsetToStartOfCentralDirectory();
 			long numberOfEntries = (zip64Eocd != null) ? zip64Eocd.totalNumberOfCentralDirectoryEntries()
 					: eocd.totalNumberOfCentralDirectoryEntries();
-			if (numberOfEntries > 0xFFFFFFFF) {
+			if (numberOfEntries > 0xFFFFFFFFL) {
 				throw new IllegalStateException("Too many zip entries in " + source);
 			}
 			Loader loader = new Loader(data, centralDirectoryPos, (int) numberOfEntries & 0xFFFFFFFF);

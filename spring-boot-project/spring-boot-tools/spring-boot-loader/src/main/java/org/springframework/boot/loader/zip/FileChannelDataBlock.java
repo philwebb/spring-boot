@@ -86,7 +86,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		int originalDestinationLimit = -1;
 		if (dst.remaining() > remaining) {
 			originalDestinationLimit = dst.limit();
-			dst.limit(remaining);
+			dst.limit(dst.position() + remaining);
 		}
 		int result = this.fileChannel.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {

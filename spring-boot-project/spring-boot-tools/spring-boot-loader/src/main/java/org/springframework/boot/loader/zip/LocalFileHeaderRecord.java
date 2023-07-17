@@ -56,16 +56,33 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 		return MINIMUM_SIZE + fileNameLength() + extraFieldLength();
 	}
 
-	LocalFileHeaderRecord withExtraFieldLength(int i) {
-		return this;
+	LocalFileHeaderRecord withExtraFieldLength(short extraFieldLength) {
+		return new LocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
+				this.compressionMethod, this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize,
+				this.uncompressedSize, this.fileNameLength, extraFieldLength);
 	}
 
-	LocalFileHeaderRecord withFileNameLength(long size) {
-		return this;
+	LocalFileHeaderRecord withFileNameLength(short fileNameLength) {
+		return new LocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
+				this.compressionMethod, this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize,
+				this.uncompressedSize, fileNameLength, this.extraFieldLength);
 	}
 
-	byte[] toByteArray(long fileNameLength) {
-		return null;
+	byte[] asByteArray() {
+		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.putInt(SIGNATURE);
+		buffer.putShort(this.versionNeededToExtract);
+		buffer.putShort(this.generalPurposeBitFlag);
+		buffer.putShort(this.compressionMethod);
+		buffer.putShort(this.lastModFileTime);
+		buffer.putShort(this.lastModFileDate);
+		buffer.putInt(this.crc32);
+		buffer.putInt(this.compressedSize);
+		buffer.putInt(this.uncompressedSize);
+		buffer.putShort(this.fileNameLength);
+		buffer.putShort(this.extraFieldLength);
+		return buffer.array();
 	}
 
 	static LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {

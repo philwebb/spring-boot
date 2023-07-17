@@ -49,10 +49,6 @@ class VirtualDataBlock implements DataBlock {
 		this.size = size;
 	}
 
-	protected List<DataBlock> createParts() throws IOException {
-		throw new IOException();
-	}
-
 	@Override
 	public long size() throws IOException {
 		return this.size;
@@ -68,10 +64,10 @@ class VirtualDataBlock implements DataBlock {
 		for (DataBlock part : this.parts) {
 			while (pos >= offset && pos < offset + part.size()) {
 				int count = part.read(dst, pos - offset);
+				result += (count < 0) ? 0 : count;
 				if (count <= 0 || !dst.hasRemaining()) {
-					return result + count;
+					return result;
 				}
-				result += count;
 				pos += count;
 			}
 			offset += part.size();
