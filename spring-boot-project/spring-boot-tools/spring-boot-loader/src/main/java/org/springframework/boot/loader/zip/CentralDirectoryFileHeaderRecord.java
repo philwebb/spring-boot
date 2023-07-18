@@ -63,6 +63,9 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 
 	private static final int MINIMUM_SIZE = 46;
 
+	/**
+	 * The offset of the file name relative to the record start position.
+	 */
 	static final int FILE_NAME_OFFSET = MINIMUM_SIZE;
 
 	/**
@@ -126,6 +129,12 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 		return Math.toIntExact(Math.min(Math.max(value, range.getMinimum()), range.getMaximum()));
 	}
 
+	/**
+	 * Return a new {@link CentralDirectoryFileHeaderRecord} with a new
+	 * {@link #fileNameLength()}.
+	 * @param fileNameLength the new file name length
+	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 */
 	CentralDirectoryFileHeaderRecord withFileNameLength(short fileNameLength) {
 		return (this.fileNameLength != fileNameLength) ? new CentralDirectoryFileHeaderRecord(this.versionMadeBy,
 				this.versionNeededToExtract, this.generalPurposeBitFlag, this.compressionMethod, this.lastModFileTime,
@@ -134,6 +143,12 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 				this.externalFileAttributes, this.offsetToLocalHeader) : this;
 	}
 
+	/**
+	 * Return a new {@link CentralDirectoryFileHeaderRecord} with a new
+	 * {@link #offsetToLocalHeader()}.
+	 * @param offsetToLocalHeader the new offset to local header
+	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 */
 	CentralDirectoryFileHeaderRecord withOffsetToLocalHeader(int offsetToLocalHeader) {
 		return (this.offsetToLocalHeader != offsetToLocalHeader) ? new CentralDirectoryFileHeaderRecord(
 				this.versionMadeBy, this.versionNeededToExtract, this.generalPurposeBitFlag, this.compressionMethod,
@@ -142,6 +157,10 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 				this.internalFileAttributes, this.externalFileAttributes, offsetToLocalHeader) : this;
 	}
 
+	/**
+	 * Return the contents of this record as a byte array suitable for writing to a zip.
+	 * @return the record as a byte array
+	 */
 	byte[] asByteArray() {
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -165,7 +184,15 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 		return buffer.array();
 	}
 
-	static CentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) {
+	/**
+	 * Load the {@link CentralDirectoryFileHeaderRecord} from the given data block,
+	 * throwing {@link UncheckedIOException} instead of {@link IOException}.
+	 * @param dataBlock the source data block
+	 * @param pos the position of the record
+	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 * @throws UncheckedIOException on I/O error
+	 */
+	static CentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) throws UncheckedIOException {
 		try {
 			return load(dataBlock, pos);
 		}
@@ -174,6 +201,13 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 		}
 	}
 
+	/**
+	 * Load the {@link CentralDirectoryFileHeaderRecord} from the given data block.
+	 * @param dataBlock the source data block
+	 * @param pos the position of the record
+	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 * @throws IOException on I/O error
+	 */
 	static CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		debug.log("Loading CentralDirectoryFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);

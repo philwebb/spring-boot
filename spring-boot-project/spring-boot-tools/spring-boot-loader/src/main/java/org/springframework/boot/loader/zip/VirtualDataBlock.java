@@ -33,13 +33,27 @@ class VirtualDataBlock implements DataBlock {
 
 	private long size;
 
+	/**
+	 * Create a new {@link VirtualDataBlock} instance. The {@link #setParts(Collection)}
+	 * method must be called before the data block can be used.
+	 */
 	protected VirtualDataBlock() {
 	}
 
+	/**
+	 * Create a new {@link VirtualDataBlock} backed by the given parts.
+	 * @param parts the parts that make up the virtual data block
+	 * @throws IOException in I/O error
+	 */
 	VirtualDataBlock(Collection<? extends DataBlock> parts) throws IOException {
 		setParts(parts);
 	}
 
+	/**
+	 * Set the parts that make up the virtual data block.
+	 * @param parts the data block parts
+	 * @throws IOException on I/O error
+	 */
 	protected void setParts(Collection<? extends DataBlock> parts) throws IOException {
 		this.parts = List.copyOf(parts);
 		long size = 0;

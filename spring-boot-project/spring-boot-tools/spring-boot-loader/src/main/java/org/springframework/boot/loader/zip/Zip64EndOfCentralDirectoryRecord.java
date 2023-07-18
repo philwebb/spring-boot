@@ -54,6 +54,15 @@ record Zip64EndOfCentralDirectoryRecord(long size, long sizeOfZip64EndOfCentralD
 
 	private static final int MINIMUM_SIZE = 56;
 
+	/**
+	 * Load the {@link Zip64EndOfCentralDirectoryRecord} from the given data block based
+	 * on the offset given in the locator.
+	 * @param dataBlock the source data block
+	 * @param locator the {@link Zip64EndOfCentralDirectoryLocator} or {@code null}
+	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance or {@code null} if
+	 * the locator is {@code null}
+	 * @throws IOException on I/O error
+	 */
 	static Zip64EndOfCentralDirectoryRecord load(DataBlock dataBlock, Zip64EndOfCentralDirectoryLocator locator)
 			throws IOException {
 		if (locator == null) {

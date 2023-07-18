@@ -43,6 +43,9 @@ record Zip64EndOfCentralDirectoryLocator(long pos, int numberOfThisDisk, long of
 
 	private static final int SIGNATURE = 0x07064b50;
 
+	/**
+	 * The size of this record.
+	 */
 	static final int SIZE = 20;
 
 	/**

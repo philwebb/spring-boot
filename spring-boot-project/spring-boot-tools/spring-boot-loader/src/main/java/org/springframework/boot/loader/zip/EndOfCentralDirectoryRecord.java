@@ -63,6 +63,9 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 
 	private static final int BUFFER_SIZE = 256;
 
+	/**
+	 * The offset of the file comment relative to the record start position.
+	 */
 	static final int COMMENT_OFFSET = MINIMUM_SIZE;
 
 	/**
@@ -73,6 +76,10 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 		return MINIMUM_SIZE + this.commentLength;
 	}
 
+	/**
+	 * Return the contents of this record as a byte array suitable for writing to a zip.
+	 * @return the record as a byte array
+	 */
 	byte[] asByteArray() {
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
