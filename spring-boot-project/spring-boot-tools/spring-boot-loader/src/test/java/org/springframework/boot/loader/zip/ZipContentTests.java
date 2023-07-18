@@ -44,7 +44,6 @@ import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -262,7 +261,6 @@ class ZipContentTests {
 	}
 
 	@Test
-	@Disabled
 	void openWhenZip64ThatExceedsZipEntryLimitOpensZip() throws Exception {
 		File zip64File = new File(this.tempDir, "zip64.zip");
 		FileCopyUtils.copy(zip64Bytes(), zip64File);
@@ -279,7 +277,6 @@ class ZipContentTests {
 	}
 
 	@Test
-	@Disabled
 	void openWhenZip64ThatExceedsZipSizeLimitOpensZip() throws Exception {
 		Assumptions.assumeTrue(this.tempDir.getFreeSpace() > 6 * 1024 * 1024 * 1024, "Insufficient disk space");
 		File zip64File = new File(this.tempDir, "zip64.zip");
@@ -313,7 +310,6 @@ class ZipContentTests {
 	}
 
 	@Test
-	@Disabled
 	void nestedZip64CanBeRead() throws Exception {
 		File containerFile = new File(this.tempDir, "outer.zip");
 		try (ZipOutputStream jarOutput = new ZipOutputStream(new FileOutputStream(containerFile))) {

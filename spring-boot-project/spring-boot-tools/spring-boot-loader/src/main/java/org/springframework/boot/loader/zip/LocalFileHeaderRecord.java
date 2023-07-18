@@ -56,18 +56,32 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 		return MINIMUM_SIZE + fileNameLength() + extraFieldLength();
 	}
 
+	/**
+	 * Return a new {@link LocalFileHeaderRecord} with a new {@link #extraFieldLength()}.
+	 * @param extraFieldLength the new extra field length
+	 * @return a new {@link LocalFileHeaderRecord} instance
+	 */
 	LocalFileHeaderRecord withExtraFieldLength(short extraFieldLength) {
 		return new LocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
 				this.compressionMethod, this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize,
 				this.uncompressedSize, this.fileNameLength, extraFieldLength);
 	}
 
+	/**
+	 * Return a new {@link LocalFileHeaderRecord} with a new {@link #fileNameLength()}.
+	 * @param fileNameLength the new file name length
+	 * @return a new {@link LocalFileHeaderRecord} instance
+	 */
 	LocalFileHeaderRecord withFileNameLength(short fileNameLength) {
 		return new LocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
 				this.compressionMethod, this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize,
 				this.uncompressedSize, fileNameLength, this.extraFieldLength);
 	}
 
+	/**
+	 * Return the contents of this record as a byte array suitable for writing to a zip.
+	 * @return the record as a byte array
+	 */
 	byte[] asByteArray() {
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -85,6 +99,13 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 		return buffer.array();
 	}
 
+	/**
+	 * Load the {@link LocalFileHeaderRecord} from the given data block.
+	 * @param dataBlock the source data block
+	 * @param pos the position of the record
+	 * @return a new {@link LocalFileHeaderRecord} instance
+	 * @throws IOException on I/O error
+	 */
 	static LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		debug.log("Loading LocalFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);

@@ -19,11 +19,13 @@ package org.springframework.boot.loader.zip;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link DataBlock} that creates a virtual zip.
+ * {@link DataBlock} that creates a virtual zip. This class allows us to create virtual
+ * zip files that can be parsed by regular JDK classes such as the zip {@link FileSystem}.
  *
  * @author Phillip Webb
  */
@@ -31,6 +33,15 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 
 	private final FileChannelDataBlock data;
 
+	/**
+	 * Create a new {@link VirtualZipDataBlock} for the given entries.
+	 * @param data the source zip data
+	 * @param namePrefix the name prefix that should be stripped from entries or
+	 * {@code null}
+	 * @param centralRecords the records that should be copied to the virtual zip
+	 * @param centralRecordPositions the record positions in the data block.
+	 * @throws IOException on I/O error
+	 */
 	VirtualZipDataBlock(FileChannelDataBlock data, String namePrefix, CentralDirectoryFileHeaderRecord[] centralRecords,
 			long[] centralRecordPositions) throws IOException {
 		this.data = data;

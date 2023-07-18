@@ -115,7 +115,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.position = zipContent.position;
 		this.filter = filter;
 		this.namePrefix = namePrefix;
-		open();
+		this.data.open();
 	}
 
 	/**
@@ -177,6 +177,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * smaller than the original file since additional bytes are permitted at the front of
 	 * a zip file. For nested zip files, this will be only the contents of the nest zip.
 	 * <p>
+	 * For {@link #split(String) split} zip files, a virtual data block will be created
+	 * containing only the split content.
+	 * <p>
 	 * Data contents must not be accessed after calling {@link ZipContent#close()} .
 	 * @return the zip data
 	 * @throws IOException on I/O error
@@ -236,13 +239,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
-	 * Open another connection to the underling data block.
-	 */
-	private void open() throws IOException {
-		this.data.open();
-	}
-
-	/**
 	 * Close this jar file, releasing the underlying file if this was the last reference.
 	 * @see java.io.Closeable#close()
 	 */
@@ -262,7 +258,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
-	 * Return the entry with the given name.
+	 * Return the entry with the given name, if any.
 	 * @param name the name of the entry to find
 	 * @return the entry or {@code null}
 	 */
@@ -328,7 +324,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	/**
 	 * Open {@link ZipContent} from the specified path. The resulting {@link ZipContent}
-	 * <em>must</em> be {@link #close() closed} by the called.
+	 * <em>must</em> be {@link #close() closed} by the caller.
 	 * @param zip the zip path
 	 * @return a {@link ZipContent} instance
 	 * @throws IOException on I/O error
@@ -339,21 +335,21 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	/**
 	 * Open nested {@link ZipContent} from the specified path. The resulting
-	 * {@link ZipContent} <em>must</em> be {@link #close() closed} by the called.
-	 * @param containerZip the container zip path
+	 * {@link ZipContent} <em>must</em> be {@link #close() closed} by the caller.
+	 * @param zip the zip path
 	 * @param nestedEntryName the nested entry name to open
 	 * @return a {@link ZipContent} instance
 	 * @throws IOException on I/O error
 	 */
-	public static ZipContent open(Path containerZip, String nestedEntryName) throws IOException {
-		return open(new Source(containerZip.toAbsolutePath(), nestedEntryName));
+	public static ZipContent open(Path zip, String nestedEntryName) throws IOException {
+		return open(new Source(zip.toAbsolutePath(), nestedEntryName));
 	}
 
 	private static ZipContent open(Source source) throws IOException {
 		ZipContent zipContent = cache.get(source);
 		if (zipContent != null) {
 			debug.log("Opening existing cached zip content for %s", zipContent);
-			zipContent.open();
+			zipContent.data.open();
 			return zipContent;
 		}
 		debug.log("Loading zip content from %s", source);
@@ -362,7 +358,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		if (previouslyCached != null) {
 			debug.log("Closing zip content from %s since cache was populated from another thread", source);
 			zipContent.close();
-			previouslyCached.open();
+			previouslyCached.data.open();
 			return previouslyCached;
 		}
 		return zipContent;
@@ -376,6 +372,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	private static record Source(Path path, String nestedEntryName) {
 
+		/**
+		 * Return if this is the source of a nested zip.
+		 * @return if this is for a nested zip
+		 */
 		boolean isNested() {
 			return this.nestedEntryName != null;
 		}
@@ -582,7 +582,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 							.formatted(source.nestedEntryName(), source.path()));
 					}
 					if (entry.getName().endsWith("/")) {
-						throw new IllegalStateException("Not yet implemented");
+						throw new IllegalStateException(
+								"Nested entry '%s' in container zip '%s' must not be a directory"
+									.formatted(source.nestedEntryName(), source.path()));
 					}
 					if (entry.centralRecord.compressionMethod() != ZipEntry.STORED) {
 						throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
@@ -607,11 +609,20 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private String name;
 
+		/**
+		 * Create a new {@link Entry} instance.
+		 * @param index the index of the entry
+		 * @param centralRecord the {@link CentralDirectoryFileHeaderRecord} for the entry
+		 */
 		Entry(int index, CentralDirectoryFileHeaderRecord centralRecord) {
 			this.index = index;
 			this.centralRecord = centralRecord;
 		}
 
+		/**
+		 * Return the index of the entry.
+		 * @return the entry index
+		 */
 		int getIndex() {
 			return this.index;
 		}
@@ -705,14 +716,14 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	public static record Split(ZipContent included, ZipContent remainder) implements Closeable {
 
 		void open() throws IOException {
-			included().open();
-			remainder().open();
+			this.included.data.open();
+			this.remainder.data.open();
 		}
 
 		@Override
 		public void close() throws IOException {
-			included().close();
-			remainder().close();
+			this.included.close();
+			this.remainder.close();
 		}
 
 	}

@@ -28,6 +28,10 @@ class ByteArrayDataBlock implements DataBlock {
 
 	private byte[] bytes;
 
+	/**
+	 * Create a new {@link ByteArrayDataBlock} backed by the given bytes.
+	 * @param bytes the bytes to use
+	 */
 	ByteArrayDataBlock(byte... bytes) {
 		this.bytes = bytes;
 	}
@@ -39,11 +43,14 @@ class ByteArrayDataBlock implements DataBlock {
 
 	@Override
 	public int read(ByteBuffer dst, long pos) throws IOException {
-		int length = this.bytes.length - (int) pos;
-		if (length > dst.remaining()) {
-			length = dst.remaining();
-		}
-		dst.put(this.bytes, (int) pos, length);
+		return read(dst, (int) pos);
+	}
+
+	private int read(ByteBuffer dst, int pos) {
+		int remaining = dst.remaining();
+		int length = this.bytes.length - pos;
+		length = (length > remaining) ? length = remaining : length;
+		dst.put(this.bytes, pos, length);
 		return length;
 	}
 

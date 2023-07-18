@@ -53,6 +53,13 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 	private final Object lock = new Object();
 
+	/**
+	 * Create a new {@link FileChannelDataBlock} instance.
+	 * @param path the file path
+	 * @param opener the {@link Opener} to use when opening the file
+	 * @param closer the {@link Closer} to use when closing the file
+	 * @throws IOException on I/O error
+	 */
 	FileChannelDataBlock(Path path, Opener opener, Closer closer) throws IOException {
 		this(path, opener, closer, 0, -1);
 	}
@@ -96,8 +103,9 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	}
 
 	/**
-	 * Return a version of this instance with front matter removed. Note that this method
-	 * does not increment the reference count.
+	 * Return a version of this instance with front matter removed. Note the result of
+	 * this method is expected to replace this instance and as such calls do not increment
+	 * the reference count.
 	 * @param pos the new start position
 	 * @return a {@link FileChannelDataBlock} with front matter removed
 	 * @throws IOException on I/O error
@@ -138,10 +146,20 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		close();
 	}
 
+	/**
+	 * Ensure that the underlying file channel is currently open.
+	 * @throws ClosedChannelException if the channel is closed
+	 */
 	void ensureOpen() throws ClosedChannelException {
 		ensureOpen(ClosedChannelException::new);
 	}
 
+	/**
+	 * Ensure that the underlying file channel is currently open.
+	 * @param exceptionSupplier a supplier providing the exception to throw
+	 * @param <E> the exception type
+	 * @throws E if the channel is closed
+	 */
 	<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
 		synchronized (this.lock) {
 			if (this.referenceCount == 0) {
