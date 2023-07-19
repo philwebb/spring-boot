@@ -133,6 +133,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @throws IOException on I/O error
 	 */
 	public Split split(String directoryName) throws IOException {
+		// FIXME we don't need this, we only need the directory entries. May as well use
+		// open
 		Entry directoryEntry = getEntry(directoryName);
 		if (directoryEntry == null || !directoryEntry.isDirectory()) {
 			throw new IllegalStateException("No directory entry '%s' found".formatted(directoryName));

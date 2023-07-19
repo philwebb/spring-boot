@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
@@ -38,6 +39,12 @@ import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.ZipContent;
 
 /**
+ * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but can
+ * open nested jars.
+ *
+ * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class JarFile extends java.util.jar.JarFile {
 
@@ -45,7 +52,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private static final int BASE_VERSION = baseVersion().feature();
 
-	private final ManagedResources managed;
+	private final Resources resources;
 
 	private final Cleanable cleanup;
 
@@ -62,8 +69,8 @@ public class JarFile extends java.util.jar.JarFile {
 	private volatile boolean closing;
 
 	/**
-	 * Opens a jar file for reading.
-	 * @param file
+	 * Creates a new {@link JarFile} instance to read from the specific {@code File}.
+	 * @param file the jar file to be opened for reading
 	 * @throws IOException on I/O error
 	 */
 	public JarFile(File file) throws IOException {
@@ -71,8 +78,9 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
-	 * Opens a jar file for reading.
-	 * @param file
+	 * Creates a new {@link JarFile} instance to read from the specific {@code File}.
+	 * @param file the jar file to be opened for reading
+	 * @param nestedEntryName the nested entry name to open or {@code null}
 	 * @throws IOException on I/O error
 	 */
 	public JarFile(File file, String nestedEntryName) throws IOException {
@@ -80,35 +88,45 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
-	 * Opens a jar file for reading.
-	 * @param file
+	 * Creates a new {@link JarFile} instance to read from the specific {@code File}.
+	 * @param file the jar file to be opened for reading
+	 * @param nestedEntryName the nested entry name to open or {@code null}
+	 * @param version the release version to use when opening a multi-release jar
 	 * @throws IOException on I/O error
 	 */
 	public JarFile(File file, String nestedEntryName, Runtime.Version version) throws IOException {
 		super(file);
-		this.managed = new ManagedResources(file, nestedEntryName);
-		this.cleanup = Cleaner.register(this, this.managed);
+		this.resources = new Resources(file, nestedEntryName);
+		this.cleanup = Cleaner.register(this, this.resources);
 		this.name = file.getPath() + ((nestedEntryName != null) ? "[" + nestedEntryName + "]" : "");
 		this.version = version.feature();
 	}
 
+	private boolean isMultiReleaseJar() {
+		return true;
+	}
+
 	@Override
 	public Manifest getManifest() throws IOException {
+		// FIXME
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 	@Override
 	public Enumeration<JarEntry> entries() {
+		// FIXME
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 	@Override
 	public Stream<JarEntry> stream() {
+		// FIXME
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
+		// FIXME
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
@@ -128,13 +146,13 @@ public class JarFile extends java.util.jar.JarFile {
 		if (!isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION < this.version) {
 			return null;
 		}
-		MetaInfVersions metaInfVersions = this.managed.zipContent()
-			.getOrCompute(MetaInfVersions.class, MetaInfVersions::from);
-		int[] metaInfVersionNumbers = metaInfVersions.versions();
-		String[] metaInfVersionDirectories = metaInfVersions.directories();
-		for (int i = metaInfVersionNumbers.length - 1; i >= 0; i--) {
-			if (metaInfVersionNumbers[i] <= this.version) {
-				ZipContent.Entry entry = getContentEntry(metaInfVersionDirectories[i], name);
+		MetaInfVersionsInfo info = this.resources.zipContent()
+			.getOrCompute(MetaInfVersionsInfo.class, MetaInfVersionsInfo::from);
+		int[] versions = info.versions();
+		String[] directories = info.directories();
+		for (int i = versions.length - 1; i >= 0; i--) {
+			if (versions[i] <= this.version) {
+				ZipContent.Entry entry = getContentEntry(directories[i], name);
 				if (entry != null) {
 					return entry.as((realName) -> new Entry(realName, name));
 				}
@@ -149,7 +167,7 @@ public class JarFile extends java.util.jar.JarFile {
 			if (Objects.equals(namePrefix, this.lastEntryPrefix) && Objects.equals(name, this.lastEntryName)) {
 				return this.lastEntry;
 			}
-			ZipContent.Entry entry = this.managed.zipContent().getEntry(namePrefix, name);
+			ZipContent.Entry entry = this.resources.zipContent().getEntry(namePrefix, name);
 			this.lastEntryName = name;
 			this.lastEntry = entry;
 			return entry;
@@ -169,7 +187,7 @@ public class JarFile extends java.util.jar.JarFile {
 	public String getComment() {
 		synchronized (this) {
 			ensureOpen();
-			return this.managed.zipContent().getComment();
+			return this.resources.zipContent().getComment();
 		}
 	}
 
@@ -177,7 +195,7 @@ public class JarFile extends java.util.jar.JarFile {
 	public int size() {
 		synchronized (this) {
 			ensureOpen();
-			return this.managed.zipContent().size();
+			return this.resources.zipContent().size();
 		}
 	}
 
@@ -206,7 +224,7 @@ public class JarFile extends java.util.jar.JarFile {
 		if (this.closing) {
 			throw new IllegalStateException("zip file closed");
 		}
-		if (this.managed.zipContent() == null) {
+		if (this.resources.zipContent() == null) {
 			throw new IllegalStateException("The object is not initialized.");
 		}
 	}
@@ -214,11 +232,11 @@ public class JarFile extends java.util.jar.JarFile {
 	/**
 	 * Resources created managed and cleaned by a {@link JarFile} instance.
 	 */
-	private static class ManagedResources implements Runnable {
+	private static class Resources implements Runnable {
 
 		private ZipContent zipContent;
 
-		ManagedResources(File file, String nestedEntryName) throws IOException {
+		Resources(File file, String nestedEntryName) throws IOException {
 			this.zipContent = ZipContent.open(file.toPath(), nestedEntryName);
 		}
 
@@ -255,6 +273,9 @@ public class JarFile extends java.util.jar.JarFile {
 
 	}
 
+	/**
+	 * An individual entry from this jar file.
+	 */
 	class Entry extends java.util.jar.JarEntry {
 
 		private final String name;
@@ -300,19 +321,19 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
-	 * Versions found under {@code META-INF/versions/}.
+	 * Info related to the directories listed under {@code META-INF/versions/}.
 	 */
-	static class MetaInfVersions {
+	static class MetaInfVersionsInfo {
 
 		private static final String META_INF_VERSIONS = META_INF + "versions/";
 
-		private static final MetaInfVersions NONE = new MetaInfVersions(Collections.emptySet());
+		private static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(Collections.emptySet());
 
 		private final int[] versions;
 
 		private final String[] directories;
 
-		MetaInfVersions(Set<Integer> versions) {
+		MetaInfVersionsInfo(Set<Integer> versions) {
 			this.versions = versions.stream().mapToInt(Integer::intValue).toArray();
 			this.directories = versions.stream()
 				.map((version) -> META_INF_VERSIONS + version + "/")
@@ -327,7 +348,7 @@ public class JarFile extends java.util.jar.JarFile {
 			return this.directories;
 		}
 
-		static MetaInfVersions from(ZipContent zipContent) {
+		static MetaInfVersionsInfo from(ZipContent zipContent) {
 			Set<Integer> versions = new TreeSet<>();
 			for (ZipContent.Entry entry : zipContent) {
 				if (entry.hasNameStartingWith(META_INF_VERSIONS) && !entry.isDirectory()) {
@@ -343,7 +364,42 @@ public class JarFile extends java.util.jar.JarFile {
 					}
 				}
 			}
-			return (!versions.isEmpty()) ? new MetaInfVersions(versions) : NONE;
+			return (!versions.isEmpty()) ? new MetaInfVersionsInfo(versions) : NONE;
+		}
+
+	}
+
+	/**
+	 * Info related to the {@link Manifest}.
+	 */
+	static class ManifestInfo {
+
+		private static final Name MULTI_RELEASE = new Name("Multi-Release");
+
+		private final Manifest manifest;
+
+		private Boolean multiRelease;
+
+		private ManifestInfo(Manifest manifest) {
+			this.manifest = manifest;
+		}
+
+		boolean isMultiRelease() {
+			if (this.manifest == null) {
+				this.multiRelease = false;
+			}
+			Boolean multiRelease = this.multiRelease;
+			if (multiRelease != null) {
+				return multiRelease;
+			}
+			Attributes attributes = this.manifest.getMainAttributes();
+			multiRelease = attributes.containsKey(MULTI_RELEASE);
+			this.multiRelease = multiRelease;
+			return multiRelease;
+		}
+
+		static ManifestInfo from(ZipContent zipContent) {
+			return null;
 		}
 
 	}
