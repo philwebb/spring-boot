@@ -103,7 +103,7 @@ class ZipContentTests {
 	}
 
 	@Test
-	void getEntryWhenPresentreturnsEntry() {
+	void getEntryWhenPresentReturnsEntry() {
 		Entry entry = this.zipContent.getEntry("1.dat");
 		assertThat(entry).isNotNull();
 		assertThat(entry.getName()).isEqualTo("1.dat");
@@ -112,6 +112,24 @@ class ZipContentTests {
 	@Test
 	void getEntryWhenMissingReturnsNull() {
 		assertThat(this.zipContent.getEntry("missing.dat")).isNull();
+	}
+
+	@Test
+	void getEntryWithPrefixWhenPresentReturnsEntry() {
+		Entry entry = this.zipContent.getEntry("1", ".dat");
+		assertThat(entry).isNotNull();
+		assertThat(entry.getName()).isEqualTo("1.dat");
+	}
+
+	@Test
+	void getEntryWithLongPrefixWhenNameIsShorterReturnsNull() {
+		Entry entry = this.zipContent.getEntry("iamaverylongprefixandiwontfindanything", "1.dat");
+		assertThat(entry).isNull();
+	}
+
+	@Test
+	void getEntryWithPrefixWhenMissingReturnsNull() {
+		assertThat(this.zipContent.getEntry("miss", "ing.dat")).isNull();
 	}
 
 	@Test
@@ -384,6 +402,13 @@ class ZipContentTests {
 		return zerotimedFile;
 	}
 
+	@Test
+	void getOrCompute() {
+		ZipInfo info = this.zipContent.getOrCompute(ZipInfo.class, ZipInfo::get);
+		assertThat(info.size()).isEqualTo(12);
+		assertThat(this.zipContent.getOrCompute(ZipInfo.class, ZipInfo::get)).isSameAs(info);
+	}
+
 	private static void writeTimeBlock(byte[] data, int pos, int value) {
 		data[pos] = (byte) (value & 0xff);
 		data[pos + 1] = (byte) ((value >> 8) & 0xff);
@@ -419,6 +444,23 @@ class ZipContentTests {
 		ByteBuffer buffer = ByteBuffer.allocate((int) dataBlock.size());
 		dataBlock.readFully(buffer, 0);
 		Files.write(file.toPath(), buffer.array());
+	}
+
+	private static class ZipInfo {
+
+		private int size;
+
+		ZipInfo(int size) {
+			this.size = size;
+		}
+
+		public int size() {
+			return this.size;
+		}
+
+		static ZipInfo get(ZipContent content) {
+			return new ZipInfo(content.size());
+		}
 
 	}
 
