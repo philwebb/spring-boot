@@ -24,6 +24,7 @@ import java.lang.ref.SoftReference;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -80,6 +81,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private final int[] relativeCentralDirectoryOffset;
 
 	private final int[] position;
+
+	private final Map<Class<?>, Object> info = new HashMap<>();
 
 	/**
 	 * If not {@code null} only items set in the filter should be included.
@@ -263,21 +266,39 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @return the entry or {@code null}
 	 */
 	public Entry getEntry(CharSequence name) {
+		return getEntry(null, name);
+	}
+
+	/**
+	 * Return the entry with the given name, if any.
+	 * @param namePrefix an optional prefix for the name
+	 * @param name the name of the entry to find
+	 * @return the entry or {@code null}
+	 */
+	public Entry getEntry(CharSequence namePrefix, CharSequence name) {
 		ensureOpen();
-		int nameHash = ZipString.hash((this.namePrefix != null) ? this.namePrefix.hashCode() : 0, name, true);
+		int nameHash = nameHash(namePrefix, name);
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
 			if (!isFiltered(index)) {
 				long pos = getCentralDirectoryFileHeaderRecordPos(index);
 				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord
 					.loadUnchecked(this.data, pos);
-				if (hasName(centralRecord, pos, name)) {
+				if (hasName(centralRecord, pos, namePrefix, name)) {
 					return new Entry(index, centralRecord);
 				}
 			}
 			index++;
 		}
 		return null;
+	}
+
+	private int nameHash(CharSequence namePrefix, CharSequence name) {
+		int nameHash = 0;
+		nameHash = (this.namePrefix != null) ? ZipString.hash(nameHash, this.namePrefix, false) : nameHash;
+		nameHash = (namePrefix != null) ? ZipString.hash(nameHash, namePrefix, false) : nameHash;
+		nameHash = ZipString.hash(nameHash, name, true);
+		return nameHash;
 	}
 
 	private int getFirstIndex(int nameHash) {
@@ -299,23 +320,34 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return this.centralDirectoryPos + this.relativeCentralDirectoryOffset[index];
 	}
 
-	private boolean hasName(CentralDirectoryFileHeaderRecord centralRecord, long pos, CharSequence name) {
-		try {
-			pos += CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-			short len = centralRecord.fileNameLength();
-			if (this.namePrefix != null) {
-				int startsWith = ZipString.startsWith(this.data, pos, len, this.namePrefix);
+	private boolean hasName(CentralDirectoryFileHeaderRecord centralRecord, long pos, CharSequence namePrefix,
+			CharSequence name) {
+		pos += CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
+		short len = centralRecord.fileNameLength();
+		for (int i = 0; i < 2; i++) {
+			CharSequence prefixToCheck = (i == 0) ? this.namePrefix : namePrefix;
+			if (prefixToCheck != null) {
+				int startsWith = ZipString.startsWith(this.data, pos, len, prefixToCheck);
 				if (startsWith == -1) {
 					return false;
 				}
 				pos += startsWith;
 				len -= startsWith;
 			}
-			return ZipString.matches(this.data, pos, len, name, true);
 		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		return ZipString.matches(this.data, pos, len, name, true);
+	}
+
+	/**
+	 * Get or compute information based on the {@link ZipContent}.
+	 * @param <T> the type to get or compute
+	 * @param type the type to get or compute
+	 * @param function the function used to compute the information
+	 * @return the computed or existing information
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getOrCompute(Class<T> type, Function<ZipContent, T> function) {
+		return (T) this.info.computeIfAbsent(type, (key) -> function.apply(this));
 	}
 
 	private void ensureOpen() {
@@ -633,6 +665,21 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		 */
 		public boolean isDirectory() {
 			return getName().endsWith("/");
+		}
+
+		/**
+		 * Returns {@code true} if this entry has a name starting with the given prefix.
+		 * @param prefix the required prefix
+		 * @return if the entry name starts with the prefix
+		 */
+		public boolean hasNameStartingWith(CharSequence prefix) {
+			String name = this.name;
+			if (name != null) {
+				return name.startsWith(prefix.toString());
+			}
+			long pos = getCentralDirectoryFileHeaderRecordPos(this.index)
+					+ CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
+			return ZipString.startsWith(ZipContent.this.data, pos, this.centralRecord.fileNameLength(), prefix) != -1;
 		}
 
 		/**

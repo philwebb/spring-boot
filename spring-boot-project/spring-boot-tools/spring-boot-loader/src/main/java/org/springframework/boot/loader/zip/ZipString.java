@@ -138,12 +138,15 @@ class ZipString {
 	 * @param addSlash also accept {@code charSequence + '/'} when it doesn't already end
 	 * with one
 	 * @return true if the contents are considered equal
-	 * @throws IOException on I/O error
 	 */
-	static boolean matches(DataBlock dataBlock, long pos, int len, CharSequence charSequence, boolean addSlash)
-			throws IOException {
-		return compare(dataBlock, pos, len, charSequence,
-				(!addSlash) ? CompareType.MATCHES : CompareType.MATCHES_ADDING_SLASH) != -1;
+	static boolean matches(DataBlock dataBlock, long pos, int len, CharSequence charSequence, boolean addSlash) {
+		try {
+			return compare(dataBlock, pos, len, charSequence,
+					(!addSlash) ? CompareType.MATCHES : CompareType.MATCHES_ADDING_SLASH) != -1;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	/**
@@ -155,10 +158,14 @@ class ZipString {
 	 * @param charSequence the required starting chars
 	 * @return {@code -1} if the data block does not start with the char sequence, or a
 	 * positive number indicating the number of bytes that contain the starting chars
-	 * @throws IOException on I/O error
 	 */
-	static int startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) throws IOException {
-		return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
+	static int startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) {
+		try {
+			return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	private static int compare(DataBlock dataBlock, long pos, int len, CharSequence charSequence,
