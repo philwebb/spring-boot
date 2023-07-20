@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -64,6 +66,9 @@ import org.springframework.boot.loader.log.DebugLogger;
  */
 public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
+	private static int ADDITIONAL_SPLITERATOR_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
+			| Spliterator.IMMUTABLE | Spliterator.NONNULL;
+
 	private static final DebugLogger debug = DebugLogger.get(ZipContent.class);
 
 	private static final Map<Source, ZipContent> cache = new ConcurrentHashMap<>();
@@ -82,8 +87,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final int[] position;
 
-	private final Map<Class<?>, Object> info = new HashMap<>();
-
 	/**
 	 * If not {@code null} only items set in the filter should be included.
 	 */
@@ -94,6 +97,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private final Map<String, Split> splitCache = new ConcurrentHashMap<>();
 
 	private SoftReference<DataBlock> virtualData;
+
+	private SoftReference<Map<Class<?>, Object>> info;
 
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
 			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position) {
@@ -234,6 +239,13 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return new EntryIterator();
 	}
 
+	@Override
+	public Spliterator<Entry> spliterator() {
+		ensureOpen();
+		int size = (this.filter != null) ? this.filter.cardinality() : this.nameHash.length;
+		return Spliterators.spliterator(new EntryIterator(), size, ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
+	}
+
 	/**
 	 * Returns the number of entries in the ZIP file.
 	 * @return the number of entries
@@ -342,14 +354,19 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	/**
 	 * Get or compute information based on the {@link ZipContent}.
-	 * @param <T> the type to get or compute
-	 * @param type the type to get or compute
+	 * @param <I> the info type to get or compute
+	 * @param type the info type to get or compute
 	 * @param function the function used to compute the information
 	 * @return the computed or existing information
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getOrCompute(Class<T> type, Function<ZipContent, T> function) {
-		return (T) this.info.computeIfAbsent(type, (key) -> function.apply(this));
+	public <I> I getInfo(Class<I> type, Function<ZipContent, I> function) {
+		Map<Class<?>, Object> info = (this.info != null) ? this.info.get() : null;
+		if (info == null) {
+			info = new HashMap<>();
+			this.info = new SoftReference<>(info);
+		}
+		return (I) info.computeIfAbsent(type, (key) -> function.apply(this));
 	}
 
 	private void ensureOpen() {
@@ -417,7 +434,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
-	 * Iterator for entries.
+	 * {@link Iterator} for entries.
 	 */
 	private final class EntryIterator implements Iterator<Entry> {
 
@@ -700,6 +717,24 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				this.name = name;
 			}
 			return name;
+		}
+
+		/**
+		 * Return the compression method for this entry.
+		 * @return the compression method
+		 * @see ZipEntry#STORED
+		 * @see ZipEntry#DEFLATED
+		 */
+		public int getCompressionMethod() {
+			return this.centralRecord.compressionMethod();
+		}
+
+		/**
+		 * Return the uncompressed size of this entry.
+		 * @return the uncompressed size
+		 */
+		public int getUncompressedSize() {
+			return this.centralRecord.uncompressedSize();
 		}
 
 		/**
