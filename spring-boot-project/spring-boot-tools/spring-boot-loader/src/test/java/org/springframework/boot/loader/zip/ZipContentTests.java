@@ -403,10 +403,10 @@ class ZipContentTests {
 	}
 
 	@Test
-	void getOrCompute() {
-		ZipInfo info = this.zipContent.getOrCompute(ZipInfo.class, ZipInfo::get);
+	void getInfoReturnsComputedInfo() {
+		ZipInfo info = this.zipContent.getInfo(ZipInfo.class, ZipInfo::get);
 		assertThat(info.size()).isEqualTo(12);
-		assertThat(this.zipContent.getOrCompute(ZipInfo.class, ZipInfo::get)).isSameAs(info);
+		assertThat(this.zipContent.getInfo(ZipInfo.class, ZipInfo::get)).isSameAs(info);
 	}
 
 	private static void writeTimeBlock(byte[] data, int pos, int value) {

@@ -18,6 +18,7 @@ package org.springframework.boot.loader.jar;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.jar.JarEntry;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
+import org.springframework.boot.loader.jar.JarFile.Entry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -132,8 +134,13 @@ class JarFileTests {
 	}
 
 	@Test
-	void getInputStreamReturnsInputStream() {
-
+	void getInputStreamReturnsInputStream() throws IOException {
+		try (JarFile jarFile = new JarFile(this.file)) {
+			Entry entry = jarFile.getJarEntry("2.dat");
+			try (InputStream in = jarFile.getInputStream(entry)) {
+				assertThat(in).hasBinaryContent(new byte[] { 0x02 });
+			}
+		}
 	}
 
 	@Test

@@ -21,21 +21,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner.Cleanable;
+import java.nio.ByteBuffer;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
+import java.util.zip.Inflater;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 
 import org.springframework.boot.loader.ref.Cleaner;
+import org.springframework.boot.loader.zip.CloseableDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
 
 /**
@@ -48,7 +58,14 @@ import org.springframework.boot.loader.zip.ZipContent;
  */
 public class JarFile extends java.util.jar.JarFile {
 
+	/**
+	 *
+	 */
+	private static final int BASE_10 = 10;
+
 	private static final String META_INF = "META-INF/";
+
+	private static final String META_INF_VERSIONS = META_INF + "versions/";
 
 	private static final int BASE_VERSION = baseVersion().feature();
 
@@ -102,14 +119,14 @@ public class JarFile extends java.util.jar.JarFile {
 		this.version = version.feature();
 	}
 
-	private boolean isMultiReleaseJar() {
-		return true;
-	}
-
 	@Override
 	public Manifest getManifest() throws IOException {
-		// FIXME
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		try {
+			return this.resources.zipContent.getInfo(ManifestInfo.class, this::computeManifestInfo).getManifest();
+		}
+		catch (UncheckedIOException ex) {
+			throw ex.getCause();
+		}
 	}
 
 	@Override
@@ -120,14 +137,51 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Stream<JarEntry> stream() {
-		// FIXME
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		synchronized (this) {
+			ensureOpen();
+			return this.resources.zipContent()
+				.stream()
+				.map((contentEntry) -> contentEntry.as((realName) -> new Entry(contentEntry, realName)));
+		}
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
-		// FIXME
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		synchronized (this) {
+			ensureOpen();
+			return this.resources.zipContent()
+				.stream()
+				.map(this::asVersionedEntry)
+				.filter(nonNullDistinct(JarEntry::getName));
+		}
+	}
+
+	private JarEntry asVersionedEntry(ZipContent.Entry contentEntry) {
+		String name = contentEntry.getName();
+		if (!name.startsWith(META_INF_VERSIONS)) {
+			return contentEntry.as((realName) -> new Entry(contentEntry, realName));
+		}
+		int versionNumberStartIndex = META_INF_VERSIONS.length();
+		int versionNumberEndIndex = name.indexOf('/', versionNumberStartIndex);
+		if (versionNumberEndIndex == -1 && versionNumberEndIndex == (name.length() - 1)) {
+			return null;
+		}
+		try {
+			int versionNumber = Integer.parseInt(name, versionNumberStartIndex, versionNumberEndIndex, BASE_10);
+			if (versionNumber > this.version) {
+				return null;
+			}
+		}
+		catch (NumberFormatException ex) {
+			return null;
+		}
+		String baseName = name.substring(versionNumberEndIndex + 1);
+		return contentEntry.as((realName) -> new Entry(contentEntry, baseName));
+	}
+
+	public static <T, K> Predicate<T> nonNullDistinct(Function<T, K> extractor) {
+		Set<K> seen = ConcurrentHashMap.newKeySet();
+		return (entry) -> entry != null && seen.add(extractor.apply(entry));
 	}
 
 	@Override
@@ -139,26 +193,34 @@ public class JarFile extends java.util.jar.JarFile {
 	public ZipEntry getEntry(String name) {
 		Objects.requireNonNull(name, "name");
 		Entry entry = getVersionedEntry(name);
-		return (entry != null) ? entry : getContentEntry(null, name).as(Entry::new);
+		return (entry != null) ? entry : getEntry(null, name);
 	}
 
 	private Entry getVersionedEntry(String name) {
-		if (!isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION < this.version) {
+		// NOTE: we can't call isMultiRelease() directly because it's a final method and
+		// it inspects the container jar. We use ManifestInfo instead.
+		ManifestInfo manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::computeManifestInfo);
+		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION < this.version) {
 			return null;
 		}
 		MetaInfVersionsInfo info = this.resources.zipContent()
-			.getOrCompute(MetaInfVersionsInfo.class, MetaInfVersionsInfo::from);
+			.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::compute);
 		int[] versions = info.versions();
 		String[] directories = info.directories();
 		for (int i = versions.length - 1; i >= 0; i--) {
 			if (versions[i] <= this.version) {
-				ZipContent.Entry entry = getContentEntry(directories[i], name);
+				Entry entry = getEntry(directories[i], name);
 				if (entry != null) {
-					return entry.as((realName) -> new Entry(realName, name));
+					return entry;
 				}
 			}
 		}
 		return null;
+	}
+
+	private Entry getEntry(String namePrefix, String name) {
+		ZipContent.Entry contentEntry = getContentEntry(namePrefix, name);
+		return (contentEntry != null) ? contentEntry.as((realName) -> new Entry(contentEntry, name)) : null;
 	}
 
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
@@ -174,12 +236,53 @@ public class JarFile extends java.util.jar.JarFile {
 		}
 	}
 
+	private ManifestInfo computeManifestInfo(ZipContent zipContent) {
+		ZipContent.Entry manifestEntry = zipContent.getEntry(MANIFEST_NAME);
+		if (manifestEntry == null) {
+			return ManifestInfo.NONE;
+		}
+		try {
+			try (InputStream inputStream = getInputStream(manifestEntry)) {
+				Manifest manifest = new Manifest(inputStream);
+				return new ManifestInfo(manifest, null);
+			}
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
 	@Override
-	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
+	public InputStream getInputStream(ZipEntry entry) throws IOException {
 		Objects.requireNonNull(entry, "entry");
+		if (!(entry instanceof Entry)) {
+			entry = getEntry(entry.getName());
+		}
+		return getInputStream(((Entry) entry).contentEntry());
+	}
+
+	private InputStream getInputStream(ZipContent.Entry entry) throws IOException {
+		int compression = entry.getCompressionMethod();
+		if (compression != ZipEntry.STORED && compression != ZipEntry.DEFLATED) {
+			throw new ZipException("invalid compression method");
+		}
+		Set<InputStream> inputStreams = this.resources.inputStreams();
 		synchronized (this) {
-			// FIXME
-			return null;
+			ensureOpen();
+			InputStream inputStream = new EntryInputStream(entry);
+			try {
+				if (compression == ZipEntry.DEFLATED) {
+					inputStream = new InflaterEntryInputStream((EntryInputStream) inputStream, this.resources);
+				}
+				synchronized (inputStreams) {
+					inputStreams.add(inputStream);
+				}
+				return inputStream;
+			}
+			catch (RuntimeException ex) {
+				inputStream.close();
+				throw ex;
+			}
 		}
 	}
 
@@ -234,7 +337,13 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	private static class Resources implements Runnable {
 
+		private static final int INFLATER_CACHE_LIMIT = 50;
+
 		private ZipContent zipContent;
+
+		private final Set<InputStream> inputStreams = Collections.newSetFromMap(new WeakHashMap<>());
+
+		private Deque<Inflater> inflaterCache = new ArrayDeque<>();
 
 		Resources(File file, String nestedEntryName) throws IOException {
 			this.zipContent = ZipContent.open(file.toPath(), nestedEntryName);
@@ -244,31 +353,96 @@ public class JarFile extends java.util.jar.JarFile {
 			return this.zipContent;
 		}
 
+		Set<InputStream> inputStreams() {
+			return this.inputStreams;
+		}
+
 		@Override
 		public void run() {
 			IOException exceptionChain = null;
-			exceptionChain = releaseAllResources(exceptionChain);
+			exceptionChain = releaseInflators(exceptionChain);
+			exceptionChain = releaseInputStreams(exceptionChain);
+			exceptionChain = releaseZipContent(exceptionChain);
 			if (exceptionChain != null) {
 				throw new UncheckedIOException(exceptionChain);
 			}
 		}
 
-		private IOException releaseAllResources(IOException exceptionChain) {
-			if (this.zipContent != null) {
-				synchronized (this.zipContent) { // FIXME not sure why we sync on this
+		private IOException releaseInflators(IOException exceptionChain) {
+			Deque<Inflater> inflaterCache = this.inflaterCache;
+			if (inflaterCache != null) {
+				synchronized (inflaterCache) {
+					inflaterCache.stream().forEach(Inflater::end);
+				}
+				this.inflaterCache = null;
+			}
+			return exceptionChain;
+		}
+
+		private IOException releaseInputStreams(IOException exceptionChain) {
+			synchronized (this.inputStreams) {
+				for (InputStream inputStream : this.inputStreams) {
 					try {
-						this.zipContent.close();
+						inputStream.close();
 					}
 					catch (IOException ex) {
-						if (exceptionChain != null) {
-							exceptionChain.addSuppressed(ex);
-							return exceptionChain;
-						}
-						return ex;
+						exceptionChain = addToExceptionChain(exceptionChain, ex);
+					}
+					this.inputStreams.clear();
+				}
+			}
+			return exceptionChain;
+		}
+
+		private IOException releaseZipContent(IOException exceptionChain) {
+			if (this.zipContent != null) {
+				try {
+					this.zipContent.close();
+				}
+				catch (IOException ex) {
+					exceptionChain = addToExceptionChain(exceptionChain, ex);
+				}
+			}
+			return exceptionChain;
+		}
+
+		private IOException addToExceptionChain(IOException exceptionChain, IOException ex) {
+			if (exceptionChain != null) {
+				exceptionChain.addSuppressed(ex);
+				return exceptionChain;
+			}
+			return ex;
+		}
+
+		Runnable createInflatorCleanupAction(Inflater inflater) {
+			return () -> endOrResetAndCacheInflater(inflater);
+		}
+
+		Inflater getOrCreateInflater() {
+			Deque<Inflater> inflaterCache = this.inflaterCache;
+			if (inflaterCache != null) {
+				synchronized (inflaterCache) {
+					Inflater inflater = this.inflaterCache.poll();
+					if (inflater != null) {
+						return inflater;
 					}
 				}
 			}
-			return null;
+			return new Inflater(true);
+		}
+
+		private void endOrResetAndCacheInflater(Inflater inflater) {
+			Deque<Inflater> inflaterCache = this.inflaterCache;
+			if (inflaterCache != null) {
+				synchronized (inflaterCache) {
+					if (this.inflaterCache == inflaterCache && inflaterCache.size() < INFLATER_CACHE_LIMIT) {
+						inflater.reset();
+						this.inflaterCache.add(inflater);
+						return;
+					}
+				}
+			}
+			inflater.end();
 		}
 
 	}
@@ -278,16 +452,18 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	class Entry extends java.util.jar.JarEntry {
 
+		private final ZipContent.Entry contentEntry;
+
 		private final String name;
 
-		Entry(String name) {
-			super(name);
+		Entry(ZipContent.Entry contentEntry, String name) {
+			super(contentEntry.getName());
+			this.contentEntry = contentEntry;
 			this.name = name;
 		}
 
-		Entry(String realName, String name) {
-			super(realName);
-			this.name = name;
+		ZipContent.Entry contentEntry() {
+			return this.contentEntry;
 		}
 
 		@Override
@@ -321,11 +497,140 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
+	 * {@link InputStream} to read entry content.
+	 */
+	private class EntryInputStream extends InputStream {
+
+		private final int uncompressedSize;
+
+		private final CloseableDataBlock content;
+
+		private long pos;
+
+		private long remaining;
+
+		private volatile boolean closing;
+
+		EntryInputStream(ZipContent.Entry entry) throws IOException {
+			this.uncompressedSize = entry.getUncompressedSize();
+			this.content = entry.openContent();
+		}
+
+		@Override
+		public int read() throws IOException {
+			byte[] b = new byte[1];
+			return (read(b, 0, 1) == 1) ? b[0] & 0xFF : -1;
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			int result;
+			synchronized (JarFile.this) {
+				ensureOpen();
+				ByteBuffer dst = ByteBuffer.wrap(b, off, len);
+				int count = this.content.read(dst, this.pos);
+				if (count > 0) {
+					this.pos += count;
+					this.remaining -= count;
+				}
+				result = count;
+			}
+			if (this.remaining == 0) {
+				close();
+			}
+			return result;
+		}
+
+		@Override
+		public long skip(long n) throws IOException {
+			long result;
+			synchronized (JarFile.this) {
+				result = (n > 0) ? maxForwardSkip(n) : maxBackwardSkip(n);
+				this.pos += result;
+				this.remaining -= result;
+			}
+			if (this.remaining == 0) {
+				close();
+			}
+			return result;
+		}
+
+		private long maxForwardSkip(long n) {
+			boolean willCauseOverflow = (this.pos + n) < 0;
+			return (willCauseOverflow || n > this.remaining) ? this.remaining : n;
+		}
+
+		private long maxBackwardSkip(long n) {
+			return Math.max(-this.pos, n);
+		}
+
+		@Override
+		public int available() throws IOException {
+			return (this.remaining < Integer.MAX_VALUE) ? (int) this.remaining : Integer.MAX_VALUE;
+		}
+
+		private void ensureOpen() throws ZipException {
+			if (JarFile.this.closing || this.closing) {
+				throw new ZipException("ZipFile closed");
+			}
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (this.closing) {
+				return;
+			}
+			this.closing = true;
+			this.content.close();
+			Set<InputStream> inputStreams = JarFile.this.resources.inputStreams();
+			synchronized (inputStreams) {
+				inputStreams.remove(this);
+			}
+		}
+
+		int getUncompressedSize() {
+			return this.uncompressedSize;
+		}
+
+	}
+
+	/**
+	 * {@link ZipInflaterInputStream} to read entry content.
+	 */
+	private class InflaterEntryInputStream extends ZipInflaterInputStream {
+
+		private final Cleanable cleanup;
+
+		private volatile boolean closing;
+
+		InflaterEntryInputStream(EntryInputStream inputStream, Resources resources) {
+			this(inputStream, resources, resources.getOrCreateInflater());
+		}
+
+		private InflaterEntryInputStream(EntryInputStream inputStream, Resources resources, Inflater inflater) {
+			super(inputStream, inflater, inputStream.getUncompressedSize());
+			this.cleanup = Cleaner.register(this, resources.createInflatorCleanupAction(inflater));
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (this.closing) {
+				return;
+			}
+			this.closing = true;
+			super.close();
+			synchronized (JarFile.this.resources.inputStreams()) {
+				JarFile.this.resources.inputStreams().remove(this);
+			}
+			this.cleanup.clean();
+		}
+
+	}
+
+	/**
 	 * Info related to the directories listed under {@code META-INF/versions/}.
 	 */
-	static class MetaInfVersionsInfo {
-
-		private static final String META_INF_VERSIONS = META_INF + "versions/";
+	private static class MetaInfVersionsInfo {
 
 		private static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(Collections.emptySet());
 
@@ -348,7 +653,7 @@ public class JarFile extends java.util.jar.JarFile {
 			return this.directories;
 		}
 
-		static MetaInfVersionsInfo from(ZipContent zipContent) {
+		static MetaInfVersionsInfo compute(ZipContent zipContent) {
 			Set<Integer> versions = new TreeSet<>();
 			for (ZipContent.Entry entry : zipContent) {
 				if (entry.hasNameStartingWith(META_INF_VERSIONS) && !entry.isDirectory()) {
@@ -372,16 +677,22 @@ public class JarFile extends java.util.jar.JarFile {
 	/**
 	 * Info related to the {@link Manifest}.
 	 */
-	static class ManifestInfo {
+	private static class ManifestInfo {
 
 		private static final Name MULTI_RELEASE = new Name("Multi-Release");
+
+		static final ManifestInfo NONE = new ManifestInfo(null, false);
 
 		private final Manifest manifest;
 
 		private Boolean multiRelease;
 
-		private ManifestInfo(Manifest manifest) {
+		private ManifestInfo(Manifest manifest, Boolean multiRelease) {
 			this.manifest = manifest;
+		}
+
+		Manifest getManifest() {
+			return this.manifest;
 		}
 
 		boolean isMultiRelease() {
@@ -396,10 +707,6 @@ public class JarFile extends java.util.jar.JarFile {
 			multiRelease = attributes.containsKey(MULTI_RELEASE);
 			this.multiRelease = multiRelease;
 			return multiRelease;
-		}
-
-		static ManifestInfo from(ZipContent zipContent) {
-			return null;
 		}
 
 	}
