@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -71,11 +70,15 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private static int ADDITIONAL_SPLITERATOR_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
 			| Spliterator.IMMUTABLE | Spliterator.NONNULL;
 
+	private static final String META_INF = "META-INF/";
+
 	private static byte[] SIGNATURE_SUFFIX = ".DSA".getBytes(StandardCharsets.UTF_8);
 
 	private static final DebugLogger debug = DebugLogger.get(ZipContent.class);
 
 	private static final Map<Source, ZipContent> cache = new ConcurrentHashMap<>();
+
+	private final Entry directoryEntry;
 
 	private final FileChannelDataBlock data;
 
@@ -93,23 +96,16 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final boolean hasJarSignatureFile;
 
-	/**
-	 * If not {@code null} only items set in the filter should be included.
-	 */
-	private final BitSet filter;
-
-	private final String namePrefix;
-
-	private final Map<String, Split> splitCache = new ConcurrentHashMap<>();
-
 	private SoftReference<DataBlock> virtualData;
 
 	private SoftReference<Map<Class<?>, Object>> softInfo;
 
 	private final Map<Class<?>, Object> retainedInfo = new ConcurrentHashMap<>();
 
-	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
-			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position, boolean hasJarSignatureFile) {
+	private ZipContent(Entry directoryEntry, FileChannelDataBlock data, long centralDirectoryPos, long commentPos,
+			long commentLength, int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position,
+			boolean hasJarSignatureFile) {
+		this.directoryEntry = directoryEntry;
 		this.data = data;
 		this.centralDirectoryPos = centralDirectoryPos;
 		this.commentPos = commentPos;
@@ -117,79 +113,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.nameHash = nameHash;
 		this.relativeCentralDirectoryOffset = relativeCentralDirectoryOffset;
 		this.position = position;
-		this.filter = null;
-		this.namePrefix = null;
 		this.hasJarSignatureFile = hasJarSignatureFile;
-	}
-
-	private ZipContent(ZipContent zipContent, BitSet filter, String namePrefix) throws IOException {
-		this.data = zipContent.data;
-		this.centralDirectoryPos = zipContent.centralDirectoryPos;
-		this.commentPos = zipContent.commentPos;
-		this.commentLength = zipContent.commentLength;
-		this.nameHash = zipContent.nameHash;
-		this.relativeCentralDirectoryOffset = zipContent.relativeCentralDirectoryOffset;
-		this.position = zipContent.position;
-		this.hasJarSignatureFile = zipContent.hasJarSignatureFile;
-		this.filter = filter;
-		this.namePrefix = namePrefix;
-		this.data.open();
-	}
-
-	/**
-	 * Split the zip based based the named directory entry. This method will return two
-	 * new {@link ZipContent} instances, one containing the included entries and one
-	 * containing the remaining entries. Included entries will named with the directory
-	 * prefix removed. The caller is responsible for {@link #close() closing} the returned
-	 * instance, this {@link ZipContent} instance will be closed after split and should
-	 * not be used again.
-	 * @param directoryName the name of the directory that should be split off
-	 * @return the split zip content
-	 * @throws IOException on I/O error
-	 */
-	public Split split(String directoryName) throws IOException {
-		// FIXME we don't need this, we only need the directory entries. May as well use
-		// open
-		Entry directoryEntry = getEntry(directoryName);
-		if (directoryEntry == null || !directoryEntry.isDirectory()) {
-			throw new IllegalStateException("No directory entry '%s' found".formatted(directoryName));
-		}
-		String namePrefix = directoryEntry.getName();
-		Split split = this.splitCache.get(namePrefix);
-		if (split != null) {
-			debug.log("Opening existing cached split zip for %s", namePrefix);
-			split.open();
-			close();
-			return split;
-		}
-		debug.log("Splitting zip content by %s", namePrefix);
-		int size = size();
-		BitSet includedFilter = new BitSet(size);
-		BitSet remainderFilter = new BitSet(size);
-		for (int i = 0; i < this.nameHash.length; i++) {
-			if (i != directoryEntry.getIndex()) {
-				long pos = getCentralDirectoryFileHeaderRecordPos(i);
-				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(this.data, pos);
-				boolean underDirectory = ZipString.startsWith(this.data,
-						pos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET, centralRecord.fileNameLength(),
-						namePrefix) != -1;
-				includedFilter.set(i, underDirectory);
-				remainderFilter.set(i, !underDirectory);
-			}
-		}
-		ZipContent included = new ZipContent(this, includedFilter, namePrefix);
-		ZipContent remainder = new ZipContent(this, remainderFilter, null);
-		split = new Split(included, remainder);
-		Split previouslySplit = this.splitCache.putIfAbsent(namePrefix, split);
-		if (previouslySplit != null) {
-			debug.log("Closing split zip content from %s since cache was populated from another thread", namePrefix);
-			split.close();
-			previouslySplit.open();
-			close();
-			return previouslySplit;
-		}
-		close();
-		return split;
 	}
 
 	/**
@@ -197,15 +121,15 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * smaller than the original file since additional bytes are permitted at the front of
 	 * a zip file. For nested zip files, this will be only the contents of the nest zip.
 	 * <p>
-	 * For {@link #split(String) split} zip files, a virtual data block will be created
-	 * containing only the split content.
+	 * For nested directory zip files, a virtual data block will be created containing
+	 * only the relevant content.
 	 * <p>
 	 * Data contents must not be accessed after calling {@link ZipContent#close()} .
 	 * @return the zip data
 	 * @throws IOException on I/O error
 	 */
 	public DataBlock getData() throws IOException {
-		return (this.filter != null) ? getVirtualData() : this.data;
+		return (this.directoryEntry != null) ? getVirtualData() : this.data;
 	}
 
 	private DataBlock getVirtualData() throws IOException {
@@ -228,7 +152,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			centralRecords[i] = CentralDirectoryFileHeaderRecord.load(this.data, pos);
 			i++;
 		}
-		return new VirtualZipDataBlock(this.data, this.namePrefix, centralRecords, centralRecordPositions);
+		return null; // FIXME
+		// return new VirtualZipDataBlock(this.data, this.directoryName, centralRecords,
+		// centralRecordPositions);
 	}
 
 	/**
@@ -252,8 +178,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	@Override
 	public Spliterator<Entry> spliterator() {
 		ensureOpen();
-		int size = (this.filter != null) ? this.filter.cardinality() : this.nameHash.length;
-		return Spliterators.spliterator(new EntryIterator(), size, ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
+		return Spliterators.spliterator(new EntryIterator(), this.nameHash.length,
+				ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
 	}
 
 	/**
@@ -262,7 +188,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	public int size() {
 		ensureOpen();
-		return (this.filter != null) ? this.filter.cardinality() : this.nameHash.length;
+		return this.nameHash.length;
 	}
 
 	/**
@@ -294,13 +220,11 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		int nameHash = nameHash(namePrefix, name);
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
-			if (!isFiltered(index)) {
-				long pos = getCentralDirectoryFileHeaderRecordPos(index);
-				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord
-					.loadUnchecked(this.data, pos);
-				if (hasName(centralRecord, pos, namePrefix, name)) {
-					return new Entry(index, centralRecord);
-				}
+			long pos = getCentralDirectoryFileHeaderRecordPos(index);
+			CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.loadUnchecked(this.data,
+					pos);
+			if (hasName(centralRecord, pos, namePrefix, name)) {
+				return new Entry(index, centralRecord);
 			}
 			index++;
 		}
@@ -309,7 +233,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private int nameHash(CharSequence namePrefix, CharSequence name) {
 		int nameHash = 0;
-		nameHash = (this.namePrefix != null) ? ZipString.hash(nameHash, this.namePrefix, false) : nameHash;
 		nameHash = (namePrefix != null) ? ZipString.hash(nameHash, namePrefix, false) : nameHash;
 		nameHash = ZipString.hash(nameHash, name, true);
 		return nameHash;
@@ -326,10 +249,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return index;
 	}
 
-	private boolean isFiltered(int index) {
-		return this.filter != null && !this.filter.get(index);
-	}
-
 	private long getCentralDirectoryFileHeaderRecordPos(int index) {
 		return this.centralDirectoryPos + this.relativeCentralDirectoryOffset[index];
 	}
@@ -338,16 +257,21 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			CharSequence name) {
 		pos += CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
 		short len = centralRecord.fileNameLength();
-		for (int i = 0; i < 2; i++) {
-			CharSequence prefixToCheck = (i == 0) ? this.namePrefix : namePrefix;
-			if (prefixToCheck != null) {
-				int startsWith = ZipString.startsWith(this.data, pos, len, prefixToCheck);
-				if (startsWith == -1) {
-					return false;
-				}
-				pos += startsWith;
-				len -= startsWith;
+		if (this.directoryEntry != null && ZipString.startsWith(this.data, pos, len, META_INF) != -1) {
+			int startsWithDirectoryName = ZipString.startsWith(this.data, pos, len, this.directoryEntry.getName());
+			if (startsWithDirectoryName == -1) {
+				return false;
 			}
+			pos += startsWithDirectoryName;
+			len -= startsWithDirectoryName;
+		}
+		if (namePrefix != null) {
+			int startsWithNamePrefix = ZipString.startsWith(this.data, pos, len, namePrefix);
+			if (startsWithNamePrefix == -1) {
+				return false;
+			}
+			pos += startsWithNamePrefix;
+			len -= startsWithNamePrefix;
 		}
 		return ZipString.matches(this.data, pos, len, name, true);
 	}
@@ -466,7 +390,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	private final class EntryIterator implements Iterator<Entry> {
 
-		private int cursor = nextCursor(-1);
+		private int cursor = 0;
 
 		@Override
 		public boolean hasNext() {
@@ -481,17 +405,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			}
 			int index = ZipContent.this.position[this.cursor];
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
-			this.cursor = nextCursor(this.cursor);
+			this.cursor++;
 			return new Entry(index, CentralDirectoryFileHeaderRecord.loadUnchecked(ZipContent.this.data, pos));
-		}
-
-		private int nextCursor(int cursor) {
-			while (true) {
-				cursor++;
-				if (cursor >= ZipContent.this.position.length || !isFiltered(ZipContent.this.position[cursor])) {
-					return cursor;
-				}
-			}
 		}
 
 	}
@@ -542,7 +457,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			for (int i = 0; i < size; i++) {
 				position[this.index[i]] = i;
 			}
-			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameHash,
+			return new ZipContent(null, this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameHash,
 					this.relativeCentralDirectoryOffset, position, hasJarSignatureFile);
 		}
 
@@ -588,7 +503,34 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		}
 
 		static ZipContent load(Source source) throws IOException {
-			FileChannelDataBlock data = openDataBlock(source);
+			if (!source.isNested()) {
+				return loadNonNested(source);
+			}
+			try (ZipContent zip = open(source.path())) {
+				Entry entry = zip.getEntry(source.nestedEntryName());
+				if (entry == null) {
+					throw new IOException("Nested entry '%s' not found in container zip '%s'"
+						.formatted(source.nestedEntryName(), source.path()));
+				}
+				return (!entry.isDirectory()) ? loadNestedZip(source, entry) : loadNestedDirectory(source, zip, entry);
+			}
+		}
+
+		private static ZipContent loadNonNested(Source source) throws IOException {
+			debug.log("Loading non-nested zip '%s'", source.path());
+			return loadOrClose(source, FileChannelDataBlock.open(source.path()));
+		}
+
+		private static ZipContent loadNestedZip(Source source, Entry entry) throws IOException {
+			if (entry.centralRecord.compressionMethod() != ZipEntry.STORED) {
+				throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
+					.formatted(source.nestedEntryName(), source.path()));
+			}
+			debug.log("Loading nested zip entry '%s' from '%s'", source.nestedEntryName(), source.path());
+			return loadOrClose(source, entry.openSlice());
+		}
+
+		private static ZipContent loadOrClose(Source source, FileChannelDataBlock data) throws IOException {
 			try {
 				return load(source, data);
 			}
@@ -620,8 +562,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(data, pos);
 				if (!hasJarSignatureFile) {
 					long filenamePos = pos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-					if (centralRecord.fileNameLength() > SIGNATURE_SUFFIX.length && ZipString.startsWith(data,
-							filenamePos, centralRecord.fileNameLength(), "META-INF/") >= 0) {
+					if (centralRecord.fileNameLength() > SIGNATURE_SUFFIX.length
+							&& ZipString.startsWith(data, filenamePos, centralRecord.fileNameLength(), META_INF) >= 0) {
 						signatureNameSuffixBuffer.clear();
 						data.readFully(signatureNameSuffixBuffer,
 								filenamePos + centralRecord.fileNameLength() - SIGNATURE_SUFFIX.length);
@@ -664,27 +606,44 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			return result;
 		}
 
-		private static FileChannelDataBlock openDataBlock(Source source) throws IOException {
-			if (source.isNested()) {
-				try (ZipContent container = open(source.path())) {
-					Entry entry = container.getEntry(source.nestedEntryName());
-					if (entry == null) {
-						throw new IOException("Nested entry '%s' not found in container zip '%s'"
-							.formatted(source.nestedEntryName(), source.path()));
-					}
-					if (entry.getName().endsWith("/")) {
-						throw new IllegalStateException(
-								"Nested entry '%s' in container zip '%s' must not be a directory"
-									.formatted(source.nestedEntryName(), source.path()));
-					}
-					if (entry.centralRecord.compressionMethod() != ZipEntry.STORED) {
-						throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
-							.formatted(source.nestedEntryName(), source.path()));
-					}
-					return entry.openSlice();
+		private static ZipContent loadNestedDirectory(Source source, ZipContent zip, Entry directoryEntry)
+				throws IOException {
+			debug.log("Loading nested directry entry '%s' from '%s'", source.nestedEntryName(), source.path());
+			String directoryName = directoryEntry.getName();
+			int[] nameHash = new int[zip.size()];
+			int[] relativeCentralDirectoryOffset = new int[zip.size()];
+			int[] position = new int[zip.size()];
+			int size = 0;
+			for (int i = 0; i < zip.nameHash.length; i++) {
+				if (i == directoryEntry.getIndex()) {
+					continue;
+				}
+				long pos = zip.getCentralDirectoryFileHeaderRecordPos(i);
+				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(zip.data, pos);
+				long namePos = pos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
+				short nameLen = centralRecord.fileNameLength();
+				if (ZipString.startsWith(zip.data, namePos, centralRecord.fileNameLength(), META_INF) != -1) {
+					size++;
+					nameHash[size] = zip.nameHash[i];
+					relativeCentralDirectoryOffset[size] = zip.relativeCentralDirectoryOffset[i];
+					position[size] = zip.position[i];
+					continue;
+				}
+				int startsWithDirectoryName = ZipString.startsWith(zip.data, namePos, nameLen, directoryName);
+				if (startsWithDirectoryName != -1) {
+					size++;
+					nameHash[size] = ZipString.hash(zip.data, namePos + startsWithDirectoryName,
+							nameLen - startsWithDirectoryName, true);
+					relativeCentralDirectoryOffset[size] = zip.relativeCentralDirectoryOffset[i];
+					position[size] = zip.position[i];
+					continue;
 				}
 			}
-			return FileChannelDataBlock.open(source.path());
+			nameHash = Arrays.copyOf(nameHash, size);
+			relativeCentralDirectoryOffset = Arrays.copyOf(relativeCentralDirectoryOffset, size);
+			position = Arrays.copyOf(position, size);
+			return new ZipContent(directoryEntry, zip.data.open(), zip.centralDirectoryPos, zip.commentPos,
+					zip.commentLength, nameHash, relativeCentralDirectoryOffset, position, zip.hasJarSignatureFile);
 		}
 
 	}
@@ -748,11 +707,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		public String getName() {
 			String name = this.name;
 			if (name == null) {
+				Entry directory = ZipContent.this.directoryEntry;
 				long pos = getCentralDirectoryFileHeaderRecordPos(this.index)
 						+ CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
 				name = ZipString.readString(ZipContent.this.data, pos, this.centralRecord.fileNameLength());
-				if (ZipContent.this.namePrefix != null) {
-					name = name.substring(ZipContent.this.namePrefix.length());
+				if (directory != null && !name.startsWith(META_INF)) {
+					name = name.substring(directory.getName().length());
 				}
 				this.name = name;
 			}
@@ -837,27 +797,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
-		}
-
-	}
-
-	/**
-	 * Split {@link ZipContent}.
-	 *
-	 * @param included the subcontent split from the zip
-	 * @param remainder the remaining zip content after the subcontent has been filtered
-	 */
-	public static record Split(ZipContent included, ZipContent remainder) implements Closeable {
-
-		void open() throws IOException {
-			this.included.data.open();
-			this.remainder.data.open();
-		}
-
-		@Override
-		public void close() throws IOException {
-			this.included.close();
-			this.remainder.close();
 		}
 
 	}
