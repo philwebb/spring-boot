@@ -161,6 +161,7 @@ class ZipString {
 	 */
 	static int startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) {
 		try {
+			// FIXME check if we actually use the int return
 			return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
 		}
 		catch (IOException ex) {

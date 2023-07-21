@@ -213,7 +213,7 @@ class ZipContentTests {
 	}
 
 	@Test
-	void nestedJarFileReturnsNestedaJar() throws IOException {
+	void nestedJarFileReturnsNestedJar() throws IOException {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "nested.jar")) {
 			assertThat(nested.size()).isEqualTo(5);
 			assertThat(nested.getComment()).isEqualTo("nested");
@@ -228,7 +228,7 @@ class ZipContentTests {
 	}
 
 	@Test
-	void nestedDirectoryReturnsNestedaJar() throws IOException {
+	void nestedDirectoryReturnsNestedJar() throws IOException {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d")) {
 			assertThat(nested.size()).isEqualTo(3);
 			assertThat(nested.getEntry("9.dat")).isNotNull();
