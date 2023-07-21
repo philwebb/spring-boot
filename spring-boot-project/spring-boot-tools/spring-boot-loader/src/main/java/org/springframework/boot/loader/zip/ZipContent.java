@@ -31,6 +31,7 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -778,8 +779,18 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		 * @return a fully populated zip entry
 		 */
 		public <E extends ZipEntry> E as(Function<String, E> factory) {
+			return as((entry, name) -> factory.apply(name));
+		}
+
+		/**
+		 * Adapt the raw entry into a {@link ZipEntry} or {@link ZipEntry} subclass.
+		 * @param <E> the entry type
+		 * @param factory the factory used to create the {@link ZipEntry}
+		 * @return a fully populated zip entry
+		 */
+		public <E extends ZipEntry> E as(BiFunction<Entry, String, E> factory) {
 			try {
-				E result = factory.apply(getName());
+				E result = factory.apply(this, getName());
 				long pos = getCentralDirectoryFileHeaderRecordPos(this.index);
 				this.centralRecord.copyTo(ZipContent.this.data, pos, result);
 				return result;
