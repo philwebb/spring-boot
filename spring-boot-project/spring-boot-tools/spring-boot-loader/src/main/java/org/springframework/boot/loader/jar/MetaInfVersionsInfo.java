@@ -49,7 +49,7 @@ class MetaInfVersionsInfo {
 		return this.directories;
 	}
 
-	static MetaInfVersionsInfo compute(ZipContent zipContent) {
+	static MetaInfVersionsInfo get(ZipContent zipContent) {
 		Set<Integer> versions = new TreeSet<>();
 		for (ZipContent.Entry entry : zipContent) {
 			if (entry.hasNameStartingWith(NestedJarFile.META_INF_VERSIONS) && !entry.isDirectory()) {

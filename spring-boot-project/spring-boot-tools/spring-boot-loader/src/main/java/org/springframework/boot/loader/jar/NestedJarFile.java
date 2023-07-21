@@ -40,6 +40,7 @@ import java.util.zip.ZipException;
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.CloseableDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
+import org.springframework.boot.loader.zip.ZipContent.InfoReference;
 
 /**
  * Extended variant of {@link JarFile} that behaves in the same way but can open nested
@@ -59,6 +60,8 @@ public class NestedJarFile extends JarFile {
 
 	static final int BASE_VERSION = baseVersion().feature();
 
+	private final Cleaner cleaner;
+
 	private final NestedJarFileResources resources;
 
 	private final Cleanable cleanup;
@@ -76,41 +79,47 @@ public class NestedJarFile extends JarFile {
 	private volatile boolean closing;
 
 	/**
-	 * Creates a new {@link NestedJarFile} instance to read from the specific {@code File}.
+	 * Creates a new {@link NestedJarFile} instance to read from the specific
+	 * {@code File}.
 	 * @param file the jar file to be opened for reading
 	 * @param nestedEntryName the nested entry name to open or {@code null}
 	 * @throws IOException on I/O error
 	 */
 	public NestedJarFile(File file, String nestedEntryName) throws IOException {
-		this(file, nestedEntryName, null, true);
+		this(file, nestedEntryName, null, true, null);
 	}
 
 	/**
-	 * Creates a new {@link NestedJarFile} instance to read from the specific {@code File}.
+	 * Creates a new {@link NestedJarFile} instance to read from the specific
+	 * {@code File}.
 	 * @param file the jar file to be opened for reading
 	 * @param nestedEntryName the nested entry name to open or {@code null}
 	 * @param version the release version to use when opening a multi-release jar
 	 * @throws IOException on I/O error
 	 */
 	public NestedJarFile(File file, String nestedEntryName, Runtime.Version version) throws IOException {
-		this(file, nestedEntryName, version, true);
+		this(file, nestedEntryName, version, true, null);
 	}
 
 	/**
-	 * Creates a new {@link NestedJarFile} instance to read from the specific {@code File}.
+	 * Creates a new {@link NestedJarFile} instance to read from the specific
+	 * {@code File}.
 	 * @param file the jar file to be opened for reading
 	 * @param nestedEntryName the nested entry name to open or {@code null}
 	 * @param version the release version to use when opening a multi-release jar
 	 * @param onlyNestedJars if <em>only</em> nested jars should be opened
+	 * @param cleaner the cleaner used to release resources
 	 * @throws IOException on I/O error
 	 */
-	NestedJarFile(File file, String nestedEntryName, Runtime.Version version, boolean onlyNestedJars) throws IOException {
+	NestedJarFile(File file, String nestedEntryName, Runtime.Version version, boolean onlyNestedJars, Cleaner cleaner)
+			throws IOException {
 		super(file);
 		if (onlyNestedJars && (nestedEntryName == null || nestedEntryName.isEmpty())) {
 			throw new IllegalArgumentException("nestedEntryName must not be empty");
 		}
+		this.cleaner = (cleaner != null) ? cleaner : Cleaner.instance;
 		this.resources = new NestedJarFileResources(file, nestedEntryName);
-		this.cleanup = Cleaner.register(this, this.resources);
+		this.cleanup = this.cleaner.register(this, this.resources);
 		this.name = file.getPath() + ((nestedEntryName != null) ? "[" + nestedEntryName + "]" : "");
 		this.version = (version != null) ? version.feature() : baseVersion().feature();
 	}
@@ -118,7 +127,9 @@ public class NestedJarFile extends JarFile {
 	@Override
 	public Manifest getManifest() throws IOException {
 		try {
-			return this.resources.zipContent.getInfo(ManifestInfo.class, this::getManifestInfo).getManifest();
+			ManifestInfo info = this.resources.zipContent()
+				.getInfo(InfoReference.SOFT, ManifestInfo.class, this::getManifestInfo);
+			return info.getManifest();
 		}
 		catch (UncheckedIOException ex) {
 			throw ex.getCause();
@@ -195,14 +206,15 @@ public class NestedJarFile extends JarFile {
 	private NestedJarEntry getVersionedEntry(String name) {
 		// NOTE: we can't call isMultiRelease() directly because it's a final method and
 		// it inspects the container jar. We use ManifestInfo instead.
-		ManifestInfo manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
+		ManifestInfo manifestInfo = this.resources.zipContent()
+			.getInfo(InfoReference.SOFT, ManifestInfo.class, this::getManifestInfo);
 		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION < this.version) {
 			return null;
 		}
-		MetaInfVersionsInfo info = this.resources.zipContent()
-			.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::compute);
-		int[] versions = info.versions();
-		String[] directories = info.directories();
+		MetaInfVersionsInfo versionsInfo = this.resources.zipContent()
+			.getInfo(InfoReference.SOFT, MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
+		int[] versions = versionsInfo.versions();
+		String[] directories = versionsInfo.directories();
 		for (int i = versions.length - 1; i >= 0; i--) {
 			if (versions[i] <= this.version) {
 				NestedJarEntry entry = getEntry(directories[i], name);
@@ -466,7 +478,7 @@ public class NestedJarFile extends JarFile {
 		private JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources,
 				Inflater inflater) {
 			super(inputStream, inflater, inputStream.getUncompressedSize());
-			this.cleanup = Cleaner.register(this, resources.createInflatorCleanupAction(inflater));
+			this.cleanup = NestedJarFile.this.cleaner.register(this, resources.createInflatorCleanupAction(inflater));
 		}
 
 		@Override
