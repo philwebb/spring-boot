@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -87,13 +86,13 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final long commentLength;
 
-	private final NameOffset nameOffset;
+	private final NameOffsets nameOffset;
 
 	private final int[] nameHash;
 
 	private final int[] relativeCentralDirectoryOffset;
 
-	private final int[] position;
+	private final int[] order;
 
 	private final boolean hasJarSignatureFile;
 
@@ -104,7 +103,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private final Map<Class<?>, Object> retainedInfo = new ConcurrentHashMap<>();
 
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
-			NameOffset nameOffset, int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position,
+			NameOffsets nameOffset, int[] nameHash, int[] relativeCentralDirectoryOffset, int[] order,
 			boolean hasJarSignatureFile) {
 		this.data = data;
 		this.centralDirectoryPos = centralDirectoryPos;
@@ -113,7 +112,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.nameOffset = nameOffset;
 		this.nameHash = nameHash;
 		this.relativeCentralDirectoryOffset = relativeCentralDirectoryOffset;
-		this.position = position;
+		this.order = order;
 		this.hasJarSignatureFile = hasJarSignatureFile;
 	}
 
@@ -144,18 +143,18 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	private DataBlock createVirtualData() throws IOException {
+		NameOffsets nameOffsets = this.nameOffset.emptyCopy();
 		CentralDirectoryFileHeaderRecord[] centralRecords = new CentralDirectoryFileHeaderRecord[size()];
 		long[] centralRecordPositions = new long[centralRecords.length];
 		int i = 0;
 		for (Entry entry : this) {
+			nameOffsets.enable(i, this.nameOffset.isEnabled(entry.getIndex()));
 			long pos = getCentralDirectoryFileHeaderRecordPos(entry.getIndex());
 			centralRecordPositions[i] = pos;
 			centralRecords[i] = CentralDirectoryFileHeaderRecord.load(this.data, pos);
 			i++;
 		}
-		return null; // FIXME
-		// return new VirtualZipDataBlock(this.data, this.directoryName, centralRecords,
-		// centralRecordPositions);
+		return new VirtualZipDataBlock(this.data, nameOffsets, centralRecords, centralRecordPositions);
 	}
 
 	/**
@@ -388,7 +387,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		@Override
 		public boolean hasNext() {
-			return this.cursor < ZipContent.this.position.length;
+			return this.cursor < ZipContent.this.order.length;
 		}
 
 		@Override
@@ -397,7 +396,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			int index = ZipContent.this.position[this.cursor];
+			int index = ZipContent.this.order[this.cursor];
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			this.cursor++;
 			return new Entry(index, CentralDirectoryFileHeaderRecord.loadUnchecked(ZipContent.this.data, pos));
@@ -415,7 +414,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private final long centralDirectoryPos;
 
-		private final NameOffset nameOffset;
+		private final NameOffsets nameOffset;
 
 		private int[] nameHash;
 
@@ -429,8 +428,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			this.data = data;
 			this.centralDirectoryPos = centralDirectoryPos;
 			this.nameHash = new int[maxSize];
-			this.nameOffset = (directoryEntry != null) ? new NameOffset(directoryEntry.getName().length(), maxSize)
-					: NameOffset.NONE;
+			this.nameOffset = (directoryEntry != null) ? new NameOffsets(directoryEntry.getName().length(), maxSize)
+					: NameOffsets.NONE;
 			this.relativeCentralDirectoryOffset = new int[maxSize];
 			this.index = new int[maxSize];
 		}
@@ -453,12 +452,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			}
 			int size = this.nameHash.length;
 			sort(0, size - 1);
-			int[] position = new int[size];
+			int[] order = new int[size];
 			for (int i = 0; i < size; i++) {
-				position[this.index[i]] = i;
+				order[this.index[i]] = i;
 			}
 			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameOffset,
-					this.nameHash, this.relativeCentralDirectoryOffset, position, hasJarSignatureFile);
+					this.nameHash, this.relativeCentralDirectoryOffset, order, hasJarSignatureFile);
 		}
 
 		private void sort(int left, int right) {
@@ -612,9 +611,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			debug.log("Loading nested directry entry '%s' from '%s'", source.nestedEntryName(), source.path());
 			String directoryName = directoryEntry.getName();
 			Loader loader = new Loader(directoryEntry, zip.data, zip.centralDirectoryPos, zip.size());
-			for (int i = 0; i < zip.size(); i++) {
-				if (i != directoryEntry.getIndex()) {
-					int index = zip.position[i];
+			for (int cursor = 0; cursor < zip.size(); cursor++) {
+				int index = zip.order[cursor];
+				if (index != directoryEntry.getIndex()) {
 					long pos = zip.getCentralDirectoryFileHeaderRecordPos(index);
 					CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(zip.data,
 							pos);
@@ -779,44 +778,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
 			}
-		}
-
-	}
-
-	private static class NameOffset {
-
-		public static final NameOffset NONE = new NameOffset(0, 0);
-
-		private int offset;
-
-		private BitSet enabled;
-
-		NameOffset(int offset, int size) {
-			this.offset = offset;
-			this.enabled = (size != 0) ? new BitSet(size) : null;
-		}
-
-		void swap(int i, int j) {
-			if (this.enabled != null) {
-				boolean temp = this.enabled.get(i);
-				this.enabled.set(i, this.enabled.get(j));
-				this.enabled.set(j, temp);
-			}
-		}
-
-		int get(int index) {
-			return (this.enabled != null && this.enabled.get(index)) ? this.offset : 0;
-		}
-
-		int enable(int index, boolean enable) {
-			if (this.enabled != null) {
-				this.enabled.set(index, enable);
-			}
-			return (!enable) ? 0 : this.offset;
-		}
-
-		boolean hasAnyEnabled() {
-			return this.enabled != null && this.enabled.cardinality() > 0;
 		}
 
 	}

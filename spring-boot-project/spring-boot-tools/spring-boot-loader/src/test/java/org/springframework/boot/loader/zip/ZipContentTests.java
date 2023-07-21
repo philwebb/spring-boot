@@ -232,33 +232,29 @@ class ZipContentTests {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d")) {
 			assertThat(nested.size()).isEqualTo(3);
 			assertThat(nested.getEntry("9.dat")).isNotNull();
-			assertThat(nested.stream().map(Entry::getName)).containsExactly("9.dat");
+			assertThat(nested.stream().map(Entry::getName)).containsExactly("META-INF/", "META-INF/MANIFEST.MF",
+					"9.dat");
 		}
 	}
 
-	// @Test
-	// void getDataWhenSplitReturnsVirtualZipDataBlock() throws IOException {
-	// try (ZipContent.Split split = this.zipContent.split("d")) {
-	// File includedFile = new File(this.tempDir, "included.zip");
-	// write(includedFile, split.included().getData());
-	// try (ZipFile included = new ZipFile(includedFile)) {
-	// assertThat(included.size()).isEqualTo(1);
-	// assertThat(included.getEntry("9.dat")).isNotNull();
-	// try (InputStream in = included.getInputStream(included.getEntry("9.dat"))) {
-	// ByteArrayOutputStream out = new ByteArrayOutputStream();
-	// in.transferTo(out);
-	// assertThat(out.toByteArray()).containsExactly(0x09);
-	// }
-	// }
-	// File remainderFile = new File(this.tempDir, "remainder.zip");
-	// write(remainderFile, split.remainder().getData());
-	// try (ZipFile remainder = new ZipFile(remainderFile)) {
-	// assertThat(remainder.size()).isEqualTo(10);
-	// assertThat(remainder.getEntry("d/")).isNull();
-	// assertThat(remainder.getEntry("d/9.dat")).isNull();
-	// }
-	// }
-	// }
+	@Test
+	void getDataWhenNestedDirectoryReturnsVirtualZipDataBlock() throws IOException {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d")) {
+			File file = new File(this.tempDir, "included.zip");
+			write(file, nested.getData());
+			try (ZipFile loadedZipFile = new ZipFile(file)) {
+				assertThat(loadedZipFile.size()).isEqualTo(3);
+				assertThat(loadedZipFile.stream().map(ZipEntry::getName)).containsExactly("META-INF/",
+						"META-INF/MANIFEST.MF", "9.dat");
+				assertThat(loadedZipFile.getEntry("9.dat")).isNotNull();
+				try (InputStream in = loadedZipFile.getInputStream(loadedZipFile.getEntry("9.dat"))) {
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					in.transferTo(out);
+					assertThat(out.toByteArray()).containsExactly(0x09);
+				}
+			}
+		}
+	}
 
 	@Test
 	void loadWhenHasFrontMatterOpensZip() throws IOException {
