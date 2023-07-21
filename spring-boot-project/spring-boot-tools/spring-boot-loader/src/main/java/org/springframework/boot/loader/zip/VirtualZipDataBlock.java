@@ -18,7 +18,6 @@ package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,26 +35,25 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 	/**
 	 * Create a new {@link VirtualZipDataBlock} for the given entries.
 	 * @param data the source zip data
-	 * @param namePrefix the name prefix that should be stripped from entries or
-	 * {@code null}
+	 * @param nameOffsets the name offsets to apply
 	 * @param centralRecords the records that should be copied to the virtual zip
 	 * @param centralRecordPositions the record positions in the data block.
 	 * @throws IOException on I/O error
 	 */
-	VirtualZipDataBlock(FileChannelDataBlock data, String namePrefix, CentralDirectoryFileHeaderRecord[] centralRecords,
-			long[] centralRecordPositions) throws IOException {
+	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsets nameOffsets,
+			CentralDirectoryFileHeaderRecord[] centralRecords, long[] centralRecordPositions) throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
 		List<DataBlock> centralParts = new ArrayList<>();
-		int prefixLen = (namePrefix != null) ? namePrefix.getBytes(StandardCharsets.UTF_8).length : 0;
 		int offset = 0;
 		int sizeOfCentralDirectory = 0;
 		for (int i = 0; i < centralRecords.length; i++) {
 			CentralDirectoryFileHeaderRecord centralRecord = centralRecords[i];
+			int nameOffset = nameOffsets.get(i);
 			long centralRecordPos = centralRecordPositions[i];
 			DataBlock name = new DataPart(
-					centralRecordPos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + prefixLen,
-					centralRecord.fileNameLength() & 0xFFFF - prefixLen);
+					centralRecordPos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
+					centralRecord.fileNameLength() & 0xFFFF - nameOffset);
 			LocalFileHeaderRecord localRecord = LocalFileHeaderRecord.load(this.data,
 					centralRecord.offsetToLocalHeader());
 			DataBlock content = new DataPart(centralRecord.offsetToLocalHeader() + localRecord.size(),
