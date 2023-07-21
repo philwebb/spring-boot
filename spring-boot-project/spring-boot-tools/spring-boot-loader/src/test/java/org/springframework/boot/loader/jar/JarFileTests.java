@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
-import org.springframework.boot.loader.jar.JarFile.Entry;
+import org.springframework.boot.loader.jar.NestedJarFile.Entry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JarFile}.
+ * Tests for {@link NestedJarFile}.
  *
  * @author Phillip Webb
  * @author Martin Lau
@@ -73,7 +73,7 @@ class JarFileTests {
 
 	@Test
 	void getEntryWhenMultiReleaseEntryReturnsEntry() throws IOException {
-		try (JarFile jarFile = new JarFile(this.file, "multi-release.jar")) {
+		try (NestedJarFile jarFile = new NestedJarFile(this.file, "multi-release.jar")) {
 			JarEntry entry = jarFile.getJarEntry("multi-release.dat");
 			assertThat(entry.getName()).isEqualTo("multi-release.dat");
 			assertThat(entry.getRealName()).isEqualTo("multi-release.dat");
@@ -135,8 +135,8 @@ class JarFileTests {
 
 	@Test
 	void getInputStreamReturnsInputStream() throws IOException {
-		try (JarFile jarFile = new JarFile(this.file)) {
-			Entry entry = jarFile.getJarEntry("2.dat");
+		try (NestedJarFile jarFile = new NestedJarFile(this.file)) {
+			JarEntry entry = jarFile.getJarEntry("2.dat");
 			try (InputStream in = jarFile.getInputStream(entry)) {
 				assertThat(in).hasBinaryContent(new byte[] { 0x02 });
 			}
