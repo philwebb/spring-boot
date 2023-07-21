@@ -19,12 +19,19 @@ package org.springframework.boot.loader.ref;
 import java.lang.ref.Cleaner.Cleanable;
 
 /**
+ * Default {@link Cleaner} implementation that delegates to {@link java.lang.ref.Cleaner}.
+ *
  * @author Phillip Webb
  */
-public interface Cleaner {
+class DefaultCleaner implements Cleaner {
 
-	Cleaner instance = DefaultCleaner.instance;
+	static final DefaultCleaner instance = new DefaultCleaner();
 
-	Cleanable register(Object obj, Runnable action);
+	private final java.lang.ref.Cleaner cleaner = java.lang.ref.Cleaner.create();
+
+	@Override
+	public Cleanable register(Object obj, Runnable action) {
+		return this.cleaner.register(obj, action);
+	}
 
 }

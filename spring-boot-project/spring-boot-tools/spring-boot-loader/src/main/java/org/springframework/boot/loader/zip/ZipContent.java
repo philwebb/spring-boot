@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner.Cleanable;
 import java.lang.ref.SoftReference;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -70,6 +71,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private static int ADDITIONAL_SPLITERATOR_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
 			| Spliterator.IMMUTABLE | Spliterator.NONNULL;
 
+	private static byte[] SIGNATURE_SUFFIX = ".DSA".getBytes(StandardCharsets.UTF_8);
+
 	private static final DebugLogger debug = DebugLogger.get(ZipContent.class);
 
 	private static final Map<Source, ZipContent> cache = new ConcurrentHashMap<>();
@@ -88,6 +91,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final int[] position;
 
+	private final boolean hasJarSignatureFile;
+
 	/**
 	 * If not {@code null} only items set in the filter should be included.
 	 */
@@ -99,10 +104,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private SoftReference<DataBlock> virtualData;
 
-	private SoftReference<Map<Class<?>, Object>> info;
+	private SoftReference<Map<Class<?>, Object>> softInfo;
+
+	private final Map<Class<?>, Object> retainedInfo = new ConcurrentHashMap<>();
 
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
-			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position) {
+			int[] nameHash, int[] relativeCentralDirectoryOffset, int[] position, boolean hasJarSignatureFile) {
 		this.data = data;
 		this.centralDirectoryPos = centralDirectoryPos;
 		this.commentPos = commentPos;
@@ -112,6 +119,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.position = position;
 		this.filter = null;
 		this.namePrefix = null;
+		this.hasJarSignatureFile = hasJarSignatureFile;
 	}
 
 	private ZipContent(ZipContent zipContent, BitSet filter, String namePrefix) throws IOException {
@@ -122,6 +130,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		this.nameHash = zipContent.nameHash;
 		this.relativeCentralDirectoryOffset = zipContent.relativeCentralDirectoryOffset;
 		this.position = zipContent.position;
+		this.hasJarSignatureFile = zipContent.hasJarSignatureFile;
 		this.filter = filter;
 		this.namePrefix = namePrefix;
 		this.data.open();
@@ -257,16 +266,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
-	 * Close this jar file, releasing the underlying file if this was the last reference.
-	 * @see java.io.Closeable#close()
-	 */
-	@Override
-	public void close() throws IOException {
-		ensureOpen();
-		this.data.close();
-	}
-
-	/**
 	 * Return the zip comment, if any.
 	 * @return the comment or {@code null}
 	 */
@@ -356,22 +355,50 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	/**
 	 * Get or compute information based on the {@link ZipContent}.
 	 * @param <I> the info type to get or compute
+	 * @param reference the info reference type
 	 * @param type the info type to get or compute
 	 * @param function the function used to compute the information
 	 * @return the computed or existing information
 	 */
 	@SuppressWarnings("unchecked")
-	public <I> I getInfo(Class<I> type, Function<ZipContent, I> function) {
-		Map<Class<?>, Object> info = (this.info != null) ? this.info.get() : null;
-		if (info == null) {
-			info = new HashMap<>();
-			this.info = new SoftReference<>(info);
-		}
-		return (I) info.computeIfAbsent(type, (key) -> function.apply(this));
+	public <I> I getInfo(InfoReference reference, Class<I> type, Function<ZipContent, I> function) {
+		return (I) getInfo(reference).computeIfAbsent(type, (key) -> function.apply(this));
+	}
+
+	private Map<Class<?>, Object> getInfo(InfoReference reference) {
+		return switch (reference) {
+			case RETAIN -> this.retainedInfo;
+			case SOFT -> {
+				Map<Class<?>, Object> softInfo = (this.softInfo != null) ? this.softInfo.get() : null;
+				if (softInfo == null) {
+					softInfo = new ConcurrentHashMap<>();
+					this.softInfo = new SoftReference<>(softInfo);
+				}
+				yield softInfo;
+			}
+		};
+	}
+
+	/**
+	 * Returns {@code true} if this zip file contains a {@code META-INF/*.DSA} file.
+	 * @return if the zip contains a jar signature file
+	 */
+	public boolean hasJarSignatureFile() {
+		return this.hasJarSignatureFile;
 	}
 
 	private void ensureOpen() {
 		this.data.ensureOpen(() -> new IllegalStateException("Zip content has been closed"));
+	}
+
+	/**
+	 * Close this jar file, releasing the underlying file if this was the last reference.
+	 * @see java.io.Closeable#close()
+	 */
+	@Override
+	public void close() throws IOException {
+		ensureOpen();
+		this.data.close();
 	}
 
 	/**
@@ -504,7 +531,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			this.cursor++;
 		}
 
-		private ZipContent finish(long commentPos, long commentLength) {
+		private ZipContent finish(long commentPos, long commentLength, boolean hasJarSignatureFile) {
 			int size = this.nameHash.length;
 			if (this.cursor != size) {
 				throw new IllegalStateException(
@@ -516,7 +543,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				position[this.index[i]] = i;
 			}
 			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameHash,
-					this.relativeCentralDirectoryOffset, position);
+					this.relativeCentralDirectoryOffset, position, hasJarSignatureFile);
 		}
 
 		private void sort(int left, int right) {
@@ -586,14 +613,26 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				throw new IllegalStateException("Too many zip entries in " + source);
 			}
 			Loader loader = new Loader(data, centralDirectoryPos, (int) numberOfEntries & 0xFFFFFFFF);
+			ByteBuffer signatureNameSuffixBuffer = ByteBuffer.allocate(SIGNATURE_SUFFIX.length);
+			boolean hasJarSignatureFile = false;
 			long pos = centralDirectoryPos;
 			for (int i = 0; i < numberOfEntries; i++) {
 				CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(data, pos);
+				if (!hasJarSignatureFile) {
+					long filenamePos = pos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
+					if (centralRecord.fileNameLength() > SIGNATURE_SUFFIX.length && ZipString.startsWith(data,
+							filenamePos, centralRecord.fileNameLength(), "META-INF/") >= 0) {
+						signatureNameSuffixBuffer.clear();
+						data.readFully(signatureNameSuffixBuffer,
+								filenamePos + centralRecord.fileNameLength() - SIGNATURE_SUFFIX.length);
+						hasJarSignatureFile = Arrays.equals(SIGNATURE_SUFFIX, signatureNameSuffixBuffer.array());
+					}
+				}
 				loader.add(centralRecord, pos);
 				pos += centralRecord.size();
 			}
 			long commentPos = locatedEocd.pos() + EndOfCentralDirectoryRecord.COMMENT_OFFSET;
-			return loader.finish(commentPos, eocd.commentLength());
+			return loader.finish(commentPos, eocd.commentLength(), hasJarSignatureFile);
 		}
 
 		/**
@@ -820,6 +859,23 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			this.included.close();
 			this.remainder.close();
 		}
+
+	}
+
+	/**
+	 * Info reference types.
+	 */
+	public enum InfoReference {
+
+		/**
+		 * A soft reference that can be cleared under memory pressure.
+		 */
+		SOFT,
+
+		/**
+		 * A retained reference that is held indefinitely.
+		 */
+		RETAIN
 
 	}
 

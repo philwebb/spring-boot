@@ -49,6 +49,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.zip.ZipContent.Entry;
+import org.springframework.boot.loader.zip.ZipContent.InfoReference;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -404,9 +405,9 @@ class ZipContentTests {
 
 	@Test
 	void getInfoReturnsComputedInfo() {
-		ZipInfo info = this.zipContent.getInfo(ZipInfo.class, ZipInfo::get);
+		ZipInfo info = this.zipContent.getInfo(InfoReference.SOFT, ZipInfo.class, ZipInfo::get);
 		assertThat(info.size()).isEqualTo(12);
-		assertThat(this.zipContent.getInfo(ZipInfo.class, ZipInfo::get)).isSameAs(info);
+		assertThat(this.zipContent.getInfo(InfoReference.SOFT, ZipInfo.class, ZipInfo::get)).isSameAs(info);
 	}
 
 	private static void writeTimeBlock(byte[] data, int pos, int value) {
