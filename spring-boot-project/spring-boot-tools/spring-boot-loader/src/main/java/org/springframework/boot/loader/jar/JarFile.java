@@ -28,6 +28,7 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -58,10 +59,7 @@ import org.springframework.boot.loader.zip.ZipContent;
  */
 public class JarFile extends java.util.jar.JarFile {
 
-	/**
-	 *
-	 */
-	private static final int BASE_10 = 10;
+	private static final int DECIMAL = 10;
 
 	private static final String META_INF = "META-INF/";
 
@@ -131,8 +129,10 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Enumeration<JarEntry> entries() {
-		// FIXME
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		synchronized (this) {
+			ensureOpen();
+			return new JarEntryEnumeration(this.resources.zipContent().iterator());
+		}
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class JarFile extends java.util.jar.JarFile {
 			return null;
 		}
 		try {
-			int versionNumber = Integer.parseInt(name, versionNumberStartIndex, versionNumberEndIndex, BASE_10);
+			int versionNumber = Integer.parseInt(name, versionNumberStartIndex, versionNumberEndIndex, DECIMAL);
 			if (versionNumber > this.version) {
 				return null;
 			}
@@ -185,12 +185,12 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	@Override
-	public Entry getJarEntry(String name) {
-		return (Entry) getEntry(name);
+	public JarEntry getJarEntry(String name) {
+		return getEntry(name);
 	}
 
 	@Override
-	public ZipEntry getEntry(String name) {
+	public JarEntry getEntry(String name) {
 		Objects.requireNonNull(name, "name");
 		Entry entry = getVersionedEntry(name);
 		return (entry != null) ? entry : getEntry(null, name);
@@ -337,7 +337,7 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	private static class Resources implements Runnable {
 
-		private static final int INFLATER_CACHE_LIMIT = 50;
+		private static final int INFLATER_CACHE_LIMIT = 20;
 
 		private ZipContent zipContent;
 
@@ -415,7 +415,7 @@ public class JarFile extends java.util.jar.JarFile {
 		}
 
 		Runnable createInflatorCleanupAction(Inflater inflater) {
-			return () -> endOrResetAndCacheInflater(inflater);
+			return () -> endOrCacheInflater(inflater);
 		}
 
 		Inflater getOrCreateInflater() {
@@ -431,7 +431,7 @@ public class JarFile extends java.util.jar.JarFile {
 			return new Inflater(true);
 		}
 
-		private void endOrResetAndCacheInflater(Inflater inflater) {
+		private void endOrCacheInflater(Inflater inflater) {
 			Deque<Inflater> inflaterCache = this.inflaterCache;
 			if (inflaterCache != null) {
 				synchronized (inflaterCache) {
@@ -448,9 +448,33 @@ public class JarFile extends java.util.jar.JarFile {
 	}
 
 	/**
+	 * {@link Enumeration} of {@link JarEntry} instances.
+	 */
+	private class JarEntryEnumeration implements Enumeration<JarEntry> {
+
+		private Iterator<ZipContent.Entry> iterator;
+
+		JarEntryEnumeration(Iterator<ZipContent.Entry> iterator) {
+			this.iterator = iterator;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			return this.iterator.hasNext();
+		}
+
+		@Override
+		public JarEntry nextElement() {
+			ZipContent.Entry next = this.iterator.next();
+			return next.as((realName) -> new Entry(next, realName));
+		}
+
+	}
+
+	/**
 	 * An individual entry from this jar file.
 	 */
-	class Entry extends java.util.jar.JarEntry {
+	private class Entry extends java.util.jar.JarEntry {
 
 		private final ZipContent.Entry contentEntry;
 
@@ -468,20 +492,33 @@ public class JarFile extends java.util.jar.JarFile {
 
 		@Override
 		public Attributes getAttributes() throws IOException {
-			// FIXME
-			throw new UnsupportedOperationException("Auto-generated method stub");
+			Manifest manifest = getManifest();
+			return (manifest != null) ? manifest.getAttributes(getName()) : null;
 		}
 
 		@Override
 		public Certificate[] getCertificates() {
-			// FIXME
-			throw new UnsupportedOperationException("Auto-generated method stub");
+			return getCertification().getCertificates();
 		}
 
 		@Override
 		public CodeSigner[] getCodeSigners() {
-			// FIXME
-			throw new UnsupportedOperationException("Auto-generated method stub");
+			return getCertification().getCodeSigners();
+		}
+
+		private JarEntryCertification getCertification() {
+			// @formatter:off
+//			if (!this.jarFile.isSigned()) {
+//				return JarEntryCertification.NONE;
+//			}
+//			JarEntryCertification certification = this.certification;
+//			if (certification == null) {
+//				certification = this.jarFile.getCertification(this);
+//				this.certification = certification;
+//			}
+//			return certification;
+			// @formatter:on
+			return null;
 		}
 
 		@Override
