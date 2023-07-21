@@ -171,9 +171,10 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	/**
 	 * Open a connection to this block, increasing the reference count and re-opening the
 	 * underlying file channel if necessary.
+	 * @return this instance
 	 * @throws IOException on I/O error
 	 */
-	void open() throws IOException {
+	FileChannelDataBlock open() throws IOException {
 		synchronized (this.lock) {
 			if (this.referenceCount == 0) {
 				debug.log("Reopening '%s'", this.path);
@@ -182,6 +183,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			this.referenceCount++;
 			debug.log("Reference count for '%s' (%s,%s) incremented to %s", this.path, this.offset, this.size,
 					this.referenceCount);
+			return this;
 		}
 	}
 
