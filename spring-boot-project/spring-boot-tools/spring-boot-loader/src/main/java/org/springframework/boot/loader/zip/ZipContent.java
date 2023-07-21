@@ -86,13 +86,13 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final long commentLength;
 
-	private final NameOffsets nameOffset;
+	private final NameOffsets nameOffsets;
 
-	private final int[] nameHash;
+	private final int[] nameHashes;
 
-	private final int[] relativeCentralDirectoryOffset;
+	private final int[] relativeCentralDirectoryOffsets;
 
-	private final int[] order;
+	private final int[] orderIndexes;
 
 	private final boolean hasJarSignatureFile;
 
@@ -103,16 +103,16 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	private final Map<Class<?>, Object> retainedInfo = new ConcurrentHashMap<>();
 
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
-			NameOffsets nameOffset, int[] nameHash, int[] relativeCentralDirectoryOffset, int[] order,
+			NameOffsets nameOffsets, int[] nameHashes, int[] relativeCentralDirectoryOffsets, int[] orderIndexes,
 			boolean hasJarSignatureFile) {
 		this.data = data;
 		this.centralDirectoryPos = centralDirectoryPos;
 		this.commentPos = commentPos;
 		this.commentLength = commentLength;
-		this.nameOffset = nameOffset;
-		this.nameHash = nameHash;
-		this.relativeCentralDirectoryOffset = relativeCentralDirectoryOffset;
-		this.order = order;
+		this.nameOffsets = nameOffsets;
+		this.nameHashes = nameHashes;
+		this.relativeCentralDirectoryOffsets = relativeCentralDirectoryOffsets;
+		this.orderIndexes = orderIndexes;
 		this.hasJarSignatureFile = hasJarSignatureFile;
 	}
 
@@ -129,7 +129,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @throws IOException on I/O error
 	 */
 	public DataBlock getData() throws IOException {
-		return (!this.nameOffset.hasAnyEnabled()) ? this.data : getVirtualData();
+		return (!this.nameOffsets.hasAnyEnabled()) ? this.data : getVirtualData();
 	}
 
 	private DataBlock getVirtualData() throws IOException {
@@ -143,12 +143,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	private DataBlock createVirtualData() throws IOException {
-		NameOffsets nameOffsets = this.nameOffset.emptyCopy();
+		NameOffsets nameOffsets = this.nameOffsets.emptyCopy();
 		CentralDirectoryFileHeaderRecord[] centralRecords = new CentralDirectoryFileHeaderRecord[size()];
 		long[] centralRecordPositions = new long[centralRecords.length];
 		int i = 0;
 		for (Entry entry : this) {
-			nameOffsets.enable(i, this.nameOffset.isEnabled(entry.getIndex()));
+			nameOffsets.enable(i, this.nameOffsets.isEnabled(entry.getIndex()));
 			long pos = getCentralDirectoryFileHeaderRecordPos(entry.getIndex());
 			centralRecordPositions[i] = pos;
 			centralRecords[i] = CentralDirectoryFileHeaderRecord.load(this.data, pos);
@@ -178,7 +178,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	@Override
 	public Spliterator<Entry> spliterator() {
 		ensureOpen();
-		return Spliterators.spliterator(new EntryIterator(), this.nameHash.length,
+		return Spliterators.spliterator(new EntryIterator(), this.nameHashes.length,
 				ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
 	}
 
@@ -188,7 +188,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	public int size() {
 		ensureOpen();
-		return this.nameHash.length;
+		return this.nameHashes.length;
 	}
 
 	/**
@@ -219,7 +219,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		ensureOpen();
 		int nameHash = nameHash(namePrefix, name);
 		int index = getFirstIndex(nameHash);
-		while (index >= 0 && index < this.nameHash.length && this.nameHash[index] == nameHash) {
+		while (index >= 0 && index < this.nameHashes.length && this.nameHashes[index] == nameHash) {
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.loadUnchecked(this.data,
 					pos);
@@ -239,23 +239,23 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	private int getFirstIndex(int nameHash) {
-		int index = Arrays.binarySearch(this.nameHash, 0, this.nameHash.length, nameHash);
+		int index = Arrays.binarySearch(this.nameHashes, 0, this.nameHashes.length, nameHash);
 		if (index < 0) {
 			return -1;
 		}
-		while (index > 0 && this.nameHash[index - 1] == nameHash) {
+		while (index > 0 && this.nameHashes[index - 1] == nameHash) {
 			index--;
 		}
 		return index;
 	}
 
 	private long getCentralDirectoryFileHeaderRecordPos(int index) {
-		return this.centralDirectoryPos + this.relativeCentralDirectoryOffset[index];
+		return this.centralDirectoryPos + this.relativeCentralDirectoryOffsets[index];
 	}
 
 	private boolean hasName(int index, CentralDirectoryFileHeaderRecord centralRecord, long pos,
 			CharSequence namePrefix, CharSequence name) {
-		int offset = this.nameOffset.get(index);
+		int offset = this.nameOffsets.get(index);
 		pos += CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + offset;
 		int len = centralRecord.fileNameLength() - offset;
 		if (namePrefix != null) {
@@ -387,7 +387,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		@Override
 		public boolean hasNext() {
-			return this.cursor < ZipContent.this.order.length;
+			return this.cursor < ZipContent.this.orderIndexes.length;
 		}
 
 		@Override
@@ -396,7 +396,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			int index = ZipContent.this.order[this.cursor];
+			int index = ZipContent.this.orderIndexes[this.cursor];
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			this.cursor++;
 			return new Entry(index, CentralDirectoryFileHeaderRecord.loadUnchecked(ZipContent.this.data, pos));
@@ -414,11 +414,11 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private final long centralDirectoryPos;
 
-		private final NameOffsets nameOffset;
+		private final NameOffsets nameOffsets;
 
-		private int[] nameHash;
+		private int[] nameHashes;
 
-		private int[] relativeCentralDirectoryOffset;
+		private int[] relativeCentralDirectoryOffsets;
 
 		private int[] index;
 
@@ -427,51 +427,51 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		private Loader(Entry directoryEntry, FileChannelDataBlock data, long centralDirectoryPos, int maxSize) {
 			this.data = data;
 			this.centralDirectoryPos = centralDirectoryPos;
-			this.nameHash = new int[maxSize];
-			this.nameOffset = (directoryEntry != null) ? new NameOffsets(directoryEntry.getName().length(), maxSize)
+			this.nameHashes = new int[maxSize];
+			this.nameOffsets = (directoryEntry != null) ? new NameOffsets(directoryEntry.getName().length(), maxSize)
 					: NameOffsets.NONE;
-			this.relativeCentralDirectoryOffset = new int[maxSize];
+			this.relativeCentralDirectoryOffsets = new int[maxSize];
 			this.index = new int[maxSize];
 		}
 
 		private void add(CentralDirectoryFileHeaderRecord centralRecord, long pos, boolean enableNameOffset)
 				throws IOException {
-			int nameOffset = this.nameOffset.enable(this.cursor, enableNameOffset);
+			int nameOffset = this.nameOffsets.enable(this.cursor, enableNameOffset);
 			int hash = ZipString.hash(this.data, pos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
 					centralRecord.fileNameLength() - nameOffset, true);
-			this.nameHash[this.cursor] = hash;
-			this.relativeCentralDirectoryOffset[this.cursor] = (int) ((pos - this.centralDirectoryPos) & 0xFFFFFFFF);
+			this.nameHashes[this.cursor] = hash;
+			this.relativeCentralDirectoryOffsets[this.cursor] = (int) ((pos - this.centralDirectoryPos) & 0xFFFFFFFF);
 			this.index[this.cursor] = this.cursor;
 			this.cursor++;
 		}
 
 		private ZipContent finish(long commentPos, long commentLength, boolean hasJarSignatureFile) {
-			if (this.cursor != this.nameHash.length) {
-				this.nameHash = Arrays.copyOf(this.nameHash, this.cursor);
-				this.relativeCentralDirectoryOffset = Arrays.copyOf(this.relativeCentralDirectoryOffset, this.cursor);
+			if (this.cursor != this.nameHashes.length) {
+				this.nameHashes = Arrays.copyOf(this.nameHashes, this.cursor);
+				this.relativeCentralDirectoryOffsets = Arrays.copyOf(this.relativeCentralDirectoryOffsets, this.cursor);
 			}
-			int size = this.nameHash.length;
+			int size = this.nameHashes.length;
 			sort(0, size - 1);
-			int[] order = new int[size];
+			int[] orderIndexes = new int[size];
 			for (int i = 0; i < size; i++) {
-				order[this.index[i]] = i;
+				orderIndexes[this.index[i]] = i;
 			}
-			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameOffset,
-					this.nameHash, this.relativeCentralDirectoryOffset, order, hasJarSignatureFile);
+			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameOffsets,
+					this.nameHashes, this.relativeCentralDirectoryOffsets, orderIndexes, hasJarSignatureFile);
 		}
 
 		private void sort(int left, int right) {
 			// Quick sort algorithm, uses nameHashCode as the source but sorts all
 			// arrays
 			if (left < right) {
-				int pivot = this.nameHash[left + (right - left) / 2];
+				int pivot = this.nameHashes[left + (right - left) / 2];
 				int i = left;
 				int j = right;
 				while (i <= j) {
-					while (this.nameHash[i] < pivot) {
+					while (this.nameHashes[i] < pivot) {
 						i++;
 					}
-					while (this.nameHash[j] > pivot) {
+					while (this.nameHashes[j] > pivot) {
 						j--;
 					}
 					if (i <= j) {
@@ -490,9 +490,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		}
 
 		private void swap(int i, int j) {
-			this.nameOffset.swap(i, j);
-			swap(this.nameHash, i, j);
-			swap(this.relativeCentralDirectoryOffset, i, j);
+			this.nameOffsets.swap(i, j);
+			swap(this.nameHashes, i, j);
+			swap(this.relativeCentralDirectoryOffsets, i, j);
 			swap(this.index, i, j);
 		}
 
@@ -612,7 +612,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			String directoryName = directoryEntry.getName();
 			Loader loader = new Loader(directoryEntry, zip.data, zip.centralDirectoryPos, zip.size());
 			for (int cursor = 0; cursor < zip.size(); cursor++) {
-				int index = zip.order[cursor];
+				int index = zip.orderIndexes[cursor];
 				if (index != directoryEntry.getIndex()) {
 					long pos = zip.getCentralDirectoryFileHeaderRecordPos(index);
 					CentralDirectoryFileHeaderRecord centralRecord = CentralDirectoryFileHeaderRecord.load(zip.data,
@@ -691,7 +691,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		public String getName() {
 			String name = this.name;
 			if (name == null) {
-				int offset = ZipContent.this.nameOffset.get(this.index);
+				int offset = ZipContent.this.nameOffsets.get(this.index);
 				long pos = getCentralDirectoryFileHeaderRecordPos(this.index)
 						+ CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + offset;
 				name = ZipString.readString(ZipContent.this.data, pos, this.centralRecord.fileNameLength() - offset);
