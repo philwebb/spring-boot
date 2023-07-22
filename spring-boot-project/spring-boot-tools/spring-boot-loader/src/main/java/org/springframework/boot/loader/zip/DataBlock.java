@@ -18,6 +18,7 @@ package org.springframework.boot.loader.zip;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -67,6 +68,14 @@ public interface DataBlock {
 			pos += count;
 		}
 		while (dst.hasRemaining());
+	}
+
+	/**
+	 * Return this {@link DataBlock} as an {@link InputStream}.
+	 * @return an {@link InputStream} to read the data block content
+	 */
+	default InputStream asInputStream() {
+		return new DataBlockInputStream(this);
 	}
 
 }

@@ -25,8 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.TestJarCreator;
-import org.springframework.boot.loader.jar.NestedJarFile.Entry;
+import org.springframework.boot.loader.testsupport.TestJarCreator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-class JarFileTests {
+class NestedJarFileTests {
 
 	@TempDir
 	File tempDir;

@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Phillip Webb
  */
-class VirtualZipDataBlock extends VirtualDataBlock {
+class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock {
 
 	private final FileChannelDataBlock data;
 
@@ -91,6 +91,11 @@ class VirtualZipDataBlock extends VirtualDataBlock {
 		parts.add(name);
 		parts.add(content);
 		return record.size() + content.size();
+	}
+
+	@Override
+	public void close() throws IOException {
+		// Virtual blocks don't change reference counts because they are cached
 	}
 
 	/**

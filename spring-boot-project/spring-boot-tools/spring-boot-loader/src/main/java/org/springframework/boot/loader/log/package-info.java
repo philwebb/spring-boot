@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.nio.channels;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 /**
- * @author pwebb
+ * Debug {@link java.lang.System#err} logging support.
  */
-public interface Dunno {
-
-	int read(ByteBuffer dst, long position) throws IOException;
-
-}
+package org.springframework.boot.loader.log;

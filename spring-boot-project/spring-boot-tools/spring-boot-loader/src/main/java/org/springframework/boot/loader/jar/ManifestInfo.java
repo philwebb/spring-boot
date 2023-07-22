@@ -35,14 +35,27 @@ class ManifestInfo {
 
 	private Boolean multiRelease;
 
+	/**
+	 * Create a new {@link ManifestInfo} instance.
+	 * @param manifest the jar manifest or {@code null}
+	 * @param multiRelease if the jar is multi-release
+	 */
 	ManifestInfo(Manifest manifest, Boolean multiRelease) {
 		this.manifest = manifest;
 	}
 
+	/**
+	 * Return the manifest, if any.
+	 * @return the manifest or {@code null}
+	 */
 	Manifest getManifest() {
 		return this.manifest;
 	}
 
+	/**
+	 * Return if this is a multi-release jar.
+	 * @return if the jar is multi-release
+	 */
 	boolean isMultiRelease() {
 		if (this.manifest == null) {
 			this.multiRelease = false;

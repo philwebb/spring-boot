@@ -47,9 +47,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJarCreator;
 import org.springframework.boot.loader.zip.ZipContent.Entry;
-import org.springframework.boot.loader.zip.ZipContent.InfoReference;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -241,7 +240,7 @@ class ZipContentTests {
 	void getDataWhenNestedDirectoryReturnsVirtualZipDataBlock() throws IOException {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d")) {
 			File file = new File(this.tempDir, "included.zip");
-			write(file, nested.getData());
+			write(file, nested.openRawZipData());
 			try (ZipFile loadedZipFile = new ZipFile(file)) {
 				assertThat(loadedZipFile.size()).isEqualTo(3);
 				assertThat(loadedZipFile.stream().map(ZipEntry::getName)).containsExactly("META-INF/",
@@ -393,9 +392,8 @@ class ZipContentTests {
 
 	@Test
 	void getInfoReturnsComputedInfo() {
-		ZipInfo info = this.zipContent.getInfo(InfoReference.SOFT, ZipInfo.class, ZipInfo::get);
+		ZipInfo info = this.zipContent.getInfo(ZipInfo.class, ZipInfo::get);
 		assertThat(info.size()).isEqualTo(12);
-		assertThat(this.zipContent.getInfo(InfoReference.SOFT, ZipInfo.class, ZipInfo::get)).isSameAs(info);
 	}
 
 	private static void writeTimeBlock(byte[] data, int pos, int value) {
@@ -429,10 +427,11 @@ class ZipContentTests {
 		return new InflaterInputStream(in, new Inflater(true));
 	}
 
-	private void write(File file, DataBlock dataBlock) throws IOException {
+	private void write(File file, CloseableDataBlock dataBlock) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate((int) dataBlock.size());
 		dataBlock.readFully(buffer, 0);
 		Files.write(file.toPath(), buffer.array());
+		dataBlock.close();
 	}
 
 	private static class ZipInfo {

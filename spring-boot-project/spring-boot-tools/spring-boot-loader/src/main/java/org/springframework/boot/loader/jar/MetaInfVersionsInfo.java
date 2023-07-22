@@ -34,21 +34,34 @@ class MetaInfVersionsInfo {
 
 	private final String[] directories;
 
-	MetaInfVersionsInfo(Set<Integer> versions) {
+	private MetaInfVersionsInfo(Set<Integer> versions) {
 		this.versions = versions.stream().mapToInt(Integer::intValue).toArray();
 		this.directories = versions.stream()
 			.map((version) -> NestedJarFile.META_INF_VERSIONS + version + "/")
 			.toArray(String[]::new);
 	}
 
+	/**
+	 * Return the versions listed under {@code META-INF/versions/} in ascending order.
+	 * @return the versions
+	 */
 	int[] versions() {
 		return this.versions;
 	}
 
+	/**
+	 * Return the version directories in the same order as {@link #versions()}.
+	 * @return the version directories
+	 */
 	String[] directories() {
 		return this.directories;
 	}
 
+	/**
+	 * Get {@link MetaInfVersionsInfo} for the given {@link ZipContent}.
+	 * @param zipContent the zip content
+	 * @return the {@link MetaInfVersionsInfo}.
+	 */
 	static MetaInfVersionsInfo get(ZipContent zipContent) {
 		Set<Integer> versions = new TreeSet<>();
 		for (ZipContent.Entry entry : zipContent) {

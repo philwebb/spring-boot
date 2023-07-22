@@ -17,9 +17,10 @@
 package org.springframework.boot.loader.log;
 
 /**
- * Simple logger class used for debugging.
+ * Simple logger class used for {@link System#err} debugging.
  *
  * @author Phillip Webb
+ * @since 3.2.0
  */
 public abstract sealed class DebugLogger {
 
@@ -27,24 +28,62 @@ public abstract sealed class DebugLogger {
 
 	private static final DebugLogger disabled;
 	static {
-		disabled = Boolean.getBoolean(ENABLED_PROPERTY) ? null : new NoOpDebugLogger();
+		disabled = Boolean.getBoolean(ENABLED_PROPERTY) ? null : new DisabledDebugLogger();
 	}
 
+	/**
+	 * Log a message.
+	 * @param message the message to log
+	 */
 	public abstract void log(String message);
 
+	/**
+	 * Log a formatted message.
+	 * @param message the message to log
+	 * @param arg1 the first format argument
+	 */
 	public abstract void log(String message, Object arg1);
 
+	/**
+	 * Log a formatted message.
+	 * @param message the message to log
+	 * @param arg1 the first format argument
+	 * @param arg2 the second format argument
+	 */
 	public abstract void log(String message, Object arg1, Object arg2);
 
+	/**
+	 * Log a formatted message.
+	 * @param message the message to log
+	 * @param arg1 the first format argument
+	 * @param arg2 the second format argument
+	 * @param arg3 the third format argument
+	 */
 	public abstract void log(String message, Object arg1, Object arg2, Object arg3);
 
+	/**
+	 * Log a formatted message.
+	 * @param message the message to log
+	 * @param arg1 the first format argument
+	 * @param arg2 the second format argument
+	 * @param arg3 the third format argument
+	 * @param arg4 the fourth format argument
+	 */
 	public abstract void log(String message, Object arg1, Object arg2, Object arg3, Object arg4);
 
+	/**
+	 * Get a {@link DebugLogger} to log messages for the given source class.
+	 * @param sourceClass the source class
+	 * @return a {@link DebugLogger} instance
+	 */
 	public static DebugLogger get(Class<?> sourceClass) {
-		return (disabled != null) ? disabled : new SystemDebugLogger(sourceClass);
+		return (disabled != null) ? disabled : new SystemErrDebugLogger(sourceClass);
 	}
 
-	private static final class NoOpDebugLogger extends DebugLogger {
+	/**
+	 * {@link DebugLogger} used for disabled logging that does nothing.
+	 */
+	private static final class DisabledDebugLogger extends DebugLogger {
 
 		@Override
 		public void log(String message) {
@@ -68,11 +107,14 @@ public abstract sealed class DebugLogger {
 
 	}
 
-	private static final class SystemDebugLogger extends DebugLogger {
+	/**
+	 * {@link DebugLogger} that prints messages to {@link System#err}.
+	 */
+	private static final class SystemErrDebugLogger extends DebugLogger {
 
 		private final String prefix;
 
-		SystemDebugLogger(Class<?> sourceClass) {
+		SystemErrDebugLogger(Class<?> sourceClass) {
 			this.prefix = "LOADER: " + sourceClass + " : ";
 		}
 

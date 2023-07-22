@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.ByteBuffer;
+import java.security.CodeSigner;
+import java.security.cert.Certificate;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Objects;
@@ -29,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -40,7 +43,6 @@ import java.util.zip.ZipException;
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.CloseableDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
-import org.springframework.boot.loader.zip.ZipContent.InfoReference;
 
 /**
  * Extended variant of {@link JarFile} that behaves in the same way but can open nested
@@ -48,7 +50,7 @@ import org.springframework.boot.loader.zip.ZipContent.InfoReference;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.0.0
+ * @since 3.2.0
  */
 public class NestedJarFile extends JarFile {
 
@@ -77,6 +79,16 @@ public class NestedJarFile extends JarFile {
 	private ZipContent.Entry lastContentEntry;
 
 	private volatile boolean closing;
+
+	/**
+	 * Creates a new {@link NestedJarFile} instance to read from the specific
+	 * {@code File}.
+	 * @param file the jar file to be opened for reading
+	 * @throws IOException on I/O error
+	 */
+	NestedJarFile(File file) throws IOException {
+		this(file, null, null, false, null);
+	}
 
 	/**
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
@@ -127,9 +139,7 @@ public class NestedJarFile extends JarFile {
 	@Override
 	public Manifest getManifest() throws IOException {
 		try {
-			ManifestInfo info = this.resources.zipContent()
-				.getInfo(InfoReference.SOFT, ManifestInfo.class, this::getManifestInfo);
-			return info.getManifest();
+			return this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo).getManifest();
 		}
 		catch (UncheckedIOException ex) {
 			throw ex.getCause();
@@ -206,13 +216,12 @@ public class NestedJarFile extends JarFile {
 	private NestedJarEntry getVersionedEntry(String name) {
 		// NOTE: we can't call isMultiRelease() directly because it's a final method and
 		// it inspects the container jar. We use ManifestInfo instead.
-		ManifestInfo manifestInfo = this.resources.zipContent()
-			.getInfo(InfoReference.SOFT, ManifestInfo.class, this::getManifestInfo);
+		ManifestInfo manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
 		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION < this.version) {
 			return null;
 		}
 		MetaInfVersionsInfo versionsInfo = this.resources.zipContent()
-			.getInfo(InfoReference.SOFT, MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
+			.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
 		int[] versions = versionsInfo.versions();
 		String[] directories = versionsInfo.directories();
 		for (int i = versions.length - 1; i >= 0; i--) {
@@ -338,6 +347,57 @@ public class NestedJarFile extends JarFile {
 		if (this.resources.zipContent() == null) {
 			throw new IllegalStateException("The object is not initialized.");
 		}
+	}
+
+	/**
+	 * An individual entry from a {@link NestedJarFile}.
+	 */
+	private class NestedJarEntry extends java.util.jar.JarEntry {
+
+		private final ZipContent.Entry contentEntry;
+
+		private final String name;
+
+		NestedJarEntry(ZipContent.Entry contentEntry, String name) {
+			super(contentEntry.getName());
+			this.contentEntry = contentEntry;
+			this.name = name;
+		}
+
+		@Override
+		public String getRealName() {
+			return super.getName();
+		}
+
+		@Override
+		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public Attributes getAttributes() throws IOException {
+			Manifest manifest = getManifest();
+			return (manifest != null) ? manifest.getAttributes(getName()) : null;
+		}
+
+		@Override
+		public Certificate[] getCertificates() {
+			return getSecurityInfo().getCertificates(contentEntry());
+		}
+
+		@Override
+		public CodeSigner[] getCodeSigners() {
+			return getSecurityInfo().getCodeSigners(contentEntry());
+		}
+
+		private SecurityInfo getSecurityInfo() {
+			return NestedJarFile.this.resources.zipContent().getInfo(SecurityInfo.class, SecurityInfo::get);
+		}
+
+		ZipContent.Entry contentEntry() {
+			return this.contentEntry;
+		}
+
 	}
 
 	/**
