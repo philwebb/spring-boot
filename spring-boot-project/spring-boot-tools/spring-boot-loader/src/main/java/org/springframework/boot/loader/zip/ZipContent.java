@@ -96,11 +96,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private final boolean hasJarSignatureFile;
 
-	private SoftReference<DataBlock> virtualData;
+	private SoftReference<CloseableDataBlock> virtualData;
 
-	private SoftReference<Map<Class<?>, Object>> softInfo;
-
-	private final Map<Class<?>, Object> retainedInfo = new ConcurrentHashMap<>();
+	private SoftReference<Map<Class<?>, Object>> info;
 
 	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
 			NameOffsets nameOffsets, int[] nameHashes, int[] relativeCentralDirectoryOffsets, int[] orderIndexes,
@@ -117,23 +115,28 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	}
 
 	/**
-	 * Return the data block containing the zip data. For container zip files, this may be
-	 * smaller than the original file since additional bytes are permitted at the front of
-	 * a zip file. For nested zip files, this will be only the contents of the nest zip.
+	 * Open a {@link DataBlock} containing the raw zip data. For container zip files, this
+	 * may be smaller than the original file since additional bytes are permitted at the
+	 * front of a zip file. For nested zip files, this will be only the contents of the
+	 * nest zip.
 	 * <p>
 	 * For nested directory zip files, a virtual data block will be created containing
 	 * only the relevant content.
 	 * <p>
-	 * Data contents must not be accessed after calling {@link ZipContent#close()} .
+	 * To release resources, the {@link #close()} method of the data block should be
+	 * called explicitly or by try-with-resources.
+	 * <p>
+	 * The returned data block should not be accessed once {@link #close()} has been
+	 * called.
 	 * @return the zip data
 	 * @throws IOException on I/O error
 	 */
-	public DataBlock getData() throws IOException {
-		return (!this.nameOffsets.hasAnyEnabled()) ? this.data : getVirtualData();
+	public CloseableDataBlock openRawZipData() throws IOException {
+		return (!this.nameOffsets.hasAnyEnabled()) ? this.data.open() : getVirtualData();
 	}
 
-	private DataBlock getVirtualData() throws IOException {
-		DataBlock virtualData = (this.virtualData != null) ? this.virtualData.get() : null;
+	private CloseableDataBlock getVirtualData() throws IOException {
+		CloseableDataBlock virtualData = (this.virtualData != null) ? this.virtualData.get() : null;
 		if (virtualData != null) {
 			return virtualData;
 		}
@@ -142,7 +145,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return virtualData;
 	}
 
-	private DataBlock createVirtualData() throws IOException {
+	private CloseableDataBlock createVirtualData() throws IOException {
 		NameOffsets nameOffsets = this.nameOffsets.emptyCopy();
 		CentralDirectoryFileHeaderRecord[] centralRecords = new CentralDirectoryFileHeaderRecord[size()];
 		long[] centralRecordPositions = new long[centralRecords.length];
@@ -272,28 +275,18 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	/**
 	 * Get or compute information based on the {@link ZipContent}.
 	 * @param <I> the info type to get or compute
-	 * @param reference the info reference type
 	 * @param type the info type to get or compute
 	 * @param function the function used to compute the information
 	 * @return the computed or existing information
 	 */
 	@SuppressWarnings("unchecked")
-	public <I> I getInfo(InfoReference reference, Class<I> type, Function<ZipContent, I> function) {
-		return (I) getInfo(reference).computeIfAbsent(type, (key) -> function.apply(this));
-	}
-
-	private Map<Class<?>, Object> getInfo(InfoReference reference) {
-		return switch (reference) {
-			case RETAIN -> this.retainedInfo;
-			case SOFT -> {
-				Map<Class<?>, Object> softInfo = (this.softInfo != null) ? this.softInfo.get() : null;
-				if (softInfo == null) {
-					softInfo = new ConcurrentHashMap<>();
-					this.softInfo = new SoftReference<>(softInfo);
-				}
-				yield softInfo;
-			}
-		};
+	public <I> I getInfo(Class<I> type, Function<ZipContent, I> function) {
+		Map<Class<?>, Object> info = (this.info != null) ? this.info.get() : null;
+		if (info == null) {
+			info = new ConcurrentHashMap<>();
+			this.info = new SoftReference<>(info);
+		}
+		return (I) info.computeIfAbsent(type, (key) -> function.apply(this));
 	}
 
 	/**
@@ -657,7 +650,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		 * Return the index of the entry.
 		 * @return the entry index
 		 */
-		int getIndex() {
+		public int getIndex() {
 			return this.index;
 		}
 
@@ -719,7 +712,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		}
 
 		/**
-		 * Open a new {@link DataBlock} providing access to raw contents of the entry.
+		 * Open a {@link DataBlock} providing access to raw contents of the entry (not
+		 * including the local file header).
 		 * <p>
 		 * To release resources, the {@link #close()} method of the data block should be
 		 * called explicitly or by try-with-resources.
@@ -779,23 +773,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				throw new UncheckedIOException(ex);
 			}
 		}
-
-	}
-
-	/**
-	 * Info reference types.
-	 */
-	public enum InfoReference {
-
-		/**
-		 * A soft reference that can be cleared under memory pressure.
-		 */
-		SOFT,
-
-		/**
-		 * A retained reference that is held indefinitely.
-		 */
-		RETAIN
 
 	}
 

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * @author pwebb
+ * Support for {@link java.lang.ref.Cleaner}.
  */
 package org.springframework.boot.loader.ref;

@@ -14,28 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.nio.channels;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 /**
- * @author pwebb
+ * Alternative {@link java.util.jar.JarFile} implementation with support for nested jars.
+ * @see org.springframework.boot.loader.jar.NestedJarFile
  */
-public class Dunno2 implements Dunno {
-
-	private ByteBuffer src;
-
-	public Dunno2(ByteBuffer byteBuffer) {
-		this.src = byteBuffer;
-	}
-
-	@Override
-	public int read(ByteBuffer dst, long position) throws IOException {
-		int length = 0;
-		int offset = 0;
-		dst.put(dst.position(), this.src, offset, length);
-		return 0;
-	}
-
-}
+package org.springframework.boot.loader.jar;

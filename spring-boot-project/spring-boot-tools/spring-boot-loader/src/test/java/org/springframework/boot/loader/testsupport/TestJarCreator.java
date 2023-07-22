@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.testsupport;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

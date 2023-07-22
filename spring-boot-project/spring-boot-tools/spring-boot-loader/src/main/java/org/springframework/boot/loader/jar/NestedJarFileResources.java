@@ -27,35 +27,104 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.zip.Inflater;
 
+import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.ZipContent;
 
 /**
- * Resources created managed and cleaned by a {@link NestedJarFile} instance.
+ * Resources created managed and cleaned by a {@link NestedJarFile} instance and suitable
+ * for registration with a {@link Cleaner}.
  */
 class NestedJarFileResources implements Runnable {
 
 	private static final int INFLATER_CACHE_LIMIT = 20;
 
-	ZipContent zipContent;
+	private final ZipContent zipContent;
 
 	private final Set<InputStream> inputStreams = Collections.newSetFromMap(new WeakHashMap<>());
 
 	private Deque<Inflater> inflaterCache = new ArrayDeque<>();
 
+	/**
+	 * Create a new {@link NestedJarFileResources} instance.
+	 * @param file the source zip file
+	 * @param nestedEntryName the nested entry or {@code null}
+	 * @throws IOException on I/O error
+	 */
 	NestedJarFileResources(File file, String nestedEntryName) throws IOException {
 		this.zipContent = ZipContent.open(file.toPath(), nestedEntryName);
 	}
 
+	/**
+	 * Return the underling {@link ZipContent}.
+	 * @return the zip content
+	 */
 	ZipContent zipContent() {
 		return this.zipContent;
 	}
 
+	/**
+	 * Return the input streams that have not yet been closed or cleaned.
+	 * @return the input streams
+	 */
 	Set<InputStream> inputStreams() {
 		return this.inputStreams;
 	}
 
+	/**
+	 * Create a {@link Runnable} action to cleanup the given inflater.
+	 * @param inflater the inflater to cleanup
+	 * @return the cleanup action
+	 */
+	Runnable createInflatorCleanupAction(Inflater inflater) {
+		return () -> endOrCacheInflater(inflater);
+	}
+
+	/**
+	 * Get previously used {@link Inflater} from the cache, or create a new one.
+	 * @return a usable {@link Inflater}
+	 */
+	Inflater getOrCreateInflater() {
+		Deque<Inflater> inflaterCache = this.inflaterCache;
+		if (inflaterCache != null) {
+			synchronized (inflaterCache) {
+				Inflater inflater = this.inflaterCache.poll();
+				if (inflater != null) {
+					return inflater;
+				}
+			}
+		}
+		return new Inflater(true);
+	}
+
+	/**
+	 * Either release the given {@link Inflater} by calling {@link Inflater#end()} or add
+	 * it to the cache for later reuse.
+	 * @param inflater the inflater to end or cache
+	 */
+	private void endOrCacheInflater(Inflater inflater) {
+		Deque<Inflater> inflaterCache = this.inflaterCache;
+		if (inflaterCache != null) {
+			synchronized (inflaterCache) {
+				if (this.inflaterCache == inflaterCache && inflaterCache.size() < INFLATER_CACHE_LIMIT) {
+					inflater.reset();
+					this.inflaterCache.add(inflater);
+					return;
+				}
+			}
+		}
+		inflater.end();
+	}
+
+	/**
+	 * Called by the {@link Cleaner} to free resources.
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
+		releaseAll();
+	}
+
+	private void releaseAll() {
 		IOException exceptionChain = null;
 		exceptionChain = releaseInflators(exceptionChain);
 		exceptionChain = releaseInputStreams(exceptionChain);
@@ -109,37 +178,6 @@ class NestedJarFileResources implements Runnable {
 			return exceptionChain;
 		}
 		return ex;
-	}
-
-	Runnable createInflatorCleanupAction(Inflater inflater) {
-		return () -> endOrCacheInflater(inflater);
-	}
-
-	Inflater getOrCreateInflater() {
-		Deque<Inflater> inflaterCache = this.inflaterCache;
-		if (inflaterCache != null) {
-			synchronized (inflaterCache) {
-				Inflater inflater = this.inflaterCache.poll();
-				if (inflater != null) {
-					return inflater;
-				}
-			}
-		}
-		return new Inflater(true);
-	}
-
-	private void endOrCacheInflater(Inflater inflater) {
-		Deque<Inflater> inflaterCache = this.inflaterCache;
-		if (inflaterCache != null) {
-			synchronized (inflaterCache) {
-				if (this.inflaterCache == inflaterCache && inflaterCache.size() < INFLATER_CACHE_LIMIT) {
-					inflater.reset();
-					this.inflaterCache.add(inflater);
-					return;
-				}
-			}
-		}
-		inflater.end();
 	}
 
 }
