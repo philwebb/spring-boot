@@ -26,10 +26,10 @@ import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -132,7 +132,7 @@ public class NestedJarFile extends JarFile {
 		this.cleaner = (cleaner != null) ? cleaner : Cleaner.instance;
 		this.resources = new NestedJarFileResources(file, nestedEntryName);
 		this.cleanup = this.cleaner.register(this, this.resources);
-		this.name = file.getPath() + ((nestedEntryName != null) ? "[" + nestedEntryName + "]" : "");
+		this.name = file.getPath() + ((nestedEntryName != null) ? "!" + nestedEntryName : "");
 		this.version = (version != null) ? version.feature() : baseVersion().feature();
 	}
 
@@ -169,7 +169,7 @@ public class NestedJarFile extends JarFile {
 			return this.resources.zipContent()
 				.stream()
 				.map(this::asVersionedEntry)
-				.filter(nonNullDistinct(JarEntry::getName));
+				.filter(highestVersionNonNullDistinct());
 		}
 	}
 
@@ -196,28 +196,36 @@ public class NestedJarFile extends JarFile {
 		return contentEntry.as((realName) -> new NestedJarEntry(contentEntry, baseName));
 	}
 
-	public static <T, K> Predicate<T> nonNullDistinct(Function<T, K> extractor) {
-		Set<K> seen = ConcurrentHashMap.newKeySet();
-		return (entry) -> entry != null && seen.add(extractor.apply(entry));
+	public static Predicate<JarEntry> highestVersionNonNullDistinct() {
+		Map<String, JarEntry> highest = new ConcurrentHashMap<>();
+		return (entry) -> {
+			if (entry == null) {
+				return false;
+			}
+
+			// entry != null && seen.add(extractor.apply(entry))
+		};
 	}
 
 	@Override
-	public NestedJarEntry getJarEntry(String name) {
+	public JarEntry getJarEntry(String name) {
 		return getEntry(name);
 	}
 
 	@Override
-	public NestedJarEntry getEntry(String name) {
+	public JarEntry getEntry(String name) {
 		Objects.requireNonNull(name, "name");
-		NestedJarEntry entry = getVersionedEntry(name);
-		return (entry != null) ? entry : getEntry(null, name);
+		ensureOpen();
+		ZipContent.Entry entry = getVersionedContentEntry(name);
+		entry = (entry != null) ? entry : getContentEntry(null, name);
+		return entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name));
 	}
 
-	private NestedJarEntry getVersionedEntry(String name) {
+	private ZipContent.Entry getVersionedContentEntry(String name) {
 		// NOTE: we can't call isMultiRelease() directly because it's a final method and
 		// it inspects the container jar. We use ManifestInfo instead.
 		ManifestInfo manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
-		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION < this.version) {
+		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION >= this.version) {
 			return null;
 		}
 		MetaInfVersionsInfo versionsInfo = this.resources.zipContent()
@@ -226,18 +234,13 @@ public class NestedJarFile extends JarFile {
 		String[] directories = versionsInfo.directories();
 		for (int i = versions.length - 1; i >= 0; i--) {
 			if (versions[i] <= this.version) {
-				NestedJarEntry entry = getEntry(directories[i], name);
+				ZipContent.Entry entry = getContentEntry(directories[i], name);
 				if (entry != null) {
 					return entry;
 				}
 			}
 		}
 		return null;
-	}
-
-	private NestedJarEntry getEntry(String namePrefix, String name) {
-		ZipContent.Entry contentEntry = getContentEntry(namePrefix, name);
-		return (contentEntry != null) ? contentEntry.as(NestedJarEntry::new) : null;
 	}
 
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
@@ -342,7 +345,7 @@ public class NestedJarFile extends JarFile {
 
 	private void ensureOpen() {
 		if (this.closing) {
-			throw new IllegalStateException("zip file closed");
+			throw new IllegalStateException("Zip file closed");
 		}
 		if (this.resources.zipContent() == null) {
 			throw new IllegalStateException("The object is not initialized.");
@@ -358,10 +361,17 @@ public class NestedJarFile extends JarFile {
 
 		private final String name;
 
+		private final int stashedVesionNumber;
+
 		NestedJarEntry(ZipContent.Entry contentEntry, String name) {
+			this(contentEntry, name, -1);
+		}
+
+		NestedJarEntry(ZipContent.Entry contentEntry, String name, int stashedVesionNumber) {
 			super(contentEntry.getName());
 			this.contentEntry = contentEntry;
 			this.name = name;
+			this.stashedVesionNumber = stashedVesionNumber;
 		}
 
 		@Override
@@ -396,6 +406,10 @@ public class NestedJarFile extends JarFile {
 
 		ZipContent.Entry contentEntry() {
 			return this.contentEntry;
+		}
+
+		int stashedVesionNumber() {
+			return this.stashedVesionNumber;
 		}
 
 	}

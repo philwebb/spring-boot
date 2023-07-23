@@ -17,17 +17,29 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.zip.ZipFile;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.zip.ZipContent;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link NestedJarFile}.
@@ -51,85 +63,192 @@ class NestedJarFileTests {
 	}
 
 	@Test
-	void createOpensJar() {
-
-	}
-
-	@Test
-	void createWhenNestedJarOpensJar() {
-
-	}
-
-	@Test
-	void createWhenJarHasFrontMatterOpensJar() {
-
-	}
-
-	@Test
-	void getEntryReturnsEntry() {
-
-	}
-
-	@Test
-	void getEntryWhenMultiReleaseEntryReturnsEntry() throws IOException {
-		try (NestedJarFile jarFile = new NestedJarFile(this.file, "multi-release.jar")) {
-			JarEntry entry = jarFile.getJarEntry("multi-release.dat");
-			assertThat(entry.getName()).isEqualTo("multi-release.dat");
-			assertThat(entry.getRealName()).isEqualTo("multi-release.dat");
-			// InputStream inputStream = jarFile.getInputStream(entry);
-			// assertThat(inputStream.available()).isOne();
-			// assertThat(inputStream.read()).isEqualTo(Runtime.version().feature());
+	void createOpensJar() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			try (JarFile jdkJar = new JarFile(this.file)) {
+				assertThat(jar.size()).isEqualTo(jdkJar.size());
+				assertThat(jar.getComment()).isEqualTo(jdkJar.getComment());
+				Enumeration<JarEntry> entries = jar.entries();
+				Enumeration<JarEntry> jdkEntries = jdkJar.entries();
+				while (entries.hasMoreElements()) {
+					assertThat(entries.nextElement().getName()).isEqualTo(jdkEntries.nextElement().getName());
+				}
+				assertThat(jdkEntries.hasMoreElements()).isFalse();
+				try (InputStream in = jar.getInputStream(jar.getEntry("1.dat"))) {
+					assertThat(in.readAllBytes()).containsExactly(new byte[] { 1 });
+				}
+			}
 		}
 	}
 
 	@Test
-	void getManifestReturnsManifest() {
-
+	void createWhenNestedJarFileOpensJar() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file, "nested.jar")) {
+			assertThat(jar.size()).isEqualTo(5);
+			assertThat(jar.stream().map(JarEntry::getName)).containsExactly("META-INF/", "META-INF/MANIFEST.MF",
+					"3.dat", "4.dat", "\u00E4.dat");
+		}
 	}
 
 	@Test
-	void getJarEntryReturnsEntry() {
-
+	void createWhenNestedJarDirectoryOpensJar() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file, "d/")) {
+			assertThat(jar.getName()).isEqualTo(this.file.getAbsolutePath() + "!d/");
+			assertThat(jar.size()).isEqualTo(3);
+			assertThat(jar.stream().map(JarEntry::getName)).containsExactly("META-INF/", "META-INF/MANIFEST.MF",
+					"9.dat");
+		}
 	}
 
 	@Test
-	void getJarEntryWhenClosedThrowsException() {
-
+	void createWhenJarHasFrontMatterOpensJar() throws IOException {
+		File file = new File(this.tempDir, "frontmatter.jar");
+		InputStream sourceJarContent = new FileInputStream(this.file);
+		FileOutputStream outputStream = new FileOutputStream(file);
+		StreamUtils.copy("#/bin/bash", Charset.defaultCharset(), outputStream);
+		FileCopyUtils.copy(sourceJarContent, outputStream);
+		try (NestedJarFile jar = new NestedJarFile(file)) {
+			assertThat(jar.size()).isEqualTo(12);
+		}
+		try (NestedJarFile jar = new NestedJarFile(this.file, "nested.jar")) {
+			assertThat(jar.size()).isEqualTo(5);
+		}
 	}
 
 	@Test
-	void getCommentReturnsComment() {
-
+	void getEntryReturnsEntry() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			JarEntry entry = jar.getEntry("1.dat");
+			assertEntryOne(entry);
+		}
 	}
 
 	@Test
-	void getCommentWhenClosedThrowsException() {
-
+	void getEntryWhenClosedThrowsException() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			jar.close();
+			assertThatIllegalStateException().isThrownBy(() -> jar.getEntry("1.dat")).withMessage("Zip file closed");
+		}
 	}
 
 	@Test
-	void getNameReturnsName() {
-
+	void getJarEntryReturnsEntry() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			JarEntry entry = jar.getJarEntry("1.dat");
+			assertEntryOne(entry);
+		}
 	}
 
 	@Test
-	void getNameWhenNestedReturnsName() {
+	void getJarEntryWhenClosedThrowsException() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			jar.close();
+			assertThatIllegalStateException().isThrownBy(() -> jar.getJarEntry("1.dat")).withMessage("Zip file closed");
+		}
+	}
 
+	private void assertEntryOne(JarEntry entry) {
+		assertThat(entry.getName()).isEqualTo("1.dat");
+		assertThat(entry.getRealName()).isEqualTo("1.dat");
+		assertThat(entry.getSize()).isEqualTo(1);
+		assertThat(entry.getCompressedSize()).isEqualTo(3);
+		assertThat(entry.getCrc()).isEqualTo(2768625435L);
+		assertThat(entry.getMethod()).isEqualTo(8);
 	}
 
 	@Test
-	void getSizeReturnsSize() {
-
+	void getEntryWhenMultiReleaseEntryReturnsEntry() throws IOException {
+		File multiReleaseFile = new File(this.tempDir, "mutli.zip");
+		try (ZipContent zip = ZipContent.open(this.file.toPath(), "multi-release.jar")) {
+			try (FileOutputStream out = new FileOutputStream(multiReleaseFile)) {
+				zip.openRawZipData().asInputStream().transferTo(out);
+			}
+		}
+		try (NestedJarFile jar = new NestedJarFile(this.file, "multi-release.jar", JarFile.runtimeVersion())) {
+			try (JarFile jdkJar = new JarFile(multiReleaseFile, true, ZipFile.OPEN_READ, JarFile.runtimeVersion())) {
+				JarEntry entry = jar.getJarEntry("multi-release.dat");
+				JarEntry jdkEntry = jdkJar.getJarEntry("multi-release.dat");
+				assertThat(entry.getName()).isEqualTo(jdkEntry.getName());
+				assertThat(entry.getRealName()).isEqualTo(jdkEntry.getRealName());
+				try (InputStream inputStream = jdkJar.getInputStream(entry)) {
+					assertThat(inputStream.available()).isOne();
+					assertThat(inputStream.read()).isEqualTo(Runtime.version().feature());
+				}
+				try (InputStream inputStream = jar.getInputStream(entry)) {
+					assertThat(inputStream.available()).isOne();
+					assertThat(inputStream.read()).isEqualTo(Runtime.version().feature());
+				}
+			}
+		}
 	}
 
 	@Test
-	void getEntryTime() {
+	void getManifestReturnsManifest() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			Manifest manifest = jar.getManifest();
+			assertThat(manifest).isNotNull();
+			assertThat(manifest.getEntries()).isEmpty();
+			assertThat(manifest.getMainAttributes().getValue("Manifest-Version")).isEqualTo("1.0");
+		}
+	}
 
+	@Test
+	void getCommentReturnsComment() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			assertThat(jar.getComment()).isEqualTo("outer");
+		}
+	}
+
+	@Test
+	void getCommentWhenClosedThrowsException() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			jar.close();
+			assertThatIllegalStateException().isThrownBy(() -> jar.getComment()).withMessage("Zip file closed");
+		}
+	}
+
+	@Test
+	void getNameReturnsName() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			assertThat(jar.getName()).isEqualTo(this.file.getAbsolutePath());
+		}
+	}
+
+	@Test
+	void getNameWhenNestedReturnsName() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file, "nested.jar")) {
+			assertThat(jar.getName()).isEqualTo(this.file.getAbsolutePath() + "!nested.jar");
+		}
+	}
+
+	@Test
+	void sizeReturnsSize() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			assertThat(jar.size()).isEqualByComparingTo(12);
+		}
+	}
+
+	@Test
+	void sizeWhenClosedThowsException() throws Exception {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			jar.close();
+			assertThatIllegalStateException().isThrownBy(() -> jar.size()).withMessage("Zip file closed");
+		}
+	}
+
+	@Test
+	void getEntryTime() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			try (JarFile jdkJar = new JarFile(this.file)) {
+				assertThat(jar.getEntry("META-INF/MANIFEST.MF").getTime())
+					.isEqualTo(jar.getEntry("META-INF/MANIFEST.MF").getTime());
+			}
+		}
 	}
 
 	@Test
 	void close() {
-
+		// FIXME
 	}
 
 	@Test
@@ -143,13 +262,83 @@ class NestedJarFileTests {
 	}
 
 	@Test
-	void getInputStreamWhenIsDirectory() {
-
+	void getInputStreamWhenIsDirectory() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			try (InputStream inputStream = jar.getInputStream(jar.getEntry("d/"))) {
+				assertThat(inputStream).isNotNull();
+				assertThat(inputStream.read()).isEqualTo(-1);
+			}
+		}
 	}
 
 	@Test
-	void getInputStreamWhenNameWithoutSlashAndIsDirectory() {
+	void getInputStreamWhenNameWithoutSlashAndIsDirectory() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			try (InputStream inputStream = jar.getInputStream(jar.getEntry("d"))) {
+				assertThat(inputStream).isNotNull();
+				assertThat(inputStream.read()).isEqualTo(-1);
+			}
+		}
+	}
 
+	@Test
+	void verifySignedJar() throws Exception {
+		File signedJarFile = getSignedJarFile();
+		assertThat(signedJarFile).exists();
+		try (JarFile expected = new JarFile(signedJarFile)) {
+			try (NestedJarFile actual = new NestedJarFile(signedJarFile)) {
+				StopWatch stopWatch = new StopWatch();
+				Enumeration<JarEntry> actualEntries = actual.entries();
+				while (actualEntries.hasMoreElements()) {
+					JarEntry actualEntry = actualEntries.nextElement();
+					JarEntry expectedEntry = expected.getJarEntry(actualEntry.getName());
+					StreamUtils.drain(expected.getInputStream(expectedEntry));
+					if (!actualEntry.getName().equals("META-INF/MANIFEST.MF")) {
+						assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
+							.isEqualTo(expectedEntry.getCertificates());
+						assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
+							.isEqualTo(expectedEntry.getCodeSigners());
+					}
+				}
+				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
+			}
+		}
+	}
+
+	@Test
+	void closeAllowsFileToBeDeleted() throws Exception {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+		}
+		assertThat(this.file.delete()).isTrue();
+	}
+
+	@Test
+	void streamStreamsEnties() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file, "multi-release.jar")) {
+			assertThat(jar.stream().map((entry) -> entry.getName() + ":" + entry.getRealName())).containsExactly(
+					"META-INF/:META-INF/", "META-INF/MANIFEST.MF:META-INF/MANIFEST.MF",
+					"multi-release.dat:multi-release.dat",
+					"META-INF/versions/17/multi-release.dat:META-INF/versions/17/multi-release.dat");
+		}
+	}
+
+	@Test
+	void versionedStreamStreamsEntries() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file, "multi-release.jar", Runtime.version())) {
+			assertThat(jar.versionedStream().map((entry) -> entry.getName() + ":" + entry.getRealName()))
+				.containsExactly("META-INF/:META-INF/", "META-INF/MANIFEST.MF:META-INF/MANIFEST.MF",
+						"multi-release.dat:META-INF/versions/17/multi-release.dat");
+		}
+	}
+
+	private File getSignedJarFile() {
+		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+		for (String entry : entries) {
+			if (entry.contains("bcprov")) {
+				return new File(entry);
+			}
+		}
+		return null;
 	}
 
 }
