@@ -44,11 +44,15 @@ class SecurityInfo {
 	}
 
 	Certificate[] getCertificates(ZipContent.Entry contentEntry) {
-		return (this.certificates != null) ? this.certificates[contentEntry.getIndex()].clone() : null;
+		return (this.certificates != null) ? clone(this.certificates[contentEntry.getIndex()]) : null;
 	}
 
 	CodeSigner[] getCodeSigners(ZipContent.Entry contentEntry) {
-		return (this.codeSigners != null) ? this.codeSigners[contentEntry.getIndex()].clone() : null;
+		return (this.codeSigners != null) ? clone(this.codeSigners[contentEntry.getIndex()]) : null;
+	}
+
+	private <T> T[] clone(T[] array) {
+		return (array != null) ? array.clone() : null;
 	}
 
 	/**

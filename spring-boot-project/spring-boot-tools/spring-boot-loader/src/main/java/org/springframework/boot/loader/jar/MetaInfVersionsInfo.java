@@ -28,6 +28,8 @@ import org.springframework.boot.loader.zip.ZipContent;
  */
 class MetaInfVersionsInfo {
 
+	private static final String META_INF_VERSIONS = NestedJarFile.META_INF_VERSIONS;
+
 	private static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(Collections.emptySet());
 
 	private final int[] versions;
@@ -36,9 +38,7 @@ class MetaInfVersionsInfo {
 
 	private MetaInfVersionsInfo(Set<Integer> versions) {
 		this.versions = versions.stream().mapToInt(Integer::intValue).toArray();
-		this.directories = versions.stream()
-			.map((version) -> NestedJarFile.META_INF_VERSIONS + version + "/")
-			.toArray(String[]::new);
+		this.directories = versions.stream().map((version) -> META_INF_VERSIONS + version + "/").toArray(String[]::new);
 	}
 
 	/**
@@ -65,9 +65,10 @@ class MetaInfVersionsInfo {
 	static MetaInfVersionsInfo get(ZipContent zipContent) {
 		Set<Integer> versions = new TreeSet<>();
 		for (ZipContent.Entry entry : zipContent) {
-			if (entry.hasNameStartingWith(NestedJarFile.META_INF_VERSIONS) && !entry.isDirectory()) {
+			if (entry.hasNameStartingWith(META_INF_VERSIONS) && !entry.isDirectory()) {
 				String name = entry.getName();
-				String version = name.substring(NestedJarFile.META_INF_VERSIONS.length(), name.length() - 1);
+				int slash = name.indexOf('/', META_INF_VERSIONS.length());
+				String version = name.substring(META_INF_VERSIONS.length(), slash);
 				try {
 					Integer versionNumber = Integer.valueOf(version);
 					if (versionNumber >= NestedJarFile.BASE_VERSION) {
