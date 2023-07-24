@@ -26,11 +26,8 @@ import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -168,15 +165,18 @@ public class NestedJarFile extends JarFile {
 			ensureOpen();
 			return this.resources.zipContent()
 				.stream()
-				.map(this::asVersionedEntry)
-				.filter(highestVersionNonNullDistinct());
+				.map(this::getBaseName)
+				.filter(Objects::nonNull)
+				.distinct()
+				.map(this::getJarEntry)
+				.filter(Objects::nonNull);
 		}
 	}
 
-	private JarEntry asVersionedEntry(ZipContent.Entry contentEntry) {
+	private String getBaseName(ZipContent.Entry contentEntry) {
 		String name = contentEntry.getName();
 		if (!name.startsWith(META_INF_VERSIONS)) {
-			return contentEntry.as(NestedJarEntry::new);
+			return name;
 		}
 		int versionNumberStartIndex = META_INF_VERSIONS.length();
 		int versionNumberEndIndex = name.indexOf('/', versionNumberStartIndex);
@@ -192,19 +192,7 @@ public class NestedJarFile extends JarFile {
 		catch (NumberFormatException ex) {
 			return null;
 		}
-		String baseName = name.substring(versionNumberEndIndex + 1);
-		return contentEntry.as((realName) -> new NestedJarEntry(contentEntry, baseName));
-	}
-
-	public static Predicate<JarEntry> highestVersionNonNullDistinct() {
-		Map<String, JarEntry> highest = new ConcurrentHashMap<>();
-		return (entry) -> {
-			if (entry == null) {
-				return false;
-			}
-
-			// entry != null && seen.add(extractor.apply(entry))
-		};
+		return name.substring(versionNumberEndIndex + 1);
 	}
 
 	@Override
@@ -361,17 +349,10 @@ public class NestedJarFile extends JarFile {
 
 		private final String name;
 
-		private final int stashedVesionNumber;
-
 		NestedJarEntry(ZipContent.Entry contentEntry, String name) {
-			this(contentEntry, name, -1);
-		}
-
-		NestedJarEntry(ZipContent.Entry contentEntry, String name, int stashedVesionNumber) {
 			super(contentEntry.getName());
 			this.contentEntry = contentEntry;
 			this.name = name;
-			this.stashedVesionNumber = stashedVesionNumber;
 		}
 
 		@Override
@@ -406,10 +387,6 @@ public class NestedJarFile extends JarFile {
 
 		ZipContent.Entry contentEntry() {
 			return this.contentEntry;
-		}
-
-		int stashedVesionNumber() {
-			return this.stashedVesionNumber;
 		}
 
 	}

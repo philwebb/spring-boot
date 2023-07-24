@@ -515,9 +515,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		}
 
 		private static ZipContent loadNestedZip(Source source, Entry entry) throws IOException {
-			if (source.nestedEntryName().endsWith("/")) {
-				throw new IllegalStateException("Nested entry name must not end with '/'");
-			}
 			if (entry.centralRecord.compressionMethod() != ZipEntry.STORED) {
 				throw new IOException("Nested entry '%s' in container zip '%s' must not be compressed"
 					.formatted(source.nestedEntryName(), source.path()));
@@ -606,7 +603,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 				throws IOException {
 			debug.log("Loading nested directry entry '%s' from '%s'", source.nestedEntryName(), source.path());
 			if (!source.nestedEntryName().endsWith("/")) {
-				throw new IllegalStateException("Nested entry name must end with '/'");
+				throw new IllegalArgumentException("Nested entry name must end with '/'");
 			}
 			String directoryName = directoryEntry.getName();
 			Loader loader = new Loader(directoryEntry, zip.data.open(), zip.centralDirectoryPos, zip.size());
