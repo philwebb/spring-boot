@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.Cleaner.Cleanable;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -31,7 +32,9 @@ import java.util.zip.ZipFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 
+import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.testsupport.TestJarCreator;
 import org.springframework.boot.loader.zip.ZipContent;
 import org.springframework.util.FileCopyUtils;
@@ -40,6 +43,11 @@ import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link NestedJarFile}.
@@ -247,8 +255,29 @@ class NestedJarFileTests {
 	}
 
 	@Test
-	void close() {
-		// FIXME
+	void closeTriggersCleanupOnlyOnce() throws IOException {
+		Cleaner cleaner = mock(Cleaner.class);
+		ArgumentCaptor<Runnable> action = ArgumentCaptor.forClass(Runnable.class);
+		Cleanable cleanable = mock(Cleanable.class);
+		given(cleaner.register(any(), action.capture())).willReturn(cleanable);
+		NestedJarFile jar = new NestedJarFile(this.file, null, null, false, cleaner);
+		jar.close();
+		jar.close();
+		then(cleanable).should(atMostOnce()).clean();
+		action.getValue().run();
+	}
+
+	@Test
+	void cleanupFromReleasesResources() throws IOException {
+		Cleaner cleaner = mock(Cleaner.class);
+		ArgumentCaptor<Runnable> action = ArgumentCaptor.forClass(Runnable.class);
+		Cleanable cleanable = mock(Cleanable.class);
+		given(cleaner.register(any(), action.capture())).willReturn(cleanable);
+		try (NestedJarFile jar = new NestedJarFile(this.file, null, null, false, cleaner)) {
+			assertThat(jar).extracting("resources.zipContent.data.referenceCount").isEqualTo(1);
+			action.getValue().run();
+			assertThat(jar).extracting("resources.zipContent.data.referenceCount").isEqualTo(0);
+		}
 	}
 
 	@Test

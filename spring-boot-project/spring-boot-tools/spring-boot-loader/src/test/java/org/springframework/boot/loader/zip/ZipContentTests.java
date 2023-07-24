@@ -53,6 +53,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -99,7 +101,7 @@ class ZipContentTests {
 	void getCommentWhenClosedThrowsException() throws IOException {
 		this.zipContent.close();
 		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.getComment())
-			.withMessage("Zip content has been closed");
+			.withMessage("Zip content closed");
 	}
 
 	@Test
@@ -141,14 +143,14 @@ class ZipContentTests {
 	void iteratorWhenClosedThrowsException() throws IOException {
 		this.zipContent.close();
 		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.iterator())
-			.withMessage("Zip content has been closed");
+			.withMessage("Zip content closed");
 	}
 
 	@Test
 	void iteratorWhenClosedLaterThrowsException() throws IOException {
 		Iterator<Entry> iterator = this.zipContent.iterator();
 		this.zipContent.close();
-		assertThatIllegalStateException().isThrownBy(() -> iterator.next()).withMessage("Zip content has been closed");
+		assertThatIllegalStateException().isThrownBy(() -> iterator.next()).withMessage("Zip content closed");
 	}
 
 	@Test
@@ -207,8 +209,7 @@ class ZipContentTests {
 	@Test
 	void sizeWhenClosedThrowsException() throws IOException {
 		this.zipContent.close();
-		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.size())
-			.withMessage("Zip content has been closed");
+		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.size()).withMessage("Zip content closed");
 	}
 
 	@Test
@@ -227,8 +228,14 @@ class ZipContentTests {
 	}
 
 	@Test
+	void nestedJarFileWhenNameEndsInSlashThrowsException() {
+		assertThatIOException().isThrownBy(() -> ZipContent.open(this.file.toPath(), "nested.jar/"))
+			.withMessageStartingWith("Nested entry 'nested.jar/' not found in container zip");
+	}
+
+	@Test
 	void nestedDirectoryReturnsNestedJar() throws IOException {
-		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d")) {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
 			assertThat(nested.size()).isEqualTo(3);
 			assertThat(nested.getEntry("9.dat")).isNotNull();
 			assertThat(nested.stream().map(Entry::getName)).containsExactly("META-INF/", "META-INF/MANIFEST.MF",
@@ -237,8 +244,14 @@ class ZipContentTests {
 	}
 
 	@Test
+	void nestedDirectoryWhenNotEndingInSlashThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ZipContent.open(this.file.toPath(), "d"))
+			.withMessage("Nested entry name must end with '/'");
+	}
+
+	@Test
 	void getDataWhenNestedDirectoryReturnsVirtualZipDataBlock() throws IOException {
-		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d")) {
+		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
 			File file = new File(this.tempDir, "included.zip");
 			write(file, nested.openRawZipData());
 			try (ZipFile loadedZipFile = new ZipFile(file)) {
