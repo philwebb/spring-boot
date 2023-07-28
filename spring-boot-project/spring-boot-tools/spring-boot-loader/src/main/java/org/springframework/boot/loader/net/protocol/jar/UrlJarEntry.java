@@ -16,17 +16,30 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.jar.JarFile;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
 
 /**
- * @author pwebb
+ * {@link JarEntry} returned from a {@link UrlJarFile} or {@link UrlNestedJarFile}.
  */
-public class XUrlJarFile extends JarFile {
+class UrlJarEntry extends JarEntry {
 
-	private XUrlJarFile(File file) throws IOException {
-		super(file);
+	private UrlJarManifest manifest;
+
+	UrlJarEntry(JarEntry entry, UrlJarManifest manifest) {
+		super(entry);
+		this.manifest = manifest;
+	}
+
+	@Override
+	public Attributes getAttributes() throws IOException {
+		return this.manifest.getEntryAttributes(this);
+	}
+
+	static UrlJarEntry of(ZipEntry entry, UrlJarManifest manifest) {
+		return (entry != null) ? new UrlJarEntry((JarEntry) entry, manifest) : null;
 	}
 
 }

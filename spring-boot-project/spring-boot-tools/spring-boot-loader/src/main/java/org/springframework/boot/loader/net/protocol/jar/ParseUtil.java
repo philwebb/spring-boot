@@ -16,15 +16,18 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
-import java.util.jar.JarEntry;
-
 /**
  * @author pwebb
  */
-public class XUrlJarEntry extends JarEntry {
+public class ParseUtil {
 
-	private XUrlJarEntry(JarEntry je) {
-		super(je);
+	/**
+	 * @param file
+	 * @return
+	 */
+	public static String decode(String file) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }
