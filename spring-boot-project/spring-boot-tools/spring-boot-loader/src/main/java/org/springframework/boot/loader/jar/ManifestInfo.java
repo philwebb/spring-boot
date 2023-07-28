@@ -38,10 +38,14 @@ class ManifestInfo {
 	/**
 	 * Create a new {@link ManifestInfo} instance.
 	 * @param manifest the jar manifest or {@code null}
-	 * @param multiRelease if the jar is multi-release
 	 */
-	ManifestInfo(Manifest manifest, Boolean multiRelease) {
+	ManifestInfo(Manifest manifest) {
+		this(manifest, null);
+	}
+
+	private ManifestInfo(Manifest manifest, Boolean multiRelease) {
 		this.manifest = manifest;
+		this.multiRelease = multiRelease;
 	}
 
 	/**

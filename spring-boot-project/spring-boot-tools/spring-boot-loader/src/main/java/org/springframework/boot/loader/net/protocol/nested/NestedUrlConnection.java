@@ -39,6 +39,18 @@ import java.net.URLConnection;
  */
 public class NestedUrlConnection extends URLConnection {
 
+	/*
+	 * jar:file:foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
+	 *
+	 * jar:<innerurl>!/org/spring/Utils.class
+	 *
+	 * jar:nested:foo.jar!BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
+	 *
+	 *
+	 * jar:file:foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
+	 * jar:http://foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
+	 */
+
 	protected NestedUrlConnection(URL url) {
 		super(url);
 	}

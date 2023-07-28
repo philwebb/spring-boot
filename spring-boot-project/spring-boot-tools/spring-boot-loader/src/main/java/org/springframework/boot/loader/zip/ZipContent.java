@@ -637,7 +637,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private final CentralDirectoryFileHeaderRecord centralRecord;
 
-		private String name;
+		private volatile String name;
 
 		/**
 		 * Create a new {@link Entry} instance.
