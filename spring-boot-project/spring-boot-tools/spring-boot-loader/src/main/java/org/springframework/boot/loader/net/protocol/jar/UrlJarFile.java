@@ -27,11 +27,6 @@ package org.springframework.boot.loader.net.protocol.jar;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -49,7 +44,7 @@ class UrlJarFile extends JarFile {
 
 	private final Consumer<JarFile> closeAction;
 
-	private UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
+	UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
 		super(file, true, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE, version);
 		this.manifest = new UrlJarManifest(super::getManifest);
 		this.closeAction = closeAction;
@@ -69,74 +64,6 @@ class UrlJarFile extends JarFile {
 	public void close() throws IOException {
 		this.closeAction.accept(this);
 		super.close();
-	}
-
-	// FIXME here down
-
-	static JarFile getJarFile(URL url) throws IOException {
-		return getJarFile(url, null);
-	}
-
-	static JarFile getJarFile(URL url, Consumer<JarFile> closeController) throws IOException {
-		if (isFileURL(url)) {
-			Runtime.Version version = getVersion(url);
-			File file = new File(ParseUtil.decode(url.getFile()));
-			return new UrlJarFile(file, version, closeController);
-		}
-		else {
-			return retrieve(url, closeController);
-		}
-	}
-
-	/**
-	 * Given a URL, retrieves a JAR file, caches it to disk, and creates a cached JAR file
-	 * object.
-	 */
-	private static JarFile retrieve(final URL url, final Consumer<JarFile> closeAction) throws IOException {
-		JarFile result = null;
-		Runtime.Version version = getVersion(url);
-		try (final InputStream in = url.openConnection().getInputStream()) {
-			result = extracted(closeAction, version, in);
-		}
-		return result;
-	}
-
-	private static JarFile extracted(final Consumer<JarFile> closeController, Runtime.Version version, InputStream in)
-			throws IOException {
-		Path tmpFile = Files.createTempFile("jar_cache", null);
-		try {
-			Files.copy(in, tmpFile, StandardCopyOption.REPLACE_EXISTING);
-			JarFile jarFile = new UrlJarFile(tmpFile.toFile(), version, closeController);
-			tmpFile.toFile().deleteOnExit();
-			return jarFile;
-		}
-		catch (Throwable thr) {
-			try {
-				Files.delete(tmpFile);
-			}
-			catch (IOException ioe) {
-				thr.addSuppressed(ioe);
-			}
-			throw thr;
-		}
-	}
-
-	static boolean isFileURL(URL url) {
-		if (url.getProtocol().equalsIgnoreCase("file")) {
-			/*
-			 * Consider this a 'file' only if it's a LOCAL file, because 'file:' URLs can
-			 * be accessible through ftp.
-			 */
-			String host = url.getHost();
-			if (host == null || host.isEmpty() || host.equals("~") || host.equalsIgnoreCase("localhost")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static Runtime.Version getVersion(URL url) {
-		return "runtime".equals(url.getRef()) ? JarFile.runtimeVersion() : JarFile.baseVersion();
 	}
 
 }

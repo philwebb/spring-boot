@@ -76,22 +76,23 @@ class JarUrlConnection extends java.net.JarURLConnection {
 			return;
 		}
 		boolean useCaches = getUseCaches();
-		this.jarFile = jarFiles.getOrCreate(useCaches, getJarFileURL());
-		this.jarEntry = getJarEntry(this.jarFile, this.entryName);
-		boolean addedToCache = jarFiles.cacheIfAbsent(useCaches, this.jarFile);
+		URL jarFileURL = getJarFileURL();
+		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
+		this.jarEntry = getJarEntry(jarFileURL, this.jarFile, this.entryName);
+		boolean addedToCache = jarFiles.cacheIfAbsent(useCaches, jarFileURL, this.jarFile);
 		if (addedToCache) {
 			this.jarFileConnection = jarFiles.reconnect(this.jarFile, this.jarFileConnection);
 		}
 		this.connected = true;
 	}
 
-	private JarEntry getJarEntry(JarFile jarFile, String entryName) throws FileNotFoundException {
+	private JarEntry getJarEntry(URL jarFileUrl, JarFile jarFile, String entryName) throws IOException {
 		if (entryName == null) {
 			return null;
 		}
 		JarEntry jarEntry = jarFile.getJarEntry(this.entryName);
 		if (jarEntry == null) {
-			jarFiles.closeIfNotCached(jarFile);
+			jarFiles.closeIfNotCached(jarFileUrl, jarFile);
 			throw new FileNotFoundException(
 					"JAR entry %s not found in %s".formatted(this.entryName, jarFile.getName()));
 		}

@@ -37,7 +37,7 @@ class UrlNestedJarFile extends NestedJarFile {
 
 	private final Consumer<JarFile> closeAction;
 
-	public UrlNestedJarFile(File file, String nestedEntryName, Version version, Consumer<JarFile> closeAction)
+	UrlNestedJarFile(File file, String nestedEntryName, Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		super(file, nestedEntryName, version);
 		this.manifest = new UrlJarManifest(super::getManifest);
