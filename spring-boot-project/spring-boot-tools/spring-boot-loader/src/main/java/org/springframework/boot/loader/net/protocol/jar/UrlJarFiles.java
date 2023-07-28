@@ -16,8 +16,11 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 /**
@@ -25,20 +28,87 @@ import java.util.jar.JarFile;
  */
 class UrlJarFiles {
 
-	public JarFile getOrCreate(boolean useCaches, URL jarFileUrl) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private final JarFileFactory jarFileFactory;
+
+	private Object lock = new Object();
+
+	private final Map<JarFileUrlKey, JarFile> jarFileUrlToJarFileCache = new HashMap<>();
+
+	private final Map<JarFile, URL> jarFileToJarFileUrlCache = new HashMap<>();
+
+	UrlJarFiles() {
+		this(XJarFileFactory::createJarFile);
 	}
 
-	public void closeIfNotCached(JarFile jarFile) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	UrlJarFiles(JarFileFactory jarFileFactory) {
+		this.jarFileFactory = jarFileFactory;
 	}
 
-	public boolean cacheIfAbsent(boolean useCaches, JarFile jarFile) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	JarFile getOrCreate(boolean useCaches, URL jarFileUrl) throws IOException {
+		if (useCaches) {
+			JarFileUrlKey key = JarFileUrlKey.get(jarFileUrl);
+			synchronized (this.lock) {
+				JarFile cached = this.jarFileUrlToJarFileCache.get(key);
+				if (cached != null) {
+					return cached;
+				}
+			}
+		}
+		return this.jarFileFactory.createJarFile(jarFileUrl, this::onClose);
 	}
 
-	public URLConnection reconnect(JarFile jarFile, URLConnection jarFileConnection) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	boolean cacheIfAbsent(boolean useCaches, URL jarFileUrl, JarFile jarFile) {
+		if (!useCaches) {
+			return false;
+		}
+		JarFileUrlKey key = JarFileUrlKey.get(jarFileUrl);
+		synchronized (this.lock) {
+			JarFile cached = this.jarFileUrlToJarFileCache.get(key);
+			if (cached == null) {
+				this.jarFileUrlToJarFileCache.put(key, jarFile);
+				this.jarFileToJarFileUrlCache.put(jarFile, jarFileUrl);
+				return true;
+			}
+			return false;
+		}
+	}
+
+	void closeIfNotCached(URL jarFileUrl, JarFile jarFile) throws IOException {
+		JarFileUrlKey key = JarFileUrlKey.get(jarFileUrl);
+		JarFile cached;
+		synchronized (this.lock) {
+			cached = this.jarFileUrlToJarFileCache.get(key);
+		}
+		if (cached != jarFile) {
+			jarFile.close();
+		}
+	}
+
+	URLConnection reconnect(JarFile jarFile, URLConnection existingConnection) throws IOException {
+		Boolean useCaches = (existingConnection != null) ? existingConnection.getUseCaches() : null;
+		URLConnection connection = openConnection(jarFile);
+		if (useCaches != null) {
+			connection.setUseCaches(useCaches);
+		}
+		return connection;
+	}
+
+	private URLConnection openConnection(JarFile jarFile) throws IOException {
+		URL url;
+		synchronized (this.lock) {
+			url = this.jarFileToJarFileUrlCache.get(jarFile);
+		}
+		return (url != null) ? url.openConnection() : null;
+	}
+
+	private void onClose(JarFile jarFile) {
+		synchronized (this.lock) {
+			URL removed = this.jarFileToJarFileUrlCache.remove(jarFile);
+			if (removed != null) {
+				JarFileUrlKey key = JarFileUrlKey.get(removed);
+				this.jarFileUrlToJarFileCache.remove(key);
+			}
+		}
 	}
 
 }
