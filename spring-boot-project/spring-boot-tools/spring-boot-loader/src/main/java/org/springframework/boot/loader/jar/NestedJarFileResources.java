@@ -63,11 +63,23 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	/**
-	 * Return the input streams that have not yet been closed or cleaned.
-	 * @return the input streams
+	 * Add a managed input stream resource.
+	 * @param inputStream the input stream
 	 */
-	Set<InputStream> inputStreams() {
-		return this.inputStreams;
+	void addInputStream(InputStream inputStream) {
+		synchronized (this.inputStreams) {
+			this.inputStreams.add(inputStream);
+		}
+	}
+
+	/**
+	 * Remove a managed input stream resource.
+	 * @param inputStream the input stream
+	 */
+	void removeInputStream(InputStream inputStream) {
+		synchronized (this.inputStreams) {
+			this.inputStreams.remove(inputStream);
+		}
 	}
 
 	/**

@@ -27,7 +27,6 @@ import java.security.cert.Certificate;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -155,12 +154,14 @@ public class NestedJarFile extends JarFile {
 	public Stream<JarEntry> stream() {
 		synchronized (this) {
 			ensureOpen();
+			// FIXME do we need synchronized on the underlying stream
 			return this.resources.zipContent().stream().map((entry) -> entry.as(NestedJarEntry::new));
 		}
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
+		// FIXME do we need synchronized on the underlying stream
 		synchronized (this) {
 			ensureOpen();
 			return this.resources.zipContent()
@@ -203,7 +204,6 @@ public class NestedJarFile extends JarFile {
 	@Override
 	public JarEntry getEntry(String name) {
 		Objects.requireNonNull(name, "name");
-		ensureOpen();
 		ZipContent.Entry entry = getVersionedContentEntry(name);
 		entry = (entry != null) ? entry : getContentEntry(null, name);
 		return entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name));
@@ -252,7 +252,7 @@ public class NestedJarFile extends JarFile {
 		try {
 			try (InputStream inputStream = getInputStream(contentEntry)) {
 				Manifest manifest = new Manifest(inputStream);
-				return new ManifestInfo(manifest, null);
+				return new ManifestInfo(manifest);
 			}
 		}
 		catch (IOException ex) {
@@ -263,6 +263,7 @@ public class NestedJarFile extends JarFile {
 	@Override
 	public InputStream getInputStream(ZipEntry entry) throws IOException {
 		Objects.requireNonNull(entry, "entry");
+		// FIXME if entry isn't owned by this zip even if it's a NestedJarEntry
 		if (!(entry instanceof NestedJarEntry)) {
 			entry = getEntry(entry.getName());
 		}
@@ -274,7 +275,6 @@ public class NestedJarFile extends JarFile {
 		if (compression != ZipEntry.STORED && compression != ZipEntry.DEFLATED) {
 			throw new ZipException("invalid compression method");
 		}
-		Set<InputStream> inputStreams = this.resources.inputStreams();
 		synchronized (this) {
 			ensureOpen();
 			InputStream inputStream = new JarEntryInputStream(contentEntry);
@@ -282,9 +282,7 @@ public class NestedJarFile extends JarFile {
 				if (compression == ZipEntry.DEFLATED) {
 					inputStream = new JarEntryInflaterInputStream((JarEntryInputStream) inputStream, this.resources);
 				}
-				synchronized (inputStreams) {
-					inputStreams.add(inputStream);
-				}
+				this.resources.addInputStream(inputStream);
 				return inputStream;
 			}
 			catch (RuntimeException ex) {
@@ -409,8 +407,11 @@ public class NestedJarFile extends JarFile {
 
 		@Override
 		public NestedJarEntry nextElement() {
-			ZipContent.Entry next = this.iterator.next();
-			return next.as(NestedJarEntry::new);
+			synchronized (NestedJarFile.this) {
+				ensureOpen();
+				ZipContent.Entry next = this.iterator.next();
+				return next.as(NestedJarEntry::new);
+			}
 		}
 
 	}
@@ -501,10 +502,7 @@ public class NestedJarFile extends JarFile {
 			}
 			this.closing = true;
 			this.content.close();
-			Set<InputStream> inputStreams = NestedJarFile.this.resources.inputStreams();
-			synchronized (inputStreams) {
-				inputStreams.remove(this);
-			}
+			NestedJarFile.this.resources.removeInputStream(this);
 		}
 
 		int getUncompressedSize() {
@@ -539,9 +537,7 @@ public class NestedJarFile extends JarFile {
 			}
 			this.closing = true;
 			super.close();
-			synchronized (NestedJarFile.this.resources.inputStreams()) {
-				NestedJarFile.this.resources.inputStreams().remove(this);
-			}
+			NestedJarFile.this.resources.removeInputStream(this);
 			this.cleanup.clean();
 		}
 
