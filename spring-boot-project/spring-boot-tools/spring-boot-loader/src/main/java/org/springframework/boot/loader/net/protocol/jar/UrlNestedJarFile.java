@@ -33,15 +33,15 @@ import org.springframework.boot.loader.jar.NestedJarFile;
  */
 class UrlNestedJarFile extends NestedJarFile {
 
-	private final Consumer<JarFile> closeAction;
-
 	private final UrlJarManifest manifest;
 
-	public UrlNestedJarFile(File file, Consumer<JarFile> closeAction, String nestedEntryName, Version version)
+	private final Consumer<JarFile> closeAction;
+
+	public UrlNestedJarFile(File file, String nestedEntryName, Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		super(file, nestedEntryName, version);
-		this.closeAction = closeAction;
 		this.manifest = new UrlJarManifest(super::getManifest);
+		this.closeAction = closeAction;
 	}
 
 	@Override
