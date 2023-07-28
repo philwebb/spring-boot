@@ -45,20 +45,14 @@ import java.util.zip.ZipFile;
  */
 class UrlJarFile extends JarFile {
 
-	private final Consumer<JarFile> closeAction;
-
 	private final UrlJarManifest manifest;
 
-	private UrlJarFile(File file, Consumer<JarFile> closeAction, Runtime.Version version) throws IOException {
-		super(file, true, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE, version);
-		this.closeAction = closeAction;
-		this.manifest = new UrlJarManifest(super::getManifest);
-	}
+	private final Consumer<JarFile> closeAction;
 
-	private UrlJarFile(URL url, Consumer<JarFile> closeAction, Runtime.Version version) throws IOException {
-		super(new File(ParseUtil.decode(url.getFile())), true, ZipFile.OPEN_READ, version);
-		this.closeAction = closeAction;
+	private UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
+		super(file, true, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE, version);
 		this.manifest = new UrlJarManifest(super::getManifest);
+		this.closeAction = closeAction;
 	}
 
 	@Override
@@ -79,6 +73,21 @@ class UrlJarFile extends JarFile {
 
 	// FIXME here down
 
+	static JarFile getJarFile(URL url) throws IOException {
+		return getJarFile(url, null);
+	}
+
+	static JarFile getJarFile(URL url, Consumer<JarFile> closeController) throws IOException {
+		if (isFileURL(url)) {
+			Runtime.Version version = getVersion(url);
+			File file = new File(ParseUtil.decode(url.getFile()));
+			return new UrlJarFile(file, version, closeController);
+		}
+		else {
+			return retrieve(url, closeController);
+		}
+	}
+
 	/**
 	 * Given a URL, retrieves a JAR file, caches it to disk, and creates a cached JAR file
 	 * object.
@@ -97,7 +106,7 @@ class UrlJarFile extends JarFile {
 		Path tmpFile = Files.createTempFile("jar_cache", null);
 		try {
 			Files.copy(in, tmpFile, StandardCopyOption.REPLACE_EXISTING);
-			JarFile jarFile = new UrlJarFile(tmpFile.toFile(), closeController, version);
+			JarFile jarFile = new UrlJarFile(tmpFile.toFile(), version, closeController);
 			tmpFile.toFile().deleteOnExit();
 			return jarFile;
 		}
@@ -109,20 +118,6 @@ class UrlJarFile extends JarFile {
 				thr.addSuppressed(ioe);
 			}
 			throw thr;
-		}
-	}
-
-	static JarFile getJarFile(URL url) throws IOException {
-		return getJarFile(url, null);
-	}
-
-	static JarFile getJarFile(URL url, Consumer<JarFile> closeController) throws IOException {
-		if (isFileURL(url)) {
-			Runtime.Version version = getVersion(url);
-			return new UrlJarFile(url, closeController, version);
-		}
-		else {
-			return retrieve(url, closeController);
 		}
 	}
 
