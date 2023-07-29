@@ -16,86 +16,15 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
 /**
- * @author pwebb
+ * @author Phillip Webb
  */
 interface JarFileFactory {
-
-	JarFileFactory DEFAULT = new JarFileFactory() {
-
-		@Override
-		public JarFile createJarFile(URL jarFileUrl, Consumer<JarFile> closeAction) throws IOException {
-			Runtime.Version version = getVersion(jarFileUrl);
-			if (isFileURL(jarFileUrl)) {
-				File file = new File(ParseUtil.decode(jarFileUrl.getFile()));
-				return new UrlJarFile(file, version, closeAction);
-			}
-			if (isNestedUrl(jarFileUrl)) {
-				// FIXME
-			}
-			return null;
-		}
-
-		private Runtime.Version getVersion(URL url) {
-			return "runtime".equals(url.getRef()) ? JarFile.runtimeVersion() : JarFile.baseVersion();
-		}
-
-		private boolean isFileURL(URL url) {
-			return url.getProtocol().equalsIgnoreCase("file") && isLocal(url.getHost());
-		}
-
-		private boolean isLocal(String host) {
-			return host == null || host.isEmpty() || host.equals("~") || host.equalsIgnoreCase("localhost");
-		}
-
-		private boolean isNestedUrl(URL url) {
-			return url.getProtocol().equalsIgnoreCase("nested");
-		}
-
-		/**
-		 * Given a URL, retrieves a JAR file, caches it to disk, and creates a cached JAR
-		 * file object.
-		 */
-		private JarFile retrieve(final URL url, final Consumer<JarFile> closeAction) throws IOException {
-			JarFile result = null;
-			Runtime.Version version = getVersion(url);
-			try (final InputStream in = url.openConnection().getInputStream()) {
-				result = extracted(closeAction, version, in);
-			}
-			return result;
-		}
-
-		private JarFile extracted(final Consumer<JarFile> closeController, Runtime.Version version, InputStream in)
-				throws IOException {
-			Path tmpFile = Files.createTempFile("jar_cache", null);
-			try {
-				Files.copy(in, tmpFile, StandardCopyOption.REPLACE_EXISTING);
-				JarFile jarFile = new UrlJarFile(tmpFile.toFile(), version, closeController);
-				tmpFile.toFile().deleteOnExit();
-				return jarFile;
-			}
-			catch (Throwable thr) {
-				try {
-					Files.delete(tmpFile);
-				}
-				catch (IOException ioe) {
-					thr.addSuppressed(ioe);
-				}
-				throw thr;
-			}
-		}
-
-	};
 
 	JarFile createJarFile(URL jarFileUrl, Consumer<JarFile> closeAction) throws IOException;
 

@@ -37,7 +37,7 @@ class UrlJarFiles {
 	private final Map<JarFile, URL> jarFileToJarFileUrlCache = new HashMap<>();
 
 	UrlJarFiles() {
-		this(XJarFileFactory::createJarFile);
+		this(new DefaultJarFileFactory());
 	}
 
 	UrlJarFiles(JarFileFactory jarFileFactory) {

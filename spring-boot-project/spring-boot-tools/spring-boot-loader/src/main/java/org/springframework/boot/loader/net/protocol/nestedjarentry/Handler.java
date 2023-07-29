@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.jar;
+package org.springframework.boot.loader.net.protocol.nestedjarentry;
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /**
+ * {@link URLStreamHandler} to support.
+ *
  * @author pwebb
  */
-public class ParseUtil {
+public class Handler extends URLStreamHandler {
 
-	/**
-	 * @param file
-	 * @return
-	 */
-	public static String decode(String file) {
-		// TODO Auto-generated method stub
+	// NOTE: in order to be found as a URL protocol handler, this class must be public,
+	// must be named Handler and must be in a package ending '.nestedjar'
+
+	@Override
+	protected URLConnection openConnection(URL u) throws IOException {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 

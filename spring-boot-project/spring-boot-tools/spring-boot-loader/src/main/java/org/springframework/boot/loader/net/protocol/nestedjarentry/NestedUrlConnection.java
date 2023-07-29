@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.nested;
+package org.springframework.boot.loader.net.protocol.nestedjarentry;
 
 import java.io.IOException;
 import java.net.URL;
