@@ -27,21 +27,34 @@ import java.nio.file.StandardCopyOption;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
-/**
- * @author pwebb
- */
-public class DefaultJarFileFactory implements JarFileFactory {
+import org.springframework.boot.loader.net.protocol.UrlDecoder;
+import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
 
-	@Override
-	public JarFile createJarFile(URL jarFileUrl, Consumer<JarFile> closeAction) throws IOException {
+/**
+ * Factory used by {@link UrlJarFiles} to create {@link JarFile} instances.
+ *
+ * @author Phillip Webb
+ * @see UrlJarFile
+ * @see UrlNestedJarFile
+ */
+class UrlJarFileFactory {
+
+	/**
+	 * Create a new {@link UrlJarFile} or {@link UrlNestedJarFile} instance.
+	 * @param jarFileUrl the jar file URL
+	 * @param closeAction the action to call when the file is closed
+	 * @return a new {@link JarFile} instance
+	 * @throws IOException on I/O error
+	 */
+	JarFile createJarFile(URL jarFileUrl, Consumer<JarFile> closeAction) throws IOException {
 		Runtime.Version version = getVersion(jarFileUrl);
 		if (isLocalFileUrl(jarFileUrl)) {
 			return createJarFileForLocalFile(jarFileUrl, version, closeAction);
 		}
-		if (isNestedJarEntryUrl(jarFileUrl)) {
-			// FIXME createJarFileForNestedLocalFile
+		if (isNestedUrl(jarFileUrl)) {
+			return createJarFileForNested(jarFileUrl, version, closeAction);
 		}
-		return createJarFileForRemoteFile(jarFileUrl, version, closeAction);
+		return createJarFileForStream(jarFileUrl, version, closeAction);
 	}
 
 	private Runtime.Version getVersion(URL url) {
@@ -56,24 +69,29 @@ public class DefaultJarFileFactory implements JarFileFactory {
 		return host == null || host.isEmpty() || host.equals("~") || host.equalsIgnoreCase("localhost");
 	}
 
-	private boolean isNestedJarEntryUrl(URL url) {
+	private JarFile createJarFileForLocalFile(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
+			throws IOException {
+		String path = UrlDecoder.decode(url.getPath());
+		return new UrlJarFile(new File(path), version, closeAction);
+	}
+
+	private boolean isNestedUrl(URL url) {
 		return url.getProtocol().equalsIgnoreCase("nested");
 	}
 
-	private JarFile createJarFileForLocalFile(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
+	private JarFile createJarFileForNested(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
 			throws IOException {
-		File file = new File(UrlDecoder.decode(url.getFile()));
-		return new UrlJarFile(file, version, closeAction);
+		NestedLocation location = NestedLocation.fromUrl(url);
+		return new UrlNestedJarFile(location.file(), location.nestedEntryName(), version, closeAction);
 	}
 
-	private JarFile createJarFileForRemoteFile(URL url, Version version, Consumer<JarFile> closeAction)
-			throws IOException {
+	private JarFile createJarFileForStream(URL url, Version version, Consumer<JarFile> closeAction) throws IOException {
 		try (InputStream in = url.openStream()) {
-			return createJarFileForRemoteFile(in, version, closeAction);
+			return createJarFileForStream(in, version, closeAction);
 		}
 	}
 
-	private JarFile createJarFileForRemoteFile(InputStream in, Version version, Consumer<JarFile> closeAction)
+	private JarFile createJarFileForStream(InputStream in, Version version, Consumer<JarFile> closeAction)
 			throws IOException {
 		Path local = Files.createTempFile("jar_cache", null);
 		try {

@@ -30,6 +30,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
+ * {@link java.net.JarURLConnection} alternative to
+ * {@code sun.net.www.protocol.jar.JarURLConnection} with optimized support for nested
+ * jars.
+ *
  * @author Phillip Webb
  */
 class JarUrlConnection extends java.net.JarURLConnection {

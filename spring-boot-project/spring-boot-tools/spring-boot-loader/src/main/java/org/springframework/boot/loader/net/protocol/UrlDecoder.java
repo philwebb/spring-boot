@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.jar;
+package org.springframework.boot.loader.net.protocol;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -24,13 +24,21 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
 /**
- * {@code sun.net.www.ParseUtil}.
+ * Utility share by protocol handlers to decode URL strings.
  *
- * @author pwebb
+ * @author Phillip Webb
+ * @since 3.2.0
  */
 public class UrlDecoder {
 
-	static String decode(String string) {
+	/**
+	 * Decode the given string by decoding URL {@code '%'} escapes. This method should be
+	 * identical in behavior to the {@code decode} method in the internal
+	 * {@code sun.net.www.ParseUtil} JDK class.
+	 * @param string the string to decode
+	 * @return the decoded string
+	 */
+	public static String decode(String string) {
 		int length = string.length();
 		if ((length == 0) || (string.indexOf('%') < 0)) {
 			return string;
@@ -52,14 +60,15 @@ public class UrlDecoder {
 				index++;
 				continue;
 			}
-			fillByteBuffer(byteBuffer, string, index, length);
+			index = fillByteBuffer(byteBuffer, string, index, length);
 			decodeToCharBuffer(byteBuffer, charBuffer, decoder);
 			result.append(charBuffer.flip().toString());
+
 		}
 		return result.toString();
 	}
 
-	private static void fillByteBuffer(ByteBuffer byteBuffer, String string, int index, int length) {
+	private static int fillByteBuffer(ByteBuffer byteBuffer, String string, int index, int length) {
 		byteBuffer.clear();
 		while (true) {
 			byteBuffer.put(unescape(string, index));
@@ -69,6 +78,7 @@ public class UrlDecoder {
 			}
 		}
 		byteBuffer.flip();
+		return index;
 	}
 
 	private static byte unescape(String string, int index) {
