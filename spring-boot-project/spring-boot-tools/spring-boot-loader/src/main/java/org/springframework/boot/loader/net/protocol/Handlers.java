@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.nestedjarentry;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+package org.springframework.boot.loader.net.protocol;
 
 /**
- * {@link URLStreamHandler} to support.
+ * Utility to manage protocol handlers.
  *
- * @author pwebb
+ * @author Phillip Webb
+ * @since 3.2.0
  */
-public class Handler extends URLStreamHandler {
+public class Handlers {
 
-	// NOTE: in order to be found as a URL protocol handler, this class must be public,
-	// must be named Handler and must be in a package ending '.nestedjar'
-
-	@Override
-	protected URLConnection openConnection(URL u) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	public static void install() {
 	}
 
 }

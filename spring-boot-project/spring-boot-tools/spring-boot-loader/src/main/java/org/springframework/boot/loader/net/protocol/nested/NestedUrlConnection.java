@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol.nestedjarentry;
+package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,7 +37,7 @@ import java.net.URLConnection;
  *
  * @author Phillip Webb
  */
-public class NestedUrlConnection extends URLConnection {
+class NestedUrlConnection extends URLConnection {
 
 	/*
 	 * jar:file:foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class

@@ -27,6 +27,7 @@ import java.net.URLStreamHandler;
  * optimized support for nested jars.
  *
  * @author Phillip Webb
+ * @since 3.2.0
  */
 public class Handler extends URLStreamHandler {
 
