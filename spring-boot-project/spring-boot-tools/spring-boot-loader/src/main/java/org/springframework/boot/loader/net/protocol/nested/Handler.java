@@ -22,7 +22,8 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 /**
- * {@link URLStreamHandler} to support.
+ * {@link URLStreamHandler} to support {@code nested:} URLs. See {@link NestedLocation}
+ * for details of the URL format.
  *
  * @author Phillip Webb
  * @since 3.2.0
@@ -30,11 +31,11 @@ import java.net.URLStreamHandler;
 public class Handler extends URLStreamHandler {
 
 	// NOTE: in order to be found as a URL protocol handler, this class must be public,
-	// must be named Handler and must be in a package ending '.nestedjar'
+	// must be named Handler and must be in a package ending '.nested'
 
 	@Override
 	protected URLConnection openConnection(URL u) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return new NestedUrlConnection(u);
 	}
 
 }

@@ -50,7 +50,7 @@ class JarUrlConnection extends java.net.JarURLConnection {
 
 	private String contentType;
 
-	JarUrlConnection(URL url, Handler handler) throws IOException {
+	JarUrlConnection(URL url) throws IOException {
 		super(url);
 		this.entryName = getEntryName();
 		this.jarFileConnection = getJarFileURL().openConnection();
