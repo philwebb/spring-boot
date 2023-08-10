@@ -22,7 +22,24 @@ import java.net.URL;
 import org.springframework.boot.loader.net.protocol.UrlDecoder;
 
 /**
- * A nested location from a {@code nested:} {@link URL} path.
+ * A location obtained from a {@code nested:} {@link URL} consisting of a jar file and a
+ * nested entry.
+ * <p>
+ * The syntax of a nested JAR URL is: <pre>
+ * nestedjar:&lt;path&gt;!{entry}
+ * </pre>
+ * <p>
+ * for example:
+ * <p>
+ * {@code nested:/home/example/my.jar!BOOT-INF/lib/my-nested.jar}
+ * <p>
+ * or:
+ * <p>
+ * {@code nested:/home/example/my.jar!BOOT-INF/classes/}
+ * <p>
+ * The path must refer to a jar file on the file system. The entry refers to either an
+ * uncompressed entry that contains the nested jar, or a directory entry. The entry must
+ * not start with a {@code '/'}.
  *
  * @param file the zip file that contains the nested entry
  * @param nestedEntryName the nested entry name
@@ -31,6 +48,21 @@ import org.springframework.boot.loader.net.protocol.UrlDecoder;
  */
 public record NestedLocation(File file, String nestedEntryName) {
 
+	public NestedLocation {
+		if (file == null) {
+			throw new IllegalArgumentException("'file' must not be null");
+		}
+		if (nestedEntryName == null || nestedEntryName.isEmpty()) {
+			throw new IllegalArgumentException("'nestedEntryName' must not be empty");
+		}
+	}
+
+	/**
+	 * Create a new {@link NestedLocation} from the given URL.
+	 * @param url the nested URL
+	 * @return a new {@link NestedLocation} instance
+	 * @throws IllegalArgumentException if the URL is not valid
+	 */
 	public static NestedLocation fromUrl(URL url) {
 		if (url == null || !"nested".equalsIgnoreCase(url.getProtocol())) {
 			throw new IllegalArgumentException("'url' must not be null and must use 'nested' protocol");
@@ -38,7 +70,7 @@ public record NestedLocation(File file, String nestedEntryName) {
 		return parse(UrlDecoder.decode(url.getPath()));
 	}
 
-	private static NestedLocation parse(String location) {
+	static NestedLocation parse(String location) {
 		if (location == null || location.isEmpty()) {
 			throw new IllegalArgumentException("'location' must not be null and or empty");
 		}
@@ -48,7 +80,7 @@ public record NestedLocation(File file, String nestedEntryName) {
 		}
 		String file = location.substring(0, index);
 		String nestedEntryName = location.substring(index, location.length());
-		return new NestedLocation(new File(file), nestedEntryName);
+		return new NestedLocation((!file.isEmpty()) ? new File(file) : null, nestedEntryName);
 	}
 
 }

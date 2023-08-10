@@ -16,50 +16,165 @@
 
 package org.springframework.boot.loader.net.protocol.nested;
 
+import java.io.FilePermission;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.lang.ref.Cleaner.Cleanable;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.Permission;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.boot.loader.ref.Cleaner;
 
 /**
- * A URL Connection...
- * <p>
- * The syntax of a nested JAR URL is: <pre>
- * nestedjar:&lt;path&gt;!{entry}
- * </pre>
- * <p>
- * for example:
- * <p>
- * {@code nested:/home/example/my.jar!BOOT-INF/lib/my-nested.jar}
- * <p>
- * The path must refer to a container jar file on the file system. The entry refers to the
- * uncompressed entry within the container jar that contains the nested jar. The entry
- * must not start with a {@code '/'}.
+ * {@link URLConnection} to support {@code nested:} URLs. See {@link NestedLocation} for
+ * details of the URL format.
  *
  * @author Phillip Webb
  */
 class NestedUrlConnection extends URLConnection {
 
-	/*
-	 * jar:file:foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
-	 *
-	 * jar:<innerurl>!/org/spring/Utils.class
-	 *
-	 * jar:nested:foo.jar!BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
-	 *
-	 *
-	 * jar:file:foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
-	 * jar:http://foo.jar!/BOOT-INF/lib/spring-core.jar!/org/spring/Utils.class
-	 */
+	private final NestedUrlConnectionResources resources;
 
-	protected NestedUrlConnection(URL url) {
+	private final Cleanable cleanup;
+
+	private long lastModified;
+
+	private FilePermission permission;
+
+	NestedUrlConnection(URL url) throws MalformedURLException {
+		this(url, null);
+	}
+
+	NestedUrlConnection(URL url, Cleaner cleaner) throws MalformedURLException {
 		super(url);
+		NestedLocation location = parseNestedLocation(url);
+		this.resources = new NestedUrlConnectionResources(location);
+		this.cleanup = cleaner.register(this, this.resources);
+	}
+
+	private NestedLocation parseNestedLocation(URL url) throws MalformedURLException {
+		try {
+			return NestedLocation.parse(url.getPath());
+		}
+		catch (IllegalArgumentException ex) {
+			throw new MalformedURLException(ex.getMessage());
+		}
 	}
 
 	@Override
 	public void connect() throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		if (this.connected) {
+			return;
+		}
+		this.resources.connect();
+		this.connected = true;
 	}
 
-	// don't do much other than expose paths
+	@Override
+	public InputStream getInputStream() throws IOException {
+		connect();
+		return new ConnectionInputStream(this.resources.getInputStream());
+	}
+
+	@Override
+	public String getContentType() {
+		return "application/zip";
+	}
+
+	@Override
+	public int getContentLength() {
+		long contentLength = getContentLengthLong();
+		return (contentLength <= Integer.MAX_VALUE) ? (int) contentLength : -1;
+	}
+
+	@Override
+	public long getContentLengthLong() {
+		try {
+			connect();
+			return this.resources.getContentLength();
+		}
+		catch (IOException ex) {
+			return -1;
+		}
+	}
+
+	@Override
+	public Map<String, List<String>> getHeaderFields() {
+		initializeHeaders();
+		return super.getHeaderFields();
+	}
+
+	@Override
+	public String getHeaderField(String name) {
+		initializeHeaders();
+		return super.getHeaderField(name);
+	}
+
+	@Override
+	public String getHeaderField(int n) {
+		initializeHeaders();
+		return super.getHeaderField(n);
+	}
+
+	@Override
+	public String getHeaderFieldKey(int n) {
+		initializeHeaders();
+		return super.getHeaderFieldKey(n);
+	}
+
+	@Override
+	public long getLastModified() {
+		initializeHeaders();
+		return this.lastModified;
+	}
+
+	@Override
+	public Permission getPermission() throws IOException {
+		if (this.permission == null) {
+			this.permission = new FilePermission(this.resources.getLocation().file().getCanonicalPath(), "read");
+		}
+		return this.permission;
+	}
+
+	private void initializeHeaders() {
+	}
+
+	/**
+	 * Connection {@link InputStream}
+	 */
+	class ConnectionInputStream extends FilterInputStream {
+
+		private volatile boolean closing;
+
+		ConnectionInputStream(InputStream in) {
+			super(in);
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (this.closing) {
+				return;
+			}
+			this.closing = true;
+			try {
+				super.close();
+			}
+			finally {
+				try {
+					NestedUrlConnection.this.cleanup.clean();
+				}
+				catch (UncheckedIOException ex) {
+					throw ex.getCause();
+				}
+			}
+		}
+
+	}
 
 }
