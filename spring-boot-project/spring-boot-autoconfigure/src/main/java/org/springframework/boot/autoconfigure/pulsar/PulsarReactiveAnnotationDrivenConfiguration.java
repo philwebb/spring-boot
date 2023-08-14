@@ -50,18 +50,15 @@ class PulsarReactiveAnnotationDrivenConfiguration {
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ObjectProvider<ReactivePulsarConsumerFactory<Object>> consumerFactoryProvider,
 			SchemaResolver schemaResolver, TopicResolver topicResolver) {
-
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		containerProperties.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
-
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		PulsarReactiveProperties.Listener listenerProperties = this.properties.getListener();
 		map.from(listenerProperties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(listenerProperties::getHandlingTimeout).to(containerProperties::setHandlingTimeout);
 		map.from(listenerProperties::getUseKeyOrderedProcessing).to(containerProperties::setUseKeyOrderedProcessing);
-
 		return new DefaultReactivePulsarListenerContainerFactory<>(consumerFactoryProvider.getIfAvailable(),
 				containerProperties);
 	}

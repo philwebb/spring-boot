@@ -41,7 +41,6 @@ import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
-import org.springframework.pulsar.core.PulsarClientFactory;
 import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarReaderFactory;
@@ -76,21 +75,10 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	PulsarClientBuilderConfigurer pulsarClientBuilderConfigurer(PulsarProperties pulsarProperties,
-			ObjectProvider<PulsarClientBuilderCustomizer> customizers) {
-		return new PulsarClientBuilderConfigurer(pulsarProperties, customizers.orderedStream().toList());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	PulsarClient pulsarClient(PulsarClientBuilderConfigurer configurer) {
-		PulsarClientFactory clientFactory = new DefaultPulsarClientFactory(configurer::configure);
-		try {
-			return clientFactory.createClient();
-		}
-		catch (PulsarClientException ex) {
-			throw new IllegalArgumentException("Failed to create client", ex);
-		}
+	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> customizers) throws PulsarClientException {
+		PulsarClientBuilderConfigurer configurer = new PulsarClientBuilderConfigurer(this.properties,
+				customizers.orderedStream().toList());
+		return new DefaultPulsarClientFactory(configurer::configure).createClient();
 	}
 
 	@Bean

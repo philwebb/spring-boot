@@ -22,8 +22,10 @@ package org.springframework.boot.autoconfigure.pulsar;
  *
  * @author Chris Bono
  * @since 3.2.0
+ * @see PulsarProperties
+ * @see PulsarReactiveProperties
  */
-public class DeadLetterPolicyConfig {
+public class DeadLetterPolicyProperties {
 
 	/**
 	 * Maximum number of times that a message will be redelivered before being sent to the

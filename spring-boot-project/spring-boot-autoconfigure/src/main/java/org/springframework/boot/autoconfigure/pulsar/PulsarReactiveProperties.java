@@ -364,7 +364,7 @@ public class PulsarReactiveProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicyConfig deadLetterPolicy;
+		private DeadLetterPolicyProperties deadLetterPolicy;
 
 		/**
 		 * Whether the retry letter topic is enabled.
@@ -409,11 +409,11 @@ public class PulsarReactiveProperties {
 			this.topicsPattern = topicsPattern;
 		}
 
-		public DeadLetterPolicyConfig getDeadLetterPolicy() {
+		public DeadLetterPolicyProperties getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicyConfig deadLetterPolicy) {
+		public void setDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicy) {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
@@ -482,7 +482,7 @@ public class PulsarReactiveProperties {
 		 * @param dlpConfigProps the config props defining the DLP to construct
 		 * @return the Pulsar expected dead letter policy
 		 */
-		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyConfig dlpConfigProps) {
+		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyProperties dlpConfigProps) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			DeadLetterPolicyBuilder dlpBuilder = DeadLetterPolicy.builder();
 			map.from(dlpConfigProps::getMaxRedeliverCount).to(dlpBuilder::maxRedeliverCount);

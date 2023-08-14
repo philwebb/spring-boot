@@ -78,7 +78,6 @@ public class PulsarClientBuilderConfigurer {
 		map.from(clientProperties::getLookupTimeout)
 			.asInt(Duration::toMillis)
 			.to(clientBuilder, (cb, val) -> cb.lookupTimeout(val, TimeUnit.MILLISECONDS));
-
 		// Authentication properties
 		applyAuthentication(clientProperties, clientBuilder);
 	}

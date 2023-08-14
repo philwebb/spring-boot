@@ -31,8 +31,9 @@ import org.springframework.util.CollectionUtils;
  */
 final class AuthParameterUtils {
 
-	private AuthParameterUtils() {
+	// FIXME drop or move?
 
+	private AuthParameterUtils() {
 	}
 
 	static String maybeConvertToEncodedParamString(Map<String, String> params) {
