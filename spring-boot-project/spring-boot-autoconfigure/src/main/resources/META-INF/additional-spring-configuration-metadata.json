@@ -2004,6 +2004,80 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
+      "name": "spring.pulsar.consumer.subscription.initial-position",
+      "defaultValue": "Latest"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.mode",
+      "defaultValue":  "Durable"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.topics-mode",
+      "defaultValue":  "PersistentOnly"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.type",
+      "defaultValue":  "Exclusive"
+    },
+    {
+      "name": "spring.pulsar.function.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable function support.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.producer.access-mode",
+      "defaultValue": "Shared"
+    },
+    {
+      "name": "spring.pulsar.producer.cache.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable caching in the PulsarProducerFactory.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.producer.hashing-scheme",
+      "defaultValue": "JavaStringHash"
+    },
+    {
+      "name": "spring.pulsar.producer.message-routing-mode",
+      "defaultValue": "RoundRobinPartition"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.subscription.initial-position",
+      "defaultValue": "Latest"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.subscription.mode",
+      "defaultValue":  "Durable"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.subscription.type",
+      "defaultValue":  "Exclusive"
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.topics-pattern-subscription-mode",
+      "defaultValue":  "PersistentOnly"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.access-mode",
+      "defaultValue": "Shared"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.cache.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable caching in the ReactivePulsarSenderFactory.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.hashing-scheme",
+      "defaultValue": "JavaStringHash"
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.message-routing-mode",
+      "defaultValue": "RoundRobinPartition"
+    },
+    {
       "name": "spring.quartz.jdbc.comment-prefix",
       "defaultValue": [
         "#",
