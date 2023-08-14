@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.Schema;
@@ -37,7 +36,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.ConsumerConfigProperties;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.ProducerConfigProperties;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Reader;
-import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -92,7 +90,6 @@ import static org.mockito.Mockito.spy;
 class PulsarAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class));
 
 	@Test
@@ -118,11 +115,9 @@ class PulsarAutoConfigurationTests {
 
 	@Test
 	void defaultBeansAreAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ClientBuilderSslConfigurer.class)
-			.hasSingleBean(PulsarClientBuilderConfigurer.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PulsarClientBuilderConfigurer.class)
 			.hasSingleBean(PulsarClient.class)
 			.hasSingleBean(PulsarAdministration.class)
-			.hasSingleBean(PulsarAdminBuilderConfigurer.class)
 			.hasSingleBean(PulsarProducerFactory.class)
 			.hasSingleBean(PulsarTemplate.class)
 			.hasSingleBean(PulsarConsumerFactory.class)
@@ -132,14 +127,6 @@ class PulsarAutoConfigurationTests {
 			.hasSingleBean(PulsarListenerEndpointRegistry.class)
 			.hasSingleBean(DefaultSchemaResolver.class)
 			.hasSingleBean(DefaultTopicResolver.class));
-	}
-
-	@Test
-	void sslConfigurerStillCreatedWhenSslAutoConfigurationExcluded() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class))
-			.run((context) -> assertThat(context).hasSingleBean(ClientBuilderSslConfigurer.class)
-				.getBean(ClientBuilderSslConfigurer.class)
-				.hasAllNullFieldsOrProperties());
 	}
 
 	@Nested
@@ -505,7 +492,7 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void customPulsarClientBuilderConfigurerIsRespected() {
 			PulsarClientBuilderConfigurer customConfigurer = new PulsarClientBuilderConfigurer(new PulsarProperties(),
-					Collections.emptyList(), mock(ClientBuilderSslConfigurer.class));
+					Collections.emptyList());
 			PulsarAutoConfigurationTests.this.contextRunner
 				.withBean("customPulsarClientConfigurer", PulsarClientBuilderConfigurer.class, () -> customConfigurer)
 				.run((context) -> assertThat(context).getBean(PulsarClientBuilderConfigurer.class)
@@ -531,8 +518,8 @@ class PulsarAutoConfigurationTests {
 
 		@Test
 		void clientConfigurerIsApplied() {
-			PulsarClientBuilderConfigurer clientConfigurer = spy(new PulsarClientBuilderConfigurer(
-					new PulsarProperties(), Collections.emptyList(), mock(ClientBuilderSslConfigurer.class)));
+			PulsarClientBuilderConfigurer clientConfigurer = spy(
+					new PulsarClientBuilderConfigurer(new PulsarProperties(), Collections.emptyList()));
 			PulsarAutoConfigurationTests.this.contextRunner
 				.withBean("clientConfigurer", PulsarClientBuilderConfigurer.class, () -> clientConfigurer)
 				.run((context) -> then(clientConfigurer).should().configure(any(ClientBuilder.class)));
@@ -571,29 +558,6 @@ class PulsarAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasNotFailed()
 					.getBean(PulsarAdministration.class)
 					.isSameAs(pulsarAdministration));
-		}
-
-		@Test
-		void customAdminBuilderConfigurerIsRespected() {
-			PulsarAdminBuilderConfigurer customConfigurer = new PulsarAdminBuilderConfigurer(new PulsarProperties(),
-					mock(ClientBuilderSslConfigurer.class));
-			PulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarAdminConfigurer", PulsarAdminBuilderConfigurer.class, () -> customConfigurer)
-				.run((context) -> assertThat(context).getBean(PulsarAdminBuilderConfigurer.class)
-					.isSameAs(customConfigurer));
-		}
-
-		@Test
-		void adminBuilderConfigurerIsApplied() {
-			PulsarAdminBuilderConfigurer adminConfigurer = spy(
-					new PulsarAdminBuilderConfigurer(new PulsarProperties(), mock(ClientBuilderSslConfigurer.class)));
-			PulsarAutoConfigurationTests.this.contextRunner
-				.withBean("adminBuilderConfigurer", PulsarAdminBuilderConfigurer.class, () -> adminConfigurer)
-				.run((context) -> {
-					// the configurer is not called until the admin client is created
-					context.getBean(PulsarAdministration.class).createAdminClient();
-					then(adminConfigurer).should().configure(any(PulsarAdminBuilder.class));
-				});
 		}
 
 	}

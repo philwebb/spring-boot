@@ -39,7 +39,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -73,7 +72,6 @@ import static org.mockito.Mockito.mock;
 class PulsarReactiveAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(PulsarReactiveAutoConfiguration.class));
 
