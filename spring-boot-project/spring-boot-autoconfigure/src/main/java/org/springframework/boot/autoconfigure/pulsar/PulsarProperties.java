@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -45,6 +44,7 @@ import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
 import org.springframework.pulsar.core.ProducerBuilderCustomizer;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.listener.AckMode;
+import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -63,15 +63,15 @@ import org.springframework.util.unit.DataSize;
 @ConfigurationProperties(prefix = "spring.pulsar")
 public class PulsarProperties {
 
-	private final ConsumerConfigProperties consumer = new ConsumerConfigProperties();
-
 	private final Client client = new Client();
 
-	private final Function function = new Function();
+	private final Producer producer = new Producer();
+
+	private final Consumer consumer = new Consumer();
 
 	private final Listener listener = new Listener();
 
-	private final ProducerConfigProperties producer = new ProducerConfigProperties();
+	private final Function function = new Function();
 
 	private final Template template = new Template();
 
@@ -81,12 +81,16 @@ public class PulsarProperties {
 
 	private final Defaults defaults = new Defaults();
 
-	public ConsumerConfigProperties getConsumer() {
-		return this.consumer;
-	}
-
 	public Client getClient() {
 		return this.client;
+	}
+
+	public Producer getProducer() {
+		return this.producer;
+	}
+
+	public Consumer getConsumer() {
+		return this.consumer;
 	}
 
 	public Listener getListener() {
@@ -95,10 +99,6 @@ public class PulsarProperties {
 
 	public Function getFunction() {
 		return this.function;
-	}
-
-	public ProducerConfigProperties getProducer() {
-		return this.producer;
 	}
 
 	public Template getTemplate() {
@@ -117,277 +117,102 @@ public class PulsarProperties {
 		return this.defaults;
 	}
 
-	public static class Template {
+	public static class Client {
 
 		/**
-		 * Whether to record observations for send operations when the Observations API is
-		 * available.
+		 * Pulsar service URL in the format '(pulsar|pulsar+ssl)://host:port'.
 		 */
-		private boolean observationsEnabled = true;
+		private String serviceUrl = "pulsar://localhost:6650";
 
-		public Boolean isObservationsEnabled() {
-			return this.observationsEnabled;
+		/**
+		 * Fully qualified class name of the authentication plugin.
+		 */
+		private String authPluginClassName;
+
+		/**
+		 * Authentication parameter(s) as a map of parameter names to parameter values.
+		 */
+		private Map<String, String> authentication;
+
+		/**
+		 * Client operation timeout.
+		 */
+		private Duration operationTimeout = Duration.ofSeconds(30);
+
+		/**
+		 * Client lookup timeout.
+		 */
+		private Duration lookupTimeout = Duration.ofMillis(-1);
+
+		/**
+		 * Duration to wait for a connection to a broker to be established.
+		 */
+		private Duration connectionTimeout = Duration.ofSeconds(10);
+
+		/**
+		 * Maximum duration for completing a request.
+		 */
+		private Duration requestTimeout = Duration.ofSeconds(60);
+
+		public String getServiceUrl() {
+			return this.serviceUrl;
 		}
 
-		public void setObservationsEnabled(boolean observationsEnabled) {
-			this.observationsEnabled = observationsEnabled;
+		public void setServiceUrl(String serviceUrl) {
+			this.serviceUrl = serviceUrl;
+		}
+
+		public String getAuthPluginClassName() {
+			return this.authPluginClassName;
+		}
+
+		public void setAuthPluginClassName(String authPluginClassName) {
+			this.authPluginClassName = authPluginClassName;
+		}
+
+		public Map<String, String> getAuthentication() {
+			return this.authentication;
+		}
+
+		public void setAuthentication(Map<String, String> authentication) {
+			this.authentication = authentication;
+		}
+
+		public Duration getOperationTimeout() {
+			return this.operationTimeout;
+		}
+
+		public void setOperationTimeout(Duration operationTimeout) {
+			this.operationTimeout = operationTimeout;
+		}
+
+		public Duration getLookupTimeout() {
+			return this.lookupTimeout;
+		}
+
+		public void setLookupTimeout(Duration lookupTimeout) {
+			this.lookupTimeout = lookupTimeout;
+		}
+
+		public Duration getConnectionTimeout() {
+			return this.connectionTimeout;
+		}
+
+		public void setConnectionTimeout(Duration connectionTimeout) {
+			this.connectionTimeout = connectionTimeout;
+		}
+
+		public Duration getRequestTimeout() {
+			return this.requestTimeout;
+		}
+
+		public void setRequestTimeout(Duration requestTimeout) {
+			this.requestTimeout = requestTimeout;
 		}
 
 	}
 
-	public static class Cache {
-
-		/** Time period to expire unused entries in the cache. */
-		private Duration expireAfterAccess = Duration.ofMinutes(1);
-
-		/** Maximum size of cache (entries). */
-		private long maximumSize = 1000L;
-
-		/** Initial size of cache. */
-		private int initialCapacity = 50;
-
-		public Duration getExpireAfterAccess() {
-			return this.expireAfterAccess;
-		}
-
-		public void setExpireAfterAccess(Duration expireAfterAccess) {
-			this.expireAfterAccess = expireAfterAccess;
-		}
-
-		public long getMaximumSize() {
-			return this.maximumSize;
-		}
-
-		public void setMaximumSize(long maximumSize) {
-			this.maximumSize = maximumSize;
-		}
-
-		public int getInitialCapacity() {
-			return this.initialCapacity;
-		}
-
-		public void setInitialCapacity(int initialCapacity) {
-			this.initialCapacity = initialCapacity;
-		}
-
-	}
-
-	public static class ConsumerConfigProperties {
-
-		private final Subscription subscription = new Subscription();
-
-		/**
-		 * Comma-separated list of topics the consumer subscribes to.
-		 */
-		private Set<String> topics;
-
-		/**
-		 * Pattern for topics the consumer subscribes to.
-		 */
-		private Pattern topicsPattern;
-
-		/**
-		 * Consumer name to identify a particular consumer from the topic stats.
-		 */
-		private String name;
-
-		/**
-		 * Priority level for shared subscription consumers.
-		 */
-		private int priorityLevel = 0;
-
-		/**
-		 * Whether to read messages from the compacted topic rather than the full message
-		 * backlog.
-		 */
-		private boolean readCompacted = false;
-
-		/**
-		 * Dead letter policy to use.
-		 */
-		@NestedConfigurationProperty
-		private DeadLetterPolicyProperties deadLetterPolicy;
-
-		/**
-		 * Whether to auto retry messages.
-		 */
-		private boolean retryEnable = false;
-
-		public ConsumerConfigProperties.Subscription getSubscription() {
-			return this.subscription;
-		}
-
-		public Set<String> getTopics() {
-			return this.topics;
-		}
-
-		public void setTopics(Set<String> topics) {
-			this.topics = topics;
-		}
-
-		public Pattern getTopicsPattern() {
-			return this.topicsPattern;
-		}
-
-		public void setTopicsPattern(Pattern topicsPattern) {
-			this.topicsPattern = topicsPattern;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public int getPriorityLevel() {
-			return this.priorityLevel;
-		}
-
-		public void setPriorityLevel(int priorityLevel) {
-			this.priorityLevel = priorityLevel;
-		}
-
-		public boolean getReadCompacted() {
-			return this.readCompacted;
-		}
-
-		public void setReadCompacted(boolean readCompacted) {
-			this.readCompacted = readCompacted;
-		}
-
-		public DeadLetterPolicyProperties getDeadLetterPolicy() {
-			return this.deadLetterPolicy;
-		}
-
-		public void setDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicy) {
-			this.deadLetterPolicy = deadLetterPolicy;
-		}
-
-		public boolean getRetryEnable() {
-			return this.retryEnable;
-		}
-
-		public void setRetryEnable(boolean retryEnable) {
-			this.retryEnable = retryEnable;
-		}
-
-		public ConsumerBuilderCustomizer<?> toConsumerBuilderCustomizer() {
-			return (consumerBuilder) -> {
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-				map.from(this::getTopics).as(ArrayList::new).to(consumerBuilder::topics);
-				map.from(this::getTopicsPattern).to(consumerBuilder::topicsPattern);
-				map.from(this::getName).to(consumerBuilder::consumerName);
-				map.from(this::getPriorityLevel).to(consumerBuilder::priorityLevel);
-				map.from(this::getReadCompacted).to(consumerBuilder::readCompacted);
-				map.from(this::getDeadLetterPolicy)
-					.as(this::toPulsarDeadLetterPolicy)
-					.to(consumerBuilder::deadLetterPolicy);
-				map.from(this::getRetryEnable).to(consumerBuilder::enableRetry);
-				mapSubscriptionProperties(this.getSubscription(), map, consumerBuilder);
-			};
-		}
-
-		/**
-		 * Maps from a dead letter policy config props to a 'DeadLetterPolicy' expected by
-		 * Pulsar.
-		 * @param deadLetterPolicyConfig the config props defining the DLP to construct
-		 * @return the Pulsar expected dead letter policy
-		 */
-		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicyConfig) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			DeadLetterPolicyBuilder dlpBuilder = DeadLetterPolicy.builder();
-			DeadLetterPolicyProperties dlpConfigProps = this.getDeadLetterPolicy();
-			map.from(dlpConfigProps::getMaxRedeliverCount).to(dlpBuilder::maxRedeliverCount);
-			map.from(dlpConfigProps::getRetryLetterTopic).to(dlpBuilder::retryLetterTopic);
-			map.from(dlpConfigProps::getDeadLetterTopic).to(dlpBuilder::deadLetterTopic);
-			map.from(dlpConfigProps::getInitialSubscriptionName).to(dlpBuilder::initialSubscriptionName);
-			return dlpBuilder.build();
-		}
-
-		private void mapSubscriptionProperties(ConsumerConfigProperties.Subscription subscription, PropertyMapper map,
-				ConsumerBuilder<?> consumerBuilder) {
-			map.from(subscription::getInitialPosition).to(consumerBuilder::subscriptionInitialPosition);
-			map.from(subscription::getMode).to(consumerBuilder::subscriptionMode);
-			map.from(subscription::getName).to(consumerBuilder::subscriptionName);
-			map.from(subscription::getTopicsMode).to(consumerBuilder::subscriptionTopicsMode);
-			map.from(subscription::getType).to(consumerBuilder::subscriptionType);
-		}
-
-		public static class Subscription {
-
-			/**
-			 * Position where to initialize a newly created subscription.
-			 */
-			private SubscriptionInitialPosition initialPosition = SubscriptionInitialPosition.Latest;
-
-			/**
-			 * Subscription mode to be used when subscribing to the topic.
-			 */
-			private SubscriptionMode mode = SubscriptionMode.Durable;
-
-			/**
-			 * Subscription name for the consumer.
-			 */
-			private String name;
-
-			/**
-			 * Determines which type of topics (persistent, non-persistent, or all) the
-			 * consumer should be subscribed to when using pattern subscriptions.
-			 */
-			private RegexSubscriptionMode topicsMode = RegexSubscriptionMode.PersistentOnly;
-
-			/**
-			 * Subscription type to be used when subscribing to a topic.
-			 */
-			private SubscriptionType type = SubscriptionType.Exclusive;
-
-			public SubscriptionInitialPosition getInitialPosition() {
-				return this.initialPosition;
-			}
-
-			public void setInitialPosition(SubscriptionInitialPosition initialPosition) {
-				this.initialPosition = initialPosition;
-			}
-
-			public SubscriptionMode getMode() {
-				return this.mode;
-			}
-
-			public void setMode(SubscriptionMode mode) {
-				this.mode = mode;
-			}
-
-			public String getName() {
-				return this.name;
-			}
-
-			public void setName(String name) {
-				this.name = name;
-			}
-
-			public RegexSubscriptionMode getTopicsMode() {
-				return this.topicsMode;
-			}
-
-			public void setTopicsMode(RegexSubscriptionMode topicsMode) {
-				this.topicsMode = topicsMode;
-			}
-
-			public SubscriptionType getType() {
-				return this.type;
-			}
-
-			public void setType(SubscriptionType type) {
-				this.type = type;
-			}
-
-		}
-
-	}
-
-	public static class ProducerConfigProperties {
+	public static class Producer {
 
 		/**
 		 * Topic the producer will publish to.
@@ -506,7 +331,8 @@ public class PulsarProperties {
 			return this.cache;
 		}
 
-		public ProducerBuilderCustomizer<?> toProducerBuilderCustomizer() {
+		ProducerBuilderCustomizer<?> toProducerBuilderCustomizer() {
+			// FIXME move?
 			return (producerBuilder) -> {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(this::getTopicName).to(producerBuilder::topic);
@@ -540,146 +366,259 @@ public class PulsarProperties {
 
 		}
 
-	}
+		public static class Cache {
 
-	public static class Client {
+			/** Time period to expire unused entries in the cache. */
+			private Duration expireAfterAccess = Duration.ofMinutes(1);
 
-		/**
-		 * Pulsar service URL in the format
-		 * '(pulsar|pulsar+ssl)://&lt;host&gt;:&lt;port&gt;'.
-		 */
-		private String serviceUrl = "pulsar://localhost:6650";
+			/** Maximum size of cache (entries). */
+			private long maximumSize = 1000L;
 
-		/**
-		 * Fully qualified class name of the authentication plugin.
-		 */
-		private String authPluginClassName;
+			/** Initial size of cache. */
+			private int initialCapacity = 50;
 
-		/**
-		 * Authentication parameter(s) as a map of parameter names to parameter values.
-		 */
-		private Map<String, String> authentication;
+			public Duration getExpireAfterAccess() {
+				return this.expireAfterAccess;
+			}
 
-		/**
-		 * Client operation timeout.
-		 */
-		private Duration operationTimeout = Duration.ofSeconds(30);
+			public void setExpireAfterAccess(Duration expireAfterAccess) {
+				this.expireAfterAccess = expireAfterAccess;
+			}
 
-		/**
-		 * Client lookup timeout.
-		 */
-		private Duration lookupTimeout = Duration.ofMillis(-1);
+			public long getMaximumSize() {
+				return this.maximumSize;
+			}
 
-		/**
-		 * Duration to wait for a connection to a broker to be established.
-		 */
-		private Duration connectionTimeout = Duration.ofSeconds(10);
+			public void setMaximumSize(long maximumSize) {
+				this.maximumSize = maximumSize;
+			}
 
-		/**
-		 * Maximum duration for completing a request.
-		 */
-		private Duration requestTimeout = Duration.ofSeconds(60);
+			public int getInitialCapacity() {
+				return this.initialCapacity;
+			}
 
-		public String getServiceUrl() {
-			return this.serviceUrl;
-		}
+			public void setInitialCapacity(int initialCapacity) {
+				this.initialCapacity = initialCapacity;
+			}
 
-		public void setServiceUrl(String serviceUrl) {
-			this.serviceUrl = serviceUrl;
-		}
-
-		public String getAuthPluginClassName() {
-			return this.authPluginClassName;
-		}
-
-		public void setAuthPluginClassName(String authPluginClassName) {
-			this.authPluginClassName = authPluginClassName;
-		}
-
-		public Map<String, String> getAuthentication() {
-			return this.authentication;
-		}
-
-		public void setAuthentication(Map<String, String> authentication) {
-			this.authentication = authentication;
-		}
-
-		public Duration getOperationTimeout() {
-			return this.operationTimeout;
-		}
-
-		public void setOperationTimeout(Duration operationTimeout) {
-			this.operationTimeout = operationTimeout;
-		}
-
-		public Duration getLookupTimeout() {
-			return this.lookupTimeout;
-		}
-
-		public void setLookupTimeout(Duration lookupTimeout) {
-			this.lookupTimeout = lookupTimeout;
-		}
-
-		public Duration getConnectionTimeout() {
-			return this.connectionTimeout;
-		}
-
-		public void setConnectionTimeout(Duration connectionTimeout) {
-			this.connectionTimeout = connectionTimeout;
-		}
-
-		public Duration getRequestTimeout() {
-			return this.requestTimeout;
-		}
-
-		public void setRequestTimeout(Duration requestTimeout) {
-			this.requestTimeout = requestTimeout;
 		}
 
 	}
 
-	public static class Function {
+	public static class Consumer {
+
+		private final Subscription subscription = new Subscription();
 
 		/**
-		 * Whether to stop processing further function creates/updates when a failure
-		 * occurs.
+		 * Comma-separated list of topics the consumer subscribes to.
 		 */
-		private boolean failFast = true;
+		private Set<String> topics;
 
 		/**
-		 * Whether to throw an exception if any failure is encountered during server
-		 * startup while creating/updating functions.
+		 * Pattern for topics the consumer subscribes to.
 		 */
-		private boolean propagateFailures = true;
+		private Pattern topicsPattern;
 
 		/**
-		 * Whether to throw an exception if any failure is encountered during server
-		 * shutdown while enforcing stop policy on functions.
+		 * Consumer name to identify a particular consumer from the topic stats.
 		 */
-		private boolean propagateStopFailures = false;
+		private String name;
 
-		public boolean getFailFast() {
-			return this.failFast;
+		/**
+		 * Priority level for shared subscription consumers.
+		 */
+		private int priorityLevel = 0;
+
+		/**
+		 * Whether to read messages from the compacted topic rather than the full message
+		 * backlog.
+		 */
+		private boolean readCompacted = false;
+
+		/**
+		 * Dead letter policy to use.
+		 */
+		@NestedConfigurationProperty
+		private DeadLetterPolicyProperties deadLetterPolicy;
+
+		/**
+		 * Whether to auto retry messages.
+		 */
+		private boolean retryEnable = false;
+
+		public Consumer.Subscription getSubscription() {
+			return this.subscription;
 		}
 
-		public void setFailFast(boolean failFast) {
-			this.failFast = failFast;
+		public Set<String> getTopics() {
+			return this.topics;
 		}
 
-		public boolean getPropagateFailures() {
-			return this.propagateFailures;
+		public void setTopics(Set<String> topics) {
+			this.topics = topics;
 		}
 
-		public void setPropagateFailures(boolean propagateFailures) {
-			this.propagateFailures = propagateFailures;
+		public Pattern getTopicsPattern() {
+			return this.topicsPattern;
 		}
 
-		public boolean getPropagateStopFailures() {
-			return this.propagateStopFailures;
+		public void setTopicsPattern(Pattern topicsPattern) {
+			this.topicsPattern = topicsPattern;
 		}
 
-		public void setPropagateStopFailures(boolean propagateStopFailures) {
-			this.propagateStopFailures = propagateStopFailures;
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getPriorityLevel() {
+			return this.priorityLevel;
+		}
+
+		public void setPriorityLevel(int priorityLevel) {
+			this.priorityLevel = priorityLevel;
+		}
+
+		public boolean getReadCompacted() {
+			return this.readCompacted;
+		}
+
+		public void setReadCompacted(boolean readCompacted) {
+			this.readCompacted = readCompacted;
+		}
+
+		public DeadLetterPolicyProperties getDeadLetterPolicy() {
+			return this.deadLetterPolicy;
+		}
+
+		public void setDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicy) {
+			this.deadLetterPolicy = deadLetterPolicy;
+		}
+
+		public boolean getRetryEnable() {
+			return this.retryEnable;
+		}
+
+		public void setRetryEnable(boolean retryEnable) {
+			this.retryEnable = retryEnable;
+		}
+
+		ConsumerBuilderCustomizer<?> toConsumerBuilderCustomizer() {
+			// FIXME?
+			return (consumerBuilder) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				map.from(this::getTopics).as(ArrayList::new).to(consumerBuilder::topics);
+				map.from(this::getTopicsPattern).to(consumerBuilder::topicsPattern);
+				map.from(this::getName).to(consumerBuilder::consumerName);
+				map.from(this::getPriorityLevel).to(consumerBuilder::priorityLevel);
+				map.from(this::getReadCompacted).to(consumerBuilder::readCompacted);
+				map.from(this::getDeadLetterPolicy)
+					.as(this::toPulsarDeadLetterPolicy)
+					.to(consumerBuilder::deadLetterPolicy);
+				map.from(this::getRetryEnable).to(consumerBuilder::enableRetry);
+				mapSubscriptionProperties(this.getSubscription(), map, consumerBuilder);
+			};
+		}
+
+		/**
+		 * Maps from a dead letter policy config props to a 'DeadLetterPolicy' expected by
+		 * Pulsar.
+		 * @param deadLetterPolicyConfig the config props defining the DLP to construct
+		 * @return the Pulsar expected dead letter policy
+		 */
+		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicyConfig) {
+			// FIXME
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			DeadLetterPolicyBuilder builder = DeadLetterPolicy.builder();
+			DeadLetterPolicyProperties policy = this.getDeadLetterPolicy();
+			map.from(policy::getMaxRedeliverCount).to(builder::maxRedeliverCount);
+			map.from(policy::getRetryLetterTopic).to(builder::retryLetterTopic);
+			map.from(policy::getDeadLetterTopic).to(builder::deadLetterTopic);
+			map.from(policy::getInitialSubscriptionName).to(builder::initialSubscriptionName);
+			return builder.build();
+		}
+
+		private void mapSubscriptionProperties(Consumer.Subscription subscription, PropertyMapper map,
+				ConsumerBuilder<?> consumerBuilder) {
+			// FIXME
+			map.from(subscription::getInitialPosition).to(consumerBuilder::subscriptionInitialPosition);
+			map.from(subscription::getMode).to(consumerBuilder::subscriptionMode);
+			map.from(subscription::getName).to(consumerBuilder::subscriptionName);
+			map.from(subscription::getTopicsMode).to(consumerBuilder::subscriptionTopicsMode);
+			map.from(subscription::getType).to(consumerBuilder::subscriptionType);
+		}
+
+		public static class Subscription {
+
+			/**
+			 * Position where to initialize a newly created subscription.
+			 */
+			private SubscriptionInitialPosition initialPosition = SubscriptionInitialPosition.Latest;
+
+			/**
+			 * Subscription mode to be used when subscribing to the topic.
+			 */
+			private SubscriptionMode mode = SubscriptionMode.Durable;
+
+			/**
+			 * Subscription name for the consumer.
+			 */
+			private String name;
+
+			/**
+			 * Determines which type of topics (persistent, non-persistent, or all) the
+			 * consumer should be subscribed to when using pattern subscriptions.
+			 */
+			private RegexSubscriptionMode topicsMode = RegexSubscriptionMode.PersistentOnly;
+
+			/**
+			 * Subscription type to be used when subscribing to a topic.
+			 */
+			private SubscriptionType type = SubscriptionType.Exclusive;
+
+			public SubscriptionInitialPosition getInitialPosition() {
+				return this.initialPosition;
+			}
+
+			public void setInitialPosition(SubscriptionInitialPosition initialPosition) {
+				this.initialPosition = initialPosition;
+			}
+
+			public SubscriptionMode getMode() {
+				return this.mode;
+			}
+
+			public void setMode(SubscriptionMode mode) {
+				this.mode = mode;
+			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+			public RegexSubscriptionMode getTopicsMode() {
+				return this.topicsMode;
+			}
+
+			public void setTopicsMode(RegexSubscriptionMode topicsMode) {
+				this.topicsMode = topicsMode;
+			}
+
+			public SubscriptionType getType() {
+				return this.type;
+			}
+
+			public void setType(SubscriptionType type) {
+				this.type = type;
+			}
+
 		}
 
 	}
@@ -767,11 +706,74 @@ public class PulsarProperties {
 
 	}
 
+	public static class Function {
+
+		/**
+		 * Whether to stop processing further function creates/updates when a failure
+		 * occurs.
+		 */
+		private boolean failFast = true;
+
+		/**
+		 * Whether to throw an exception if any failure is encountered during server
+		 * startup while creating/updating functions.
+		 */
+		private boolean propagateFailures = true;
+
+		/**
+		 * Whether to throw an exception if any failure is encountered during server
+		 * shutdown while enforcing stop policy on functions.
+		 */
+		private boolean propagateStopFailures = false;
+
+		public boolean getFailFast() {
+			return this.failFast;
+		}
+
+		public void setFailFast(boolean failFast) {
+			this.failFast = failFast;
+		}
+
+		public boolean getPropagateFailures() {
+			return this.propagateFailures;
+		}
+
+		public void setPropagateFailures(boolean propagateFailures) {
+			this.propagateFailures = propagateFailures;
+		}
+
+		public boolean getPropagateStopFailures() {
+			return this.propagateStopFailures;
+		}
+
+		public void setPropagateStopFailures(boolean propagateStopFailures) {
+			this.propagateStopFailures = propagateStopFailures;
+		}
+
+	}
+
+	public static class Template {
+
+		/**
+		 * Whether to record observations for send operations when the Observations API is
+		 * available.
+		 */
+		private boolean observationsEnabled = true;
+
+		public Boolean isObservationsEnabled() {
+			return this.observationsEnabled;
+		}
+
+		public void setObservationsEnabled(boolean observationsEnabled) {
+			this.observationsEnabled = observationsEnabled;
+		}
+
+	}
+
 	public static class Admin {
 
 		/**
-		 * Pulsar web URL for the admin endpoint in the format
-		 * '(http|https)://&lt;host&gt;:&lt;port&gt;'.
+		 * Pulsar web URL for the admin endpoint in the format '(http|https)://host:port'.
 		 */
 		private String serviceUrl = "http://localhost:8080";
 
@@ -783,7 +785,7 @@ public class PulsarProperties {
 		/**
 		 * Authentication parameter(s) as a JSON encoded string.
 		 */
-		private String authParams;
+		private String authParams; // FIXME ??
 
 		/**
 		 * Authentication parameter(s) as a map of parameter names to parameter values.
@@ -944,7 +946,8 @@ public class PulsarProperties {
 			this.resetIncludeHead = resetIncludeHead;
 		}
 
-		public ReaderBuilderCustomizer<?> toReaderBuilderCustomizer() {
+		ReaderBuilderCustomizer<?> toReaderBuilderCustomizer() {
+			// FIXME
 			return (readerBuilder) -> {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(this::getTopicNames).as(ArrayList::new).to(readerBuilder::topics);
@@ -975,42 +978,42 @@ public class PulsarProperties {
 			this.typeMappings = typeMappings;
 		}
 
-	}
+		/**
+		 * A mapping from message type to topic and/or schema info to use (at least one of
+		 * {@code topicName} or {@code schemaInfo} must be specified.
+		 *
+		 * @param messageType the message type
+		 * @param topicName the topic name
+		 * @param schemaInfo the schema info
+		 */
+		public record TypeMapping(Class<?> messageType, String topicName, SchemaInfo schemaInfo) {
 
-	/**
-	 * A mapping from message type to topic and/or schema info to use (at least one of
-	 * {@code topicName} or {@code schemaInfo} must be specified.
-	 *
-	 * @param messageType the message type
-	 * @param topicName the topic name
-	 * @param schemaInfo the schema info
-	 */
-	public record TypeMapping(Class<?> messageType, String topicName, SchemaInfo schemaInfo) {
-		public TypeMapping {
-			Objects.requireNonNull(messageType, "messageType must not be null");
-			if (topicName == null && schemaInfo == null) {
-				throw new IllegalArgumentException("At least one of topicName or schemaInfo must not be null");
+			public TypeMapping {
+				Assert.notNull(messageType, "messageType must not be null");
+				Assert.isTrue(topicName != null || schemaInfo != null,
+						"At least one of topicName or schemaInfo must not be null");
 			}
-		}
-	}
 
-	/**
-	 * Represents a schema - holds enough information to construct an actual schema
-	 * instance.
-	 *
-	 * @param schemaType schema type
-	 * @param messageKeyType message key type (required for key value type)
-	 */
-	public record SchemaInfo(SchemaType schemaType, Class<?> messageKeyType) {
-		public SchemaInfo {
-			Objects.requireNonNull(schemaType, "schemaType must not be null");
-			if (schemaType == SchemaType.NONE) {
-				throw new IllegalArgumentException("schemaType NONE not supported");
-			}
-			if (schemaType != SchemaType.KEY_VALUE && messageKeyType != null) {
-				throw new IllegalArgumentException("messageKeyType can only be set when schemaType is KEY_VALUE");
-			}
 		}
+
+		/**
+		 * Represents a schema - holds enough information to construct an actual schema
+		 * instance.
+		 *
+		 * @param schemaType schema type
+		 * @param messageKeyType message key type (required for key value type)
+		 */
+		public record SchemaInfo(SchemaType schemaType, Class<?> messageKeyType) {
+
+			public SchemaInfo {
+				Assert.notNull(schemaType, "schemaType must not be null");
+				Assert.isTrue(schemaType != SchemaType.NONE, "schemaType NONE not supported");
+				Assert.isTrue(messageKeyType == null || schemaType == SchemaType.KEY_VALUE,
+						"messageKeyType can only be set when schemaType is KEY_VALUE");
+			}
+
+		}
+
 	}
 
 }

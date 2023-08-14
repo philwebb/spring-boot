@@ -36,11 +36,11 @@ import org.springframework.util.StringUtils;
  *
  * @author Chris Bono
  */
-class ApplyClientPropertiesClientBuilderCustomizer implements PulsarClientBuilderCustomizer {
+class PulsarPropertiesClientBuilderCustomizer implements PulsarClientBuilderCustomizer {
 
 	private final PulsarProperties.Client properties;
 
-	ApplyClientPropertiesClientBuilderCustomizer(PulsarProperties properties) {
+	PulsarPropertiesClientBuilderCustomizer(PulsarProperties properties) {
 		Assert.notNull(properties, "properties must not be null");
 		this.properties = properties.getClient();
 	}

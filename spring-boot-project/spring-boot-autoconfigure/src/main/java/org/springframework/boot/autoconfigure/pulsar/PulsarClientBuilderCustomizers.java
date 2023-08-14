@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.pulsar.client.api.ClientBuilder;
 
@@ -30,7 +32,9 @@ import org.springframework.util.Assert;
  *
  * @author Chris Bono
  */
-class PulsarClientBuilderConfigurer {
+class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
+
+	// FIXME
 
 	private final List<PulsarClientBuilderCustomizer> customizers;
 
@@ -39,9 +43,17 @@ class PulsarClientBuilderConfigurer {
 	 * @param properties properties to use
 	 * @param customizers list of customizers to apply or empty list if no customizers
 	 */
-	public PulsarClientBuilderConfigurer(PulsarProperties properties, List<PulsarClientBuilderCustomizer> customizers) {
+	public PulsarClientBuilderCustomizers(PulsarProperties properties,
+			List<PulsarClientBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "customizers must not be null");
 		this.customizers = customizers;
+	}
+
+	/**
+	 *
+	 */
+	public PulsarClientBuilderCustomizers() {
+		this.customizers = new ArrayList<>();
 	}
 
 	/**
@@ -56,8 +68,37 @@ class PulsarClientBuilderConfigurer {
 	protected void applyCustomizers(List<PulsarClientBuilderCustomizer> clientBuilderCustomizers,
 			ClientBuilder clientBuilder) {
 		LambdaSafe.callbacks(PulsarClientBuilderCustomizer.class, clientBuilderCustomizers, clientBuilder)
-			.withLogger(PulsarClientBuilderConfigurer.class)
+			.withLogger(PulsarClientBuilderCustomizers.class)
 			.invoke((customizer) -> customizer.customize(clientBuilder));
+	}
+
+	/**
+	 * @param pulsarPropertiesClientBuilderCustomizer
+	 */
+	public void add(PulsarPropertiesClientBuilderCustomizer pulsarPropertiesClientBuilderCustomizer) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	/**
+	 * @param orderedStream
+	 */
+	public void addAll(Stream<PulsarClientBuilderCustomizer> orderedStream) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.springframework.pulsar.core.PulsarClientBuilderCustomizer#customize(org.apache.
+	 * pulsar.client.api.ClientBuilder)
+	 */
+	@Override
+	public void customize(ClientBuilder clientBuilder) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

@@ -57,34 +57,42 @@ class PulsarAnnotationDrivenConfiguration {
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			ObjectProvider<PulsarConsumerFactory<Object>> consumerFactoryProvider, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
-		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
-		containerProperties.setSchemaResolver(schemaResolver);
-		containerProperties.setTopicResolver(topicResolver);
-		containerProperties.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
-		containerProperties.setObservationEnabled(this.properties.getListener().isObservationsEnabled());
-		PulsarProperties.Listener listenerProperties = this.properties.getListener();
+		PulsarConsumerFactory<Object> consumerFactory = consumerFactoryProvider.getIfAvailable();
+		PulsarContainerProperties containerProperties = getContainerProperties(schemaResolver, topicResolver);
+		return new ConcurrentPulsarListenerContainerFactory<>(consumerFactory, containerProperties);
+	}
+
+	private PulsarContainerProperties getContainerProperties(SchemaResolver schemaResolver,
+			TopicResolver topicResolver) {
+		PulsarContainerProperties container = new PulsarContainerProperties();
+		container.setSchemaResolver(schemaResolver);
+		container.setTopicResolver(topicResolver);
+		container.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
+		mapListenerProperties(container);
+		return container;
+	}
+
+	private void mapListenerProperties(PulsarContainerProperties container) {
+		PulsarProperties.Listener properties = this.properties.getListener();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(listenerProperties::getSchemaType).to(containerProperties::setSchemaType);
-		map.from(listenerProperties::getAckMode).to(containerProperties::setAckMode);
-		map.from(listenerProperties::getBatchTimeout)
-			.asInt(Duration::toMillis)
-			.to(containerProperties::setBatchTimeoutMillis);
-		map.from(listenerProperties::getMaxNumBytes).asInt(DataSize::toBytes).to(containerProperties::setMaxNumBytes);
-		map.from(listenerProperties::getMaxNumMessages).to(containerProperties::setMaxNumMessages);
-		return new ConcurrentPulsarListenerContainerFactory<>(consumerFactoryProvider.getIfAvailable(),
-				containerProperties);
+		map.from(properties::getSchemaType).to(container::setSchemaType);
+		map.from(properties::getAckMode).to(container::setAckMode);
+		map.from(properties::getBatchTimeout).asInt(Duration::toMillis).to(container::setBatchTimeoutMillis);
+		map.from(properties::getMaxNumBytes).asInt(DataSize::toBytes).to(container::setMaxNumBytes);
+		map.from(properties::getMaxNumMessages).to(container::setMaxNumMessages);
+		map.from(properties::isObservationsEnabled).to(container::setObservationEnabled);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(
 			ObjectProvider<PulsarReaderFactory<Object>> readerFactoryProvider, SchemaResolver schemaResolver) {
-		PulsarReaderContainerProperties containerProperties = new PulsarReaderContainerProperties();
-		containerProperties.setSchemaResolver(schemaResolver);
+		PulsarReaderContainerProperties reader = new PulsarReaderContainerProperties();
+		reader.setSchemaResolver(schemaResolver);
+		PulsarProperties.Reader properties = this.properties.getReader();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		PulsarProperties.Reader readerProperties = this.properties.getReader();
-		map.from(readerProperties::getTopicNames).to(containerProperties::setTopics);
-		return new DefaultPulsarReaderContainerFactory<>(readerFactoryProvider.getIfAvailable(), containerProperties);
+		map.from(properties::getTopicNames).to(reader::setTopics);
+		return new DefaultPulsarReaderContainerFactory<>(readerFactoryProvider.getIfAvailable(), reader);
 	}
 
 	@Configuration(proxyBeanMethods = false)
