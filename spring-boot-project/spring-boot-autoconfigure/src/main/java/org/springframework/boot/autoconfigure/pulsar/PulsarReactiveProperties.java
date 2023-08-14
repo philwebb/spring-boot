@@ -63,9 +63,9 @@ public class PulsarReactiveProperties {
 
 	private final Consumer consumer = new Consumer();
 
-	private final Reader reader = new Reader();
-
 	private final Listener listener = new Listener();
+
+	private final Reader reader = new Reader();
 
 	public Sender getSender() {
 		return this.sender;
@@ -214,7 +214,7 @@ public class PulsarReactiveProperties {
 			return this.cache;
 		}
 
-		public ReactiveMessageSenderSpec buildReactiveMessageSenderSpec() {
+		ReactiveMessageSenderSpec buildReactiveMessageSenderSpec() {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			MutableReactiveMessageSenderSpec spec = new MutableReactiveMessageSenderSpec();
 			map.from(this::getTopicName).to(spec::setTopicName);
@@ -461,7 +461,7 @@ public class PulsarReactiveProperties {
 			return this.subscription;
 		}
 
-		public ReactiveMessageConsumerSpec buildReactiveMessageConsumerSpec() {
+		ReactiveMessageConsumerSpec buildReactiveMessageConsumerSpec() {
 			MutableReactiveMessageConsumerSpec spec = new MutableReactiveMessageConsumerSpec();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getTopics).as(List::of).to(spec::setTopicNames);
