@@ -632,6 +632,8 @@ public class PulsarReactiveProperties {
 
 	public static class Listener {
 
+		// FIXME quite different from regular
+
 		/**
 		 * SchemaType of the consumed messages.
 		 */

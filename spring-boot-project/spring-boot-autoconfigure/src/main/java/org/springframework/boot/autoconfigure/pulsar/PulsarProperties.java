@@ -71,13 +71,14 @@ public class PulsarProperties {
 
 	private final Listener listener = new Listener();
 
+	private final Reader reader = new Reader();
+
 	private final Function function = new Function();
 
+	// For PulsarTemplate. Exists in both but Observations not yet in reactive
 	private final Template template = new Template();
 
 	private final Admin admin = new Admin();
-
-	private final Reader reader = new Reader();
 
 	private final Defaults defaults = new Defaults();
 
