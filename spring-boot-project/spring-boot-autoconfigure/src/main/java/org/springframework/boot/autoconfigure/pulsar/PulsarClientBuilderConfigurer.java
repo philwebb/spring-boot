@@ -43,16 +43,22 @@ public class PulsarClientBuilderConfigurer {
 
 	private final List<PulsarClientBuilderCustomizer> customizers;
 
+	private final ClientBuilderSslConfigurer sslConfigurer;
+
 	/**
 	 * Creates a new configurer that will use the given properties for configuration.
 	 * @param properties properties to use
 	 * @param customizers list of customizers to apply or empty list if no customizers
+	 * @param sslConfigurer optional SSL settings configurer
 	 */
-	public PulsarClientBuilderConfigurer(PulsarProperties properties, List<PulsarClientBuilderCustomizer> customizers) {
+	public PulsarClientBuilderConfigurer(PulsarProperties properties, List<PulsarClientBuilderCustomizer> customizers,
+			ClientBuilderSslConfigurer sslConfigurer) {
 		Assert.notNull(properties, "properties must not be null");
 		Assert.notNull(customizers, "customizers must not be null");
+		Assert.notNull(sslConfigurer, "sslConfigurer must not be null");
 		this.properties = properties;
 		this.customizers = customizers;
+		this.sslConfigurer = sslConfigurer;
 	}
 
 	/**
@@ -63,6 +69,8 @@ public class PulsarClientBuilderConfigurer {
 	public void configure(ClientBuilder clientBuilder) {
 		applyProperties(this.properties, clientBuilder);
 		applyCustomizers(this.customizers, clientBuilder);
+		this.sslConfigurer.applySsl(new PulsarClientBuilderSslSettings(clientBuilder),
+				this.properties.getClient().getSsl());
 	}
 
 	protected void applyProperties(PulsarProperties pulsarProperties, ClientBuilder clientBuilder) {
@@ -80,10 +88,10 @@ public class PulsarClientBuilderConfigurer {
 			.to(clientBuilder, (cb, val) -> cb.lookupTimeout(val, TimeUnit.MILLISECONDS));
 
 		// Authentication properties
-		applyAuthentication(clientProperties, clientBuilder);
+		applyAuthenticationProperties(clientProperties, clientBuilder);
 	}
 
-	private void applyAuthentication(Client clientProperties, ClientBuilder clientBuilder) {
+	protected void applyAuthenticationProperties(Client clientProperties, ClientBuilder clientBuilder) {
 		String authPluginClass = clientProperties.getAuthPluginClassName();
 		if (StringUtils.hasText(authPluginClass)) {
 			String authParams = null;

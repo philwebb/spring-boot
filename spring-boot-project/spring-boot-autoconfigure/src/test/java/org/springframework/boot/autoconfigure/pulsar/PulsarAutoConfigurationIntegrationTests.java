@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -81,7 +82,7 @@ class PulsarAutoConfigurationIntegrationTests {
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ DispatcherServletAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
-			PulsarAutoConfiguration.class, PulsarReactiveAutoConfiguration.class })
+			PulsarAutoConfiguration.class, PulsarReactiveAutoConfiguration.class, SslAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Autowired

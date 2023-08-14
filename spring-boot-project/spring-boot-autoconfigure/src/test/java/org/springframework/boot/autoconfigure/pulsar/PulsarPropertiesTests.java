@@ -30,7 +30,6 @@ import org.apache.pulsar.client.api.HashingScheme;
 import org.apache.pulsar.client.api.MessageRoutingMode;
 import org.apache.pulsar.client.api.ProducerAccessMode;
 import org.apache.pulsar.client.api.ProducerBuilder;
-import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticationException;
 import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.RegexSubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionInitialPosition;
@@ -87,21 +86,12 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.client.service-url", "my-service-url");
 			props.put("spring.pulsar.client.operation-timeout", "1s");
 			props.put("spring.pulsar.client.lookup-timeout", "2s");
-			props.put("spring.pulsar.client.use-tls", "true");
-			props.put("spring.pulsar.client.tls-hostname-verification-enable", "true");
-			props.put("spring.pulsar.client.tls-trust-certs-file-path", "my-trust-certs-file-path");
-			props.put("spring.pulsar.client.tls-certificate-file-path", "my-certificate-file-path");
-			props.put("spring.pulsar.client.tls-key-file-path", "my-key-file-path");
-			props.put("spring.pulsar.client.tls-allow-insecure-connection", "true");
-			props.put("spring.pulsar.client.use-key-store-tls", "true");
-			props.put("spring.pulsar.client.ssl-provider", "my-ssl-provider");
-			props.put("spring.pulsar.client.tls-trust-store-type", "my-trust-store-type");
-			props.put("spring.pulsar.client.tls-trust-store-path", "my-trust-store-path");
-			props.put("spring.pulsar.client.tls-trust-store-password", "my-trust-store-password");
-			props.put("spring.pulsar.client.tls-ciphers[0]", "my-tls-cipher");
-			props.put("spring.pulsar.client.tls-protocols[0]", "my-tls-protocol");
 			props.put("spring.pulsar.client.connection-timeout", "12s");
 			props.put("spring.pulsar.client.request-timeout", "13s");
+			props.put("spring.pulsar.client.ssl.enabled", "true");
+			props.put("spring.pulsar.client.ssl.bundle", "fooBundle");
+			props.put("spring.pulsar.client.ssl.verify-hostname", "true");
+			props.put("spring.pulsar.client.ssl.allow-insecure-connection", "true");
 			Client clientProps = newConfigPropsFromUserProps(props).getClient();
 
 			assertThat(clientProps.getServiceUrl()).isEqualTo("my-service-url");
@@ -109,6 +99,10 @@ class PulsarPropertiesTests {
 			assertThat(clientProps.getLookupTimeout()).isEqualTo(Duration.ofMillis(2000));
 			assertThat(clientProps.getConnectionTimeout()).isEqualTo(Duration.ofMillis(12000));
 			assertThat(clientProps.getRequestTimeout()).isEqualTo(Duration.ofMillis(13_000));
+			assertThat(clientProps.getSsl().isEnabled()).isTrue();
+			assertThat(clientProps.getSsl().getBundle()).isEqualTo("fooBundle");
+			assertThat(clientProps.getSsl().isVerifyHostname()).isTrue();
+			assertThat(clientProps.getSsl().getAllowInsecureConnection()).isTrue();
 		}
 
 		@Test
@@ -140,19 +134,10 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.administration.connection-timeout", "12s");
 			props.put("spring.pulsar.administration.read-timeout", "13s");
 			props.put("spring.pulsar.administration.request-timeout", "14s");
-			props.put("spring.pulsar.administration.auto-cert-refresh-time", "15s");
-			props.put("spring.pulsar.administration.tls-hostname-verification-enable", "true");
-			props.put("spring.pulsar.administration.tls-trust-certs-file-path", "my-trust-certs-file-path");
-			props.put("spring.pulsar.administration.tls-certificate-file-path", "my-certificate-file-path");
-			props.put("spring.pulsar.administration.tls-key-file-path", "my-key-file-path");
-			props.put("spring.pulsar.administration.tls-allow-insecure-connection", "true");
-			props.put("spring.pulsar.administration.use-key-store-tls", "true");
-			props.put("spring.pulsar.administration.ssl-provider", "my-ssl-provider");
-			props.put("spring.pulsar.administration.tls-trust-store-type", "my-trust-store-type");
-			props.put("spring.pulsar.administration.tls-trust-store-path", "my-trust-store-path");
-			props.put("spring.pulsar.administration.tls-trust-store-password", "my-trust-store-password");
-			props.put("spring.pulsar.administration.tls-ciphers[0]", "my-tls-cipher");
-			props.put("spring.pulsar.administration.tls-protocols[0]", "my-tls-protocol");
+			props.put("spring.pulsar.administration.ssl.enabled", "true");
+			props.put("spring.pulsar.administration.ssl.bundle", "fooBundle");
+			props.put("spring.pulsar.administration.ssl.verify-hostname", "true");
+			props.put("spring.pulsar.administration.ssl.allow-insecure-connection", "true");
 			Admin adminProps = newConfigPropsFromUserProps(props).getAdministration();
 
 			// Verify properties
@@ -160,10 +145,14 @@ class PulsarPropertiesTests {
 			assertThat(adminProps.getConnectionTimeout()).isEqualTo(Duration.ofMillis(12_000));
 			assertThat(adminProps.getReadTimeout()).isEqualTo(Duration.ofMillis(13_000));
 			assertThat(adminProps.getRequestTimeout()).isEqualTo(Duration.ofMillis(14_000));
+			assertThat(adminProps.getSsl().isEnabled()).isTrue();
+			assertThat(adminProps.getSsl().getBundle()).isEqualTo("fooBundle");
+			assertThat(adminProps.getSsl().isVerifyHostname()).isTrue();
+			assertThat(adminProps.getSsl().getAllowInsecureConnection()).isTrue();
 		}
 
 		@Test
-		void authenticationUsingAuthenticationMap() throws UnsupportedAuthenticationException {
+		void authenticationUsingAuthenticationMap() {
 			Map<String, String> props = new HashMap<>();
 			props.put("spring.pulsar.administration.auth-plugin-class-name", this.authPluginClassName);
 			props.put("spring.pulsar.administration.authentication.token", this.authToken);

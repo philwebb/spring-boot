@@ -29,7 +29,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.pulsar.core.CachingPulsarProducerFactory;
@@ -62,7 +65,7 @@ import org.springframework.pulsar.function.PulsarSource;
  * @author Alexander Preuß
  * @since 3.2.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass(PulsarTemplate.class)
 @EnableConfigurationProperties(PulsarProperties.class)
 @Import({ PulsarAnnotationDrivenConfiguration.class })
@@ -76,9 +79,16 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	ClientBuilderSslConfigurer clientBuilderSslConfigurer(ObjectProvider<SslBundles> sslBundles,
+			ObjectProvider<SslProperties> sslProperties) {
+		return new ClientBuilderSslConfigurer(sslBundles.getIfAvailable(), sslProperties.getIfAvailable());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	PulsarClientBuilderConfigurer pulsarClientBuilderConfigurer(PulsarProperties pulsarProperties,
-			ObjectProvider<PulsarClientBuilderCustomizer> customizers) {
-		return new PulsarClientBuilderConfigurer(pulsarProperties, customizers.orderedStream().toList());
+			ObjectProvider<PulsarClientBuilderCustomizer> customizers, ClientBuilderSslConfigurer sslConfigurer) {
+		return new PulsarClientBuilderConfigurer(pulsarProperties, customizers.orderedStream().toList(), sslConfigurer);
 	}
 
 	@Bean
@@ -162,6 +172,19 @@ public class PulsarAutoConfiguration {
 	DefaultPulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient) {
 		return new DefaultPulsarConsumerFactory<>(pulsarClient,
 				this.properties.getConsumer().toConsumerBuilderCustomizer());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	PulsarAdminBuilderConfigurer adminBuilderConfigurer(PulsarProperties pulsarProperties,
+			ClientBuilderSslConfigurer sslConfigurer) {
+		return new PulsarAdminBuilderConfigurer(pulsarProperties, sslConfigurer);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	PulsarAdministration pulsarAdministration(PulsarAdminBuilderConfigurer adminClientBuilderConfigurer) {
+		return new PulsarAdministration(adminClientBuilderConfigurer::configure);
 	}
 
 	@Bean

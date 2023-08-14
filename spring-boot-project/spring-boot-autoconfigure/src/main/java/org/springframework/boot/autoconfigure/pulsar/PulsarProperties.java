@@ -580,6 +580,12 @@ public class PulsarProperties {
 		 */
 		private Duration requestTimeout = Duration.ofSeconds(60);
 
+		/**
+		 * SSL related settings for the client.
+		 */
+		@NestedConfigurationProperty
+		private SslConfigProperties ssl = new SslConfigProperties();
+
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
@@ -634,6 +640,10 @@ public class PulsarProperties {
 
 		public void setRequestTimeout(Duration requestTimeout) {
 			this.requestTimeout = requestTimeout;
+		}
+
+		public SslConfigProperties getSsl() {
+			return this.ssl;
 		}
 
 	}
@@ -781,11 +791,6 @@ public class PulsarProperties {
 		private String authPluginClassName;
 
 		/**
-		 * Authentication parameter(s) as a JSON encoded string.
-		 */
-		private String authParams;
-
-		/**
 		 * Authentication parameter(s) as a map of parameter names to parameter values.
 		 */
 		private Map<String, String> authentication;
@@ -805,6 +810,12 @@ public class PulsarProperties {
 		 */
 		private Duration requestTimeout = Duration.ofMinutes(5);
 
+		/**
+		 * SSL related settings for the client.
+		 */
+		@NestedConfigurationProperty
+		private SslConfigProperties ssl = new SslConfigProperties();
+
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
@@ -819,14 +830,6 @@ public class PulsarProperties {
 
 		public void setAuthPluginClassName(String authPluginClassName) {
 			this.authPluginClassName = authPluginClassName;
-		}
-
-		public String getAuthParams() {
-			return this.authParams;
-		}
-
-		public void setAuthParams(String authParams) {
-			this.authParams = authParams;
 		}
 
 		public Map<String, String> getAuthentication() {
@@ -859,6 +862,10 @@ public class PulsarProperties {
 
 		public void setRequestTimeout(Duration requestTimeout) {
 			this.requestTimeout = requestTimeout;
+		}
+
+		public SslConfigProperties getSsl() {
+			return this.ssl;
 		}
 
 	}
