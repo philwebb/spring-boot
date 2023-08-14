@@ -16,30 +16,21 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.pulsar.client.api.ClientBuilder;
-import org.apache.pulsar.client.api.PulsarClientException;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Client;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Configure Pulsar {@link ClientBuilder} with sensible defaults and apply a list of
  * optional {@link PulsarClientBuilderCustomizer customizers}.
  *
  * @author Chris Bono
- * @since 3.2.0
  */
-public class PulsarClientBuilderConfigurer {
-
-	private final PulsarProperties properties;
+class PulsarClientBuilderConfigurer {
 
 	private final List<PulsarClientBuilderCustomizer> customizers;
 
@@ -49,9 +40,7 @@ public class PulsarClientBuilderConfigurer {
 	 * @param customizers list of customizers to apply or empty list if no customizers
 	 */
 	public PulsarClientBuilderConfigurer(PulsarProperties properties, List<PulsarClientBuilderCustomizer> customizers) {
-		Assert.notNull(properties, "properties must not be null");
 		Assert.notNull(customizers, "customizers must not be null");
-		this.properties = properties;
 		this.customizers = customizers;
 	}
 
@@ -60,42 +49,8 @@ public class PulsarClientBuilderConfigurer {
 	 * default settings can be overridden.
 	 * @param clientBuilder the {@link ClientBuilder} instance to configure
 	 */
-	public void configure(ClientBuilder clientBuilder) {
-		applyProperties(this.properties, clientBuilder);
+	void configure(ClientBuilder clientBuilder) {
 		applyCustomizers(this.customizers, clientBuilder);
-	}
-
-	protected void applyProperties(PulsarProperties pulsarProperties, ClientBuilder clientBuilder) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		Client clientProperties = pulsarProperties.getClient();
-		map.from(clientProperties::getServiceUrl).to(clientBuilder::serviceUrl);
-		map.from(clientProperties::getConnectionTimeout)
-			.asInt(Duration::toMillis)
-			.to(clientBuilder, (cb, val) -> cb.connectionTimeout(val, TimeUnit.MILLISECONDS));
-		map.from(clientProperties::getOperationTimeout)
-			.asInt(Duration::toMillis)
-			.to(clientBuilder, (cb, val) -> cb.operationTimeout(val, TimeUnit.MILLISECONDS));
-		map.from(clientProperties::getLookupTimeout)
-			.asInt(Duration::toMillis)
-			.to(clientBuilder, (cb, val) -> cb.lookupTimeout(val, TimeUnit.MILLISECONDS));
-		// Authentication properties
-		applyAuthentication(clientProperties, clientBuilder);
-	}
-
-	private void applyAuthentication(Client clientProperties, ClientBuilder clientBuilder) {
-		String authPluginClass = clientProperties.getAuthPluginClassName();
-		if (StringUtils.hasText(authPluginClass)) {
-			String authParams = null;
-			if (clientProperties.getAuthentication() != null) {
-				authParams = AuthParameterUtils.maybeConvertToEncodedParamString(clientProperties.getAuthentication());
-			}
-			try {
-				clientBuilder.authentication(authPluginClass, authParams);
-			}
-			catch (PulsarClientException.UnsupportedAuthenticationException ex) {
-				throw new IllegalArgumentException("Unable to configure authentication", ex);
-			}
-		}
 	}
 
 	protected void applyCustomizers(List<PulsarClientBuilderCustomizer> clientBuilderCustomizers,
