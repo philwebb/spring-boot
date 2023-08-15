@@ -43,7 +43,7 @@ class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 	 * @param properties properties to use
 	 * @param customizers list of customizers to apply or empty list if no customizers
 	 */
-	public PulsarClientBuilderCustomizers(PulsarProperties properties,
+	public PulsarClientBuilderCustomizers(XPulsarProperties properties,
 			List<PulsarClientBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "customizers must not be null");
 		this.customizers = customizers;

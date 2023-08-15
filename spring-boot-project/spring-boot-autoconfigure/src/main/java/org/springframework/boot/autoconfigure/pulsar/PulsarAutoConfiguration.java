@@ -30,10 +30,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.SchemaInfo;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.TypeMapping;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer.Cache;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Defaults;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Defaults.SchemaInfo;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Defaults.TypeMapping;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Producer.Cache;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -69,13 +69,13 @@ import org.springframework.pulsar.function.PulsarSource;
  */
 @AutoConfiguration
 @ConditionalOnClass(PulsarTemplate.class)
-@EnableConfigurationProperties(PulsarProperties.class)
+@EnableConfigurationProperties(XPulsarProperties.class)
 @Import({ PulsarAnnotationDrivenConfiguration.class })
 public class PulsarAutoConfiguration {
 
-	private final PulsarProperties properties;
+	private final XPulsarProperties properties;
 
-	PulsarAutoConfiguration(PulsarProperties properties) {
+	PulsarAutoConfiguration(XPulsarProperties properties) {
 		this.properties = properties;
 	}
 
@@ -177,7 +177,7 @@ public class PulsarAutoConfiguration {
 	PulsarFunctionAdministration pulsarFunctionAdministration(PulsarAdministration pulsarAdministration,
 			ObjectProvider<PulsarFunction> pulsarFunctions, ObjectProvider<PulsarSink> pulsarSinks,
 			ObjectProvider<PulsarSource> pulsarSources) {
-		PulsarProperties.Function function = this.properties.getFunction();
+		XPulsarProperties.Function function = this.properties.getFunction();
 		return new PulsarFunctionAdministration(pulsarAdministration, pulsarFunctions, pulsarSinks, pulsarSources,
 				function.getFailFast(), function.getPropagateFailures(), function.getPropagateStopFailures());
 	}

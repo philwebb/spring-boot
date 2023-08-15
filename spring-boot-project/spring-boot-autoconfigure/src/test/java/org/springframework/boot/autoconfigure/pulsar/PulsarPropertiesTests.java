@@ -42,11 +42,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Admin;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Client;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Function;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.SchemaInfo;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.TypeMapping;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Admin;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Client;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Function;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.SchemaInfo;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.TypeMapping;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -63,7 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 /**
- * Tests for {@link PulsarProperties}.
+ * Tests for {@link XPulsarProperties}.
  *
  * @author Chris Bono
  * @author Christophe Bornet
@@ -71,8 +71,8 @@ import static org.mockito.Mockito.never;
  */
 class PulsarPropertiesTests {
 
-	private PulsarProperties newConfigPropsFromUserProps(Map<String, String> map) {
-		PulsarProperties targetProps = new PulsarProperties();
+	private XPulsarProperties newConfigPropsFromUserProps(Map<String, String> map) {
+		XPulsarProperties targetProps = new XPulsarProperties();
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource(map);
 		new Binder(source).bind("spring.pulsar", Bindable.ofInstance(targetProps));
 		return targetProps;
@@ -118,7 +118,7 @@ class PulsarPropertiesTests {
 			Map<String, String> props = new HashMap<>();
 			props.put("spring.pulsar.client.auth-plugin-class-name", authPluginClassName);
 			props.put("spring.pulsar.client.authentication.token", authToken);
-			PulsarProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarProperties configProps = newConfigPropsFromUserProps(props);
 			Client clientProps = configProps.getClient();
 			assertThat(clientProps.getAuthPluginClassName()).isEqualTo(authPluginClassName);
 			assertThat(clientProps.getAuthentication()).containsEntry("token", authToken);
@@ -181,7 +181,7 @@ class PulsarPropertiesTests {
 
 		@Test
 		void emptyByDefault() {
-			assertThat(new PulsarProperties().getDefaults().getTypeMappings()).isEmpty();
+			assertThat(new XPulsarProperties().getDefaults().getTypeMappings()).isEmpty();
 		}
 
 		@Test
@@ -191,7 +191,7 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.defaults.type-mappings[0].topic-name", "foo-topic");
 			props.put("spring.pulsar.defaults.type-mappings[1].message-type", String.class.getName());
 			props.put("spring.pulsar.defaults.type-mappings[1].topic-name", "string-topic");
-			PulsarProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarProperties configProps = newConfigPropsFromUserProps(props);
 			assertThat(configProps.getDefaults().getTypeMappings()).containsExactly(
 					new TypeMapping(Foo.class, "foo-topic", null), new TypeMapping(String.class, "string-topic", null));
 		}
@@ -201,7 +201,7 @@ class PulsarPropertiesTests {
 			Map<String, String> props = new HashMap<>();
 			props.put("spring.pulsar.defaults.type-mappings[0].message-type", Foo.class.getName());
 			props.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "JSON");
-			PulsarProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarProperties configProps = newConfigPropsFromUserProps(props);
 			assertThat(configProps.getDefaults().getTypeMappings())
 				.containsExactly(new TypeMapping(Foo.class, null, new SchemaInfo(SchemaType.JSON, null)));
 		}
@@ -212,7 +212,7 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.defaults.type-mappings[0].message-type", Foo.class.getName());
 			props.put("spring.pulsar.defaults.type-mappings[0].topic-name", "foo-topic");
 			props.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "JSON");
-			PulsarProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarProperties configProps = newConfigPropsFromUserProps(props);
 			assertThat(configProps.getDefaults().getTypeMappings())
 				.containsExactly(new TypeMapping(Foo.class, "foo-topic", new SchemaInfo(SchemaType.JSON, null)));
 		}
@@ -223,7 +223,7 @@ class PulsarPropertiesTests {
 			props.put("spring.pulsar.defaults.type-mappings[0].message-type", Foo.class.getName());
 			props.put("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type", "KEY_VALUE");
 			props.put("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type", String.class.getName());
-			PulsarProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarProperties configProps = newConfigPropsFromUserProps(props);
 			assertThat(configProps.getDefaults().getTypeMappings())
 				.containsExactly(new TypeMapping(Foo.class, null, new SchemaInfo(SchemaType.KEY_VALUE, String.class)));
 		}
@@ -267,7 +267,7 @@ class PulsarPropertiesTests {
 	@Nested
 	class ProducerPropertiesTests {
 
-		private PulsarProperties.Producer producerProps;
+		private XPulsarProperties.Producer producerProps;
 
 		@BeforeEach
 		void producerTestProps() {
@@ -320,7 +320,7 @@ class PulsarPropertiesTests {
 	@Nested
 	class ConsumerPropertiesTests {
 
-		private PulsarProperties.Consumer consumerProps;
+		private XPulsarProperties.Consumer consumerProps;
 
 		@BeforeEach
 		void consumerTestProps() {
@@ -437,7 +437,7 @@ class PulsarPropertiesTests {
 	@Nested
 	class ReaderPropertiesTests {
 
-		private PulsarProperties.Reader readerProps;
+		private XPulsarProperties.Reader readerProps;
 
 		@BeforeEach
 		void readerTestProps() {

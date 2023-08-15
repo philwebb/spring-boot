@@ -34,7 +34,7 @@ import org.apache.pulsar.reactive.client.api.ReactiveMessageSenderSpec;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarReactiveProperties.Cache;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarReactiveProperties.Cache;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -43,15 +43,15 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PulsarReactiveProperties}.
+ * Tests for {@link XPulsarReactiveProperties}.
  *
  * @author Christophe Bornet
  * @author Chris Bono
  */
 class PulsarReactivePropertiesTests {
 
-	private PulsarReactiveProperties newConfigPropsFromUserProps(Map<String, String> map) {
-		PulsarReactiveProperties targetProps = new PulsarReactiveProperties();
+	private XPulsarReactiveProperties newConfigPropsFromUserProps(Map<String, String> map) {
+		XPulsarReactiveProperties targetProps = new XPulsarReactiveProperties();
 		ConfigurationPropertySource source = new MapConfigurationPropertySource(map);
 		new Binder(source).bind("spring.pulsar.reactive", Bindable.ofInstance(targetProps));
 		return targetProps;
@@ -73,7 +73,7 @@ class PulsarReactivePropertiesTests {
 			props.put("spring.pulsar.reactive.sender.compression-type", "lz4");
 			props.put("spring.pulsar.reactive.sender.access-mode", "exclusive");
 
-			PulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
 			ReactiveMessageSenderSpec senderSpec = configProps.buildReactiveMessageSenderSpec();
 
 			assertThat(senderSpec.getTopicName()).isEqualTo("my-topic");
@@ -125,7 +125,7 @@ class PulsarReactivePropertiesTests {
 			props.put("spring.pulsar.reactive.consumer.subscription.type", "shared");
 			props.put("spring.pulsar.reactive.consumer.subscription.mode", "nondurable");
 
-			PulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
 			ReactiveMessageConsumerSpec consumerSpec = configProps.buildReactiveMessageConsumerSpec();
 
 			assertThat(consumerSpec.getTopicNames()).containsExactly("my-topic");
@@ -150,7 +150,7 @@ class PulsarReactivePropertiesTests {
 		@Test
 		void deadLetterPolicyConfigIsNotRequired() {
 			Map<String, String> props = new HashMap<>();
-			PulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
 			ReactiveMessageConsumerSpec consumerSpec = configProps.buildReactiveMessageConsumerSpec();
 			assertThat(consumerSpec.getDeadLetterPolicy()).isNull();
 		}
@@ -171,7 +171,7 @@ class PulsarReactivePropertiesTests {
 			props.put("spring.pulsar.reactive.reader.key-hash-ranges[0].start", "2");
 			props.put("spring.pulsar.reactive.reader.key-hash-ranges[0].end", "3");
 
-			PulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
+			XPulsarReactiveProperties configProps = newConfigPropsFromUserProps(props);
 			ReactiveMessageReaderSpec readerSpec = configProps.buildReactiveMessageReaderSpec();
 
 			assertThat(readerSpec.getTopicNames()).containsExactly("my-topic");

@@ -39,9 +39,9 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
 @ConditionalOnClass(EnableReactivePulsar.class)
 class PulsarReactiveAnnotationDrivenConfiguration {
 
-	private final PulsarReactiveProperties properties;
+	private final XPulsarReactiveProperties properties;
 
-	PulsarReactiveAnnotationDrivenConfiguration(PulsarReactiveProperties properties) {
+	PulsarReactiveAnnotationDrivenConfiguration(XPulsarReactiveProperties properties) {
 		this.properties = properties;
 	}
 
@@ -55,7 +55,7 @@ class PulsarReactiveAnnotationDrivenConfiguration {
 		containerProperties.setTopicResolver(topicResolver);
 		containerProperties.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		PulsarReactiveProperties.Listener listenerProperties = this.properties.getListener();
+		XPulsarReactiveProperties.Listener listenerProperties = this.properties.getListener();
 		map.from(listenerProperties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(listenerProperties::getHandlingTimeout).to(containerProperties::setHandlingTimeout);
 		map.from(listenerProperties::getUseKeyOrderedProcessing).to(containerProperties::setUseKeyOrderedProcessing);

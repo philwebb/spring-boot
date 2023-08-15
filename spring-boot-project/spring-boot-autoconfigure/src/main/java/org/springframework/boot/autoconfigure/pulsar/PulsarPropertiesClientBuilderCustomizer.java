@@ -38,9 +38,9 @@ import org.springframework.util.StringUtils;
  */
 class PulsarPropertiesClientBuilderCustomizer implements PulsarClientBuilderCustomizer {
 
-	private final PulsarProperties.Client properties;
+	private final XPulsarProperties.Client properties;
 
-	PulsarPropertiesClientBuilderCustomizer(PulsarProperties properties) {
+	PulsarPropertiesClientBuilderCustomizer(XPulsarProperties properties) {
 		Assert.notNull(properties, "properties must not be null");
 		this.properties = properties.getClient();
 	}
@@ -64,9 +64,9 @@ class PulsarPropertiesClientBuilderCustomizer implements PulsarClientBuilderCust
 		Map<String, String> authentication = this.properties.getAuthentication();
 		if (StringUtils.hasText(authPluginClassName)) {
 			try {
-				String maybeConvertToEncodedParamString = AuthParameterUtils.maybeConvertToEncodedParamString(authentication);
-				clientBuilder.authentication(authPluginClassName,
-						maybeConvertToEncodedParamString);
+				String maybeConvertToEncodedParamString = AuthParameterUtils
+					.maybeConvertToEncodedParamString(authentication);
+				clientBuilder.authentication(authPluginClassName, maybeConvertToEncodedParamString);
 			}
 			catch (UnsupportedAuthenticationException ex) {
 				throw new IllegalStateException("Unable to configure authentication", ex);

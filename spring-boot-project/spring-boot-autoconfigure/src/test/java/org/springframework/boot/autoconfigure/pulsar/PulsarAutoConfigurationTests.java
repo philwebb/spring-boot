@@ -33,9 +33,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Reader;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Consumer;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Producer;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Reader;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -281,8 +281,8 @@ class PulsarAutoConfigurationTests {
 		};
 
 		@Bean(name = "spring.pulsar-org.springframework.boot.autoconfigure.pulsar.PulsarProperties")
-		PulsarProperties pulsarProperties() {
-			PulsarProperties pulsarProps = new PulsarProperties();
+		XPulsarProperties pulsarProperties() {
+			XPulsarProperties pulsarProps = new XPulsarProperties();
 
 			Producer producerProps = spy(pulsarProps.getProducer());
 			given(producerProps.toProducerBuilderCustomizer()).willReturn(testProducerCustomizer);
@@ -293,7 +293,7 @@ class PulsarAutoConfigurationTests {
 			Reader readerProps = spy(pulsarProps.getReader());
 			given(readerProps.toReaderBuilderCustomizer()).willReturn(testReaderCustomizer);
 
-			PulsarProperties spyPulsarProps = spy(pulsarProps);
+			XPulsarProperties spyPulsarProps = spy(pulsarProps);
 			given(spyPulsarProps.getProducer()).willReturn(producerProps);
 			given(spyPulsarProps.getConsumer()).willReturn(consumerProps);
 			given(spyPulsarProps.getReader()).willReturn(readerProps);
@@ -491,7 +491,7 @@ class PulsarAutoConfigurationTests {
 
 		@Test
 		void customPulsarClientBuilderConfigurerIsRespected() {
-			PulsarClientBuilderCustomizers customConfigurer = new PulsarClientBuilderCustomizers(new PulsarProperties(),
+			PulsarClientBuilderCustomizers customConfigurer = new PulsarClientBuilderCustomizers(new XPulsarProperties(),
 					Collections.emptyList());
 			PulsarAutoConfigurationTests.this.contextRunner
 				.withBean("customPulsarClientConfigurer", PulsarClientBuilderCustomizers.class, () -> customConfigurer)
@@ -519,7 +519,7 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void clientConfigurerIsApplied() {
 			PulsarClientBuilderCustomizers clientConfigurer = spy(
-					new PulsarClientBuilderCustomizers(new PulsarProperties(), Collections.emptyList()));
+					new PulsarClientBuilderCustomizers(new XPulsarProperties(), Collections.emptyList()));
 			PulsarAutoConfigurationTests.this.contextRunner
 				.withBean("clientConfigurer", PulsarClientBuilderCustomizers.class, () -> clientConfigurer)
 				.run((context) -> then(clientConfigurer).should().configure(any(ClientBuilder.class)));

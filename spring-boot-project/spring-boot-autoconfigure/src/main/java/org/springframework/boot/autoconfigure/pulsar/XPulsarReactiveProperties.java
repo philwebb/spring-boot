@@ -57,7 +57,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * @since 3.2.0
  */
 @ConfigurationProperties(prefix = "spring.pulsar.reactive")
-public class PulsarReactiveProperties {
+public class XPulsarReactiveProperties {
 
 	private final Sender sender = new Sender();
 
@@ -361,17 +361,6 @@ public class PulsarReactiveProperties {
 		private Pattern topicsPattern;
 
 		/**
-		 * Dead letter policy to use.
-		 */
-		@NestedConfigurationProperty
-		private DeadLetterPolicyProperties deadLetterPolicy;
-
-		/**
-		 * Whether the retry letter topic is enabled.
-		 */
-		private boolean retryLetterTopicEnable = false;
-
-		/**
 		 * Consumer name to identify a particular consumer from the topic stats.
 		 */
 		private String name;
@@ -386,6 +375,17 @@ public class PulsarReactiveProperties {
 		 * backlog.
 		 */
 		private boolean readCompacted = false;
+
+		/**
+		 * Dead letter policy to use.
+		 */
+		@NestedConfigurationProperty
+		private DeadLetterPolicyProperties deadLetterPolicy;
+
+		/**
+		 * Whether the retry letter topic is enabled.
+		 */
+		private boolean retryLetterTopicEnable = false;
 
 		/**
 		 * Determines which topics the consumer should be subscribed to when using pattern
@@ -515,14 +515,14 @@ public class PulsarReactiveProperties {
 		private String name;
 
 		/**
-		 * Subscription type to be used when subscribing to a topic.
-		 */
-		private SubscriptionType type = SubscriptionType.Exclusive;
-
-		/**
 		 * Subscription mode to be used when subscribing to the topic.
 		 */
 		private SubscriptionMode mode = SubscriptionMode.Durable;
+
+		/**
+		 * Subscription type to be used when subscribing to a topic.
+		 */
+		private SubscriptionType type = SubscriptionType.Exclusive;
 
 		public SubscriptionInitialPosition getInitialPosition() {
 			return this.initialPosition;

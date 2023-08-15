@@ -53,13 +53,13 @@ import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
  */
 @AutoConfiguration(after = PulsarAutoConfiguration.class)
 @ConditionalOnClass({ ReactivePulsarTemplate.class, ReactivePulsarClient.class, Flux.class })
-@EnableConfigurationProperties(PulsarReactiveProperties.class)
+@EnableConfigurationProperties(XPulsarReactiveProperties.class)
 @Import({ PulsarReactiveAnnotationDrivenConfiguration.class })
 public class PulsarReactiveAutoConfiguration {
 
-	private final PulsarReactiveProperties properties;
+	private final XPulsarReactiveProperties properties;
 
-	PulsarReactiveAutoConfiguration(PulsarReactiveProperties properties) {
+	PulsarReactiveAutoConfiguration(XPulsarReactiveProperties properties) {
 		this.properties = properties;
 	}
 
@@ -75,7 +75,7 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.pulsar.reactive.sender.cache.enabled", havingValue = "true",
 			matchIfMissing = true)
 	CaffeineShadedProducerCacheProvider pulsarProducerCacheProvider() {
-		PulsarReactiveProperties.Cache cache = this.properties.getSender().getCache();
+		XPulsarReactiveProperties.Cache cache = this.properties.getSender().getCache();
 		return new CaffeineShadedProducerCacheProvider(cache.getExpireAfterAccess(), cache.getExpireAfterWrite(),
 				cache.getMaximumSize(), cache.getInitialCapacity());
 	}

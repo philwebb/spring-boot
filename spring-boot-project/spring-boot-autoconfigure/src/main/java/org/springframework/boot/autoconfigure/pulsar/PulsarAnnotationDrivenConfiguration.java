@@ -46,9 +46,9 @@ import org.springframework.util.unit.DataSize;
 @ConditionalOnClass(EnablePulsar.class)
 class PulsarAnnotationDrivenConfiguration {
 
-	private final PulsarProperties properties;
+	private final XPulsarProperties properties;
 
-	PulsarAnnotationDrivenConfiguration(PulsarProperties pulsarProperties) {
+	PulsarAnnotationDrivenConfiguration(XPulsarProperties pulsarProperties) {
 		this.properties = pulsarProperties;
 	}
 
@@ -73,7 +73,7 @@ class PulsarAnnotationDrivenConfiguration {
 	}
 
 	private void mapListenerProperties(PulsarContainerProperties container) {
-		PulsarProperties.Listener properties = this.properties.getListener();
+		XPulsarProperties.Listener properties = this.properties.getListener();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(container::setSchemaType);
 		map.from(properties::getAckMode).to(container::setAckMode);
@@ -89,7 +89,7 @@ class PulsarAnnotationDrivenConfiguration {
 			ObjectProvider<PulsarReaderFactory<Object>> readerFactoryProvider, SchemaResolver schemaResolver) {
 		PulsarReaderContainerProperties reader = new PulsarReaderContainerProperties();
 		reader.setSchemaResolver(schemaResolver);
-		PulsarProperties.Reader properties = this.properties.getReader();
+		XPulsarProperties.Reader properties = this.properties.getReader();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getTopicNames).to(reader::setTopics);
 		return new DefaultPulsarReaderContainerFactory<>(readerFactoryProvider.getIfAvailable(), reader);

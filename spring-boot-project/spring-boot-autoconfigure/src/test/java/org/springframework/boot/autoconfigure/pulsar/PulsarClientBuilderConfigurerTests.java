@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Client;
+import org.springframework.boot.autoconfigure.pulsar.XPulsarProperties.Client;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 
 import static org.mockito.BDDMockito.then;
@@ -46,7 +46,7 @@ class PulsarClientBuilderConfigurerTests {
 	@Test
 	void singleCustomizerIsApplied() {
 		PulsarClientBuilderCustomizer customizer = mock(PulsarClientBuilderCustomizer.class);
-		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(new PulsarProperties(),
+		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(new XPulsarProperties(),
 				List.of(customizer));
 		ClientBuilder clientBuilder = mock(ClientBuilder.class);
 		configurer.configure(clientBuilder);
@@ -57,7 +57,7 @@ class PulsarClientBuilderConfigurerTests {
 	void multipleCustomizersAreAppliedInOrder() {
 		PulsarClientBuilderCustomizer customizer1 = mock(PulsarClientBuilderCustomizer.class);
 		PulsarClientBuilderCustomizer customizer2 = mock(PulsarClientBuilderCustomizer.class);
-		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(new PulsarProperties(),
+		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(new XPulsarProperties(),
 				List.of(customizer2, customizer1));
 		ClientBuilder clientBuilder = mock(ClientBuilder.class);
 		configurer.configure(clientBuilder);
@@ -69,7 +69,7 @@ class PulsarClientBuilderConfigurerTests {
 	@SuppressWarnings("deprecation")
 	@Test
 	void standardPropertiesAreApplied() {
-		PulsarProperties pulsarProps = new PulsarProperties();
+		XPulsarProperties pulsarProps = new XPulsarProperties();
 		Client clientProps = pulsarProps.getClient();
 		clientProps.setServiceUrl("my-service-url");
 		clientProps.setOperationTimeout(Duration.ofSeconds(1));
@@ -102,7 +102,7 @@ class PulsarClientBuilderConfigurerTests {
 
 	@Test
 	void customizerAppliedAfterProperties() {
-		PulsarProperties pulsarProps = new PulsarProperties();
+		XPulsarProperties pulsarProps = new XPulsarProperties();
 		Client clientProps = pulsarProps.getClient();
 		clientProps.setServiceUrl("foo");
 
@@ -127,7 +127,7 @@ class PulsarClientBuilderConfigurerTests {
 
 		@Test
 		void usingAuthenticationMap() throws UnsupportedAuthenticationException {
-			PulsarProperties pulsarProps = new PulsarProperties();
+			XPulsarProperties pulsarProps = new XPulsarProperties();
 			Client clientProps = pulsarProps.getClient();
 			clientProps.setAuthPluginClassName(this.authPluginClassName);
 			clientProps.setAuthentication(Map.of("token", this.authToken));
