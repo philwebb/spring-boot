@@ -63,7 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Autoconfiguration tests for {@link PulsarReactiveAutoConfiguration}.
+ * Autoconfiguration tests for {@link XPulsarReactiveAutoConfiguration}.
  *
  * @author Christophe Bornet
  * @author Chris Bono
@@ -72,25 +72,25 @@ import static org.mockito.Mockito.mock;
 class PulsarReactiveAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class))
-		.withConfiguration(AutoConfigurations.of(PulsarReactiveAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(XPulsarAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(XPulsarReactiveAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationSkippedWhenReactivePulsarClientNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactivePulsarClient.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(PulsarReactiveAutoConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(XPulsarReactiveAutoConfiguration.class));
 	}
 
 	@Test
 	void autoConfigurationSkippedWhenReactivePulsarTemplateNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactivePulsarTemplate.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(PulsarReactiveAutoConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(XPulsarReactiveAutoConfiguration.class));
 	}
 
 	@Test
 	void annotationDrivenConfigurationSkippedWhenEnablePulsarAnnotationNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(EnableReactivePulsar.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(PulsarReactiveAnnotationDrivenConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(XPulsarReactiveAnnotationDrivenConfiguration.class));
 	}
 
 	@Test

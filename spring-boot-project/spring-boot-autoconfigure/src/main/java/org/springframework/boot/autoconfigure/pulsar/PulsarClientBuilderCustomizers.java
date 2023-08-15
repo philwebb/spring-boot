@@ -43,8 +43,7 @@ class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 	 * @param properties properties to use
 	 * @param customizers list of customizers to apply or empty list if no customizers
 	 */
-	public PulsarClientBuilderCustomizers(XPulsarProperties properties,
-			List<PulsarClientBuilderCustomizer> customizers) {
+	public PulsarClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "customizers must not be null");
 		this.customizers = customizers;
 	}
@@ -75,7 +74,7 @@ class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 	/**
 	 * @param pulsarPropertiesClientBuilderCustomizer
 	 */
-	public void add(PulsarPropertiesClientBuilderCustomizer pulsarPropertiesClientBuilderCustomizer) {
+	public void add(XPulsarPropertiesClientBuilderCustomizer pulsarPropertiesClientBuilderCustomizer) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}

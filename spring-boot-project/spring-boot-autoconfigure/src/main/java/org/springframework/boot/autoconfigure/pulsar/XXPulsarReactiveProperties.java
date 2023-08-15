@@ -57,7 +57,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * @since 3.2.0
  */
 @ConfigurationProperties(prefix = "spring.pulsar.reactive")
-public class XPulsarReactiveProperties {
+public class XXPulsarReactiveProperties {
 
 	private final Sender sender = new Sender();
 
@@ -380,7 +380,7 @@ public class XPulsarReactiveProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicyProperties deadLetterPolicy;
+		private XDeadLetterPolicyProperties deadLetterPolicy;
 
 		/**
 		 * Whether the retry letter topic is enabled.
@@ -409,11 +409,11 @@ public class XPulsarReactiveProperties {
 			this.topicsPattern = topicsPattern;
 		}
 
-		public DeadLetterPolicyProperties getDeadLetterPolicy() {
+		public XDeadLetterPolicyProperties getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicy) {
+		public void setDeadLetterPolicy(XDeadLetterPolicyProperties deadLetterPolicy) {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
@@ -482,7 +482,7 @@ public class XPulsarReactiveProperties {
 		 * @param dlpConfigProps the config props defining the DLP to construct
 		 * @return the Pulsar expected dead letter policy
 		 */
-		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyProperties dlpConfigProps) {
+		private DeadLetterPolicy toPulsarDeadLetterPolicy(XDeadLetterPolicyProperties dlpConfigProps) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			DeadLetterPolicyBuilder dlpBuilder = DeadLetterPolicy.builder();
 			map.from(dlpConfigProps::getMaxRedeliverCount).to(dlpBuilder::maxRedeliverCount);

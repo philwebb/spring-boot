@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AuthParameterUtils}.
+ * Tests for {@link XAuthParameterUtils}.
  *
  * @author Alexander Preuß
  * @author Chris Bono
@@ -33,19 +33,19 @@ class AuthParameterUtilsTests {
 
 	@Test
 	void encodedParamStringIsNullWhenAuthParamsMapIsNull() {
-		assertThat(AuthParameterUtils.maybeConvertToEncodedParamString(null)).isNull();
+		assertThat(XAuthParameterUtils.maybeConvertToEncodedParamString(null)).isNull();
 	}
 
 	@Test
 	void encodedParamStringIsNullWhenAuthParamsMapIsEmpty() {
-		assertThat(AuthParameterUtils.maybeConvertToEncodedParamString(Collections.emptyMap())).isNull();
+		assertThat(XAuthParameterUtils.maybeConvertToEncodedParamString(Collections.emptyMap())).isNull();
 	}
 
 	@Test
 	void encodedParamStringOrdersByAuthParamsMapKeys() {
 		Map<String, String> authParamsMap = Map.of("issuerUrl", "https://auth.server.cloud", "privateKey",
 				"file://Users/xyz/key.json", "audience", "urn:sn:pulsar:abc:xyz");
-		String encodedAuthParamString = AuthParameterUtils.maybeConvertToEncodedParamString(authParamsMap);
+		String encodedAuthParamString = XAuthParameterUtils.maybeConvertToEncodedParamString(authParamsMap);
 		assertThat(encodedAuthParamString).isEqualTo("{\"audience\":\"urn:sn:pulsar:abc:xyz\","
 				+ "\"issuerUrl\":\"https://auth.server.cloud\",\"privateKey\":\"file://Users/xyz/key.json\"}");
 	}
@@ -56,7 +56,7 @@ class AuthParameterUtilsTests {
 		// lowercase keys are left alone (eg. 'privatekey')
 		Map<String, String> authParamsMap = Map.of("issuer-url", "https://auth.server.cloud", "privatekey",
 				"file://Users/xyz/key.json", "audience", "urn:sn:pulsar:abc:xyz");
-		String encodedAuthParamString = AuthParameterUtils.maybeConvertToEncodedParamString(authParamsMap);
+		String encodedAuthParamString = XAuthParameterUtils.maybeConvertToEncodedParamString(authParamsMap);
 		assertThat(encodedAuthParamString).isEqualTo("{\"audience\":\"urn:sn:pulsar:abc:xyz\","
 				+ "\"issuer-url\":\"https://auth.server.cloud\",\"privatekey\":\"file://Users/xyz/key.json\"}");
 	}

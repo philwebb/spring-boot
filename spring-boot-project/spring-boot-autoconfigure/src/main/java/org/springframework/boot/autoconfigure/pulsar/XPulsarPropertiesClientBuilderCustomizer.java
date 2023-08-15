@@ -36,11 +36,13 @@ import org.springframework.util.StringUtils;
  *
  * @author Chris Bono
  */
-class PulsarPropertiesClientBuilderCustomizer implements PulsarClientBuilderCustomizer {
+class XPulsarPropertiesClientBuilderCustomizer implements PulsarClientBuilderCustomizer {
 
-	private final XPulsarProperties.Client properties;
+	// FIXME move?
 
-	PulsarPropertiesClientBuilderCustomizer(XPulsarProperties properties) {
+	private final PulsarProperties.Client properties;
+
+	XPulsarPropertiesClientBuilderCustomizer(PulsarProperties properties) {
 		Assert.notNull(properties, "properties must not be null");
 		this.properties = properties.getClient();
 	}
@@ -64,7 +66,7 @@ class PulsarPropertiesClientBuilderCustomizer implements PulsarClientBuilderCust
 		Map<String, String> authentication = this.properties.getAuthentication();
 		if (StringUtils.hasText(authPluginClassName)) {
 			try {
-				String maybeConvertToEncodedParamString = AuthParameterUtils
+				String maybeConvertToEncodedParamString = XAuthParameterUtils
 					.maybeConvertToEncodedParamString(authentication);
 				clientBuilder.authentication(authPluginClassName, maybeConvertToEncodedParamString);
 			}

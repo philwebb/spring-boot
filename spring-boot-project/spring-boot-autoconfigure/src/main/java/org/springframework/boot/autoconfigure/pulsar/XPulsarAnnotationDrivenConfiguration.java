@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
-import java.time.Duration;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.pulsar.annotation.EnablePulsar;
@@ -34,7 +31,6 @@ import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
-import org.springframework.util.unit.DataSize;
 
 /**
  * Configuration for Pulsar annotation-driven support.
@@ -44,11 +40,11 @@ import org.springframework.util.unit.DataSize;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnablePulsar.class)
-class PulsarAnnotationDrivenConfiguration {
+class XPulsarAnnotationDrivenConfiguration {
 
-	private final XPulsarProperties properties;
+	private final PulsarProperties properties;
 
-	PulsarAnnotationDrivenConfiguration(XPulsarProperties pulsarProperties) {
+	XPulsarAnnotationDrivenConfiguration(PulsarProperties pulsarProperties) {
 		this.properties = pulsarProperties;
 	}
 
@@ -58,40 +54,16 @@ class PulsarAnnotationDrivenConfiguration {
 			ObjectProvider<PulsarConsumerFactory<Object>> consumerFactoryProvider, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
 		PulsarConsumerFactory<Object> consumerFactory = consumerFactoryProvider.getIfAvailable();
-		PulsarContainerProperties containerProperties = getContainerProperties(schemaResolver, topicResolver);
+		PulsarContainerProperties containerProperties = null;
+		// FIXME getContainerProperties(schemaResolver, topicResolver);
 		return new ConcurrentPulsarListenerContainerFactory<>(consumerFactory, containerProperties);
-	}
-
-	private PulsarContainerProperties getContainerProperties(SchemaResolver schemaResolver,
-			TopicResolver topicResolver) {
-		PulsarContainerProperties container = new PulsarContainerProperties();
-		container.setSchemaResolver(schemaResolver);
-		container.setTopicResolver(topicResolver);
-		container.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
-		mapListenerProperties(container);
-		return container;
-	}
-
-	private void mapListenerProperties(PulsarContainerProperties container) {
-		XPulsarProperties.Listener properties = this.properties.getListener();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getSchemaType).to(container::setSchemaType);
-		map.from(properties::getAckMode).to(container::setAckMode);
-		map.from(properties::getBatchTimeout).asInt(Duration::toMillis).to(container::setBatchTimeoutMillis);
-		map.from(properties::getMaxNumBytes).asInt(DataSize::toBytes).to(container::setMaxNumBytes);
-		map.from(properties::getMaxNumMessages).to(container::setMaxNumMessages);
-		map.from(properties::isObservationsEnabled).to(container::setObservationEnabled);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(
 			ObjectProvider<PulsarReaderFactory<Object>> readerFactoryProvider, SchemaResolver schemaResolver) {
-		PulsarReaderContainerProperties reader = new PulsarReaderContainerProperties();
-		reader.setSchemaResolver(schemaResolver);
-		XPulsarProperties.Reader properties = this.properties.getReader();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getTopicNames).to(reader::setTopics);
+		PulsarReaderContainerProperties reader = null; // FIXME
 		return new DefaultPulsarReaderContainerFactory<>(readerFactoryProvider.getIfAvailable(), reader);
 	}
 

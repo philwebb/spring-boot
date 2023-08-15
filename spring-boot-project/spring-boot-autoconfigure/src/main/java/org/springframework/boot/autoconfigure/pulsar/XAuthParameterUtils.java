@@ -29,11 +29,11 @@ import org.springframework.util.CollectionUtils;
  * @author Alexander Preuß
  * @author Chris Bono
  */
-final class AuthParameterUtils {
+final class XAuthParameterUtils {
 
 	// FIXME drop or move?
 
-	private AuthParameterUtils() {
+	private XAuthParameterUtils() {
 	}
 
 	static String maybeConvertToEncodedParamString(Map<String, String> params) {

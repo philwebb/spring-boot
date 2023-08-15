@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.pulsar;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.pulsar.config.PulsarAnnotationSupportBeanNames;
@@ -37,11 +36,11 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableReactivePulsar.class)
-class PulsarReactiveAnnotationDrivenConfiguration {
+class XPulsarReactiveAnnotationDrivenConfiguration {
 
-	private final XPulsarReactiveProperties properties;
+	private final PulsarProperties properties;
 
-	PulsarReactiveAnnotationDrivenConfiguration(XPulsarReactiveProperties properties) {
+	XPulsarReactiveAnnotationDrivenConfiguration(PulsarProperties properties) {
 		this.properties = properties;
 	}
 
@@ -50,15 +49,7 @@ class PulsarReactiveAnnotationDrivenConfiguration {
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ObjectProvider<ReactivePulsarConsumerFactory<Object>> consumerFactoryProvider,
 			SchemaResolver schemaResolver, TopicResolver topicResolver) {
-		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
-		containerProperties.setSchemaResolver(schemaResolver);
-		containerProperties.setTopicResolver(topicResolver);
-		containerProperties.setSubscriptionType(this.properties.getConsumer().getSubscription().getType());
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		XPulsarReactiveProperties.Listener listenerProperties = this.properties.getListener();
-		map.from(listenerProperties::getSchemaType).to(containerProperties::setSchemaType);
-		map.from(listenerProperties::getHandlingTimeout).to(containerProperties::setHandlingTimeout);
-		map.from(listenerProperties::getUseKeyOrderedProcessing).to(containerProperties::setUseKeyOrderedProcessing);
+		ReactivePulsarContainerProperties<Object> containerProperties = null; // FIXME
 		return new DefaultReactivePulsarListenerContainerFactory<>(consumerFactoryProvider.getIfAvailable(),
 				containerProperties);
 	}

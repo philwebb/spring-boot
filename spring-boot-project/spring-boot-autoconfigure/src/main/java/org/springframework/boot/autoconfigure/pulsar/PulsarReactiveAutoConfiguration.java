@@ -17,109 +17,69 @@
 package org.springframework.boot.autoconfigure.pulsar;
 
 import org.apache.pulsar.client.api.PulsarClient;
-import org.apache.pulsar.reactive.client.adapter.AdaptedReactivePulsarClientFactory;
-import org.apache.pulsar.reactive.client.adapter.ProducerCacheProvider;
-import org.apache.pulsar.reactive.client.api.ReactiveMessageSenderCache;
-import org.apache.pulsar.reactive.client.api.ReactivePulsarClient;
-import org.apache.pulsar.reactive.client.producercache.CaffeineShadedProducerCacheProvider;
-import reactor.core.publisher.Flux;
+import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.pulsar.config.PulsarAnnotationSupportBeanNames;
+import org.springframework.pulsar.core.CachingPulsarProducerFactory;
+import org.springframework.pulsar.core.DefaultPulsarProducerFactory;
+import org.springframework.pulsar.core.PulsarProducerFactory;
+import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
-import org.springframework.pulsar.reactive.core.DefaultReactivePulsarConsumerFactory;
-import org.springframework.pulsar.reactive.core.DefaultReactivePulsarReaderFactory;
-import org.springframework.pulsar.reactive.core.DefaultReactivePulsarSenderFactory;
+import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
+import org.springframework.pulsar.reactive.config.annotation.EnableReactivePulsar;
 import org.springframework.pulsar.reactive.core.ReactivePulsarConsumerFactory;
-import org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory;
-import org.springframework.pulsar.reactive.core.ReactivePulsarSenderFactory;
-import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring for Apache Pulsar
- * Reactive.
- *
- * @author Chris Bono
- * @author Christophe Bornet
- * @since 3.2.0
+ * @author pwebb
  */
-@AutoConfiguration(after = PulsarAutoConfiguration.class)
-@ConditionalOnClass({ ReactivePulsarTemplate.class, ReactivePulsarClient.class, Flux.class })
-@EnableConfigurationProperties(XPulsarReactiveProperties.class)
-@Import({ PulsarReactiveAnnotationDrivenConfiguration.class })
+@Import(PulsarConfiguration.class)
 public class PulsarReactiveAutoConfiguration {
 
-	private final XPulsarReactiveProperties properties;
-
-	PulsarReactiveAutoConfiguration(XPulsarReactiveProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
-	@ConditionalOnMissingBean
-	ReactivePulsarClient pulsarReactivePulsarClient(PulsarClient pulsarClient) {
-		return AdaptedReactivePulsarClientFactory.create(pulsarClient);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(ProducerCacheProvider.class)
-	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
-	@ConditionalOnProperty(name = "spring.pulsar.reactive.sender.cache.enabled", havingValue = "true",
-			matchIfMissing = true)
-	CaffeineShadedProducerCacheProvider pulsarProducerCacheProvider() {
-		XPulsarReactiveProperties.Cache cache = this.properties.getSender().getCache();
-		return new CaffeineShadedProducerCacheProvider(cache.getExpireAfterAccess(), cache.getExpireAfterWrite(),
-				cache.getMaximumSize(), cache.getInitialCapacity());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.pulsar.reactive.sender.cache.enabled", havingValue = "true",
-			matchIfMissing = true)
-	ReactiveMessageSenderCache pulsarReactiveMessageSenderCache(
-			ObjectProvider<ProducerCacheProvider> producerCacheProvider) {
-		return producerCacheProvider.stream()
-			.findFirst()
-			.map(AdaptedReactivePulsarClientFactory::createCache)
-			.orElseGet(AdaptedReactivePulsarClientFactory::createCache);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(ReactivePulsarSenderFactory.class)
-	DefaultReactivePulsarSenderFactory<?> reactivePulsarSenderFactory(ReactivePulsarClient pulsarReactivePulsarClient,
-			ObjectProvider<ReactiveMessageSenderCache> cache, TopicResolver topicResolver) {
-		return new DefaultReactivePulsarSenderFactory<>(pulsarReactivePulsarClient,
-				this.properties.buildReactiveMessageSenderSpec(), cache.getIfAvailable(), topicResolver);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(ReactivePulsarConsumerFactory.class)
-	DefaultReactivePulsarConsumerFactory<?> reactivePulsarConsumerFactory(
-			ReactivePulsarClient pulsarReactivePulsarClient) {
-		return new DefaultReactivePulsarConsumerFactory<>(pulsarReactivePulsarClient,
-				this.properties.buildReactiveMessageConsumerSpec());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
-	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient pulsarReactivePulsarClient) {
-		return new DefaultReactivePulsarReaderFactory<>(pulsarReactivePulsarClient,
-				this.properties.buildReactiveMessageReaderSpec());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	ReactivePulsarTemplate<?> pulsarReactiveTemplate(ReactivePulsarSenderFactory<?> reactivePulsarSenderFactory,
+	@ConditionalOnMissingBean(name = "reactivePulsarListenerContainerFactory")
+	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
+			ObjectProvider<ReactivePulsarConsumerFactory<Object>> consumerFactoryProvider,
 			SchemaResolver schemaResolver, TopicResolver topicResolver) {
-		return new ReactivePulsarTemplate<>(reactivePulsarSenderFactory, schemaResolver, topicResolver);
+		return null; // XPulsarReactiveAnnotationDrivenConfiguration
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
+			ObjectProvider<ProducerInterceptor> interceptorsProvider, SchemaResolver schemaResolver,
+			TopicResolver topicResolver) {
+		return null;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(PulsarProducerFactory.class)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	CachingPulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient,
+			TopicResolver topicResolver) {
+		return null;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(PulsarProducerFactory.class)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
+	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
+		// FIXME merge these to save two methods?
+		return null;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableReactivePulsar
+	@ConditionalOnMissingBean(
+			name = PulsarAnnotationSupportBeanNames.REACTIVE_PULSAR_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	static class EnableReactivePulsarConfiguration {
+
 	}
 
 }

@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link PulsarAutoConfiguration}.
+ * Integration tests for {@link XPulsarAutoConfiguration}.
  *
  * @author Chris Bono
  */
@@ -81,7 +81,7 @@ class PulsarAutoConfigurationIntegrationTests {
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ DispatcherServletAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
-			PulsarAutoConfiguration.class, PulsarReactiveAutoConfiguration.class })
+			XPulsarAutoConfiguration.class, XPulsarReactiveAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Autowired

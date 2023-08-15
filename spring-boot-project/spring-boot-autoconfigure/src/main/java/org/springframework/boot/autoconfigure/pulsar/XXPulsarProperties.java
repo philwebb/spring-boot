@@ -61,7 +61,7 @@ import org.springframework.util.unit.DataSize;
  * @since 3.2.0
  */
 @ConfigurationProperties(prefix = "spring.pulsar")
-public class XPulsarProperties {
+public class XXPulsarProperties {
 
 	private final Client client = new Client();
 
@@ -440,7 +440,7 @@ public class XPulsarProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicyProperties deadLetterPolicy;
+		private XDeadLetterPolicyProperties deadLetterPolicy;
 
 		/**
 		 * Whether to auto retry messages.
@@ -491,11 +491,11 @@ public class XPulsarProperties {
 			this.readCompacted = readCompacted;
 		}
 
-		public DeadLetterPolicyProperties getDeadLetterPolicy() {
+		public XDeadLetterPolicyProperties getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicy) {
+		public void setDeadLetterPolicy(XDeadLetterPolicyProperties deadLetterPolicy) {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
@@ -530,11 +530,11 @@ public class XPulsarProperties {
 		 * @param deadLetterPolicyConfig the config props defining the DLP to construct
 		 * @return the Pulsar expected dead letter policy
 		 */
-		private DeadLetterPolicy toPulsarDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicyConfig) {
+		private DeadLetterPolicy toPulsarDeadLetterPolicy(XDeadLetterPolicyProperties deadLetterPolicyConfig) {
 			// FIXME
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			DeadLetterPolicyBuilder builder = DeadLetterPolicy.builder();
-			DeadLetterPolicyProperties policy = this.getDeadLetterPolicy();
+			XDeadLetterPolicyProperties policy = this.getDeadLetterPolicy();
 			map.from(policy::getMaxRedeliverCount).to(builder::maxRedeliverCount);
 			map.from(policy::getRetryLetterTopic).to(builder::retryLetterTopic);
 			map.from(policy::getDeadLetterTopic).to(builder::deadLetterTopic);

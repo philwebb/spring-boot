@@ -80,7 +80,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
- * Autoconfiguration tests for {@link PulsarAutoConfiguration}.
+ * Autoconfiguration tests for {@link XPulsarAutoConfiguration}.
  *
  * @author Chris Bono
  * @author Alexander Preuß
@@ -90,19 +90,19 @@ import static org.mockito.Mockito.spy;
 class PulsarAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(XPulsarAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationSkippedWhenPulsarTemplateNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(PulsarTemplate.class))
-			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(PulsarAutoConfiguration.class));
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(XPulsarAutoConfiguration.class));
 	}
 
 	@Test
 	void annotationDrivenConfigurationSkippedWhenEnablePulsarAnnotationNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(EnablePulsar.class))
 			.run((context) -> assertThat(context).hasNotFailed()
-				.doesNotHaveBean(PulsarAnnotationDrivenConfiguration.class));
+				.doesNotHaveBean(XPulsarAnnotationDrivenConfiguration.class));
 	}
 
 	@Test

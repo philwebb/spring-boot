@@ -25,7 +25,7 @@ package org.springframework.boot.autoconfigure.pulsar;
  * @see PulsarProperties
  * @see PulsarReactiveProperties
  */
-public class DeadLetterPolicyProperties {
+public class XDeadLetterPolicyProperties {
 
 	/**
 	 * Maximum number of times that a message will be redelivered before being sent to the

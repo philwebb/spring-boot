@@ -60,6 +60,8 @@ public class PulsarProperties {
 
 	private final Function function = new Function();
 
+	private final Template template = new Template();
+
 	public Client getClient() {
 		return this.client;
 	}
@@ -90,6 +92,10 @@ public class PulsarProperties {
 
 	public Function getFunction() {
 		return this.function;
+	}
+
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	public static class Client {
@@ -557,7 +563,7 @@ public class PulsarProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicyProperties deadLetterPolicy;
+		private DeadLetterPolicy deadLetterPolicy;
 
 		/**
 		 * Whether to auto retry messages.
@@ -608,11 +614,11 @@ public class PulsarProperties {
 			this.readCompacted = readCompacted;
 		}
 
-		public DeadLetterPolicyProperties getDeadLetterPolicy() {
+		public DeadLetterPolicy getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicyProperties deadLetterPolicy) {
+		public void setDeadLetterPolicy(DeadLetterPolicy deadLetterPolicy) {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
@@ -690,6 +696,66 @@ public class PulsarProperties {
 
 			public void setType(SubscriptionType type) {
 				this.type = type;
+			}
+
+		}
+
+		public class DeadLetterPolicy {
+
+			/**
+			 * Maximum number of times that a message will be redelivered before being
+			 * sent to the dead letter queue.
+			 */
+			private int maxRedeliverCount;
+
+			/**
+			 * Name of the retry topic where the failing messages will be sent.
+			 */
+			private String retryLetterTopic;
+
+			/**
+			 * Name of the dead topic where the failing messages will be sent.
+			 */
+			private String deadLetterTopic;
+
+			/**
+			 * Name of the initial subscription of the dead letter topic. When not set,
+			 * the initial subscription will not be created. However, when the property is
+			 * set then the broker's 'allowAutoSubscriptionCreation' must be enabled or
+			 * the DLQ producer will fail.
+			 */
+			private String initialSubscriptionName;
+
+			public int getMaxRedeliverCount() {
+				return this.maxRedeliverCount;
+			}
+
+			public void setMaxRedeliverCount(int maxRedeliverCount) {
+				this.maxRedeliverCount = maxRedeliverCount;
+			}
+
+			public String getRetryLetterTopic() {
+				return this.retryLetterTopic;
+			}
+
+			public void setRetryLetterTopic(String retryLetterTopic) {
+				this.retryLetterTopic = retryLetterTopic;
+			}
+
+			public String getDeadLetterTopic() {
+				return this.deadLetterTopic;
+			}
+
+			public void setDeadLetterTopic(String deadLetterTopic) {
+				this.deadLetterTopic = deadLetterTopic;
+			}
+
+			public String getInitialSubscriptionName() {
+				return this.initialSubscriptionName;
+			}
+
+			public void setInitialSubscriptionName(String initialSubscriptionName) {
+				this.initialSubscriptionName = initialSubscriptionName;
 			}
 
 		}
@@ -832,6 +898,24 @@ public class PulsarProperties {
 
 		public void setPropagateStopFailures(boolean propagateStopFailures) {
 			this.propagateStopFailures = propagateStopFailures;
+		}
+
+	}
+
+	public static class Template {
+
+		/**
+		 * Whether to record observations for send operations when the Observations API is
+		 * available.
+		 */
+		private boolean observationsEnabled = true;
+
+		public Boolean isObservationsEnabled() {
+			return this.observationsEnabled;
+		}
+
+		public void setObservationsEnabled(boolean observationsEnabled) {
+			this.observationsEnabled = observationsEnabled;
 		}
 
 	}
