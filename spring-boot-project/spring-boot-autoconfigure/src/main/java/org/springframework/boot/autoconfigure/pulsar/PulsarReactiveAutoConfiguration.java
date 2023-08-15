@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
+import org.apache.pulsar.reactive.client.api.ReactivePulsarClient;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,7 +35,11 @@ import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
 import org.springframework.pulsar.reactive.config.annotation.EnableReactivePulsar;
+import org.springframework.pulsar.reactive.core.DefaultReactivePulsarReaderFactory;
 import org.springframework.pulsar.reactive.core.ReactivePulsarConsumerFactory;
+import org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory;
+import org.springframework.pulsar.reactive.core.ReactivePulsarSenderFactory;
+import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
 /**
  * @author pwebb
@@ -72,6 +77,21 @@ public class PulsarReactiveAutoConfiguration {
 	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
 		// FIXME merge these to save two methods?
 		return null;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
+	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient pulsarReactivePulsarClient) {
+		return null; // XPulsarReactiveAutoConfiguration
+
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	ReactivePulsarTemplate<?> pulsarReactiveTemplate(ReactivePulsarSenderFactory<?> reactivePulsarSenderFactory,
+			SchemaResolver schemaResolver, TopicResolver topicResolver) {
+		return null; // XPulsarReactiveAutoConfiguration
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

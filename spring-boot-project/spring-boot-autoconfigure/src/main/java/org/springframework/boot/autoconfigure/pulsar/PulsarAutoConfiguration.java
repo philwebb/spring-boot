@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.pulsar.annotation.EnablePulsar;
 import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
+import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
 import org.springframework.pulsar.config.PulsarAnnotationSupportBeanNames;
 import org.springframework.pulsar.core.DefaultPulsarConsumerFactory;
 import org.springframework.pulsar.core.DefaultPulsarReaderFactory;
@@ -39,12 +40,10 @@ import org.springframework.pulsar.core.PulsarReaderFactory;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarConsumerFactory;
-import org.springframework.pulsar.reactive.core.DefaultReactivePulsarReaderFactory;
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarSenderFactory;
 import org.springframework.pulsar.reactive.core.ReactivePulsarConsumerFactory;
-import org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory;
 import org.springframework.pulsar.reactive.core.ReactivePulsarSenderFactory;
-import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
+import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 
 /**
  * @author pwebb
@@ -117,18 +116,11 @@ public class PulsarAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
-	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient pulsarReactivePulsarClient) {
-		return null; // XPulsarReactiveAutoConfiguration
-
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	ReactivePulsarTemplate<?> pulsarReactiveTemplate(ReactivePulsarSenderFactory<?> reactivePulsarSenderFactory,
-			SchemaResolver schemaResolver, TopicResolver topicResolver) {
-		return null; // XPulsarReactiveAutoConfiguration
-
+	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
+	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(
+			ObjectProvider<PulsarReaderFactory<Object>> readerFactoryProvider, SchemaResolver schemaResolver) {
+		PulsarReaderContainerProperties reader = null; // FIXME
+		return new DefaultPulsarReaderContainerFactory<>(readerFactoryProvider.getIfAvailable(), reader);
 	}
 
 	@Configuration(proxyBeanMethods = false)
