@@ -16,15 +16,23 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.client.api.Schema;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.SchemaInfo;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.TypeMapping;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.pulsar.core.DefaultPulsarClientFactory;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
@@ -38,28 +46,81 @@ import org.springframework.pulsar.function.PulsarSink;
 import org.springframework.pulsar.function.PulsarSource;
 
 /**
- * @author pwebb
+ * @author Chris Bono
  */
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(PulsarProperties.class)
 class PulsarConfiguration {
+
+	private final PulsarProperties properties;
+
+	PulsarConfiguration(PulsarProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider)
+	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> pulsarClientBuilderCustomizers)
 			throws PulsarClientException {
-		return null;
+		List<PulsarClientBuilderCustomizer> customizers = new ArrayList<>();
+		customizers.add(PulsarPropertyMapper.clientCustomizer(this.properties));
+		customizers.addAll(pulsarClientBuilderCustomizers.orderedStream().toList());
+
+		// FIXME map properties, add customizers, lambdasafe
+		PulsarClientBuilderCustomizer customizer = null;
+		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(customizer);
+		return clientFactory.createClient();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(SchemaResolver.class)
 	DefaultSchemaResolver pulsarSchemaResolver(
-			Optional<SchemaResolverCustomizer<DefaultSchemaResolver>> schemaResolverCustomizer) {
-		return null;
+			ObjectProvider<SchemaResolverCustomizer<SchemaResolver>> schemaResolverCustomizers) {
+		DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
+		addCustomSchemaMappings(schemaResolver, this.properties.getDefaults().getTypeMappings());
+		applySchemaResolverCustomizers(schemaResolverCustomizers.orderedStream().toList(), schemaResolver);
+		return schemaResolver;
+	}
+
+	private void addCustomSchemaMappings(DefaultSchemaResolver schemaResolver, List<TypeMapping> typeMappings) {
+		if (typeMappings != null) {
+			typeMappings.forEach((typeMapping) -> addCustomSchemaMapping(schemaResolver, typeMapping));
+		}
+	}
+
+	private void addCustomSchemaMapping(DefaultSchemaResolver schemaResolver, TypeMapping typeMapping) {
+		SchemaInfo schemaInfo = typeMapping.schemaInfo();
+		if (schemaInfo != null) {
+			Schema<Object> schema = schemaResolver
+				.resolveSchema(schemaInfo.schemaType(), typeMapping.messageType(), schemaInfo.messageKeyType())
+				.orElseThrow();
+			schemaResolver.addCustomSchemaMapping(typeMapping.messageType(), schema);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applySchemaResolverCustomizers(List<SchemaResolverCustomizer<SchemaResolver>> customizers,
+			DefaultSchemaResolver schemaResolver) {
+		LambdaSafe.callbacks(SchemaResolverCustomizer.class, customizers, schemaResolver)
+			.invoke((customizer) -> customizer.customize(schemaResolver));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(TopicResolver.class)
 	DefaultTopicResolver pulsarTopicResolver() {
-		return null;
+		DefaultTopicResolver topicResolver = new DefaultTopicResolver();
+		List<TypeMapping> typeMappings = this.properties.getDefaults().getTypeMappings();
+		if (typeMappings != null) {
+			typeMappings.forEach((typeMapping) -> addCustomTopicMapping(topicResolver, typeMapping));
+		}
+		return topicResolver;
+	}
+
+	private void addCustomTopicMapping(DefaultTopicResolver topicResolver, TypeMapping typeMapping) {
+		String topicName = typeMapping.topicName();
+		if (topicName != null) {
+			topicResolver.addCustomTopicMapping(typeMapping.messageType(), topicName);
+		}
 	}
 
 	@Bean

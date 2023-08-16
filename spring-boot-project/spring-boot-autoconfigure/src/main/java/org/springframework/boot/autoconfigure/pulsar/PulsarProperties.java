@@ -42,13 +42,13 @@ import org.springframework.util.Assert;
  */
 public class PulsarProperties {
 
-	// FIXME move DeadLetter
-
 	private final Client client = new Client();
 
 	private final Admin admin = new Admin();
 
 	private final Defaults defaults = new Defaults();
+
+	private final Function function = new Function();
 
 	private final Producer producer = new Producer();
 
@@ -57,8 +57,6 @@ public class PulsarProperties {
 	private final Listener listener = new Listener();
 
 	private final Reader reader = new Reader();
-
-	private final Function function = new Function();
 
 	private final Template template = new Template();
 
