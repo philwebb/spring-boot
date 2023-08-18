@@ -34,7 +34,7 @@ import org.springframework.util.unit.DataSize;
 /**
  * @author pwebb
  */
-public class DunnoMapToNonReactive {
+public class XDunnoMapToNonReactive {
 
 	private PulsarContainerProperties getContainerProperties(SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {

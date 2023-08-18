@@ -37,7 +37,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link PulsarClientBuilderCustomizers}.
+ * Tests for {@link XPulsarClientBuilderCustomizers}.
  *
  * @author Chris Bono
  */
@@ -46,7 +46,7 @@ class PulsarClientBuilderConfigurerTests {
 	@Test
 	void singleCustomizerIsApplied() {
 		PulsarClientBuilderCustomizer customizer = mock(PulsarClientBuilderCustomizer.class);
-		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(new XPulsarProperties(),
+		XPulsarClientBuilderCustomizers configurer = new XPulsarClientBuilderCustomizers(new XPulsarProperties(),
 				List.of(customizer));
 		ClientBuilder clientBuilder = mock(ClientBuilder.class);
 		configurer.configure(clientBuilder);
@@ -57,7 +57,7 @@ class PulsarClientBuilderConfigurerTests {
 	void multipleCustomizersAreAppliedInOrder() {
 		PulsarClientBuilderCustomizer customizer1 = mock(PulsarClientBuilderCustomizer.class);
 		PulsarClientBuilderCustomizer customizer2 = mock(PulsarClientBuilderCustomizer.class);
-		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(new XPulsarProperties(),
+		XPulsarClientBuilderCustomizers configurer = new XPulsarClientBuilderCustomizers(new XPulsarProperties(),
 				List.of(customizer2, customizer1));
 		ClientBuilder clientBuilder = mock(ClientBuilder.class);
 		configurer.configure(clientBuilder);
@@ -76,7 +76,7 @@ class PulsarClientBuilderConfigurerTests {
 		clientProps.setLookupTimeout(Duration.ofSeconds(2));
 		clientProps.setConnectionTimeout(Duration.ofSeconds(12));
 
-		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(pulsarProps,
+		XPulsarClientBuilderCustomizers configurer = new XPulsarClientBuilderCustomizers(pulsarProps,
 				Collections.emptyList());
 		ClientBuilder clientBuilder = mock(ClientBuilder.class);
 		configurer.configure(clientBuilder);
@@ -107,7 +107,7 @@ class PulsarClientBuilderConfigurerTests {
 		clientProps.setServiceUrl("foo");
 
 		PulsarClientBuilderCustomizer customizer = (clientBuilder) -> clientBuilder.serviceUrl("bar");
-		PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(pulsarProps, List.of(customizer));
+		XPulsarClientBuilderCustomizers configurer = new XPulsarClientBuilderCustomizers(pulsarProps, List.of(customizer));
 		ClientBuilder clientBuilder = mock(ClientBuilder.class);
 		configurer.configure(clientBuilder);
 
@@ -131,7 +131,7 @@ class PulsarClientBuilderConfigurerTests {
 			Client clientProps = pulsarProps.getClient();
 			clientProps.setAuthPluginClassName(this.authPluginClassName);
 			clientProps.setAuthentication(Map.of("token", this.authToken));
-			PulsarClientBuilderCustomizers configurer = new PulsarClientBuilderCustomizers(pulsarProps,
+			XPulsarClientBuilderCustomizers configurer = new XPulsarClientBuilderCustomizers(pulsarProps,
 					Collections.emptyList());
 			ClientBuilder clientBuilder = mock(ClientBuilder.class);
 			configurer.configure(clientBuilder);

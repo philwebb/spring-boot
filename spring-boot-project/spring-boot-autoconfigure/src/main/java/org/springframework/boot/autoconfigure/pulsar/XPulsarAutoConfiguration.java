@@ -83,7 +83,7 @@ public class XPulsarAutoConfiguration {
 	@ConditionalOnMissingBean
 	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider)
 			throws PulsarClientException {
-		PulsarClientBuilderCustomizers customizers = new PulsarClientBuilderCustomizers();
+		XPulsarClientBuilderCustomizers customizers = new XPulsarClientBuilderCustomizers();
 		customizers.add(new XPulsarPropertiesClientBuilderCustomizer(this.properties));
 		customizers.addAll(customizersProvider.orderedStream());
 		return new DefaultPulsarClientFactory(customizers).createClient();
@@ -94,7 +94,7 @@ public class XPulsarAutoConfiguration {
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
 	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
 		String defaultTopic = this.properties.getProducer().getTopicName();
-		ProducerBuilderCustomizer<?> defaultConfigCustomizer = DunnoMapToNonReactive
+		ProducerBuilderCustomizer<?> defaultConfigCustomizer = XDunnoMapToNonReactive
 			.toProducerBuilderCustomizer(this.properties.getProducer());
 		return new DefaultPulsarProducerFactory<>(pulsarClient, defaultTopic, defaultConfigCustomizer, topicResolver);
 	}
@@ -106,7 +106,7 @@ public class XPulsarAutoConfiguration {
 			TopicResolver topicResolver) {
 		Cache cache = this.properties.getProducer().getCache();
 		String defaultTopic = this.properties.getProducer().getTopicName();
-		ProducerBuilderCustomizer<?> defaultConfigCustomizer = DunnoMapToNonReactive
+		ProducerBuilderCustomizer<?> defaultConfigCustomizer = XDunnoMapToNonReactive
 			.toProducerBuilderCustomizer(this.properties.getProducer());
 		return new CachingPulsarProducerFactory<>(pulsarClient, defaultTopic, defaultConfigCustomizer, topicResolver,
 				cache.getExpireAfterAccess(), cache.getMaximumSize(), cache.getInitialCapacity());
@@ -168,7 +168,7 @@ public class XPulsarAutoConfiguration {
 	@ConditionalOnMissingBean(PulsarConsumerFactory.class)
 	DefaultPulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient) {
 		return new DefaultPulsarConsumerFactory<>(pulsarClient,
-				DunnoMapToNonReactive.toConsumerBuilderCustomizer(this.properties.getConsumer()));
+				XDunnoMapToNonReactive.toConsumerBuilderCustomizer(this.properties.getConsumer()));
 	}
 
 	@Bean
@@ -186,7 +186,7 @@ public class XPulsarAutoConfiguration {
 	@ConditionalOnMissingBean(PulsarReaderFactory.class)
 	DefaultPulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient) {
 		return new DefaultPulsarReaderFactory<>(pulsarClient,
-				DunnoMapToNonReactive.toReaderBuilderCustomizer(this.properties.getReader()));
+				XDunnoMapToNonReactive.toReaderBuilderCustomizer(this.properties.getReader()));
 	}
 
 }

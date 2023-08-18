@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Chris Bono
  */
-class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
+class XPulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 
 	// FIXME
 
@@ -43,7 +43,7 @@ class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 	 * @param properties properties to use
 	 * @param customizers list of customizers to apply or empty list if no customizers
 	 */
-	public PulsarClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers) {
+	public XPulsarClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "customizers must not be null");
 		this.customizers = customizers;
 	}
@@ -51,7 +51,7 @@ class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 	/**
 	 *
 	 */
-	public PulsarClientBuilderCustomizers() {
+	public XPulsarClientBuilderCustomizers() {
 		this.customizers = new ArrayList<>();
 	}
 
@@ -67,7 +67,7 @@ class PulsarClientBuilderCustomizers implements PulsarClientBuilderCustomizer {
 	protected void applyCustomizers(List<PulsarClientBuilderCustomizer> clientBuilderCustomizers,
 			ClientBuilder clientBuilder) {
 		LambdaSafe.callbacks(PulsarClientBuilderCustomizer.class, clientBuilderCustomizers, clientBuilder)
-			.withLogger(PulsarClientBuilderCustomizers.class)
+			.withLogger(XPulsarClientBuilderCustomizers.class)
 			.invoke((customizer) -> customizer.customize(clientBuilder));
 	}
 

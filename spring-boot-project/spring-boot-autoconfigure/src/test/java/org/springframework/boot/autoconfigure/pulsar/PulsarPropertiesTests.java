@@ -301,7 +301,7 @@ class PulsarPropertiesTests {
 		@Test
 		void toProducerCustomizer() {
 			ProducerBuilder producerBuilder = mock(ProducerBuilder.class);
-			ProducerBuilderCustomizer<?> customizer = this.producerProps.toProducerBuilderCustomizer();
+			ProducerBuilderCustomizer<?> customizer = this.producerProps.producerBuilderCustomizer();
 			customizer.customize(producerBuilder);
 
 			then(producerBuilder).should().topic("my-topic");

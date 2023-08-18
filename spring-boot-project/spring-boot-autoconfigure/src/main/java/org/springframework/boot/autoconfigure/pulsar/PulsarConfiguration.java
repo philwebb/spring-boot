@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
@@ -46,7 +47,12 @@ import org.springframework.pulsar.function.PulsarSink;
 import org.springframework.pulsar.function.PulsarSource;
 
 /**
+ * Common configuration used by both {@link PulsarAutoConfiguration} and
+ * {@link PulsarReactiveAutoConfiguration}. A separate configuration class is used so that
+ * {@link PulsarAutoConfiguration} can be excluded for reactive only application.
+ *
  * @author Chris Bono
+ * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(PulsarProperties.class)
@@ -65,11 +71,14 @@ class PulsarConfiguration {
 		List<PulsarClientBuilderCustomizer> customizers = new ArrayList<>();
 		customizers.add(PulsarPropertyMapper.clientCustomizer(this.properties));
 		customizers.addAll(pulsarClientBuilderCustomizers.orderedStream().toList());
-
-		// FIXME map properties, add customizers, lambdasafe
-		PulsarClientBuilderCustomizer customizer = null;
-		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(customizer);
+		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(
+				(clientBuilder) -> applyClientBuilderCustomizers(customizers, clientBuilder));
 		return clientFactory.createClient();
+	}
+
+	private void applyClientBuilderCustomizers(List<PulsarClientBuilderCustomizer> customizers,
+			ClientBuilder clientBuilder) {
+		customizers.forEach((customizer) -> customizer.customize(clientBuilder));
 	}
 
 	@Bean
@@ -129,7 +138,9 @@ class PulsarConfiguration {
 	PulsarFunctionAdministration pulsarFunctionAdministration(PulsarAdministration pulsarAdministration,
 			ObjectProvider<PulsarFunction> pulsarFunctions, ObjectProvider<PulsarSink> pulsarSinks,
 			ObjectProvider<PulsarSource> pulsarSources) {
-		return null;
+		PulsarProperties.Function properties = this.properties.getFunction();
+		return new PulsarFunctionAdministration(pulsarAdministration, pulsarFunctions, pulsarSinks, pulsarSources,
+				properties.getFailFast(), properties.getPropagateFailures(), properties.getPropagateStopFailures());
 	}
 
 }

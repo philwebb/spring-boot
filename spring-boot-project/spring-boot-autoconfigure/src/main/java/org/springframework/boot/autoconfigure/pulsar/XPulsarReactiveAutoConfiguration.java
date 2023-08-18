@@ -96,7 +96,7 @@ public class XPulsarReactiveAutoConfiguration {
 	DefaultReactivePulsarSenderFactory<?> reactivePulsarSenderFactory(ReactivePulsarClient pulsarReactivePulsarClient,
 			ObjectProvider<ReactiveMessageSenderCache> cache, TopicResolver topicResolver) {
 		return new DefaultReactivePulsarSenderFactory<>(pulsarReactivePulsarClient,
-				DunnoMapToReactive.buildReactiveMessageSenderSpec(this.properties), cache.getIfAvailable(), topicResolver);
+				XDunnoMapToReactive.buildReactiveMessageSenderSpec(this.properties), cache.getIfAvailable(), topicResolver);
 	}
 
 	@Bean
@@ -104,14 +104,14 @@ public class XPulsarReactiveAutoConfiguration {
 	DefaultReactivePulsarConsumerFactory<?> reactivePulsarConsumerFactory(
 			ReactivePulsarClient pulsarReactivePulsarClient) {
 		return new DefaultReactivePulsarConsumerFactory<>(pulsarReactivePulsarClient,
-				DunnoMapToReactive.buildReactiveMessageConsumerSpec(this.properties));
+				XDunnoMapToReactive.buildReactiveMessageConsumerSpec(this.properties));
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
 	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient pulsarReactivePulsarClient) {
 		return new DefaultReactivePulsarReaderFactory<>(pulsarReactivePulsarClient,
-				DunnoMapToReactive.buildReactiveMessageReaderSpec(this.properties));
+				XDunnoMapToReactive.buildReactiveMessageReaderSpec(this.properties));
 	}
 
 	@Bean

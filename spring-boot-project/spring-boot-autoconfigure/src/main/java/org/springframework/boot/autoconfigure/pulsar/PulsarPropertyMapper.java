@@ -16,18 +16,40 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
+import org.springframework.pulsar.core.ProducerBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 
 /**
- * @author pwebb
+ * Helper class used to map {@link PulsarProperties}.
+ *
+ * @author Chris Bono
  */
-public class PulsarPropertyMapper {
+class PulsarPropertyMapper {
 
 	/**
 	 * @param properties
 	 * @return
 	 */
 	public static PulsarClientBuilderCustomizer clientCustomizer(PulsarProperties properties) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	/**
+	 * @param producer
+	 * @return
+	 */
+	public static ProducerBuilderCustomizer<?> producerBuilderCustomizer(PulsarProperties properties) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	/**
+	 * @param properties
+	 * @return
+	 */
+	public static ConsumerBuilderCustomizer<?> consumerBuilderCustomizer(PulsarProperties properties) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}

@@ -26,7 +26,7 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
 /**
  * @author pwebb
  */
-public class DunnoMapToReactive {
+public class XDunnoMapToReactive {
 
 	private void pulsarReactiveAnnotationDrivenConfigurationReactivePulsarListenerContainerFactory() {
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();

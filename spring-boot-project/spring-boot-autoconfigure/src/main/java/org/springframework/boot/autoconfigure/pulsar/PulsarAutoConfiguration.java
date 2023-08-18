@@ -23,16 +23,21 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.pulsar.annotation.EnablePulsar;
 import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
 import org.springframework.pulsar.config.PulsarAnnotationSupportBeanNames;
+import org.springframework.pulsar.core.CachingPulsarProducerFactory;
+import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
 import org.springframework.pulsar.core.DefaultPulsarConsumerFactory;
 import org.springframework.pulsar.core.DefaultPulsarProducerFactory;
 import org.springframework.pulsar.core.DefaultPulsarReaderFactory;
+import org.springframework.pulsar.core.ProducerBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarReaderFactory;
@@ -53,19 +58,32 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 @Import(PulsarConfiguration.class)
 public class PulsarAutoConfiguration {
 
+	private PulsarProperties properties;
+
+	PulsarAutoConfiguration(PulsarProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
-	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
-		// FIXME merge these to save two methods?
-		// FIXME return based CachingPulsarProducerFactory on @ConditionalOnProperty(name
-		// = "spring.pulsar.producer.cache.enabled", havingValue = "false")
-		return null;
+	DefaultPulsarProducerFactory<?> pulsarProducerFactory(Environment environment, PulsarClient pulsarClient,
+			TopicResolver topicResolver) {
+		String topicName = this.properties.getProducer().getTopicName();
+		ProducerBuilderCustomizer<?> customizer = PulsarPropertyMapper.producerBuilderCustomizer(this.properties);
+		if (!environment.getProperty("spring.pulsar.producer.cache.enabled", Boolean.class, false)) {
+			return new DefaultPulsarProducerFactory<>(pulsarClient, topicName, customizer, topicResolver);
+		}
+		Cache cacheProperties = this.properties.getProducer().getCache();
+		return new CachingPulsarProducerFactory<>(pulsarClient, topicName, customizer, topicResolver,
+				cacheProperties.getExpireAfterAccess(), cacheProperties.getMaximumSize(),
+				cacheProperties.getInitialCapacity());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarConsumerFactory.class)
 	DefaultPulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient) {
-		return null;
+		ConsumerBuilderCustomizer<?> customizer = PulsarPropertyMapper.consumerBuilderCustomizer(this.properties);
+		return new DefaultPulsarConsumerFactory<>(pulsarClient, customizer);
 	}
 
 	@Bean
