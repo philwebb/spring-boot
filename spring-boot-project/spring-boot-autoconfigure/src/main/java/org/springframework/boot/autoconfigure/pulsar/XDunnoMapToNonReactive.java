@@ -18,13 +18,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Reader;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
-import org.springframework.pulsar.core.ProducerBuilderCustomizer;
-import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
@@ -64,33 +58,6 @@ public class XDunnoMapToNonReactive {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getTopicNames).to(reader::setTopics);
 
-	}
-
-	/**
-	 * @param producer
-	 * @return
-	 */
-	public static ProducerBuilderCustomizer<?> toProducerBuilderCustomizer(Producer producer) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
-	 * @param consumer
-	 * @return
-	 */
-	public static ConsumerBuilderCustomizer<?> toConsumerBuilderCustomizer(Consumer consumer) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
-	 * @param reader
-	 * @return
-	 */
-	public static ReaderBuilderCustomizer<?> toReaderBuilderCustomizer(Reader reader) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

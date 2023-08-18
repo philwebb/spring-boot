@@ -462,6 +462,10 @@ public class PulsarProperties {
 
 		public static class Batching {
 
+			// FIXME Big B boolean?
+
+			// FIXME why Batching type? We don't have for Chunking
+
 			/**
 			 * Whether to automatically batch messages.
 			 */
@@ -908,7 +912,7 @@ public class PulsarProperties {
 		 */
 		private boolean observationsEnabled = true;
 
-		public Boolean isObservationsEnabled() {
+		public boolean isObservationsEnabled() {
 			return this.observationsEnabled;
 		}
 

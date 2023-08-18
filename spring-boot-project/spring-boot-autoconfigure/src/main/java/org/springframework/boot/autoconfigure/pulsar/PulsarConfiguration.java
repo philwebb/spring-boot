@@ -66,13 +66,13 @@ class PulsarConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> pulsarClientBuilderCustomizers)
+	PulsarClient pulsarClient(List<PulsarClientBuilderCustomizer> pulsarClientBuilderCustomizers)
 			throws PulsarClientException {
-		List<PulsarClientBuilderCustomizer> customizers = new ArrayList<>();
-		customizers.add(PulsarPropertyMapper.clientCustomizer(this.properties));
-		customizers.addAll(pulsarClientBuilderCustomizers.orderedStream().toList());
+		List<PulsarClientBuilderCustomizer> allCustomizers = new ArrayList<>();
+		allCustomizers.add(PulsarPropertyMapper.clientBuilderCustomizer(this.properties));
+		allCustomizers.addAll(pulsarClientBuilderCustomizers);
 		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(
-				(clientBuilder) -> applyClientBuilderCustomizers(customizers, clientBuilder));
+				(clientBuilder) -> applyClientBuilderCustomizers(allCustomizers, clientBuilder));
 		return clientFactory.createClient();
 	}
 
@@ -84,10 +84,10 @@ class PulsarConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(SchemaResolver.class)
 	DefaultSchemaResolver pulsarSchemaResolver(
-			ObjectProvider<SchemaResolverCustomizer<SchemaResolver>> schemaResolverCustomizers) {
+			List<SchemaResolverCustomizer<SchemaResolver>> schemaResolverCustomizers) {
 		DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
 		addCustomSchemaMappings(schemaResolver, this.properties.getDefaults().getTypeMappings());
-		applySchemaResolverCustomizers(schemaResolverCustomizers.orderedStream().toList(), schemaResolver);
+		applySchemaResolverCustomizers(schemaResolverCustomizers, schemaResolver);
 		return schemaResolver;
 	}
 

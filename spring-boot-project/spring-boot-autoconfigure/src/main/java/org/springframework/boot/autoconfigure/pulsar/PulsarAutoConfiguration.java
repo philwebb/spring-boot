@@ -16,10 +16,11 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import java.util.List;
+
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,8 +43,10 @@ import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarReaderFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
+import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
+import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 
 /**
@@ -52,6 +55,7 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
  * @author Soby Chacko
  * @author Chris Bono
  * @author Alexander Preuß
+ * @author Phillip Webb
  * @since 3.2.0
  */
 @AutoConfiguration
@@ -89,32 +93,40 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarListenerContainerFactory")
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
-			ObjectProvider<PulsarConsumerFactory<Object>> consumerFactoryProvider, SchemaResolver schemaResolver,
+			PulsarConsumerFactory<?> pulsarConsumerFactory, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
-		return null;
-		// XPulsarAnnotationDrivenConfiguration
+		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
+		containerProperties.setSchemaResolver(schemaResolver);
+		containerProperties.setTopicResolver(topicResolver);
+		PulsarPropertyMapper.containerPropertiesCustomizer(this.properties).accept(containerProperties);
+		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarReaderFactory.class)
 	DefaultPulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient) {
-		return null;
+		ReaderBuilderCustomizer<?> readerBuilderCustomizer = PulsarPropertyMapper
+			.readerBuilderCustomizer(this.properties);
+		return new DefaultPulsarReaderFactory<>(pulsarClient, readerBuilderCustomizer);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
-	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(
-			ObjectProvider<PulsarReaderFactory<Object>> readerFactoryProvider, SchemaResolver schemaResolver) {
-		PulsarReaderContainerProperties reader = null; // FIXME
-		return new DefaultPulsarReaderContainerFactory<>(readerFactoryProvider.getIfAvailable(), reader);
+	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(PulsarReaderFactory<?> pulsarReaderFactory,
+			SchemaResolver schemaResolver) {
+		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
+		readerContainerProperties.setSchemaResolver(schemaResolver);
+		PulsarPropertyMapper.readerContainerPropertiesCustomizer(this.properties).accept(readerContainerProperties);
+		return new DefaultPulsarReaderContainerFactory<>(pulsarReaderFactory, readerContainerProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
-			ObjectProvider<ProducerInterceptor> interceptorsProvider, SchemaResolver schemaResolver,
+			List<ProducerInterceptor> producerInterceptors, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
-		return null;
+		return new PulsarTemplate<>(pulsarProducerFactory, producerInterceptors, schemaResolver, topicResolver,
+				this.properties.getTemplate().isObservationsEnabled());
 	}
 
 	@Configuration(proxyBeanMethods = false)
