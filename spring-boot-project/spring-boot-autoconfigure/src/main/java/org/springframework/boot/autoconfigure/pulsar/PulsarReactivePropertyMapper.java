@@ -41,13 +41,13 @@ class PulsarReactivePropertyMapper {
 	private static void customizeMessageSenderSpec(MutableReactiveMessageSenderSpec spec,
 			PulsarProperties.Producer properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getTopicName).to(spec::setTopicName);
 		map.from(properties::getName).to(spec::setProducerName);
+		map.from(properties::getTopicName).to(spec::setTopicName);
 		map.from(properties::getSendTimeout).to(spec::setSendTimeout);
 		map.from(properties::getMessageRoutingMode).to(spec::setMessageRoutingMode);
 		map.from(properties::getHashingScheme).to(spec::setHashingScheme);
-		map.from(properties.getBatch()::getEnabled).to(spec::setBatchingEnabled);
-		map.from(properties::getChunkingEnabled).to(spec::setChunkingEnabled);
+		map.from(properties::isBatchingEnabled).to(spec::setBatchingEnabled);
+		map.from(properties::isChunkingEnabled).to(spec::setChunkingEnabled);
 		map.from(properties::getCompressionType).to(spec::setCompressionType);
 		map.from(properties::getAccessMode).to(spec::setAccessMode);
 	}
@@ -60,16 +60,13 @@ class PulsarReactivePropertyMapper {
 	private static void customizeMessageConsumerSpec(MutableReactiveMessageConsumerSpec spec,
 			PulsarProperties.Consumer properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getName).to(spec::setConsumerName);
 		map.from(properties::getTopics).as(ArrayList::new).to(spec::setTopicNames);
 		map.from(properties::getTopicsPattern).to(spec::setTopicsPattern);
-		map.from(properties::getDeadLetterPolicy).as(DeadLetterPolicyMapper::map).to(spec::setDeadLetterPolicy);
-		// FIXME missing, does it mapper?
-		// map.from(properties::getRetryLetterTopicEnable).to(spec::setRetryLetterTopicEnable);
-		map.from(properties::getName).to(spec::setConsumerName);
 		map.from(properties::getPriorityLevel).to(spec::setPriorityLevel);
-		map.from(properties::getReadCompacted).to(spec::setReadCompacted);
-		// FIXME missing, does it mapper?
-		// map.from(properties::getTopicsPatternSubscriptionMode).to(spec::setTopicsPatternSubscriptionMode);
+		map.from(properties::isReadCompacted).to(spec::setReadCompacted);
+		map.from(properties::getDeadLetterPolicy).as(DeadLetterPolicyMapper::map).to(spec::setDeadLetterPolicy);
+		map.from(properties::isRetryEnable).to(spec::setRetryLetterTopicEnable);
 		customizeMessageConsumerSpecSubscription(spec, properties.getSubscription());
 	}
 
@@ -77,9 +74,10 @@ class PulsarReactivePropertyMapper {
 			PulsarProperties.Consumer.Subscription properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(spec::setSubscriptionName);
-		map.from(properties::getType).to(spec::setSubscriptionType);
-		map.from(properties::getMode).to(spec::setSubscriptionMode);
 		map.from(properties::getInitialPosition).to(spec::setSubscriptionInitialPosition);
+		map.from(properties::getMode).to(spec::setSubscriptionMode);
+		map.from(properties::getTopicsMode).to(spec::setTopicsPatternSubscriptionMode);
+		map.from(properties::getType).to(spec::setSubscriptionType);
 	}
 
 	public static Consumer<ReactivePulsarContainerProperties<?>> containerPropertiesCustomizer(
@@ -104,8 +102,8 @@ class PulsarReactivePropertyMapper {
 	private static void customizePulsarContainerListenerProperties(
 			ReactivePulsarContainerProperties<?> containerProperties, PulsarProperties.Listener properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		// FIXME
-		// map.from(listenerProperties::getSchemaType).to(containerProperties::setSchemaType);
 		// map.from(listenerProperties::getHandlingTimeout).to(containerProperties::setHandlingTimeout);
 		// map.from(listenerProperties::getUseKeyOrderedProcessing).to(containerProperties::setUseKeyOrderedProcessing);
 	}
@@ -117,14 +115,11 @@ class PulsarReactivePropertyMapper {
 	private static void customizeMessageReaderSpec(MutableReactiveMessageReaderSpec spec,
 			PulsarProperties.Reader properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getTopicNames).as(ArrayList::new).to(spec::setTopicNames);
 		map.from(properties::getName).to(spec::setReaderName);
+		map.from(properties::getTopicNames).to(spec::setTopicNames);
 		map.from(properties::getSubscriptionName).to(spec::setSubscriptionName);
-		// FIXME
-		// map.from(properties::getGeneratedSubscriptionNamePrefix).to(spec::setGeneratedSubscriptionNamePrefix);
+		map.from(properties::getSubscriptionRolePrefix).to(spec::setGeneratedSubscriptionNamePrefix);
 		map.from(properties::getReadCompacted).to(spec::setReadCompacted);
-		// FIXME
-		// map.from(properties::getKeyHashRanges).as(List::of).to(spec::setKeyHashRanges);
 	}
 
 }

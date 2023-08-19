@@ -81,13 +81,13 @@ class PulsarPropertyMapper {
 	private static void customizeProducerBuilder(ProducerBuilder<Object> producerBuilder,
 			PulsarProperties.Producer properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getTopicName).to(producerBuilder::topic);
 		map.from(properties::getName).to(producerBuilder::producerName);
+		map.from(properties::getTopicName).to(producerBuilder::topic);
 		map.from(properties::getSendTimeout).to(timeoutProperty(producerBuilder::sendTimeout));
 		map.from(properties::getMessageRoutingMode).to(producerBuilder::messageRoutingMode);
 		map.from(properties::getHashingScheme).to(producerBuilder::hashingScheme);
-		map.from(properties.getBatch()::getEnabled).to(producerBuilder::enableBatching);
-		map.from(properties::getChunkingEnabled).to(producerBuilder::enableChunking);
+		map.from(properties::isBatchingEnabled).to(producerBuilder::enableBatching);
+		map.from(properties::isChunkingEnabled).to(producerBuilder::enableChunking);
 		map.from(properties::getCompressionType).to(producerBuilder::compressionType);
 		map.from(properties::getAccessMode).to(producerBuilder::accessMode);
 	}
@@ -99,22 +99,22 @@ class PulsarPropertyMapper {
 	private static void customizeConsumerBuilder(ConsumerBuilder<Object> consumerBuilder,
 			PulsarProperties.Consumer properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getName).to(consumerBuilder::consumerName);
 		map.from(properties::getTopics).as(ArrayList::new).to(consumerBuilder::topics);
 		map.from(properties::getTopicsPattern).to(consumerBuilder::topicsPattern);
-		map.from(properties::getName).to(consumerBuilder::consumerName);
 		map.from(properties::getPriorityLevel).to(consumerBuilder::priorityLevel);
-		map.from(properties::getReadCompacted).to(consumerBuilder::readCompacted);
+		map.from(properties::isReadCompacted).to(consumerBuilder::readCompacted);
 		map.from(properties::getDeadLetterPolicy).as(DeadLetterPolicyMapper::map).to(consumerBuilder::deadLetterPolicy);
-		map.from(properties::getRetryEnable).to(consumerBuilder::enableRetry);
+		map.from(properties::isRetryEnable).to(consumerBuilder::enableRetry);
 		customizeConsumerBuilderSubscription(consumerBuilder, properties.getSubscription());
 	}
 
 	private static void customizeConsumerBuilderSubscription(ConsumerBuilder<?> consumerBuilder,
 			PulsarProperties.Consumer.Subscription properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getName).to(consumerBuilder::subscriptionName);
 		map.from(properties::getInitialPosition).to(consumerBuilder::subscriptionInitialPosition);
 		map.from(properties::getMode).to(consumerBuilder::subscriptionMode);
-		map.from(properties::getName).to(consumerBuilder::subscriptionName);
 		map.from(properties::getTopicsMode).to(consumerBuilder::subscriptionTopicsMode);
 		map.from(properties::getType).to(consumerBuilder::subscriptionType);
 	}
@@ -139,8 +139,8 @@ class PulsarPropertyMapper {
 	private static void customizePulsarContainerListenerProperties(PulsarContainerProperties containerProperties,
 			PulsarProperties.Listener properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		// FIXME
-		// map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		// map.from(properties::getAckMode).to(containerProperties::setAckMode);
 		// map.from(properties::getBatchTimeout).asInt(Duration::toMillis).to(containerProperties::setBatchTimeoutMillis);
 		// map.from(properties::getMaxNumBytes).asInt(DataSize::toBytes).to(containerProperties::setMaxNumBytes);
@@ -155,12 +155,11 @@ class PulsarPropertyMapper {
 	private static void customizeReaderBuilder(ReaderBuilder<Object> readerBuilder,
 			PulsarProperties.Reader properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getTopicNames).as(ArrayList::new).to(readerBuilder::topics);
 		map.from(properties::getName).to(readerBuilder::readerName);
+		map.from(properties::getTopicNames).to(readerBuilder::topics);
 		map.from(properties::getSubscriptionName).to(readerBuilder::subscriptionName);
 		map.from(properties::getSubscriptionRolePrefix).to(readerBuilder::subscriptionRolePrefix);
 		map.from(properties::getReadCompacted).to(readerBuilder::readCompacted);
-		map.from(properties::getResetIncludeHead).whenTrue().to((b) -> readerBuilder.startMessageIdInclusive());
 	}
 
 	static Consumer<PulsarReaderContainerProperties> readerContainerPropertiesCustomizer(PulsarProperties properties) {

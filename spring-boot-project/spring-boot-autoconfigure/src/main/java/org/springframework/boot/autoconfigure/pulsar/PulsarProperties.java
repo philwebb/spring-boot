@@ -27,7 +27,6 @@ import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.HashingScheme;
 import org.apache.pulsar.client.api.MessageRoutingMode;
 import org.apache.pulsar.client.api.ProducerAccessMode;
-import org.apache.pulsar.client.api.Range;
 import org.apache.pulsar.client.api.RegexSubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionInitialPosition;
 import org.apache.pulsar.client.api.SubscriptionMode;
@@ -38,7 +37,11 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
 
 /**
- * @author pwebb
+ * Configuration properties Apache Pulsar.
+ *
+ * @author Chris Bono
+ * @author Phillip Webb
+ * @since 3.2.0
  */
 public class PulsarProperties {
 
@@ -181,6 +184,7 @@ public class PulsarProperties {
 			this.connectionTimeout = connectionTimeout;
 		}
 
+		// FIXME Not used?
 		public Duration getRequestTimeout() {
 			return this.requestTimeout;
 		}
@@ -191,6 +195,7 @@ public class PulsarProperties {
 
 	}
 
+	// FIXME We're missing this
 	public static class Admin {
 
 		/**
@@ -370,6 +375,11 @@ public class PulsarProperties {
 		private HashingScheme hashingScheme = HashingScheme.JavaStringHash;
 
 		/**
+		 * Whether to automatically batch messages.
+		 */
+		private boolean batchingEnabled = true;
+
+		/**
 		 * Whether to split large-size messages into multiple chunks.
 		 */
 		private boolean chunkingEnabled;
@@ -383,8 +393,6 @@ public class PulsarProperties {
 		 * Type of access to the topic the producer requires.
 		 */
 		private ProducerAccessMode accessMode = ProducerAccessMode.Shared;
-
-		private final Batching batch = new Batching();
 
 		private final Cache cache = new Cache();
 
@@ -428,7 +436,15 @@ public class PulsarProperties {
 			this.hashingScheme = hashingScheme;
 		}
 
-		public boolean getChunkingEnabled() {
+		public boolean isBatchingEnabled() {
+			return this.batchingEnabled;
+		}
+
+		public void setBatchingEnabled(boolean batchingEnabled) {
+			this.batchingEnabled = batchingEnabled;
+		}
+
+		public boolean isChunkingEnabled() {
 			return this.chunkingEnabled;
 		}
 
@@ -452,33 +468,8 @@ public class PulsarProperties {
 			this.accessMode = accessMode;
 		}
 
-		public Batching getBatch() {
-			return this.batch;
-		}
-
 		public Cache getCache() {
 			return this.cache;
-		}
-
-		public static class Batching {
-
-			// FIXME Big B boolean?
-
-			// FIXME why Batching type? We don't have for Chunking
-
-			/**
-			 * Whether to automatically batch messages.
-			 */
-			private Boolean enabled = true;
-
-			public Boolean getEnabled() {
-				return this.enabled;
-			}
-
-			public void setEnabled(Boolean enabled) {
-				this.enabled = enabled;
-			}
-
 		}
 
 		public static class Cache {
@@ -503,6 +494,7 @@ public class PulsarProperties {
 				this.expireAfterAccess = expireAfterAccess;
 			}
 
+			// FIXME only used with reactive?
 			public Duration getExpireAfterWrite() {
 				return this.expireAfterWrite;
 			}
@@ -608,7 +600,7 @@ public class PulsarProperties {
 			this.priorityLevel = priorityLevel;
 		}
 
-		public boolean getReadCompacted() {
+		public boolean isReadCompacted() {
 			return this.readCompacted;
 		}
 
@@ -624,7 +616,7 @@ public class PulsarProperties {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
-		public boolean getRetryEnable() {
+		public boolean isRetryEnable() {
 			return this.retryEnable;
 		}
 
@@ -766,7 +758,18 @@ public class PulsarProperties {
 
 	public static class Listener {
 
-		// FIXME
+		/**
+		 * SchemaType of the consumed messages.
+		 */
+		SchemaType schemaType;
+
+		public SchemaType getSchemaType() {
+			return this.schemaType;
+		}
+
+		public void setSchemaType(SchemaType schemaType) {
+			this.schemaType = schemaType;
+		}
 
 	}
 
@@ -796,17 +799,7 @@ public class PulsarProperties {
 		 * Whether to read messages from a compacted topic rather than a full message
 		 * backlog of a topic.
 		 */
-		private Boolean readCompacted;
-
-		/**
-		 * Whether the first message to be returned is the one specified by messageId.
-		 */
-		private Boolean resetIncludeHead;
-
-		/**
-		 * Key hash ranges of the reader.
-		 */
-		private Range[] keyHashRanges; // FIXME exposes Pulsar type. Not in reactive
+		private Boolean readCompacted; // FIXME big B
 
 		public String getName() {
 			return this.name;
@@ -848,14 +841,6 @@ public class PulsarProperties {
 			this.readCompacted = readCompacted;
 		}
 
-		public Boolean getResetIncludeHead() {
-			return this.resetIncludeHead;
-		}
-
-		public void setResetIncludeHead(Boolean resetIncludeHead) {
-			this.resetIncludeHead = resetIncludeHead;
-		}
-
 	}
 
 	public static class Function {
@@ -878,7 +863,7 @@ public class PulsarProperties {
 		 */
 		private boolean propagateStopFailures = false;
 
-		public boolean getFailFast() {
+		public boolean isFailFast() {
 			return this.failFast;
 		}
 
@@ -886,7 +871,7 @@ public class PulsarProperties {
 			this.failFast = failFast;
 		}
 
-		public boolean getPropagateFailures() {
+		public boolean isPropagateFailures() {
 			return this.propagateFailures;
 		}
 
@@ -894,7 +879,7 @@ public class PulsarProperties {
 			this.propagateFailures = propagateFailures;
 		}
 
-		public boolean getPropagateStopFailures() {
+		public boolean isPropagateStopFailures() {
 			return this.propagateStopFailures;
 		}
 

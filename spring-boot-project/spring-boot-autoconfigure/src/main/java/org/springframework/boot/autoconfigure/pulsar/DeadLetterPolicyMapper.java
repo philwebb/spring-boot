@@ -22,7 +22,11 @@ import org.apache.pulsar.client.api.DeadLetterPolicy.DeadLetterPolicyBuilder;
 import org.springframework.boot.context.properties.PropertyMapper;
 
 /**
- * @author pwebb
+ * Helper class used to map {@link PulsarProperties.Consumer.DeadLetterPolicy dead letter
+ * policy properties}.
+ *
+ * @author Chris Bono
+ * @author Phillip Webb
  */
 class DeadLetterPolicyMapper {
 

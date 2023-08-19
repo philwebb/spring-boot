@@ -52,8 +52,8 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Pulsar.
  *
- * @author Soby Chacko
  * @author Chris Bono
+ * @author Soby Chacko
  * @author Alexander Preuß
  * @author Phillip Webb
  * @since 3.2.0

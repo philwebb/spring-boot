@@ -140,7 +140,7 @@ class PulsarConfiguration {
 			ObjectProvider<PulsarSource> pulsarSources) {
 		PulsarProperties.Function properties = this.properties.getFunction();
 		return new PulsarFunctionAdministration(pulsarAdministration, pulsarFunctions, pulsarSinks, pulsarSources,
-				properties.getFailFast(), properties.getPropagateFailures(), properties.getPropagateStopFailures());
+				properties.isFailFast(), properties.isPropagateFailures(), properties.isPropagateStopFailures());
 	}
 
 }
