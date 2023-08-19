@@ -16,11 +16,10 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
-import java.util.List;
-
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -123,10 +122,10 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
-			List<ProducerInterceptor> producerInterceptors, SchemaResolver schemaResolver,
+			ObjectProvider<ProducerInterceptor> producerInterceptors, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
-		return new PulsarTemplate<>(pulsarProducerFactory, producerInterceptors, schemaResolver, topicResolver,
-				this.properties.getTemplate().isObservationsEnabled());
+		return new PulsarTemplate<>(pulsarProducerFactory, producerInterceptors.orderedStream().toList(),
+				schemaResolver, topicResolver, this.properties.getTemplate().isObservationsEnabled());
 	}
 
 	@Configuration(proxyBeanMethods = false)

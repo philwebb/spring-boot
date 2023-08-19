@@ -23,20 +23,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.ProducerBuilder;
 import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticationException;
 import org.apache.pulsar.client.api.ReaderBuilder;
 
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Authentication;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
 import org.springframework.pulsar.core.ProducerBuilderCustomizer;
+import org.springframework.pulsar.core.PulsarAdminBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,16 +59,26 @@ class PulsarPropertyMapper {
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
-		customizeClientBuilderAuthentication(clientBuilder, properties);
+		customizeAuthentication(clientBuilder::authentication, properties.getAuthentication());
 	}
 
-	private static void customizeClientBuilderAuthentication(ClientBuilder clientBuilder,
-			PulsarProperties.Client properties) {
-		String authPluginClassName = properties.getAuthPluginClassName();
-		Map<String, String> authentication = properties.getAuthentication();
-		if (StringUtils.hasText(authPluginClassName) && !CollectionUtils.isEmpty(authentication)) {
+	static PulsarAdminBuilderCustomizer adminBuilderCustomizer(PulsarProperties properties) {
+		return (adminBuilder) -> customizerAdminBuilder(adminBuilder, properties.getAdmin());
+	}
+
+	private static void customizerAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarProperties.Admin properties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getServiceUrl).to(adminBuilder::serviceHttpUrl);
+		map.from(properties::getConnectionTimeout).to(timeoutProperty(adminBuilder::connectionTimeout));
+		map.from(properties::getReadTimeout).to(timeoutProperty(adminBuilder::readTimeout));
+		map.from(properties::getRequestTimeout).to(timeoutProperty(adminBuilder::requestTimeout));
+		customizeAuthentication(adminBuilder::authentication, properties.getAuthentication());
+	}
+
+	private static void customizeAuthentication(AuthenticationConsumer authentication, Authentication properties) {
+		if (StringUtils.hasText(properties.getPluginClassName())) {
 			try {
-				clientBuilder.authentication(authPluginClassName, authentication);
+				authentication.accept(properties.getPluginClassName(), properties.getParam());
 			}
 			catch (UnsupportedAuthenticationException ex) {
 				throw new IllegalStateException("Unable to configure Pulsar authentication", ex);
@@ -175,6 +187,13 @@ class PulsarPropertyMapper {
 
 	private static Consumer<Duration> timeoutProperty(BiConsumer<Integer, TimeUnit> setter) {
 		return (duration) -> setter.accept((int) duration.toMillis(), TimeUnit.MILLISECONDS);
+	}
+
+	private interface AuthenticationConsumer {
+
+		void accept(String authPluginClassName, Map<String, String> authParams)
+				throws UnsupportedAuthenticationException;
+
 	}
 
 }

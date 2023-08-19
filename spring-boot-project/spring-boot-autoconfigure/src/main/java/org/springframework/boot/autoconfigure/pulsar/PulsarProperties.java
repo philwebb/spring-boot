@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -107,16 +108,6 @@ public class PulsarProperties {
 		private String serviceUrl = "pulsar://localhost:6650";
 
 		/**
-		 * Fully qualified class name of the authentication plugin.
-		 */
-		private String authPluginClassName;
-
-		/**
-		 * Authentication parameter(s) as a map of parameter names to parameter values.
-		 */
-		private Map<String, String> authentication;
-
-		/**
 		 * Client operation timeout.
 		 */
 		private Duration operationTimeout = Duration.ofSeconds(30);
@@ -136,28 +127,17 @@ public class PulsarProperties {
 		 */
 		private Duration requestTimeout = Duration.ofSeconds(60);
 
+		/**
+		 * Authentication settings.
+		 */
+		private final Authentication authentication = new Authentication();
+
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
 
 		public void setServiceUrl(String serviceUrl) {
 			this.serviceUrl = serviceUrl;
-		}
-
-		public String getAuthPluginClassName() {
-			return this.authPluginClassName;
-		}
-
-		public void setAuthPluginClassName(String authPluginClassName) {
-			this.authPluginClassName = authPluginClassName;
-		}
-
-		public Map<String, String> getAuthentication() {
-			return this.authentication;
-		}
-
-		public void setAuthentication(Map<String, String> authentication) {
-			this.authentication = authentication;
 		}
 
 		public Duration getOperationTimeout() {
@@ -193,30 +173,18 @@ public class PulsarProperties {
 			this.requestTimeout = requestTimeout;
 		}
 
+		public Authentication getAuthentication() {
+			return this.authentication;
+		}
+
 	}
 
-	// FIXME We're missing this
 	public static class Admin {
 
 		/**
 		 * Pulsar web URL for the admin endpoint in the format '(http|https)://host:port'.
 		 */
 		private String serviceUrl = "http://localhost:8080";
-
-		/**
-		 * Fully qualified class name of the authentication plugin.
-		 */
-		private String authPluginClassName;
-
-		/**
-		 * Authentication parameter(s) as a JSON encoded string.
-		 */
-		private String authParams; // FIXME ??
-
-		/**
-		 * Authentication parameter(s) as a map of parameter names to parameter values.
-		 */
-		private Map<String, String> authentication;
 
 		/**
 		 * Duration to wait for a connection to server to be established.
@@ -233,36 +201,17 @@ public class PulsarProperties {
 		 */
 		private Duration requestTimeout = Duration.ofMinutes(5);
 
+		/**
+		 * Authentication settings.
+		 */
+		private final Authentication authentication = new Authentication();
+
 		public String getServiceUrl() {
 			return this.serviceUrl;
 		}
 
 		public void setServiceUrl(String serviceUrl) {
 			this.serviceUrl = serviceUrl;
-		}
-
-		public String getAuthPluginClassName() {
-			return this.authPluginClassName;
-		}
-
-		public void setAuthPluginClassName(String authPluginClassName) {
-			this.authPluginClassName = authPluginClassName;
-		}
-
-		public String getAuthParams() {
-			return this.authParams;
-		}
-
-		public void setAuthParams(String authParams) {
-			this.authParams = authParams;
-		}
-
-		public Map<String, String> getAuthentication() {
-			return this.authentication;
-		}
-
-		public void setAuthentication(Map<String, String> authentication) {
-			this.authentication = authentication;
 		}
 
 		public Duration getConnectionTimeout() {
@@ -287,6 +236,40 @@ public class PulsarProperties {
 
 		public void setRequestTimeout(Duration requestTimeout) {
 			this.requestTimeout = requestTimeout;
+		}
+
+		public Authentication getAuthentication() {
+			return this.authentication;
+		}
+
+	}
+
+	public static class Authentication {
+
+		/**
+		 * Fully qualified class name of the authentication plugin.
+		 */
+		private String pluginClassName;
+
+		/**
+		 * Authentication parameter(s) as a map of parameter names to parameter values.
+		 */
+		private Map<String, String> param = new LinkedHashMap<>();
+
+		public String getPluginClassName() {
+			return this.pluginClassName;
+		}
+
+		public void setPluginClassName(String pluginClassName) {
+			this.pluginClassName = pluginClassName;
+		}
+
+		public Map<String, String> getParam() {
+			return this.param;
+		}
+
+		public void setParam(Map<String, String> param) {
+			this.param = param;
 		}
 
 	}

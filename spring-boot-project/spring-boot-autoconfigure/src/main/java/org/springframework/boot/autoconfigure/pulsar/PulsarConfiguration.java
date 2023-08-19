@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pulsar.client.admin.PulsarAdminBuilder;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.pulsar.core.DefaultPulsarClientFactory;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
+import org.springframework.pulsar.core.PulsarAdminBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
@@ -66,11 +68,11 @@ class PulsarConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	PulsarClient pulsarClient(List<PulsarClientBuilderCustomizer> pulsarClientBuilderCustomizers)
+	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> pulsarClientBuilderCustomizers)
 			throws PulsarClientException {
 		List<PulsarClientBuilderCustomizer> allCustomizers = new ArrayList<>();
 		allCustomizers.add(PulsarPropertyMapper.clientBuilderCustomizer(this.properties));
-		allCustomizers.addAll(pulsarClientBuilderCustomizers);
+		allCustomizers.addAll(pulsarClientBuilderCustomizers.orderedStream().toList());
 		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(
 				(clientBuilder) -> applyClientBuilderCustomizers(allCustomizers, clientBuilder));
 		return clientFactory.createClient();
@@ -82,12 +84,27 @@ class PulsarConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	PulsarAdministration pulsarAdministration(
+			ObjectProvider<PulsarAdminBuilderCustomizer> pulsarAdminBuilderCustomizers) {
+		List<PulsarAdminBuilderCustomizer> allCustomizers = new ArrayList<>();
+		allCustomizers.add(PulsarPropertyMapper.adminBuilderCustomizer(this.properties));
+		allCustomizers.addAll(pulsarAdminBuilderCustomizers.orderedStream().toList());
+		return new PulsarAdministration((adminBuilder) -> applyAdminBuilderCustomizers(allCustomizers, adminBuilder));
+	}
+
+	private void applyAdminBuilderCustomizers(List<PulsarAdminBuilderCustomizer> customizers,
+			PulsarAdminBuilder adminBuilder) {
+		customizers.forEach((customizer) -> customizer.customize(adminBuilder));
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(SchemaResolver.class)
 	DefaultSchemaResolver pulsarSchemaResolver(
-			List<SchemaResolverCustomizer<SchemaResolver>> schemaResolverCustomizers) {
+			ObjectProvider<SchemaResolverCustomizer<SchemaResolver>> schemaResolverCustomizers) {
 		DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
 		addCustomSchemaMappings(schemaResolver, this.properties.getDefaults().getTypeMappings());
-		applySchemaResolverCustomizers(schemaResolverCustomizers, schemaResolver);
+		applySchemaResolverCustomizers(schemaResolverCustomizers.orderedStream().toList(), schemaResolver);
 		return schemaResolver;
 	}
 
