@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Chris Bono
  */
-class PulsarClientBuilderConfigurerTests {
+class XPulsarClientBuilderConfigurerTests {
 
 	@Test
 	void singleCustomizerIsApplied() {

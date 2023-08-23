@@ -21,12 +21,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link PulsarReactiveAutoConfiguration}.
+ * Tests for {@link PulsarConfiguration}.
  *
- * @author Chris Bono
- * @author Phillip Webb
+ * @author pwebb
  */
-class PulsarReactiveAutoConfigurationTests {
+class PulsarConfigurationTests {
 
 	@Test
 	void test() {

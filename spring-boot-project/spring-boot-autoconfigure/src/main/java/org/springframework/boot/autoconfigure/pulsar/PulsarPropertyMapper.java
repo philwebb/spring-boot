@@ -86,11 +86,11 @@ class PulsarPropertyMapper {
 		}
 	}
 
-	static ProducerBuilderCustomizer<?> producerBuilderCustomizer(PulsarProperties properties) {
+	static <T> ProducerBuilderCustomizer<T> producerBuilderCustomizer(PulsarProperties properties) {
 		return (producerBuilder) -> customizeProducerBuilder(producerBuilder, properties.getProducer());
 	}
 
-	private static void customizeProducerBuilder(ProducerBuilder<Object> producerBuilder,
+	private static <T> void customizeProducerBuilder(ProducerBuilder<T> producerBuilder,
 			PulsarProperties.Producer properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(producerBuilder::producerName);
@@ -104,11 +104,11 @@ class PulsarPropertyMapper {
 		map.from(properties::getAccessMode).to(producerBuilder::accessMode);
 	}
 
-	static ConsumerBuilderCustomizer<?> consumerBuilderCustomizer(PulsarProperties properties) {
+	static <T> ConsumerBuilderCustomizer<T> consumerBuilderCustomizer(PulsarProperties properties) {
 		return (consumerBuilder) -> customizeConsumerBuilder(consumerBuilder, properties.getConsumer());
 	}
 
-	private static void customizeConsumerBuilder(ConsumerBuilder<Object> consumerBuilder,
+	private static <T> void customizeConsumerBuilder(ConsumerBuilder<T> consumerBuilder,
 			PulsarProperties.Consumer properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(consumerBuilder::consumerName);
@@ -158,20 +158,20 @@ class PulsarPropertyMapper {
 		// map.from(properties::getMaxNumBytes).asInt(DataSize::toBytes).to(containerProperties::setMaxNumBytes);
 		// map.from(properties::getMaxNumMessages).to(containerProperties::setMaxNumMessages);
 		// map.from(properties::isObservationsEnabled).to(containerProperties::setObservationEnabled);
+		// FIXME log observation don't work in reactive
 	}
 
-	static ReaderBuilderCustomizer<?> readerBuilderCustomizer(PulsarProperties properties) {
+	static <T> ReaderBuilderCustomizer<T> readerBuilderCustomizer(PulsarProperties properties) {
 		return (readerBuilder) -> customizeReaderBuilder(readerBuilder, properties.getReader());
 	}
 
-	private static void customizeReaderBuilder(ReaderBuilder<Object> readerBuilder,
-			PulsarProperties.Reader properties) {
+	private static <T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder, PulsarProperties.Reader properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(readerBuilder::readerName);
-		map.from(properties::getTopicNames).to(readerBuilder::topics);
+		map.from(properties::getTopics).to(readerBuilder::topics);
 		map.from(properties::getSubscriptionName).to(readerBuilder::subscriptionName);
 		map.from(properties::getSubscriptionRolePrefix).to(readerBuilder::subscriptionRolePrefix);
-		map.from(properties::getReadCompacted).to(readerBuilder::readCompacted);
+		map.from(properties::isReadCompacted).to(readerBuilder::readCompacted);
 	}
 
 	static Consumer<PulsarReaderContainerProperties> readerContainerPropertiesCustomizer(PulsarProperties properties) {
@@ -182,7 +182,7 @@ class PulsarPropertyMapper {
 	private static void customizeReaderContainerProperties(PulsarReaderContainerProperties readerContainerProperties,
 			PulsarProperties.Reader properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getTopicNames).to(readerContainerProperties::setTopics);
+		map.from(properties::getTopics).to(readerContainerProperties::setTopics);
 	}
 
 	private static Consumer<Duration> timeoutProperty(BiConsumer<Integer, TimeUnit> setter) {

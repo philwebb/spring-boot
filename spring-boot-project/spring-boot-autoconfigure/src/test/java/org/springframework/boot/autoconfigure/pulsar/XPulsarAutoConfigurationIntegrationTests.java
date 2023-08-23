@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-class PulsarAutoConfigurationIntegrationTests {
+class XPulsarAutoConfigurationIntegrationTests {
 
 	@Container
 	private static final PulsarContainer PULSAR_CONTAINER = new PulsarContainer(DockerImageNames.pulsar())

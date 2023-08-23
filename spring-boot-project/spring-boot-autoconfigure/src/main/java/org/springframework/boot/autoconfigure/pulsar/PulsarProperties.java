@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.pulsar.client.api.CompressionType;
@@ -115,7 +114,7 @@ public class PulsarProperties {
 		/**
 		 * Client lookup timeout.
 		 */
-		private Duration lookupTimeout = Duration.ofMillis(-1);
+		private Duration lookupTimeout = Duration.ofMillis(-1); // FIXME
 
 		/**
 		 * Duration to wait for a connection to a broker to be established.
@@ -162,15 +161,6 @@ public class PulsarProperties {
 
 		public void setConnectionTimeout(Duration connectionTimeout) {
 			this.connectionTimeout = connectionTimeout;
-		}
-
-		// FIXME Not used?
-		public Duration getRequestTimeout() {
-			return this.requestTimeout;
-		}
-
-		public void setRequestTimeout(Duration requestTimeout) {
-			this.requestTimeout = requestTimeout;
 		}
 
 		public Authentication getAuthentication() {
@@ -244,36 +234,6 @@ public class PulsarProperties {
 
 	}
 
-	public static class Authentication {
-
-		/**
-		 * Fully qualified class name of the authentication plugin.
-		 */
-		private String pluginClassName;
-
-		/**
-		 * Authentication parameter(s) as a map of parameter names to parameter values.
-		 */
-		private Map<String, String> param = new LinkedHashMap<>();
-
-		public String getPluginClassName() {
-			return this.pluginClassName;
-		}
-
-		public void setPluginClassName(String pluginClassName) {
-			this.pluginClassName = pluginClassName;
-		}
-
-		public Map<String, String> getParam() {
-			return this.param;
-		}
-
-		public void setParam(Map<String, String> param) {
-			this.param = param;
-		}
-
-	}
-
 	public static class Defaults {
 
 		/**
@@ -320,11 +280,57 @@ public class PulsarProperties {
 
 			public SchemaInfo {
 				Assert.notNull(schemaType, "schemaType must not be null");
-				Assert.isTrue(schemaType != SchemaType.NONE, "schemaType NONE not supported");
+				Assert.isTrue(schemaType != SchemaType.NONE, "schemaType 'NONE' not supported");
 				Assert.isTrue(messageKeyType == null || schemaType == SchemaType.KEY_VALUE,
 						"messageKeyType can only be set when schemaType is KEY_VALUE");
 			}
 
+		}
+
+	}
+
+	public static class Function {
+
+		/**
+		 * Whether to stop processing further function creates/updates when a failure
+		 * occurs.
+		 */
+		private boolean failFast = true;
+
+		/**
+		 * Whether to throw an exception if any failure is encountered during server
+		 * startup while creating/updating functions.
+		 */
+		private boolean propagateFailures = true;
+
+		/**
+		 * Whether to throw an exception if any failure is encountered during server
+		 * shutdown while enforcing stop policy on functions.
+		 */
+		private boolean propagateStopFailures = false;
+
+		public boolean isFailFast() {
+			return this.failFast;
+		}
+
+		public void setFailFast(boolean failFast) {
+			this.failFast = failFast;
+		}
+
+		public boolean isPropagateFailures() {
+			return this.propagateFailures;
+		}
+
+		public void setPropagateFailures(boolean propagateFailures) {
+			this.propagateFailures = propagateFailures;
+		}
+
+		public boolean isPropagateStopFailures() {
+			return this.propagateStopFailures;
+		}
+
+		public void setPropagateStopFailures(boolean propagateStopFailures) {
+			this.propagateStopFailures = propagateStopFailures;
 		}
 
 	}
@@ -477,15 +483,6 @@ public class PulsarProperties {
 				this.expireAfterAccess = expireAfterAccess;
 			}
 
-			// FIXME only used with reactive?
-			public Duration getExpireAfterWrite() {
-				return this.expireAfterWrite;
-			}
-
-			public void setExpireAfterWrite(Duration expireAfterWrite) {
-				this.expireAfterWrite = expireAfterWrite;
-			}
-
 			public long getMaximumSize() {
 				return this.maximumSize;
 			}
@@ -516,9 +513,9 @@ public class PulsarProperties {
 		private final Subscription subscription = new Subscription();
 
 		/**
-		 * Comma-separated list of topics the consumer subscribes to.
+		 * Topics the consumer subscribes to.
 		 */
-		private Set<String> topics;
+		private List<String> topics;
 
 		/**
 		 * Pattern for topics the consumer subscribes to.
@@ -540,7 +537,7 @@ public class PulsarProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicy deadLetterPolicy;
+		private final DeadLetterPolicy deadLetterPolicy = new DeadLetterPolicy();
 
 		/**
 		 * Whether to auto retry messages.
@@ -559,11 +556,11 @@ public class PulsarProperties {
 			return this.subscription;
 		}
 
-		public Set<String> getTopics() {
+		public List<String> getTopics() {
 			return this.topics;
 		}
 
-		public void setTopics(Set<String> topics) {
+		public void setTopics(List<String> topics) {
 			this.topics = topics;
 		}
 
@@ -595,10 +592,6 @@ public class PulsarProperties {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicy deadLetterPolicy) {
-			this.deadLetterPolicy = deadLetterPolicy;
-		}
-
 		public boolean isRetryEnable() {
 			return this.retryEnable;
 		}
@@ -608,6 +601,8 @@ public class PulsarProperties {
 		}
 
 		public static class Subscription {
+
+			// FIXME Subscription properties are spread out, is the grouping correct?
 
 			/**
 			 * Subscription name for the consumer.
@@ -677,7 +672,7 @@ public class PulsarProperties {
 
 		}
 
-		public class DeadLetterPolicy {
+		public static class DeadLetterPolicy {
 
 			/**
 			 * Maximum number of times that a message will be redelivered before being
@@ -746,6 +741,8 @@ public class PulsarProperties {
 		 */
 		SchemaType schemaType;
 
+		// FIXME isObservationEnabled
+
 		public SchemaType getSchemaType() {
 			return this.schemaType;
 		}
@@ -764,9 +761,9 @@ public class PulsarProperties {
 		private String name;
 
 		/**
-		 * Topic names.
+		 * Topis the reader subscribes to.
 		 */
-		private List<String> topicNames;
+		private List<String> topics;
 
 		/**
 		 * Subscription name.
@@ -782,7 +779,7 @@ public class PulsarProperties {
 		 * Whether to read messages from a compacted topic rather than a full message
 		 * backlog of a topic.
 		 */
-		private Boolean readCompacted; // FIXME big B
+		private boolean readCompacted;
 
 		public String getName() {
 			return this.name;
@@ -792,12 +789,12 @@ public class PulsarProperties {
 			this.name = name;
 		}
 
-		public List<String> getTopicNames() {
-			return this.topicNames;
+		public List<String> getTopics() {
+			return this.topics;
 		}
 
-		public void setTopicNames(List<String> topicNames) {
-			this.topicNames = topicNames;
+		public void setTopics(List<String> topics) {
+			this.topics = topics;
 		}
 
 		public String getSubscriptionName() {
@@ -816,58 +813,12 @@ public class PulsarProperties {
 			this.subscriptionRolePrefix = subscriptionRolePrefix;
 		}
 
-		public Boolean getReadCompacted() {
+		public boolean isReadCompacted() {
 			return this.readCompacted;
 		}
 
-		public void setReadCompacted(Boolean readCompacted) {
+		public void setReadCompacted(boolean readCompacted) {
 			this.readCompacted = readCompacted;
-		}
-
-	}
-
-	public static class Function {
-
-		/**
-		 * Whether to stop processing further function creates/updates when a failure
-		 * occurs.
-		 */
-		private boolean failFast = true;
-
-		/**
-		 * Whether to throw an exception if any failure is encountered during server
-		 * startup while creating/updating functions.
-		 */
-		private boolean propagateFailures = true;
-
-		/**
-		 * Whether to throw an exception if any failure is encountered during server
-		 * shutdown while enforcing stop policy on functions.
-		 */
-		private boolean propagateStopFailures = false;
-
-		public boolean isFailFast() {
-			return this.failFast;
-		}
-
-		public void setFailFast(boolean failFast) {
-			this.failFast = failFast;
-		}
-
-		public boolean isPropagateFailures() {
-			return this.propagateFailures;
-		}
-
-		public void setPropagateFailures(boolean propagateFailures) {
-			this.propagateFailures = propagateFailures;
-		}
-
-		public boolean isPropagateStopFailures() {
-			return this.propagateStopFailures;
-		}
-
-		public void setPropagateStopFailures(boolean propagateStopFailures) {
-			this.propagateStopFailures = propagateStopFailures;
 		}
 
 	}
@@ -886,6 +837,36 @@ public class PulsarProperties {
 
 		public void setObservationsEnabled(boolean observationsEnabled) {
 			this.observationsEnabled = observationsEnabled;
+		}
+
+	}
+
+	public static class Authentication {
+
+		/**
+		 * Fully qualified class name of the authentication plugin.
+		 */
+		private String pluginClassName;
+
+		/**
+		 * Authentication parameter(s) as a map of parameter names to parameter values.
+		 */
+		private Map<String, String> param = new LinkedHashMap<>();
+
+		public String getPluginClassName() {
+			return this.pluginClassName;
+		}
+
+		public void setPluginClassName(String pluginClassName) {
+			this.pluginClassName = pluginClassName;
+		}
+
+		public Map<String, String> getParam() {
+			return this.param;
+		}
+
+		public void setParam(Map<String, String> param) {
+			this.param = param;
 		}
 
 	}

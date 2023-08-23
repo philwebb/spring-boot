@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.reactive.client.adapter.AdaptedReactivePulsarClientFactory;
 import org.apache.pulsar.reactive.client.adapter.ProducerCacheProvider;
@@ -43,6 +47,7 @@ import org.springframework.pulsar.reactive.config.annotation.EnableReactivePulsa
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarConsumerFactory;
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarReaderFactory;
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarSenderFactory;
+import org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCustomizer;
 import org.springframework.pulsar.reactive.core.ReactivePulsarConsumerFactory;
 import org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory;
 import org.springframework.pulsar.reactive.core.ReactivePulsarSenderFactory;
@@ -73,6 +78,8 @@ public class PulsarReactiveAutoConfiguration {
 		return AdaptedReactivePulsarClientFactory.create(pulsarClient);
 	}
 
+	// FIXME spring.pulsar.reactive properties
+
 	@Bean
 	@ConditionalOnMissingBean(ProducerCacheProvider.class)
 	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
@@ -80,8 +87,8 @@ public class PulsarReactiveAutoConfiguration {
 			matchIfMissing = true)
 	CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider() {
 		PulsarProperties.Producer.Cache properties = this.properties.getProducer().getCache();
-		return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(),
-				properties.getExpireAfterWrite(), properties.getMaximumSize(), properties.getInitialCapacity());
+		return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
+				properties.getMaximumSize(), properties.getInitialCapacity());
 	}
 
 	@Bean
@@ -104,8 +111,9 @@ public class PulsarReactiveAutoConfiguration {
 			ObjectProvider<ReactiveMessageSenderCache> reactiveMessageSenderCache, TopicResolver topicResolver) {
 		MutableReactiveMessageSenderSpec reactiveMessageSenderSpec = new MutableReactiveMessageSenderSpec();
 		PulsarReactivePropertyMapper.messageSenderSpecCustomizer(this.properties).accept(reactiveMessageSenderSpec);
+		List<ReactiveMessageSenderBuilderCustomizer<Object>> customizers = Collections.emptyList();
 		return new DefaultReactivePulsarSenderFactory<>(reactivePulsarClient, reactiveMessageSenderSpec,
-				reactiveMessageSenderCache.getIfAvailable(), topicResolver);
+				reactiveMessageSenderCache.getIfAvailable(), customizers, topicResolver);
 	}
 
 	@Bean
@@ -133,8 +141,7 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
 	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient reactivePulsarClient) {
 		MutableReactiveMessageReaderSpec reactiveMessageReaderSpec = new MutableReactiveMessageReaderSpec();
-		PulsarReactivePropertyMapper.messageReaderSpecCustomizer(this.properties)
-			.accept(reactiveMessageReaderSpec);
+		PulsarReactivePropertyMapper.messageReaderSpecCustomizer(this.properties).accept(reactiveMessageReaderSpec);
 		return new DefaultReactivePulsarReaderFactory<>(reactivePulsarClient, reactiveMessageReaderSpec);
 	}
 

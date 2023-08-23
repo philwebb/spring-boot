@@ -116,10 +116,10 @@ class PulsarReactivePropertyMapper {
 			PulsarProperties.Reader properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getName).to(spec::setReaderName);
-		map.from(properties::getTopicNames).to(spec::setTopicNames);
+		map.from(properties::getTopics).to(spec::setTopicNames);
 		map.from(properties::getSubscriptionName).to(spec::setSubscriptionName);
 		map.from(properties::getSubscriptionRolePrefix).to(spec::setGeneratedSubscriptionNamePrefix);
-		map.from(properties::getReadCompacted).to(spec::setReadCompacted);
+		map.from(properties::isReadCompacted).to(spec::setReadCompacted);
 	}
 
 }
