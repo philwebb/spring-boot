@@ -103,9 +103,6 @@ class PulsarReactivePropertyMapper {
 			ReactivePulsarContainerProperties<?> containerProperties, PulsarProperties.Listener properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
-		// FIXME
-		// map.from(listenerProperties::getHandlingTimeout).to(containerProperties::setHandlingTimeout);
-		// map.from(listenerProperties::getUseKeyOrderedProcessing).to(containerProperties::setUseKeyOrderedProcessing);
 	}
 
 	public static Consumer<MutableReactiveMessageReaderSpec> messageReaderSpecCustomizer(PulsarProperties properties) {

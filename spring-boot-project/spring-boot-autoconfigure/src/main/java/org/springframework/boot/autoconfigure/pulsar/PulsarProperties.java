@@ -122,11 +122,6 @@ public class PulsarProperties {
 		private Duration connectionTimeout = Duration.ofSeconds(10);
 
 		/**
-		 * Maximum duration for completing a request.
-		 */
-		private Duration requestTimeout = Duration.ofSeconds(60);
-
-		/**
 		 * Authentication settings.
 		 */
 		private final Authentication authentication = new Authentication();
@@ -463,16 +458,19 @@ public class PulsarProperties {
 
 		public static class Cache {
 
-			/** Time period to expire unused entries in the cache. */
+			/**
+			 * Time period to expire unused entries in the cache.
+			 */
 			private Duration expireAfterAccess = Duration.ofMinutes(1);
 
-			/** Time period after last write to expire unused entries in the cache. */
-			private Duration expireAfterWrite = Duration.ofMinutes(10);
-
-			/** Maximum size of cache (entries). */
+			/**
+			 * Maximum size of cache (entries).
+			 */
 			private long maximumSize = 1000L;
 
-			/** Initial size of cache. */
+			/**
+			 * Initial size of cache.
+			 */
 			private int initialCapacity = 50;
 
 			public Duration getExpireAfterAccess() {
@@ -601,8 +599,6 @@ public class PulsarProperties {
 		}
 
 		public static class Subscription {
-
-			// FIXME Subscription properties are spread out, is the grouping correct?
 
 			/**
 			 * Subscription name for the consumer.

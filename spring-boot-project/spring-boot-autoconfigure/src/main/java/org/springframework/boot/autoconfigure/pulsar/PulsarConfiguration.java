@@ -100,8 +100,7 @@ class PulsarConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(SchemaResolver.class)
-	DefaultSchemaResolver pulsarSchemaResolver(
-			ObjectProvider<SchemaResolverCustomizer<SchemaResolver>> schemaResolverCustomizers) {
+	DefaultSchemaResolver pulsarSchemaResolver(ObjectProvider<SchemaResolverCustomizer<?>> schemaResolverCustomizers) {
 		DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
 		addCustomSchemaMappings(schemaResolver, this.properties.getDefaults().getTypeMappings());
 		applySchemaResolverCustomizers(schemaResolverCustomizers.orderedStream().toList(), schemaResolver);
@@ -125,7 +124,7 @@ class PulsarConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void applySchemaResolverCustomizers(List<SchemaResolverCustomizer<SchemaResolver>> customizers,
+	private void applySchemaResolverCustomizers(List<SchemaResolverCustomizer<?>> customizers,
 			DefaultSchemaResolver schemaResolver) {
 		LambdaSafe.callbacks(SchemaResolverCustomizer.class, customizers, schemaResolver)
 			.invoke((customizer) -> customizer.customize(schemaResolver));

@@ -78,13 +78,10 @@ public class PulsarReactiveAutoConfiguration {
 		return AdaptedReactivePulsarClientFactory.create(pulsarClient);
 	}
 
-	// FIXME spring.pulsar.reactive properties
-
 	@Bean
 	@ConditionalOnMissingBean(ProducerCacheProvider.class)
 	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
-	@ConditionalOnProperty(name = "spring.pulsar.reactive.producer.cache.enabled", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
 	CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider() {
 		PulsarProperties.Producer.Cache properties = this.properties.getProducer().getCache();
 		return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
@@ -93,8 +90,7 @@ public class PulsarReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.pulsar.reactive.producer.cache.enabled", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
 	ReactiveMessageSenderCache reactivePulsarMessageSenderCache(
 			ObjectProvider<ProducerCacheProvider> producerCacheProvider) {
 		return reactivePulsarMessageSenderCache(producerCacheProvider.getIfAvailable());

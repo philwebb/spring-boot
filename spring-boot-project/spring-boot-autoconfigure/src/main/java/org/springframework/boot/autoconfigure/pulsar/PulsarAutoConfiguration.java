@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -27,6 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer.Cache;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -98,10 +101,20 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarConsumerFactory.class)
-	DefaultPulsarConsumerFactory<Object> pulsarConsumerFactory(PulsarClient pulsarClient) {
-		ConsumerBuilderCustomizer<Object> customizer = PulsarPropertyMapper.consumerBuilderCustomizer(this.properties);
-		List<ConsumerBuilderCustomizer<Object>> customizers = List.of(customizer);
-		return new DefaultPulsarConsumerFactory<>(pulsarClient, customizers);
+	DefaultPulsarConsumerFactory<Object> pulsarConsumerFactory(PulsarClient pulsarClient,
+			ObjectProvider<ConsumerBuilderCustomizer<?>> customizersProvider) {
+		List<ConsumerBuilderCustomizer<?>> customizers = new ArrayList<>();
+		customizers.add(PulsarPropertyMapper.consumerBuilderCustomizer(this.properties));
+		customizers.addAll(customizersProvider.orderedStream().toList());
+		return new DefaultPulsarConsumerFactory<>(pulsarClient,
+				List.of((consumerBuilder) -> applyConsumerBuilderCustomizers(customizers, consumerBuilder)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyConsumerBuilderCustomizers(List<ConsumerBuilderCustomizer<?>> customizers,
+			ConsumerBuilder<?> consumerBuilder) {
+		LambdaSafe.callbacks(ConsumerBuilderCustomizer.class, customizers, consumerBuilder)
+			.invoke((customizer) -> customizer.customize(consumerBuilder));
 	}
 
 	@Bean
@@ -118,10 +131,20 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarReaderFactory.class)
-	DefaultPulsarReaderFactory<Object> pulsarReaderFactory(PulsarClient pulsarClient) {
-		ReaderBuilderCustomizer<Object> customizer = PulsarPropertyMapper.readerBuilderCustomizer(this.properties);
-		List<ReaderBuilderCustomizer<Object>> customizers = List.of(customizer);
-		return new DefaultPulsarReaderFactory<>(pulsarClient, customizers);
+	DefaultPulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient,
+			ObjectProvider<ReaderBuilderCustomizer<?>> customizersProvider) {
+		List<ReaderBuilderCustomizer<?>> customizers = new ArrayList<>();
+		customizers.add(PulsarPropertyMapper.readerBuilderCustomizer(this.properties));
+		customizers.addAll(customizersProvider.orderedStream().toList());
+		return new DefaultPulsarReaderFactory<>(pulsarClient,
+				List.of((readerBuilder) -> applyReaderBuilderCustomizers(customizers, readerBuilder)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyReaderBuilderCustomizers(List<ReaderBuilderCustomizer<?>> customizers,
+			ReaderBuilder<?> readerBuilder) {
+		LambdaSafe.callbacks(ReaderBuilderCustomizer.class, customizers, readerBuilder)
+			.invoke((customizer) -> customizer.customize(readerBuilder));
 	}
 
 	@Bean
