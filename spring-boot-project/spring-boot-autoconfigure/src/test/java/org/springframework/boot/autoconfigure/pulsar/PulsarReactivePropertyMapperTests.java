@@ -57,7 +57,7 @@ class PulsarReactivePropertyMapperTests {
 		properties.getProducer().setCompressionType(CompressionType.SNAPPY);
 		properties.getProducer().setAccessMode(ProducerAccessMode.Exclusive);
 		MutableReactiveMessageSenderSpec producerBuilder = new MutableReactiveMessageSenderSpec();
-		PulsarReactivePropertyMapper.reactiveMessageSenderBuilderCustomizer(properties).accept(producerBuilder);
+		PulsarReactivePropertyMapper.messageSenderSpecCustomizer(properties).accept(producerBuilder);
 		assertThat(producerBuilder.getProducerName()).isEqualTo("name");
 		assertThat(producerBuilder.getTopicName()).isEqualTo("topicname");
 		assertThat(producerBuilder.getSendTimeout()).isEqualTo(Duration.ofSeconds(1));

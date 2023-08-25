@@ -33,6 +33,7 @@ import org.apache.pulsar.client.api.SubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
 
@@ -43,6 +44,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 3.2.0
  */
+@ConfigurationProperties("spring.pulsar")
 public class PulsarProperties {
 
 	private final Client client = new Client();

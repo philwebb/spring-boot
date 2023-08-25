@@ -18,19 +18,39 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.pulsar.annotation.PulsarBootstrapConfiguration;
+import org.springframework.pulsar.core.PulsarTemplate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PulsarAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Alexander Preuß
+ * @author Soby Chacko
  * @author Phillip Webb
  */
 class PulsarAutoConfigurationTests {
 
+	private static final String INTERNAL_PULSAR_LISTENER_ANNOTATION_PROCESSOR = "org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor";
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class));
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void whenPulsarTemplateNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(PulsarTemplate.class))
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(PulsarAutoConfiguration.class));
+	}
+
+	@Test
+	void whenCustomPulsarListenerAnnotationProcessorDefinedAutoConfigurationIsSkipped() {
+		this.contextRunner.withBean(INTERNAL_PULSAR_LISTENER_ANNOTATION_PROCESSOR, String.class, () -> "bean")
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(PulsarBootstrapConfiguration.class));
 	}
 
 }

@@ -27,6 +27,7 @@ import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Producer.Cache;
 import org.springframework.boot.util.LambdaSafe;
@@ -64,6 +65,7 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
  * @since 3.2.0
  */
 @AutoConfiguration
+@ConditionalOnClass(EnablePulsar.class)
 @Import(PulsarConfiguration.class)
 public class PulsarAutoConfiguration {
 
