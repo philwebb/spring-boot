@@ -68,11 +68,11 @@ class PulsarConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> pulsarClientBuilderCustomizers)
+	PulsarClient pulsarClient(ObjectProvider<PulsarClientBuilderCustomizer> customizersProvider)
 			throws PulsarClientException {
 		List<PulsarClientBuilderCustomizer> allCustomizers = new ArrayList<>();
 		allCustomizers.add(PulsarPropertyMapper.clientBuilderCustomizer(this.properties));
-		allCustomizers.addAll(pulsarClientBuilderCustomizers.orderedStream().toList());
+		allCustomizers.addAll(customizersProvider.orderedStream().toList());
 		DefaultPulsarClientFactory clientFactory = new DefaultPulsarClientFactory(
 				(clientBuilder) -> applyClientBuilderCustomizers(allCustomizers, clientBuilder));
 		return clientFactory.createClient();

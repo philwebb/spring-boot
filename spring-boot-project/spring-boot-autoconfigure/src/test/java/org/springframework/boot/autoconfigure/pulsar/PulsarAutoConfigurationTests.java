@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,7 +71,8 @@ class PulsarAutoConfigurationTests {
 	private static final String INTERNAL_PULSAR_LISTENER_ANNOTATION_PROCESSOR = "org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor";
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(PulsarAutoConfiguration.class))
+		.withUserConfiguration(PulsarClientBuilderCustomizerConfiguration.class);
 
 	@Test
 	void whenPulsarNotOnClasspathAutoConfigurationIsSkipped() {
@@ -86,7 +88,8 @@ class PulsarAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PulsarClient.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PulsarConfiguration.class)
+			.hasSingleBean(PulsarClient.class)
 			.hasSingleBean(PulsarAdministration.class)
 			.hasSingleBean(PulsarProducerFactory.class)
 			.hasSingleBean(PulsarTemplate.class)
@@ -334,6 +337,17 @@ class PulsarAutoConfigurationTests {
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
 				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+		}
+
+	}
+
+	@TestConfiguration(proxyBeanMethods = false)
+	static class PulsarClientBuilderCustomizerConfiguration {
+
+		@Bean
+		PulsarClient pulsarClient() {
+			// Use a mock because the real PulsarClient is very slow to close
+			return mock(PulsarClient.class);
 		}
 
 	}

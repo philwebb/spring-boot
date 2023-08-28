@@ -16,20 +16,90 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import org.apache.pulsar.client.api.PulsarClient;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PulsarConfiguration}.
  *
- * @author pwebb
+ * @author Chris Bono
+ * @author Phillip Webb
  */
 class PulsarConfigurationTests {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
+		.withUserConfiguration(PulsarClientBuilderCustomizerConfiguration.class);
+
+	@Nested
+	class ClientTests {
+
+		@Test
+		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+			PulsarClient customClient = mock(PulsarClient.class);
+			new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
+				.withBean("customPulsarClient", PulsarClient.class, () -> customClient)
+				.run((context) -> assertThat(context).getBean(PulsarClient.class).isSameAs(customClient));
+		}
+
+		@Test
+		void whenHasUseDefinedCustomizersAppliesInCorrectOrder() {
+			new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(PulsarConfiguration.class))
+				.withUserConfiguration(ClientCustomizersTestConfiguration.class)
+				.run((context) -> {
+					PulsarClientBuilderCustomizer customizer1 = context.getBean("clientCustomizerBar",
+							PulsarClientBuilderCustomizer.class);
+					PulsarClientBuilderCustomizer customizer2 = context.getBean("clientCustomizerFoo",
+							PulsarClientBuilderCustomizer.class);
+					InOrder ordered = inOrder(customizer1, customizer2);
+					ordered.verify(customizer1).customize(any());
+					ordered.verify(customizer2).customize(any());
+				});
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		static class ClientCustomizersTestConfiguration {
+
+			@Bean
+			@Order(200)
+			PulsarClientBuilderCustomizer clientCustomizerFoo() {
+				return mock(PulsarClientBuilderCustomizer.class);
+			}
+
+			@Bean
+			@Order(100)
+			PulsarClientBuilderCustomizer clientCustomizerBar() {
+				return mock(PulsarClientBuilderCustomizer.class);
+			}
+
+		}
+
+	}
+
+	@TestConfiguration(proxyBeanMethods = false)
+	static class PulsarClientBuilderCustomizerConfiguration {
+
+		@Bean
+		PulsarClient pulsarClient() {
+			// Use a mock because the real PulsarClient is very slow to close
+			return mock(PulsarClient.class);
+		}
+
 	}
 
 }
