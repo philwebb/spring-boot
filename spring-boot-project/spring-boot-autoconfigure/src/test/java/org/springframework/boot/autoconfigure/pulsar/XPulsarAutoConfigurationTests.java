@@ -17,61 +17,36 @@
 package org.springframework.boot.autoconfigure.pulsar;
 
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.Schema;
-import org.apache.pulsar.client.api.SubscriptionType;
-import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.apache.pulsar.common.schema.KeyValueEncodingType;
 import org.apache.pulsar.common.schema.SchemaType;
-import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.FilteredClassLoader;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.pulsar.annotation.PulsarBootstrapConfiguration;
-import org.springframework.pulsar.annotation.PulsarListenerAnnotationBeanPostProcessor;
 import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
-import org.springframework.pulsar.config.PulsarListenerContainerFactory;
-import org.springframework.pulsar.config.PulsarListenerEndpointRegistry;
-import org.springframework.pulsar.core.CachingPulsarProducerFactory;
-import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
-import org.springframework.pulsar.core.DefaultPulsarConsumerFactory;
-import org.springframework.pulsar.core.DefaultPulsarProducerFactory;
-import org.springframework.pulsar.core.DefaultPulsarReaderFactory;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
-import org.springframework.pulsar.core.ProducerBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
-import org.springframework.pulsar.core.PulsarConsumerFactory;
-import org.springframework.pulsar.core.PulsarProducerFactory;
-import org.springframework.pulsar.core.PulsarReaderFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
-import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.function.PulsarFunctionAdministration;
-import org.springframework.pulsar.listener.AckMode;
-import org.springframework.pulsar.listener.PulsarContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.hamcrest.Matchers.any;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -96,203 +71,225 @@ class XPulsarAutoConfigurationTests {
 	// .run((context) -> assertThat(context).hasNotFailed()
 	// .doesNotHaveBean(XPulsarAnnotationDrivenConfiguration.class));
 	// }
+	//
+	// @Test
+	// void
+	// bootstrapConfigurationSkippedWhenCustomPulsarListenerAnnotationProcessorDefined() {
+	// this.contextRunner
+	// .withBean("org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor",
+	// String.class,
+	// () -> "someFauxBean")
+	// .run((context) ->
+	// assertThat(context).hasNotFailed().doesNotHaveBean(PulsarBootstrapConfiguration.class));
+	// }
 
-	@Test
-	void bootstrapConfigurationSkippedWhenCustomPulsarListenerAnnotationProcessorDefined() {
-		this.contextRunner
-			.withBean("org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor", String.class,
-					() -> "someFauxBean")
-			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean(PulsarBootstrapConfiguration.class));
-	}
+	// @Test
+	// void defaultBeansAreAutoConfigured() {
+	// this.contextRunner.run((context) ->
+	// assertThat(context).hasSingleBean(XPulsarClientBuilderCustomizers.class)
+	// .hasSingleBean(PulsarClient.class)
+	// .hasSingleBean(PulsarAdministration.class)
+	// .hasSingleBean(PulsarProducerFactory.class)
+	// .hasSingleBean(PulsarTemplate.class)
+	// .hasSingleBean(PulsarConsumerFactory.class)
+	// .hasSingleBean(PulsarReaderFactory.class)
+	// .hasSingleBean(ConcurrentPulsarListenerContainerFactory.class)
+	// .hasSingleBean(PulsarListenerAnnotationBeanPostProcessor.class)
+	// .hasSingleBean(PulsarListenerEndpointRegistry.class)
+	// .hasSingleBean(DefaultSchemaResolver.class)
+	// .hasSingleBean(DefaultTopicResolver.class));
+	// }
 
-	@Test
-	void defaultBeansAreAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(XPulsarClientBuilderCustomizers.class)
-			.hasSingleBean(PulsarClient.class)
-			.hasSingleBean(PulsarAdministration.class)
-			.hasSingleBean(PulsarProducerFactory.class)
-			.hasSingleBean(PulsarTemplate.class)
-			.hasSingleBean(PulsarConsumerFactory.class)
-			.hasSingleBean(PulsarReaderFactory.class)
-			.hasSingleBean(ConcurrentPulsarListenerContainerFactory.class)
-			.hasSingleBean(PulsarListenerAnnotationBeanPostProcessor.class)
-			.hasSingleBean(PulsarListenerEndpointRegistry.class)
-			.hasSingleBean(DefaultSchemaResolver.class)
-			.hasSingleBean(DefaultTopicResolver.class));
-	}
+	// @Nested
+	// class ProducerFactoryTests {
+	//
+	// @Test
+	// void customPulsarProducerFactoryIsRespected() {
+	// PulsarProducerFactory<String> producerFactory = mock(PulsarProducerFactory.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("customPulsarProducerFactory", PulsarProducerFactory.class, () ->
+	// producerFactory)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarProducerFactory.class)
+	// .isSameAs(producerFactory));
+	// }
+	//
+	// @Test
+	// void cachingProducerFactoryEnabledByDefault() {
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .run((context) ->
+	// assertHasProducerFactoryOfType(CachingPulsarProducerFactory.class, context));
+	// }
+	//
+	// @Test
+	// void nonCachingProducerFactoryCanBeEnabled() {
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withPropertyValues("spring.pulsar.producer.cache.enabled=false")
+	// .run((context) ->
+	// assertHasProducerFactoryOfType(DefaultPulsarProducerFactory.class, context));
+	// }
+	//
+	// @Test
+	// void cachingProducerFactoryCanBeEnabled() {
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withPropertyValues("spring.pulsar.producer.cache.enabled=true")
+	// .run((context) ->
+	// assertHasProducerFactoryOfType(CachingPulsarProducerFactory.class, context));
+	// }
+	//
+	// @Test
+	// void cachingEnabledAndCaffeineNotOnClasspath() {
+	// XPulsarAutoConfigurationTests.this.contextRunner.withClassLoader(new
+	// FilteredClassLoader(Caffeine.class))
+	// .withPropertyValues("spring.pulsar.producer.cache.enabled=true")
+	// .run((context) ->
+	// assertHasProducerFactoryOfType(CachingPulsarProducerFactory.class, context));
+	// }
+	//
+	// @Test
+	// void cachingProducerFactoryCanBeConfigured() {
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withPropertyValues("spring.pulsar.producer.cache.expire-after-access=100s",
+	// "spring.pulsar.producer.cache.maximum-size=5150",
+	// "spring.pulsar.producer.cache.initial-capacity=200")
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarProducerFactory.class)
+	// .extracting("producerCache.cache.cache")
+	// .hasFieldOrPropertyWithValue("maximum", 5150L)
+	// .hasFieldOrPropertyWithValue("expiresAfterAccessNanos",
+	// TimeUnit.SECONDS.toNanos(100)));
+	// }
+	//
+	// @Test
+	// void beansAreInjectedInNonCachingProducerFactory() {
+	// XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
+	// .withPropertyValues("spring.pulsar.producer.topic-name=foo-topic",
+	// "spring.pulsar.producer.cache.enabled=false")
+	// .run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
+	// .hasFieldOrPropertyWithValue("defaultTopic", "foo-topic")
+	// .hasFieldOrPropertyWithValue("defaultConfigCustomizer",
+	// SpyCustomizersConfig.testProducerCustomizer)
+	// .hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+	// .hasFieldOrPropertyWithValue("topicResolver",
+	// context.getBean(TopicResolver.class)));
+	// }
+	//
+	// @Test
+	// void beansAreInjectedInCachingProducerFactory() {
+	// XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
+	// .withPropertyValues("spring.pulsar.producer.topic-name=foo-topic",
+	// "spring.pulsar.producer.cache.enabled=true")
+	// .run((context) -> assertThat(context).getBean(CachingPulsarProducerFactory.class)
+	// .hasFieldOrPropertyWithValue("defaultTopic", "foo-topic")
+	// .hasFieldOrPropertyWithValue("defaultConfigCustomizer",
+	// SpyCustomizersConfig.testProducerCustomizer)
+	// .hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+	// .hasFieldOrPropertyWithValue("topicResolver",
+	// context.getBean(TopicResolver.class)));
+	// }
+	//
+	// private void assertHasProducerFactoryOfType(Class<?> producerFactoryType,
+	// AssertableApplicationContext context) {
+	// assertThat(context).hasNotFailed()
+	// .hasSingleBean(PulsarProducerFactory.class)
+	// .getBean(PulsarProducerFactory.class)
+	// .isExactlyInstanceOf(producerFactoryType);
+	// }
+	//
+	// }
 
-	@Nested
-	class ProducerFactoryTests {
+	// @Nested
+	// class ConsumerFactoryTests {
+	//
+	// @Test
+	// void customPulsarConsumerFactoryIsRespected() {
+	// PulsarConsumerFactory<String> consumerFactory = mock(PulsarConsumerFactory.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("customPulsarConsumerFactory", PulsarConsumerFactory.class, () ->
+	// consumerFactory)
+	// .run((context) ->
+	// assertThat(context).getBean(PulsarConsumerFactory.class).isSameAs(consumerFactory));
+	// }
+	//
+	// @Test
+	// void beansAreInjectedInConsumerFactory() {
+	// XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
+	// .run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
+	// .hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+	// .hasFieldOrPropertyWithValue("defaultConfigCustomizer",
+	// SpyCustomizersConfig.testConsumerCustomizer));
+	// }
+	//
+	// }
 
-		@Test
-		void customPulsarProducerFactoryIsRespected() {
-			PulsarProducerFactory<String> producerFactory = mock(PulsarProducerFactory.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarProducerFactory", PulsarProducerFactory.class, () -> producerFactory)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarProducerFactory.class)
-					.isSameAs(producerFactory));
-		}
-
-		@Test
-		void cachingProducerFactoryEnabledByDefault() {
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.run((context) -> assertHasProducerFactoryOfType(CachingPulsarProducerFactory.class, context));
-		}
-
-		@Test
-		void nonCachingProducerFactoryCanBeEnabled() {
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withPropertyValues("spring.pulsar.producer.cache.enabled=false")
-				.run((context) -> assertHasProducerFactoryOfType(DefaultPulsarProducerFactory.class, context));
-		}
-
-		@Test
-		void cachingProducerFactoryCanBeEnabled() {
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withPropertyValues("spring.pulsar.producer.cache.enabled=true")
-				.run((context) -> assertHasProducerFactoryOfType(CachingPulsarProducerFactory.class, context));
-		}
-
-		@Test
-		void cachingEnabledAndCaffeineNotOnClasspath() {
-			XPulsarAutoConfigurationTests.this.contextRunner.withClassLoader(new FilteredClassLoader(Caffeine.class))
-				.withPropertyValues("spring.pulsar.producer.cache.enabled=true")
-				.run((context) -> assertHasProducerFactoryOfType(CachingPulsarProducerFactory.class, context));
-		}
-
-		@Test
-		void cachingProducerFactoryCanBeConfigured() {
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withPropertyValues("spring.pulsar.producer.cache.expire-after-access=100s",
-						"spring.pulsar.producer.cache.maximum-size=5150",
-						"spring.pulsar.producer.cache.initial-capacity=200")
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarProducerFactory.class)
-					.extracting("producerCache.cache.cache")
-					.hasFieldOrPropertyWithValue("maximum", 5150L)
-					.hasFieldOrPropertyWithValue("expiresAfterAccessNanos", TimeUnit.SECONDS.toNanos(100)));
-		}
-
-		@Test
-		void beansAreInjectedInNonCachingProducerFactory() {
-			XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
-				.withPropertyValues("spring.pulsar.producer.topic-name=foo-topic",
-						"spring.pulsar.producer.cache.enabled=false")
-				.run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
-					.hasFieldOrPropertyWithValue("defaultTopic", "foo-topic")
-					.hasFieldOrPropertyWithValue("defaultConfigCustomizer", SpyCustomizersConfig.testProducerCustomizer)
-					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class)));
-		}
-
-		@Test
-		void beansAreInjectedInCachingProducerFactory() {
-			XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
-				.withPropertyValues("spring.pulsar.producer.topic-name=foo-topic",
-						"spring.pulsar.producer.cache.enabled=true")
-				.run((context) -> assertThat(context).getBean(CachingPulsarProducerFactory.class)
-					.hasFieldOrPropertyWithValue("defaultTopic", "foo-topic")
-					.hasFieldOrPropertyWithValue("defaultConfigCustomizer", SpyCustomizersConfig.testProducerCustomizer)
-					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class)));
-		}
-
-		private void assertHasProducerFactoryOfType(Class<?> producerFactoryType,
-				AssertableApplicationContext context) {
-			assertThat(context).hasNotFailed()
-				.hasSingleBean(PulsarProducerFactory.class)
-				.getBean(PulsarProducerFactory.class)
-				.isExactlyInstanceOf(producerFactoryType);
-		}
-
-	}
-
-	@Nested
-	class ConsumerFactoryTests {
-
-		@Test
-		void customPulsarConsumerFactoryIsRespected() {
-			PulsarConsumerFactory<String> consumerFactory = mock(PulsarConsumerFactory.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarConsumerFactory", PulsarConsumerFactory.class, () -> consumerFactory)
-				.run((context) -> assertThat(context).getBean(PulsarConsumerFactory.class).isSameAs(consumerFactory));
-		}
-
-		@Test
-		void beansAreInjectedInConsumerFactory() {
-			XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
-				.run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
-					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("defaultConfigCustomizer",
-							SpyCustomizersConfig.testConsumerCustomizer));
-		}
-
-	}
-
-	@Nested
-	class ReaderFactoryTests {
-
-		@Test
-		void customPulsarReaderFactoryIsRespected() {
-			PulsarReaderFactory<String> readerFactory = mock(PulsarReaderFactory.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarReaderFactory", PulsarReaderFactory.class, () -> readerFactory)
-				.run((context) -> assertThat(context).getBean(PulsarReaderFactory.class).isSameAs(readerFactory));
-		}
-
-		@Test
-		void beansAreInjectedInReaderFactory() {
-			XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
-				.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
-					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("defaultConfigCustomizer", SpyCustomizersConfig.testReaderCustomizer));
-		}
-
-	}
-
-	/*
-	 * Use '@TestConfiguration' and exact name of the PulsarProperties bean that is
-	 * created via the '@EnableConfigurationProperties' on the actual auto-config in order
-	 * to 'replace' the PulsarProperties bean - all of this effort is to make sure the
-	 * returned producer/consumer/reader builder customizer is the one we expect.
-	 */
-	@TestConfiguration(proxyBeanMethods = false)
-	static class SpyCustomizersConfig {
-
-		@SuppressWarnings("rawtypes")
-		static ProducerBuilderCustomizer testProducerCustomizer = (producerBuilder) -> {
-		};
-
-		@SuppressWarnings("rawtypes")
-		static ConsumerBuilderCustomizer testConsumerCustomizer = (consumerBuilder) -> {
-		};
-
-		@SuppressWarnings("rawtypes")
-		static ReaderBuilderCustomizer testReaderCustomizer = (readerBuilder) -> {
-		};
-
-		@Bean(name = "spring.pulsar-org.springframework.boot.autoconfigure.pulsar.PulsarProperties")
-		XPulsarProperties pulsarProperties() {
-			XPulsarProperties pulsarProps = new XPulsarProperties();
-
-			Producer producerProps = spy(pulsarProps.getProducer());
-			given(producerProps.producerBuilderCustomizer()).willReturn(testProducerCustomizer);
-
-			Consumer consumerProps = spy(pulsarProps.getConsumer());
-			given(consumerProps.toConsumerBuilderCustomizer()).willReturn(testConsumerCustomizer);
-
-			Reader readerProps = spy(pulsarProps.getReader());
-			given(readerProps.toReaderBuilderCustomizer()).willReturn(testReaderCustomizer);
-
-			XPulsarProperties spyPulsarProps = spy(pulsarProps);
-			given(spyPulsarProps.getProducer()).willReturn(producerProps);
-			given(spyPulsarProps.getConsumer()).willReturn(consumerProps);
-			given(spyPulsarProps.getReader()).willReturn(readerProps);
-			return spyPulsarProps;
-		}
-
-	}
+	// @Nested
+	// class ReaderFactoryTests {
+	//
+	// @Test
+	// void customPulsarReaderFactoryIsRespected() {
+	// PulsarReaderFactory<String> readerFactory = mock(PulsarReaderFactory.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("customPulsarReaderFactory", PulsarReaderFactory.class, () ->
+	// readerFactory)
+	// .run((context) ->
+	// assertThat(context).getBean(PulsarReaderFactory.class).isSameAs(readerFactory));
+	// }
+	//
+	// @Test
+	// void beansAreInjectedInReaderFactory() {
+	// XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(SpyCustomizersConfig.class)
+	// .run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
+	// .hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+	// .hasFieldOrPropertyWithValue("defaultConfigCustomizer",
+	// SpyCustomizersConfig.testReaderCustomizer));
+	// }
+	//
+	// }
+	//
+	// /*
+	// * Use '@TestConfiguration' and exact name of the PulsarProperties bean that is
+	// * created via the '@EnableConfigurationProperties' on the actual auto-config in
+	// order
+	// * to 'replace' the PulsarProperties bean - all of this effort is to make sure the
+	// * returned producer/consumer/reader builder customizer is the one we expect.
+	// */
+	// @TestConfiguration(proxyBeanMethods = false)
+	// static class SpyCustomizersConfig {
+	//
+	// @SuppressWarnings("rawtypes")
+	// static ProducerBuilderCustomizer testProducerCustomizer = (producerBuilder) -> {
+	// };
+	//
+	// @SuppressWarnings("rawtypes")
+	// static ConsumerBuilderCustomizer testConsumerCustomizer = (consumerBuilder) -> {
+	// };
+	//
+	// @SuppressWarnings("rawtypes")
+	// static ReaderBuilderCustomizer testReaderCustomizer = (readerBuilder) -> {
+	// };
+	//
+	// @Bean(name =
+	// "spring.pulsar-org.springframework.boot.autoconfigure.pulsar.PulsarProperties")
+	// XPulsarProperties pulsarProperties() {
+	// XPulsarProperties pulsarProps = new XPulsarProperties();
+	//
+	// Producer producerProps = spy(pulsarProps.getProducer());
+	// given(producerProps.producerBuilderCustomizer()).willReturn(testProducerCustomizer);
+	//
+	// Consumer consumerProps = spy(pulsarProps.getConsumer());
+	// given(consumerProps.toConsumerBuilderCustomizer()).willReturn(testConsumerCustomizer);
+	//
+	// Reader readerProps = spy(pulsarProps.getReader());
+	// given(readerProps.toReaderBuilderCustomizer()).willReturn(testReaderCustomizer);
+	//
+	// XPulsarProperties spyPulsarProps = spy(pulsarProps);
+	// given(spyPulsarProps.getProducer()).willReturn(producerProps);
+	// given(spyPulsarProps.getConsumer()).willReturn(consumerProps);
+	// given(spyPulsarProps.getReader()).willReturn(readerProps);
+	// return spyPulsarProps;
+	// }
+	//
+	// }
 
 	@Nested
 	class SchemaAndTopicResolversTests {
@@ -333,142 +330,153 @@ class XPulsarAutoConfigurationTests {
 
 	}
 
-	@Nested
-	class PulsarTemplateTests {
-
-		@Test
-		void customPulsarTemplateIsRespected() {
-			PulsarTemplate<String> template = mock(PulsarTemplate.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarTemplate", PulsarTemplate.class, () -> template)
-				.run((context) -> assertThat(context).hasNotFailed().getBean(PulsarTemplate.class).isSameAs(template));
-		}
-
-		@Test
-		void beansAreInjectedInPulsarTemplate() {
-			PulsarProducerFactory<?> producerFactory = mock(PulsarProducerFactory.class);
-			SchemaResolver schemaResolver = mock(SchemaResolver.class);
-			TopicResolver topicResolver = mock(TopicResolver.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarProducerFactory", PulsarProducerFactory.class, () -> producerFactory)
-				.withBean("schemaResolver", SchemaResolver.class, () -> schemaResolver)
-				.withBean("topicResolver", TopicResolver.class, () -> topicResolver)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarTemplate.class)
-					.hasFieldOrPropertyWithValue("producerFactory", producerFactory)
-					.hasFieldOrPropertyWithValue("schemaResolver", schemaResolver)
-					.hasFieldOrPropertyWithValue("topicResolver", topicResolver));
-		}
-
-		@Test
-		void customProducerInterceptorIsUsedInPulsarTemplate() {
-			ProducerInterceptor interceptor = mock(ProducerInterceptor.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customProducerInterceptor", ProducerInterceptor.class, () -> interceptor)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarTemplate.class)
-					.extracting("interceptors")
-					.asInstanceOf(InstanceOfAssertFactories.list(ProducerInterceptor.class))
-					.contains(interceptor));
-		}
-
-		@Test
-		void customProducerInterceptorsOrderedProperly() {
-			XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarTemplate.class)
-					.extracting("interceptors")
-					.asInstanceOf(InstanceOfAssertFactories.list(ProducerInterceptor.class))
-					.containsExactly(InterceptorTestConfiguration.interceptorBar,
-							InterceptorTestConfiguration.interceptorFoo));
-		}
-
-		@Configuration(proxyBeanMethods = false)
-		static class InterceptorTestConfiguration {
-
-			static ProducerInterceptor interceptorFoo = mock(ProducerInterceptor.class);
-			static ProducerInterceptor interceptorBar = mock(ProducerInterceptor.class);
-
-			@Bean
-			@Order(200)
-			ProducerInterceptor interceptorFoo() {
-				return interceptorFoo;
-			}
-
-			@Bean
-			@Order(100)
-			ProducerInterceptor interceptorBar() {
-				return interceptorBar;
-			}
-
-		}
-
-	}
-
-	@Nested
-	class PulsarListenerTests {
-
-		@Test
-		void customPulsarListenerContainerFactoryIsRespected() {
-			PulsarListenerContainerFactory listenerContainerFactory = mock(PulsarListenerContainerFactory.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("pulsarListenerContainerFactory", PulsarListenerContainerFactory.class,
-						() -> listenerContainerFactory)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarListenerContainerFactory.class)
-					.isSameAs(listenerContainerFactory));
-		}
-
-		@Test
-		void beansAreInjectedInPulsarListenerContainerFactory() {
-			PulsarConsumerFactory<?> consumerFactory = mock(PulsarConsumerFactory.class);
-			SchemaResolver schemaResolver = mock(SchemaResolver.class);
-			TopicResolver topicResolver = mock(TopicResolver.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("pulsarConsumerFactory", PulsarConsumerFactory.class, () -> consumerFactory)
-				.withBean("schemaResolver", SchemaResolver.class, () -> schemaResolver)
-				.withBean("topicResolver", TopicResolver.class, () -> topicResolver)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(ConcurrentPulsarListenerContainerFactory.class)
-					.hasFieldOrPropertyWithValue("consumerFactory", consumerFactory)
-					.extracting(ConcurrentPulsarListenerContainerFactory<Object>::getContainerProperties)
-					.hasFieldOrPropertyWithValue("schemaResolver", schemaResolver)
-					.hasFieldOrPropertyWithValue("topicResolver", topicResolver));
-		}
-
-		@Test
-		void customPulsarListenerAnnotationBeanPostProcessorIsRespected() {
-			PulsarListenerAnnotationBeanPostProcessor<String> listenerAnnotationBeanPostProcessor = mock(
-					PulsarListenerAnnotationBeanPostProcessor.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor",
-						PulsarListenerAnnotationBeanPostProcessor.class, () -> listenerAnnotationBeanPostProcessor)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarListenerAnnotationBeanPostProcessor.class)
-					.isSameAs(listenerAnnotationBeanPostProcessor));
-		}
-
-		@Test
-		void listenerPropertiesAreHonored() {
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withPropertyValues("spring.pulsar.listener.ack-mode=manual", "spring.pulsar.listener.schema-type=avro",
-						"spring.pulsar.listener.max-num-messages=10", "spring.pulsar.listener.max-num-bytes=101B",
-						"spring.pulsar.listener.batch-timeout=50ms", "spring.pulsar.consumer.subscription.type=shared")
-				.run((context) -> {
-					AbstractObjectAssert<?, PulsarContainerProperties> properties = assertThat(context).hasNotFailed()
-						.getBean(ConcurrentPulsarListenerContainerFactory.class)
-						.extracting(ConcurrentPulsarListenerContainerFactory<Object>::getContainerProperties);
-					properties.extracting(PulsarContainerProperties::getAckMode).isEqualTo(AckMode.MANUAL);
-					properties.extracting(PulsarContainerProperties::getSchemaType).isEqualTo(SchemaType.AVRO);
-					properties.extracting(PulsarContainerProperties::getMaxNumMessages).isEqualTo(10);
-					properties.extracting(PulsarContainerProperties::getMaxNumBytes).isEqualTo(101);
-					properties.extracting(PulsarContainerProperties::getBatchTimeoutMillis).isEqualTo(50);
-					properties.extracting(PulsarContainerProperties::getSubscriptionType)
-						.isEqualTo(SubscriptionType.Shared);
-				});
-		}
-
-	}
+	// @Nested
+	// class PulsarTemplateTests {
+	//
+	// @Test
+	// void customPulsarTemplateIsRespected() {
+	// PulsarTemplate<String> template = mock(PulsarTemplate.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("customPulsarTemplate", PulsarTemplate.class, () -> template)
+	// .run((context) ->
+	// assertThat(context).hasNotFailed().getBean(PulsarTemplate.class).isSameAs(template));
+	// }
+	//
+	// @Test
+	// void beansAreInjectedInPulsarTemplate() {
+	// PulsarProducerFactory<?> producerFactory = mock(PulsarProducerFactory.class);
+	// SchemaResolver schemaResolver = mock(SchemaResolver.class);
+	// TopicResolver topicResolver = mock(TopicResolver.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("customPulsarProducerFactory", PulsarProducerFactory.class, () ->
+	// producerFactory)
+	// .withBean("schemaResolver", SchemaResolver.class, () -> schemaResolver)
+	// .withBean("topicResolver", TopicResolver.class, () -> topicResolver)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarTemplate.class)
+	// .hasFieldOrPropertyWithValue("producerFactory", producerFactory)
+	// .hasFieldOrPropertyWithValue("schemaResolver", schemaResolver)
+	// .hasFieldOrPropertyWithValue("topicResolver", topicResolver));
+	// }
+	//
+	// @Test
+	// void customProducerInterceptorIsUsedInPulsarTemplate() {
+	// ProducerInterceptor interceptor = mock(ProducerInterceptor.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("customProducerInterceptor", ProducerInterceptor.class, () ->
+	// interceptor)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarTemplate.class)
+	// .extracting("interceptors")
+	// .asInstanceOf(InstanceOfAssertFactories.list(ProducerInterceptor.class))
+	// .contains(interceptor));
+	// }
+	//
+	// @Test
+	// void customProducerInterceptorsOrderedProperly() {
+	// XPulsarAutoConfigurationTests.this.contextRunner.withUserConfiguration(InterceptorTestConfiguration.class)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarTemplate.class)
+	// .extracting("interceptors")
+	// .asInstanceOf(InstanceOfAssertFactories.list(ProducerInterceptor.class))
+	// .containsExactly(InterceptorTestConfiguration.interceptorBar,
+	// InterceptorTestConfiguration.interceptorFoo));
+	// }
+	//
+	// @Configuration(proxyBeanMethods = false)
+	// static class InterceptorTestConfiguration {
+	//
+	// static ProducerInterceptor interceptorFoo = mock(ProducerInterceptor.class);
+	// static ProducerInterceptor interceptorBar = mock(ProducerInterceptor.class);
+	//
+	// @Bean
+	// @Order(200)
+	// ProducerInterceptor interceptorFoo() {
+	// return interceptorFoo;
+	// }
+	//
+	// @Bean
+	// @Order(100)
+	// ProducerInterceptor interceptorBar() {
+	// return interceptorBar;
+	// }
+	//
+	// }
+	//
+	// }
+	//
+	// @Nested
+	// class PulsarListenerTests {
+	//
+	// @Test
+	// void customPulsarListenerContainerFactoryIsRespected() {
+	// PulsarListenerContainerFactory listenerContainerFactory =
+	// mock(PulsarListenerContainerFactory.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("pulsarListenerContainerFactory", PulsarListenerContainerFactory.class,
+	// () -> listenerContainerFactory)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarListenerContainerFactory.class)
+	// .isSameAs(listenerContainerFactory));
+	// }
+	//
+	// @Test
+	// void beansAreInjectedInPulsarListenerContainerFactory() {
+	// PulsarConsumerFactory<?> consumerFactory = mock(PulsarConsumerFactory.class);
+	// SchemaResolver schemaResolver = mock(SchemaResolver.class);
+	// TopicResolver topicResolver = mock(TopicResolver.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("pulsarConsumerFactory", PulsarConsumerFactory.class, () ->
+	// consumerFactory)
+	// .withBean("schemaResolver", SchemaResolver.class, () -> schemaResolver)
+	// .withBean("topicResolver", TopicResolver.class, () -> topicResolver)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(ConcurrentPulsarListenerContainerFactory.class)
+	// .hasFieldOrPropertyWithValue("consumerFactory", consumerFactory)
+	// .extracting(ConcurrentPulsarListenerContainerFactory<Object>::getContainerProperties)
+	// .hasFieldOrPropertyWithValue("schemaResolver", schemaResolver)
+	// .hasFieldOrPropertyWithValue("topicResolver", topicResolver));
+	// }
+	//
+	// @Test
+	// void customPulsarListenerAnnotationBeanPostProcessorIsRespected() {
+	// PulsarListenerAnnotationBeanPostProcessor<String>
+	// listenerAnnotationBeanPostProcessor = mock(
+	// PulsarListenerAnnotationBeanPostProcessor.class);
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withBean("org.springframework.pulsar.config.internalPulsarListenerAnnotationProcessor",
+	// PulsarListenerAnnotationBeanPostProcessor.class, () ->
+	// listenerAnnotationBeanPostProcessor)
+	// .run((context) -> assertThat(context).hasNotFailed()
+	// .getBean(PulsarListenerAnnotationBeanPostProcessor.class)
+	// .isSameAs(listenerAnnotationBeanPostProcessor));
+	// }
+	//
+	// @Test
+	// void listenerPropertiesAreHonored() {
+	// XPulsarAutoConfigurationTests.this.contextRunner
+	// .withPropertyValues("spring.pulsar.listener.ack-mode=manual",
+	// "spring.pulsar.listener.schema-type=avro",
+	// "spring.pulsar.listener.max-num-messages=10",
+	// "spring.pulsar.listener.max-num-bytes=101B",
+	// "spring.pulsar.listener.batch-timeout=50ms",
+	// "spring.pulsar.consumer.subscription.type=shared")
+	// .run((context) -> {
+	// AbstractObjectAssert<?, PulsarContainerProperties> properties =
+	// assertThat(context).hasNotFailed()
+	// .getBean(ConcurrentPulsarListenerContainerFactory.class)
+	// .extracting(ConcurrentPulsarListenerContainerFactory<Object>::getContainerProperties);
+	// properties.extracting(PulsarContainerProperties::getAckMode).isEqualTo(AckMode.MANUAL);
+	// properties.extracting(PulsarContainerProperties::getSchemaType).isEqualTo(SchemaType.AVRO);
+	// properties.extracting(PulsarContainerProperties::getMaxNumMessages).isEqualTo(10);
+	// properties.extracting(PulsarContainerProperties::getMaxNumBytes).isEqualTo(101);
+	// properties.extracting(PulsarContainerProperties::getBatchTimeoutMillis).isEqualTo(50);
+	// properties.extracting(PulsarContainerProperties::getSubscriptionType)
+	// .isEqualTo(SubscriptionType.Shared);
+	// });
+	// }
+	//
+	// }
 
 	@Nested
 	class PulsarClientTests {

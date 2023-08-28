@@ -83,7 +83,7 @@ public class PulsarAutoConfiguration {
 		List<ProducerBuilderCustomizer<Object>> customizers = new ArrayList<>();
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		customizers.add(PulsarPropertyMapper.producerBuilderCustomizer(this.properties));
-		if (!environment.getProperty("spring.pulsar.producer.cache.enabled", Boolean.class, false)) {
+		if (!environment.getProperty("spring.pulsar.producer.cache.enabled", Boolean.class, true)) {
 			return new DefaultPulsarProducerFactory<>(pulsarClient, topicName, customizers, topicResolver);
 		}
 		Cache cacheProperties = this.properties.getProducer().getCache();
