@@ -92,21 +92,6 @@ class XPulsarAutoConfigurationTests {
 	}
 
 	@Nested
-	class PulsarAdministrationTests {
-
-		@Test
-		void customPulsarAdministrationIsRespected() {
-			PulsarAdministration pulsarAdministration = mock(PulsarAdministration.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customPulsarAdministration", PulsarAdministration.class, () -> pulsarAdministration)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarAdministration.class)
-					.isSameAs(pulsarAdministration));
-		}
-
-	}
-
-	@Nested
 	class DefaultsTypeMappingsTests {
 
 		@Test

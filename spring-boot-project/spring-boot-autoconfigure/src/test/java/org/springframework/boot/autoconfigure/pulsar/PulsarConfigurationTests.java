@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,6 +88,23 @@ class PulsarConfigurationTests {
 				return mock(PulsarClientBuilderCustomizer.class);
 			}
 
+		}
+
+	}
+
+	@Nested
+	class AdministrationTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarConfigurationTests.this.contextRunner;
+
+		@Test
+		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+			PulsarAdministration pulsarAdministration = mock(PulsarAdministration.class);
+			this.contextRunner
+				.withBean("customPulsarAdministration", PulsarAdministration.class, () -> pulsarAdministration)
+				.run((context) -> assertThat(context).hasNotFailed()
+					.getBean(PulsarAdministration.class)
+					.isSameAs(pulsarAdministration));
 		}
 
 	}
