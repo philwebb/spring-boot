@@ -222,6 +222,26 @@ class PulsarAutoConfigurationTests {
 					.containsExactly(context.getBean("interceptorBar"), context.getBean("interceptorFoo")));
 		}
 
+		@Test
+		void whenNoPropertiesEnablesObservation() {
+			this.contextRunner.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
+				.hasFieldOrPropertyWithValue("observationEnabled", true));
+		}
+
+		@Test
+		void whenObservationsEnabledEnablesObservation() {
+			this.contextRunner.withPropertyValues("spring.pulsar.template.observations-enabled=true")
+				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
+					.hasFieldOrPropertyWithValue("observationEnabled", true));
+		}
+
+		@Test
+		void whenObservationsDisabledDoesNotEnableObservation() {
+			this.contextRunner.withPropertyValues("spring.pulsar.template.observations-enabled=false")
+				.run((context) -> assertThat(context).getBean(PulsarTemplate.class)
+					.hasFieldOrPropertyWithValue("observationEnabled", false));
+		}
+
 		@Configuration(proxyBeanMethods = false)
 		static class InterceptorTestConfiguration {
 
@@ -316,6 +336,27 @@ class PulsarAutoConfigurationTests {
 						assertThat(actual).extracting(PulsarContainerProperties::getSchemaType)
 							.isEqualTo(SchemaType.AVRO);
 					}));
+		}
+
+		@Test
+		void whenNoPropertiesEnablesObservation() {
+			this.contextRunner
+				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", true));
+		}
+
+		@Test
+		void whenObservationsEnabledEnablesObservation() {
+			this.contextRunner.withPropertyValues("spring.pulsar.listener.observations-enabled=true")
+				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", true));
+		}
+
+		@Test
+		void whenObservationsDisabledDoesNotEnableObservation() {
+			this.contextRunner.withPropertyValues("spring.pulsar.listener.observations-enabled=false")
+				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", false));
 		}
 
 	}

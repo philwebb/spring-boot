@@ -44,6 +44,7 @@ import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
+import org.springframework.pulsar.function.PulsarFunctionAdministration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -220,6 +221,51 @@ class PulsarConfigurationTests {
 					.asInstanceOf(InstanceOfAssertFactories.type(DefaultTopicResolver.class))
 					.extracting(DefaultTopicResolver::getCustomTopicMappings, InstanceOfAssertFactories.MAP)
 					.containsOnly(entry(TestRecord.class, "foo-topic"), entry(String.class, "string-topic")));
+		}
+
+	}
+
+	@Nested
+	class FunctionAdministrationTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarConfigurationTests.this.contextRunner;
+
+		@Test
+		void whenNoPropertiesAddsFunctionAdministrationBean() {
+			this.contextRunner.run((context) -> assertThat(context).getBean(PulsarFunctionAdministration.class)
+				.hasFieldOrPropertyWithValue("failFast", Boolean.TRUE)
+				.hasFieldOrPropertyWithValue("propagateFailures", Boolean.TRUE)
+				.hasFieldOrPropertyWithValue("propagateStopFailures", Boolean.FALSE)
+				.hasNoNullFieldsOrProperties() // ensures object providers set
+				.extracting("pulsarAdministration")
+				.isSameAs(context.getBean(PulsarAdministration.class)));
+		}
+
+		@Test
+		void whenHasFunctionPropertiesAppliesPropertiesToBean() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.function.fail-fast=false");
+			properties.add("spring.pulsar.function.propagate-failures=false");
+			properties.add("spring.pulsar.function.propagate-stop-failures=true");
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
+				.run((context) -> assertThat(context).getBean(PulsarFunctionAdministration.class)
+					.hasFieldOrPropertyWithValue("failFast", Boolean.FALSE)
+					.hasFieldOrPropertyWithValue("propagateFailures", Boolean.FALSE)
+					.hasFieldOrPropertyWithValue("propagateStopFailures", Boolean.TRUE));
+		}
+
+		@Test
+		void whenHasFunctionDisabledPropertyDoesNotCreateBean() {
+			this.contextRunner.withPropertyValues("spring.pulsar.function.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(PulsarFunctionAdministration.class));
+		}
+
+		@Test
+		void whenHasCustomFunctionAdministrationBean() {
+			PulsarFunctionAdministration functionAdministration = mock(PulsarFunctionAdministration.class);
+			this.contextRunner.withBean(PulsarFunctionAdministration.class, () -> functionAdministration)
+				.run((context) -> assertThat(context).getBean(PulsarFunctionAdministration.class)
+					.isSameAs(functionAdministration));
 		}
 
 	}
