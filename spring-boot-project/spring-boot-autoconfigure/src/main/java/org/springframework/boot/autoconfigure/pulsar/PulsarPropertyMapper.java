@@ -152,13 +152,7 @@ class PulsarPropertyMapper {
 			PulsarProperties.Listener properties) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
-		// FIXME
-		// map.from(properties::getAckMode).to(containerProperties::setAckMode);
-		// map.from(properties::getBatchTimeout).asInt(Duration::toMillis).to(containerProperties::setBatchTimeoutMillis);
-		// map.from(properties::getMaxNumBytes).asInt(DataSize::toBytes).to(containerProperties::setMaxNumBytes);
-		// map.from(properties::getMaxNumMessages).to(containerProperties::setMaxNumMessages);
-		// map.from(properties::isObservationsEnabled).to(containerProperties::setObservationEnabled);
-		// FIXME log observation don't work in reactive
+		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
 	}
 
 	static <T> ReaderBuilderCustomizer<T> readerBuilderCustomizer(PulsarProperties properties) {

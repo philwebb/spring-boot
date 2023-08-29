@@ -739,7 +739,11 @@ public class PulsarProperties {
 		 */
 		SchemaType schemaType;
 
-		// FIXME isObservationEnabled
+		/**
+		 * Whether to record observations for when the Observations API is available and
+		 * the client supports it.
+		 */
+		private boolean observationEnabled = true;
 
 		public SchemaType getSchemaType() {
 			return this.schemaType;
@@ -747,6 +751,14 @@ public class PulsarProperties {
 
 		public void setSchemaType(SchemaType schemaType) {
 			this.schemaType = schemaType;
+		}
+
+		public boolean isObservationEnabled() {
+			return this.observationEnabled;
+		}
+
+		public void setObservationEnabled(boolean observationEnabled) {
+			this.observationEnabled = observationEnabled;
 		}
 
 	}
@@ -824,8 +836,7 @@ public class PulsarProperties {
 	public static class Template {
 
 		/**
-		 * Whether to record observations for send operations when the Observations API is
-		 * available.
+		 * Whether to record observations for when the Observations API is available.
 		 */
 		private boolean observationsEnabled = true;
 

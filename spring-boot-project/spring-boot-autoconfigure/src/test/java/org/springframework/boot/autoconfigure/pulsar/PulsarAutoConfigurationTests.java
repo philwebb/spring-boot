@@ -347,14 +347,14 @@ class PulsarAutoConfigurationTests {
 
 		@Test
 		void whenObservationsEnabledEnablesObservation() {
-			this.contextRunner.withPropertyValues("spring.pulsar.listener.observations-enabled=true")
+			this.contextRunner.withPropertyValues("spring.pulsar.listener.observation-enabled=true")
 				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
 					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", true));
 		}
 
 		@Test
 		void whenObservationsDisabledDoesNotEnableObservation() {
-			this.contextRunner.withPropertyValues("spring.pulsar.listener.observations-enabled=false")
+			this.contextRunner.withPropertyValues("spring.pulsar.listener.observation-enabled=false")
 				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
 					.hasFieldOrPropertyWithValue("containerProperties.observationEnabled", false));
 		}

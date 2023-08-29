@@ -156,10 +156,12 @@ class PulsarPropertyMapperTests {
 		PulsarProperties properties = new PulsarProperties();
 		properties.getConsumer().getSubscription().setType(SubscriptionType.Shared);
 		properties.getListener().setSchemaType(SchemaType.AVRO);
+		properties.getListener().setObservationEnabled(false);
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties("my-topic-pattern");
 		PulsarPropertyMapper.containerPropertiesCustomizer(properties).accept(containerProperties);
 		assertThat(containerProperties.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
 		assertThat(containerProperties.getSchemaType()).isEqualTo(SchemaType.AVRO);
+		assertThat(containerProperties.isObservationEnabled()).isFalse();
 	}
 
 	@Test
