@@ -24,6 +24,7 @@ import org.apache.pulsar.client.api.ClientBuilder;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
+import org.apache.pulsar.common.schema.SchemaType;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -116,9 +117,10 @@ class PulsarConfiguration {
 	private void addCustomSchemaMapping(DefaultSchemaResolver schemaResolver, TypeMapping typeMapping) {
 		SchemaInfo schemaInfo = typeMapping.schemaInfo();
 		if (schemaInfo != null) {
-			Schema<Object> schema = schemaResolver
-				.resolveSchema(schemaInfo.schemaType(), typeMapping.messageType(), schemaInfo.messageKeyType())
-				.orElseThrow();
+			Class<?> messageType = typeMapping.messageType();
+			SchemaType schemaType = schemaInfo.schemaType();
+			Class<?> messageKeyType = schemaInfo.messageKeyType();
+			Schema<?> schema = schemaResolver.resolveSchema(schemaType, messageType, messageKeyType).orElseThrow();
 			schemaResolver.addCustomSchemaMapping(typeMapping.messageType(), schema);
 		}
 	}

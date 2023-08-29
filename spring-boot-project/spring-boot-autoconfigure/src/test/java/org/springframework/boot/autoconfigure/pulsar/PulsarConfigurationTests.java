@@ -16,9 +16,17 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.Schema;
+import org.apache.pulsar.common.schema.KeyValueEncodingType;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.assertj.core.api.InstanceOfAssertFactory;
+import org.assertj.core.api.MapAssert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -30,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
+import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
@@ -37,6 +46,7 @@ import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -45,6 +55,8 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link PulsarConfiguration}.
  *
  * @author Chris Bono
+ * @author Alexander Preuß
+ * @author Soby Chacko
  * @author Phillip Webb
  */
 class PulsarConfigurationTests {
@@ -108,8 +120,7 @@ class PulsarConfigurationTests {
 			PulsarAdministration pulsarAdministration = mock(PulsarAdministration.class);
 			this.contextRunner
 				.withBean("customPulsarAdministration", PulsarAdministration.class, () -> pulsarAdministration)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(PulsarAdministration.class)
+				.run((context) -> assertThat(context).getBean(PulsarAdministration.class)
 					.isSameAs(pulsarAdministration));
 		}
 
@@ -117,6 +128,10 @@ class PulsarConfigurationTests {
 
 	@Nested
 	class SchemaResolverTests {
+
+		@SuppressWarnings("rawtypes")
+		private static final InstanceOfAssertFactory<Map, MapAssert<Class, Schema>> CLASS_SCHEMA_MAP = InstanceOfAssertFactories
+			.map(Class.class, Schema.class);
 
 		private final ApplicationContextRunner contextRunner = PulsarConfigurationTests.this.contextRunner;
 
@@ -137,6 +152,48 @@ class PulsarConfigurationTests {
 					.containsEntry(TestRecord.class, Schema.STRING));
 		}
 
+		@Test
+		void whenHasDefaultsTypeMappingForPrimitiveAddsToSchemaResolver() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.defaults.type-mappings[0].message-type=" + TestRecord.CLASS_NAME);
+			properties.add("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type=STRING");
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
+				.run((context) -> assertThat(context).getBean(DefaultSchemaResolver.class)
+					.extracting(DefaultSchemaResolver::getCustomSchemaMappings, InstanceOfAssertFactories.MAP)
+					.containsOnly(entry(TestRecord.class, Schema.STRING)));
+		}
+
+		@Test
+		void whenHasDefaultsTypeMappingForStructAddsToSchemaResolver() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.defaults.type-mappings[0].message-type=" + TestRecord.CLASS_NAME);
+			properties.add("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type=JSON");
+			Schema<?> expectedSchema = Schema.JSON(TestRecord.class);
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
+				.run((context) -> assertThat(context).getBean(DefaultSchemaResolver.class)
+					.extracting(DefaultSchemaResolver::getCustomSchemaMappings, CLASS_SCHEMA_MAP)
+					.hasEntrySatisfying(TestRecord.class, schemaEqualTo(expectedSchema)));
+		}
+
+		@Test
+		void whenHasDefaultsTypeMappingForKeyValueAddsToSchemaResolver() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.defaults.type-mappings[0].message-type=" + TestRecord.CLASS_NAME);
+			properties.add("spring.pulsar.defaults.type-mappings[0].schema-info.schema-type=key-value");
+			properties.add("spring.pulsar.defaults.type-mappings[0].schema-info.message-key-type=java.lang.String");
+			Schema<?> expectedSchema = Schema.KeyValue(Schema.STRING, Schema.JSON(TestRecord.class),
+					KeyValueEncodingType.INLINE);
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
+				.run((context) -> assertThat(context).getBean(DefaultSchemaResolver.class)
+					.extracting(DefaultSchemaResolver::getCustomSchemaMappings, CLASS_SCHEMA_MAP)
+					.hasEntrySatisfying(TestRecord.class, schemaEqualTo(expectedSchema)));
+		}
+
+		@SuppressWarnings("rawtypes")
+		private Consumer<Schema> schemaEqualTo(Schema<?> expected) {
+			return (actual) -> assertThat(actual.getSchemaInfo()).isEqualTo(expected.getSchemaInfo());
+		}
+
 	}
 
 	@Nested
@@ -151,9 +208,26 @@ class PulsarConfigurationTests {
 				.run((context) -> assertThat(context).getBean(TopicResolver.class).isSameAs(topicResolver));
 		}
 
+		@Test
+		void whenHasDefaultsTypeMappingAddsToSchemaResolver() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.defaults.type-mappings[0].message-type=" + TestRecord.CLASS_NAME);
+			properties.add("spring.pulsar.defaults.type-mappings[0].topic-name=foo-topic");
+			properties.add("spring.pulsar.defaults.type-mappings[1].message-type=java.lang.String");
+			properties.add("spring.pulsar.defaults.type-mappings[1].topic-name=string-topic");
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
+				.run((context) -> assertThat(context).getBean(TopicResolver.class)
+					.asInstanceOf(InstanceOfAssertFactories.type(DefaultTopicResolver.class))
+					.extracting(DefaultTopicResolver::getCustomTopicMappings, InstanceOfAssertFactories.MAP)
+					.containsOnly(entry(TestRecord.class, "foo-topic"), entry(String.class, "string-topic")));
+		}
+
 	}
 
 	record TestRecord() {
+
+		private static final String CLASS_NAME = TestRecord.class.getName();
+
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
