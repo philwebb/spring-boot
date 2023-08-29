@@ -31,7 +31,6 @@ import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.SchemaResolver;
-import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.function.PulsarFunctionAdministration;
 
@@ -51,45 +50,6 @@ class XPulsarAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(XPulsarAutoConfiguration.class));
-
-	@Nested
-	class SchemaAndTopicResolversTests {
-
-		@Test
-		void customSchemaResolverIsRespected() {
-			SchemaResolver customSchemaResolver = mock(SchemaResolver.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customSchemaResolver", SchemaResolver.class, () -> customSchemaResolver)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(SchemaResolver.class)
-					.isSameAs(customSchemaResolver));
-		}
-
-		@Test
-		void defaultSchemaResolverCanBeCustomized() {
-			record Foo() {
-			}
-			SchemaResolverCustomizer<DefaultSchemaResolver> customizer = (sr) -> sr.addCustomSchemaMapping(Foo.class,
-					Schema.STRING);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("schemaResolverCustomizer", SchemaResolverCustomizer.class, () -> customizer)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(DefaultSchemaResolver.class)
-					.extracting(DefaultSchemaResolver::getCustomSchemaMappings, InstanceOfAssertFactories.MAP)
-					.containsEntry(Foo.class, Schema.STRING));
-		}
-
-		@Test
-		void customTopicResolverIsRespected() {
-			TopicResolver customTopicResolver = mock(TopicResolver.class);
-			XPulsarAutoConfigurationTests.this.contextRunner
-				.withBean("customTopicResolver", TopicResolver.class, () -> customTopicResolver)
-				.run((context) -> assertThat(context).hasNotFailed()
-					.getBean(TopicResolver.class)
-					.isSameAs(customTopicResolver));
-		}
-
-	}
 
 	@Nested
 	class DefaultsTypeMappingsTests {

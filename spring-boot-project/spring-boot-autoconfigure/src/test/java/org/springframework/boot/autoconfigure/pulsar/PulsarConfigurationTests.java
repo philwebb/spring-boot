@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.pulsar;
 
 import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.Schema;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -27,8 +29,12 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
+import org.springframework.pulsar.core.SchemaResolver;
+import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
+import org.springframework.pulsar.core.TopicResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,6 +113,47 @@ class PulsarConfigurationTests {
 					.isSameAs(pulsarAdministration));
 		}
 
+	}
+
+	@Nested
+	class SchemaResolverTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarConfigurationTests.this.contextRunner;
+
+		@Test
+		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+			SchemaResolver schemaResolver = mock(SchemaResolver.class);
+			this.contextRunner.withBean("customSchemaResolver", SchemaResolver.class, () -> schemaResolver)
+				.run((context) -> assertThat(context).getBean(SchemaResolver.class).isSameAs(schemaResolver));
+		}
+
+		@Test
+		void whenHasUserDefinedSchemaResolverCustomizer() {
+			SchemaResolverCustomizer<DefaultSchemaResolver> customizer = (schemaResolver) -> schemaResolver
+				.addCustomSchemaMapping(TestRecord.class, Schema.STRING);
+			this.contextRunner.withBean("schemaResolverCustomizer", SchemaResolverCustomizer.class, () -> customizer)
+				.run((context) -> assertThat(context).getBean(DefaultSchemaResolver.class)
+					.extracting(DefaultSchemaResolver::getCustomSchemaMappings, InstanceOfAssertFactories.MAP)
+					.containsEntry(TestRecord.class, Schema.STRING));
+		}
+
+	}
+
+	@Nested
+	class TopicResolverTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarConfigurationTests.this.contextRunner;
+
+		@Test
+		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+			TopicResolver topicResolver = mock(TopicResolver.class);
+			this.contextRunner.withBean("customTopicResolver", TopicResolver.class, () -> topicResolver)
+				.run((context) -> assertThat(context).getBean(TopicResolver.class).isSameAs(topicResolver));
+		}
+
+	}
+
+	record TestRecord() {
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
