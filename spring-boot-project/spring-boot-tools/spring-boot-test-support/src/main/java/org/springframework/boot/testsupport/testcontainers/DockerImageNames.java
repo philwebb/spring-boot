@@ -51,7 +51,7 @@ public final class DockerImageNames {
 
 	private static final String ORACLE_XE_VERSION = "18.4.0-slim";
 
-	private static final String PULSAR_VERSION = "3.0.0";
+	private static final String PULSAR_VERSION = "3.1.0";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
 

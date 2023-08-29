@@ -18,14 +18,12 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.time.Duration;
 
-import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -38,6 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -47,13 +46,14 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link XPulsarAutoConfiguration}.
+ * Integration tests for {@link PulsarAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-class XPulsarAutoConfigurationIntegrationTests {
+class PulsarAutoConfigurationIntegrationTests {
 
 	@Container
 	private static final PulsarContainer PULSAR_CONTAINER = new PulsarContainer(DockerImageNames.pulsar())
@@ -67,40 +67,36 @@ class XPulsarAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void appStartsWithAutoConfiguredSpringPulsarComponents(
-			@Autowired ObjectProvider<PulsarTemplate<String>> pulsarTemplate) {
-		assertThat(pulsarTemplate.getIfAvailable()).isNotNull();
+	void appStartsWithAutoConfiguredSpringPulsarComponents(@Autowired PulsarTemplate<String> pulsarTemplate) {
+		assertThat(pulsarTemplate).isNotNull();
 	}
 
 	@Test
 	void templateCanBeAccessedDuringWebRequest(@Autowired TestRestTemplate restTemplate) {
-		String body = restTemplate.getForObject("/hello", String.class);
-		assertThat(body).startsWith("Hello World -> ");
+		assertThat(restTemplate.getForObject("/hello", String.class)).startsWith("Hello World -> ");
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration({ DispatcherServletAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
-			XPulsarAutoConfiguration.class, XPulsarReactiveAutoConfiguration.class })
+			PulsarAutoConfiguration.class, PulsarReactiveAutoConfiguration.class })
+	@Import(TestWebController.class)
 	static class TestConfiguration {
 
-		@Autowired
-		private ObjectProvider<PulsarTemplate<String>> pulsarTemplateProvider;
+	}
 
-		@RestController
-		class TestWebController {
+	@RestController
+	static class TestWebController {
 
-			@GetMapping("/hello")
-			String sayHello() throws PulsarClientException {
+		private final PulsarTemplate<String> pulsarTemplate;
 
-				PulsarTemplate<String> pulsarTemplate = TestConfiguration.this.pulsarTemplateProvider.getIfAvailable();
-				if (pulsarTemplate == null) {
-					return "NOPE! Not hello world";
-				}
-				MessageId msgId = pulsarTemplate.send("spbast-hello-topic", "hello");
-				return "Hello World -> " + msgId;
-			}
+		TestWebController(PulsarTemplate<String> pulsarTemplate) {
+			this.pulsarTemplate = pulsarTemplate;
+		}
 
+		@GetMapping("/hello")
+		String sayHello() throws PulsarClientException {
+			return "Hello World -> " + this.pulsarTemplate.send("spbast-hello-topic", "hello");
 		}
 
 	}
