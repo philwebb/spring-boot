@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -76,6 +77,12 @@ class PulsarAutoConfigurationTests {
 
 	@Test
 	void whenPulsarNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(PulsarClient.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(PulsarAutoConfiguration.class));
+	}
+
+	@Test
+	void whenSpringPulsarNotOnClasspathAutoConfigurationIsSkipped() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(EnablePulsar.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(PulsarAutoConfiguration.class));
 	}
@@ -91,15 +98,15 @@ class PulsarAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PulsarConfiguration.class)
 			.hasSingleBean(PulsarClient.class)
 			.hasSingleBean(PulsarAdministration.class)
+			.hasSingleBean(DefaultSchemaResolver.class)
+			.hasSingleBean(DefaultTopicResolver.class)
 			.hasSingleBean(PulsarProducerFactory.class)
 			.hasSingleBean(PulsarTemplate.class)
 			.hasSingleBean(PulsarConsumerFactory.class)
 			.hasSingleBean(PulsarReaderFactory.class)
 			.hasSingleBean(ConcurrentPulsarListenerContainerFactory.class)
 			.hasSingleBean(PulsarListenerAnnotationBeanPostProcessor.class)
-			.hasSingleBean(PulsarListenerEndpointRegistry.class)
-			.hasSingleBean(DefaultSchemaResolver.class)
-			.hasSingleBean(DefaultTopicResolver.class));
+			.hasSingleBean(PulsarListenerEndpointRegistry.class));
 	}
 
 	@Nested
@@ -383,6 +390,7 @@ class PulsarAutoConfigurationTests {
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
+	@ConditionalOnClass
 	static class PulsarClientBuilderCustomizerConfiguration {
 
 		@Bean

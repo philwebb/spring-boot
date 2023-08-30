@@ -65,7 +65,7 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
  * @since 3.2.0
  */
 @AutoConfiguration
-@ConditionalOnClass(EnablePulsar.class)
+@ConditionalOnClass({ PulsarClient.class, EnablePulsar.class })
 @Import(PulsarConfiguration.class)
 public class PulsarAutoConfiguration {
 
