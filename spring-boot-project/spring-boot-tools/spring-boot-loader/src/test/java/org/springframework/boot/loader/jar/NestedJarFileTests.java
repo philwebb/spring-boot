@@ -274,9 +274,9 @@ class NestedJarFileTests {
 		Cleanable cleanable = mock(Cleanable.class);
 		given(cleaner.register(any(), action.capture())).willReturn(cleanable);
 		try (NestedJarFile jar = new NestedJarFile(this.file, null, null, false, cleaner)) {
-			assertThat(jar).extracting("resources.zipContent.data.referenceCount").isEqualTo(1);
+			assertThat(jar).extracting("resources.zipContent.data.channel.referenceCount").isEqualTo(1);
 			action.getValue().run();
-			assertThat(jar).extracting("resources.zipContent.data.referenceCount").isEqualTo(0);
+			assertThat(jar).extracting("resources.zipContent.data.channel.referenceCount").isEqualTo(0);
 		}
 	}
 

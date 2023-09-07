@@ -37,56 +37,24 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
 
-	private static Tracker tracker = new NoOpTracker();
+	private static Tracker tracker = NoOpTracker.INSTANCE;
 
-	private volatile FileChannel fileChannel;
-
-	private volatile int referenceCount;
-
-	private final Path path;
-
-	private final Opener opener;
-
-	private final Closer closer;
+	private final ManagedFileChannel channel;
 
 	private final long offset;
 
 	private final long size;
 
-	private final Object lock = new Object();
-
-	/**
-	 * Create a new {@link FileChannelDataBlock} instance.
-	 * @param path the file path
-	 * @param opener the {@link Opener} to use when opening the file
-	 * @param closer the {@link Closer} to use when closing the file
-	 * @throws IOException on I/O error
-	 */
-	FileChannelDataBlock(Path path, Opener opener, Closer closer) throws IOException {
-		this(path, opener, closer, 0, -1);
+	FileChannelDataBlock(Path path) throws IOException {
+		this.channel = new ManagedFileChannel(path);
+		this.offset = 0;
+		this.size = Files.size(path);
 	}
 
-	private FileChannelDataBlock(Path path, Opener opener, Closer closer, long offset, long size) throws IOException {
-		this.path = path;
-		this.fileChannel = opener.open();
-		this.referenceCount = 1;
-		this.opener = opener;
-		this.closer = closer;
-		this.offset = offset;
-		this.size = (size != -1) ? size : this.fileChannel.size();
-		debug.log("Created new FileChannelDataBlock '%s' at %s with size %s", path, offset, size);
-	}
-
-	private FileChannelDataBlock(Path path, FileChannel fileChannel, Opener opener, Closer closer, long offset,
-			long size) throws IOException {
-		this.path = path;
-		this.fileChannel = fileChannel;
-		this.referenceCount = 1;
-		this.opener = opener;
-		this.closer = closer;
+	public FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
+		this.channel = channel;
 		this.offset = offset;
 		this.size = size;
-		debug.log("Created new FileChannelDataBlock '%s' at %s with size %s", path, offset, size);
 	}
 
 	@Override
@@ -99,7 +67,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		if (pos < 0) {
 			throw new IllegalArgumentException("Position must not be negative");
 		}
-		ensureOpen();
+		ensureOpen(ClosedChannelException::new);
 		int remaining = (int) (this.size - pos);
 		if (remaining <= 0) {
 			return -1;
@@ -109,7 +77,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			originalDestinationLimit = dst.limit();
 			dst.limit(dst.position() + remaining);
 		}
-		int result = this.fileChannel.read(dst, this.offset + pos);
+		int result = this.channel.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}
@@ -117,88 +85,12 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	}
 
 	/**
-	 * Return a version of this instance with front matter removed. Note the result of
-	 * this method is expected to replace this instance and as such calls do not increment
-	 * the reference count.
-	 * @param pos the new start position
-	 * @return a {@link FileChannelDataBlock} with front matter removed
-	 * @throws IOException on I/O error
-	 */
-	FileChannelDataBlock removeFrontMatter(long pos) throws IOException {
-		if (pos <= 0) {
-			return this;
-		}
-		return new FileChannelDataBlock(this.path, this.opener, this.closer, this.offset + pos, this.size - pos);
-	}
-
-	/**
-	 * Open a new {@link FileChannelDataBlock} slice providing access to a subset of the
-	 * data. The caller is responsible for closing resulting {@link FileChannelDataBlock}.
-	 * @param offset the start offset for the slice relative to this block
-	 * @param size the size of the new slice
-	 * @return a new {@link FileChannelDataBlock} instance
-	 * @throws IOException on I/O error
-	 */
-	FileChannelDataBlock openSlice(long offset, long size) throws IOException {
-		if (offset < 0) {
-			throw new IllegalArgumentException("Offset must not be negative");
-		}
-		if (size < 0 || offset + size > this.size) {
-			throw new IllegalArgumentException("Size must not be negative and must be within bounds");
-		}
-		debug.log("Openning slice from %s at %s with size %s", this.path, offset, size);
-		return new FileChannelDataBlock(this.path, this::openDuplicate, this::closeDuplicate, this.offset + offset,
-				size);
-	}
-
-	private FileChannel openDuplicate() throws IOException {
-		open();
-		return this.fileChannel;
-	}
-
-	private void closeDuplicate(FileChannel fileChannel) throws IOException {
-		close();
-	}
-
-	/**
-	 * Ensure that the underlying file channel is currently open.
-	 * @throws ClosedChannelException if the channel is closed
-	 */
-	void ensureOpen() throws ClosedChannelException {
-		ensureOpen(ClosedChannelException::new);
-	}
-
-	/**
-	 * Ensure that the underlying file channel is currently open.
-	 * @param exceptionSupplier a supplier providing the exception to throw
-	 * @param <E> the exception type
-	 * @throws E if the channel is closed
-	 */
-	<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
-		synchronized (this.lock) {
-			if (this.referenceCount == 0) {
-				throw exceptionSupplier.get();
-			}
-		}
-	}
-
-	/**
 	 * Open a connection to this block, increasing the reference count and re-opening the
 	 * underlying file channel if necessary.
-	 * @return this instance
 	 * @throws IOException on I/O error
 	 */
-	FileChannelDataBlock open() throws IOException {
-		synchronized (this.lock) {
-			if (this.referenceCount == 0) {
-				debug.log("Reopening '%s'", this.path);
-				this.fileChannel = this.opener.open();
-			}
-			this.referenceCount++;
-			debug.log("Reference count for '%s' (%s,%s) incremented to %s", this.path, this.offset, this.size,
-					this.referenceCount);
-			return this;
-		}
+	void open() throws IOException {
+		this.channel.open();
 	}
 
 	/**
@@ -208,71 +100,150 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 */
 	@Override
 	public void close() throws IOException {
-		synchronized (this.lock) {
-			if (this.referenceCount == 0) {
-				return;
-			}
-			this.referenceCount--;
-			if (this.referenceCount == 0) {
-				debug.log("Closing '%s'", this.path);
-				this.closer.close(this.fileChannel);
-				this.fileChannel = null;
-			}
-			debug.log("Reference count for '%s' (%s,%s) decremented to %s", this.path, this.offset, this.size,
-					this.referenceCount);
-		}
+		this.channel.close();
 	}
 
 	/**
-	 * Opens a new {@link FileChannelDataBlock} backed by the given file.
-	 * @param path the path of the file to open
-	 * @return a new file channel instance
+	 * Ensure that the underlying file channel is currently open.
+	 * @param exceptionSupplier a supplier providing the exception to throw
+	 * @param <E> the exception type
+	 * @throws E if the channel is closed
+	 */
+	<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
+		this.channel.ensureOpen(exceptionSupplier);
+	}
+
+	/**
+	 * Return a new {@link FileChannelDataBlock} slice providing access to a subset of the
+	 * data. The caller is responsible for calling {@link #open()} and {@link #close()} on
+	 * the returned block.
+	 * @param offset the start offset for the slice relative to this block
+	 * @return a new {@link FileChannelDataBlock} instance
 	 * @throws IOException on I/O error
 	 */
-	static FileChannelDataBlock open(Path path) throws IOException {
-		if (!Files.isRegularFile(path)) {
-			throw new IllegalArgumentException(path + " must be a regular file");
+	FileChannelDataBlock slice(long offset) throws IOException {
+		return slice(offset, this.size - offset);
+	}
+
+	/**
+	 * Return a new {@link FileChannelDataBlock} slice providing access to a subset of the
+	 * data. The caller is responsible for calling {@link #open()} and {@link #close()} on
+	 * the returned block.
+	 * @param offset the start offset for the slice relative to this block
+	 * @param size the size of the new slice
+	 * @return a new {@link FileChannelDataBlock} instance
+	 * @throws IOException on I/O error
+	 */
+	FileChannelDataBlock slice(long offset, long size) throws IOException {
+		if (offset == 0 && size == this.size) {
+			return this;
 		}
-		return new FileChannelDataBlock(path, () -> FileChannel.open(path, StandardOpenOption.READ),
-				FileChannel::close);
+		if (offset < 0) {
+			throw new IllegalArgumentException("Offset must not be negative");
+		}
+		if (size < 0 || offset + size > this.size) {
+			throw new IllegalArgumentException("Size must not be negative and must be within bounds");
+		}
+		debug.log("Slicing %s at %s with size %s", this.channel, offset, size);
+		return new FileChannelDataBlock(this.channel, this.offset + offset, size);
+	}
+
+	static void setTracker(Tracker tracker) {
+		FileChannelDataBlock.tracker = (tracker != null) ? tracker : NoOpTracker.INSTANCE;
 	}
 
 	/**
-	 * Strategy interface used to handle opening of a {@link FileChannel}.
+	 * Manages access to underlying {@link FileChannel}.
 	 */
-	interface Opener {
+	static class ManagedFileChannel {
 
-		/**
-		 * Opens the file channel.
-		 * @return the file channel instance
-		 * @throws IOException on I/O error
-		 * @see FileChannel#open(Path, java.nio.file.OpenOption...)
-		 */
-		FileChannel open() throws IOException;
+		private final Path path;
+
+		private final Object lock = new Object();
+
+		private volatile int referenceCount;
+
+		private volatile FileChannel fileChannel;
+
+		ManagedFileChannel(Path path) {
+			if (!Files.isRegularFile(path)) {
+				throw new IllegalArgumentException(path + " must be a regular file");
+			}
+			this.path = path;
+		}
+
+		public int read(ByteBuffer dst, long position) throws IOException {
+			return this.fileChannel.read(dst, position);
+		}
+
+		void open() throws IOException {
+			synchronized (this.lock) {
+				if (this.referenceCount == 0) {
+					debug.log("Opening '%s'", this.path);
+					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
+					tracker.openedFileChannel(this.path, this.fileChannel);
+				}
+				this.referenceCount++;
+				debug.log("Reference count for '%s' incremented to %s", this.path, this.referenceCount);
+			}
+		}
+
+		void close() throws IOException {
+			synchronized (this.lock) {
+				if (this.referenceCount == 0) {
+					return;
+				}
+				this.referenceCount--;
+				if (this.referenceCount == 0) {
+					debug.log("Closing '%s'", this.path);
+					this.fileChannel.close();
+					tracker.closedFileChannel(this.path, this.fileChannel);
+					this.fileChannel = null;
+				}
+				debug.log("Reference count for '%s' decremented to %s", this.path, this.referenceCount);
+			}
+		}
+
+		<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
+			synchronized (this.lock) {
+				if (this.referenceCount == 0) {
+					throw exceptionSupplier.get();
+				}
+			}
+		}
+
+		@Override
+		public String toString() {
+			return this.path.toString();
+		}
 
 	}
 
 	/**
-	 * Strategy interface used to handle closing of a {@link FileChannel}.
+	 * Internal tracker used to check open and closing of files in tests.
 	 */
-	interface Closer {
-
-		/**
-		 * Close the file channel.
-		 * @param channel the file channel to close
-		 * @throws IOException on I/O error
-		 */
-		void close(FileChannel channel) throws IOException;
-
-	}
-
 	interface Tracker {
 
-		// void closed(Path path, FileChannel fileChannel);
+		void openedFileChannel(Path path, FileChannel fileChannel);
+
+		void closedFileChannel(Path path, FileChannel fileChannel);
 
 	}
 
+	/**
+	 * No-op {@link Tracker}.
+	 */
 	private static class NoOpTracker implements Tracker {
+
+		public static final NoOpTracker INSTANCE = new NoOpTracker();
+
+		@Override
+		public void openedFileChannel(Path path, FileChannel fileChannel) {
+		}
+
+		@Override
+		public void closedFileChannel(Path path, FileChannel fileChannel) {
+		}
 
 	}
 
