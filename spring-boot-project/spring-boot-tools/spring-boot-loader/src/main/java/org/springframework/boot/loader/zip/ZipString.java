@@ -278,6 +278,9 @@ class ZipString {
 		return codePoint;
 	}
 
+	/**
+	 * Supported compare types.
+	 */
 	private enum CompareType {
 
 		MATCHES, MATCHES_ADDING_SLASH, STARTS_WITH

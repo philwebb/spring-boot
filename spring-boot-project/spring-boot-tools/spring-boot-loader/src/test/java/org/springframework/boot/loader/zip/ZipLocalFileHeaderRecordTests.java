@@ -19,11 +19,11 @@ package org.springframework.boot.loader.zip;
 import org.junit.jupiter.api.Disabled;
 
 /**
- * Tests for {@link LocalFileHeaderRecord}.
+ * Tests for {@link ZipLocalFileHeaderRecord}.
  *
  * @author Phillip Webb
  */
 @Disabled("not yet written")
-class LocalFileHeaderRecordTests {
+class ZipLocalFileHeaderRecordTests {
 
 }

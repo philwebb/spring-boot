@@ -41,20 +41,20 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	 * @throws IOException on I/O error
 	 */
 	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsets nameOffsets,
-			CentralDirectoryFileHeaderRecord[] centralRecords, long[] centralRecordPositions) throws IOException {
+			ZipCentralDirectoryFileHeaderRecord[] centralRecords, long[] centralRecordPositions) throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
 		List<DataBlock> centralParts = new ArrayList<>();
 		int offset = 0;
 		int sizeOfCentralDirectory = 0;
 		for (int i = 0; i < centralRecords.length; i++) {
-			CentralDirectoryFileHeaderRecord centralRecord = centralRecords[i];
+			ZipCentralDirectoryFileHeaderRecord centralRecord = centralRecords[i];
 			int nameOffset = nameOffsets.get(i);
 			long centralRecordPos = centralRecordPositions[i];
 			DataBlock name = new DataPart(
-					centralRecordPos + CentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
+					centralRecordPos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
 					centralRecord.fileNameLength() & 0xFFFF - nameOffset);
-			LocalFileHeaderRecord localRecord = LocalFileHeaderRecord.load(this.data,
+			ZipLocalFileHeaderRecord localRecord = ZipLocalFileHeaderRecord.load(this.data,
 					centralRecord.offsetToLocalHeader());
 			DataBlock content = new DataPart(centralRecord.offsetToLocalHeader() + localRecord.size(),
 					centralRecord.compressedSize());
@@ -62,15 +62,15 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			offset += addToLocal(parts, localRecord, name, content);
 		}
 		parts.addAll(centralParts);
-		EndOfCentralDirectoryRecord eocd = new EndOfCentralDirectoryRecord((short) centralRecords.length,
+		ZipEndOfCentralDirectoryRecord eocd = new ZipEndOfCentralDirectoryRecord((short) centralRecords.length,
 				sizeOfCentralDirectory, offset);
 		parts.add(new ByteArrayDataBlock(eocd.asByteArray()));
 		setParts(parts);
 	}
 
-	private long addToCentral(List<DataBlock> parts, CentralDirectoryFileHeaderRecord originalRecord,
+	private long addToCentral(List<DataBlock> parts, ZipCentralDirectoryFileHeaderRecord originalRecord,
 			long originalRecordPos, DataBlock name, int offsetToLocalHeader) throws IOException {
-		CentralDirectoryFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF))
+		ZipCentralDirectoryFileHeaderRecord record = originalRecord.withFileNameLength((short) (name.size() & 0xFFFF))
 			.withOffsetToLocalHeader(offsetToLocalHeader);
 		int originalExtraFieldLength = originalRecord.extraFieldLength() & 0xFFFF;
 		int originalFileCommentLength = originalRecord.fileCommentLength() & 0xFFFF;
@@ -83,9 +83,9 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 		return record.size();
 	}
 
-	private long addToLocal(List<DataBlock> parts, LocalFileHeaderRecord originalRecord, DataBlock name,
+	private long addToLocal(List<DataBlock> parts, ZipLocalFileHeaderRecord originalRecord, DataBlock name,
 			DataBlock content) throws IOException {
-		LocalFileHeaderRecord record = originalRecord.withExtraFieldLength((short) 0)
+		ZipLocalFileHeaderRecord record = originalRecord.withExtraFieldLength((short) 0)
 			.withFileNameLength((short) (name.size() & 0xFFFF));
 		parts.add(new ByteArrayDataBlock(record.asByteArray()));
 		parts.add(name);

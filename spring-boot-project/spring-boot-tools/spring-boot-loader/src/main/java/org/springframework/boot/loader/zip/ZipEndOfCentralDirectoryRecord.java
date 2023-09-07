@@ -41,17 +41,17 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.16 of the Zip File Format Specification</a>
  */
-record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentralDirectoryStarts,
+record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentralDirectoryStarts,
 		short numberOfCentralDirectoryEntriesOnThisDisk, short totalNumberOfCentralDirectoryEntries,
 		int sizeOfCentralDirectory, int offsetToStartOfCentralDirectory, short commentLength) {
 
-	EndOfCentralDirectoryRecord(short totalNumberOfCentralDirectoryEntries, int sizeOfCentralDirectory,
+	ZipEndOfCentralDirectoryRecord(short totalNumberOfCentralDirectoryEntries, int sizeOfCentralDirectory,
 			int offsetToStartOfCentralDirectory) {
 		this((short) 0, (short) 0, totalNumberOfCentralDirectoryEntries, totalNumberOfCentralDirectoryEntries,
 				sizeOfCentralDirectory, offsetToStartOfCentralDirectory, (short) 0);
 	}
 
-	private static final DebugLogger debug = DebugLogger.get(EndOfCentralDirectoryRecord.class);
+	private static final DebugLogger debug = DebugLogger.get(ZipEndOfCentralDirectoryRecord.class);
 
 	private static final int SIGNATURE = 0x06054b50;
 
@@ -95,18 +95,18 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 	}
 
 	/**
-	 * Create a new {@link EndOfCentralDirectoryRecord} instance from the specified
+	 * Create a new {@link ZipEndOfCentralDirectoryRecord} instance from the specified
 	 * {@link DataBlock} by searching backwards from the end until a valid record is
 	 * located.
 	 * @param dataBlock the source data block
-	 * @return the {@link Located located} {@link EndOfCentralDirectoryRecord}
-	 * @throws IOException if the {@link EndOfCentralDirectoryRecord} cannot be read
+	 * @return the {@link Located located} {@link ZipEndOfCentralDirectoryRecord}
+	 * @throws IOException if the {@link ZipEndOfCentralDirectoryRecord} cannot be read
 	 */
 	static Located load(DataBlock dataBlock) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		long pos = locate(dataBlock, buffer);
-		return new Located(pos, new EndOfCentralDirectoryRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
+		return new Located(pos, new ZipEndOfCentralDirectoryRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getShort()));
 	}
 
@@ -148,12 +148,12 @@ record EndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCentra
 	}
 
 	/**
-	 * A located {@link EndOfCentralDirectoryRecord}.
+	 * A located {@link ZipEndOfCentralDirectoryRecord}.
 	 *
 	 * @param pos the position of the record
 	 * @param endOfCentralDirectoryRecord the located end of central directory record
 	 */
-	static record Located(long pos, EndOfCentralDirectoryRecord endOfCentralDirectoryRecord) {
+	static record Located(long pos, ZipEndOfCentralDirectoryRecord endOfCentralDirectoryRecord) {
 
 	}
 
