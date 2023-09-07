@@ -21,14 +21,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Path;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.zip.FileChannelDataBlock.Closer;
-import org.springframework.boot.loader.zip.FileChannelDataBlock.Opener;
+import org.springframework.boot.loader.zip.FileChannelDataBlock.Tracker;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -53,16 +53,21 @@ class FileChannelDataBlockTests {
 		Files.write(this.tempFile.toPath(), CONTENT);
 	}
 
+	@AfterEach
+	void resetTracker() {
+		FileChannelDataBlock.setTracker(null);
+	}
+
 	@Test
 	void sizeReturnsFileSize() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			assertThat(block.size()).isEqualTo(CONTENT.length);
 		}
 	}
 
 	@Test
 	void readReadsFile() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
 			assertThat(block.read(buffer, 0)).isEqualTo(6);
 			assertThat(buffer.array()).containsExactly(CONTENT);
@@ -71,7 +76,7 @@ class FileChannelDataBlockTests {
 
 	@Test
 	void readDoesNotReadPastEndOfFile() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
 			assertThat(block.read(buffer, 2)).isEqualTo(4);
 			assertThat(buffer.array()).containsExactly(0x02, 0x03, 0x04, 0x05, 0x0, 0x0);
@@ -80,7 +85,7 @@ class FileChannelDataBlockTests {
 
 	@Test
 	void readWhenPosAtSizeReturnsMinusOne() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
 			assertThat(block.read(buffer, 6)).isEqualTo(-1);
 		}
@@ -88,7 +93,7 @@ class FileChannelDataBlockTests {
 
 	@Test
 	void readWhenPosOverSizeReturnsMinusOne() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
 			assertThat(block.read(buffer, 7)).isEqualTo(-1);
 		}
@@ -96,137 +101,136 @@ class FileChannelDataBlockTests {
 
 	@Test
 	void readWhenPosIsNegativeThrowsException() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
 			ByteBuffer buffer = ByteBuffer.allocate(CONTENT.length);
 			assertThatIllegalArgumentException().isThrownBy(() -> block.read(buffer, -1));
 		}
 	}
 
 	@Test
-	void openSliceWhenOffsetIsNegativeThrowsException() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
-			assertThatIllegalArgumentException().isThrownBy(() -> block.openSlice(-1, 0))
+	void sliceWhenOffsetIsNegativeThrowsException() throws IOException {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
+			assertThatIllegalArgumentException().isThrownBy(() -> block.slice(-1, 0))
 				.withMessage("Offset must not be negative");
 		}
 	}
 
 	@Test
-	void openSliceWhenSizeIsNegativeThrowsException() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
-			assertThatIllegalArgumentException().isThrownBy(() -> block.openSlice(0, -1))
+	void sliceWhenSizeIsNegativeThrowsException() throws IOException {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
+			assertThatIllegalArgumentException().isThrownBy(() -> block.slice(0, -1))
 				.withMessage("Size must not be negative and must be within bounds");
 		}
 	}
 
 	@Test
-	void openSliceWhenSizeIsOutOfBoundsThrowsException() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
-			assertThatIllegalArgumentException().isThrownBy(() -> block.openSlice(2, 5))
+	void sliceWhenSizeIsOutOfBoundsThrowsException() throws IOException {
+		try (FileChannelDataBlock block = createAndOpenBlock()) {
+			assertThatIllegalArgumentException().isThrownBy(() -> block.slice(2, 5))
 				.withMessage("Size must not be negative and must be within bounds");
 		}
 	}
 
 	@Test
-	void openSliceOpensSlice() throws IOException {
-		try (FileChannelDataBlock block = FileChannelDataBlock.open(this.tempFile.toPath())) {
-			try (FileChannelDataBlock slice = block.openSlice(1, 4)) {
-				assertThat(slice.size()).isEqualTo(4);
-				ByteBuffer buffer = ByteBuffer.allocate(4);
-				assertThat(slice.read(buffer, 0)).isEqualTo(4);
-				assertThat(buffer.array()).containsExactly(0x01, 0x02, 0x03, 0x04);
-			}
+	void sliceReturnsSlice() throws IOException {
+		try (FileChannelDataBlock slice = createAndOpenBlock().slice(1, 4)) {
+			assertThat(slice.size()).isEqualTo(4);
+			ByteBuffer buffer = ByteBuffer.allocate(4);
+			assertThat(slice.read(buffer, 0)).isEqualTo(4);
+			assertThat(buffer.array()).containsExactly(0x01, 0x02, 0x03, 0x04);
 		}
 	}
 
 	@Test
 	void openAndCloseHandleReferenceCounting() throws IOException {
-		TestOpener opener = new TestOpener();
-		TestCloser closer = new TestCloser();
-		FileChannelDataBlock block = new FileChannelDataBlock(null, opener, closer);
-		assertThat(block).extracting("referenceCount").isEqualTo(1);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(0);
+		TestTracker tracker = new TestTracker();
+		FileChannelDataBlock.setTracker(tracker);
+		FileChannelDataBlock block = createBlock();
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		tracker.assertOpenCloseCounts(0, 0);
 		block.open();
-		assertThat(block).extracting("referenceCount").isEqualTo(2);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(0);
-		block.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(1);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(0);
-		block.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(0);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(1);
-		block.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(0);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(1);
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		tracker.assertOpenCloseCounts(1, 0);
 		block.open();
-		assertThat(block).extracting("referenceCount").isEqualTo(1);
-		assertThat(opener.calls).isEqualTo(2);
-		assertThat(closer.calls).isEqualTo(1);
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(2);
+		tracker.assertOpenCloseCounts(1, 0);
 		block.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(0);
-		assertThat(opener.calls).isEqualTo(2);
-		assertThat(closer.calls).isEqualTo(2);
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		tracker.assertOpenCloseCounts(1, 0);
+		block.close();
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		tracker.assertOpenCloseCounts(1, 1);
+		block.open();
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		tracker.assertOpenCloseCounts(2, 1);
+		block.close();
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		tracker.assertOpenCloseCounts(2, 2);
 	}
 
 	@Test
 	void openAndCloseSliceHandleReferenceCounting() throws IOException {
-		TestOpener opener = new TestOpener();
-		TestCloser closer = new TestCloser();
-		FileChannelDataBlock block = new FileChannelDataBlock(null, opener, closer);
-		assertThat(block).extracting("referenceCount").isEqualTo(1);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(0);
-		FileChannelDataBlock slice = block.openSlice(1, 4);
-		assertThat(block).extracting("referenceCount").isEqualTo(2);
-		assertThat(slice).extracting("referenceCount").isEqualTo(1);
+		TestTracker tracker = new TestTracker();
+		FileChannelDataBlock.setTracker(tracker);
+		FileChannelDataBlock block = createBlock();
+		FileChannelDataBlock slice = block.slice(1, 4);
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		tracker.assertOpenCloseCounts(0, 0);
+		block.open();
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		tracker.assertOpenCloseCounts(1, 0);
 		slice.open();
-		assertThat(block).extracting("referenceCount").isEqualTo(2);
-		assertThat(slice).extracting("referenceCount").isEqualTo(2);
+		assertThat(slice).extracting("channel.referenceCount").isEqualTo(2);
+		tracker.assertOpenCloseCounts(1, 0);
+		slice.open();
+		assertThat(slice).extracting("channel.referenceCount").isEqualTo(3);
+		tracker.assertOpenCloseCounts(1, 0);
 		slice.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(2);
-		assertThat(slice).extracting("referenceCount").isEqualTo(1);
+		assertThat(slice).extracting("channel.referenceCount").isEqualTo(2);
+		tracker.assertOpenCloseCounts(1, 0);
 		slice.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(1);
-		assertThat(slice).extracting("referenceCount").isEqualTo(0);
+		assertThat(slice).extracting("channel.referenceCount").isEqualTo(1);
+		tracker.assertOpenCloseCounts(1, 0);
 		block.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(0);
-		assertThat(slice).extracting("referenceCount").isEqualTo(0);
-		assertThat(opener.calls).isEqualTo(1);
-		assertThat(closer.calls).isEqualTo(1);
+		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		tracker.assertOpenCloseCounts(1, 1);
 		slice.open();
-		assertThat(block).extracting("referenceCount").isEqualTo(1);
-		assertThat(slice).extracting("referenceCount").isEqualTo(1);
+		assertThat(slice).extracting("channel.referenceCount").isEqualTo(1);
+		tracker.assertOpenCloseCounts(2, 1);
 		slice.close();
-		assertThat(block).extracting("referenceCount").isEqualTo(0);
-		assertThat(slice).extracting("referenceCount").isEqualTo(0);
-		assertThat(opener.calls).isEqualTo(2);
-		assertThat(closer.calls).isEqualTo(2);
+		assertThat(slice).extracting("channel.referenceCount").isEqualTo(0);
+		tracker.assertOpenCloseCounts(2, 2);
 	}
 
-	class TestOpener implements Opener {
+	private FileChannelDataBlock createAndOpenBlock() throws IOException {
+		FileChannelDataBlock block = createBlock();
+		block.open();
+		return block;
+	}
 
-		int calls;
+	private FileChannelDataBlock createBlock() throws IOException {
+		return new FileChannelDataBlock(this.tempFile.toPath());
+	}
+
+	static class TestTracker implements Tracker {
+
+		private int openCount;
+
+		private int closeCount;
 
 		@Override
-		public FileChannel open() throws IOException {
-			this.calls++;
-			return FileChannel.open(FileChannelDataBlockTests.this.tempFile.toPath(), StandardOpenOption.READ);
+		public void openedFileChannel(Path path, FileChannel fileChannel) {
+			this.openCount++;
 		}
 
-	}
-
-	class TestCloser implements Closer {
-
-		int calls;
-
 		@Override
-		public void close(FileChannel channel) throws IOException {
-			this.calls++;
-			channel.close();
+		public void closedFileChannel(Path path, FileChannel fileChannel) {
+			this.closeCount++;
+		}
+
+		void assertOpenCloseCounts(int expectedOpenCount, int expectedCloseCount) {
+			assertThat(this.openCount).as("openCount").isEqualTo(expectedOpenCount);
+			assertThat(this.closeCount).as("closeCount").isEqualTo(expectedCloseCount);
 		}
 
 	}
