@@ -36,6 +36,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.zip.TrackFileChannelDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StopWatch;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
+@TrackFileChannelDataBlock
 class NestedJarFileTests {
 
 	@TempDir
@@ -135,7 +137,7 @@ class NestedJarFileTests {
 	void getEntryWhenClosedThrowsException() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
-			assertThatIllegalStateException().isThrownBy(() -> jar.getEntry("1.dat")).withMessage("Zip file closed");
+			assertThatIllegalStateException().isThrownBy(() -> jar.getEntry("1.dat")).withMessage("Zip content closed");
 		}
 	}
 
@@ -151,7 +153,8 @@ class NestedJarFileTests {
 	void getJarEntryWhenClosedThrowsException() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
-			assertThatIllegalStateException().isThrownBy(() -> jar.getJarEntry("1.dat")).withMessage("Zip file closed");
+			assertThatIllegalStateException().isThrownBy(() -> jar.getJarEntry("1.dat"))
+				.withMessage("Zip content closed");
 		}
 	}
 
@@ -168,8 +171,10 @@ class NestedJarFileTests {
 	void getEntryWhenMultiReleaseEntryReturnsEntry() throws IOException {
 		File multiReleaseFile = new File(this.tempDir, "mutli.zip");
 		try (ZipContent zip = ZipContent.open(this.file.toPath(), "multi-release.jar")) {
-			try (FileOutputStream out = new FileOutputStream(multiReleaseFile)) {
-				zip.openRawZipData().asInputStream().transferTo(out);
+			try (InputStream in = zip.openRawZipData().asInputStream()) {
+				try (FileOutputStream out = new FileOutputStream(multiReleaseFile)) {
+					in.transferTo(out);
+				}
 			}
 		}
 		try (NestedJarFile jar = new NestedJarFile(this.file, "multi-release.jar", JarFile.runtimeVersion())) {
