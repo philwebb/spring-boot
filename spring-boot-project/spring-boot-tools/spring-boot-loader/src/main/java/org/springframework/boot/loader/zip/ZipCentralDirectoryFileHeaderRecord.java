@@ -52,12 +52,12 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.12 of the Zip File Format Specification</a>
  */
-record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract, short generalPurposeBitFlag,
+record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract, short generalPurposeBitFlag,
 		short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32, int compressedSize,
 		int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
 		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
 
-	private static final DebugLogger debug = DebugLogger.get(CentralDirectoryFileHeaderRecord.class);
+	private static final DebugLogger debug = DebugLogger.get(ZipCentralDirectoryFileHeaderRecord.class);
 
 	private static final int SIGNATURE = 0x02014b50;
 
@@ -79,7 +79,7 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	/**
 	 * Copy values from this block to the given {@link ZipEntry}.
 	 * @param dataBlock the source data block
-	 * @param pos the position of this {@link CentralDirectoryFileHeaderRecord}
+	 * @param pos the position of this {@link ZipCentralDirectoryFileHeaderRecord}
 	 * @param zipEntry the destination zip entry
 	 * @throws IOException on I/O error
 	 */
@@ -130,13 +130,13 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	}
 
 	/**
-	 * Return a new {@link CentralDirectoryFileHeaderRecord} with a new
+	 * Return a new {@link ZipCentralDirectoryFileHeaderRecord} with a new
 	 * {@link #fileNameLength()}.
 	 * @param fileNameLength the new file name length
-	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 * @return a new {@link ZipCentralDirectoryFileHeaderRecord} instance
 	 */
-	CentralDirectoryFileHeaderRecord withFileNameLength(short fileNameLength) {
-		return (this.fileNameLength != fileNameLength) ? new CentralDirectoryFileHeaderRecord(this.versionMadeBy,
+	ZipCentralDirectoryFileHeaderRecord withFileNameLength(short fileNameLength) {
+		return (this.fileNameLength != fileNameLength) ? new ZipCentralDirectoryFileHeaderRecord(this.versionMadeBy,
 				this.versionNeededToExtract, this.generalPurposeBitFlag, this.compressionMethod, this.lastModFileTime,
 				this.lastModFileDate, this.crc32, this.compressedSize, this.uncompressedSize, fileNameLength,
 				this.extraFieldLength, this.fileCommentLength, this.diskNumberStart, this.internalFileAttributes,
@@ -144,13 +144,13 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	}
 
 	/**
-	 * Return a new {@link CentralDirectoryFileHeaderRecord} with a new
+	 * Return a new {@link ZipCentralDirectoryFileHeaderRecord} with a new
 	 * {@link #offsetToLocalHeader()}.
 	 * @param offsetToLocalHeader the new offset to local header
-	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 * @return a new {@link ZipCentralDirectoryFileHeaderRecord} instance
 	 */
-	CentralDirectoryFileHeaderRecord withOffsetToLocalHeader(int offsetToLocalHeader) {
-		return (this.offsetToLocalHeader != offsetToLocalHeader) ? new CentralDirectoryFileHeaderRecord(
+	ZipCentralDirectoryFileHeaderRecord withOffsetToLocalHeader(int offsetToLocalHeader) {
+		return (this.offsetToLocalHeader != offsetToLocalHeader) ? new ZipCentralDirectoryFileHeaderRecord(
 				this.versionMadeBy, this.versionNeededToExtract, this.generalPurposeBitFlag, this.compressionMethod,
 				this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize, this.uncompressedSize,
 				this.fileNameLength, this.extraFieldLength, this.fileCommentLength, this.diskNumberStart,
@@ -185,14 +185,14 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	}
 
 	/**
-	 * Load the {@link CentralDirectoryFileHeaderRecord} from the given data block,
+	 * Load the {@link ZipCentralDirectoryFileHeaderRecord} from the given data block,
 	 * throwing {@link UncheckedIOException} instead of {@link IOException}.
 	 * @param dataBlock the source data block
 	 * @param pos the position of the record
-	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 * @return a new {@link ZipCentralDirectoryFileHeaderRecord} instance
 	 * @throws UncheckedIOException on I/O error
 	 */
-	static CentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) throws UncheckedIOException {
+	static ZipCentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) throws UncheckedIOException {
 		try {
 			return load(dataBlock, pos);
 		}
@@ -202,13 +202,13 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 	}
 
 	/**
-	 * Load the {@link CentralDirectoryFileHeaderRecord} from the given data block.
+	 * Load the {@link ZipCentralDirectoryFileHeaderRecord} from the given data block.
 	 * @param dataBlock the source data block
 	 * @param pos the position of the record
-	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance
+	 * @return a new {@link ZipCentralDirectoryFileHeaderRecord} instance
 	 * @throws IOException on I/O error
 	 */
-	static CentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+	static ZipCentralDirectoryFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		debug.log("Loading CentralDirectoryFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -219,7 +219,7 @@ record CentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeeded
 			debug.log("Found incorrect CentralDirectoryFileHeaderRecord signature %s at position %s", signature, pos);
 			throw new IOException("Zip 'Central Directory File Header Record' not found at position " + pos);
 		}
-		return new CentralDirectoryFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
+		return new ZipCentralDirectoryFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getInt(), buffer.getInt(),
 				buffer.getInt(), buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getInt(), buffer.getInt());

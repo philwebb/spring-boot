@@ -37,6 +37,8 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
 
+	private static Tracker tracker = new NoOpTracker();
+
 	private volatile FileChannel fileChannel;
 
 	private volatile int referenceCount;
@@ -72,6 +74,18 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		this.closer = closer;
 		this.offset = offset;
 		this.size = (size != -1) ? size : this.fileChannel.size();
+		debug.log("Created new FileChannelDataBlock '%s' at %s with size %s", path, offset, size);
+	}
+
+	private FileChannelDataBlock(Path path, FileChannel fileChannel, Opener opener, Closer closer, long offset,
+			long size) throws IOException {
+		this.path = path;
+		this.fileChannel = fileChannel;
+		this.referenceCount = 1;
+		this.opener = opener;
+		this.closer = closer;
+		this.offset = offset;
+		this.size = size;
 		debug.log("Created new FileChannelDataBlock '%s' at %s with size %s", path, offset, size);
 	}
 
@@ -249,6 +263,16 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		 * @throws IOException on I/O error
 		 */
 		void close(FileChannel channel) throws IOException;
+
+	}
+
+	interface Tracker {
+
+		// void closed(Path path, FileChannel fileChannel);
+
+	}
+
+	private static class NoOpTracker implements Tracker {
 
 	}
 

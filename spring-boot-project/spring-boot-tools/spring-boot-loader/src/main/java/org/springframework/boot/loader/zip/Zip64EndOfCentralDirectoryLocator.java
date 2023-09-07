@@ -52,7 +52,7 @@ record Zip64EndOfCentralDirectoryLocator(long pos, int numberOfThisDisk, long of
 	 * Return the {@link Zip64EndOfCentralDirectoryLocator} or {@code null} if this is not
 	 * a Zip64 file.
 	 * @param dataBlock the source data block
-	 * @param endOfCentralDirectoryPos the {@link EndOfCentralDirectoryRecord} position
+	 * @param endOfCentralDirectoryPos the {@link ZipEndOfCentralDirectoryRecord} position
 	 * @return a {@link Zip64EndOfCentralDirectoryLocator} instance or null
 	 * @throws IOException on I/O error
 	 */

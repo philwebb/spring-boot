@@ -19,11 +19,11 @@ package org.springframework.boot.loader.zip;
 import org.junit.jupiter.api.Disabled;
 
 /**
- * Tests for {@link EndOfCentralDirectoryRecord}.
+ * Tests for {@link ZipEndOfCentralDirectoryRecord}.
  *
  * @author Phillip Webb
  */
 @Disabled("not yet written")
-class EndOfCentralDirectoryRecordTests {
+class ZipEndOfCentralDirectoryRecordTests {
 
 }

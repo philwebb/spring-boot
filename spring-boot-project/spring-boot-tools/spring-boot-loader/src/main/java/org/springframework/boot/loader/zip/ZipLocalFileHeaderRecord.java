@@ -38,11 +38,11 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.7 of the Zip File Format Specification</a>
  */
-record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeBitFlag, short compressionMethod,
+record ZipLocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeBitFlag, short compressionMethod,
 		short lastModFileTime, short lastModFileDate, int crc32, int compressedSize, int uncompressedSize,
 		short fileNameLength, short extraFieldLength) {
 
-	private static final DebugLogger debug = DebugLogger.get(LocalFileHeaderRecord.class);
+	private static final DebugLogger debug = DebugLogger.get(ZipLocalFileHeaderRecord.class);
 
 	private static final int SIGNATURE = 0x04034b50;
 
@@ -57,23 +57,23 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 	}
 
 	/**
-	 * Return a new {@link LocalFileHeaderRecord} with a new {@link #extraFieldLength()}.
+	 * Return a new {@link ZipLocalFileHeaderRecord} with a new {@link #extraFieldLength()}.
 	 * @param extraFieldLength the new extra field length
-	 * @return a new {@link LocalFileHeaderRecord} instance
+	 * @return a new {@link ZipLocalFileHeaderRecord} instance
 	 */
-	LocalFileHeaderRecord withExtraFieldLength(short extraFieldLength) {
-		return new LocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
+	ZipLocalFileHeaderRecord withExtraFieldLength(short extraFieldLength) {
+		return new ZipLocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
 				this.compressionMethod, this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize,
 				this.uncompressedSize, this.fileNameLength, extraFieldLength);
 	}
 
 	/**
-	 * Return a new {@link LocalFileHeaderRecord} with a new {@link #fileNameLength()}.
+	 * Return a new {@link ZipLocalFileHeaderRecord} with a new {@link #fileNameLength()}.
 	 * @param fileNameLength the new file name length
-	 * @return a new {@link LocalFileHeaderRecord} instance
+	 * @return a new {@link ZipLocalFileHeaderRecord} instance
 	 */
-	LocalFileHeaderRecord withFileNameLength(short fileNameLength) {
-		return new LocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
+	ZipLocalFileHeaderRecord withFileNameLength(short fileNameLength) {
+		return new ZipLocalFileHeaderRecord(this.versionNeededToExtract, this.generalPurposeBitFlag,
 				this.compressionMethod, this.lastModFileTime, this.lastModFileDate, this.crc32, this.compressedSize,
 				this.uncompressedSize, fileNameLength, this.extraFieldLength);
 	}
@@ -100,13 +100,13 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 	}
 
 	/**
-	 * Load the {@link LocalFileHeaderRecord} from the given data block.
+	 * Load the {@link ZipLocalFileHeaderRecord} from the given data block.
 	 * @param dataBlock the source data block
 	 * @param pos the position of the record
-	 * @return a new {@link LocalFileHeaderRecord} instance
+	 * @return a new {@link ZipLocalFileHeaderRecord} instance
 	 * @throws IOException on I/O error
 	 */
-	static LocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
+	static ZipLocalFileHeaderRecord load(DataBlock dataBlock, long pos) throws IOException {
 		debug.log("Loading LocalFileHeaderRecord from position %s", pos);
 		ByteBuffer buffer = ByteBuffer.allocate(MINIMUM_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -115,7 +115,7 @@ record LocalFileHeaderRecord(short versionNeededToExtract, short generalPurposeB
 		if (buffer.getInt() != SIGNATURE) {
 			throw new IOException("Zip 'Local File Header Record' not found at position " + pos);
 		}
-		return new LocalFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
+		return new ZipLocalFileHeaderRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(), buffer.getShort(),
 				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getShort(),
 				buffer.getShort());
 	}

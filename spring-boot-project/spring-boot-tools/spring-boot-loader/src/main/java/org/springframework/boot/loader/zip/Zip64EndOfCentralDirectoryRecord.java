@@ -59,7 +59,7 @@ record Zip64EndOfCentralDirectoryRecord(long size, long sizeOfZip64EndOfCentralD
 	 * on the offset given in the locator.
 	 * @param dataBlock the source data block
 	 * @param locator the {@link Zip64EndOfCentralDirectoryLocator} or {@code null}
-	 * @return a new {@link CentralDirectoryFileHeaderRecord} instance or {@code null} if
+	 * @return a new {@link ZipCentralDirectoryFileHeaderRecord} instance or {@code null} if
 	 * the locator is {@code null}
 	 * @throws IOException on I/O error
 	 */
