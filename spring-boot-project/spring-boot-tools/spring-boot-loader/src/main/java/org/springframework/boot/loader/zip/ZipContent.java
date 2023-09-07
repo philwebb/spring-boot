@@ -78,6 +78,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private static final Map<Source, ZipContent> cache = new ConcurrentHashMap<>();
 
+	private final Source source;
+
 	private final FileChannelDataBlock data;
 
 	private final long centralDirectoryPos;
@@ -100,9 +102,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private SoftReference<Map<Class<?>, Object>> info;
 
-	private ZipContent(FileChannelDataBlock data, long centralDirectoryPos, long commentPos, long commentLength,
-			NameOffsets nameOffsets, int[] nameHashes, int[] relativeCentralDirectoryOffsets, int[] orderIndexes,
-			boolean hasJarSignatureFile) {
+	private ZipContent(Source source, FileChannelDataBlock data, long centralDirectoryPos, long commentPos,
+			long commentLength, NameOffsets nameOffsets, int[] nameHashes, int[] relativeCentralDirectoryOffsets,
+			int[] orderIndexes, boolean hasJarSignatureFile) {
+		this.source = source;
 		this.data = data;
 		this.centralDirectoryPos = centralDirectoryPos;
 		this.commentPos = commentPos;
@@ -290,7 +293,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			info = new ConcurrentHashMap<>();
 			this.info = new SoftReference<>(info);
 		}
-		return (I) info.computeIfAbsent(type, (key) -> function.apply(this));
+		return (I) info.computeIfAbsent(type, (key) -> {
+			debug.log("Getting %s from zip '%s'", type.getName(), this);
+			return function.apply(this);
+		});
 	}
 
 	/**
@@ -313,6 +319,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	public void close() throws IOException {
 		ensureOpen();
 		this.data.close();
+	}
+
+	@Override
+	public String toString() {
+		return (!this.source.isNested()) ? "%s[%s]".formatted(this.source.path(), this.source.nestedEntryName())
+				: this.source.path().toString();
 	}
 
 	/**
@@ -389,13 +401,13 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		@Override
 		public Entry next() {
-			ensureOpen();
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
 			int index = ZipContent.this.orderIndexes[this.cursor];
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			this.cursor++;
+			ensureOpen();
 			return new Entry(index, ZipCentralDirectoryFileHeaderRecord.loadUnchecked(ZipContent.this.data, pos));
 		}
 
@@ -406,6 +418,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * instance.
 	 */
 	private static class Loader {
+
+		private final Source source;
 
 		private final FileChannelDataBlock data;
 
@@ -421,7 +435,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		private int cursor;
 
-		private Loader(Entry directoryEntry, FileChannelDataBlock data, long centralDirectoryPos, int maxSize) {
+		private Loader(Source source, Entry directoryEntry, FileChannelDataBlock data, long centralDirectoryPos,
+				int maxSize) {
+			this.source = source;
 			this.data = data;
 			this.centralDirectoryPos = centralDirectoryPos;
 			this.nameHashes = new int[maxSize];
@@ -454,8 +470,9 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			for (int i = 0; i < size; i++) {
 				orderIndexes[this.index[i]] = i;
 			}
-			return new ZipContent(this.data, this.centralDirectoryPos, commentPos, commentLength, this.nameOffsets,
-					this.nameHashes, this.relativeCentralDirectoryOffsets, orderIndexes, hasJarSignatureFile);
+			return new ZipContent(this.source, this.data, this.centralDirectoryPos, commentPos, commentLength,
+					this.nameOffsets, this.nameHashes, this.relativeCentralDirectoryOffsets, orderIndexes,
+					hasJarSignatureFile);
 		}
 
 		private void sort(int left, int right) {
@@ -553,7 +570,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			if (numberOfEntries > 0xFFFFFFFFL) {
 				throw new IllegalStateException("Too many zip entries in " + source);
 			}
-			Loader loader = new Loader(null, data, centralDirectoryPos, (int) numberOfEntries & 0xFFFFFFFF);
+			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) numberOfEntries & 0xFFFFFFFF);
 			ByteBuffer signatureNameSuffixBuffer = ByteBuffer.allocate(SIGNATURE_SUFFIX.length);
 			boolean hasJarSignatureFile = false;
 			long pos = centralDirectoryPos;
@@ -614,7 +631,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			String directoryName = directoryEntry.getName();
 			zip.data.open();
 			try {
-				Loader loader = new Loader(directoryEntry, zip.data, zip.centralDirectoryPos, zip.size());
+				Loader loader = new Loader(source, directoryEntry, zip.data, zip.centralDirectoryPos, zip.size());
 				for (int cursor = 0; cursor < zip.size(); cursor++) {
 					int index = zip.orderIndexes[cursor];
 					if (index != directoryEntry.getIndex()) {

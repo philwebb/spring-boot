@@ -37,7 +37,7 @@ class ManifestInfo {
 
 	/**
 	 * Create a new {@link ManifestInfo} instance.
-	 * @param manifest the jar manifest or {@code null}
+	 * @param manifest the jar manifest
 	 */
 	ManifestInfo(Manifest manifest) {
 		this(manifest, null);

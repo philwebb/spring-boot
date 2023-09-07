@@ -36,6 +36,7 @@ import java.util.zip.Inflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
+import org.springframework.boot.loader.log.DebugLogger;
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.CloseableDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
@@ -57,6 +58,8 @@ public class NestedJarFile extends JarFile {
 	static final String META_INF_VERSIONS = META_INF + "versions/";
 
 	static final int BASE_VERSION = baseVersion().feature();
+
+	private static final DebugLogger debug = DebugLogger.get(NestedJarFile.class);
 
 	private final Cleaner cleaner;
 
@@ -125,6 +128,7 @@ public class NestedJarFile extends JarFile {
 		if (onlyNestedJars && (nestedEntryName == null || nestedEntryName.isEmpty())) {
 			throw new IllegalArgumentException("nestedEntryName must not be empty");
 		}
+		debug.log("Created nested jar file (%s, %s, %s)", file, nestedEntryName, version);
 		this.cleaner = (cleaner != null) ? cleaner : Cleaner.instance;
 		this.resources = new NestedJarFileResources(file, nestedEntryName);
 		this.cleanup = this.cleaner.register(this, this.resources);
