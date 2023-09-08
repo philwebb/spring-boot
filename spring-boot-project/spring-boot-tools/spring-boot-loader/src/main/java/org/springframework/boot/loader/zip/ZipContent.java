@@ -22,6 +22,7 @@ import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner.Cleanable;
 import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -180,13 +181,11 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 */
 	@Override
 	public Iterator<Entry> iterator() {
-		ensureOpen();
 		return new EntryIterator();
 	}
 
 	@Override
 	public Spliterator<Entry> spliterator() {
-		ensureOpen();
 		return Spliterators.spliterator(new EntryIterator(), this.nameHashes.length,
 				ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
 	}
@@ -196,7 +195,6 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @return the number of entries
 	 */
 	public int size() {
-		ensureOpen();
 		return this.nameHashes.length;
 	}
 
@@ -205,8 +203,15 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @return the comment or {@code null}
 	 */
 	public String getComment() {
-		ensureOpen();
-		return ZipString.readString(this.data, this.commentPos, this.commentLength);
+		try {
+			return ZipString.readString(this.data, this.commentPos, this.commentLength);
+		}
+		catch (UncheckedIOException ex) {
+			if (ex.getCause() instanceof ClosedChannelException) {
+				throw new IllegalStateException("Zip content closed", ex);
+			}
+			throw ex;
+		}
 	}
 
 	/**
@@ -225,19 +230,30 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	 * @return the entry or {@code null}
 	 */
 	public Entry getEntry(CharSequence namePrefix, CharSequence name) {
-		ensureOpen();
 		int nameHash = nameHash(namePrefix, name);
 		int index = getFirstIndex(nameHash);
 		while (index >= 0 && index < this.nameHashes.length && this.nameHashes[index] == nameHash) {
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
-			ZipCentralDirectoryFileHeaderRecord centralRecord = ZipCentralDirectoryFileHeaderRecord
-				.loadUnchecked(this.data, pos);
+			ZipCentralDirectoryFileHeaderRecord centralRecord = loadZipCentralDirectoryFileHeaderRecord(pos);
 			if (hasName(index, centralRecord, pos, namePrefix, name)) {
 				return new Entry(index, centralRecord);
 			}
 			index++;
 		}
 		return null;
+	}
+
+	private ZipCentralDirectoryFileHeaderRecord loadZipCentralDirectoryFileHeaderRecord(long pos) {
+		try {
+			return ZipCentralDirectoryFileHeaderRecord.load(this.data, pos);
+		}
+		catch (IOException ex) {
+			if (ex instanceof ClosedChannelException) {
+				throw new IllegalStateException("Zip content closed", ex);
+			}
+			throw new UncheckedIOException(ex);
+		}
+
 	}
 
 	private int nameHash(CharSequence namePrefix, CharSequence name) {
@@ -306,17 +322,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		return this.hasJarSignatureFile;
 	}
 
-	private void ensureOpen() {
-		this.data.ensureOpen(() -> new IllegalStateException("Zip content closed"));
-	}
-
 	/**
 	 * Close this jar file, releasing the underlying file if this was the last reference.
 	 * @see java.io.Closeable#close()
 	 */
 	@Override
 	public void close() throws IOException {
-		ensureOpen();
 		this.data.close();
 	}
 
@@ -406,8 +417,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 			int index = ZipContent.this.orderIndexes[this.cursor];
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			this.cursor++;
-			ensureOpen();
-			return new Entry(index, ZipCentralDirectoryFileHeaderRecord.loadUnchecked(ZipContent.this.data, pos));
+			return new Entry(index, loadZipCentralDirectoryFileHeaderRecord(pos));
 		}
 
 	}
