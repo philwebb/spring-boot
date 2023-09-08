@@ -155,9 +155,10 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	private CloseableDataBlock createVirtualData() throws IOException {
 		NameOffsets nameOffsets = this.nameOffsets.emptyCopy();
-		ZipCentralDirectoryFileHeaderRecord[] centralRecords = new ZipCentralDirectoryFileHeaderRecord[size()];
-		long[] centralRecordPositions = new long[centralRecords.length];
-		for (int i = 0; i < this.orderIndexes.length; i++) {
+		int size = size();
+		ZipCentralDirectoryFileHeaderRecord[] centralRecords = new ZipCentralDirectoryFileHeaderRecord[size];
+		long[] centralRecordPositions = new long[size];
+		for (int i = 0; i < size; i++) {
 			int index = ZipContent.this.orderIndexes[i];
 			nameOffsets.enable(i, this.nameOffsets.isEnabled(index));
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
@@ -186,8 +187,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	@Override
 	public Spliterator<Entry> spliterator() {
-		return Spliterators.spliterator(new EntryIterator(), this.nameHashes.length,
-				ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
+		return Spliterators.spliterator(new EntryIterator(), size(), ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
 	}
 
 	/**
@@ -232,7 +232,8 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 	public Entry getEntry(CharSequence namePrefix, CharSequence name) {
 		int nameHash = nameHash(namePrefix, name);
 		int index = getFirstIndex(nameHash);
-		while (index >= 0 && index < this.nameHashes.length && this.nameHashes[index] == nameHash) {
+		int size = size();
+		while (index >= 0 && index < size && this.nameHashes[index] == nameHash) {
 			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			ZipCentralDirectoryFileHeaderRecord centralRecord = loadZipCentralDirectoryFileHeaderRecord(pos);
 			if (hasName(index, centralRecord, pos, namePrefix, name)) {
@@ -406,7 +407,7 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 		@Override
 		public boolean hasNext() {
-			return this.cursor < ZipContent.this.orderIndexes.length;
+			return this.cursor < size();
 		}
 
 		@Override
