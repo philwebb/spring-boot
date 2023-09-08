@@ -150,6 +150,7 @@ public class NestedJarFile extends JarFile {
 	public Enumeration<JarEntry> entries() {
 		synchronized (this) {
 			ensureOpen();
+			// FIXME do we need synchronized on the underlying stream
 			return new JarEntriesEnumeration(this.resources.zipContent().iterator());
 		}
 	}
