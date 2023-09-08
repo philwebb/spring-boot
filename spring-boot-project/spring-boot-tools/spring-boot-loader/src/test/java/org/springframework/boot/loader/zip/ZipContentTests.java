@@ -31,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.jar.Manifest;
 import java.util.zip.CRC32;
@@ -135,18 +134,6 @@ class ZipContentTests {
 	}
 
 	@Test
-	void iteratorIteratesEntries() {
-		assertHasExpectedEntries(this.zipContent.iterator());
-	}
-
-	@Test
-	void iteratorWhenClosedLaterThrowsException() throws IOException {
-		Iterator<Entry> iterator = this.zipContent.iterator();
-		this.zipContent.close();
-		assertThatIllegalStateException().isThrownBy(() -> iterator.next()).withMessage("Zip content closed");
-	}
-
-	@Test
 	void getEntryWhenUsingSlashesIsCompatibleWithZipFile() throws IOException {
 		try (ZipFile zipFile = new ZipFile(this.file)) {
 			assertThat(zipFile.getEntry("META-INF").getName()).isEqualTo("META-INF/");
@@ -173,9 +160,10 @@ class ZipContentTests {
 	void getEntryAsCreatesCompatibleEntries() throws IOException {
 		try (ZipFile zipFile = new ZipFile(this.file)) {
 			Iterator<? extends ZipEntry> expected = zipFile.entries().asIterator();
-			Iterator<Entry> actual = this.zipContent.iterator();
+			int i = 0;
 			while (expected.hasNext()) {
-				assertThatFieldsAreEqual(actual.next().as(ZipEntry::new), expected.next());
+				Entry actual = this.zipContent.getEntry(i++);
+				assertThatFieldsAreEqual(actual.as(ZipEntry::new), expected.next());
 			}
 		}
 	}
@@ -204,13 +192,12 @@ class ZipContentTests {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "nested.jar")) {
 			assertThat(nested.size()).isEqualTo(5);
 			assertThat(nested.getComment()).isEqualTo("nested");
-			Iterator<Entry> iterator = nested.iterator();
-			assertThat(iterator.next().getName()).isEqualTo("META-INF/");
-			assertThat(iterator.next().getName()).isEqualTo("META-INF/MANIFEST.MF");
-			assertThat(iterator.next().getName()).isEqualTo("3.dat");
-			assertThat(iterator.next().getName()).isEqualTo("4.dat");
-			assertThat(iterator.next().getName()).isEqualTo("\u00E4.dat");
-			assertThat(iterator.hasNext()).isFalse();
+			assertThat(nested.size()).isEqualTo(5);
+			assertThat(nested.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(nested.getEntry(1).getName()).isEqualTo("META-INF/MANIFEST.MF");
+			assertThat(nested.getEntry(2).getName()).isEqualTo("3.dat");
+			assertThat(nested.getEntry(3).getName()).isEqualTo("4.dat");
+			assertThat(nested.getEntry(4).getName()).isEqualTo("\u00E4.dat");
 		}
 	}
 
@@ -225,8 +212,9 @@ class ZipContentTests {
 		try (ZipContent nested = ZipContent.open(this.file.toPath(), "d/")) {
 			assertThat(nested.size()).isEqualTo(3);
 			assertThat(nested.getEntry("9.dat")).isNotNull();
-			assertThat(nested.stream().map(Entry::getName)).containsExactly("META-INF/", "META-INF/MANIFEST.MF",
-					"9.dat");
+			assertThat(nested.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(nested.getEntry(1).getName()).isEqualTo("META-INF/MANIFEST.MF");
+			assertThat(nested.getEntry(2).getName()).isEqualTo("9.dat");
 		}
 	}
 
@@ -261,8 +249,20 @@ class ZipContentTests {
 		FileOutputStream outputStream = new FileOutputStream(fileWithFrontMatter);
 		StreamUtils.copy("#/bin/bash", Charset.defaultCharset(), outputStream);
 		FileCopyUtils.copy(new FileInputStream(this.file), outputStream);
-		try (ZipContent zipWithFrontMatter = ZipContent.open(fileWithFrontMatter.toPath())) {
-			assertHasExpectedEntries(zipWithFrontMatter.iterator());
+		try (ZipContent zip = ZipContent.open(fileWithFrontMatter.toPath())) {
+			assertThat(zip.size()).isEqualTo(12);
+			assertThat(zip.getEntry(0).getName()).isEqualTo("META-INF/");
+			assertThat(zip.getEntry(1).getName()).isEqualTo("META-INF/MANIFEST.MF");
+			assertThat(zip.getEntry(2).getName()).isEqualTo("1.dat");
+			assertThat(zip.getEntry(3).getName()).isEqualTo("2.dat");
+			assertThat(zip.getEntry(4).getName()).isEqualTo("d/");
+			assertThat(zip.getEntry(5).getName()).isEqualTo("d/9.dat");
+			assertThat(zip.getEntry(6).getName()).isEqualTo("special/");
+			assertThat(zip.getEntry(7).getName()).isEqualTo("special/\u00EB.dat");
+			assertThat(zip.getEntry(8).getName()).isEqualTo("nested.jar");
+			assertThat(zip.getEntry(9).getName()).isEqualTo("another-nested.jar");
+			assertThat(zip.getEntry(10).getName()).isEqualTo("space nested.jar");
+			assertThat(zip.getEntry(11).getName()).isEqualTo("multi-release.jar");
 		}
 	}
 
@@ -271,10 +271,9 @@ class ZipContentTests {
 		File zip64File = new File(this.tempDir, "zip64.zip");
 		FileCopyUtils.copy(zip64Bytes(), zip64File);
 		try (ZipContent zip64Content = ZipContent.open(zip64File.toPath())) {
-			List<Entry> entries = zip64Content.stream().toList();
-			assertThat(entries).hasSize(65537);
-			for (int i = 0; i < entries.size(); i++) {
-				Entry entry = entries.get(i);
+			assertThat(zip64Content.size()).isEqualTo(65537);
+			for (int i = 0; i < zip64Content.size(); i++) {
+				Entry entry = zip64Content.getEntry(i);
 				try (CloseableDataBlock dataBlock = entry.openContent()) {
 					assertThat(asInflaterInputStream(dataBlock)).hasContent("Entry " + (i + 1));
 				}
@@ -311,7 +310,7 @@ class ZipContentTests {
 			}
 		}
 		try (ZipContent zip64Content = ZipContent.open(zip64File.toPath())) {
-			assertThat(zip64Content.stream()).hasSize(6);
+			assertThat(zip64Content.size()).isEqualTo(6);
 		}
 	}
 
@@ -332,10 +331,9 @@ class ZipContentTests {
 			jarOutput.closeEntry();
 		}
 		try (ZipContent nestedZip = ZipContent.open(containerFile.toPath(), "nested-zip64.zip")) {
-			List<Entry> entries = nestedZip.stream().toList();
-			assertThat(entries).hasSize(65537);
-			for (int i = 0; i < entries.size(); i++) {
-				Entry entry = entries.get(i);
+			assertThat(nestedZip.size()).isEqualTo(65537);
+			for (int i = 0; i < nestedZip.size(); i++) {
+				Entry entry = nestedZip.getEntry(i);
 				try (CloseableDataBlock content = entry.openContent()) {
 					assertThat(asInflaterInputStream(content)).hasContent("Entry " + (i + 1));
 				}
@@ -359,7 +357,7 @@ class ZipContentTests {
 	void entryWithEpochTimeOfZeroShouldNotFail() throws Exception {
 		File file = createZipFileWithEpochTimeOfZero();
 		try (ZipContent zip = ZipContent.open(file.toPath())) {
-			ZipEntry entry = zip.iterator().next().as(ZipEntry::new);
+			ZipEntry entry = zip.getEntry(0).as(ZipEntry::new);
 			assertThat(entry.getLastModifiedTime().toInstant()).isEqualTo(Instant.EPOCH);
 			assertThat(entry.getName()).isEqualTo("1.dat");
 		}
@@ -401,22 +399,6 @@ class ZipContentTests {
 		data[pos + 1] = (byte) ((value >> 8) & 0xff);
 		data[pos + 2] = (byte) ((value >> 16) & 0xff);
 		data[pos + 3] = (byte) ((value >> 24) & 0xff);
-	}
-
-	private void assertHasExpectedEntries(Iterator<Entry> entries) {
-		assertThat(entries.next().getName()).isEqualTo("META-INF/");
-		assertThat(entries.next().getName()).isEqualTo("META-INF/MANIFEST.MF");
-		assertThat(entries.next().getName()).isEqualTo("1.dat");
-		assertThat(entries.next().getName()).isEqualTo("2.dat");
-		assertThat(entries.next().getName()).isEqualTo("d/");
-		assertThat(entries.next().getName()).isEqualTo("d/9.dat");
-		assertThat(entries.next().getName()).isEqualTo("special/");
-		assertThat(entries.next().getName()).isEqualTo("special/\u00EB.dat");
-		assertThat(entries.next().getName()).isEqualTo("nested.jar");
-		assertThat(entries.next().getName()).isEqualTo("another-nested.jar");
-		assertThat(entries.next().getName()).isEqualTo("space nested.jar");
-		assertThat(entries.next().getName()).isEqualTo("multi-release.jar");
-		assertThat(entries.hasNext()).isFalse();
 	}
 
 	private InputStream asInflaterInputStream(DataBlock dataBlock) throws IOException {

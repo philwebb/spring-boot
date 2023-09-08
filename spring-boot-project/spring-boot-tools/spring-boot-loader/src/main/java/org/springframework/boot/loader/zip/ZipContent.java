@@ -26,16 +26,10 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.log.DebugLogger;
@@ -67,9 +61,6 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @since 3.2.0
  */
 public final class ZipContent implements Closeable {
-
-	private static int ADDITIONAL_SPLITERATOR_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
-			| Spliterator.IMMUTABLE | Spliterator.NONNULL;
 
 	private static final String META_INF = "META-INF/";
 
@@ -167,28 +158,6 @@ public final class ZipContent implements Closeable {
 		}
 		// FIXME ordering of stuff
 		return new VirtualZipDataBlock(this.data, nameOffsetLookups, centralRecords, centralRecordPositions);
-	}
-
-	/**
-	 * Return a {@link Stream} of all the {@link Entry entries}.
-	 * @return a stream of entries
-	 */
-	public Stream<Entry> stream() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
-	/**
-	 * Iterate entries in the order that they were written to the zip file.
-	 * @return a new iterator
-	 * @see Iterable#iterator()
-	 */
-	public Iterator<Entry> iterator() {
-		// FIXME Delete
-		return new EntryIterator();
-	}
-
-	public Spliterator<Entry> spliterator() {
-		return Spliterators.spliterator(new EntryIterator(), size(), ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
 	}
 
 	/**
@@ -408,31 +377,6 @@ public final class ZipContent implements Closeable {
 		@Override
 		public String toString() {
 			return (!isNested()) ? path().toString() : path() + "[" + nestedEntryName() + "]";
-		}
-
-	}
-
-	/**
-	 * {@link Iterator} for entries.
-	 */
-	private final class EntryIterator implements Iterator<Entry> {
-
-		private int cursor = 0;
-
-		@Override
-		public boolean hasNext() {
-			return this.cursor < size();
-		}
-
-		@Override
-		public Entry next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			int index = ZipContent.this.lookupIndexes[this.cursor];
-			long pos = getCentralDirectoryFileHeaderRecordPos(index);
-			this.cursor++;
-			return new Entry(index, loadZipCentralDirectoryFileHeaderRecord(pos));
 		}
 
 	}
