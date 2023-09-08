@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol;
-
 /**
- * Utility to manage protocol handlers.
  *
- * @author Phillip Webb
- * @since 3.2.0
  */
-public class Handlers {
-
-	public static void install() {
-		// FIXME
-	}
-
-}
+package org.springframework.boot.loader.launch;

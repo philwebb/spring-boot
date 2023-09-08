@@ -75,13 +75,13 @@ public class NestedJarFile extends JarFile {
 
 	private final int version;
 
-	private String lastEntryPrefix;
+	private String lastNamePrefix;
 
-	private String lastEntryName;
+	private String lastName;
 
 	private ZipContent.Entry lastContentEntry;
 
-	private volatile boolean closing;
+	private volatile boolean closed;
 
 	/**
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
@@ -207,11 +207,15 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public JarEntry getJarEntry(String name) {
-		return getEntry(name);
+		return getNestedJarEntry(name);
 	}
 
 	@Override
 	public JarEntry getEntry(String name) {
+		return getNestedJarEntry(name);
+	}
+
+	private NestedJarEntry getNestedJarEntry(String name) {
 		Objects.requireNonNull(name, "name");
 		ZipContent.Entry entry = getVersionedContentEntry(name);
 		entry = (entry != null) ? entry : getContentEntry(null, name);
@@ -243,11 +247,12 @@ public class NestedJarFile extends JarFile {
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
 		synchronized (this) {
 			ensureOpen();
-			if (Objects.equals(namePrefix, this.lastEntryPrefix) && Objects.equals(name, this.lastEntryName)) {
+			if (Objects.equals(namePrefix, this.lastNamePrefix) && Objects.equals(name, this.lastName)) {
 				return this.lastContentEntry;
 			}
 			ZipContent.Entry contentEntry = this.resources.zipContent().getEntry(namePrefix, name);
-			this.lastEntryName = name;
+			this.lastNamePrefix = namePrefix;
+			this.lastName = name;
 			this.lastContentEntry = contentEntry;
 			return contentEntry;
 		}
@@ -272,11 +277,10 @@ public class NestedJarFile extends JarFile {
 	@Override
 	public InputStream getInputStream(ZipEntry entry) throws IOException {
 		Objects.requireNonNull(entry, "entry");
-		// FIXME if entry isn't owned by this zip even if it's a NestedJarEntry
-		if (!(entry instanceof NestedJarEntry)) {
-			entry = getEntry(entry.getName());
+		if (entry instanceof NestedJarEntry nestedJarEntry && nestedJarEntry.isOwnedBy(this)) {
+			return getInputStream(nestedJarEntry.contentEntry());
 		}
-		return getInputStream(((NestedJarEntry) entry).contentEntry());
+		return getInputStream(getNestedJarEntry(entry.getName()).contentEntry());
 	}
 
 	private InputStream getInputStream(ZipContent.Entry contentEntry) throws IOException {
@@ -319,10 +323,10 @@ public class NestedJarFile extends JarFile {
 
 	@Override
 	public void close() throws IOException {
-		if (this.closing) {
+		if (this.closed) {
 			return;
 		}
-		this.closing = true;
+		this.closed = true;
 		synchronized (this) {
 			try {
 				this.cleanup.clean();
@@ -339,7 +343,7 @@ public class NestedJarFile extends JarFile {
 	}
 
 	private void ensureOpen() {
-		if (this.closing) {
+		if (this.closed) {
 			throw new IllegalStateException("Zip file closed");
 		}
 		if (this.resources.zipContent() == null) {
@@ -360,6 +364,10 @@ public class NestedJarFile extends JarFile {
 			super(contentEntry.getName());
 			this.contentEntry = contentEntry;
 			this.name = name;
+		}
+
+		public boolean isOwnedBy(NestedJarFile nestedJarFile) {
+			return NestedJarFile.this == nestedJarFile;
 		}
 
 		@Override
@@ -429,6 +437,9 @@ public class NestedJarFile extends JarFile {
 
 	}
 
+	/**
+	 * {@link Spliterator} for {@link ZipContent.Entry} instances.
+	 */
 	private class ZipContentEntriesSpliterator extends AbstractSpliterator<ZipContent.Entry> {
 
 		private static final int ADDITIONAL_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
@@ -470,7 +481,7 @@ public class NestedJarFile extends JarFile {
 
 		private long remaining;
 
-		private volatile boolean closing;
+		private volatile boolean closed;
 
 		JarEntryInputStream(ZipContent.Entry entry) throws IOException {
 			this.uncompressedSize = entry.getUncompressedSize();
@@ -531,17 +542,17 @@ public class NestedJarFile extends JarFile {
 		}
 
 		private void ensureOpen() throws ZipException {
-			if (NestedJarFile.this.closing || this.closing) {
+			if (NestedJarFile.this.closed || this.closed) {
 				throw new ZipException("ZipFile closed");
 			}
 		}
 
 		@Override
 		public void close() throws IOException {
-			if (this.closing) {
+			if (this.closed) {
 				return;
 			}
-			this.closing = true;
+			this.closed = true;
 			this.content.close();
 			NestedJarFile.this.resources.removeInputStream(this);
 		}
@@ -559,7 +570,7 @@ public class NestedJarFile extends JarFile {
 
 		private final Cleanable cleanup;
 
-		private volatile boolean closing;
+		private volatile boolean closed;
 
 		JarEntryInflaterInputStream(JarEntryInputStream inputStream, NestedJarFileResources resources) {
 			this(inputStream, resources, resources.getOrCreateInflater());
@@ -573,10 +584,10 @@ public class NestedJarFile extends JarFile {
 
 		@Override
 		public void close() throws IOException {
-			if (this.closing) {
+			if (this.closed) {
 				return;
 			}
-			this.closing = true;
+			this.closed = true;
 			super.close();
 			NestedJarFile.this.resources.removeInputStream(this);
 			this.cleanup.clean();

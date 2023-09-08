@@ -38,7 +38,7 @@ class NestedJarFileResources implements Runnable {
 
 	private static final int INFLATER_CACHE_LIMIT = 20;
 
-	private final ZipContent zipContent;
+	private ZipContent zipContent;
 
 	private final Set<InputStream> inputStreams = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -149,10 +149,14 @@ class NestedJarFileResources implements Runnable {
 	private IOException releaseInflators(IOException exceptionChain) {
 		Deque<Inflater> inflaterCache = this.inflaterCache;
 		if (inflaterCache != null) {
-			synchronized (inflaterCache) {
-				inflaterCache.stream().forEach(Inflater::end);
+			try {
+				synchronized (inflaterCache) {
+					inflaterCache.stream().forEach(Inflater::end);
+				}
 			}
-			this.inflaterCache = null;
+			finally {
+				this.inflaterCache = null;
+			}
 		}
 		return exceptionChain;
 	}
@@ -173,12 +177,16 @@ class NestedJarFileResources implements Runnable {
 	}
 
 	private IOException releaseZipContent(IOException exceptionChain) {
-		if (this.zipContent != null) {
+		ZipContent zipContent = this.zipContent;
+		if (zipContent != null) {
 			try {
-				this.zipContent.close();
+				zipContent.close();
 			}
 			catch (IOException ex) {
 				exceptionChain = addToExceptionChain(exceptionChain, ex);
+			}
+			finally {
+				this.zipContent = null;
 			}
 		}
 		return exceptionChain;
