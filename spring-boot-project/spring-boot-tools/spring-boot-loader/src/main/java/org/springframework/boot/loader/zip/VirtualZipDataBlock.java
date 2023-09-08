@@ -40,7 +40,7 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	 * @param centralRecordPositions the record positions in the data block.
 	 * @throws IOException on I/O error
 	 */
-	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsets nameOffsets,
+	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsetLookups nameOffsets,
 			ZipCentralDirectoryFileHeaderRecord[] centralRecords, long[] centralRecordPositions) throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
