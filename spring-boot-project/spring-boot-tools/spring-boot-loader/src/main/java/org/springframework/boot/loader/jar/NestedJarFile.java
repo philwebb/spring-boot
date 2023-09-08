@@ -25,13 +25,17 @@ import java.nio.ByteBuffer;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.Inflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -150,8 +154,7 @@ public class NestedJarFile extends JarFile {
 	public Enumeration<JarEntry> entries() {
 		synchronized (this) {
 			ensureOpen();
-			// FIXME do we need synchronized on the underlying stream
-			return new JarEntriesEnumeration(this.resources.zipContent().iterator());
+			return new JarEntriesEnumeration(this.resources.zipContent());
 		}
 	}
 
@@ -159,24 +162,25 @@ public class NestedJarFile extends JarFile {
 	public Stream<JarEntry> stream() {
 		synchronized (this) {
 			ensureOpen();
-			// FIXME do we need synchronized on the underlying stream
-			return this.resources.zipContent().stream().map((entry) -> entry.as(NestedJarEntry::new));
+			return streamContentEntries().map((contentEntry) -> contentEntry.as(NestedJarEntry::new));
 		}
 	}
 
 	@Override
 	public Stream<JarEntry> versionedStream() {
-		// FIXME do we need synchronized on the underlying stream
 		synchronized (this) {
 			ensureOpen();
-			return this.resources.zipContent()
-				.stream()
-				.map(this::getBaseName)
+			return streamContentEntries().map(this::getBaseName)
 				.filter(Objects::nonNull)
 				.distinct()
 				.map(this::getJarEntry)
 				.filter(Objects::nonNull);
 		}
+	}
+
+	private Stream<ZipContent.Entry> streamContentEntries() {
+		ZipContentEntriesSpliterator spliterator = new ZipContentEntriesSpliterator(this.resources.zipContent());
+		return StreamSupport.stream(spliterator, false);
 	}
 
 	private String getBaseName(ZipContent.Entry contentEntry) {
@@ -399,24 +403,56 @@ public class NestedJarFile extends JarFile {
 	 */
 	private class JarEntriesEnumeration implements Enumeration<JarEntry> {
 
-		private Iterator<ZipContent.Entry> iterator;
+		private final ZipContent zipContent;
 
-		JarEntriesEnumeration(Iterator<ZipContent.Entry> iterator) {
-			this.iterator = iterator;
+		private int cursor;
+
+		JarEntriesEnumeration(ZipContent zipContent) {
+			this.zipContent = zipContent;
 		}
 
 		@Override
 		public boolean hasMoreElements() {
-			return this.iterator.hasNext();
+			return this.cursor < this.zipContent.size();
 		}
 
 		@Override
 		public NestedJarEntry nextElement() {
+			if (!hasMoreElements()) {
+				throw new NoSuchElementException();
+			}
 			synchronized (NestedJarFile.this) {
 				ensureOpen();
-				ZipContent.Entry next = this.iterator.next();
-				return next.as(NestedJarEntry::new);
+				return this.zipContent.getEntry(this.cursor++).as(NestedJarEntry::new);
 			}
+		}
+
+	}
+
+	private class ZipContentEntriesSpliterator extends AbstractSpliterator<ZipContent.Entry> {
+
+		private static final int ADDITIONAL_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
+				| Spliterator.IMMUTABLE | Spliterator.NONNULL;
+
+		private final ZipContent zipContent;
+
+		private int cursor;
+
+		ZipContentEntriesSpliterator(ZipContent zipContent) {
+			super(zipContent.size(), ADDITIONAL_CHARACTERISTICS);
+			this.zipContent = zipContent;
+		}
+
+		@Override
+		public boolean tryAdvance(Consumer<? super ZipContent.Entry> action) {
+			if (this.cursor < this.zipContent.size()) {
+				synchronized (NestedJarFile.this) {
+					ensureOpen();
+					action.accept(this.zipContent.getEntry(this.cursor++));
+				}
+				return true;
+			}
+			return false;
 		}
 
 	}

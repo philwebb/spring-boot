@@ -66,7 +66,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @author Andy Wilkinson
  * @since 3.2.0
  */
-public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
+public final class ZipContent implements Closeable {
 
 	private static int ADDITIONAL_SPLITERATOR_CHARACTERISTICS = Spliterator.ORDERED | Spliterator.DISTINCT
 			| Spliterator.IMMUTABLE | Spliterator.NONNULL;
@@ -179,14 +179,14 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 
 	/**
 	 * Iterate entries in the order that they were written to the zip file.
+	 * @return a new iterator
 	 * @see Iterable#iterator()
 	 */
-	@Override
 	public Iterator<Entry> iterator() {
+		// FIXME Delete
 		return new EntryIterator();
 	}
 
-	@Override
 	public Spliterator<Entry> spliterator() {
 		return Spliterators.spliterator(new EntryIterator(), size(), ADDITIONAL_SPLITERATOR_CHARACTERISTICS);
 	}
