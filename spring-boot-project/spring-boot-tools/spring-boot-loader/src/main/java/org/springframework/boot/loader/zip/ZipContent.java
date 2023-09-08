@@ -156,13 +156,12 @@ public final class ZipContent implements Iterable<ZipContent.Entry>, Closeable {
 		NameOffsets nameOffsets = this.nameOffsets.emptyCopy();
 		ZipCentralDirectoryFileHeaderRecord[] centralRecords = new ZipCentralDirectoryFileHeaderRecord[size()];
 		long[] centralRecordPositions = new long[centralRecords.length];
-		int i = 0;
-		for (Entry entry : this) {
-			nameOffsets.enable(i, this.nameOffsets.isEnabled(entry.getIndex()));
-			long pos = getCentralDirectoryFileHeaderRecordPos(entry.getIndex());
+		for (int i = 0; i < this.orderIndexes.length; i++) {
+			int index = ZipContent.this.orderIndexes[i];
+			nameOffsets.enable(i, this.nameOffsets.isEnabled(index));
+			long pos = getCentralDirectoryFileHeaderRecordPos(index);
 			centralRecordPositions[i] = pos;
 			centralRecords[i] = ZipCentralDirectoryFileHeaderRecord.load(this.data, pos);
-			i++;
 		}
 		return new VirtualZipDataBlock(this.data, nameOffsets, centralRecords, centralRecordPositions);
 	}
