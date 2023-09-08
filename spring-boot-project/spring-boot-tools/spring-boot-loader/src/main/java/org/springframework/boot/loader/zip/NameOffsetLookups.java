@@ -23,15 +23,15 @@ import java.util.BitSet;
  * is used with nested directory zip files so that entries under the directory are offset
  * correctly. META-INF entries are copied directly and have no offset.
  */
-class NameOffsets {
+class NameOffsetLookups {
 
-	public static final NameOffsets NONE = new NameOffsets(0, 0);
+	public static final NameOffsetLookups NONE = new NameOffsetLookups(0, 0);
 
 	private int offset;
 
 	private BitSet enabled;
 
-	NameOffsets(int offset, int size) {
+	NameOffsetLookups(int offset, int size) {
 		this.offset = offset;
 		this.enabled = (size != 0) ? new BitSet(size) : null;
 	}
@@ -63,8 +63,8 @@ class NameOffsets {
 		return this.enabled != null && this.enabled.cardinality() > 0;
 	}
 
-	NameOffsets emptyCopy() {
-		return new NameOffsets(this.offset, this.enabled.size());
+	NameOffsetLookups emptyCopy() {
+		return new NameOffsetLookups(this.offset, this.enabled.size());
 	}
 
 }

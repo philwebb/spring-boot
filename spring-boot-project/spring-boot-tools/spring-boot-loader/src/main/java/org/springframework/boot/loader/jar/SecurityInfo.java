@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
+import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 import org.springframework.boot.loader.zip.ZipContent;
@@ -34,21 +35,21 @@ class SecurityInfo {
 
 	private static final SecurityInfo NONE = new SecurityInfo(null, null);
 
-	private final Certificate[][] certificates;
+	private final Certificate[][] certificateLookups;
 
-	private final CodeSigner[][] codeSigners;
+	private final CodeSigner[][] codeSignerLookups;
 
 	private SecurityInfo(Certificate[][] entryCertificates, CodeSigner[][] entryCodeSigners) {
-		this.certificates = entryCertificates;
-		this.codeSigners = entryCodeSigners;
+		this.certificateLookups = entryCertificates;
+		this.codeSignerLookups = entryCodeSigners;
 	}
 
 	Certificate[] getCertificates(ZipContent.Entry contentEntry) {
-		return (this.certificates != null) ? clone(this.certificates[contentEntry.getIndex()]) : null;
+		return (this.certificateLookups != null) ? clone(this.certificateLookups[contentEntry.getLookupIndex()]) : null;
 	}
 
 	CodeSigner[] getCodeSigners(ZipContent.Entry contentEntry) {
-		return (this.codeSigners != null) ? clone(this.codeSigners[contentEntry.getIndex()]) : null;
+		return (this.codeSignerLookups != null) ? clone(this.codeSignerLookups[contentEntry.getLookupIndex()]) : null;
 	}
 
 	private <T> T[] clone(T[] array) {
@@ -86,7 +87,7 @@ class SecurityInfo {
 		Certificate[][] entryCertificates = new Certificate[size][];
 		CodeSigner[][] entryCodeSigners = new CodeSigner[size][];
 		try (JarInputStream in = new JarInputStream(content.openRawZipData().asInputStream())) {
-			java.util.jar.JarEntry jarEntry = in.getNextJarEntry();
+			JarEntry jarEntry = in.getNextJarEntry();
 			while (jarEntry != null) {
 				in.closeEntry(); // Close to trigger a read and set certs/signers
 				Certificate[] certificates = jarEntry.getCertificates();
@@ -95,8 +96,8 @@ class SecurityInfo {
 					ZipContent.Entry contentEntry = content.getEntry(jarEntry.getName());
 					if (contentEntry != null) {
 						hasSecurityInfo = true;
-						entryCertificates[contentEntry.getIndex()] = certificates;
-						entryCodeSigners[contentEntry.getIndex()] = codeSigners;
+						entryCertificates[contentEntry.getLookupIndex()] = certificates;
+						entryCodeSigners[contentEntry.getLookupIndex()] = codeSigners;
 					}
 				}
 				jarEntry = in.getNextJarEntry();

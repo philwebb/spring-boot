@@ -64,9 +64,11 @@ class MetaInfVersionsInfo {
 	 */
 	static MetaInfVersionsInfo get(ZipContent zipContent) {
 		Set<Integer> versions = new TreeSet<>();
-		for (ZipContent.Entry entry : zipContent) {
-			if (entry.hasNameStartingWith(META_INF_VERSIONS) && !entry.isDirectory()) {
-				String name = entry.getName();
+		int size = zipContent.size();
+		for (int i = 0; i < size; i++) {
+			ZipContent.Entry contentEntry = zipContent.getEntry(i);
+			if (contentEntry.hasNameStartingWith(META_INF_VERSIONS) && !contentEntry.isDirectory()) {
+				String name = contentEntry.getName();
 				int slash = name.indexOf('/', META_INF_VERSIONS.length());
 				String version = name.substring(META_INF_VERSIONS.length(), slash);
 				try {
