@@ -17,7 +17,6 @@
 package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.ZoneId;
@@ -52,9 +51,9 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.12 of the Zip File Format Specification</a>
  */
-record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract, short generalPurposeBitFlag,
-		short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32, int compressedSize,
-		int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
+record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNeededToExtract,
+		short generalPurposeBitFlag, short compressionMethod, short lastModFileTime, short lastModFileDate, int crc32,
+		int compressedSize, int uncompressedSize, short fileNameLength, short extraFieldLength, short fileCommentLength,
 		short diskNumberStart, short internalFileAttributes, int externalFileAttributes, int offsetToLocalHeader) {
 
 	private static final DebugLogger debug = DebugLogger.get(ZipCentralDirectoryFileHeaderRecord.class);
@@ -182,23 +181,6 @@ record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNee
 		buffer.putInt(this.externalFileAttributes);
 		buffer.putInt(this.offsetToLocalHeader);
 		return buffer.array();
-	}
-
-	/**
-	 * Load the {@link ZipCentralDirectoryFileHeaderRecord} from the given data block,
-	 * throwing {@link UncheckedIOException} instead of {@link IOException}.
-	 * @param dataBlock the source data block
-	 * @param pos the position of the record
-	 * @return a new {@link ZipCentralDirectoryFileHeaderRecord} instance
-	 * @throws UncheckedIOException on I/O error
-	 */
-	static ZipCentralDirectoryFileHeaderRecord loadUnchecked(DataBlock dataBlock, long pos) throws UncheckedIOException {
-		try {
-			return load(dataBlock, pos);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
 	}
 
 	/**

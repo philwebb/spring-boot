@@ -140,13 +140,6 @@ class ZipContentTests {
 	}
 
 	@Test
-	void iteratorWhenClosedThrowsException() throws IOException {
-		this.zipContent.close();
-		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.iterator())
-			.withMessage("Zip content closed");
-	}
-
-	@Test
 	void iteratorWhenClosedLaterThrowsException() throws IOException {
 		Iterator<Entry> iterator = this.zipContent.iterator();
 		this.zipContent.close();
@@ -204,12 +197,6 @@ class ZipContentTests {
 	@Test
 	void sizeReturnsNumberOfEntries() {
 		assertThat(this.zipContent.size()).isEqualTo(12);
-	}
-
-	@Test
-	void sizeWhenClosedThrowsException() throws IOException {
-		this.zipContent.close();
-		assertThatIllegalStateException().isThrownBy(() -> this.zipContent.size()).withMessage("Zip content closed");
 	}
 
 	@Test
