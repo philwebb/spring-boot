@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.launch.archive;
+package org.springframework.boot.loader.launch;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.jar.Manifest;
 
 /**
@@ -39,25 +40,26 @@ import java.util.jar.Manifest;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
- * @since 1.0.0
+ * @since 3.2.0
  */
 public class ExplodedArchive implements Archive {
 
-	private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
+	private static final Object NO_MANIFEST = new Object();
 
 	private final File root;
 
+	private final URL url;
+
 	private final boolean recursive;
 
-	private final File manifestFile;
-
-	private Manifest manifest;
+	private volatile Object manifest;
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
 	 * @param root the root directory
+	 * @throws IOException on IO error
 	 */
-	public ExplodedArchive(File root) {
+	public ExplodedArchive(File root) throws IOException {
 		this(root, true);
 	}
 
@@ -67,50 +69,46 @@ public class ExplodedArchive implements Archive {
 	 * @param recursive if recursive searching should be used to locate the manifest.
 	 * Defaults to {@code true}, directories with a large tree might want to set this to
 	 * {@code false}.
+	 * @throws IOException on IO error
 	 */
-	public ExplodedArchive(File root, boolean recursive) {
+	public ExplodedArchive(File root, boolean recursive) throws IOException {
 		if (!root.exists() || !root.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source directory " + root);
 		}
 		this.root = root;
+		this.url = root.toURI().toURL();
 		this.recursive = recursive;
-		this.manifestFile = getManifestFile(root);
-	}
-
-	private File getManifestFile(File root) {
-		File metaInf = new File(root, "META-INF");
-		return new File(metaInf, "MANIFEST.MF");
 	}
 
 	@Override
-	public URL getUrl() throws MalformedURLException {
-		return this.root.toURI().toURL();
+	public URL getUrl() {
+		return this.url;
 	}
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		if (this.manifest == null && this.manifestFile.exists()) {
-			try (FileInputStream inputStream = new FileInputStream(this.manifestFile)) {
-				this.manifest = new Manifest(inputStream);
-			}
+		Object manifest = this.manifest;
+		if (manifest == null) {
+			manifest = loadManifest();
+			this.manifest = manifest;
 		}
-		return this.manifest;
+		return (manifest != NO_MANIFEST) ? (Manifest) manifest : null;
+	}
+
+	private Object loadManifest() throws IOException {
+		File file = new File(this.root, "META-INF/MANIFEST.MF");
+		if (!file.exists()) {
+			return NO_MANIFEST;
+		}
+		try (FileInputStream inputStream = new FileInputStream(file)) {
+			return new Manifest(inputStream);
+		}
 	}
 
 	@Override
-	public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException {
-		return new ArchiveIterator(this.root, this.recursive, searchFilter, includeFilter);
-	}
-
-	@Override
-	@Deprecated(since = "2.3.10", forRemoval = false)
-	public Iterator<Entry> iterator() {
-		return new EntryIterator(this.root, this.recursive, null, null);
-	}
-
-	protected Archive getNestedArchive(Entry entry) {
-		File file = ((FileEntry) entry).getFile();
-		return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive((FileEntry) entry));
+	public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
+			throws IOException {
+		return new NestedArchives(this.root, this.recursive, searchFilter, includeFilter);
 	}
 
 	@Override
@@ -120,18 +118,17 @@ public class ExplodedArchive implements Archive {
 
 	@Override
 	public String toString() {
-		try {
-			return getUrl().toString();
-		}
-		catch (Exception ex) {
-			return "exploded archive";
-		}
+		return getUrl().toString();
 	}
 
 	/**
-	 * File based {@link Entry} {@link Iterator}.
+	 * Nested archives contained in the exploded archive.
 	 */
-	private abstract static class AbstractIterator<T> implements Iterator<T> {
+	private static class NestedArchives implements Iterator<Archive> {
+
+		private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
+
+		private static final Predicate<Entry> INCLUDE_ALL = (entry) -> true;
 
 		private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
 
@@ -139,22 +136,22 @@ public class ExplodedArchive implements Archive {
 
 		private final boolean recursive;
 
-		private final EntryFilter searchFilter;
+		private final Predicate<Entry> searchFilter;
 
-		private final EntryFilter includeFilter;
+		private final Predicate<Entry> includeFilter;
 
 		private final Deque<Iterator<File>> stack = new LinkedList<>();
 
 		private FileEntry current;
 
-		private final String rootUrl;
+		private final String rootUriPath;
 
-		AbstractIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
+		NestedArchives(File root, boolean recursive, Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) {
 			this.root = root;
-			this.rootUrl = this.root.toURI().getPath();
+			this.rootUriPath = this.root.toURI().getPath();
 			this.recursive = recursive;
-			this.searchFilter = searchFilter;
-			this.includeFilter = includeFilter;
+			this.searchFilter = (searchFilter != null) ? searchFilter : INCLUDE_ALL;
+			this.includeFilter = (includeFilter != null) ? includeFilter : INCLUDE_ALL;
 			this.stack.add(listFiles(root));
 			this.current = poll();
 		}
@@ -165,13 +162,19 @@ public class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		public T next() {
+		public Archive next() {
 			FileEntry entry = this.current;
 			if (entry == null) {
 				throw new NoSuchElementException();
 			}
 			this.current = poll();
-			return adapt(entry);
+			try {
+				File file = entry.getFile();
+				return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive(entry));
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
 
 		private FileEntry poll() {
@@ -185,7 +188,7 @@ public class ExplodedArchive implements Archive {
 					if (isListable(entry)) {
 						this.stack.addFirst(listFiles(file));
 					}
-					if (this.includeFilter == null || this.includeFilter.matches(entry)) {
+					if (this.includeFilter.test(entry)) {
 						return entry;
 					}
 				}
@@ -195,20 +198,17 @@ public class ExplodedArchive implements Archive {
 		}
 
 		private FileEntry getFileEntry(File file) {
-			URI uri = file.toURI();
-			String name = uri.getPath().substring(this.rootUrl.length());
-			try {
-				return new FileEntry(name, file, uri.toURL());
-			}
-			catch (MalformedURLException ex) {
-				throw new IllegalStateException(ex);
-			}
+			String name = file.toURI().getPath().substring(this.rootUriPath.length());
+			return new FileEntry(name, file);
 		}
 
 		private boolean isListable(FileEntry entry) {
-			return entry.isDirectory() && (this.recursive || entry.getFile().getParentFile().equals(this.root))
-					&& (this.searchFilter == null || this.searchFilter.matches(entry))
-					&& (this.includeFilter == null || !this.includeFilter.matches(entry));
+			return entry.isDirectory() && (this.recursive || isImmediateChild(entry)) && this.searchFilter.test(entry)
+					&& !this.includeFilter.test(entry);
+		}
+
+		private boolean isImmediateChild(FileEntry entry) {
+			return entry.getFile().getParentFile().equals(this.root);
 		}
 
 		private Iterator<File> listFiles(File file) {
@@ -218,40 +218,6 @@ public class ExplodedArchive implements Archive {
 			}
 			Arrays.sort(files, entryComparator);
 			return Arrays.asList(files).iterator();
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException("remove");
-		}
-
-		protected abstract T adapt(FileEntry entry);
-
-	}
-
-	private static class EntryIterator extends AbstractIterator<Entry> {
-
-		EntryIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
-			super(root, recursive, searchFilter, includeFilter);
-		}
-
-		@Override
-		protected Entry adapt(FileEntry entry) {
-			return entry;
-		}
-
-	}
-
-	private static class ArchiveIterator extends AbstractIterator<Archive> {
-
-		ArchiveIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
-			super(root, recursive, searchFilter, includeFilter);
-		}
-
-		@Override
-		protected Archive adapt(FileEntry entry) {
-			File file = entry.getFile();
-			return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive(entry));
 		}
 
 	}
@@ -265,21 +231,9 @@ public class ExplodedArchive implements Archive {
 
 		private final File file;
 
-		private final URL url;
-
-		FileEntry(String name, File file, URL url) {
+		FileEntry(String name, File file) {
 			this.name = name;
 			this.file = file;
-			this.url = url;
-		}
-
-		File getFile() {
-			return this.file;
-		}
-
-		@Override
-		public boolean isDirectory() {
-			return this.file.isDirectory();
 		}
 
 		@Override
@@ -287,8 +241,13 @@ public class ExplodedArchive implements Archive {
 			return this.name;
 		}
 
-		URL getUrl() {
-			return this.url;
+		@Override
+		public boolean isDirectory() {
+			return this.file.isDirectory();
+		}
+
+		File getFile() {
+			return this.file;
 		}
 
 	}
@@ -301,12 +260,17 @@ public class ExplodedArchive implements Archive {
 
 		private final URL url;
 
-		SimpleJarFileArchive(FileEntry file) {
-			this.url = file.getUrl();
+		SimpleJarFileArchive(FileEntry fileEntry) {
+			try {
+				this.url = fileEntry.getFile().toURI().toURL();
+			}
+			catch (MalformedURLException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
 
 		@Override
-		public URL getUrl() throws MalformedURLException {
+		public URL getUrl() {
 			return this.url;
 		}
 
@@ -316,25 +280,14 @@ public class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
+		public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
 				throws IOException {
 			return Collections.emptyIterator();
 		}
 
 		@Override
-		@Deprecated(since = "2.3.10", forRemoval = false)
-		public Iterator<Entry> iterator() {
-			return Collections.emptyIterator();
-		}
-
-		@Override
 		public String toString() {
-			try {
-				return getUrl().toString();
-			}
-			catch (Exception ex) {
-				return "jar archive";
-			}
+			return getUrl().toString();
 		}
 
 	}

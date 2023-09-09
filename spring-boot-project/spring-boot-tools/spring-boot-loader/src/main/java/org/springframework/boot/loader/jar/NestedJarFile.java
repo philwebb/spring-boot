@@ -352,6 +352,17 @@ public class NestedJarFile extends JarFile {
 	}
 
 	/**
+	 * Clear any internal caches.
+	 */
+	public void clearCache() {
+		synchronized (this) {
+			this.lastNamePrefix = null;
+			this.lastName = null;
+			this.lastContentEntry = null;
+		}
+	}
+
+	/**
 	 * An individual entry from a {@link NestedJarFile}.
 	 */
 	private class NestedJarEntry extends java.util.jar.JarEntry {

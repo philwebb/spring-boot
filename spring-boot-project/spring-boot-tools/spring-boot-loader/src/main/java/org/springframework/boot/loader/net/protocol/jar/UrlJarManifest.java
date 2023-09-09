@@ -28,7 +28,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  */
-public class UrlJarManifest {
+class UrlJarManifest {
 
 	private static final Object NONE = new Object();
 

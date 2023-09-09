@@ -24,7 +24,7 @@ package org.springframework.boot.loader.log;
  */
 public abstract sealed class DebugLogger {
 
-	private static final String ENABLED_PROPERTY = "org.springframework.boot.loader.debug";
+	private static final String ENABLED_PROPERTY = "loader.debug";
 
 	private static final DebugLogger disabled;
 	static {

@@ -116,6 +116,10 @@ public class Handler extends URLStreamHandler {
 		return -1;
 	}
 
+	public static void register() {
+		// FIXME
+	}
+
 	/**
 	 * The supported spec formats.
 	 */
@@ -217,6 +221,13 @@ public class Handler extends URLStreamHandler {
 			return RELATIVE;
 		}
 
+	}
+
+	/**
+	 * @param b
+	 */
+	public static void useFastConnectionExceptions(boolean b) {
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

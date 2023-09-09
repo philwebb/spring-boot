@@ -16,11 +16,6 @@
 
 package org.springframework.boot.loader.launch;
 
-import org.springframework.boot.loader.launch.archive.Archive;
-import org.springframework.boot.loader.launch.archive.Archive.EntryFilter;
-
-import static org.assertj.core.api.Assertions.entry;
-
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
  * included inside a {@code /BOOT-INF/lib} directory and that application classes are
@@ -34,28 +29,17 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
-		if (entry.isDirectory()) {
-			return entry.getName().equals("BOOT-INF/classes/");
-		}
-		return entry.getName().startsWith("BOOT-INF/lib/");
-	};
-
-	public JarLauncher() {
+	public JarLauncher() throws Exception {
 	}
 
-	protected JarLauncher(Archive archive) {
+	protected JarLauncher(Archive archive) throws Exception {
 		super(archive);
 	}
 
 	@Override
-	protected boolean isPostProcessingClassPathArchives() {
-		return false;
-	}
-
-	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
-		return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
+		return (entry.isDirectory() && entry.getName().equals("BOOT-INF/classes/"))
+				|| entry.getName().startsWith("BOOT-INF/lib/");
 	}
 
 	@Override
