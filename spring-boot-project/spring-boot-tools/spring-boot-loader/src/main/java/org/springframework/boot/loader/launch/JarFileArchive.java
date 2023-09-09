@@ -22,8 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.nio.file.FileSystem;
@@ -117,7 +115,8 @@ public class JarFileArchive implements Archive {
 	protected Archive getNestedArchive(JarArchiveEntry entry) {
 		try {
 			JarEntry jarEntry = entry.getJarEntry();
-			if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
+			String comment = jarEntry.getComment();
+			if (comment != null && comment.startsWith(UNPACK_MARKER)) {
 				return getUnpackedNestedArchive(jarEntry);
 			}
 			JarFile jarFile = new NestedJarFile(this.file, entry.getName());
@@ -197,12 +196,12 @@ public class JarFileArchive implements Archive {
 
 	private static URL getUrl(File file, JarEntry nestedEntry) {
 		try {
-			URI fileUri = file.toURI();
-			URI contentUri = (nestedEntry != null)
-					? new URI("nested", null, fileUri.getPath() + "!" + nestedEntry.getName(), null) : fileUri;
-			return new URL(null, "jar:" + contentUri.toURL() + "!/", JAR_HANDLER);
+			String filePath = file.toURI().getPath();
+			String path = (nestedEntry != null) ? "nested:" + filePath + "!" + nestedEntry.getName()
+					: "file:" + filePath;
+			return new URL(null, "jar:" + path + "!/", JAR_HANDLER);
 		}
-		catch (URISyntaxException | MalformedURLException ex) {
+		catch (MalformedURLException ex) {
 			throw new IllegalStateException("Unable to create JarFileArchive URL", ex);
 		}
 	}

@@ -95,7 +95,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected Iterator<Archive> getArchives() throws Exception {
+	protected Iterator<Archive> getClassPathArchives() throws Exception {
 		Iterator<Archive> archives = this.rootArchive.getNestedArchives(this::isSearchCandidate, this::isIncluded);
 		return postProcessClassPathArchives(archives);
 	}
@@ -106,10 +106,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @return {@code true} if the entry is a candidate for further searching
 	 */
 	protected boolean isSearchCandidate(Archive.Entry entry) {
-		if (getArchiveEntryPathPrefix() == null) {
-			return true;
-		}
-		return entry.getName().startsWith(getArchiveEntryPathPrefix());
+		return (getArchiveEntryPathPrefix() == null) || entry.getName().startsWith(getArchiveEntryPathPrefix());
 	}
 
 	private boolean isIncluded(Entry entry) {
