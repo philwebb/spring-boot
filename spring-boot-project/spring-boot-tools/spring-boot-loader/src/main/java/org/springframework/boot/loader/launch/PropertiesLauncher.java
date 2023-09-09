@@ -370,7 +370,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
-	protected Iterator<Archive> getArchives() throws Exception {
+	protected Iterator<Archive> getClassPathArchives() throws Exception {
 		Archives classPathArchives = this.classPathArchives;
 		if (classPathArchives == null) {
 			classPathArchives = new Archives();

@@ -38,7 +38,14 @@ import java.util.jar.JarFile;
  */
 class JarUrlConnection extends java.net.JarURLConnection {
 
+	private static final ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
+
 	private static final UrlJarFiles jarFiles = new UrlJarFiles();
+
+	private static final IOException NO_ENTRY_NAME_SPECIFIED_EXCEPTION = new IOException("no entry name specified");
+
+	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
+			"Jar file or entry not found");
 
 	private final String entryName;
 
@@ -82,7 +89,7 @@ class JarUrlConnection extends java.net.JarURLConnection {
 		boolean useCaches = getUseCaches();
 		URL jarFileURL = getJarFileURL();
 		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
-		this.jarEntry = getJarEntry(jarFileURL, this.jarFile, this.entryName);
+		this.jarEntry = getJarEntry(jarFileURL);
 		boolean addedToCache = jarFiles.cacheIfAbsent(useCaches, jarFileURL, this.jarFile);
 		if (addedToCache) {
 			this.jarFileConnection = jarFiles.reconnect(this.jarFile, this.jarFileConnection);
@@ -90,15 +97,14 @@ class JarUrlConnection extends java.net.JarURLConnection {
 		this.connected = true;
 	}
 
-	private JarEntry getJarEntry(URL jarFileUrl, JarFile jarFile, String entryName) throws IOException {
-		if (entryName == null) {
+	private JarEntry getJarEntry(URL jarFileUrl) throws IOException {
+		if (this.entryName == null) {
 			return null;
 		}
-		JarEntry jarEntry = jarFile.getJarEntry(this.entryName);
+		JarEntry jarEntry = this.jarFile.getJarEntry(this.entryName);
 		if (jarEntry == null) {
-			jarFiles.closeIfNotCached(jarFileUrl, jarFile);
-			throw new FileNotFoundException(
-					"JAR entry %s not found in %s".formatted(this.entryName, jarFile.getName()));
+			jarFiles.closeIfNotCached(jarFileUrl, this.jarFile);
+			throwFileNotFound();
 		}
 		return jarEntry;
 	}
@@ -107,13 +113,19 @@ class JarUrlConnection extends java.net.JarURLConnection {
 	public InputStream getInputStream() throws IOException {
 		connect();
 		if (this.entryName == null) {
-			throw new IOException("no entry name specified");
+			throw NO_ENTRY_NAME_SPECIFIED_EXCEPTION;
 		}
 		if (this.jarEntry == null) {
-			throw new FileNotFoundException(
-					"JAR entry %s  not found in %s".formatted(this.entryName, this.jarFile.getName()));
+			throwFileNotFound();
 		}
 		return new ConnectionInputStream(this.jarFile.getInputStream(this.jarEntry));
+	}
+
+	private void throwFileNotFound() throws FileNotFoundException {
+		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
+		throw new FileNotFoundException("JAR entry " + this.entryName + " not found in " + this.jarFile.getName());
 	}
 
 	@Override
@@ -228,6 +240,10 @@ class JarUrlConnection extends java.net.JarURLConnection {
 	@Override
 	public void setDefaultUseCaches(boolean defaultusecaches) {
 		this.jarFileConnection.setDefaultUseCaches(defaultusecaches);
+	}
+
+	static void useFastExceptions(boolean useFastExceptions) {
+		JarUrlConnection.useFastExceptions.set(useFastExceptions);
 	}
 
 	/**

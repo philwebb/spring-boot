@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.launch;
 
 import java.io.File;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URL;
 import java.security.CodeSource;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.boot.loader.net.protocol.jar.Handler;
+import org.springframework.boot.loader.net.protocol.Handlers;
 
 /**
  * Base class for launchers that can start an application with a fully configured
@@ -49,12 +50,17 @@ public abstract class Launcher {
 	 */
 	protected void launch(String[] args) throws Exception {
 		if (!isExploded()) {
-			Handler.register();
+			Handlers.register();
 		}
-		ClassLoader classLoader = createClassLoader(getArchives());
-		String jarMode = System.getProperty("jarmode");
-		String launchClass = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_LAUNCHER : getMainClass();
-		launch(classLoader, launchClass, args);
+		try {
+			ClassLoader classLoader = createClassLoader(getClassPathArchives());
+			String jarMode = System.getProperty("jarmode");
+			String launchClass = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_LAUNCHER : getMainClass();
+			launch(classLoader, launchClass, args);
+		}
+		catch (UncheckedIOException ex) {
+			throw ex.getCause();
+		}
 	}
 
 	/**
@@ -114,7 +120,7 @@ public abstract class Launcher {
 	 * @return the class path archives
 	 * @throws Exception if the class path archives cannot be obtained
 	 */
-	protected abstract Iterator<Archive> getArchives() throws Exception;
+	protected abstract Iterator<Archive> getClassPathArchives() throws Exception;
 
 	/**
 	 * Return the root archive.

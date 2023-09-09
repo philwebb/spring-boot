@@ -116,8 +116,18 @@ public class Handler extends URLStreamHandler {
 		return -1;
 	}
 
-	public static void register() {
-		// FIXME
+	/**
+	 * Set if a generic static exception can be thrown when a URL cannot be connected.
+	 * This optimization is used during class loading to save creating lots of exceptions
+	 * which are then swallowed.
+	 * @param useFastConnectionExceptions if fast connection exceptions can be used.
+	 */
+	public static void useFastConnectionExceptions(boolean useFastConnectionExceptions) {
+		JarUrlConnection.useFastExceptions(useFastConnectionExceptions);
+	}
+
+	public static boolean createdConnection(URLConnection connection) {
+		return connection instanceof JarUrlConnection;
 	}
 
 	/**
@@ -137,7 +147,7 @@ public class Handler extends URLStreamHandler {
 					throw new IllegalStateException("no !/ in spec");
 				}
 				String innerUrl = spec.substring(start, indexOfSeparator);
-				assertInnerUrlIsNotMalformed(spec, innerUrl);
+				// FIXME expensive? assertInnerUrlIsNotMalformed(spec, innerUrl);
 				return spec.substring(start, limit);
 			}
 
@@ -221,13 +231,6 @@ public class Handler extends URLStreamHandler {
 			return RELATIVE;
 		}
 
-	}
-
-	/**
-	 * @param b
-	 */
-	public static void useFastConnectionExceptions(boolean b) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }
