@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.launch.archive.Archive;
-import org.springframework.boot.loader.launch.archive.ExplodedArchive;
+import org.springframework.boot.loader.launch.Archive.Entry;
 
 /**
  * Base class for executable archive {@link Launcher}s.
@@ -34,7 +33,6 @@ import org.springframework.boot.loader.launch.archive.ExplodedArchive;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Scott Frederick
- * @since 1.0.0
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 
@@ -44,37 +42,25 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	protected static final String DEFAULT_CLASSPATH_INDEX_FILE_NAME = "classpath.idx";
 
-	private final Archive archive;
+	private final Archive rootArchive;
 
 	private final ClassPathIndexFile classPathIndex;
 
-	public ExecutableArchiveLauncher() {
-		try {
-			this.archive = createArchive();
-			this.classPathIndex = getClassPathIndex(this.archive);
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+	public ExecutableArchiveLauncher() throws Exception {
+		this(createArchive());
 	}
 
-	protected ExecutableArchiveLauncher(Archive archive) {
-		try {
-			this.archive = archive;
-			this.classPathIndex = getClassPathIndex(this.archive);
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+	protected ExecutableArchiveLauncher(Archive rootArchive) throws Exception {
+		this.rootArchive = rootArchive;
+		this.classPathIndex = getClassPathIndex(this.rootArchive);
 	}
 
 	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
-		// Only needed for exploded archives, regular ones already have a defined order
-		if (archive instanceof ExplodedArchive) {
-			String location = getClassPathIndexFileLocation(archive);
-			return ClassPathIndexFile.loadIfPossible(archive.getUrl(), location);
+		if (!archive.isExploded()) {
+			return null; // Regular archives already have a defined order
 		}
-		return null;
+		String location = getClassPathIndexFileLocation(archive);
+		return ClassPathIndexFile.loadIfPossible(archive.getUrl(), location);
 	}
 
 	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
@@ -86,11 +72,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected String getMainClass() throws Exception {
-		Manifest manifest = this.archive.getManifest();
-		String mainClass = null;
-		if (manifest != null) {
-			mainClass = manifest.getMainAttributes().getValue(START_CLASS_ATTRIBUTE);
-		}
+		Manifest manifest = this.rootArchive.getManifest();
+		String mainClass = (manifest != null) ? manifest.getMainAttributes().getValue(START_CLASS_ATTRIBUTE) : null;
 		if (mainClass == null) {
 			throw new IllegalStateException("No 'Start-Class' manifest entry specified in " + this);
 		}
@@ -100,9 +83,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	@Override
 	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<>(guessClassPathSize());
-		while (archives.hasNext()) {
-			urls.add(archives.next().getUrl());
-		}
+		archives.forEachRemaining((archive) -> urls.add(archive.getUrl()));
 		if (this.classPathIndex != null) {
 			urls.addAll(this.classPathIndex.getUrls());
 		}
@@ -110,50 +91,43 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	private int guessClassPathSize() {
-		if (this.classPathIndex != null) {
-			return this.classPathIndex.size() + 10;
-		}
-		return 50;
+		return (this.classPathIndex != null) ? this.classPathIndex.size() + 10 : DEFAULT_NUMBER_OF_CLASSPATH_URLS;
 	}
 
 	@Override
-	protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
-		Archive.EntryFilter searchFilter = this::isSearchCandidate;
-		Iterator<Archive> archives = this.archive.getNestedArchives(searchFilter,
-				(entry) -> isNestedArchive(entry) && !isEntryIndexed(entry));
-		if (isPostProcessingClassPathArchives()) {
-			archives = applyClassPathArchivePostProcessing(archives);
-		}
-		return archives;
-	}
-
-	private boolean isEntryIndexed(Archive.Entry entry) {
-		if (this.classPathIndex != null) {
-			return this.classPathIndex.containsEntry(entry.getName());
-		}
-		return false;
-	}
-
-	private Iterator<Archive> applyClassPathArchivePostProcessing(Iterator<Archive> archives) throws Exception {
-		List<Archive> list = new ArrayList<>();
-		while (archives.hasNext()) {
-			list.add(archives.next());
-		}
-		postProcessClassPathArchives(list);
-		return list.iterator();
+	protected Iterator<Archive> getArchives() throws Exception {
+		Iterator<Archive> archives = this.rootArchive.getNestedArchives(this::isSearchCandidate, this::isIncluded);
+		return postProcessClassPathArchives(archives);
 	}
 
 	/**
 	 * Determine if the specified entry is a candidate for further searching.
 	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a candidate for further searching
-	 * @since 2.3.0
 	 */
 	protected boolean isSearchCandidate(Archive.Entry entry) {
 		if (getArchiveEntryPathPrefix() == null) {
 			return true;
 		}
 		return entry.getName().startsWith(getArchiveEntryPathPrefix());
+	}
+
+	private boolean isIncluded(Entry entry) {
+		return isNestedArchive(entry) && !isEntryIndexed(entry);
+	}
+
+	private boolean isEntryIndexed(Archive.Entry entry) {
+		return (this.classPathIndex != null) ? this.classPathIndex.containsEntry(entry.getName()) : false;
+	}
+
+	@Override
+	protected final Archive getRootArchive() {
+		return this.rootArchive;
+	}
+
+	@Override
+	protected boolean isExploded() {
+		return this.rootArchive.isExploded();
 	}
 
 	/**
@@ -165,25 +139,14 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	protected abstract boolean isNestedArchive(Archive.Entry entry);
 
 	/**
-	 * Return if post-processing needs to be applied to the archives. For back
-	 * compatibility this method returns {@code true}, but subclasses that don't override
-	 * {@link #postProcessClassPathArchives(List)} should provide an implementation that
-	 * returns {@code false}.
-	 * @return if the {@link #postProcessClassPathArchives(List)} method is implemented
-	 * @since 2.3.0
+	 * Apply any required post processing to the given archives. By default this method
+	 * returns the original archives.
+	 * @param archives the archives to post process
+	 * @return the post processed archives
+	 * @throws Exception on error
 	 */
-	protected boolean isPostProcessingClassPathArchives() {
-		return true;
-	}
-
-	/**
-	 * Called to post-process archive entries before they are used. Implementations can
-	 * add and remove entries.
-	 * @param archives the archives
-	 * @throws Exception if the post-processing fails
-	 * @see #isPostProcessingClassPathArchives()
-	 */
-	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+	protected Iterator<Archive> postProcessClassPathArchives(Iterator<Archive> archives) throws Exception {
+		return archives;
 	}
 
 	/**
@@ -192,16 +155,6 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 */
 	protected String getArchiveEntryPathPrefix() {
 		return null;
-	}
-
-	@Override
-	protected boolean isExploded() {
-		return this.archive.isExploded();
-	}
-
-	@Override
-	protected final Archive getArchive() {
-		return this.archive;
 	}
 
 }

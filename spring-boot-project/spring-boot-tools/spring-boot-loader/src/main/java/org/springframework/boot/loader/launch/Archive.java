@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.launch.archive;
+package org.springframework.boot.loader.launch;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.function.Predicate;
 import java.util.jar.Manifest;
-
-import org.springframework.boot.loader.launch.Launcher;
 
 /**
  * An archive that can be launched by the {@link Launcher}.
  *
  * @author Phillip Webb
- * @since 1.0.0
+ * @since 3.2.0
  * @see JarFileArchive
+ * @see ExplodedArchive
  */
-public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
+public interface Archive extends AutoCloseable {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
 	 * @return the archive URL
-	 * @throws MalformedURLException if the URL is malformed
 	 */
-	URL getUrl() throws MalformedURLException;
+	URL getUrl();
 
 	/**
 	 * Returns the manifest of the archive.
@@ -48,21 +46,20 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	Manifest getManifest() throws IOException;
 
 	/**
-	 * Returns nested {@link Archive}s for entries that match the specified filters.
+	 * Returns nested {@link Archive} instances that match the specified filters.
 	 * @param searchFilter filter used to limit when additional sub-entry searching is
 	 * required or {@code null} if all entries should be considered.
 	 * @param includeFilter filter used to determine which entries should be included in
 	 * the result or {@code null} if all entries should be included
 	 * @return the nested archives
 	 * @throws IOException on IO error
-	 * @since 2.3.0
 	 */
-	Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException;
+	Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
+			throws IOException;
 
 	/**
 	 * Return if the archive is exploded (already unpacked).
 	 * @return if the archive is exploded
-	 * @since 2.3.0
 	 */
 	default boolean isExploded() {
 		return false;
@@ -71,11 +68,9 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	/**
 	 * Closes the {@code Archive}, releasing any open resources.
 	 * @throws Exception if an error occurs during close processing
-	 * @since 2.2.0
 	 */
 	@Override
 	default void close() throws Exception {
-
 	}
 
 	/**
@@ -84,31 +79,16 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	interface Entry {
 
 		/**
-		 * Returns {@code true} if the entry represents a directory.
-		 * @return if the entry is a directory
-		 */
-		boolean isDirectory();
-
-		/**
 		 * Returns the name of the entry.
 		 * @return the name of the entry
 		 */
 		String getName();
 
-	}
-
-	/**
-	 * Strategy interface to filter {@link Entry Entries}.
-	 */
-	@FunctionalInterface
-	interface EntryFilter {
-
 		/**
-		 * Apply the jar entry filter.
-		 * @param entry the entry to filter
-		 * @return {@code true} if the filter matches
+		 * Returns {@code true} if the entry represents a directory.
+		 * @return if the entry is a directory
 		 */
-		boolean matches(Entry entry);
+		boolean isDirectory();
 
 	}
 

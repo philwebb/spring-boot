@@ -19,7 +19,7 @@ package org.springframework.boot.loader.net.protocol.nested;
 import java.io.File;
 import java.net.URL;
 
-import org.springframework.boot.loader.net.protocol.UrlDecoder;
+import org.springframework.boot.loader.net.util.UrlDecoder;
 
 /**
  * A location obtained from a {@code nested:} {@link URL} consisting of a jar file and a

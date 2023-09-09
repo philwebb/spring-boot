@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol;
+package org.springframework.boot.loader.net.util;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;

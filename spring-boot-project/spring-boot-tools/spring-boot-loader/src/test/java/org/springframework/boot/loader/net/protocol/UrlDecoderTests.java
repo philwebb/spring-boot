@@ -18,6 +18,8 @@ package org.springframework.boot.loader.net.protocol;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.net.util.UrlDecoder;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
