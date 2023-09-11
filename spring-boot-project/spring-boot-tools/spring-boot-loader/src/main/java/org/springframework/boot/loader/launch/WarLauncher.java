@@ -37,8 +37,10 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 
 	@Override
 	public boolean isNestedArchive(Archive.Entry entry) {
-		return (entry.isDirectory() && entry.getName().equals("WEB-INF/classes/"))
-				|| entry.getName().startsWith("WEB-INF/lib/") || entry.getName().startsWith("WEB-INF/lib-provided/");
+		if (entry.isDirectory()) {
+			return entry.getName().equals("WEB-INF/classes/");
+		}
+		return entry.getName().startsWith("WEB-INF/lib/") || entry.getName().startsWith("WEB-INF/lib-provided/");
 	}
 
 	@Override

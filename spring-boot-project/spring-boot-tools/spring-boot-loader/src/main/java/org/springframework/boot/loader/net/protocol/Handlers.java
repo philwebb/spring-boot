@@ -27,7 +27,7 @@ public class Handlers {
 
 	private static final String PROTOCOL_HANDLER_PACKAGES = "java.protocol.handler.pkgs";
 
-	private static final String PACKAGE = Handlers.class.getName();
+	private static final String PACKAGE = Handlers.class.getPackageName();
 
 	/**
 	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
@@ -35,7 +35,7 @@ public class Handlers {
 	 */
 	public static void register() {
 		String packages = System.getProperty(PROTOCOL_HANDLER_PACKAGES, "");
-		packages = (!packages.isEmpty()) ? packages + "|" + PACKAGE : PACKAGE;
+		packages = (!packages.isEmpty() && !packages.contains(PACKAGE)) ? packages + "|" + PACKAGE : PACKAGE;
 		System.setProperty(PROTOCOL_HANDLER_PACKAGES, packages);
 		resetCachedUrlHandlers();
 	}

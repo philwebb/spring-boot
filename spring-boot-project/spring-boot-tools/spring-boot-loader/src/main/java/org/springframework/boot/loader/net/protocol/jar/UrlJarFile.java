@@ -52,7 +52,7 @@ class UrlJarFile extends JarFile {
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		return UrlJarEntry.of(this.getEntry(name), this.manifest);
+		return UrlJarEntry.of(super.getEntry(name), this.manifest);
 	}
 
 	@Override

@@ -48,7 +48,7 @@ class NestedUrlConnection extends URLConnection {
 	private FilePermission permission;
 
 	NestedUrlConnection(URL url) throws MalformedURLException {
-		this(url, null);
+		this(url, Cleaner.instance);
 	}
 
 	NestedUrlConnection(URL url, Cleaner cleaner) throws MalformedURLException {

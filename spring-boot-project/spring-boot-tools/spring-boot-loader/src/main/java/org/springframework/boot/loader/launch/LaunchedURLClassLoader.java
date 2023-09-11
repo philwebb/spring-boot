@@ -279,17 +279,18 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * {@code ClearCachesApplicationListener}.
 	 */
 	public void clearCache() {
-		if (!this.exploded) {
-			for (URL url : getURLs()) {
-				try {
-					URLConnection connection = url.openConnection();
-					if (connection instanceof JarURLConnection jarUrlConnection) {
-						clearCache(jarUrlConnection);
-					}
+		if (this.exploded) {
+			return;
+		}
+		for (URL url : getURLs()) {
+			try {
+				URLConnection connection = url.openConnection();
+				if (connection instanceof JarURLConnection jarUrlConnection) {
+					clearCache(jarUrlConnection);
 				}
-				catch (IOException ex) {
-					// Ignore
-				}
+			}
+			catch (IOException ex) {
+				// Ignore
 			}
 		}
 	}

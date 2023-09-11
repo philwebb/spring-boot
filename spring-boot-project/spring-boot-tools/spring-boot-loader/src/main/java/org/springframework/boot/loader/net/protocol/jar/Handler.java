@@ -34,7 +34,11 @@ public class Handler extends URLStreamHandler {
 	// NOTE: in order to be found as a URL protocol handler, this class must be public,
 	// must be named Handler and must be in a package ending '.jar'
 
+	private static final String PROTOCOL = "jar";
+
 	private static final String SEPARATOR = "!/";
+
+	static final Handler INSTANCE = new Handler();
 
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
@@ -50,7 +54,7 @@ public class Handler extends URLStreamHandler {
 		SpecFormat format = SpecFormat.detect(spec, start, anchorIndex);
 		String path = format.extractPath(url, spec, start, limit);
 		String ref = (anchorIndex != -1) ? spec.substring(anchorIndex + 1, spec.length()) : null;
-		setURL(url, "jar", "", -1, null, null, path, null, ref);
+		setURL(url, PROTOCOL, "", -1, null, null, path, null, ref);
 	}
 
 	@Override
@@ -75,7 +79,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected boolean sameFile(URL url1, URL url2) {
-		if (!url1.getProtocol().equals("jar") || !url2.getProtocol().equals("jar")) {
+		if (!url1.getProtocol().equals(PROTOCOL) || !url2.getProtocol().equals(PROTOCOL)) {
 			return false;
 		}
 		String file1 = url1.getFile();
@@ -126,10 +130,6 @@ public class Handler extends URLStreamHandler {
 		JarUrlConnection.useFastExceptions(useFastConnectionExceptions);
 	}
 
-	public static boolean createdConnection(URLConnection connection) {
-		return connection instanceof JarUrlConnection;
-	}
-
 	/**
 	 * The supported spec formats.
 	 */
@@ -147,11 +147,15 @@ public class Handler extends URLStreamHandler {
 					throw new IllegalStateException("no !/ in spec");
 				}
 				String innerUrl = spec.substring(start, indexOfSeparator);
-				// FIXME expensive? assertInnerUrlIsNotMalformed(spec, innerUrl);
+				assertInnerUrlIsNotMalformed(spec, innerUrl);
 				return spec.substring(start, limit);
 			}
 
 			private void assertInnerUrlIsNotMalformed(String spec, String innerUrl) {
+				if (innerUrl.startsWith("nested:")) {
+					org.springframework.boot.loader.net.protocol.nested.Handler.assertUrlIsNotMalformed(innerUrl);
+					return;
+				}
 				try {
 					new URL(innerUrl);
 				}

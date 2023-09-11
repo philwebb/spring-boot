@@ -39,8 +39,6 @@ import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.launch.Archive;
-import org.springframework.boot.loader.launch.ExecutableArchiveLauncher;
 import org.springframework.util.FileCopyUtils;
 
 /**
