@@ -21,9 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLStreamHandler;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +40,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.jar.NestedJarFile;
-import org.springframework.boot.loader.net.protocol.jar.Handler;
+import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
 /**
  * {@link Archive} implementation backed by a {@link JarFile}.
@@ -54,8 +52,6 @@ import org.springframework.boot.loader.net.protocol.jar.Handler;
 public class JarFileArchive implements Archive {
 
 	// FIXME Implement close check it's called
-
-	private static final URLStreamHandler JAR_HANDLER = new Handler();
 
 	private static final String UNPACK_MARKER = "UNPACK:";
 
@@ -78,7 +74,7 @@ public class JarFileArchive implements Archive {
 	private Path tempUnpackDirectory;
 
 	public JarFileArchive(File file) throws IOException {
-		this(file, new JarFile(file), getUrl(file, null));
+		this(file, new JarFile(file), JarUrl.create(file));
 	}
 
 	private JarFileArchive(File file, JarFile jarFile, URL url) {
@@ -120,7 +116,7 @@ public class JarFileArchive implements Archive {
 				return getUnpackedNestedArchive(jarEntry);
 			}
 			JarFile jarFile = new NestedJarFile(this.file, entry.getName());
-			return new JarFileArchive(this.file, jarFile, getUrl(this.file, jarEntry));
+			return new JarFileArchive(this.file, jarFile, JarUrl.create(this.file, jarEntry));
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -192,18 +188,6 @@ public class JarFileArchive implements Archive {
 	@Override
 	public String toString() {
 		return getUrl().toString();
-	}
-
-	private static URL getUrl(File file, JarEntry nestedEntry) {
-		try {
-			String filePath = file.toURI().getPath();
-			String path = (nestedEntry != null) ? "nested:" + filePath + "!" + nestedEntry.getName()
-					: "file:" + filePath;
-			return new URL(null, "jar:" + path + "!/", JAR_HANDLER);
-		}
-		catch (MalformedURLException ex) {
-			throw new IllegalStateException("Unable to create JarFileArchive URL", ex);
-		}
 	}
 
 	/**

@@ -18,15 +18,14 @@ package org.springframework.boot.loader.launch;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.jar.JarFile;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.launch.LaunchedURLClassLoader;
+import org.springframework.boot.loader.net.protocol.Handlers;
+import org.springframework.boot.loader.net.protocol.jar.Handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +41,11 @@ class LaunchedURLClassLoaderTests {
 
 	@TempDir
 	File tempDir;
+
+	@BeforeAll
+	static void setup() {
+		Handlers.register();
+	}
 
 	@Test
 	void resolveResourceFromArchive() throws Exception {
@@ -75,36 +79,12 @@ class LaunchedURLClassLoaderTests {
 	void resolveFromNested() throws Exception {
 		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
-		try (JarFile jarFile = new JarFile(file)) {
-			URL url = jarFile.getUrl();
-			try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
-				URL resource = loader.getResource("nested.jar!/3.dat");
-				assertThat(resource).hasToString(url + "nested.jar!/3.dat");
-				try (InputStream input = resource.openConnection().getInputStream()) {
-					assertThat(input.read()).isEqualTo(3);
-				}
-			}
-		}
-	}
-
-	@Test
-	void resolveFromNestedWhileThreadIsInterrupted() throws Exception {
-		File file = new File(this.tempDir, "test.jar");
-		TestJarCreator.createTestJar(file);
-		try (JarFile jarFile = new JarFile(file)) {
-			URL url = jarFile.getUrl();
-			try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
-				Thread.currentThread().interrupt();
-				URL resource = loader.getResource("nested.jar!/3.dat");
-				assertThat(resource).hasToString(url + "nested.jar!/3.dat");
-				URLConnection connection = resource.openConnection();
-				try (InputStream input = connection.getInputStream()) {
-					assertThat(input.read()).isEqualTo(3);
-				}
-				((JarURLConnection) connection).getJarFile().close();
-			}
-			finally {
-				Thread.interrupted();
+		URL url = Handler.create(file, "nested.jar");
+		try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
+			URL resource = loader.getResource("3.dat");
+			assertThat(resource).hasToString(url + "3.dat");
+			try (InputStream input = resource.openConnection().getInputStream()) {
+				assertThat(input.read()).isEqualTo(3);
 			}
 		}
 	}

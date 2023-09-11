@@ -90,7 +90,7 @@ public class NestedJarFile extends JarFile {
 	 * @throws IOException on I/O error
 	 */
 	NestedJarFile(File file) throws IOException {
-		this(file, null, null, false, null);
+		this(file, null, null, false, Cleaner.instance);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class NestedJarFile extends JarFile {
 	 * @throws IOException on I/O error
 	 */
 	public NestedJarFile(File file, String nestedEntryName) throws IOException {
-		this(file, nestedEntryName, null, true, null);
+		this(file, nestedEntryName, null, true, Cleaner.instance);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class NestedJarFile extends JarFile {
 	 * @throws IOException on I/O error
 	 */
 	public NestedJarFile(File file, String nestedEntryName, Runtime.Version version) throws IOException {
-		this(file, nestedEntryName, version, true, null);
+		this(file, nestedEntryName, version, true, Cleaner.instance);
 	}
 
 	/**
@@ -133,9 +133,9 @@ public class NestedJarFile extends JarFile {
 			throw new IllegalArgumentException("nestedEntryName must not be empty");
 		}
 		debug.log("Created nested jar file (%s, %s, %s)", file, nestedEntryName, version);
-		this.cleaner = (cleaner != null) ? cleaner : Cleaner.instance;
+		this.cleaner = cleaner;
 		this.resources = new NestedJarFileResources(file, nestedEntryName);
-		this.cleanup = this.cleaner.register(this, this.resources);
+		this.cleanup = cleaner.register(this, this.resources);
 		this.name = file.getPath() + ((nestedEntryName != null) ? "!" + nestedEntryName : "");
 		this.version = (version != null) ? version.feature() : baseVersion().feature();
 	}
@@ -219,7 +219,7 @@ public class NestedJarFile extends JarFile {
 		Objects.requireNonNull(name, "name");
 		ZipContent.Entry entry = getVersionedContentEntry(name);
 		entry = (entry != null) ? entry : getContentEntry(null, name);
-		return entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name));
+		return (entry != null) ? entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name)) : null;
 	}
 
 	private ZipContent.Entry getVersionedContentEntry(String name) {

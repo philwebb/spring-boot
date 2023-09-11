@@ -35,6 +35,8 @@ import java.util.jar.JarFile;
  * jars.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Rostyslav Dudka
  */
 class JarUrlConnection extends java.net.JarURLConnection {
 

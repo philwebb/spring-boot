@@ -135,7 +135,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private final Archive parent;
 
-	private volatile Archives classPathArchives;
+	private volatile ClassPathArchives classPathArchives;
 
 	public PropertiesLauncher() throws Exception {
 		try {
@@ -371,9 +371,9 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected Iterator<Archive> getClassPathArchives() throws Exception {
-		Archives classPathArchives = this.classPathArchives;
+		ClassPathArchives classPathArchives = this.classPathArchives;
 		if (classPathArchives == null) {
-			classPathArchives = new Archives();
+			classPathArchives = new ClassPathArchives();
 			this.classPathArchives = classPathArchives;
 		}
 		return classPathArchives.iterator();
@@ -436,7 +436,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	String getManifestValue(Archive archive, String manifestKey) throws Exception {
-		Manifest manifest = createArchive().getManifest();
+		Manifest manifest = archive.getManifest();
 		return (manifest != null) ? manifest.getMainAttributes().getValue(manifestKey) : null;
 	}
 
@@ -485,13 +485,13 @@ public class PropertiesLauncher extends Launcher {
 	/**
 	 * An iterable collection of the classpath archives.
 	 */
-	private class Archives implements Iterable<Archive> {
+	private class ClassPathArchives implements Iterable<Archive> {
 
 		private final List<Archive> classPathArchives;
 
 		private final List<AutoCloseable> closeables = new ArrayList<>();
 
-		Archives() throws Exception {
+		ClassPathArchives() throws Exception {
 			this.classPathArchives = new ArrayList<>();
 			for (String path : PropertiesLauncher.this.paths) {
 				for (Archive archive : getClassPathArchives(path)) {
@@ -512,12 +512,10 @@ public class PropertiesLauncher extends Launcher {
 					classPathArchives.add(new ExplodedArchive(file, false));
 				}
 			}
-			else {
-				Archive archive = getArchive(file);
-				if (archive != null) {
-					debug.log("Adding classpath entries from archive %s", archive.getUrl() + path);
-					classPathArchives.add(archive);
-				}
+			Archive archive = getArchive(file);
+			if (archive != null) {
+				debug.log("Adding classpath entries from archive %s", archive.getUrl() + path);
+				classPathArchives.add(archive);
 			}
 			List<Archive> nestedArchives = getNestedArchives(path);
 			if (nestedArchives != null) {

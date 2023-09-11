@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.io.FileSystemResource;
@@ -178,7 +179,7 @@ class PropertiesLauncherTests {
 		List<Archive> archives = new ArrayList<>();
 		this.launcher.getClassPathArchives().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
-		assertThat(archives).areExactly(1, endingWith("app.jar"));
+		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
 	}
 
 	@Test
@@ -188,7 +189,7 @@ class PropertiesLauncherTests {
 		List<Archive> archives = new ArrayList<>();
 		this.launcher.getClassPathArchives().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
-		assertThat(archives).areExactly(1, endingWith("app.jar"));
+		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
 	}
 
 	@Test
@@ -208,7 +209,7 @@ class PropertiesLauncherTests {
 		List<Archive> archives = new ArrayList<>();
 		this.launcher.getClassPathArchives().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
-		assertThat(archives).areExactly(1, endingWith("app.jar"));
+		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
 	}
 
 	@Test
@@ -362,8 +363,8 @@ class PropertiesLauncherTests {
 
 	@Test // gh-21575
 	void loadResourceFromJarFile() throws Exception {
-		File jarFile = new File(this.tempDir, "app.jar");
-		TestJarCreator.createTestJar(jarFile);
+		File file = new File(this.tempDir, "app.jar");
+		TestJarCreator.createTestJar(file);
 		System.setProperty("loader.home", this.tempDir.getAbsolutePath());
 		System.setProperty("loader.path", "app.jar");
 		this.launcher = new PropertiesLauncher();
@@ -376,7 +377,7 @@ class PropertiesLauncherTests {
 				.getContextClassLoader();
 			classLoader.close();
 		}
-		URL resource = new URL("jar:" + jarFile.toURI() + "!/nested.jar!/3.dat");
+		URL resource = JarUrl.create(file, "nested.jar", "3.dat");
 		byte[] bytes = FileCopyUtils.copyToByteArray(resource.openStream());
 		assertThat(bytes).isNotEmpty();
 	}
