@@ -19,9 +19,9 @@ package org.springframework.boot.loader.launch;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,13 +41,14 @@ import java.util.jar.Manifest;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
- * @since 3.2.0
  */
 class ExplodedArchive implements Archive {
 
 	private static final Object NO_MANIFEST = new Object();
 
 	private final File root;
+
+	private final String rootUriPath;
 
 	private final boolean recursive;
 
@@ -75,6 +76,7 @@ class ExplodedArchive implements Archive {
 			throw new IllegalArgumentException("Invalid source directory " + root);
 		}
 		this.root = root;
+		this.rootUriPath = ExplodedArchive.this.root.toURI().getPath();
 		this.recursive = recursive;
 	}
 
@@ -98,15 +100,14 @@ class ExplodedArchive implements Archive {
 		}
 	}
 
-	public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
-			throws IOException {
-		return new NestedArchives(this.root, this.recursive, searchFilter, includeFilter);
-	}
-
 	@Override
 	public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
 			throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		List<URL> urls = new ArrayList<>();
+		for (FileEntryIterator iterator = new FileEntryIterator(searchFilter, includeFilter); iterator.hasNext();) {
+			urls.add(iterator.next().getUrl());
+		}
+		return urls;
 	}
 
 	public File getRoot() {
@@ -121,17 +122,13 @@ class ExplodedArchive implements Archive {
 	/**
 	 * Nested archives contained in the exploded archive.
 	 */
-	private static class NestedArchives implements Iterator<Archive> {
+	private class FileEntryIterator implements Iterator<FileEntry> {
 
 		private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
 
 		private static final Predicate<Entry> INCLUDE_ALL = (entry) -> true;
 
 		private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
-
-		private final File root;
-
-		private final boolean recursive;
 
 		private final Predicate<Entry> searchFilter;
 
@@ -141,15 +138,10 @@ class ExplodedArchive implements Archive {
 
 		private FileEntry current;
 
-		private final String rootUriPath;
-
-		NestedArchives(File root, boolean recursive, Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) {
-			this.root = root;
-			this.rootUriPath = this.root.toURI().getPath();
-			this.recursive = recursive;
+		FileEntryIterator(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) {
 			this.searchFilter = (searchFilter != null) ? searchFilter : INCLUDE_ALL;
 			this.includeFilter = (includeFilter != null) ? includeFilter : INCLUDE_ALL;
-			this.stack.add(listFiles(root));
+			this.stack.add(listFiles(ExplodedArchive.this.root));
 			this.current = poll();
 		}
 
@@ -159,19 +151,13 @@ class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		public Archive next() {
+		public FileEntry next() {
 			FileEntry entry = this.current;
 			if (entry == null) {
 				throw new NoSuchElementException();
 			}
 			this.current = poll();
-			try {
-				File file = entry.getFile();
-				return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive(entry));
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
+			return entry;
 		}
 
 		private FileEntry poll() {
@@ -195,17 +181,17 @@ class ExplodedArchive implements Archive {
 		}
 
 		private FileEntry getFileEntry(File file) {
-			String name = file.toURI().getPath().substring(this.rootUriPath.length());
+			String name = file.toURI().getPath().substring(ExplodedArchive.this.rootUriPath.length());
 			return new FileEntry(name, file);
 		}
 
 		private boolean isListable(FileEntry entry) {
-			return entry.isDirectory() && (this.recursive || isImmediateChild(entry)) && this.searchFilter.test(entry)
-					&& !this.includeFilter.test(entry);
+			return entry.isDirectory() && (ExplodedArchive.this.recursive || isImmediateChild(entry))
+					&& this.searchFilter.test(entry) && !this.includeFilter.test(entry);
 		}
 
 		private boolean isImmediateChild(FileEntry entry) {
-			return entry.getFile().getParentFile().equals(this.root);
+			return entry.isImmediateChildOf(ExplodedArchive.this.root);
 		}
 
 		private Iterator<File> listFiles(File file) {
@@ -233,6 +219,14 @@ class ExplodedArchive implements Archive {
 			this.file = file;
 		}
 
+		boolean isImmediateChildOf(File parent) {
+			return this.file.getParentFile().equals(parent);
+		}
+
+		URL getUrl() throws MalformedURLException {
+			return this.file.toURI().toURL();
+		}
+
 		@Override
 		public String getName() {
 			return this.name;
@@ -241,50 +235,6 @@ class ExplodedArchive implements Archive {
 		@Override
 		public boolean isDirectory() {
 			return this.file.isDirectory();
-		}
-
-		File getFile() {
-			return this.file;
-		}
-
-	}
-
-	/**
-	 * {@link Archive} implementation backed by a simple JAR file that doesn't itself
-	 * contain nested archives.
-	 */
-	private static class SimpleJarFileArchive implements Archive {
-
-		private final URL url;
-
-		SimpleJarFileArchive(FileEntry fileEntry) {
-			try {
-				this.url = fileEntry.getFile().toURI().toURL();
-			}
-			catch (MalformedURLException ex) {
-				throw new UncheckedIOException(ex);
-			}
-		}
-
-		@Override
-		public Manifest getManifest() throws IOException {
-			return null;
-		}
-
-		public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
-				throws IOException {
-			return Collections.emptyIterator();
-		}
-
-		@Override
-		public String toString() {
-			return this.url.toString();
-		}
-
-		@Override
-		public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
-				throws IOException {
-			throw new UnsupportedOperationException("Auto-generated method stub");
 		}
 
 	}

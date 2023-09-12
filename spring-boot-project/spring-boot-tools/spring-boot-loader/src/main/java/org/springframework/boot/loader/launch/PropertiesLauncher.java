@@ -34,7 +34,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -70,6 +69,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @author Dave Syer
  * @author Janne Valkealahti
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.2.0
  */
 public class PropertiesLauncher extends Launcher {
@@ -129,9 +129,9 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final DebugLogger debug = DebugLogger.get(PropertiesLauncher.class);
 
-	private final Archive rootArchive;
+	private final Archive archive;
 
-	private final File home;
+	private final File homeDirectory;
 
 	private final List<String> paths;
 
@@ -140,15 +140,10 @@ public class PropertiesLauncher extends Launcher {
 	private volatile ClassPathArchives classPathArchives;
 
 	public PropertiesLauncher() throws Exception {
-		try {
-			this.rootArchive = createRootArchive();
-			this.home = getHomeDirectory();
-			initializeProperties();
-			this.paths = createPaths();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+		this.archive = Archive.create(Launcher.class);
+		this.homeDirectory = getHomeDirectory();
+		initializeProperties();
+		this.paths = createPaths();
 	}
 
 	protected File getHomeDirectory() throws Exception {
@@ -164,7 +159,7 @@ public class PropertiesLauncher extends Launcher {
 			String[] names = getPropertyWithDefault(CONFIG_NAME, "loader").split(",");
 			for (String name : names) {
 				String propertiesFile = name + ".properties";
-				configs.add("file:" + this.home + "/" + propertiesFile);
+				configs.add("file:" + this.homeDirectory + "/" + propertiesFile);
 				configs.add("classpath:" + propertiesFile);
 				configs.add("classpath:BOOT-INF/classes/" + propertiesFile);
 			}
@@ -335,14 +330,14 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
-	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
+	protected ClassLoader createClassLoader(List<URL> classPathUrls) throws Exception {
 		String loaderClassName = getProperty("loader.classLoader");
 		if (loaderClassName == null) {
-			return super.createClassLoader(archives);
+			return super.createClassLoader(classPathUrls);
 		}
-		Set<URL> urls = new LinkedHashSet<>();
-		archives.forEachRemaining((archive) -> urls.add(archive.getUrl()));
-		ClassLoader classLoader = new LaunchedURLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+		LinkedHashSet<URL> urls = new LinkedHashSet<>(classPathUrls);
+		ClassLoader parent = getClass().getClassLoader();
+		ClassLoader classLoader = new LaunchedClassLoader(urls.toArray(new URL[0]), parent);
 		debug.log("Classpath for custom loader: %s", urls);
 		classLoader = wrapWithCustomClassLoader(classLoader, loaderClassName);
 		debug.log("Using custom class loader: %s", loaderClassName);
@@ -362,6 +357,11 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
+	protected Archive getArchive() {
+		return this.archive;
+	}
+
+	@Override
 	protected String getMainClass() throws Exception {
 		String mainClass = getProperty(MAIN, "Start-Class");
 		if (mainClass == null) {
@@ -371,6 +371,10 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
+	protected List<URL> getClassPathUrls() throws Exception {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
 	protected Iterator<Archive> getClassPathArchives() throws Exception {
 		ClassPathArchives classPathArchives = this.classPathArchives;
 		if (classPathArchives == null) {
@@ -415,9 +419,9 @@ public class PropertiesLauncher extends Launcher {
 			return getResolvedProperty(name, manifestKey, value, "properties");
 		}
 		// Prefer home dir for MANIFEST if there is one
-		if (this.home != null) {
+		if (this.homeDirectory != null) {
 			try {
-				try (ExplodedArchive archive = new ExplodedArchive(this.home, false)) {
+				try (ExplodedArchive archive = new ExplodedArchive(this.homeDirectory, false)) {
 					value = getManifestValue(archive, manifestKey);
 					if (value != null) {
 						return getResolvedProperty(name, manifestKey, value, "home directory manifest");
@@ -428,7 +432,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		// Otherwise try the root archive
-		value = getManifestValue(this.rootArchive, manifestKey);
+		value = getManifestValue(this.archive, manifestKey);
 		if (value != null) {
 			return getResolvedProperty(name, manifestKey, value, "manifest");
 		}
@@ -453,8 +457,8 @@ public class PropertiesLauncher extends Launcher {
 		if (this.classPathArchives != null) {
 			this.classPathArchives.close();
 		}
-		if (this.rootArchive != null) {
-			this.rootArchive.close();
+		if (this.archive != null) {
+			this.archive.close();
 		}
 	}
 
@@ -509,7 +513,7 @@ public class PropertiesLauncher extends Launcher {
 			File file = new File(path);
 			List<Archive> classPathArchives = new ArrayList<>();
 			if (!"/".equals(path)) {
-				file = (!isAbsolutePath(path)) ? new File(PropertiesLauncher.this.home, path) : file;
+				file = (!isAbsolutePath(path)) ? new File(PropertiesLauncher.this.homeDirectory, path) : file;
 				if (file.isDirectory()) {
 					debug.log("Adding classpath entries from directory %s", file);
 					ExplodedArchive archive = new ExplodedArchive(file, false);
@@ -548,15 +552,15 @@ public class PropertiesLauncher extends Launcher {
 		}
 
 		private List<Archive> getNestedArchives(String path) throws Exception {
-			Archive archive = PropertiesLauncher.this.rootArchive;
+			Archive archive = PropertiesLauncher.this.archive;
 			boolean isJar = path.endsWith(".jar");
-			URI homeUri = PropertiesLauncher.this.home.toURI();
+			URI homeUri = PropertiesLauncher.this.homeDirectory.toURI();
 			if (!path.equals("/") && path.startsWith("/") || archive.getUrl().toURI().equals(homeUri)) {
 				// If home dir is same as parent archive, no need to add it twice.
 				return null;
 			}
 			if (isJar) {
-				File file = new File(PropertiesLauncher.this.home, path);
+				File file = new File(PropertiesLauncher.this.homeDirectory, path);
 				if (file.exists()) {
 					archive = getJarFileArchive(file);
 					path = "";
@@ -577,7 +581,7 @@ public class PropertiesLauncher extends Launcher {
 			List<Archive> archives = new ArrayList<>();
 			archive.getNestedArchives(null, filterByPrefix(path)).forEachRemaining(archives::add);
 			if ((path == null || path.isEmpty() || ".".equals(path)) && !isJar
-					&& archive != PropertiesLauncher.this.rootArchive) {
+					&& archive != PropertiesLauncher.this.archive) {
 				// You can't find the root with an entry filter so it has to be added
 				// explicitly. But don't add the root of the parent archive.
 				archives.add(archive);
@@ -589,7 +593,7 @@ public class PropertiesLauncher extends Launcher {
 			if (path.startsWith(JAR_FILE_PREFIX)) {
 				return new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
 			}
-			return new File(PropertiesLauncher.this.home, path.substring(0, separatorIndex));
+			return new File(PropertiesLauncher.this.homeDirectory, path.substring(0, separatorIndex));
 		}
 
 		private Predicate<Entry> filterByPrefix(String prefix) {
@@ -607,7 +611,7 @@ public class PropertiesLauncher extends Launcher {
 			// directories, meaning we are running from an executable JAR. We add nested
 			// entries from there with low priority (i.e. at end).
 			try {
-				PropertiesLauncher.this.rootArchive.getNestedArchives(null, this::isNestedArchive)
+				PropertiesLauncher.this.archive.getNestedArchives(null, this::isNestedArchive)
 					.forEachRemaining(this.classPathArchives::add);
 			}
 			catch (IOException ex) {
@@ -640,7 +644,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-	 * Simple utility to help instantiate objects.
+	 * Utility to help instantiate objects.
 	 */
 	private record Instantiator<T>(ClassLoader parent, Class<?> type) {
 
