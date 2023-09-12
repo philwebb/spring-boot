@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
+import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,17 +91,24 @@ class JarFileArchiveTests {
 	}
 
 	@Test
-	void getUrl() throws Exception {
+	void getUrl() {
 		URL url = this.archive.getUrl();
 		assertThat(url).hasToString(this.rootJarFileUrl);
 	}
 
 	@Test
 	void getNestedArchive() throws Exception {
-		Entry entry = getEntriesMap(this.archive).get("nested.jar");
-		try (Archive nested = this.archive.getNestedArchive(entry)) {
-			assertThat(nested.getUrl()).hasToString("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
+		getNestedArchive(this.archive, "nested.jar");
+		try (Archive nested = getNestedArchive(this.archive, "nested.jar")) {
+			assertThat(nested.getUrl()).isEqualTo(JarUrl.create(this.rootJarFile, "nested.jar"));
 		}
+	}
+
+	private Archive getNestedArchive(JarFileArchive archive, String name) {
+		Iterator<Archive> nestedArchives = archive.getNestedArchives(null, (entry) -> entry.getName().equals(name));
+		Archive nestedArchive = nestedArchives.next();
+		assertThat(nestedArchives.hasNext()).isFalse();
+		return nestedArchive;
 	}
 
 	@Test

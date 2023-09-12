@@ -38,7 +38,7 @@ import org.springframework.boot.loader.net.protocol.Handlers;
  */
 public abstract class Launcher {
 
-	private static final String JAR_MODE_LAUNCHER = "org.springframework.boot.loader.jarmode.JarModeLauncher";
+	private static final String JAR_MODE_LAUNCHER = "org.springframework.boot.loader.launch.JarModeLauncher";
 
 	protected static final int DEFAULT_NUMBER_OF_CLASSPATH_URLS = 50;
 

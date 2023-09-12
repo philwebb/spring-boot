@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.net.protocol.Handlers;
-import org.springframework.boot.loader.net.protocol.jar.Handler;
+import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,7 +79,7 @@ class LaunchedURLClassLoaderTests {
 	void resolveFromNested() throws Exception {
 		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
-		URL url = Handler.create(file, "nested.jar");
+		URL url = JarUrl.create(file, "nested.jar");
 		try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
 			URL resource = loader.getResource("3.dat");
 			assertThat(resource).hasToString(url + "3.dat");
