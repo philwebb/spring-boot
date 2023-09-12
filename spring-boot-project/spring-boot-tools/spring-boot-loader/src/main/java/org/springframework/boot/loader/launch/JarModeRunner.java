@@ -23,15 +23,15 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.ClassUtils;
 
 /**
- * Delegate class used to launch the nested jar in a specific mode.
+ * Delegate class used to run the nested jar in a specific mode.
  *
  * @author Phillip Webb
  */
-final class JarModeLauncher {
+final class JarModeRunner {
 
-	static final String DISABLE_SYSTEM_EXIT = JarModeLauncher.class.getName() + ".DISABLE_SYSTEM_EXIT";
+	static final String DISABLE_SYSTEM_EXIT = JarModeRunner.class.getName() + ".DISABLE_SYSTEM_EXIT";
 
-	private JarModeLauncher() {
+	private JarModeRunner() {
 	}
 
 	public static void main(String[] args) {

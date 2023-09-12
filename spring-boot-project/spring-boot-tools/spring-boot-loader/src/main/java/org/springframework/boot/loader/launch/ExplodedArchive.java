@@ -29,6 +29,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -42,13 +43,11 @@ import java.util.jar.Manifest;
  * @author Madhura Bhave
  * @since 3.2.0
  */
-public class ExplodedArchive implements Archive {
+class ExplodedArchive implements Archive {
 
 	private static final Object NO_MANIFEST = new Object();
 
 	private final File root;
-
-	private final URL url;
 
 	private final boolean recursive;
 
@@ -76,13 +75,7 @@ public class ExplodedArchive implements Archive {
 			throw new IllegalArgumentException("Invalid source directory " + root);
 		}
 		this.root = root;
-		this.url = root.toURI().toURL();
 		this.recursive = recursive;
-	}
-
-	@Override
-	public URL getUrl() {
-		return this.url;
 	}
 
 	@Override
@@ -105,20 +98,24 @@ public class ExplodedArchive implements Archive {
 		}
 	}
 
-	@Override
 	public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
 			throws IOException {
 		return new NestedArchives(this.root, this.recursive, searchFilter, includeFilter);
 	}
 
 	@Override
-	public boolean isExploded() {
-		return true;
+	public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
+			throws IOException {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	public File getRoot() {
+		return this.root;
 	}
 
 	@Override
 	public String toString() {
-		return getUrl().toString();
+		return this.root.toString();
 	}
 
 	/**
@@ -270,16 +267,10 @@ public class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		public URL getUrl() {
-			return this.url;
-		}
-
-		@Override
 		public Manifest getManifest() throws IOException {
 			return null;
 		}
 
-		@Override
 		public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
 				throws IOException {
 			return Collections.emptyIterator();
@@ -287,7 +278,13 @@ public class ExplodedArchive implements Archive {
 
 		@Override
 		public String toString() {
-			return getUrl().toString();
+			return this.url.toString();
+		}
+
+		@Override
+		public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
+				throws IOException {
+			throw new UnsupportedOperationException("Auto-generated method stub");
 		}
 
 	}

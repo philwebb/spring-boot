@@ -39,13 +39,13 @@ class LauncherJarModeTests {
 
 	@BeforeEach
 	void setup() {
-		System.setProperty(JarModeLauncher.DISABLE_SYSTEM_EXIT, "true");
+		System.setProperty(JarModeRunner.DISABLE_SYSTEM_EXIT, "true");
 	}
 
 	@AfterEach
 	void cleanup() {
 		System.clearProperty("jarmode");
-		System.clearProperty(JarModeLauncher.DISABLE_SYSTEM_EXIT);
+		System.clearProperty(JarModeRunner.DISABLE_SYSTEM_EXIT);
 	}
 
 	@Test

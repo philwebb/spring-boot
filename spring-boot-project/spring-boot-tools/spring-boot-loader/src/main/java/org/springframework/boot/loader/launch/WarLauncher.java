@@ -36,7 +36,7 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
-	public boolean isNestedArchive(Archive.Entry entry) {
+	public boolean isIncludedOnClassPath(Archive.Entry entry) {
 		if (entry.isDirectory()) {
 			return entry.getName().equals("WEB-INF/classes/");
 		}
@@ -44,7 +44,7 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
-	protected String getArchiveEntryPathPrefix() {
+	protected String getEntryPathPrefix() {
 		return "WEB-INF/";
 	}
 

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A class path index file that provides ordering information for JARs.
+ * A class path index file that provides an ordered classpath for exploded JARs.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
@@ -78,11 +77,7 @@ final class ClassPathIndexFile {
 		}
 	}
 
-	static ClassPathIndexFile loadIfPossible(URL root, String location) throws IOException {
-		return loadIfPossible(asFile(root), location);
-	}
-
-	private static ClassPathIndexFile loadIfPossible(File root, String location) throws IOException {
+	static ClassPathIndexFile loadIfPossible(File root, String location) throws IOException {
 		return loadIfPossible(root, new File(root, location));
 	}
 
@@ -106,18 +101,6 @@ final class ClassPathIndexFile {
 			line = reader.readLine();
 		}
 		return Collections.unmodifiableList(lines);
-	}
-
-	private static File asFile(URL url) {
-		if (!"file".equals(url.getProtocol())) {
-			throw new IllegalArgumentException("URL does not reference a file");
-		}
-		try {
-			return new File(url.toURI());
-		}
-		catch (URISyntaxException ex) {
-			return new File(url.getPath());
-		}
 	}
 
 }

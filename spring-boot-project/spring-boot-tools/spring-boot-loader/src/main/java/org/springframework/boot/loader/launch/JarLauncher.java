@@ -37,13 +37,13 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
-	protected boolean isNestedArchive(Archive.Entry entry) {
+	protected boolean isIncludedOnClassPath(Archive.Entry entry) {
 		String name = entry.getName();
 		return (!entry.isDirectory()) ? name.startsWith("BOOT-INF/lib/") : name.equals("BOOT-INF/classes/");
 	}
 
 	@Override
-	protected String getArchiveEntryPathPrefix() {
+	protected String getEntryPathPrefix() {
 		return "BOOT-INF/";
 	}
 
