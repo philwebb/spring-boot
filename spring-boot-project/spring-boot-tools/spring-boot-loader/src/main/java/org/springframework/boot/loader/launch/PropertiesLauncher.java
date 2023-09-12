@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -127,22 +128,22 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final DebugLogger debug = DebugLogger.get(PropertiesLauncher.class);
 
+	private final Archive rootArchive;
+
 	private final File home;
 
-	private List<String> paths = new ArrayList<>();
+	private final List<String> paths;
 
 	private final Properties properties = new Properties();
-
-	private final Archive parent;
 
 	private volatile ClassPathArchives classPathArchives;
 
 	public PropertiesLauncher() throws Exception {
 		try {
+			this.rootArchive = createRootArchive();
 			this.home = getHomeDirectory();
 			initializeProperties();
-			initializePaths();
-			this.parent = createArchive();
+			this.paths = createPaths();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -294,12 +295,11 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private void initializePaths() throws Exception {
+	private List<String> createPaths() throws Exception {
 		String path = getProperty(PATH);
-		if (path != null) {
-			this.paths = parsePathsProperty(path);
-		}
+		List<String> paths = (path != null) ? parsePathsProperty(path) : Collections.emptyList();
 		debug.log("Nested archive paths: %s", this.paths);
+		return paths;
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
@@ -426,8 +426,8 @@ public class PropertiesLauncher extends Launcher {
 			catch (IllegalStateException ex) {
 			}
 		}
-		// Otherwise try the parent archive
-		value = getManifestValue(createArchive(), manifestKey);
+		// Otherwise try the root archive
+		value = getManifestValue(this.rootArchive, manifestKey);
 		if (value != null) {
 			return getResolvedProperty(name, manifestKey, value, "manifest");
 		}
@@ -452,8 +452,8 @@ public class PropertiesLauncher extends Launcher {
 		if (this.classPathArchives != null) {
 			this.classPathArchives.close();
 		}
-		if (this.parent != null) {
-			this.parent.close();
+		if (this.rootArchive != null) {
+			this.rootArchive.close();
 		}
 	}
 
@@ -543,40 +543,40 @@ public class PropertiesLauncher extends Launcher {
 		}
 
 		private List<Archive> getNestedArchives(String path) throws Exception {
-			Archive parent = PropertiesLauncher.this.parent;
-			String root = path;
-			if (!root.equals("/") && root.startsWith("/")
+			Archive parent = PropertiesLauncher.this.rootArchive;
+			String rootPath = path;
+			if (!rootPath.equals("/") && rootPath.startsWith("/")
 					|| parent.getUrl().toURI().equals(PropertiesLauncher.this.home.toURI())) {
 				// If home dir is same as parent archive, no need to add it twice.
 				return null;
 			}
-			int index = root.indexOf('!');
+			int index = rootPath.indexOf('!');
 			if (index != -1) {
-				File file = new File(PropertiesLauncher.this.home, root.substring(0, index));
-				if (root.startsWith("jar:file:")) {
-					file = new File(root.substring("jar:file:".length(), index));
+				File file = new File(PropertiesLauncher.this.home, rootPath.substring(0, index));
+				if (rootPath.startsWith("jar:file:")) {
+					file = new File(rootPath.substring("jar:file:".length(), index));
 				}
 				parent = getJarFileArchive(file);
-				root = root.substring(index + 1);
-				while (root.startsWith("/")) {
-					root = root.substring(1);
+				rootPath = rootPath.substring(index + 1);
+				while (rootPath.startsWith("/")) {
+					rootPath = rootPath.substring(1);
 				}
 			}
-			if (root.endsWith(".jar")) {
-				File file = new File(PropertiesLauncher.this.home, root);
+			if (rootPath.endsWith(".jar")) {
+				File file = new File(PropertiesLauncher.this.home, rootPath);
 				if (file.exists()) {
 					parent = getJarFileArchive(file);
-					root = "";
+					rootPath = "";
 				}
 			}
-			if (root.equals("/") || root.equals("./") || root.equals(".")) {
+			if (rootPath.equals("/") || rootPath.equals("./") || rootPath.equals(".")) {
 				// The prefix for nested jars is actually empty if it's at the root
-				root = "";
+				rootPath = "";
 			}
 			List<Archive> archives = new ArrayList<>();
-			parent.getNestedArchives(null, filterByPrefix(root)).forEachRemaining(archives::add);
-			if ((root == null || root.isEmpty() || ".".equals(root)) && !path.endsWith(".jar")
-					&& parent != PropertiesLauncher.this.parent) {
+			parent.getNestedArchives(null, filterByPrefix(rootPath)).forEachRemaining(archives::add);
+			if ((rootPath == null || rootPath.isEmpty() || ".".equals(rootPath)) && !path.endsWith(".jar")
+					&& parent != PropertiesLauncher.this.rootArchive) {
 				// You can't find the root with an entry filter so it has to be added
 				// explicitly. But don't add the root of the parent archive.
 				archives.add(parent);
@@ -606,7 +606,7 @@ public class PropertiesLauncher extends Launcher {
 			// directories, meaning we are running from an executable JAR. We add nested
 			// entries from there with low priority (i.e. at end).
 			try {
-				PropertiesLauncher.this.parent.getNestedArchives(null, this::isNestedArchive)
+				PropertiesLauncher.this.rootArchive.getNestedArchives(null, this::isNestedArchive)
 					.forEachRemaining(this.classPathArchives::add);
 			}
 			catch (IOException ex) {

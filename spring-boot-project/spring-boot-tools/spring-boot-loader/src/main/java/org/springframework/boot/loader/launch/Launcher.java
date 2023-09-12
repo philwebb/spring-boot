@@ -145,7 +145,7 @@ public abstract class Launcher {
 	 * @return an {@link Archive} instance
 	 * @throws Exception if the archive cannot be created
 	 */
-	protected static Archive createArchive() throws Exception {
+	protected static Archive createRootArchive() throws Exception {
 		ProtectionDomain protectionDomain = Launcher.class.getProtectionDomain();
 		CodeSource codeSource = protectionDomain.getCodeSource();
 		URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
