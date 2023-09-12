@@ -45,7 +45,7 @@ class UrlJarFile extends JarFile {
 	private final Consumer<JarFile> closeAction;
 
 	UrlJarFile(File file, Runtime.Version version, Consumer<JarFile> closeAction) throws IOException {
-		super(file, true, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE, version);
+		super(file, true, ZipFile.OPEN_READ, version);
 		this.manifest = new UrlJarManifest(super::getManifest);
 		this.closeAction = closeAction;
 	}

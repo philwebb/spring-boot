@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.jarmode;
+package org.springframework.boot.loader.launch;
 
 import java.util.List;
 
+import org.springframework.boot.loader.jarmode.JarMode;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.ClassUtils;
 
@@ -25,9 +26,8 @@ import org.springframework.util.ClassUtils;
  * Delegate class used to launch the nested jar in a specific mode.
  *
  * @author Phillip Webb
- * @since 2.3.0
  */
-public final class JarModeLauncher {
+final class JarModeLauncher {
 
 	static final String DISABLE_SYSTEM_EXIT = JarModeLauncher.class.getName() + ".DISABLE_SYSTEM_EXIT";
 
