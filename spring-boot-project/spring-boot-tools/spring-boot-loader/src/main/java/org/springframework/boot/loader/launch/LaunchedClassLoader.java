@@ -39,7 +39,7 @@ import org.springframework.boot.loader.net.protocol.jar.Handler;
  * @author Andy Wilkinson
  * @since 1.0.0
  */
-public class LaunchedURLClassLoader extends URLClassLoader {
+public class LaunchedClassLoader extends URLClassLoader {
 
 	static {
 		ClassLoader.registerAsParallelCapable();
@@ -54,33 +54,33 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	private volatile DefinePackageCallType definePackageCallType;
 
 	/**
-	 * Create a new {@link LaunchedURLClassLoader} instance.
+	 * Create a new {@link LaunchedClassLoader} instance.
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
-	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
+	public LaunchedClassLoader(URL[] urls, ClassLoader parent) {
 		this(false, urls, parent);
 	}
 
 	/**
-	 * Create a new {@link LaunchedURLClassLoader} instance.
+	 * Create a new {@link LaunchedClassLoader} instance.
 	 * @param exploded if the underlying archive is exploded
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
-	public LaunchedURLClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
+	public LaunchedClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
 		this(exploded, null, urls, parent);
 	}
 
 	/**
-	 * Create a new {@link LaunchedURLClassLoader} instance.
+	 * Create a new {@link LaunchedClassLoader} instance.
 	 * @param exploded if the underlying archive is exploded
 	 * @param rootArchive the root archive or {@code null}
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 * @since 2.3.1
 	 */
-	public LaunchedURLClassLoader(boolean exploded, Archive rootArchive, URL[] urls, ClassLoader parent) {
+	public LaunchedClassLoader(boolean exploded, Archive rootArchive, URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.exploded = exploded;
 		this.rootArchive = rootArchive;

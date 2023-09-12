@@ -58,13 +58,6 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Returns the archives that will be used to construct the class path.
-	 * @return the class path archives
-	 * @throws Exception if the class path archives cannot be obtained
-	 */
-	protected abstract List<URL> getClassPathUrls() throws Exception;
-
-	/**
 	 * Create a classloader for the specified archives.
 	 * @param classPathUrls the classpath URLs
 	 * @return the classloader
@@ -76,7 +69,7 @@ public abstract class Launcher {
 
 	private ClassLoader createClassLoader(URL[] urls) {
 		ClassLoader parent = getClass().getClassLoader();
-		return new LaunchedURLClassLoader(isExploded(), getArchive(), urls, parent);
+		return new LaunchedClassLoader(isExploded(), getArchive(), urls, parent);
 	}
 
 	/**
@@ -95,19 +88,6 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Returns the main class that should be launched.
-	 * @return the name of the main class
-	 * @throws Exception if the main class cannot be obtained
-	 */
-	protected abstract String getMainClass() throws Exception;
-
-	/**
-	 * Return the archive being launched or {@code null} if there is no archive.
-	 * @return the launched archive
-	 */
-	protected abstract Archive getArchive();
-
-	/**
 	 * Returns if the launcher is running in an exploded mode. If this method returns
 	 * {@code true} then only regular JARs are supported and the additional URL and
 	 * ClassLoader support infrastructure can be optimized.
@@ -117,5 +97,25 @@ public abstract class Launcher {
 		Archive archive = getArchive();
 		return archive != null && archive.isExploded();
 	}
+
+	/**
+	 * Return the archive being launched or {@code null} if there is no archive.
+	 * @return the launched archive
+	 */
+	protected abstract Archive getArchive();
+
+	/**
+	 * Returns the main class that should be launched.
+	 * @return the name of the main class
+	 * @throws Exception if the main class cannot be obtained
+	 */
+	protected abstract String getMainClass() throws Exception;
+
+	/**
+	 * Returns the archives that will be used to construct the class path.
+	 * @return the class path archives
+	 * @throws Exception if the class path archives cannot be obtained
+	 */
+	protected abstract List<URL> getClassPathUrls() throws Exception;
 
 }

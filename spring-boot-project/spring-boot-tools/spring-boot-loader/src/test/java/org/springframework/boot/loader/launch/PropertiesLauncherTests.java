@@ -373,7 +373,7 @@ class PropertiesLauncherTests {
 		}
 		catch (Exception ex) {
 			// Expected ClassNotFoundException
-			LaunchedURLClassLoader classLoader = (LaunchedURLClassLoader) Thread.currentThread()
+			LaunchedClassLoader classLoader = (LaunchedClassLoader) Thread.currentThread()
 				.getContextClassLoader();
 			classLoader.close();
 		}

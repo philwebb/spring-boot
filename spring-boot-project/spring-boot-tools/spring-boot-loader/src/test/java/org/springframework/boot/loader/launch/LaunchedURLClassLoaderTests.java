@@ -30,7 +30,7 @@ import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LaunchedURLClassLoader}.
+ * Tests for {@link LaunchedClassLoader}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -49,28 +49,28 @@ class LaunchedURLClassLoaderTests {
 
 	@Test
 	void resolveResourceFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResource("demo/Application.java")).isNotNull();
 	}
 
 	@Test
 	void resolveResourcesFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
 	}
 
 	@Test
 	void resolveRootPathFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResource("")).isNotNull();
 	}
 
 	@Test
 	void resolveRootResourcesFromArchive() throws Exception {
-		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResources("").hasMoreElements()).isTrue();
 	}
@@ -80,7 +80,7 @@ class LaunchedURLClassLoaderTests {
 		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 		URL url = JarUrl.create(file, "nested.jar");
-		try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
+		try (LaunchedClassLoader loader = new LaunchedClassLoader(new URL[] { url }, null)) {
 			URL resource = loader.getResource("3.dat");
 			assertThat(resource).hasToString(url + "3.dat");
 			try (InputStream input = resource.openConnection().getInputStream()) {

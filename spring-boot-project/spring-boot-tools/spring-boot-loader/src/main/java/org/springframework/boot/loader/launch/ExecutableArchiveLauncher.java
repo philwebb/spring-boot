@@ -70,6 +70,20 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
+	protected ClassLoader createClassLoader(List<URL> urls) throws Exception {
+		if (this.classPathIndex != null) {
+			urls = new ArrayList<>(urls);
+			urls.addAll(this.classPathIndex.getUrls());
+		}
+		return super.createClassLoader(urls);
+	}
+
+	@Override
+	protected final Archive getArchive() {
+		return this.archive;
+	}
+
+	@Override
 	protected String getMainClass() throws Exception {
 		Manifest manifest = this.archive.getManifest();
 		String mainClass = (manifest != null) ? manifest.getMainAttributes().getValue(START_CLASS_ATTRIBUTE) : null;
@@ -80,26 +94,9 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected ClassLoader createClassLoader(List<URL> urls) throws Exception {
-		if (this.classPathIndex != null) {
-			urls = new ArrayList<>(urls);
-			urls.addAll(this.classPathIndex.getUrls());
-		}
-		return createClassLoader(urls);
-	}
-
-	@Override
 	protected List<URL> getClassPathUrls() throws Exception {
-		return this.archive.getClassPathUrls(this::isSearched, (entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry));
-	}
-
-	private boolean isEntryIndexed(Archive.Entry entry) {
-		return (this.classPathIndex != null) ? this.classPathIndex.containsEntry(entry.getName()) : false;
-	}
-
-	@Override
-	protected final Archive getArchive() {
-		return this.archive;
+		return this.archive.getClassPathUrls(this::isSearched,
+				(entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry));
 	}
 
 	/**
@@ -118,6 +115,10 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @return {@code true} if the entry is a nested item (jar or directory)
 	 */
 	protected abstract boolean isIncludedOnClassPath(Archive.Entry entry);
+
+	private boolean isEntryIndexed(Archive.Entry entry) {
+		return (this.classPathIndex != null) ? this.classPathIndex.containsEntry(entry.getName()) : false;
+	}
 
 	/**
 	 * Return the path prefix for relevant entries in the archive.
