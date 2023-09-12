@@ -19,20 +19,19 @@ package org.springframework.boot.loader.launch;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.launch.Archive.Entry;
-
 /**
- * Base class for executable archive {@link Launcher}s.
+ * Base class for a {@link Launcher} backed by an executable archive.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @see JarLauncher
+ * @see WarLauncher
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 
@@ -42,17 +41,17 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	protected static final String DEFAULT_CLASSPATH_INDEX_FILE_NAME = "classpath.idx";
 
-	private final Archive rootArchive;
+	private final Archive archive;
 
 	private final ClassPathIndexFile classPathIndex;
 
 	public ExecutableArchiveLauncher() throws Exception {
-		this(createRootArchive());
+		this(Archive.create(Launcher.class));
 	}
 
-	protected ExecutableArchiveLauncher(Archive rootArchive) throws Exception {
-		this.rootArchive = rootArchive;
-		this.classPathIndex = getClassPathIndex(this.rootArchive);
+	protected ExecutableArchiveLauncher(Archive archive) throws Exception {
+		this.archive = archive;
+		this.classPathIndex = getClassPathIndex(this.archive);
 	}
 
 	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
@@ -60,19 +59,19 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 			return null; // Regular archives already have a defined order
 		}
 		String location = getClassPathIndexFileLocation(archive);
-		return ClassPathIndexFile.loadIfPossible(archive.getUrl(), location);
+		return ClassPathIndexFile.loadIfPossible(archive.getRootDirectory(), location);
 	}
 
 	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
 		Manifest manifest = archive.getManifest();
 		Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
 		String location = (attributes != null) ? attributes.getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE) : null;
-		return (location != null) ? location : getArchiveEntryPathPrefix() + DEFAULT_CLASSPATH_INDEX_FILE_NAME;
+		return (location != null) ? location : getEntryPathPrefix() + DEFAULT_CLASSPATH_INDEX_FILE_NAME;
 	}
 
 	@Override
 	protected String getMainClass() throws Exception {
-		Manifest manifest = this.rootArchive.getManifest();
+		Manifest manifest = this.archive.getManifest();
 		String mainClass = (manifest != null) ? manifest.getMainAttributes().getValue(START_CLASS_ATTRIBUTE) : null;
 		if (mainClass == null) {
 			throw new IllegalStateException("No 'Start-Class' manifest entry specified in " + this);
@@ -81,36 +80,17 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
-		List<URL> urls = new ArrayList<>(guessClassPathSize());
-		archives.forEachRemaining((archive) -> urls.add(archive.getUrl()));
+	protected ClassLoader createClassLoader(List<URL> urls) throws Exception {
 		if (this.classPathIndex != null) {
+			urls = new ArrayList<>(urls);
 			urls.addAll(this.classPathIndex.getUrls());
 		}
-		return createClassLoader(urls.toArray(new URL[0]));
-	}
-
-	private int guessClassPathSize() {
-		return (this.classPathIndex != null) ? this.classPathIndex.size() + 10 : DEFAULT_NUMBER_OF_CLASSPATH_URLS;
+		return createClassLoader(urls);
 	}
 
 	@Override
-	protected Iterator<Archive> getClassPathArchives() throws Exception {
-		Iterator<Archive> archives = this.rootArchive.getNestedArchives(this::isSearchCandidate, this::isIncluded);
-		return postProcessClassPathArchives(archives);
-	}
-
-	/**
-	 * Determine if the specified entry is a candidate for further searching.
-	 * @param entry the entry to check
-	 * @return {@code true} if the entry is a candidate for further searching
-	 */
-	protected boolean isSearchCandidate(Archive.Entry entry) {
-		return (getArchiveEntryPathPrefix() == null) || entry.getName().startsWith(getArchiveEntryPathPrefix());
-	}
-
-	private boolean isIncluded(Entry entry) {
-		return isNestedArchive(entry) && !isEntryIndexed(entry);
+	protected List<URL> getClassPathUrls() throws Exception {
+		return this.archive.getClassPathUrls(this::isSearched, (entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry));
 	}
 
 	private boolean isEntryIndexed(Archive.Entry entry) {
@@ -118,13 +98,17 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected final Archive getRootArchive() {
-		return this.rootArchive;
+	protected final Archive getArchive() {
+		return this.archive;
 	}
 
-	@Override
-	protected boolean isExploded() {
-		return this.rootArchive.isExploded();
+	/**
+	 * Determine if the specified entry is a candidate for further searching.
+	 * @param entry the entry to check
+	 * @return {@code true} if the entry is a candidate for further searching
+	 */
+	protected boolean isSearched(Archive.Entry entry) {
+		return (getEntryPathPrefix() == null) || entry.getName().startsWith(getEntryPathPrefix());
 	}
 
 	/**
@@ -133,25 +117,12 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @param entry the entry to check
 	 * @return {@code true} if the entry is a nested item (jar or directory)
 	 */
-	protected abstract boolean isNestedArchive(Archive.Entry entry);
+	protected abstract boolean isIncludedOnClassPath(Archive.Entry entry);
 
 	/**
-	 * Apply any required post processing to the given archives. By default this method
-	 * returns the original archives.
-	 * @param archives the archives to post process
-	 * @return the post processed archives
-	 * @throws Exception on error
+	 * Return the path prefix for relevant entries in the archive.
+	 * @return the entry path prefix
 	 */
-	protected Iterator<Archive> postProcessClassPathArchives(Iterator<Archive> archives) throws Exception {
-		return archives;
-	}
-
-	/**
-	 * Return the path prefix for entries in the archive.
-	 * @return the path prefix
-	 */
-	protected String getArchiveEntryPathPrefix() {
-		return null;
-	}
+	protected abstract String getEntryPathPrefix();
 
 }

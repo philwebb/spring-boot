@@ -31,7 +31,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.EnumSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -39,7 +39,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.jar.NestedJarFile;
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
 /**
@@ -47,11 +46,8 @@ import org.springframework.boot.loader.net.protocol.jar.JarUrl;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 3.0.0
  */
-public class JarFileArchive implements Archive {
-
-	// FIXME Implement close check it's called
+class JarFileArchive implements Archive {
 
 	private static final String UNPACK_MARKER = "UNPACK:";
 
@@ -69,23 +65,15 @@ public class JarFileArchive implements Archive {
 
 	private final JarFile jarFile;
 
-	private final URL url;
-
 	private Path tempUnpackDirectory;
 
 	public JarFileArchive(File file) throws IOException {
-		this(file, new JarFile(file), JarUrl.create(file));
+		this(file, new JarFile(file));
 	}
 
-	private JarFileArchive(File file, JarFile jarFile, URL url) {
+	private JarFileArchive(File file, JarFile jarFile) {
 		this.file = file;
 		this.jarFile = jarFile;
-		this.url = url;
-	}
-
-	@Override
-	public URL getUrl() {
-		return this.url;
 	}
 
 	@Override
@@ -94,36 +82,31 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) {
+	public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
+			throws IOException {
 		return this.jarFile.stream()
 			.map(JarArchiveEntry::new)
 			.filter(searchFilter != null ? searchFilter : ALL_ENTRIES)
 			.filter(includeFilter != null ? includeFilter : ALL_ENTRIES)
-			.map(this::getNestedArchive)
-			.iterator();
+			.map(this::getNestedJarUrl)
+			.toList();
 	}
 
-	@Override
-	public void close() throws IOException {
-		this.jarFile.close();
-	}
-
-	protected Archive getNestedArchive(JarArchiveEntry entry) {
+	private URL getNestedJarUrl(JarArchiveEntry archiveEntry) {
 		try {
-			JarEntry jarEntry = entry.getJarEntry();
+			JarEntry jarEntry = archiveEntry.getJarEntry();
 			String comment = jarEntry.getComment();
 			if (comment != null && comment.startsWith(UNPACK_MARKER)) {
-				return getUnpackedNestedArchive(jarEntry);
+				return getUnpackedNestedJarUrl(jarEntry);
 			}
-			JarFile jarFile = new NestedJarFile(this.file, entry.getName());
-			return new JarFileArchive(this.file, jarFile, JarUrl.create(this.file, jarEntry));
+			return JarUrl.create(this.file, jarEntry);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
 	}
 
-	private Archive getUnpackedNestedArchive(JarEntry jarEntry) throws IOException {
+	private URL getUnpackedNestedJarUrl(JarEntry jarEntry) throws IOException {
 		String name = jarEntry.getName();
 		if (name.lastIndexOf('/') != -1) {
 			name = name.substring(name.lastIndexOf('/') + 1);
@@ -132,7 +115,7 @@ public class JarFileArchive implements Archive {
 		if (!Files.exists(path) || Files.size(path) != jarEntry.getSize()) {
 			unpack(jarEntry, path);
 		}
-		return new JarFileArchive(path.toFile());
+		return JarUrl.create(path.toFile());
 	}
 
 	private Path getTempUnpackDirectory() {
@@ -186,8 +169,13 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
+	public void close() throws IOException {
+		this.jarFile.close();
+	}
+
+	@Override
 	public String toString() {
-		return getUrl().toString();
+		return this.file.toString();
 	}
 
 	/**

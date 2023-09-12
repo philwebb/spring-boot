@@ -16,9 +16,13 @@
 
 package org.springframework.boot.loader.launch;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
-import java.util.Iterator;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
 
@@ -27,42 +31,44 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  * @since 3.2.0
- * @see JarFileArchive
- * @see ExplodedArchive
  */
 public interface Archive extends AutoCloseable {
 
-	/**
-	 * Returns a URL that can be used to load the archive.
-	 * @return the archive URL
-	 */
-	URL getUrl();
+	// FIXME review close()
 
 	/**
 	 * Returns the manifest of the archive.
-	 * @return the manifest
+	 * @return the manifest or {@code null}
 	 * @throws IOException if the manifest cannot be read
 	 */
 	Manifest getManifest() throws IOException;
 
 	/**
-	 * Returns nested {@link Archive} instances that match the specified filters.
+	 * Returns classpath URLs for the archive that match the specified filters.
 	 * @param searchFilter filter used to limit when additional sub-entry searching is
 	 * required or {@code null} if all entries should be considered.
 	 * @param includeFilter filter used to determine which entries should be included in
 	 * the result or {@code null} if all entries should be included
-	 * @return the nested archives
+	 * @return the classpath URLs
 	 * @throws IOException on IO error
 	 */
-	Iterator<Archive> getNestedArchives(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
-			throws IOException;
+	List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException;
 
 	/**
-	 * Return if the archive is exploded (already unpacked).
+	 * Returns if this archive is backed by an exploded archive directory.
 	 * @return if the archive is exploded
 	 */
 	default boolean isExploded() {
-		return false;
+		return getRootDirectory() != null;
+	}
+
+	/**
+	 * Returns the root directory of this archive or {@code null} if the archive is not
+	 * backed by a directory.
+	 * @return the root directory
+	 */
+	default File getRootDirectory() {
+		return null;
 	}
 
 	/**
@@ -71,6 +77,38 @@ public interface Archive extends AutoCloseable {
 	 */
 	@Override
 	default void close() throws Exception {
+	}
+
+	/**
+	 * Factory method to create an appropriate {@link Archive} from the given
+	 * {@link Class} target.
+	 * @param target a target class that will be used to find the archive code source
+	 * @return an new {@link Archive} instance
+	 * @throws Exception if the archive cannot be created
+	 */
+	static Archive create(Class<?> target) throws Exception {
+		ProtectionDomain protectionDomain = target.getProtectionDomain();
+		CodeSource codeSource = protectionDomain.getCodeSource();
+		URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
+		String path = (location != null) ? location.getSchemeSpecificPart() : null;
+		if (path == null) {
+			throw new IllegalStateException("Unable to determine code source archive");
+		}
+		return create(new File(path));
+	}
+
+	/**
+	 * Factory method to create an {@link Archive} from the given {@link File} target.
+	 * @param target a target {@link File} used to create the archive. May be a directory
+	 * or a jar file.
+	 * @return a new {@link Archive} instance.
+	 * @throws Exception if the archive cannot be created
+	 */
+	static Archive create(File target) throws Exception {
+		if (!target.exists()) {
+			throw new IllegalStateException("Unable to determine code source archive from " + target);
+		}
+		return (target.isDirectory() ? new ExplodedArchive(target) : new JarFileArchive(target));
 	}
 
 	/**
