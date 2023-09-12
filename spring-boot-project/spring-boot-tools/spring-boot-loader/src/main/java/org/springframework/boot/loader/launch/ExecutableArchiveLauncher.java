@@ -47,7 +47,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	private final ClassPathIndexFile classPathIndex;
 
 	public ExecutableArchiveLauncher() throws Exception {
-		this(createArchive());
+		this(createRootArchive());
 	}
 
 	protected ExecutableArchiveLauncher(Archive rootArchive) throws Exception {
