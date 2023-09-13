@@ -122,6 +122,8 @@ class ExplodedArchive implements Archive {
 	 */
 	private class FileEntryIterator implements Iterator<FileEntry> {
 
+		// FIXME try to inline
+
 		private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
 
 		private static final Predicate<Entry> INCLUDE_ALL = (entry) -> true;

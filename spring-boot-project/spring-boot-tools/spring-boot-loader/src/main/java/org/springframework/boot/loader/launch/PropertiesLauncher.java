@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
 import org.springframework.boot.loader.log.DebugLogger;
+import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class through a
@@ -480,9 +481,9 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Set<URL> getClassPathUrlsForPath(String path) throws Exception {
+		File file = (!isAbsolutePath(path)) ? new File(this.homeDirectory, path) : new File(path);
 		Set<URL> urls = new LinkedHashSet<>();
 		if (!"/".equals(path)) {
-			File file = (!isAbsolutePath(path)) ? new File(this.homeDirectory, path) : new File(path);
 			if (file.isDirectory()) {
 				try (ExplodedArchive archive = new ExplodedArchive(file, false)) {
 					debug.log("Adding classpath entries from directory %s", file);
@@ -491,9 +492,9 @@ public class PropertiesLauncher extends Launcher {
 				}
 			}
 		}
-		if (isNonNestedJarOrZip(path)) {
+		if (isNonNestedJarOrZip(file)) {
 			debug.log("Adding classpath entries from jar archive %s", path);
-			urls.add(new File(path).toURI().toURL());
+			urls.add(file.toURI().toURL());
 		}
 		Set<URL> neated = getClassPathUrlsForNested(path);
 		if (!neated.isEmpty()) {
@@ -503,47 +504,45 @@ public class PropertiesLauncher extends Launcher {
 		return urls;
 	}
 
-	private boolean isNonNestedJarOrZip(String path) {
-		String lowerCasePath = path.toLowerCase(Locale.ENGLISH);
-		return !path.contains(NESTED_ARCHIVE_SEPARATOR)
-				&& (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip"));
+	private boolean isNonNestedJarOrZip(File file) {
+		String name = file.getName().toLowerCase(Locale.ENGLISH);
+		return !file.getPath().contains(NESTED_ARCHIVE_SEPARATOR) && (name.endsWith(".jar") || name.endsWith(".zip"));
 
 	}
 
 	private Set<URL> getClassPathUrlsForNested(String path) throws Exception {
-		boolean isJar = path.endsWith(".jar");
+		boolean isJustJar = path.endsWith(".jar");
 		if (!path.equals("/") && path.startsWith("/")
 				|| (this.archive.isExploded() && this.archive.getRootDirectory().equals(this.homeDirectory))) {
 			return Collections.emptySet();
 		}
 		Set<URL> urls = new LinkedHashSet<>();
-		Archive archive = this.archive;
-		try {
-			if (isJar) {
-				File file = new File(this.homeDirectory, path);
-				if (file.exists()) {
-					archive = new JarFileArchive(file);
-					path = "";
-				}
-			}
-			int separatorIndex = path.indexOf('!');
-			if (separatorIndex != -1) {
-				File file = (!path.startsWith(JAR_FILE_PREFIX))
-						? new File(this.homeDirectory, path.substring(0, separatorIndex))
-						: new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
-				archive = new JarFileArchive(file);
-				path = path.substring(separatorIndex + 1);
-				while (path.startsWith("/")) {
-					path = path.substring(1);
-				}
-			}
-			if (path.equals("/") || path.equals("./") || path.equals(".")) {
-				// The prefix for nested jars is actually empty if it's at the root
+		File file = null;
+		if (isJustJar) {
+			File candidate = new File(this.homeDirectory, path);
+			if (candidate.exists()) {
+				file = candidate;
 				path = "";
 			}
+		}
+		int separatorIndex = path.indexOf('!');
+		if (separatorIndex != -1) {
+			file = (!path.startsWith(JAR_FILE_PREFIX)) ? new File(this.homeDirectory, path.substring(0, separatorIndex))
+					: new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
+			path = path.substring(separatorIndex + 1);
+			while (path.startsWith("/")) {
+				path = path.substring(1);
+			}
+		}
+		if (path.equals("/") || path.equals("./") || path.equals(".")) {
+			// The prefix for nested jars is actually empty if it's at the root
+			path = "";
+		}
+		Archive archive = (file != null) ? new JarFileArchive(file) : this.archive;
+		try {
 			urls.addAll(archive.getClassPathUrls(null, filterByPrefix(path)));
-			if (!isJar && (path == null || path.isEmpty() || ".".equals(path)) && archive.isExploded()) {
-				urls.add(this.archive.getRootDirectory().toURI().toURL());
+			if (!isJustJar && (file != null) && (path == null || path.isEmpty() || ".".equals(path))) {
+				urls.add(JarUrl.create(file));
 			}
 			return urls;
 		}
