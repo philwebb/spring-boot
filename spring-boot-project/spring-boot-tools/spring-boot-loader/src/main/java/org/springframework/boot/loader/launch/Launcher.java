@@ -19,7 +19,8 @@ package org.springframework.boot.loader.launch;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 import org.springframework.boot.loader.net.protocol.Handlers;
 
@@ -46,7 +47,7 @@ public abstract class Launcher {
 			Handlers.register();
 		}
 		try {
-			List<URL> classPathUrls = getClassPathUrls();
+			Set<URL> classPathUrls = getClassPathUrls();
 			ClassLoader classLoader = createClassLoader(classPathUrls);
 			String jarMode = System.getProperty("jarmode");
 			String mainClassName = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_RUNNER : getMainClass();
@@ -59,12 +60,12 @@ public abstract class Launcher {
 
 	/**
 	 * Create a classloader for the specified archives.
-	 * @param classPathUrls the classpath URLs
+	 * @param urls the classpath URLs
 	 * @return the classloader
 	 * @throws Exception if the classloader cannot be created
 	 */
-	protected ClassLoader createClassLoader(List<URL> classPathUrls) throws Exception {
-		return createClassLoader(classPathUrls.toArray(new URL[0]));
+	protected ClassLoader createClassLoader(Collection<URL> urls) throws Exception {
+		return createClassLoader(urls.toArray(new URL[0]));
 	}
 
 	private ClassLoader createClassLoader(URL[] urls) {
@@ -116,6 +117,6 @@ public abstract class Launcher {
 	 * @return the class path archives
 	 * @throws Exception if the class path archives cannot be obtained
 	 */
-	protected abstract List<URL> getClassPathUrls() throws Exception;
+	protected abstract Set<URL> getClassPathUrls() throws Exception;
 
 }

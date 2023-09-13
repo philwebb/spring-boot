@@ -23,17 +23,17 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -127,6 +127,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final String NESTED_ARCHIVE_SEPARATOR = "!" + File.separator;
 
+	private static final String JAR_FILE_PREFIX = "jar:file:";
+
 	private static final DebugLogger debug = DebugLogger.get(PropertiesLauncher.class);
 
 	private final Archive archive;
@@ -137,13 +139,11 @@ public class PropertiesLauncher extends Launcher {
 
 	private final Properties properties = new Properties();
 
-	private volatile ClassPathArchives classPathArchives;
-
 	public PropertiesLauncher() throws Exception {
 		this.archive = Archive.create(Launcher.class);
 		this.homeDirectory = getHomeDirectory();
 		initializeProperties();
-		this.paths = createPaths();
+		this.paths = getPaths();
 	}
 
 	protected File getHomeDirectory() throws Exception {
@@ -291,7 +291,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private List<String> createPaths() throws Exception {
+	private List<String> getPaths() throws Exception {
 		String path = getProperty(PATH);
 		List<String> paths = (path != null) ? parsePathsProperty(path) : Collections.emptyList();
 		debug.log("Nested archive paths: %s", this.paths);
@@ -330,12 +330,11 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
-	protected ClassLoader createClassLoader(List<URL> classPathUrls) throws Exception {
+	protected ClassLoader createClassLoader(Collection<URL> urls) throws Exception {
 		String loaderClassName = getProperty("loader.classLoader");
 		if (loaderClassName == null) {
-			return super.createClassLoader(classPathUrls);
+			return super.createClassLoader(urls);
 		}
-		LinkedHashSet<URL> urls = new LinkedHashSet<>(classPathUrls);
 		ClassLoader parent = getClass().getClassLoader();
 		ClassLoader classLoader = new LaunchedClassLoader(urls.toArray(new URL[0]), parent);
 		debug.log("Classpath for custom loader: %s", urls);
@@ -368,20 +367,6 @@ public class PropertiesLauncher extends Launcher {
 			throw new IllegalStateException("No '" + MAIN + "' or 'Start-Class' specified");
 		}
 		return mainClass;
-	}
-
-	@Override
-	protected List<URL> getClassPathUrls() throws Exception {
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	protected Iterator<Archive> getClassPathArchives() throws Exception {
-		ClassPathArchives classPathArchives = this.classPathArchives;
-		if (classPathArchives == null) {
-			classPathArchives = new ClassPathArchives();
-			this.classPathArchives = classPathArchives;
-		}
-		return classPathArchives.iterator();
 	}
 
 	protected String[] getArgs(String... args) throws Exception {
@@ -454,9 +439,6 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	void close() throws Exception {
-		if (this.classPathArchives != null) {
-			this.classPathArchives.close();
-		}
 		if (this.archive != null) {
 			this.archive.close();
 		}
@@ -487,88 +469,69 @@ public class PropertiesLauncher extends Launcher {
 		launcher.launch(args);
 	}
 
-	/**
-	 * An iterable collection of the classpath archives.
-	 */
-	private class ClassPathArchives implements Iterable<Archive> {
-
-		private static final String JAR_FILE_PREFIX = "jar:file:";
-
-		private final List<Archive> classPathArchives;
-
-		private final List<AutoCloseable> closeables = new ArrayList<>();
-
-		ClassPathArchives() throws Exception {
-			this.classPathArchives = new ArrayList<>();
-			for (String path : PropertiesLauncher.this.paths) {
-				for (Archive archive : getClassPathArchives(path)) {
-					this.classPathArchives.add(archive);
-				}
-			}
-			addNestedEntries();
-		}
-
-		private List<Archive> getClassPathArchives(String path) throws Exception {
+	@Override
+	protected Set<URL> getClassPathUrls() throws Exception {
+		Set<URL> urls = new LinkedHashSet<>();
+		for (String path : getPaths()) {
 			path = cleanupPath(handleUrl(path));
-			File file = new File(path);
-			List<Archive> classPathArchives = new ArrayList<>();
-			if (!"/".equals(path)) {
-				file = (!isAbsolutePath(path)) ? new File(PropertiesLauncher.this.homeDirectory, path) : file;
-				if (file.isDirectory()) {
+			urls.addAll(getClassPathUrlsForPath(path));
+		}
+		return urls;
+	}
+
+	private Set<URL> getClassPathUrlsForPath(String path) throws Exception {
+		Set<URL> urls = new LinkedHashSet<>();
+		if (!"/".equals(path)) {
+			File file = (!isAbsolutePath(path)) ? new File(this.homeDirectory, path) : new File(path);
+			if (file.isDirectory()) {
+				try (ExplodedArchive archive = new ExplodedArchive(file, false)) {
 					debug.log("Adding classpath entries from directory %s", file);
-					ExplodedArchive archive = new ExplodedArchive(file, false);
-					classPathArchives.add(archive);
-					archive.getNestedArchives(null, this::isArchive).forEachRemaining(this.classPathArchives::add);
+					urls.add(file.toURI().toURL());
+					urls.addAll(archive.getClassPathUrls(null, this::isArchive));
 				}
 			}
-			Archive archive = getArchive(file);
-			if (archive != null) {
-				debug.log("Adding classpath entries from archive %s", archive.getUrl() + path);
-				classPathArchives.add(archive);
-			}
-			List<Archive> nestedArchives = getNestedArchives(path);
-			if (nestedArchives != null) {
-				debug.log("Adding classpath entries from nested %s", path);
-				classPathArchives.addAll(nestedArchives);
-			}
-			return classPathArchives;
 		}
-
-		private boolean isAbsolutePath(String root) {
-			// Windows contains ":" others start with "/"
-			return root.contains(":") || root.startsWith("/");
+		if (isNonNestedJarOrZip(path)) {
+			debug.log("Adding classpath entries from jar archive %s", path);
+			urls.add(new File(path).toURI().toURL());
 		}
-
-		private Archive getArchive(File file) throws IOException {
-			String name = file.getName().toLowerCase(Locale.ENGLISH);
-			if (!isNestedArchivePath(file) && (name.endsWith(".jar") || name.endsWith(".zip"))) {
-				return getJarFileArchive(file);
-			}
-			return null;
+		Set<URL> neated = getClassPathUrlsForNested(path);
+		if (!neated.isEmpty()) {
+			debug.log("Adding classpath entries from nested %s", path);
+			urls.addAll(neated);
 		}
+		return urls;
+	}
 
-		private boolean isNestedArchivePath(File file) {
-			return file.getPath().contains(NESTED_ARCHIVE_SEPARATOR);
+	private boolean isNonNestedJarOrZip(String path) {
+		String lowerCasePath = path.toLowerCase(Locale.ENGLISH);
+		return !path.contains(NESTED_ARCHIVE_SEPARATOR)
+				&& (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip"));
+
+	}
+
+	private Set<URL> getClassPathUrlsForNested(String path) throws Exception {
+		boolean isJar = path.endsWith(".jar");
+		if (!path.equals("/") && path.startsWith("/")
+				|| (this.archive.isExploded() && this.archive.getRootDirectory().equals(this.homeDirectory))) {
+			return Collections.emptySet();
 		}
-
-		private List<Archive> getNestedArchives(String path) throws Exception {
-			Archive archive = PropertiesLauncher.this.archive;
-			boolean isJar = path.endsWith(".jar");
-			URI homeUri = PropertiesLauncher.this.homeDirectory.toURI();
-			if (!path.equals("/") && path.startsWith("/") || archive.getUrl().toURI().equals(homeUri)) {
-				// If home dir is same as parent archive, no need to add it twice.
-				return null;
-			}
+		Set<URL> urls = new LinkedHashSet<>();
+		Archive archive = this.archive;
+		try {
 			if (isJar) {
-				File file = new File(PropertiesLauncher.this.homeDirectory, path);
+				File file = new File(this.homeDirectory, path);
 				if (file.exists()) {
-					archive = getJarFileArchive(file);
+					archive = new JarFileArchive(file);
 					path = "";
 				}
 			}
 			int separatorIndex = path.indexOf('!');
 			if (separatorIndex != -1) {
-				archive = getJarFileArchive(getJarFile(path, separatorIndex));
+				File file = (!path.startsWith(JAR_FILE_PREFIX))
+						? new File(this.homeDirectory, path.substring(0, separatorIndex))
+						: new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
+				archive = new JarFileArchive(file);
 				path = path.substring(separatorIndex + 1);
 				while (path.startsWith("/")) {
 					path = path.substring(1);
@@ -578,69 +541,32 @@ public class PropertiesLauncher extends Launcher {
 				// The prefix for nested jars is actually empty if it's at the root
 				path = "";
 			}
-			List<Archive> archives = new ArrayList<>();
-			archive.getNestedArchives(null, filterByPrefix(path)).forEachRemaining(archives::add);
-			if ((path == null || path.isEmpty() || ".".equals(path)) && !isJar
-					&& archive != PropertiesLauncher.this.archive) {
-				// You can't find the root with an entry filter so it has to be added
-				// explicitly. But don't add the root of the parent archive.
-				archives.add(archive);
+			urls.addAll(archive.getClassPathUrls(null, filterByPrefix(path)));
+			if (!isJar && (path == null || path.isEmpty() || ".".equals(path)) && archive.isExploded()) {
+				urls.add(this.archive.getRootDirectory().toURI().toURL());
 			}
-			return archives;
+			return urls;
 		}
-
-		private File getJarFile(String path, int separatorIndex) {
-			if (path.startsWith(JAR_FILE_PREFIX)) {
-				return new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
-			}
-			return new File(PropertiesLauncher.this.homeDirectory, path.substring(0, separatorIndex));
-		}
-
-		private Predicate<Entry> filterByPrefix(String prefix) {
-			return (entry) -> (entry.isDirectory() && entry.getName().equals(prefix))
-					|| (isArchive(entry) && entry.getName().startsWith(prefix));
-		}
-
-		private boolean isArchive(Entry entry) {
-			String name = entry.getName();
-			return name.endsWith(".jar") || name.endsWith(".zip");
-		}
-
-		private void addNestedEntries() {
-			// The parent archive might have "BOOT-INF/lib/" and "BOOT-INF/classes/"
-			// directories, meaning we are running from an executable JAR. We add nested
-			// entries from there with low priority (i.e. at end).
-			try {
-				PropertiesLauncher.this.archive.getNestedArchives(null, this::isNestedArchive)
-					.forEachRemaining(this.classPathArchives::add);
-			}
-			catch (IOException ex) {
-				// Ignore
+		finally {
+			if (archive != this.archive) {
+				archive.close();
 			}
 		}
+	}
 
-		private boolean isNestedArchive(Archive.Entry entry) {
-			return (entry.isDirectory() && entry.getName().equals("BOOT-INF/classes/"))
-					|| entry.getName().startsWith("BOOT-INF/lib/");
-		}
+	private Predicate<Entry> filterByPrefix(String prefix) {
+		return (entry) -> (entry.isDirectory() && entry.getName().equals(prefix))
+				|| (isArchive(entry) && entry.getName().startsWith(prefix));
+	}
 
-		private JarFileArchive getJarFileArchive(File file) throws IOException {
-			JarFileArchive archive = new JarFileArchive(file);
-			this.closeables.add(archive);
-			return archive;
-		}
+	private boolean isArchive(Entry entry) {
+		String name = entry.getName();
+		return name.endsWith(".jar") || name.endsWith(".zip");
+	}
 
-		@Override
-		public Iterator<Archive> iterator() {
-			return this.classPathArchives.iterator();
-		}
-
-		void close() throws Exception {
-			for (AutoCloseable closeable : this.closeables) {
-				closeable.close();
-			}
-		}
-
+	private boolean isAbsolutePath(String root) {
+		// Windows contains ":" others start with "/"
+		return root.contains(":") || root.startsWith("/");
 	}
 
 	/**
