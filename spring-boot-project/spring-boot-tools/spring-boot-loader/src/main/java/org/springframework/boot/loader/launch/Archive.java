@@ -22,7 +22,7 @@ import java.net.URI;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
 
@@ -52,7 +52,7 @@ public interface Archive extends AutoCloseable {
 	 * @return the classpath URLs
 	 * @throws IOException on IO error
 	 */
-	List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException;
+	Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException;
 
 	/**
 	 * Returns if this archive is backed by an exploded archive directory.

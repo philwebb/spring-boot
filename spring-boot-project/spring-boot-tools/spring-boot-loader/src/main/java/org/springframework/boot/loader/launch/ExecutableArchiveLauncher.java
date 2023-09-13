@@ -19,7 +19,8 @@ package org.springframework.boot.loader.launch;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -70,7 +71,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected ClassLoader createClassLoader(List<URL> urls) throws Exception {
+	protected ClassLoader createClassLoader(Collection<URL> urls) throws Exception {
 		if (this.classPathIndex != null) {
 			urls = new ArrayList<>(urls);
 			urls.addAll(this.classPathIndex.getUrls());
@@ -94,7 +95,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	@Override
-	protected List<URL> getClassPathUrls() throws Exception {
+	protected Set<URL> getClassPathUrls() throws Exception {
 		return this.archive.getClassPathUrls(this::isSearched,
 				(entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry));
 	}

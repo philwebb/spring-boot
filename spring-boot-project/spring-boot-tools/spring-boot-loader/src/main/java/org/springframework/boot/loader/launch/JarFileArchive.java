@@ -31,13 +31,14 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
@@ -82,14 +83,13 @@ class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
-			throws IOException {
+	public Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException {
 		return this.jarFile.stream()
 			.map(JarArchiveEntry::new)
 			.filter(searchFilter != null ? searchFilter : ALL_ENTRIES)
 			.filter(includeFilter != null ? includeFilter : ALL_ENTRIES)
 			.map(this::getNestedJarUrl)
-			.toList();
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	private URL getNestedJarUrl(JarArchiveEntry archiveEntry) {

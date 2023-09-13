@@ -21,15 +21,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -101,9 +100,8 @@ class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public List<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter)
-			throws IOException {
-		List<URL> urls = new ArrayList<>();
+	public Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException {
+		Set<URL> urls = new LinkedHashSet<>();
 		for (FileEntryIterator iterator = new FileEntryIterator(searchFilter, includeFilter); iterator.hasNext();) {
 			urls.add(iterator.next().getUrl());
 		}
