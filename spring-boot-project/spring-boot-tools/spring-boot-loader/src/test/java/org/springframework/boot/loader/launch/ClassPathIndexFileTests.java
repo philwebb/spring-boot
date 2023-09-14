@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ClassPathIndexFile}.
@@ -42,23 +41,16 @@ class ClassPathIndexFileTests {
 	File temp;
 
 	@Test
-	void loadIfPossibleWhenRootIsNotFileReturnsNull() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("https://example.com/file"), "test.idx"))
-			.withMessage("URL does not reference a file");
-	}
-
-	@Test
 	void loadIfPossibleWhenRootDoesNotExistReturnsNull() throws Exception {
 		File root = new File(this.temp, "missing");
-		assertThat(ClassPathIndexFile.loadIfPossible(root.toURI().toURL(), "test.idx")).isNull();
+		assertThat(ClassPathIndexFile.loadIfPossible(root, "test.idx")).isNull();
 	}
 
 	@Test
 	void loadIfPossibleWhenRootIsDirectoryThrowsException() throws Exception {
 		File root = new File(this.temp, "directory");
 		root.mkdirs();
-		assertThat(ClassPathIndexFile.loadIfPossible(root.toURI().toURL(), "test.idx")).isNull();
+		assertThat(ClassPathIndexFile.loadIfPossible(root, "test.idx")).isNull();
 	}
 
 	@Test
@@ -97,7 +89,7 @@ class ClassPathIndexFileTests {
 
 	private ClassPathIndexFile copyAndLoadTestIndexFile() throws IOException {
 		copyTestIndexFile();
-		ClassPathIndexFile indexFile = ClassPathIndexFile.loadIfPossible(this.temp.toURI().toURL(), "test.idx");
+		ClassPathIndexFile indexFile = ClassPathIndexFile.loadIfPossible(this.temp, "test.idx");
 		return indexFile;
 	}
 

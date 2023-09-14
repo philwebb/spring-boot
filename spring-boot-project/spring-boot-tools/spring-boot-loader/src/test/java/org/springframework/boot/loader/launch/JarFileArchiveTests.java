@@ -18,17 +18,11 @@ package org.springframework.boot.loader.launch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
-import java.util.zip.CRC32;
-import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,15 +47,13 @@ class JarFileArchiveTests {
 	@TempDir
 	File tempDir;
 
-	private File rootJarFile;
+	private File file;
 
 	private JarFileArchive archive;
 
-	private String rootJarFileUrl;
-
 	@BeforeEach
 	void setup() throws Exception {
-		setup(false);
+		createTestJarArchive(false);
 	}
 
 	@AfterEach
@@ -69,126 +61,71 @@ class JarFileArchiveTests {
 		this.archive.close();
 	}
 
-	private void setup(boolean unpackNested) throws Exception {
-		this.rootJarFile = new File(this.tempDir, "root.jar");
-		this.rootJarFileUrl = this.rootJarFile.toURI().toString();
-		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
-		if (this.archive != null) {
-			this.archive.close();
-		}
-		this.archive = new JarFileArchive(this.rootJarFile);
-	}
-
 	@Test
-	void getManifest() throws Exception {
+	void getManifestReturnsManifest() throws Exception {
 		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
 
 	@Test
-	void getEntries() {
-		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries).hasSize(12);
+	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls(null, null);
+		URL[] expected = TestJarCreator.expectedEntries()
+			.stream()
+			.map((name) -> JarUrl.create(this.file, name))
+			.toArray(URL[]::new);
+		assertThat(urls).containsExactly(expected);
 	}
 
 	@Test
-	void getUrl() {
-		URL url = this.archive.getUrl();
-		assertThat(url).hasToString(this.rootJarFileUrl);
+	void getClassPathUrlsWhenHasIncludeFilterReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar);
+		assertThat(urls).containsOnly(JarUrl.create(this.file, "nested.jar"));
 	}
 
 	@Test
-	void getNestedArchive() throws Exception {
-		getNestedArchive(this.archive, "nested.jar");
-		try (Archive nested = getNestedArchive(this.archive, "nested.jar")) {
-			assertThat(nested.getUrl()).isEqualTo(JarUrl.create(this.rootJarFile, "nested.jar"));
-		}
-	}
-
-	private Archive getNestedArchive(JarFileArchive archive, String name) {
-		Iterator<Archive> nestedArchives = archive.getNestedArchives(null, (entry) -> entry.getName().equals(name));
-		Archive nestedArchive = nestedArchives.next();
-		assertThat(nestedArchives.hasNext()).isFalse();
-		return nestedArchive;
+	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+		assertThat(urls).containsOnly(JarUrl.create(this.file, "nested.jar"));
 	}
 
 	@Test
-	void getNestedUnpackedArchive() throws Exception {
-		setup(true);
-		Entry entry = getEntriesMap(this.archive).get("nested.jar");
-		try (Archive nested = this.archive.getNestedArchive(entry)) {
-			assertThat(nested.getUrl().toString()).startsWith("file:");
-			assertThat(nested.getUrl().toString()).endsWith("/nested.jar");
-		}
+	void getClassPathUrlsWhenHasUnpackCommentUnpacksAndReturnsUrls() throws Exception {
+		createTestJarArchive(true);
+		Set<URL> urls = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar);
+		assertThat(urls).hasSize(1);
+		URL url = urls.iterator().next();
+		assertThat(url).isNotEqualTo(JarUrl.create(this.file, "nested.jar"));
+		assertThat(url.toString()).startsWith("jar:file:").endsWith("/nested.jar!/");
 	}
 
 	@Test
-	void unpackedLocationsAreUniquePerArchive() throws Exception {
-		setup(true);
-		Entry entry = getEntriesMap(this.archive).get("nested.jar");
-		URL firstNestedUrl;
-		try (Archive firstNested = this.archive.getNestedArchive(entry)) {
-			firstNestedUrl = firstNested.getUrl();
-		}
-		this.archive.close();
-		setup(true);
-		entry = getEntriesMap(this.archive).get("nested.jar");
-		try (Archive secondNested = this.archive.getNestedArchive(entry)) {
-			URL secondNestedUrl = secondNested.getUrl();
-			assertThat(secondNestedUrl).isNotEqualTo(firstNestedUrl);
-		}
+	void getClassPathUrlsWhenHasUnpackCommentUnpacksToUniqueLocationsPerArchive() throws Exception {
+		createTestJarArchive(true);
+		URL firstNestedUrl = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar).iterator().next();
+		createTestJarArchive(true);
+		URL secondNestedUrl = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar).iterator().next();
+		assertThat(secondNestedUrl).isNotEqualTo(firstNestedUrl);
 	}
 
 	@Test
-	void unpackedLocationsFromSameArchiveShareSameParent() throws Exception {
-		setup(true);
-		try (Archive nestedArchive = this.archive.getNestedArchive(getEntriesMap(this.archive).get("nested.jar"));
-				Archive anotherNestedArchive = this.archive
-					.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
-			File nested = new File(nestedArchive.getUrl().toURI());
-			File anotherNested = new File(anotherNestedArchive.getUrl().toURI());
-			assertThat(nested).hasParent(anotherNested.getParent());
-		}
+	void getClassPathUrlsWhenHasUnpackCommentUnpacksAndShareSameParent() throws Exception {
+		createTestJarArchive(true);
+		URL nestedUrl = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar).iterator().next();
+		URL anotherNestedUrl = this.archive
+			.getClassPathUrls(null, (entry) -> entry.getName().equals("another-nested.jar"))
+			.iterator()
+			.next();
+		assertThat(nestedUrl.toString())
+			.isEqualTo(anotherNestedUrl.toString().replace("another-nested.jar", "nested.jar"));
 	}
 
 	@Test
-	void filesInZip64ArchivesAreAllListed() throws IOException {
+	void getClassPathUrlsWhenZip64ListsAllEntries() throws Exception {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		try (JarFileArchive zip64Archive = new JarFileArchive(file)) {
-			@SuppressWarnings("deprecation")
-			Iterator<Entry> entries = zip64Archive.iterator();
-			for (int i = 0; i < 65537; i++) {
-				assertThat(entries.hasNext()).as(i + "nth file is present").isTrue();
-				entries.next();
-			}
-		}
-	}
-
-	@Test
-	void nestedZip64ArchivesAreHandledGracefully() throws Exception {
-		File file = new File(this.tempDir, "test.jar");
-		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
-			JarEntry zip64JarEntry = new JarEntry("nested/zip64.jar");
-			output.putNextEntry(zip64JarEntry);
-			byte[] zip64JarData = writeZip64Jar();
-			zip64JarEntry.setSize(zip64JarData.length);
-			zip64JarEntry.setCompressedSize(zip64JarData.length);
-			zip64JarEntry.setMethod(ZipEntry.STORED);
-			CRC32 crc32 = new CRC32();
-			crc32.update(zip64JarData);
-			zip64JarEntry.setCrc(crc32.getValue());
-			output.write(zip64JarData);
-			output.closeEntry();
-		}
-		try (JarFile jarFile = new JarFile(file)) {
-			ZipEntry nestedEntry = jarFile.getEntry("nested/zip64.jar");
-			try (JarFile nestedJarFile = jarFile.getNestedJarFile(nestedEntry)) {
-				Iterator<JarEntry> iterator = nestedJarFile.iterator();
-				for (int i = 0; i < 65537; i++) {
-					assertThat(iterator.hasNext()).as(i + "nth file is present").isTrue();
-					iterator.next();
-				}
-			}
+		try (Archive archive = new JarFileArchive(file)) {
+			Set<URL> urls = archive.getClassPathUrls(null, null);
+			assertThat(urls).hasSize(65537);
 		}
 	}
 
@@ -203,12 +140,17 @@ class JarFileArchiveTests {
 		return bytes.toByteArray();
 	}
 
-	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
-		Map<String, Archive.Entry> entries = new HashMap<>();
-		for (Archive.Entry entry : archive) {
-			entries.put(entry.getName(), entry);
+	private void createTestJarArchive(boolean unpackNested) throws Exception {
+		if (this.archive != null) {
+			this.archive.close();
 		}
-		return entries;
+		this.file = new File(this.tempDir, "root.jar");
+		TestJarCreator.createTestJar(this.file, unpackNested);
+		this.archive = new JarFileArchive(this.file);
+	}
+
+	private boolean entryNameIsNestedJar(Entry entry) {
+		return entry.getName().equals("nested.jar");
 	}
 
 }

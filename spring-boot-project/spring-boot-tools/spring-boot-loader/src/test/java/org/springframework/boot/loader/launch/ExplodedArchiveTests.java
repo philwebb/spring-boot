@@ -18,11 +18,14 @@ package org.springframework.boot.loader.launch;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -33,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,46 +68,28 @@ class ExplodedArchiveTests {
 		}
 	}
 
-	private void createArchive() throws Exception {
-		createArchive(null);
-	}
-
-	private void createArchive(String directoryName) throws Exception {
-		File file = new File(this.tempDir, "test.jar");
-		TestJarCreator.createTestJar(file);
-		this.rootDirectory = (StringUtils.hasText(directoryName) ? new File(this.tempDir, directoryName)
-				: new File(this.tempDir, UUID.randomUUID().toString()));
-		JarFile jarFile = new JarFile(file);
-		Enumeration<JarEntry> entries = jarFile.entries();
-		while (entries.hasMoreElements()) {
-			JarEntry entry = entries.nextElement();
-			File destination = new File(this.rootDirectory.getAbsolutePath() + File.separator + entry.getName());
-			destination.getParentFile().mkdirs();
-			if (entry.isDirectory()) {
-				destination.mkdir();
-			}
-			else {
-				FileCopyUtils.copy(jarFile.getInputStream(entry), new FileOutputStream(destination));
-			}
-		}
-		this.archive = new ExplodedArchive(this.rootDirectory);
-		jarFile.close();
-	}
-
 	@Test
-	void getManifest() throws Exception {
+	void getManifestReturnsManifest() throws Exception {
 		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
 
 	@Test
-	void getEntries() {
-		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries).hasSize(12);
+	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls(null, null);
+		URL[] expectedUrls = TestJarCreator.expectedEntries().stream().map(this::toUrl).toArray(URL[]::new);
+		assertThat(urls).containsExactlyInAnyOrder(expectedUrls);
 	}
 
 	@Test
-	void getUrl() throws Exception {
-		assertThat(this.archive.getUrl()).isEqualTo(this.rootDirectory.toURI().toURL());
+	void getClassPathUrlsWhenHasIncludeFilterReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar);
+		assertThat(urls).containsOnly(toUrl("nested.jar"));
+	}
+
+	@Test
+	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+		assertThat(urls).containsOnly(toUrl("nested.jar"));
 	}
 
 	@Test
@@ -177,12 +161,50 @@ class ExplodedArchiveTests {
 		}
 	}
 
-	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
-		Map<String, Archive.Entry> entries = new HashMap<>();
-		for (Archive.Entry entry : archive) {
-			entries.put(entry.getName(), entry);
+	private void createArchive() throws Exception {
+		createArchive(null);
+	}
+
+	private void createArchive(String directoryName) throws Exception {
+		File file = new File(this.tempDir, "test.jar");
+		TestJarCreator.createTestJar(file);
+		this.rootDirectory = (StringUtils.hasText(directoryName) ? new File(this.tempDir, directoryName)
+				: new File(this.tempDir, UUID.randomUUID().toString()));
+		try (JarFile jarFile = new JarFile(file)) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				File destination = new File(this.rootDirectory.getAbsolutePath() + File.separator + entry.getName());
+				destination.getParentFile().mkdirs();
+				if (entry.isDirectory()) {
+					destination.mkdir();
+				}
+				else {
+					try (InputStream in = jarFile.getInputStream(entry);
+							OutputStream out = new FileOutputStream(destination)) {
+						in.transferTo(out);
+					}
+				}
+			}
+			this.archive = new ExplodedArchive(this.rootDirectory);
 		}
-		return entries;
+	}
+
+	private URL toUrl(String name) {
+		return toUrl(new File(this.rootDirectory, name));
+	}
+
+	private URL toUrl(File file) {
+		try {
+			return file.toURI().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private boolean entryNameIsNestedJar(Entry entry) {
+		return entry.getName().equals("nested.jar");
 	}
 
 }

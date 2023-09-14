@@ -45,7 +45,7 @@ class ExplodedArchive implements Archive {
 
 	private static final Object NO_MANIFEST = new Object();
 
-	private final File root;
+	private final File rootDirectory;
 
 	private final String rootUriPath;
 
@@ -64,18 +64,18 @@ class ExplodedArchive implements Archive {
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
-	 * @param root the root directory
+	 * @param rootDirectory the root directory
 	 * @param recursive if recursive searching should be used to locate the manifest.
 	 * Defaults to {@code true}, directories with a large tree might want to set this to
 	 * {@code false}.
 	 * @throws IOException on IO error
 	 */
-	public ExplodedArchive(File root, boolean recursive) throws IOException {
-		if (!root.exists() || !root.isDirectory()) {
-			throw new IllegalArgumentException("Invalid source directory " + root);
+	public ExplodedArchive(File rootDirectory, boolean recursive) throws IOException {
+		if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
+			throw new IllegalArgumentException("Invalid source directory " + rootDirectory);
 		}
-		this.root = root;
-		this.rootUriPath = ExplodedArchive.this.root.toURI().getPath();
+		this.rootDirectory = rootDirectory;
+		this.rootUriPath = ExplodedArchive.this.rootDirectory.toURI().getPath();
 		this.recursive = recursive;
 	}
 
@@ -90,7 +90,7 @@ class ExplodedArchive implements Archive {
 	}
 
 	private Object loadManifest() throws IOException {
-		File file = new File(this.root, "META-INF/MANIFEST.MF");
+		File file = new File(this.rootDirectory, "META-INF/MANIFEST.MF");
 		if (!file.exists()) {
 			return NO_MANIFEST;
 		}
@@ -108,13 +108,14 @@ class ExplodedArchive implements Archive {
 		return urls;
 	}
 
-	public File getRoot() {
-		return this.root;
+	@Override
+	public File getRootDirectory() {
+		return this.rootDirectory;
 	}
 
 	@Override
 	public String toString() {
-		return this.root.toString();
+		return this.rootDirectory.toString();
 	}
 
 	/**
@@ -141,7 +142,7 @@ class ExplodedArchive implements Archive {
 		FileEntryIterator(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) {
 			this.searchFilter = (searchFilter != null) ? searchFilter : INCLUDE_ALL;
 			this.includeFilter = (includeFilter != null) ? includeFilter : INCLUDE_ALL;
-			this.stack.add(listFiles(ExplodedArchive.this.root));
+			this.stack.add(listFiles(ExplodedArchive.this.rootDirectory));
 			this.current = poll();
 		}
 
@@ -186,12 +187,14 @@ class ExplodedArchive implements Archive {
 		}
 
 		private boolean isListable(FileEntry entry) {
-			return entry.isDirectory() && (ExplodedArchive.this.recursive || isImmediateChild(entry))
-					&& this.searchFilter.test(entry) && !this.includeFilter.test(entry);
+			boolean r = entry.isDirectory() && (ExplodedArchive.this.recursive || isImmediateChild(entry))
+					&& this.searchFilter.test(entry);
+			System.out.println(entry.getName() + " " + r);
+			return r;
 		}
 
 		private boolean isImmediateChild(FileEntry entry) {
-			return entry.isImmediateChildOf(ExplodedArchive.this.root);
+			return entry.isImmediateChildOf(ExplodedArchive.this.rootDirectory);
 		}
 
 		private Iterator<File> listFiles(File file) {

@@ -27,9 +27,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -124,14 +122,6 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 		}
 		jarFile.close();
 		return exploded;
-	}
-
-	protected Set<URL> getUrls(List<Archive> archives) {
-		Set<URL> urls = new LinkedHashSet<>(archives.size());
-		for (Archive archive : archives) {
-			urls.add(archive.getUrl());
-		}
-		return urls;
 	}
 
 	protected final URL toUrl(File file) {

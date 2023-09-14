@@ -106,7 +106,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @return {@code true} if the entry is a candidate for further searching
 	 */
 	protected boolean isSearched(Archive.Entry entry) {
-		return (getEntryPathPrefix() == null) || entry.getName().startsWith(getEntryPathPrefix());
+		return ((getEntryPathPrefix() == null) || entry.getName().startsWith(getEntryPathPrefix()))
+				&& !isIncludedOnClassPath(entry);
 	}
 
 	/**

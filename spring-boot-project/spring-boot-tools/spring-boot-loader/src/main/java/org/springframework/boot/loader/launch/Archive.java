@@ -54,6 +54,8 @@ public interface Archive extends AutoCloseable {
 	 */
 	Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException;
 
+	// FIXME reorder
+
 	/**
 	 * Returns if this archive is backed by an exploded archive directory.
 	 * @return if the archive is exploded

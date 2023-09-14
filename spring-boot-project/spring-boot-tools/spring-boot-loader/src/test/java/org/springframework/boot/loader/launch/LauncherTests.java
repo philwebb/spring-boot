@@ -16,11 +16,13 @@
 
 package org.springframework.boot.loader.launch;
 
+import java.net.URL;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,31 +37,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
-class LauncherJarModeTests {
+class LauncherTests {
 
-	@BeforeEach
-	void setup() {
-		System.setProperty(JarModeRunner.DISABLE_SYSTEM_EXIT, "true");
-	}
+	/**
+	 * Jar Mode tests.
+	 */
+	@Nested
+	class JarMode {
 
-	@AfterEach
-	void cleanup() {
-		System.clearProperty("jarmode");
-		System.clearProperty(JarModeRunner.DISABLE_SYSTEM_EXIT);
-	}
+		@BeforeEach
+		void setup() {
+			System.setProperty(JarModeRunner.DISABLE_SYSTEM_EXIT, "true");
+		}
 
-	@Test
-	void launchWhenJarModePropertyIsSetLaunchesJarMode(CapturedOutput out) throws Exception {
-		System.setProperty("jarmode", "test");
-		new TestLauncher().launch(new String[] { "boot" });
-		assertThat(out).contains("running in test jar mode [boot]");
-	}
+		@AfterEach
+		void cleanup() {
+			System.clearProperty("jarmode");
+			System.clearProperty(JarModeRunner.DISABLE_SYSTEM_EXIT);
+		}
 
-	@Test
-	void launchWhenJarModePropertyIsNotAcceptedThrowsException(CapturedOutput out) throws Exception {
-		System.setProperty("jarmode", "idontexist");
-		new TestLauncher().launch(new String[] { "boot" });
-		assertThat(out).contains("Unsupported jarmode 'idontexist'");
+		@Test
+		void launchWhenJarModePropertyIsSetLaunchesJarMode(CapturedOutput out) throws Exception {
+			System.setProperty("jarmode", "test");
+			new TestLauncher().launch(new String[] { "boot" });
+			assertThat(out).contains("running in test jar mode [boot]");
+		}
+
+		@Test
+		void launchWhenJarModePropertyIsNotAcceptedThrowsException(CapturedOutput out) throws Exception {
+			System.setProperty("jarmode", "idontexist");
+			new TestLauncher().launch(new String[] { "boot" });
+			assertThat(out).contains("Unsupported jarmode 'idontexist'");
+		}
+
 	}
 
 	private static class TestLauncher extends Launcher {
@@ -70,8 +80,13 @@ class LauncherJarModeTests {
 		}
 
 		@Override
-		protected Iterator<Archive> getClassPathArchives() throws Exception {
-			return Collections.emptyIterator();
+		protected Archive getArchive() {
+			return null;
+		}
+
+		@Override
+		protected Set<URL> getClassPathUrls() throws Exception {
+			return Collections.emptySet();
 		}
 
 		@Override

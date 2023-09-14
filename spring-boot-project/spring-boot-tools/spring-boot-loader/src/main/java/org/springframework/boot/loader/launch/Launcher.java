@@ -34,7 +34,7 @@ import org.springframework.boot.loader.net.protocol.Handlers;
  */
 public abstract class Launcher {
 
-	private static final String JAR_MODE_RUNNER = "org.springframework.boot.loader.launch.JarModeRunner";
+	private static final String JAR_MODE_RUNNER_CLASS_NAME = JarModeRunner.class.getName();
 
 	/**
 	 * Launch the application. This method is the initial entry point that should be
@@ -47,10 +47,10 @@ public abstract class Launcher {
 			Handlers.register();
 		}
 		try {
-			Set<URL> classPathUrls = getClassPathUrls();
-			ClassLoader classLoader = createClassLoader(classPathUrls);
+			ClassLoader classLoader = createClassLoader(getClassPathUrls());
 			String jarMode = System.getProperty("jarmode");
-			String mainClassName = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_RUNNER : getMainClass();
+			String mainClassName = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_RUNNER_CLASS_NAME
+					: getMainClass();
 			launch(classLoader, mainClassName, args);
 		}
 		catch (UncheckedIOException ex) {
@@ -82,7 +82,7 @@ public abstract class Launcher {
 	 */
 	protected void launch(ClassLoader classLoader, String mainClassName, String[] args) throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
-		Class<?> mainClass = Class.forName(mainClassName, false, Thread.currentThread().getContextClassLoader());
+		Class<?> mainClass = Class.forName(mainClassName, false, classLoader);
 		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 		mainMethod.setAccessible(true);
 		mainMethod.invoke(null, new Object[] { args });
