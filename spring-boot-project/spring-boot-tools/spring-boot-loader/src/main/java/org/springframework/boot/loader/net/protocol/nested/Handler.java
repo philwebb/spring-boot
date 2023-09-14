@@ -33,8 +33,6 @@ public class Handler extends URLStreamHandler {
 	// NOTE: in order to be found as a URL protocol handler, this class must be public,
 	// must be named Handler and must be in a package ending '.nested'
 
-	private static final String PROTOCOL = "nested";
-
 	@Override
 	protected URLConnection openConnection(URL u) throws IOException {
 		return new NestedUrlConnection(u);

@@ -45,6 +45,10 @@ public class LaunchedClassLoader extends URLClassLoader {
 		ClassLoader.registerAsParallelCapable();
 	}
 
+	private static final String JAR_MODE_PACKAGE_PREFIX = "org.springframework.boot.loader.jarmode.";
+
+	private static final String JAR_MODE_RUNNER_CLASS_NAME = JarModeRunner.class.getName();
+
 	private final boolean exploded;
 
 	private final Archive rootArchive;
@@ -116,7 +120,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		if (name.startsWith("org.springframework.boot.loader.jarmode.")) {
+		if (name.startsWith(JAR_MODE_PACKAGE_PREFIX) || name.equals(JAR_MODE_RUNNER_CLASS_NAME)) {
 			try {
 				Class<?> result = loadClassInLaunchedClassLoader(name);
 				if (resolve) {

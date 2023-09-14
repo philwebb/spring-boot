@@ -23,14 +23,15 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.test.tools.SourceFile;
 import org.springframework.core.test.tools.TestCompiler;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
@@ -51,12 +53,8 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void explodedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF"));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-		List<Archive> archives = new ArrayList<>();
-		launcher.getClassPathArchives().forEachRemaining(archives::add);
-		assertThat(getUrls(archives)).containsExactlyInAnyOrder(getExpectedFileUrls(explodedRoot));
-		for (Archive archive : archives) {
-			archive.close();
-		}
+		Set<URL> urls = launcher.getClassPathUrls();
+		assertThat(urls).containsExactlyInAnyOrder(getExpectedFileUrls(explodedRoot));
 	}
 
 	@Test
@@ -64,17 +62,13 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		File jarRoot = createJarArchive("archive.jar", "BOOT-INF");
 		try (JarFileArchive archive = new JarFileArchive(jarRoot)) {
 			JarLauncher launcher = new JarLauncher(archive);
-			List<Archive> classPathArchives = new ArrayList<>();
-			launcher.getClassPathArchives().forEachRemaining(classPathArchives::add);
-			assertThat(classPathArchives).hasSize(4);
-			assertThat(getUrls(classPathArchives)).containsOnly(
-					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
-					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"),
-					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/bar.jar!/"),
-					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/baz.jar!/"));
-			for (Archive classPathArchive : classPathArchives) {
-				classPathArchive.close();
-			}
+			Set<URL> urls = launcher.getClassPathUrls();
+			List<URL> expectedUrls = new ArrayList<>();
+			expectedUrls.add(JarUrl.create(jarRoot, "BOOT-INF/classes/"));
+			expectedUrls.add(JarUrl.create(jarRoot, "BOOT-INF/lib/foo.jar"));
+			expectedUrls.add(JarUrl.create(jarRoot, "BOOT-INF/lib/bar.jar"));
+			expectedUrls.add(JarUrl.create(jarRoot, "BOOT-INF/lib/baz.jar"));
+			assertThat(urls).containsOnlyOnceElementsOf(expectedUrls);
 		}
 	}
 
@@ -82,10 +76,8 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void explodedJarShouldPreserveClasspathOrderWhenIndexPresent() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true, Collections.emptyList()));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-		Iterator<Archive> archives = launcher.getClassPathArchives();
-		URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
-		URL[] urls = classLoader.getURLs();
-		assertThat(urls).containsExactly(getExpectedFileUrls(explodedRoot));
+		URLClassLoader classLoader = createClassLoader(launcher);
+		assertThat(classLoader.getURLs()).containsExactly(getExpectedFileUrls(explodedRoot));
 	}
 
 	@Test
@@ -93,12 +85,10 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		ArrayList<String> extraLibs = new ArrayList<>(Arrays.asList("extra-1.jar", "extra-2.jar"));
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true, extraLibs));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-		Iterator<Archive> archives = launcher.getClassPathArchives();
-		URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
-		URL[] urls = classLoader.getURLs();
+		URLClassLoader classLoader = createClassLoader(launcher);
 		List<File> expectedFiles = getExpectedFilesWithExtraLibs(explodedRoot);
 		URL[] expectedFileUrls = expectedFiles.stream().map(this::toUrl).toArray(URL[]::new);
-		assertThat(urls).containsExactly(expectedFileUrls);
+		assertThat(classLoader.getURLs()).containsExactly(expectedFileUrls);
 	}
 
 	@Test
@@ -117,18 +107,21 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 			FileCopyUtils.copy(compiled.getClassLoader().getResourceAsStream("explodedsample/ExampleClass.class"),
 					new FileOutputStream(target));
 			JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-			Iterator<Archive> archives = launcher.getClassPathArchives();
-			URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
+			URLClassLoader classLoader = createClassLoader(launcher);
 			Class<?> loaded = classLoader.loadClass("explodedsample.ExampleClass");
 			assertThat(loaded.getPackage().getImplementationTitle()).isEqualTo("test");
 		}));
 	}
 
-	protected final URL[] getExpectedFileUrls(File explodedRoot) {
+	private URLClassLoader createClassLoader(JarLauncher launcher) throws Exception {
+		return (URLClassLoader) launcher.createClassLoader(launcher.getClassPathUrls());
+	}
+
+	private URL[] getExpectedFileUrls(File explodedRoot) {
 		return getExpectedFiles(explodedRoot).stream().map(this::toUrl).toArray(URL[]::new);
 	}
 
-	protected final List<File> getExpectedFiles(File parent) {
+	private List<File> getExpectedFiles(File parent) {
 		List<File> expected = new ArrayList<>();
 		expected.add(new File(parent, "BOOT-INF/classes"));
 		expected.add(new File(parent, "BOOT-INF/lib/foo.jar"));
@@ -137,7 +130,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		return expected;
 	}
 
-	protected final List<File> getExpectedFilesWithExtraLibs(File parent) {
+	private List<File> getExpectedFilesWithExtraLibs(File parent) {
 		List<File> expected = new ArrayList<>();
 		expected.add(new File(parent, "BOOT-INF/classes"));
 		expected.add(new File(parent, "BOOT-INF/lib/extra-1.jar"));
