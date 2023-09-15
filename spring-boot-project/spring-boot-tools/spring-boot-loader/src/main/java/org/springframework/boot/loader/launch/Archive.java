@@ -45,16 +45,14 @@ public interface Archive extends AutoCloseable {
 
 	/**
 	 * Returns classpath URLs for the archive that match the specified filters.
-	 * @param searchFilter filter used to limit when additional sub-entry searching is
-	 * required or {@code null} if all entries should be considered.
 	 * @param includeFilter filter used to determine which entries should be included in
 	 * the result or {@code null} if all entries should be included
+	 * @param searchFilter filter used to limit when additional sub-entry searching is
+	 * required or {@code null} if all entries should be considered.
 	 * @return the classpath URLs
 	 * @throws IOException on IO error
 	 */
-	Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException;
-
-	// FIXME reorder
+	Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException;
 
 	/**
 	 * Returns if this archive is backed by an exploded archive directory.
