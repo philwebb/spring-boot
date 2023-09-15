@@ -86,7 +86,6 @@ class JarFileArchive implements Archive {
 	public Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException {
 		return this.jarFile.stream()
 			.map(JarArchiveEntry::new)
-			.filter(searchFilter != null ? searchFilter : ALL_ENTRIES)
 			.filter(includeFilter != null ? includeFilter : ALL_ENTRIES)
 			.map(this::getNestedJarUrl)
 			.collect(Collectors.toCollection(LinkedHashSet::new));

@@ -43,7 +43,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	@Test
 	void explodedWarHasOnlyWebInfClassesAndContentsOfWebInfLibOnClasspath() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.war", "WEB-INF"));
-		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
+		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot));
 		Set<URL> urls = launcher.getClassPathUrls();
 		assertThat(urls).containsExactlyInAnyOrder(getExpectedFileUrls(explodedRoot));
 	}
@@ -66,7 +66,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	@Test
 	void explodedWarShouldPreserveClasspathOrderWhenIndexPresent() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.war", "WEB-INF", true, Collections.emptyList()));
-		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
+		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot));
 		URLClassLoader classLoader = createClassLoader(launcher);
 		URL[] urls = classLoader.getURLs();
 		assertThat(urls).containsExactly(getExpectedFileUrls(explodedRoot));
@@ -76,7 +76,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void warFilesPresentInWebInfLibsAndNotInClasspathIndexShouldBeAddedAfterWebInfClasses() throws Exception {
 		ArrayList<String> extraLibs = new ArrayList<>(Arrays.asList("extra-1.jar", "extra-2.jar"));
 		File explodedRoot = explode(createJarArchive("archive.war", "WEB-INF", true, extraLibs));
-		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
+		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot));
 		URLClassLoader classLoader = createClassLoader(launcher);
 		URL[] urls = classLoader.getURLs();
 		List<File> expectedFiles = getExpectedFilesWithExtraLibs(explodedRoot);

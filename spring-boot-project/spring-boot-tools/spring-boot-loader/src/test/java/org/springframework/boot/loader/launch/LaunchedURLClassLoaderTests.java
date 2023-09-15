@@ -49,28 +49,28 @@ class LaunchedURLClassLoaderTests {
 
 	@Test
 	void resolveResourceFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(false,
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResource("demo/Application.java")).isNotNull();
 	}
 
 	@Test
 	void resolveResourcesFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(false,
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
 	}
 
 	@Test
 	void resolveRootPathFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(false,
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResource("")).isNotNull();
 	}
 
 	@Test
 	void resolveRootResourcesFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(
+		LaunchedClassLoader loader = new LaunchedClassLoader(false,
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
 		assertThat(loader.getResources("").hasMoreElements()).isTrue();
 	}
@@ -80,7 +80,7 @@ class LaunchedURLClassLoaderTests {
 		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 		URL url = JarUrl.create(file, "nested.jar");
-		try (LaunchedClassLoader loader = new LaunchedClassLoader(new URL[] { url }, null)) {
+		try (LaunchedClassLoader loader = new LaunchedClassLoader(false, new URL[] { url }, null)) {
 			URL resource = loader.getResource("3.dat");
 			assertThat(resource).hasToString(url + "3.dat");
 			try (InputStream input = resource.openConnection().getInputStream()) {

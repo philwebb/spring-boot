@@ -59,15 +59,6 @@ public class LaunchedClassLoader extends URLClassLoader {
 
 	/**
 	 * Create a new {@link LaunchedClassLoader} instance.
-	 * @param urls the URLs from which to load classes and resources
-	 * @param parent the parent class loader for delegation
-	 */
-	public LaunchedClassLoader(URL[] urls, ClassLoader parent) {
-		this(false, urls, parent);
-	}
-
-	/**
-	 * Create a new {@link LaunchedClassLoader} instance.
 	 * @param exploded if the underlying archive is exploded
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation

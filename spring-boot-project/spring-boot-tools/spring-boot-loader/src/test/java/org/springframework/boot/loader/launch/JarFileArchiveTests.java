@@ -62,6 +62,16 @@ class JarFileArchiveTests {
 	}
 
 	@Test
+	void isExplodedReturnsFalse() {
+		assertThat(this.archive.isExploded()).isFalse();
+	}
+
+	@Test
+	void getRootDirectoryReturnsNull() {
+		assertThat(this.archive.getRootDirectory()).isNull();
+	}
+
+	@Test
 	void getManifestReturnsManifest() throws Exception {
 		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
@@ -83,9 +93,13 @@ class JarFileArchiveTests {
 	}
 
 	@Test
-	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
-		assertThat(urls).containsOnly(JarUrl.create(this.file, "nested.jar"));
+	void getClassPathUrlsWhenHasSearchFilterAllUrlsSinceSearchFilterIsNotUsed() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls((entry) -> false, null);
+		URL[] expected = TestJarCreator.expectedEntries()
+			.stream()
+			.map((name) -> JarUrl.create(this.file, name))
+			.toArray(URL[]::new);
+		assertThat(urls).containsExactly(expected);
 	}
 
 	@Test

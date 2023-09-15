@@ -29,6 +29,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipFile;
 
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -137,7 +138,7 @@ class NestedJarFileTests {
 	void getEntryWhenClosedThrowsException() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
-			assertThatIllegalStateException().isThrownBy(() -> jar.getEntry("1.dat")).withMessage("Zip content closed");
+			assertThatIllegalStateException().isThrownBy(() -> jar.getEntry("1.dat")).withMessage("Zip file closed");
 		}
 	}
 
@@ -153,8 +154,7 @@ class NestedJarFileTests {
 	void getJarEntryWhenClosedThrowsException() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
-			assertThatIllegalStateException().isThrownBy(() -> jar.getJarEntry("1.dat"))
-				.withMessage("Zip content closed");
+			assertThatIllegalStateException().isThrownBy(() -> jar.getJarEntry("1.dat")).withMessage("Zip file closed");
 		}
 	}
 
@@ -279,9 +279,10 @@ class NestedJarFileTests {
 		Cleanable cleanable = mock(Cleanable.class);
 		given(cleaner.register(any(), action.capture())).willReturn(cleanable);
 		try (NestedJarFile jar = new NestedJarFile(this.file, null, null, false, cleaner)) {
-			assertThat(jar).extracting("resources.zipContent.data.channel.referenceCount").isEqualTo(1);
+			Object channel = Extractors.byName("resources.zipContent.data.channel").apply(jar);
+			assertThat(channel).extracting("referenceCount").isEqualTo(1);
 			action.getValue().run();
-			assertThat(jar).extracting("resources.zipContent.data.channel.referenceCount").isEqualTo(0);
+			assertThat(channel).extracting("referenceCount").isEqualTo(0);
 		}
 	}
 

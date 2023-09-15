@@ -49,34 +49,19 @@ class ExplodedArchive implements Archive {
 
 	private final String rootUriPath;
 
-	private final boolean recursive;
-
 	private volatile Object manifest;
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
-	 * @param root the root directory
-	 * @throws IOException on IO error
-	 */
-	public ExplodedArchive(File root) throws IOException {
-		this(root, true);
-	}
-
-	/**
-	 * Create a new {@link ExplodedArchive} instance.
 	 * @param rootDirectory the root directory
-	 * @param recursive if recursive searching should be used to locate the manifest.
-	 * Defaults to {@code true}, directories with a large tree might want to set this to
-	 * {@code false}.
 	 * @throws IOException on IO error
 	 */
-	public ExplodedArchive(File rootDirectory, boolean recursive) throws IOException {
+	public ExplodedArchive(File rootDirectory) throws IOException {
 		if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source directory " + rootDirectory);
 		}
 		this.rootDirectory = rootDirectory;
 		this.rootUriPath = ExplodedArchive.this.rootDirectory.toURI().getPath();
-		this.recursive = recursive;
 	}
 
 	@Override
@@ -187,14 +172,7 @@ class ExplodedArchive implements Archive {
 		}
 
 		private boolean isListable(FileEntry entry) {
-			boolean r = entry.isDirectory() && (ExplodedArchive.this.recursive || isImmediateChild(entry))
-					&& this.searchFilter.test(entry);
-			System.out.println(entry.getName() + " " + r);
-			return r;
-		}
-
-		private boolean isImmediateChild(FileEntry entry) {
-			return entry.isImmediateChildOf(ExplodedArchive.this.rootDirectory);
+			return entry.isDirectory() && this.searchFilter.test(entry);
 		}
 
 		private Iterator<File> listFiles(File file) {
@@ -220,10 +198,6 @@ class ExplodedArchive implements Archive {
 		FileEntry(String name, File file) {
 			this.name = name;
 			this.file = file;
-		}
-
-		boolean isImmediateChildOf(File parent) {
-			return this.file.getParentFile().equals(parent);
 		}
 
 		URL getUrl() throws MalformedURLException {
