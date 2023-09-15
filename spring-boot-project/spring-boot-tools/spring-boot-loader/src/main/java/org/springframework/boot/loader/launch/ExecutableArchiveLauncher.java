@@ -96,8 +96,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected Set<URL> getClassPathUrls() throws Exception {
-		return this.archive.getClassPathUrls(this::isSearched,
-				(entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry));
+		return this.archive.getClassPathUrls((entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry),
+				this::isSearched);
 	}
 
 	/**

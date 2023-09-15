@@ -86,7 +86,7 @@ class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException {
+	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException {
 		Set<URL> classPathUrls = new LinkedHashSet<>();
 		LinkedList<File> files = new LinkedList<>();
 		files.addAll(listFiles(this.rootDirectory));

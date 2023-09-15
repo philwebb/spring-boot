@@ -489,7 +489,7 @@ public class PropertiesLauncher extends Launcher {
 				try (ExplodedArchive archive = new ExplodedArchive(file)) {
 					debug.log("Adding classpath entries from directory %s", file);
 					urls.add(file.toURI().toURL());
-					urls.addAll(archive.getClassPathUrls(null, this::isArchive));
+					urls.addAll(archive.getClassPathUrls(this::isArchive, null));
 				}
 			}
 		}
@@ -541,7 +541,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 		Archive archive = (file != null) ? new JarFileArchive(file) : this.archive;
 		try {
-			urls.addAll(archive.getClassPathUrls(null, filterByPrefix(path)));
+			urls.addAll(archive.getClassPathUrls(filterByPrefix(path), null));
 			if (!isJustJar && (file != null) && (path == null || path.isEmpty() || ".".equals(path))) {
 				urls.add(JarUrl.create(file));
 			}

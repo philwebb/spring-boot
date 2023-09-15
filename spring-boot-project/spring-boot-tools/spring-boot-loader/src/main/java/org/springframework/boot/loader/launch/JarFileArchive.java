@@ -83,7 +83,7 @@ class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException {
+	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException {
 		return this.jarFile.stream()
 			.map(JarArchiveEntry::new)
 			.filter(includeFilter != null ? includeFilter : ALL_ENTRIES)

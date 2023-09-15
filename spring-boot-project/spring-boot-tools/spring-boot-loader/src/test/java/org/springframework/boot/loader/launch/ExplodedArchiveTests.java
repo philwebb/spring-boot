@@ -90,20 +90,20 @@ class ExplodedArchiveTests {
 
 	@Test
 	void getClassPathUrlsWhenHasIncludeFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar);
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
 		assertThat(urls).containsOnly(toUrl("nested.jar"));
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasIncludeFilterAndSpaceInRootNameReturnsUrls() throws Exception {
 		createArchive("spaces in the name");
-		Set<URL> urls = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar);
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
 		assertThat(urls).containsOnly(toUrl("nested.jar"));
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls((entry) -> !entry.getName().equals("d/"), null);
+		Set<URL> urls = this.archive.getClassPathUrls(null, (entry) -> !entry.getName().equals("d/"));
 		assertThat(urls).contains(toUrl("nested.jar")).doesNotContain(toUrl("d/9.dat"));
 	}
 
