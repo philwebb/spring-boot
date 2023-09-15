@@ -30,7 +30,6 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -54,19 +53,19 @@ class JarFileArchive implements Archive {
 
 	private static final FileAttribute<?>[] NO_FILE_ATTRIBUTES = {};
 
-	private static final EnumSet<PosixFilePermission> DIRECTORY_PERMISSIONS = EnumSet.of(PosixFilePermission.OWNER_READ,
-			PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
+	private static final FileAttribute<?>[] DIRECTORY_PERMISSION_ATTRIBUTES = asFileAttributes(
+			PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
 
-	private static final EnumSet<PosixFilePermission> FILE_PERMISSIONS = EnumSet.of(PosixFilePermission.OWNER_READ,
-			PosixFilePermission.OWNER_WRITE);
+	private static final FileAttribute<?>[] FILE_PERMISSION_ATTRIBUTES = asFileAttributes(
+			PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
 
-	private static final Predicate<Entry> ALL_ENTRIES = (entry) -> true;
+	private static final Path TEMP = Paths.get(System.getProperty("java.io.tmpdir"));
 
 	private final File file;
 
 	private final JarFile jarFile;
 
-	private Path tempUnpackDirectory;
+	private volatile Path tempUnpackDirectory;
 
 	public JarFileArchive(File file) throws IOException {
 		this(file, new JarFile(file));
@@ -86,7 +85,7 @@ class JarFileArchive implements Archive {
 	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException {
 		return this.jarFile.stream()
 			.map(JarArchiveEntry::new)
-			.filter(includeFilter != null ? includeFilter : ALL_ENTRIES)
+			.filter(includeFilter)
 			.map(this::getNestedJarUrl)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
@@ -118,17 +117,24 @@ class JarFileArchive implements Archive {
 	}
 
 	private Path getTempUnpackDirectory() {
-		if (this.tempUnpackDirectory == null) {
-			Path tempDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
-			this.tempUnpackDirectory = createUnpackDirectory(tempDirectory);
+		Path tempUnpackDirectory = this.tempUnpackDirectory;
+		if (tempUnpackDirectory != null) {
+			return tempUnpackDirectory;
 		}
-		return this.tempUnpackDirectory;
+		synchronized (TEMP) {
+			tempUnpackDirectory = this.tempUnpackDirectory;
+			if (tempUnpackDirectory == null) {
+				tempUnpackDirectory = createUnpackDirectory(TEMP);
+				this.tempUnpackDirectory = tempUnpackDirectory;
+			}
+		}
+		return tempUnpackDirectory;
 	}
 
 	private Path createUnpackDirectory(Path parent) {
 		int attempts = 0;
+		String fileName = Paths.get(this.jarFile.getName()).getFileName().toString();
 		while (attempts++ < 1000) {
-			String fileName = Paths.get(this.jarFile.getName()).getFileName().toString();
 			Path unpackDirectory = parent.resolve(fileName + "-spring-boot-libs-" + UUID.randomUUID());
 			try {
 				createDirectory(unpackDirectory);
@@ -141,7 +147,7 @@ class JarFileArchive implements Archive {
 	}
 
 	private void createDirectory(Path path) throws IOException {
-		Files.createDirectory(path, getFileAttributes(path.getFileSystem(), DIRECTORY_PERMISSIONS));
+		Files.createDirectory(path, getFileAttributes(path.getFileSystem(), DIRECTORY_PERMISSION_ATTRIBUTES));
 	}
 
 	private void unpack(JarEntry entry, Path path) throws IOException {
@@ -155,12 +161,11 @@ class JarFileArchive implements Archive {
 	}
 
 	private void createFile(Path path) throws IOException {
-		Files.createFile(path, getFileAttributes(path.getFileSystem(), FILE_PERMISSIONS));
+		Files.createFile(path, getFileAttributes(path.getFileSystem(), FILE_PERMISSION_ATTRIBUTES));
 	}
 
-	private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, Set<PosixFilePermission> permissions) {
-		return (!supportsPosix(fileSystem)) ? NO_FILE_ATTRIBUTES
-				: new FileAttribute<?>[] { PosixFilePermissions.asFileAttribute(permissions) };
+	private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, FileAttribute<?>[] permissionAttributes) {
+		return (!supportsPosix(fileSystem)) ? NO_FILE_ATTRIBUTES : permissionAttributes;
 	}
 
 	private boolean supportsPosix(FileSystem fileSystem) {
@@ -175,6 +180,10 @@ class JarFileArchive implements Archive {
 	@Override
 	public String toString() {
 		return this.file.toString();
+	}
+
+	private static FileAttribute<?>[] asFileAttributes(PosixFilePermission... permissions) {
+		return new FileAttribute<?>[] { PosixFilePermissions.asFileAttribute(Set.of(permissions)) };
 	}
 
 	/**

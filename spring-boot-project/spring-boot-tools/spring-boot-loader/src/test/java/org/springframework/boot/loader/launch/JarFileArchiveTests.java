@@ -78,7 +78,7 @@ class JarFileArchiveTests {
 
 	@Test
 	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(null, null);
+		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES);
 		URL[] expected = TestJarCreator.expectedEntries()
 			.stream()
 			.map((name) -> JarUrl.create(this.file, name))
@@ -88,13 +88,13 @@ class JarFileArchiveTests {
 
 	@Test
 	void getClassPathUrlsWhenHasIncludeFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar);
 		assertThat(urls).containsOnly(JarUrl.create(this.file, "nested.jar"));
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasSearchFilterAllUrlsSinceSearchFilterIsNotUsed() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(null, (entry) -> false);
+		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES, (entry) -> false);
 		URL[] expected = TestJarCreator.expectedEntries()
 			.stream()
 			.map((name) -> JarUrl.create(this.file, name))
@@ -105,7 +105,7 @@ class JarFileArchiveTests {
 	@Test
 	void getClassPathUrlsWhenHasUnpackCommentUnpacksAndReturnsUrls() throws Exception {
 		createTestJarArchive(true);
-		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar);
 		assertThat(urls).hasSize(1);
 		URL url = urls.iterator().next();
 		assertThat(url).isNotEqualTo(JarUrl.create(this.file, "nested.jar"));
@@ -115,18 +115,17 @@ class JarFileArchiveTests {
 	@Test
 	void getClassPathUrlsWhenHasUnpackCommentUnpacksToUniqueLocationsPerArchive() throws Exception {
 		createTestJarArchive(true);
-		URL firstNestedUrl = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null).iterator().next();
+		URL firstNestedUrl = this.archive.getClassPathUrls(this::entryNameIsNestedJar).iterator().next();
 		createTestJarArchive(true);
-		URL secondNestedUrl = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null).iterator().next();
+		URL secondNestedUrl = this.archive.getClassPathUrls(this::entryNameIsNestedJar).iterator().next();
 		assertThat(secondNestedUrl).isNotEqualTo(firstNestedUrl);
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasUnpackCommentUnpacksAndShareSameParent() throws Exception {
 		createTestJarArchive(true);
-		URL nestedUrl = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null).iterator().next();
-		URL anotherNestedUrl = this.archive
-			.getClassPathUrls((entry) -> entry.getName().equals("another-nested.jar"), null)
+		URL nestedUrl = this.archive.getClassPathUrls(this::entryNameIsNestedJar).iterator().next();
+		URL anotherNestedUrl = this.archive.getClassPathUrls((entry) -> entry.getName().equals("another-nested.jar"))
 			.iterator()
 			.next();
 		assertThat(nestedUrl.toString())
@@ -138,7 +137,7 @@ class JarFileArchiveTests {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
 		try (Archive archive = new JarFileArchive(file)) {
-			Set<URL> urls = archive.getClassPathUrls(null, null);
+			Set<URL> urls = archive.getClassPathUrls(Archive.ALL_ENTRIES);
 			assertThat(urls).hasSize(65537);
 		}
 	}

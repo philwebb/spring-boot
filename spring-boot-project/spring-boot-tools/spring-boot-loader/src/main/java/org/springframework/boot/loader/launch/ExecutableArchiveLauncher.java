@@ -97,17 +97,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	@Override
 	protected Set<URL> getClassPathUrls() throws Exception {
 		return this.archive.getClassPathUrls((entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry),
-				this::isSearched);
-	}
-
-	/**
-	 * Determine if the specified entry is a candidate for further searching.
-	 * @param entry the entry to check
-	 * @return {@code true} if the entry is a candidate for further searching
-	 */
-	protected boolean isSearched(Archive.Entry entry) {
-		return ((getEntryPathPrefix() == null) || entry.getName().startsWith(getEntryPathPrefix()))
-				&& !isIncludedOnClassPath(entry);
+				this::isSearchedDirectory);
 	}
 
 	/**
@@ -117,6 +107,16 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @return {@code true} if the entry is a nested item (jar or directory)
 	 */
 	protected abstract boolean isIncludedOnClassPath(Archive.Entry entry);
+
+	/**
+	 * Determine if the specified directory entry is a candidate for further searching.
+	 * @param entry the entry to check
+	 * @return {@code true} if the entry is a candidate for further searching
+	 */
+	protected boolean isSearchedDirectory(Archive.Entry entry) {
+		return ((getEntryPathPrefix() == null) || entry.getName().startsWith(getEntryPathPrefix()))
+				&& !isIncludedOnClassPath(entry);
+	}
 
 	private boolean isEntryIndexed(Archive.Entry entry) {
 		return (this.classPathIndex != null) ? this.classPathIndex.containsEntry(entry.getName()) : false;

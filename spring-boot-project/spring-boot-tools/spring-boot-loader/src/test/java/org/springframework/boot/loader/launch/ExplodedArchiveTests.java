@@ -83,27 +83,27 @@ class ExplodedArchiveTests {
 
 	@Test
 	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(null, null);
+		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES);
 		URL[] expectedUrls = TestJarCreator.expectedEntries().stream().map(this::toUrl).toArray(URL[]::new);
 		assertThat(urls).containsExactlyInAnyOrder(expectedUrls);
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasIncludeFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar);
 		assertThat(urls).containsOnly(toUrl("nested.jar"));
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasIncludeFilterAndSpaceInRootNameReturnsUrls() throws Exception {
 		createArchive("spaces in the name");
-		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar);
 		assertThat(urls).containsOnly(toUrl("nested.jar"));
 	}
 
 	@Test
 	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(null, (entry) -> !entry.getName().equals("d/"));
+		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES, (entry) -> !entry.getName().equals("d/"));
 		assertThat(urls).contains(toUrl("nested.jar")).doesNotContain(toUrl("d/9.dat"));
 	}
 
