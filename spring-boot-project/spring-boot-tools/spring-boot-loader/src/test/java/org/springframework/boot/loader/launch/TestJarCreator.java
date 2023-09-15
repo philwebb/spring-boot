@@ -35,6 +35,8 @@ import java.util.zip.ZipEntry;
  */
 public abstract class TestJarCreator {
 
+	// FIXME Duplicate
+
 	private static final int BASE_VERSION = 8;
 
 	private static final int RUNTIME_VERSION;

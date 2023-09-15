@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
+@AssertFileChannelDataBlocksClosed
 class ExplodedArchiveTests {
 
 	@TempDir

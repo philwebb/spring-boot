@@ -16,23 +16,27 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.lang.ref.Cleaner.Cleanable;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import org.springframework.boot.loader.ref.DefaultCleanerTracking;
 import org.springframework.boot.loader.zip.FileChannelDataBlock.Tracker;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Extension for {@link TrackFileChannelDataBlock @TrackFileChannelDataBlock}.
+ * Extension for {@link AssertFileChannelDataBlocksClosed @TrackFileChannelDataBlock}.
  */
-class TrackFileChannelDataBlockExtension implements BeforeEachCallback, AfterEachCallback {
+class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private static OpenFilesTracker tracker = new OpenFilesTracker();
 
@@ -40,17 +44,20 @@ class TrackFileChannelDataBlockExtension implements BeforeEachCallback, AfterEac
 	public void beforeEach(ExtensionContext context) throws Exception {
 		tracker.clear();
 		FileChannelDataBlock.setTracker(tracker);
+		DefaultCleanerTracking.set(tracker::addedCleanable);
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		FileChannelDataBlock.setTracker(null);
 		tracker.assertAllClosed();
+		FileChannelDataBlock.setTracker(null);
 	}
 
 	private static class OpenFilesTracker implements Tracker {
 
 		private final Set<Path> paths = new LinkedHashSet<>();
+
+		private final List<Cleanable> cleanup = new ArrayList<>();
 
 		@Override
 		public void openedFileChannel(Path path, FileChannel fileChannel) {
@@ -64,10 +71,19 @@ class TrackFileChannelDataBlockExtension implements BeforeEachCallback, AfterEac
 
 		void clear() {
 			this.paths.clear();
+			this.cleanup.clear();
 		}
 
 		void assertAllClosed() {
+			for (Cleanable cleanable : this.cleanup) {
+				cleanable.clean();
+			}
+			// this.cleanup.forEach(Cleanable::clean);
 			assertThat(this.paths).as("open paths").isEmpty();
+		}
+
+		private void addedCleanable(Cleanable cleanable) {
+			this.cleanup.add(cleanable);
 		}
 
 	}
