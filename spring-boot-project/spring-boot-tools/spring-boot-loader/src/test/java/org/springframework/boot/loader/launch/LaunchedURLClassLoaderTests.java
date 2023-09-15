@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@SuppressWarnings("resource")
 @AssertFileChannelDataBlocksClosed
 class LaunchedURLClassLoaderTests {
 
@@ -52,30 +51,34 @@ class LaunchedURLClassLoaderTests {
 
 	@Test
 	void resolveResourceFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(false,
-				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
-		assertThat(loader.getResource("demo/Application.java")).isNotNull();
+		try (LaunchedClassLoader loader = new LaunchedClassLoader(false,
+				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader())) {
+			assertThat(loader.getResource("demo/Application.java")).isNotNull();
+		}
 	}
 
 	@Test
 	void resolveResourcesFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(false,
-				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
-		assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
+		try (LaunchedClassLoader loader = new LaunchedClassLoader(false,
+				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader())) {
+			assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
+		}
 	}
 
 	@Test
 	void resolveRootPathFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(false,
-				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
-		assertThat(loader.getResource("")).isNotNull();
+		try (LaunchedClassLoader loader = new LaunchedClassLoader(false,
+				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader())) {
+			assertThat(loader.getResource("")).isNotNull();
+		}
 	}
 
 	@Test
 	void resolveRootResourcesFromArchive() throws Exception {
-		LaunchedClassLoader loader = new LaunchedClassLoader(false,
-				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader());
-		assertThat(loader.getResources("").hasMoreElements()).isTrue();
+		try (LaunchedClassLoader loader = new LaunchedClassLoader(false,
+				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") }, getClass().getClassLoader())) {
+			assertThat(loader.getResources("").hasMoreElements()).isTrue();
+		}
 	}
 
 	@Test
