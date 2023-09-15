@@ -19,17 +19,14 @@ package org.springframework.boot.loader.launch;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
@@ -43,7 +40,11 @@ import java.util.jar.Manifest;
  */
 class ExplodedArchive implements Archive {
 
+	private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
+
 	private static final Object NO_MANIFEST = new Object();
+
+	private static final Set<String> SKIPPED_NAMES = Set.of(".", "..");
 
 	private final File rootDirectory;
 
@@ -86,11 +87,34 @@ class ExplodedArchive implements Archive {
 
 	@Override
 	public Set<URL> getClassPathUrls(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) throws IOException {
-		Set<URL> urls = new LinkedHashSet<>();
-		for (FileEntryIterator iterator = new FileEntryIterator(searchFilter, includeFilter); iterator.hasNext();) {
-			urls.add(iterator.next().getUrl());
+		Set<URL> classPathUrls = new LinkedHashSet<>();
+		LinkedList<File> files = new LinkedList<>();
+		files.addAll(listFiles(this.rootDirectory));
+		while (!files.isEmpty()) {
+			File file = files.poll();
+			if (!SKIPPED_NAMES.contains(file.getName())) {
+				continue;
+			}
+			URI fileUri = file.toURI();
+			String entryName = fileUri.getPath().substring(this.rootUriPath.length());
+			Entry entry = new FileEntry(entryName, file);
+			if (entry.isDirectory() && (searchFilter == null || searchFilter.test(entry))) {
+				files.addAll(0, listFiles(file));
+			}
+			if (includeFilter == null || includeFilter.test(entry)) {
+				classPathUrls.add(fileUri.toURL());
+			}
 		}
-		return urls;
+		return classPathUrls;
+	}
+
+	private List<File> listFiles(File file) {
+		File[] files = file.listFiles();
+		if (files == null) {
+			return Collections.emptyList();
+		}
+		Arrays.sort(files, entryComparator);
+		return Arrays.asList(files);
 	}
 
 	@Override
@@ -101,89 +125,6 @@ class ExplodedArchive implements Archive {
 	@Override
 	public String toString() {
 		return this.rootDirectory.toString();
-	}
-
-	/**
-	 * Nested archives contained in the exploded archive.
-	 */
-	private class FileEntryIterator implements Iterator<FileEntry> {
-
-		// FIXME try to inline
-
-		private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
-
-		private static final Predicate<Entry> INCLUDE_ALL = (entry) -> true;
-
-		private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
-
-		private final Predicate<Entry> searchFilter;
-
-		private final Predicate<Entry> includeFilter;
-
-		private final Deque<Iterator<File>> stack = new LinkedList<>();
-
-		private FileEntry current;
-
-		FileEntryIterator(Predicate<Entry> searchFilter, Predicate<Entry> includeFilter) {
-			this.searchFilter = (searchFilter != null) ? searchFilter : INCLUDE_ALL;
-			this.includeFilter = (includeFilter != null) ? includeFilter : INCLUDE_ALL;
-			this.stack.add(listFiles(ExplodedArchive.this.rootDirectory));
-			this.current = poll();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return this.current != null;
-		}
-
-		@Override
-		public FileEntry next() {
-			FileEntry entry = this.current;
-			if (entry == null) {
-				throw new NoSuchElementException();
-			}
-			this.current = poll();
-			return entry;
-		}
-
-		private FileEntry poll() {
-			while (!this.stack.isEmpty()) {
-				while (this.stack.peek().hasNext()) {
-					File file = this.stack.peek().next();
-					if (SKIPPED_NAMES.contains(file.getName())) {
-						continue;
-					}
-					FileEntry entry = getFileEntry(file);
-					if (isListable(entry)) {
-						this.stack.addFirst(listFiles(file));
-					}
-					if (this.includeFilter.test(entry)) {
-						return entry;
-					}
-				}
-				this.stack.poll();
-			}
-			return null;
-		}
-
-		private FileEntry getFileEntry(File file) {
-			String name = file.toURI().getPath().substring(ExplodedArchive.this.rootUriPath.length());
-			return new FileEntry(name, file);
-		}
-
-		private boolean isListable(FileEntry entry) {
-			return entry.isDirectory() && this.searchFilter.test(entry);
-		}
-
-		private Iterator<File> listFiles(File file) {
-			File[] files = file.listFiles();
-			if (files == null) {
-				return Collections.emptyIterator();
-			}
-			Arrays.sort(files, entryComparator);
-			return Arrays.asList(files).iterator();
-		}
-
 	}
 
 	/**
@@ -198,10 +139,6 @@ class ExplodedArchive implements Archive {
 		FileEntry(String name, File file) {
 			this.name = name;
 			this.file = file;
-		}
-
-		URL getUrl() throws MalformedURLException {
-			return this.file.toURI().toURL();
 		}
 
 		@Override
