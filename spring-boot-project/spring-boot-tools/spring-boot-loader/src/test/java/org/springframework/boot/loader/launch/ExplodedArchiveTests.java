@@ -22,9 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarEntry;
@@ -69,6 +67,16 @@ class ExplodedArchiveTests {
 	}
 
 	@Test
+	void isExplodedReturnsTrue() {
+		assertThat(this.archive.isExploded()).isTrue();
+	}
+
+	@Test
+	void getRootDirectoryReturnsRootDirectory() {
+		assertThat(this.archive.getRootDirectory()).isEqualTo(this.rootDirectory);
+	}
+
+	@Test
 	void getManifestReturnsManifest() throws Exception {
 		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By")).isEqualTo("j1");
 	}
@@ -87,78 +95,16 @@ class ExplodedArchiveTests {
 	}
 
 	@Test
-	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(this::entryNameIsNestedJar, null);
+	void getClassPathUrlsWhenHasIncludeFilterAndSpaceInRootNameReturnsUrls() throws Exception {
+		createArchive("spaces in the name");
+		Set<URL> urls = this.archive.getClassPathUrls(null, this::entryNameIsNestedJar);
 		assertThat(urls).containsOnly(toUrl("nested.jar"));
 	}
 
 	@Test
-	void getUrlWithSpaceInPath() throws Exception {
-		createArchive("spaces in the name");
-		assertThat(this.archive.getUrl()).isEqualTo(this.rootDirectory.toURI().toURL());
-	}
-
-	@Test
-	void getNestedArchive() throws Exception {
-		Entry entry = getEntriesMap(this.archive).get("nested.jar");
-		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl()).hasToString(this.rootDirectory.toURI() + "nested.jar");
-		nested.close();
-	}
-
-	@Test
-	void nestedDirArchive() throws Exception {
-		Entry entry = getEntriesMap(this.archive).get("d/");
-		Archive nested = this.archive.getNestedArchive(entry);
-		Map<String, Entry> nestedEntries = getEntriesMap(nested);
-		assertThat(nestedEntries).hasSize(1);
-		assertThat(nested.getUrl()).hasToString("file:" + this.rootDirectory.toURI().getPath() + "d/");
-	}
-
-	@Test
-	void getNonRecursiveEntriesForRoot() throws Exception {
-		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("/"), false)) {
-			Map<String, Archive.Entry> entries = getEntriesMap(explodedArchive);
-			assertThat(entries).hasSizeGreaterThan(1);
-		}
-	}
-
-	@Test
-	void getNonRecursiveManifest() throws Exception {
-		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("src/test/resources/root"))) {
-			assertThat(explodedArchive.getManifest()).isNotNull();
-			Map<String, Archive.Entry> entries = getEntriesMap(explodedArchive);
-			assertThat(entries).hasSize(4);
-		}
-	}
-
-	@Test
-	void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
-		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("src/test/resources/root"), false)) {
-			assertThat(explodedArchive.getManifest()).isNotNull();
-			Map<String, Archive.Entry> entries = getEntriesMap(explodedArchive);
-			assertThat(entries).hasSize(3);
-		}
-	}
-
-	@Test
-	void getResourceAsStream() throws Exception {
-		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("src/test/resources/root"))) {
-			assertThat(explodedArchive.getManifest()).isNotNull();
-			URLClassLoader loader = new URLClassLoader(new URL[] { explodedArchive.getUrl() });
-			assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
-			loader.close();
-		}
-	}
-
-	@Test
-	void getResourceAsStreamNonRecursive() throws Exception {
-		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("src/test/resources/root"), false)) {
-			assertThat(explodedArchive.getManifest()).isNotNull();
-			URLClassLoader loader = new URLClassLoader(new URL[] { explodedArchive.getUrl() });
-			assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
-			loader.close();
-		}
+	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
+		Set<URL> urls = this.archive.getClassPathUrls((entry) -> !entry.getName().equals("d/"), null);
+		assertThat(urls).contains(toUrl("nested.jar")).doesNotContain(toUrl("d/9.dat"));
 	}
 
 	private void createArchive() throws Exception {

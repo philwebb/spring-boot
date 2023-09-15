@@ -225,12 +225,16 @@ public class NestedJarFile extends JarFile {
 	private ZipContent.Entry getVersionedContentEntry(String name) {
 		// NOTE: we can't call isMultiRelease() directly because it's a final method and
 		// it inspects the container jar. We use ManifestInfo instead.
-		ManifestInfo manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
+		ManifestInfo manifestInfo;
+		MetaInfVersionsInfo versionsInfo;
+		synchronized (this) {
+			ensureOpen();
+			manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
+			versionsInfo = this.resources.zipContent().getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
+		}
 		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION >= this.version) {
 			return null;
 		}
-		MetaInfVersionsInfo versionsInfo = this.resources.zipContent()
-			.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
 		int[] versions = versionsInfo.versions();
 		String[] directories = versionsInfo.directories();
 		for (int i = versions.length - 1; i >= 0; i--) {

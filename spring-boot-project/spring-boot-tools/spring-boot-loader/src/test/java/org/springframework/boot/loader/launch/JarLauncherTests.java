@@ -52,7 +52,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	@Test
 	void explodedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF"));
-		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot));
 		Set<URL> urls = launcher.getClassPathUrls();
 		assertThat(urls).containsExactlyInAnyOrder(getExpectedFileUrls(explodedRoot));
 	}
@@ -75,7 +75,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	@Test
 	void explodedJarShouldPreserveClasspathOrderWhenIndexPresent() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true, Collections.emptyList()));
-		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot));
 		URLClassLoader classLoader = createClassLoader(launcher);
 		assertThat(classLoader.getURLs()).containsExactly(getExpectedFileUrls(explodedRoot));
 	}
@@ -84,7 +84,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void jarFilesPresentInBootInfLibsAndNotInClasspathIndexShouldBeAddedAfterBootInfClasses() throws Exception {
 		ArrayList<String> extraLibs = new ArrayList<>(Arrays.asList("extra-1.jar", "extra-2.jar"));
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true, extraLibs));
-		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot));
 		URLClassLoader classLoader = createClassLoader(launcher);
 		List<File> expectedFiles = getExpectedFilesWithExtraLibs(explodedRoot);
 		URL[] expectedFileUrls = expectedFiles.stream().map(this::toUrl).toArray(URL[]::new);
@@ -106,7 +106,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 			target.getParentFile().mkdirs();
 			FileCopyUtils.copy(compiled.getClassLoader().getResourceAsStream("explodedsample/ExampleClass.class"),
 					new FileOutputStream(target));
-			JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+			JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot));
 			URLClassLoader classLoader = createClassLoader(launcher);
 			Class<?> loaded = classLoader.loadClass("explodedsample.ExampleClass");
 			assertThat(loaded.getPackage().getImplementationTitle()).isEqualTo("test");

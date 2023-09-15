@@ -337,7 +337,7 @@ public class PropertiesLauncher extends Launcher {
 			return super.createClassLoader(urls);
 		}
 		ClassLoader parent = getClass().getClassLoader();
-		ClassLoader classLoader = new LaunchedClassLoader(urls.toArray(new URL[0]), parent);
+		ClassLoader classLoader = new LaunchedClassLoader(false, urls.toArray(new URL[0]), parent);
 		debug.log("Classpath for custom loader: %s", urls);
 		classLoader = wrapWithCustomClassLoader(classLoader, loaderClassName);
 		debug.log("Using custom class loader: %s", loaderClassName);
@@ -358,7 +358,8 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected Archive getArchive() {
-		return this.archive;
+		// We don't have a single archive and we must not be treated as exploded.
+		return null;
 	}
 
 	@Override
@@ -407,7 +408,7 @@ public class PropertiesLauncher extends Launcher {
 		// Prefer home dir for MANIFEST if there is one
 		if (this.homeDirectory != null) {
 			try {
-				try (ExplodedArchive archive = new ExplodedArchive(this.homeDirectory, false)) {
+				try (ExplodedArchive archive = new ExplodedArchive(this.homeDirectory)) {
 					value = getManifestValue(archive, manifestKey);
 					if (value != null) {
 						return getResolvedProperty(name, manifestKey, value, "home directory manifest");
@@ -485,7 +486,7 @@ public class PropertiesLauncher extends Launcher {
 		Set<URL> urls = new LinkedHashSet<>();
 		if (!"/".equals(path)) {
 			if (file.isDirectory()) {
-				try (ExplodedArchive archive = new ExplodedArchive(file, false)) {
+				try (ExplodedArchive archive = new ExplodedArchive(file)) {
 					debug.log("Adding classpath entries from directory %s", file);
 					urls.add(file.toURI().toURL());
 					urls.addAll(archive.getClassPathUrls(null, this::isArchive));
