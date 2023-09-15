@@ -19,7 +19,6 @@ package org.springframework.boot.loader.launch;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,11 +39,11 @@ import java.util.jar.Manifest;
  */
 class ExplodedArchive implements Archive {
 
-	private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
-
 	private static final Object NO_MANIFEST = new Object();
 
 	private static final Set<String> SKIPPED_NAMES = Set.of(".", "..");
+
+	private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
 
 	private final File rootDirectory;
 
@@ -86,23 +85,23 @@ class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException {
+	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> directorySearchFilter)
+			throws IOException {
 		Set<URL> classPathUrls = new LinkedHashSet<>();
 		LinkedList<File> files = new LinkedList<>();
 		files.addAll(listFiles(this.rootDirectory));
 		while (!files.isEmpty()) {
 			File file = files.poll();
-			if (!SKIPPED_NAMES.contains(file.getName())) {
+			if (SKIPPED_NAMES.contains(file.getName())) {
 				continue;
 			}
-			URI fileUri = file.toURI();
-			String entryName = fileUri.getPath().substring(this.rootUriPath.length());
+			String entryName = file.toURI().getPath().substring(this.rootUriPath.length());
 			Entry entry = new FileEntry(entryName, file);
-			if (entry.isDirectory() && (searchFilter == null || searchFilter.test(entry))) {
+			if (entry.isDirectory() && directorySearchFilter.test(entry)) {
 				files.addAll(0, listFiles(file));
 			}
-			if (includeFilter == null || includeFilter.test(entry)) {
-				classPathUrls.add(fileUri.toURL());
+			if (includeFilter.test(entry)) {
+				classPathUrls.add(file.toURI().toURL());
 			}
 		}
 		return classPathUrls;

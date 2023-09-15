@@ -34,6 +34,8 @@ import java.util.jar.Manifest;
  */
 public interface Archive extends AutoCloseable {
 
+	Predicate<Entry> ALL_ENTRIES = (entry) -> true;
+
 	// FIXME review close()
 
 	/**
@@ -44,15 +46,26 @@ public interface Archive extends AutoCloseable {
 	Manifest getManifest() throws IOException;
 
 	/**
-	 * Returns classpath URLs for the archive that match the specified filters.
-	 * @param includeFilter filter used to determine which entries should be included in
-	 * the result or {@code null} if all entries should be included
-	 * @param searchFilter filter used to limit when additional sub-entry searching is
-	 * required or {@code null} if all entries should be considered.
+	 * Returns classpath URLs for the archive that match the specified filter.
+	 * @param includeFilter filter used to determine which entries should be included.
 	 * @return the classpath URLs
 	 * @throws IOException on IO error
 	 */
-	Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException;
+	default Set<URL> getClassPathUrls(Predicate<Entry> includeFilter) throws IOException {
+		return getClassPathUrls(includeFilter, ALL_ENTRIES);
+
+	}
+
+	/**
+	 * Returns classpath URLs for the archive that match the specified filters.
+	 * @param includeFilter filter used to determine which entries should be included
+	 * @param directorySearchFilter filter used to optimize tree walking for exploded
+	 * archives by determining if a directory needs to be searched or not
+	 * @return the classpath URLs
+	 * @throws IOException on IO error
+	 */
+	Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> directorySearchFilter)
+			throws IOException;
 
 	/**
 	 * Returns if this archive is backed by an exploded archive directory.
