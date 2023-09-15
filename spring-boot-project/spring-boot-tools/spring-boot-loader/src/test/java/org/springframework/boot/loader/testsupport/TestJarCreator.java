@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -70,6 +71,11 @@ public abstract class TestJarCreator {
 			writeNestedEntry("space nested.jar", unpackNested, jarOutputStream);
 			writeNestedMultiReleaseEntry("multi-release.jar", unpackNested, jarOutputStream);
 		}
+	}
+
+	public static List<String> expectedEntries() {
+		return List.of("META-INF/", "META-INF/MANIFEST.MF", "1.dat", "2.dat", "d/", "d/9.dat", "special/",
+				"special/\u00EB.dat", "nested.jar", "another-nested.jar", "space nested.jar", "multi-release.jar");
 	}
 
 	private static void writeNestedEntry(String name, boolean unpackNested, JarOutputStream jarOutputStream)

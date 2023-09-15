@@ -37,6 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
+import org.springframework.boot.loader.testsupport.TestJarCreator;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;

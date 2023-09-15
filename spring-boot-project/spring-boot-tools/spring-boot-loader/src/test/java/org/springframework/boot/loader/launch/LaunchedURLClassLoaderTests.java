@@ -26,6 +26,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.net.protocol.Handlers;
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
+import org.springframework.boot.loader.testsupport.TestJarCreator;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
