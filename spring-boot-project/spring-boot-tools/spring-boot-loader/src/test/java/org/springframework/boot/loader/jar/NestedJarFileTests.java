@@ -37,7 +37,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.testsupport.TestJarCreator;
-import org.springframework.boot.loader.zip.TrackFileChannelDataBlock;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.boot.loader.zip.ZipContent;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StopWatch;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-@TrackFileChannelDataBlock
+@AssertFileChannelDataBlocksClosed
 class NestedJarFileTests {
 
 	@TempDir

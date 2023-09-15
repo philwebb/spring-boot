@@ -20,25 +20,14 @@ import java.lang.ref.Cleaner.Cleanable;
 import java.util.function.Consumer;
 
 /**
- * Default {@link Cleaner} implementation that delegates to {@link java.lang.ref.Cleaner}.
+ * Utility that allows tests to set a tracker on {@link DefaultCleaner}.
  *
  * @author Phillip Webb
  */
-class DefaultCleaner implements Cleaner {
+public class DefaultCleanerTracking {
 
-	static final DefaultCleaner instance = new DefaultCleaner();
-
-	static Consumer<Cleanable> tracker;
-
-	private final java.lang.ref.Cleaner cleaner = java.lang.ref.Cleaner.create();
-
-	@Override
-	public Cleanable register(Object obj, Runnable action) {
-		Cleanable cleanable = this.cleaner.register(obj, action);
-		if (tracker != null) {
-			tracker.accept(cleanable);
-		}
-		return cleanable;
+	public static void set(Consumer<Cleanable> tracker) {
+		DefaultCleaner.tracker = tracker;
 	}
 
 }

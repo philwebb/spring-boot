@@ -32,6 +32,7 @@ import java.util.jar.Manifest;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.test.tools.SourceFile;
 import org.springframework.core.test.tools.TestCompiler;
@@ -47,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
 	@Test

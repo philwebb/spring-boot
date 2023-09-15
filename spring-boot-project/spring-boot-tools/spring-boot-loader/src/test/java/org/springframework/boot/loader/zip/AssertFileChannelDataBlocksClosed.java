@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Annotation that can be added to tests to ensure that {@link FileChannelDataBlock} files
+ * Annotation that can be added to tests to assert that {@link FileChannelDataBlock} files
  * are not left open.
  *
  * @author Phillip Webb
@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtendWith(TrackFileChannelDataBlockExtension.class)
-public @interface TrackFileChannelDataBlock {
+@ExtendWith(AssertFileChannelDataBlocksClosedExtension.class)
+public @interface AssertFileChannelDataBlocksClosed {
 
 }
