@@ -28,6 +28,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
 	@Test

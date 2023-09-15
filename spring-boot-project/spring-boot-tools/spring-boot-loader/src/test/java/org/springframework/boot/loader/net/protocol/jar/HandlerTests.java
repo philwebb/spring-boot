@@ -21,6 +21,8 @@ import java.net.URL;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class HandlerTests {
 
 	private final Handler handler = new Handler();
