@@ -35,12 +35,12 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	/**
 	 * Create a new {@link VirtualZipDataBlock} for the given entries.
 	 * @param data the source zip data
-	 * @param nameOffsets the name offsets to apply
+	 * @param nameOffsetLookups the name offsets to apply
 	 * @param centralRecords the records that should be copied to the virtual zip
 	 * @param centralRecordPositions the record positions in the data block.
 	 * @throws IOException on I/O error
 	 */
-	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsetLookups nameOffsets,
+	VirtualZipDataBlock(FileChannelDataBlock data, NameOffsetLookups nameOffsetLookups,
 			ZipCentralDirectoryFileHeaderRecord[] centralRecords, long[] centralRecordPositions) throws IOException {
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
@@ -49,7 +49,7 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 		int sizeOfCentralDirectory = 0;
 		for (int i = 0; i < centralRecords.length; i++) {
 			ZipCentralDirectoryFileHeaderRecord centralRecord = centralRecords[i];
-			int nameOffset = nameOffsets.get(i);
+			int nameOffset = nameOffsetLookups.get(i);
 			long centralRecordPos = centralRecordPositions[i];
 			DataBlock name = new DataPart(
 					centralRecordPos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,

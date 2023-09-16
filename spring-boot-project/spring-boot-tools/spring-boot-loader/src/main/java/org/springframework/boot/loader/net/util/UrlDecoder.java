@@ -24,7 +24,7 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Utility share by protocol handlers to decode URL strings.
+ * Utility to decode URL strings.
  *
  * @author Phillip Webb
  * @since 3.2.0

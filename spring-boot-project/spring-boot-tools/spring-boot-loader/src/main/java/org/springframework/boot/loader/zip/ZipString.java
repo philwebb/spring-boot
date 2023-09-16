@@ -32,7 +32,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class ZipString {
+final class ZipString {
 
 	private static final DebugLogger debug = DebugLogger.get(ZipString.class);
 
@@ -45,6 +45,9 @@ class ZipString {
 	private static final int EMPTY_HASH = "".hashCode();
 
 	private static final int EMPTY_SLASH_HASH = "/".hashCode();
+
+	private ZipString() {
+	}
 
 	/**
 	 * Return a hash for a char sequence, optionally appending '/'.
