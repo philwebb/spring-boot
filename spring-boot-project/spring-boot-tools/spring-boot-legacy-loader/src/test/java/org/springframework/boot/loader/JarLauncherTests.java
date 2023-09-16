@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
@@ -71,8 +70,8 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 			List<Archive> classPathArchives = new ArrayList<>();
 			launcher.getClassPathArchivesIterator().forEachRemaining(classPathArchives::add);
 			assertThat(classPathArchives).hasSize(4);
-			Set<URL> urls = getUrls(classPathArchives);
-			assertThat(urls).containsOnly(new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
+			assertThat(getUrls(classPathArchives)).containsOnly(
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"),
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/bar.jar!/"),
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/baz.jar!/"));
