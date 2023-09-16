@@ -45,8 +45,7 @@ import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class through a
- * properties file. This model is often more flexible and more amenable to creating
- * well-behaved OS-level services than a model based on executable jars.
+ * properties file.
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
  * {@code loader.properties} either on the current classpath or in the current working
@@ -190,9 +189,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private InputStream getClasspathResource(String config) {
-		while (config.startsWith("/")) {
-			config = config.substring(1);
-		}
+		config = stripLeadingSlashes(config);
 		config = "/" + config;
 		debug.log("Trying classpath: %s", config);
 		return getClass().getResourceAsStream(config);
@@ -218,15 +215,12 @@ public class PropertiesLauncher extends Launcher {
 	private InputStream getURLResource(String config) throws Exception {
 		URL url = new URL(config);
 		if (exists(url)) {
-			URLConnection con = url.openConnection();
+			URLConnection connection = url.openConnection();
 			try {
-				return con.getInputStream();
+				return connection.getInputStream();
 			}
 			catch (IOException ex) {
-				// Close the HTTP connection (if applicable).
-				if (con instanceof HttpURLConnection httpURLConnection) {
-					httpURLConnection.disconnect();
-				}
+				disconnect(connection);
 				throw ex;
 			}
 		}
@@ -234,7 +228,6 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private boolean exists(URL url) throws IOException {
-		// Try a URL connection content-length header...
 		URLConnection connection = url.openConnection();
 		try {
 			connection.setUseCaches(connection.getClass().getSimpleName().startsWith("JNLP"));
@@ -251,19 +244,20 @@ public class PropertiesLauncher extends Launcher {
 			return (connection.getContentLength() >= 0);
 		}
 		finally {
-			if (connection instanceof HttpURLConnection httpURLConnection) {
-				httpURLConnection.disconnect();
-			}
+			disconnect(connection);
+		}
+	}
+
+	private void disconnect(URLConnection connection) {
+		if (connection instanceof HttpURLConnection httpConnection) {
+			httpConnection.disconnect();
 		}
 	}
 
 	private InputStream getFileResource(String config) throws Exception {
 		File file = new File(config);
 		debug.log("Trying file: %s", config);
-		if (file.canRead()) {
-			return new FileInputStream(file);
-		}
-		return null;
+		return (!file.canRead()) ? null : new FileInputStream(file);
 	}
 
 	private void loadResource(InputStream resource) throws Exception {
@@ -319,8 +313,7 @@ public class PropertiesLauncher extends Launcher {
 		if (path.startsWith("./")) {
 			path = path.substring(2);
 		}
-		String lowerCasePath = path.toLowerCase(Locale.ENGLISH);
-		if (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip")) {
+		if (isArchive(path)) {
 			return path;
 		}
 		if (path.endsWith("/*")) {
@@ -358,15 +351,14 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected Archive getArchive() {
-		// We don't have a single archive and we must not be treated as exploded.
-		return null;
+		return null; // We don't have a single archive and are not exploded.
 	}
 
 	@Override
 	protected String getMainClass() throws Exception {
 		String mainClass = getProperty(MAIN, "Start-Class");
 		if (mainClass == null) {
-			throw new IllegalStateException("No '" + MAIN + "' or 'Start-Class' specified");
+			throw new IllegalStateException("No '%s' or 'Start-Class' specified".formatted(MAIN));
 		}
 		return mainClass;
 	}
@@ -423,8 +415,7 @@ public class PropertiesLauncher extends Launcher {
 		if (value != null) {
 			return getResolvedProperty(name, manifestKey, value, "manifest");
 		}
-		return (defaultValue != null) ? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
-				: defaultValue;
+		return SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue);
 	}
 
 	String getManifestValue(Archive archive, String manifestKey) throws Exception {
@@ -450,25 +441,19 @@ public class PropertiesLauncher extends Launcher {
 		if (string == null) {
 			return null;
 		}
-		StringBuilder builder = new StringBuilder();
+		StringBuilder result = new StringBuilder();
 		Matcher matcher = WORD_SEPARATOR.matcher(string);
 		int pos = 0;
 		while (matcher.find()) {
-			builder.append(capitalize(string.subSequence(pos, matcher.end()).toString()));
+			result.append(capitalize(string.subSequence(pos, matcher.end()).toString()));
 			pos = matcher.end();
 		}
-		builder.append(capitalize(string.subSequence(pos, string.length()).toString()));
-		return builder.toString();
+		result.append(capitalize(string.subSequence(pos, string.length()).toString()));
+		return result.toString();
 	}
 
 	private static String capitalize(String str) {
 		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
-	}
-
-	public static void main(String[] args) throws Exception {
-		PropertiesLauncher launcher = new PropertiesLauncher();
-		args = launcher.getArgs(args);
-		launcher.launch(args);
 	}
 
 	@Override
@@ -493,33 +478,27 @@ public class PropertiesLauncher extends Launcher {
 				}
 			}
 		}
-		if (isNonNestedJarOrZip(file)) {
-			debug.log("Adding classpath entries from jar archive %s", path);
+		if (!file.getPath().contains(NESTED_ARCHIVE_SEPARATOR) && isArchive(file.getName())) {
+			debug.log("Adding classpath entries from jar/zip archive %s", path);
 			urls.add(file.toURI().toURL());
 		}
-		Set<URL> neated = getClassPathUrlsForNested(path);
-		if (!neated.isEmpty()) {
+		Set<URL> nested = getClassPathUrlsForNested(path);
+		if (!nested.isEmpty()) {
 			debug.log("Adding classpath entries from nested %s", path);
-			urls.addAll(neated);
+			urls.addAll(nested);
 		}
 		return urls;
 	}
 
-	private boolean isNonNestedJarOrZip(File file) {
-		String name = file.getName().toLowerCase(Locale.ENGLISH);
-		return !file.getPath().contains(NESTED_ARCHIVE_SEPARATOR) && (name.endsWith(".jar") || name.endsWith(".zip"));
-
-	}
-
 	private Set<URL> getClassPathUrlsForNested(String path) throws Exception {
-		boolean isJustJar = path.endsWith(".jar");
+		boolean isJustArchive = isArchive(path);
 		if (!path.equals("/") && path.startsWith("/")
 				|| (this.archive.isExploded() && this.archive.getRootDirectory().equals(this.homeDirectory))) {
 			return Collections.emptySet();
 		}
 		Set<URL> urls = new LinkedHashSet<>();
 		File file = null;
-		if (isJustJar) {
+		if (isJustArchive) {
 			File candidate = new File(this.homeDirectory, path);
 			if (candidate.exists()) {
 				file = candidate;
@@ -531,9 +510,7 @@ public class PropertiesLauncher extends Launcher {
 			file = (!path.startsWith(JAR_FILE_PREFIX)) ? new File(this.homeDirectory, path.substring(0, separatorIndex))
 					: new File(path.substring(JAR_FILE_PREFIX.length(), separatorIndex));
 			path = path.substring(separatorIndex + 1);
-			while (path.startsWith("/")) {
-				path = path.substring(1);
-			}
+			path = stripLeadingSlashes(path);
 		}
 		if (path.equals("/") || path.equals("./") || path.equals(".")) {
 			// The prefix for nested jars is actually empty if it's at the root
@@ -542,7 +519,7 @@ public class PropertiesLauncher extends Launcher {
 		Archive archive = (file != null) ? new JarFileArchive(file) : this.archive;
 		try {
 			urls.addAll(archive.getClassPathUrls(includeByPrefix(path)));
-			if (!isJustJar && (file != null) && (path == null || path.isEmpty() || ".".equals(path))) {
+			if (!isJustArchive && (file != null) && (path == null || path.isEmpty() || ".".equals(path))) {
 				urls.add(JarUrl.create(file));
 			}
 			return urls;
@@ -560,13 +537,30 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private boolean isArchive(Entry entry) {
-		String name = entry.getName();
+		return isArchive(entry.getName());
+	}
+
+	private boolean isArchive(String name) {
+		name = name.toLowerCase(Locale.ENGLISH);
 		return name.endsWith(".jar") || name.endsWith(".zip");
 	}
 
 	private boolean isAbsolutePath(String root) {
 		// Windows contains ":" others start with "/"
 		return root.contains(":") || root.startsWith("/");
+	}
+
+	private String stripLeadingSlashes(String string) {
+		while (string.startsWith("/")) {
+			string = string.substring(1);
+		}
+		return string;
+	}
+
+	public static void main(String[] args) throws Exception {
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		args = launcher.getArgs(args);
+		launcher.launch(args);
 	}
 
 	/**

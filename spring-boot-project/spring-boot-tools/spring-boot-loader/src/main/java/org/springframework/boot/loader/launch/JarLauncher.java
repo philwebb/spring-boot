@@ -25,7 +25,7 @@ package org.springframework.boot.loader.launch;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Scott Frederick
- * @since 1.0.0
+ * @since 3.2.0
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
@@ -39,7 +39,10 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	@Override
 	protected boolean isIncludedOnClassPath(Archive.Entry entry) {
 		String name = entry.getName();
-		return (!entry.isDirectory()) ? name.startsWith("BOOT-INF/lib/") : name.equals("BOOT-INF/classes/");
+		if (entry.isDirectory()) {
+			return name.equals("BOOT-INF/classes/");
+		}
+		return name.startsWith("BOOT-INF/lib/");
 	}
 
 	@Override

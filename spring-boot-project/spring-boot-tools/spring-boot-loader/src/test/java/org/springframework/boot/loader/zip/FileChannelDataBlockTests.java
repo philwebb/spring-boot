@@ -55,7 +55,7 @@ class FileChannelDataBlockTests {
 
 	@AfterEach
 	void resetTracker() {
-		FileChannelDataBlock.setTracker(null);
+		FileChannelDataBlock.tracker = null;
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class FileChannelDataBlockTests {
 	@Test
 	void openAndCloseHandleReferenceCounting() throws IOException {
 		TestTracker tracker = new TestTracker();
-		FileChannelDataBlock.setTracker(tracker);
+		FileChannelDataBlock.tracker = tracker;
 		FileChannelDataBlock block = createBlock();
 		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(0, 0);
@@ -171,7 +171,7 @@ class FileChannelDataBlockTests {
 	@Test
 	void openAndCloseSliceHandleReferenceCounting() throws IOException {
 		TestTracker tracker = new TestTracker();
-		FileChannelDataBlock.setTracker(tracker);
+		FileChannelDataBlock.tracker = tracker;
 		FileChannelDataBlock block = createBlock();
 		FileChannelDataBlock slice = block.slice(1, 4);
 		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);

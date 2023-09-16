@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.launch.Archive.Entry;
+
 /**
  * Base class for a {@link Launcher} backed by an executable archive.
  *
@@ -33,6 +35,7 @@ import java.util.jar.Manifest;
  * @author Scott Frederick
  * @see JarLauncher
  * @see WarLauncher
+ * @since 3.2.0
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 
@@ -96,17 +99,15 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected Set<URL> getClassPathUrls() throws Exception {
-		return this.archive.getClassPathUrls((entry) -> isIncludedOnClassPath(entry) && !isEntryIndexed(entry),
-				this::isSearchedDirectory);
+		return this.archive.getClassPathUrls(this::isIncludedOnClassPathAndNotIndexed, this::isSearchedDirectory);
 	}
 
-	/**
-	 * Determine if the specified entry is a nested item that should be added to the
-	 * classpath.
-	 * @param entry the entry to check
-	 * @return {@code true} if the entry is a nested item (jar or directory)
-	 */
-	protected abstract boolean isIncludedOnClassPath(Archive.Entry entry);
+	private boolean isIncludedOnClassPathAndNotIndexed(Entry entry) {
+		if (!isIncludedOnClassPath(entry)) {
+			return false;
+		}
+		return (this.classPathIndex == null) || !this.classPathIndex.containsEntry(entry.getName());
+	}
 
 	/**
 	 * Determine if the specified directory entry is a candidate for further searching.
@@ -118,9 +119,13 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 				&& !isIncludedOnClassPath(entry);
 	}
 
-	private boolean isEntryIndexed(Archive.Entry entry) {
-		return (this.classPathIndex != null) ? this.classPathIndex.containsEntry(entry.getName()) : false;
-	}
+	/**
+	 * Determine if the specified entry is a nested item that should be added to the
+	 * classpath.
+	 * @param entry the entry to check
+	 * @return {@code true} if the entry is a nested item (jar or directory)
+	 */
+	protected abstract boolean isIncludedOnClassPath(Archive.Entry entry);
 
 	/**
 	 * Return the path prefix for relevant entries in the archive.

@@ -19,14 +19,13 @@ package org.springframework.boot.loader.launch;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -82,7 +81,8 @@ class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> searchFilter) throws IOException {
+	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> directorySearchFilter)
+			throws IOException {
 		return this.jarFile.stream()
 			.map(JarArchiveEntry::new)
 			.filter(includeFilter)
@@ -134,7 +134,7 @@ class JarFileArchive implements Archive {
 	private Path createUnpackDirectory(Path parent) {
 		int attempts = 0;
 		String fileName = Paths.get(this.jarFile.getName()).getFileName().toString();
-		while (attempts++ < 1000) {
+		while (attempts++ < 100) {
 			Path unpackDirectory = parent.resolve(fileName + "-spring-boot-libs-" + UUID.randomUUID());
 			try {
 				createDirectory(unpackDirectory);
@@ -147,25 +147,23 @@ class JarFileArchive implements Archive {
 	}
 
 	private void createDirectory(Path path) throws IOException {
-		Files.createDirectory(path, getFileAttributes(path.getFileSystem(), DIRECTORY_PERMISSION_ATTRIBUTES));
+		Files.createDirectory(path, getFileAttributes(path, DIRECTORY_PERMISSION_ATTRIBUTES));
 	}
 
 	private void unpack(JarEntry entry, Path path) throws IOException {
 		createFile(path);
 		path.toFile().deleteOnExit();
-		try (InputStream inputStream = this.jarFile.getInputStream(entry);
-				OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.WRITE,
-						StandardOpenOption.TRUNCATE_EXISTING)) {
-			inputStream.transferTo(outputStream);
+		try (InputStream inputStream = this.jarFile.getInputStream(entry)) {
+			Files.copy(this.jarFile.getInputStream(entry), path, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
 	private void createFile(Path path) throws IOException {
-		Files.createFile(path, getFileAttributes(path.getFileSystem(), FILE_PERMISSION_ATTRIBUTES));
+		Files.createFile(path, getFileAttributes(path, FILE_PERMISSION_ATTRIBUTES));
 	}
 
-	private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, FileAttribute<?>[] permissionAttributes) {
-		return (!supportsPosix(fileSystem)) ? NO_FILE_ATTRIBUTES : permissionAttributes;
+	private FileAttribute<?>[] getFileAttributes(Path path, FileAttribute<?>[] permissionAttributes) {
+		return (!supportsPosix(path.getFileSystem())) ? NO_FILE_ATTRIBUTES : permissionAttributes;
 	}
 
 	private boolean supportsPosix(FileSystem fileSystem) {

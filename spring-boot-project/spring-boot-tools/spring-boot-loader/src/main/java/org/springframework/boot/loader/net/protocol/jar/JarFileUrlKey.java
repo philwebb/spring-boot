@@ -17,12 +17,9 @@
 package org.springframework.boot.loader.net.protocol.jar;
 
 import java.net.URL;
-import java.util.Map;
-import java.util.Set;
 
 /**
- * Key generated from a jar file {@link URL} that can be used as a {@link Map}/{@link Set}
- * key.
+ * Key generated from a jar file {@link URL} that can be used as a cache key.
  *
  * @author Phillip Webb
  */

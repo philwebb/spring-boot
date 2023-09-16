@@ -19,8 +19,7 @@ package org.springframework.boot.loader.ref;
 import java.lang.ref.Cleaner.Cleanable;
 
 /**
- * Wrapper for {@link java.lang.ref.Cleaner} providing registration support. Non-test code
- * should use {@link #instance}.
+ * Wrapper for {@link java.lang.ref.Cleaner} providing registration support.
  *
  * @author Phillip Webb
  */

@@ -34,9 +34,10 @@ import java.util.jar.Manifest;
  */
 public interface Archive extends AutoCloseable {
 
+	/**
+	 * Predicate that accepts all entries.
+	 */
 	Predicate<Entry> ALL_ENTRIES = (entry) -> true;
-
-	// FIXME review close()
 
 	/**
 	 * Returns the manifest of the archive.

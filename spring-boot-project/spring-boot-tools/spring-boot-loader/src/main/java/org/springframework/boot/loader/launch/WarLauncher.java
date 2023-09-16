@@ -37,10 +37,11 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 
 	@Override
 	public boolean isIncludedOnClassPath(Archive.Entry entry) {
+		String name = entry.getName();
 		if (entry.isDirectory()) {
-			return entry.getName().equals("WEB-INF/classes/");
+			return name.equals("WEB-INF/classes/");
 		}
-		return entry.getName().startsWith("WEB-INF/lib/") || entry.getName().startsWith("WEB-INF/lib-provided/");
+		return name.startsWith("WEB-INF/lib/") || name.startsWith("WEB-INF/lib-provided/");
 	}
 
 	@Override

@@ -156,7 +156,6 @@ public final class ZipContent implements Closeable {
 			centralRecordPositions[i] = pos;
 			centralRecords[i] = ZipCentralDirectoryFileHeaderRecord.load(this.data, pos);
 		}
-		// FIXME ordering of stuff
 		return new VirtualZipDataBlock(this.data, nameOffsetLookups, centralRecords, centralRecordPositions);
 	}
 

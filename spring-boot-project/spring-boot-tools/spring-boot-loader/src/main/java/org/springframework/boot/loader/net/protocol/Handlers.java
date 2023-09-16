@@ -21,13 +21,19 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 /**
+ * Utility used to register loader {@link URLStreamHandler URL handlers}.
+ *
  * @author Phillip Webb
+ * @since 3.2.0
  */
-public class Handlers {
+public final class Handlers {
 
 	private static final String PROTOCOL_HANDLER_PACKAGES = "java.protocol.handler.pkgs";
 
 	private static final String PACKAGE = Handlers.class.getPackageName();
+
+	private Handlers() {
+	}
 
 	/**
 	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a

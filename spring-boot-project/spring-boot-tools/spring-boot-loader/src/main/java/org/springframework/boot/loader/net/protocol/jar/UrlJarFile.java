@@ -34,7 +34,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * {@link JarFile} subclass returned from a {@link JarUrlConnection}.
+ * A {@link JarFile} subclass returned from a {@link JarUrlConnection}.
  *
  * @author Phillip Webb
  */
