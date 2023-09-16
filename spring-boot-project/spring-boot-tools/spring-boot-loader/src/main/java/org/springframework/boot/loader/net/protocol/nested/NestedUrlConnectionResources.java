@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 
+import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.CloseableDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
 
 /**
- * @author pwebb
+ * Resources created managed and cleaned by a {@link NestedUrlConnection} instance and
+ * suitable for registration with a {@link Cleaner}.
+ *
+ * @author Phillip Webb
  */
 class NestedUrlConnectionResources implements Runnable {
 

@@ -22,6 +22,7 @@ import java.lang.ref.Cleaner.Cleanable;
  * Wrapper for {@link java.lang.ref.Cleaner} providing registration support.
  *
  * @author Phillip Webb
+ * @since 3.2.0
  */
 public interface Cleaner {
 

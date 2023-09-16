@@ -162,7 +162,7 @@ class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	private String deduceContentType() {
-		String type = this.entryName != null ? null : "x-java/jar";
+		String type = (this.entryName != null) ? null : "x-java/jar";
 		type = (type != null) ? type : deduceContentTypeFromStream();
 		type = (type != null) ? type : deduceContentTypeFromEntryName();
 		return (type != null) ? type : "content/unknown";
@@ -249,7 +249,7 @@ class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	/**
-	 * Connection {@link InputStream}
+	 * Connection {@link InputStream}.
 	 */
 	class ConnectionInputStream extends FilterInputStream {
 

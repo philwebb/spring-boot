@@ -381,7 +381,7 @@ public class NestedJarFile extends JarFile {
 			this.name = name;
 		}
 
-		public boolean isOwnedBy(NestedJarFile nestedJarFile) {
+		boolean isOwnedBy(NestedJarFile nestedJarFile) {
 			return NestedJarFile.this == nestedJarFile;
 		}
 

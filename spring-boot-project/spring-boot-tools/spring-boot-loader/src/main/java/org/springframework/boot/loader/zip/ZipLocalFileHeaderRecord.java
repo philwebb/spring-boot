@@ -35,6 +35,7 @@ import org.springframework.boot.loader.log.DebugLogger;
  * @param uncompressedSize the size of the entry when uncompressed
  * @param fileNameLength the file name length
  * @param extraFieldLength the extra field length
+ * @author Phillip Webb
  * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
  * 4.3.7 of the Zip File Format Specification</a>
  */
@@ -57,7 +58,8 @@ record ZipLocalFileHeaderRecord(short versionNeededToExtract, short generalPurpo
 	}
 
 	/**
-	 * Return a new {@link ZipLocalFileHeaderRecord} with a new {@link #extraFieldLength()}.
+	 * Return a new {@link ZipLocalFileHeaderRecord} with a new
+	 * {@link #extraFieldLength()}.
 	 * @param extraFieldLength the new extra field length
 	 * @return a new {@link ZipLocalFileHeaderRecord} instance
 	 */

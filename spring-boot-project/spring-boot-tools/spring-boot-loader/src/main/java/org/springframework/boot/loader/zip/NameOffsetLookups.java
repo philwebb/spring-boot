@@ -22,6 +22,8 @@ import java.util.BitSet;
  * Tracks entries that have a name that should be offset by a specific amount. This class
  * is used with nested directory zip files so that entries under the directory are offset
  * correctly. META-INF entries are copied directly and have no offset.
+ *
+ * @author Phillip Webb
  */
 class NameOffsetLookups {
 

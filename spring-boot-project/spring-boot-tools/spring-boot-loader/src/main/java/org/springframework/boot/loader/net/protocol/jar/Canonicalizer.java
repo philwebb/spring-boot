@@ -23,7 +23,10 @@ package org.springframework.boot.loader.net.protocol.jar;
  *
  * @author Phillip Webb
  */
-class Canonicalizer {
+final class Canonicalizer {
+
+	private Canonicalizer() {
+	}
 
 	static String canonicalizeAfter(String path, int pos) {
 		int pathLength = path.length();

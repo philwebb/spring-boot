@@ -25,8 +25,10 @@ import org.springframework.boot.loader.zip.ZipContent;
 /**
  * Info obtained from a {@link ZipContent} instance relating to the directories listed
  * under {@code META-INF/versions/}.
+ *
+ * @author Phillip Webb
  */
-class MetaInfVersionsInfo {
+final class MetaInfVersionsInfo {
 
 	private static final String META_INF_VERSIONS = NestedJarFile.META_INF_VERSIONS;
 

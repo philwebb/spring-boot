@@ -23,7 +23,7 @@ import java.net.URL;
  *
  * @author Phillip Webb
  */
-class JarFileUrlKey {
+final class JarFileUrlKey {
 
 	private final String value;
 
@@ -32,16 +32,16 @@ class JarFileUrlKey {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
 		return this.value.equals(((JarFileUrlKey) obj).value);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@Override

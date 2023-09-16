@@ -31,7 +31,7 @@ import org.springframework.boot.loader.zip.ZipContent;
  *
  * @author Phillip Webb
  */
-class SecurityInfo {
+final class SecurityInfo {
 
 	private static final SecurityInfo NONE = new SecurityInfo(null, null);
 

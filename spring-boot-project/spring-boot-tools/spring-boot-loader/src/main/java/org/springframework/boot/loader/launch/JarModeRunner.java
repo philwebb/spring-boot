@@ -34,7 +34,7 @@ final class JarModeRunner {
 	private JarModeRunner() {
 	}
 
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		String mode = System.getProperty("jarmode");
 		List<JarMode> candidates = SpringFactoriesLoader.loadFactories(JarMode.class,
 				ClassUtils.getDefaultClassLoader());

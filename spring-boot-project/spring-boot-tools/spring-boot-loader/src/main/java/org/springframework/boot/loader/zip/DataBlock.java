@@ -41,7 +41,7 @@ public interface DataBlock {
 	 * Read a sequence of bytes from this channel into the given buffer, starting at the
 	 * given block position.
 	 * @param dst the buffer into which bytes are to be transferred
-	 * @param pos The position within the block at which the transfer is to begin.
+	 * @param pos the position within the block at which the transfer is to begin
 	 * @return the number of bytes read, possibly zero, or {@code -1} if the given
 	 * position is greater than or equal to the block size
 	 * @throws IOException on I/O error
@@ -54,8 +54,8 @@ public interface DataBlock {
 	 * Fully read a sequence of bytes from this channel into the given buffer, starting at
 	 * the given block position and filling {@link ByteBuffer#remaining() remaining} bytes
 	 * in the buffer.
-	 * @param dst The buffer into which bytes are to be transferred
-	 * @param pos The position within the block at which the transfer is to begin.
+	 * @param dst the buffer into which bytes are to be transferred
+	 * @param pos the position within the block at which the transfer is to begin
 	 * @throws EOFException if an attempt is made to read past the end of the block
 	 * @throws IOException on I/O error
 	 */

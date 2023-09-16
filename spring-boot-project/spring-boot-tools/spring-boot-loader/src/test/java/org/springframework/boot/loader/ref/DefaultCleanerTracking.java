@@ -24,7 +24,10 @@ import java.util.function.Consumer;
  *
  * @author Phillip Webb
  */
-public class DefaultCleanerTracking {
+public final class DefaultCleanerTracking {
+
+	private DefaultCleanerTracking() {
+	}
 
 	public static void set(Consumer<Cleanable> tracker) {
 		DefaultCleaner.tracker = tracker;

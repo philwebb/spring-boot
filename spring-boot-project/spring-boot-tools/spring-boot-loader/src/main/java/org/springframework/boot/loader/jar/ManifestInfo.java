@@ -24,6 +24,8 @@ import org.springframework.boot.loader.zip.ZipContent;
 
 /**
  * Info obtained from a {@link ZipContent} instance relating to the {@link Manifest}.
+ *
+ * @author Phillip Webb
  */
 class ManifestInfo {
 

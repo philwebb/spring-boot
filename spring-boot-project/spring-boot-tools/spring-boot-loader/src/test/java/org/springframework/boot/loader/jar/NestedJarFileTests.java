@@ -342,8 +342,7 @@ class NestedJarFileTests {
 
 	@Test
 	void closeAllowsFileToBeDeleted() throws Exception {
-		try (NestedJarFile jar = new NestedJarFile(this.file)) {
-		}
+		new NestedJarFile(this.file).close();
 		assertThat(this.file.delete()).isTrue();
 	}
 
