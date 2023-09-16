@@ -108,11 +108,14 @@ final class ZipString {
 		int hash = 0;
 		char lastChar = 0;
 		while (len > 0) {
-			int count = readInBuffer(dataBlock, pos, buffer);
+			int count = readInBuffer(dataBlock, pos, buffer, len);
 			len -= count;
 			pos += count;
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
+				if (!(byteIndex + codePointSize - 1 < count)) {
+					// FIXME
+				}
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
 				byteIndex += codePointSize;
 				if (codePoint <= 0xFFFF) {
@@ -127,7 +130,7 @@ final class ZipString {
 			}
 		}
 		hash = (addEndSlash && lastChar != '/') ? 31 * hash + '/' : hash;
-		debug.log("%s calculated for datablock position %s size %s (addEndSlash=%s)", hash, pos, len, addEndSlash);
+		debug.log("%08X calculated for datablock position %s size %s (addEndSlash=%s)", hash, pos, len, addEndSlash);
 		return hash;
 	}
 
@@ -184,11 +187,14 @@ final class ZipString {
 		ByteBuffer buffer = ByteBuffer.allocate((len < BUFFER_SIZE) ? len : BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		while (len > 0) {
-			int count = readInBuffer(dataBlock, pos, buffer);
+			int count = readInBuffer(dataBlock, pos, buffer, len);
 			len -= count;
 			pos += count;
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
+				if (!(byteIndex + codePointSize - 1 < count)) {
+					// FIXME
+				}
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
 				result += codePointSize;
 				if (codePoint <= 0xFFFF) {
@@ -249,8 +255,12 @@ final class ZipString {
 		}
 	}
 
-	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer) throws IOException, EOFException {
-		buffer.clear();
+	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen)
+			throws IOException, EOFException {
+		buffer.position(0);
+		if (buffer.remaining() > maxLen) {
+			buffer.limit(maxLen);
+		}
 		int count = dataBlock.read(buffer, pos);
 		if (count < 0) {
 			throw new EOFException();
@@ -273,11 +283,12 @@ final class ZipString {
 	}
 
 	private static int getCodePoint(byte[] bytes, int i, int codePointSize) {
-		int codePoint = bytes[i];
+		int codePoint = bytes[i] & 0xFF;
 		codePoint &= INITIAL_BYTE_BITMASK[codePointSize - 1];
 		for (int j = 1; j < codePointSize; j++) {
 			codePoint = (codePoint << 6) + (bytes[i + j] & SUBSEQUENT_BYTE_BITMASK);
 		}
+		System.out.println(Character.valueOf((char) codePoint));
 		return codePoint;
 	}
 

@@ -33,7 +33,7 @@ import org.springframework.boot.loader.tools.JavaExecutable;
  */
 class ForkProcessCommand extends RunProcessCommand {
 
-	private static final String MAIN_CLASS = "org.springframework.boot.loader.JarLauncher";
+	private static final String MAIN_CLASS = "org.springframework.boot.loader.launch.JarLauncher";
 
 	private final Command command;
 

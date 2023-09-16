@@ -40,14 +40,14 @@
 			<echo>Using destination directory ${destdir}</echo>
 			<mkdir dir="${destdir}/dependency" />
 
-			<echo>Extracting spring-boot-legacy-loader to ${destdir}/dependency</echo>
+			<echo>Extracting spring-boot-loader to ${destdir}/dependency</echo>
 			<copy todir="${destdir}/dependency">
-				<javaresource name="META-INF/loader/spring-boot-legacy-loader.jar"
+				<javaresource name="META-INF/loader/spring-boot-loader.jar"
 					loaderref="spring.boot.antlib.loader" />
 				<flattenmapper />
 			</copy>
 
-			<echo>Embedding spring-boot-legacy-loader v${spring-boot.version}...</echo>
+			<echo>Embedding spring-boot-loader v${spring-boot.version}...</echo>
 			<jar destfile="@{destfile}" compress="false">
 				<mappedresources>
 					<fileset dir="@{classes}"/>
@@ -58,10 +58,10 @@
 					<lib />
 					<globmapper from="*" to="BOOT-INF/lib/*" />
 				</mappedresources>
-				<zipfileset src="${destdir}/dependency/spring-boot-legacy-loader.jar" />
+				<zipfileset src="${destdir}/dependency/spring-boot-loader.jar" />
 				<manifest>
 					<attribute name="Main-Class"
-						value="org.springframework.boot.loader.JarLauncher" />
+						value="org.springframework.boot.loader.launch.JarLauncher" />
 					<attribute name="Start-Class" value="${start-class}" />
 					<attribute name="Spring-Boot-Classes" value="BOOT-INF/classes/" />
 					<attribute name="Spring-Boot-Lib" value="BOOT-INF/lib/" />

@@ -28,7 +28,7 @@ dependencies {
 	}
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
-	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-legacy-loader-tools"))
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
@@ -37,7 +37,7 @@ dependencies {
 	implementation("org.springframework:spring-context")
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
-	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-legacy-loader-tools"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation("org.apache.maven.shared:maven-invoker") {
 		exclude(group: "javax.inject", module: "javax.inject")

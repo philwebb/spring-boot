@@ -21,7 +21,7 @@ dependencies {
 
 	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
-	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-legacy-loader-tools"))
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("com.vaadin.external.google:android-json")
 	implementation("jline:jline")
 	implementation("net.sf.jopt-simple:jopt-simple")
@@ -35,7 +35,7 @@ dependencies {
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.springframework:spring-core")
 
-	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-legacy-loader"))
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
 	testImplementation(project(":spring-boot-project:spring-boot"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -66,7 +66,7 @@ task fullJar(type: Jar) {
 	}
 	manifest {
 		attributes(
-			"Main-Class": "org.springframework.boot.loader.JarLauncher",
+			"Main-Class": "org.springframework.boot.loader.launch.JarLauncher",
 			"Start-Class": "org.springframework.boot.cli.SpringCli"
 		)
 	}
