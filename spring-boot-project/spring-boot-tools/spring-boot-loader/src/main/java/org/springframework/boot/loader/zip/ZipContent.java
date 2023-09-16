@@ -150,11 +150,11 @@ public final class ZipContent implements Closeable {
 		ZipCentralDirectoryFileHeaderRecord[] centralRecords = new ZipCentralDirectoryFileHeaderRecord[size];
 		long[] centralRecordPositions = new long[size];
 		for (int i = 0; i < size; i++) {
-			int index = ZipContent.this.lookupIndexes[i];
-			nameOffsetLookups.enable(i, this.nameOffsetLookups.isEnabled(index));
-			long pos = getCentralDirectoryFileHeaderRecordPos(index);
-			centralRecordPositions[i] = pos;
+			int lookupIndex = ZipContent.this.lookupIndexes[i];
+			long pos = getCentralDirectoryFileHeaderRecordPos(lookupIndex);
+			nameOffsetLookups.enable(i, this.nameOffsetLookups.isEnabled(lookupIndex));
 			centralRecords[i] = ZipCentralDirectoryFileHeaderRecord.load(this.data, pos);
+			centralRecordPositions[i] = pos;
 		}
 		return new VirtualZipDataBlock(this.data, nameOffsetLookups, centralRecords, centralRecordPositions);
 	}
@@ -213,9 +213,13 @@ public final class ZipContent implements Closeable {
 		return null;
 	}
 
-	// FIXME DC
+	/**
+	 * Return the entry at the specified index.
+	 * @param index the entry index
+	 * @return the entry
+	 * @throws IndexOutOfBoundsException if the index is out of bounds
+	 */
 	public Entry getEntry(int index) {
-		// FIXME duplicate code
 		int lookupIndex = ZipContent.this.lookupIndexes[index];
 		long pos = getCentralDirectoryFileHeaderRecordPos(lookupIndex);
 		ZipCentralDirectoryFileHeaderRecord centralRecord = loadZipCentralDirectoryFileHeaderRecord(pos);
@@ -232,7 +236,6 @@ public final class ZipContent implements Closeable {
 			}
 			throw new UncheckedIOException(ex);
 		}
-
 	}
 
 	private int nameHash(CharSequence namePrefix, CharSequence name) {
@@ -294,7 +297,8 @@ public final class ZipContent implements Closeable {
 	}
 
 	/**
-	 * Returns {@code true} if this zip file contains a {@code META-INF/*.DSA} file.
+	 * Returns {@code true} if this zip contains a jar signature file
+	 * ({@code META-INF/*.DSA}).
 	 * @return if the zip contains a jar signature file
 	 */
 	public boolean hasJarSignatureFile() {
@@ -445,8 +449,7 @@ public final class ZipContent implements Closeable {
 		}
 
 		private void sort(int left, int right) {
-			// Quick sort algorithm, uses nameHashCode as the source but sorts all
-			// arrays
+			// Quick sort algorithm, uses nameHashCode as the source but sorts all arrays
 			if (left < right) {
 				int pivot = this.nameHashLookups[left + (right - left) / 2];
 				int i = left;
