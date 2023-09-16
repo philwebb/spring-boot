@@ -23,6 +23,7 @@ import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.zip.Inflater;
@@ -165,15 +166,15 @@ class NestedJarFileResources implements Runnable {
 
 	private IOException releaseInputStreams(IOException exceptionChain) {
 		synchronized (this.inputStreams) {
-			for (InputStream inputStream : this.inputStreams) {
+			for (InputStream inputStream : List.copyOf(this.inputStreams)) {
 				try {
 					inputStream.close();
 				}
 				catch (IOException ex) {
 					exceptionChain = addToExceptionChain(exceptionChain, ex);
 				}
-				this.inputStreams.clear();
 			}
+			this.inputStreams.clear();
 		}
 		return exceptionChain;
 	}
