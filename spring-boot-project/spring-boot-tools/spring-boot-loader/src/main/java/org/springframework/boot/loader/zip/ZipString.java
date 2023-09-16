@@ -288,7 +288,6 @@ final class ZipString {
 		for (int j = 1; j < codePointSize; j++) {
 			codePoint = (codePoint << 6) + (bytes[i + j] & SUBSEQUENT_BYTE_BITMASK);
 		}
-		System.out.println(Character.valueOf((char) codePoint));
 		return codePoint;
 	}
 

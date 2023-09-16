@@ -97,9 +97,10 @@ class Context {
 
 	private static File getRootJarFile(JarFile jarFile) {
 		String name = jarFile.getName();
-		int separator = name.indexOf("!/");
-		if (separator > 0) {
+		int separator = name.indexOf("!");
+		while (separator > 0) {
 			name = name.substring(0, separator);
+			separator = name.indexOf("!");
 		}
 		return new File(name);
 	}

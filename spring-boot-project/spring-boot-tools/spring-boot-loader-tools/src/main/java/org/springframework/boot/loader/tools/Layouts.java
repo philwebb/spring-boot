@@ -108,7 +108,7 @@ public final class Layouts {
 
 		@Override
 		public String getLauncherClassName() {
-			return "org.springframework.boot.loader.PropertiesLauncher";
+			return "org.springframework.boot.loader.launch.PropertiesLauncher";
 		}
 
 	}
@@ -148,7 +148,7 @@ public final class Layouts {
 
 		@Override
 		public String getLauncherClassName() {
-			return "org.springframework.boot.loader.WarLauncher";
+			return "org.springframework.boot.loader.launch.WarLauncher";
 		}
 
 		@Override
