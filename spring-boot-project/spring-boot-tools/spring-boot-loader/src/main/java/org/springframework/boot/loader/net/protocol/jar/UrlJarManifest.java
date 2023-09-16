@@ -80,11 +80,6 @@ class UrlJarManifest {
 	@FunctionalInterface
 	interface ManifestSupplier {
 
-		/**
-		 * Supply the {@link Manifest}.
-		 * @return the supplied manifest
-		 * @throws IOException on I/O error
-		 */
 		Manifest getManifest() throws IOException;
 
 	}

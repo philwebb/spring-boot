@@ -22,7 +22,9 @@ import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
 /**
- * {@link JarEntry} returned from a {@link UrlJarFile} or {@link UrlNestedJarFile}.
+ * A {@link JarEntry} returned from a {@link UrlJarFile} or {@link UrlNestedJarFile}.
+ *
+ * @author Phillip Webb
  */
 class UrlJarEntry extends JarEntry {
 

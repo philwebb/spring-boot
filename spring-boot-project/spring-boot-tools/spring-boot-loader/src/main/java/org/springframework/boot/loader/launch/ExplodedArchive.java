@@ -87,7 +87,7 @@ class ExplodedArchive implements Archive {
 	@Override
 	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> directorySearchFilter)
 			throws IOException {
-		Set<URL> classPathUrls = new LinkedHashSet<>();
+		Set<URL> urls = new LinkedHashSet<>();
 		LinkedList<File> files = new LinkedList<>();
 		files.addAll(listFiles(this.rootDirectory));
 		while (!files.isEmpty()) {
@@ -96,15 +96,15 @@ class ExplodedArchive implements Archive {
 				continue;
 			}
 			String entryName = file.toURI().getPath().substring(this.rootUriPath.length());
-			Entry entry = new FileEntry(entryName, file);
+			Entry entry = new FileArchiveEntry(entryName, file);
 			if (entry.isDirectory() && directorySearchFilter.test(entry)) {
 				files.addAll(0, listFiles(file));
 			}
 			if (includeFilter.test(entry)) {
-				classPathUrls.add(file.toURI().toURL());
+				urls.add(file.toURI().toURL());
 			}
 		}
-		return classPathUrls;
+		return urls;
 	}
 
 	private List<File> listFiles(File file) {
@@ -129,13 +129,13 @@ class ExplodedArchive implements Archive {
 	/**
 	 * {@link Entry} backed by a File.
 	 */
-	private static class FileEntry implements Entry {
+	private static class FileArchiveEntry implements Entry {
 
 		private final String name;
 
 		private final File file;
 
-		FileEntry(String name, File file) {
+		FileArchiveEntry(String name, File file) {
 			this.name = name;
 			this.file = file;
 		}

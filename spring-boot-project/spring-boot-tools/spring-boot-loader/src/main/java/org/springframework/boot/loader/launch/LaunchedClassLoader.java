@@ -41,19 +41,19 @@ import org.springframework.boot.loader.net.protocol.jar.Handler;
  */
 public class LaunchedClassLoader extends URLClassLoader {
 
-	static {
-		ClassLoader.registerAsParallelCapable();
-	}
-
 	private static final String JAR_MODE_PACKAGE_PREFIX = "org.springframework.boot.loader.jarmode.";
 
 	private static final String JAR_MODE_RUNNER_CLASS_NAME = JarModeRunner.class.getName();
+
+	static {
+		ClassLoader.registerAsParallelCapable();
+	}
 
 	private final boolean exploded;
 
 	private final Archive rootArchive;
 
-	private final Object packageLock = new Object();
+	private final Object definePackageLock = new Object();
 
 	private volatile DefinePackageCallType definePackageCallType;
 
@@ -73,7 +73,6 @@ public class LaunchedClassLoader extends URLClassLoader {
 	 * @param rootArchive the root archive or {@code null}
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
-	 * @since 2.3.1
 	 */
 	public LaunchedClassLoader(boolean exploded, Archive rootArchive, URL[] urls, ClassLoader parent) {
 		super(urls, parent);
@@ -141,22 +140,18 @@ public class LaunchedClassLoader extends URLClassLoader {
 	}
 
 	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
-		String internalName = name.replace('.', '/') + ".class";
-		InputStream inputStream = getParent().getResourceAsStream(internalName);
-		if (inputStream == null) {
-			throw new ClassNotFoundException(name);
-		}
 		try {
-			try {
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			String internalName = name.replace('.', '/') + ".class";
+			try (InputStream inputStream = getParent().getResourceAsStream(internalName);
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+				if (inputStream == null) {
+					throw new ClassNotFoundException(name);
+				}
 				inputStream.transferTo(outputStream);
 				byte[] bytes = outputStream.toByteArray();
 				Class<?> definedClass = defineClass(name, bytes, 0, bytes.length);
 				definePackageIfNecessary(name);
 				return definedClass;
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 		catch (IOException ex) {
@@ -204,10 +199,17 @@ public class LaunchedClassLoader extends URLClassLoader {
 				URLConnection connection = url.openConnection();
 				if (connection instanceof JarURLConnection jarURLConnection) {
 					JarFile jarFile = jarURLConnection.getJarFile();
-					if (jarFile.getEntry(classEntryName) != null && jarFile.getEntry(packageEntryName) != null
-							&& jarFile.getManifest() != null) {
-						definePackage(packageName, jarFile.getManifest(), url);
-						return;
+					try {
+						if (jarFile.getEntry(classEntryName) != null && jarFile.getEntry(packageEntryName) != null
+								&& jarFile.getManifest() != null) {
+							definePackage(packageName, jarFile.getManifest(), url);
+							return;
+						}
+					}
+					finally {
+						if (!jarURLConnection.getUseCaches()) {
+							jarFile.close();
+						}
 					}
 				}
 			}
@@ -222,8 +224,8 @@ public class LaunchedClassLoader extends URLClassLoader {
 		if (!this.exploded) {
 			return super.definePackage(name, man, url);
 		}
-		synchronized (this.packageLock) {
-			return doDefinePackage(DefinePackageCallType.MANIFEST, () -> super.definePackage(name, man, url));
+		synchronized (this.definePackageLock) {
+			return definePackage(DefinePackageCallType.MANIFEST, () -> super.definePackage(name, man, url));
 		}
 	}
 
@@ -234,7 +236,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 			return super.definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor,
 					sealBase);
 		}
-		synchronized (this.packageLock) {
+		synchronized (this.definePackageLock) {
 			if (this.definePackageCallType == null) {
 				// We're not part of a call chain which means that the URLClassLoader
 				// is trying to define a package for our exploded JAR. We use the
@@ -244,7 +246,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 					return definePackage(name, manifest, sealBase);
 				}
 			}
-			return doDefinePackage(DefinePackageCallType.ATTRIBUTES, () -> super.definePackage(name, specTitle,
+			return definePackage(DefinePackageCallType.ATTRIBUTES, () -> super.definePackage(name, specTitle,
 					specVersion, specVendor, implTitle, implVersion, implVendor, sealBase));
 		}
 	}
@@ -258,7 +260,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 		}
 	}
 
-	private <T> T doDefinePackage(DefinePackageCallType type, Supplier<T> call) {
+	private <T> T definePackage(DefinePackageCallType type, Supplier<T> call) {
 		DefinePackageCallType existingType = this.definePackageCallType;
 		try {
 			this.definePackageCallType = type;

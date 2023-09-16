@@ -49,13 +49,16 @@ public abstract class Launcher {
 		try {
 			ClassLoader classLoader = createClassLoader(getClassPathUrls());
 			String jarMode = System.getProperty("jarmode");
-			String mainClassName = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_RUNNER_CLASS_NAME
-					: getMainClass();
+			String mainClassName = hasLength(jarMode) ? JAR_MODE_RUNNER_CLASS_NAME : getMainClass();
 			launch(classLoader, mainClassName, args);
 		}
 		catch (UncheckedIOException ex) {
 			throw ex.getCause();
 		}
+	}
+
+	private boolean hasLength(String jarMode) {
+		return (jarMode != null) && !jarMode.isEmpty();
 	}
 
 	/**
@@ -96,7 +99,7 @@ public abstract class Launcher {
 	 */
 	protected boolean isExploded() {
 		Archive archive = getArchive();
-		return archive != null && archive.isExploded();
+		return (archive != null) && archive.isExploded();
 	}
 
 	/**

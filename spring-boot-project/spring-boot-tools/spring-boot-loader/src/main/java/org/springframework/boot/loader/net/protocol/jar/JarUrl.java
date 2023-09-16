@@ -22,9 +22,15 @@ import java.net.URL;
 import java.util.jar.JarEntry;
 
 /**
- * @author pwebb
+ * Utility class with factory methods that can be used to create JAR URLs.
+ *
+ * @author Phillip Webb
+ * @since 3.2.0
  */
-public class JarUrl {
+public final class JarUrl {
+
+	private JarUrl() {
+	}
 
 	/**
 	 * Create a new jar URL.
@@ -64,14 +70,20 @@ public class JarUrl {
 	 */
 	public static URL create(File file, String nestedEntryName, String path) {
 		try {
-			String filePath = file.toURI().getPath();
-			String innerUrl = (nestedEntryName != null) ? "nested:" + filePath + "!" + nestedEntryName
-					: "file:" + filePath;
-			return new URL(null, "jar:" + innerUrl + "!/" + ((path != null) ? path : ""), Handler.INSTANCE);
+			path = (path != null) ? path : "";
+			return new URL(null, "jar:" + getJarReference(file, nestedEntryName) + "!/" + path, Handler.INSTANCE);
 		}
 		catch (MalformedURLException ex) {
 			throw new IllegalStateException("Unable to create JarFileArchive URL", ex);
 		}
+	}
+
+	private static String getJarReference(File jarFile, String nestedEntryName) {
+		String jarFilePath = jarFile.toURI().getPath();
+		if (nestedEntryName != null) {
+			return "nested:" + jarFilePath + "!" + nestedEntryName;
+		}
+		return "file:" + jarFilePath;
 	}
 
 }

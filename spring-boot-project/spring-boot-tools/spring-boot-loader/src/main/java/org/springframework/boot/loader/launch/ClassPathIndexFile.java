@@ -16,17 +16,11 @@
 
 package org.springframework.boot.loader.launch;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -83,24 +77,17 @@ final class ClassPathIndexFile {
 
 	private static ClassPathIndexFile loadIfPossible(File root, File indexFile) throws IOException {
 		if (indexFile.exists() && indexFile.isFile()) {
-			try (InputStream inputStream = new FileInputStream(indexFile)) {
-				return new ClassPathIndexFile(root, loadLines(inputStream));
-			}
+			List<String> lines = Files.readAllLines(indexFile.toPath())
+				.stream()
+				.filter(ClassPathIndexFile::lineHasText)
+				.toList();
+			return new ClassPathIndexFile(root, lines);
 		}
 		return null;
 	}
 
-	private static List<String> loadLines(InputStream inputStream) throws IOException {
-		List<String> lines = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-		String line = reader.readLine();
-		while (line != null) {
-			if (!line.trim().isEmpty()) {
-				lines.add(line);
-			}
-			line = reader.readLine();
-		}
-		return Collections.unmodifiableList(lines);
+	private static boolean lineHasText(String line) {
+		return !line.trim().isEmpty();
 	}
 
 }

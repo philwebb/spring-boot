@@ -37,7 +37,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
 
-	private static Tracker tracker = NoOpTracker.INSTANCE;
+	static Tracker tracker;
 
 	private final ManagedFileChannel channel;
 
@@ -148,10 +148,6 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		return new FileChannelDataBlock(this.channel, this.offset + offset, size);
 	}
 
-	static void setTracker(Tracker tracker) {
-		FileChannelDataBlock.tracker = (tracker != null) ? tracker : NoOpTracker.INSTANCE;
-	}
-
 	/**
 	 * Manages access to underlying {@link FileChannel}.
 	 */
@@ -181,7 +177,9 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
-					tracker.openedFileChannel(this.path, this.fileChannel);
+					if (tracker != null) {
+						tracker.openedFileChannel(this.path, this.fileChannel);
+					}
 				}
 				this.referenceCount++;
 				debug.log("Reference count for '%s' incremented to %s", this.path, this.referenceCount);
@@ -197,7 +195,9 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Closing '%s'", this.path);
 					this.fileChannel.close();
-					tracker.closedFileChannel(this.path, this.fileChannel);
+					if (tracker != null) {
+						tracker.closedFileChannel(this.path, this.fileChannel);
+					}
 					this.fileChannel = null;
 				}
 				debug.log("Reference count for '%s' decremented to %s", this.path, this.referenceCount);
@@ -227,23 +227,6 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		void openedFileChannel(Path path, FileChannel fileChannel);
 
 		void closedFileChannel(Path path, FileChannel fileChannel);
-
-	}
-
-	/**
-	 * No-op {@link Tracker}.
-	 */
-	private static class NoOpTracker implements Tracker {
-
-		public static final NoOpTracker INSTANCE = new NoOpTracker();
-
-		@Override
-		public void openedFileChannel(Path path, FileChannel fileChannel) {
-		}
-
-		@Override
-		public void closedFileChannel(Path path, FileChannel fileChannel) {
-		}
 
 	}
 

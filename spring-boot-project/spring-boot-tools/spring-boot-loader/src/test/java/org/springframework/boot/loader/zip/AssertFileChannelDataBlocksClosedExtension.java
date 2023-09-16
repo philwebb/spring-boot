@@ -43,14 +43,14 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		tracker.clear();
-		FileChannelDataBlock.setTracker(tracker);
+		FileChannelDataBlock.tracker = tracker;
 		DefaultCleanerTracking.set(tracker::addedCleanable);
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		tracker.assertAllClosed();
-		FileChannelDataBlock.setTracker(null);
+		FileChannelDataBlock.tracker = null;
 	}
 
 	private static class OpenFilesTracker implements Tracker {
