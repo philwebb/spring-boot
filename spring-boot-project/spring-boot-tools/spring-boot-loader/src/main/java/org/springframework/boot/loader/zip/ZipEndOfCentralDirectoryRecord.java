@@ -106,8 +106,8 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		long pos = locate(dataBlock, buffer);
-		return new Located(pos, new ZipEndOfCentralDirectoryRecord(buffer.getShort(), buffer.getShort(), buffer.getShort(),
-				buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getShort()));
+		return new Located(pos, new ZipEndOfCentralDirectoryRecord(buffer.getShort(), buffer.getShort(),
+				buffer.getShort(), buffer.getShort(), buffer.getInt(), buffer.getInt(), buffer.getShort()));
 	}
 
 	private static long locate(DataBlock dataBlock, ByteBuffer buffer) throws IOException {
