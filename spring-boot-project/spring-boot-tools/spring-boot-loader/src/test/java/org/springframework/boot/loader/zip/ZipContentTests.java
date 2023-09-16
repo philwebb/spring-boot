@@ -424,7 +424,7 @@ class ZipContentTests {
 			this.size = size;
 		}
 
-		public int size() {
+		int size() {
 			return this.size;
 		}
 

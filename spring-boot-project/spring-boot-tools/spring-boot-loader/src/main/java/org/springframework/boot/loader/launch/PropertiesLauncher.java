@@ -400,8 +400,8 @@ public class PropertiesLauncher extends Launcher {
 		// Prefer home dir for MANIFEST if there is one
 		if (this.homeDirectory != null) {
 			try {
-				try (ExplodedArchive archive = new ExplodedArchive(this.homeDirectory)) {
-					value = getManifestValue(archive, manifestKey);
+				try (ExplodedArchive explodedArchive = new ExplodedArchive(this.homeDirectory)) {
+					value = getManifestValue(explodedArchive, manifestKey);
 					if (value != null) {
 						return getResolvedProperty(name, manifestKey, value, "home directory manifest");
 					}
@@ -471,10 +471,10 @@ public class PropertiesLauncher extends Launcher {
 		Set<URL> urls = new LinkedHashSet<>();
 		if (!"/".equals(path)) {
 			if (file.isDirectory()) {
-				try (ExplodedArchive archive = new ExplodedArchive(file)) {
+				try (ExplodedArchive explodedArchive = new ExplodedArchive(file)) {
 					debug.log("Adding classpath entries from directory %s", file);
 					urls.add(file.toURI().toURL());
-					urls.addAll(archive.getClassPathUrls(this::isArchive));
+					urls.addAll(explodedArchive.getClassPathUrls(this::isArchive));
 				}
 			}
 		}

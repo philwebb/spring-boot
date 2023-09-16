@@ -51,7 +51,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		this.size = Files.size(path);
 	}
 
-	public FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
+	FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
 		this.channel = channel;
 		this.offset = offset;
 		this.size = size;
@@ -168,7 +168,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			this.path = path;
 		}
 
-		public int read(ByteBuffer dst, long position) throws IOException {
+		int read(ByteBuffer dst, long position) throws IOException {
 			return this.fileChannel.read(dst, position);
 		}
 

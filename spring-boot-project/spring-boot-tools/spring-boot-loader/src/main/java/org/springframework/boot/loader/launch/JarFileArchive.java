@@ -66,7 +66,7 @@ class JarFileArchive implements Archive {
 
 	private volatile Path tempUnpackDirectory;
 
-	public JarFileArchive(File file) throws IOException {
+	JarFileArchive(File file) throws IOException {
 		this(file, new JarFile(file));
 	}
 

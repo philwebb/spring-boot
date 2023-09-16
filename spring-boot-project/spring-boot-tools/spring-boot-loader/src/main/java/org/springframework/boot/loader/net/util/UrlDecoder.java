@@ -29,7 +29,10 @@ import java.nio.charset.StandardCharsets;
  * @author Phillip Webb
  * @since 3.2.0
  */
-public class UrlDecoder {
+public final class UrlDecoder {
+
+	private UrlDecoder() {
+	}
 
 	/**
 	 * Decode the given string by decoding URL {@code '%'} escapes. This method should be

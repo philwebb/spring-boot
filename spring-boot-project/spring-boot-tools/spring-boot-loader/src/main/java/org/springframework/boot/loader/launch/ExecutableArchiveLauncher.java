@@ -33,9 +33,9 @@ import org.springframework.boot.loader.launch.Archive.Entry;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @since 3.2.0
  * @see JarLauncher
  * @see WarLauncher
- * @since 3.2.0
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 

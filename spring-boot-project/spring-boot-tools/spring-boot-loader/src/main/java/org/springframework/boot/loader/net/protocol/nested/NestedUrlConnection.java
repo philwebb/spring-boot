@@ -146,7 +146,7 @@ class NestedUrlConnection extends URLConnection {
 	}
 
 	/**
-	 * Connection {@link InputStream}
+	 * Connection {@link InputStream}.
 	 */
 	class ConnectionInputStream extends FilterInputStream {
 

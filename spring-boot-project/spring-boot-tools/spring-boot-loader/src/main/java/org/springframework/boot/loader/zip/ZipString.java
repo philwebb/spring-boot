@@ -103,7 +103,7 @@ final class ZipString {
 		if (len == 0) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
+		ByteBuffer buffer = ByteBuffer.allocate((len < BUFFER_SIZE) ? len : BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		int hash = 0;
 		char lastChar = 0;
@@ -181,7 +181,7 @@ final class ZipString {
 		int charSequenceIndex = 0;
 		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
 		int result = 0;
-		ByteBuffer buffer = ByteBuffer.allocate(len < BUFFER_SIZE ? len : BUFFER_SIZE);
+		ByteBuffer buffer = ByteBuffer.allocate((len < BUFFER_SIZE) ? len : BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		while (len > 0) {
 			int count = readInBuffer(dataBlock, pos, buffer);

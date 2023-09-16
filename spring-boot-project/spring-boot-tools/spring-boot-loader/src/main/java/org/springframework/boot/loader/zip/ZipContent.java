@@ -388,7 +388,7 @@ public final class ZipContent implements Closeable {
 	 * Internal class used to load the zip content create a new {@link ZipContent}
 	 * instance.
 	 */
-	private static class Loader {
+	private static final class Loader {
 
 		private final Source source;
 
@@ -570,8 +570,10 @@ public final class ZipContent implements Closeable {
 		 * files the archive data will start at 0, however, it is possible to have
 		 * prefixed bytes (often used for startup scripts) at the beginning of the data.
 		 * @param data the source data
+		 * @param eocd the end of central directory record
+		 * @param zip64Eocd the zip64 end of central directory record or {@code null}
 		 * @return the offset within the data where the archive begins
-		 * @throws IOException
+		 * @throws IOException on I/O error
 		 */
 		private static long getStartOfZipContent(FileChannelDataBlock data, ZipEndOfCentralDirectoryRecord eocd,
 				Zip64EndOfCentralDirectoryRecord zip64Eocd) throws IOException {

@@ -56,7 +56,7 @@ class ExplodedArchive implements Archive {
 	 * @param rootDirectory the root directory
 	 * @throws IOException on IO error
 	 */
-	public ExplodedArchive(File rootDirectory) throws IOException {
+	ExplodedArchive(File rootDirectory) throws IOException {
 		if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source directory " + rootDirectory);
 		}

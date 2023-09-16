@@ -139,8 +139,8 @@ class JarFileArchiveTests {
 	void getClassPathUrlsWhenZip64ListsAllEntries() throws Exception {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		try (Archive archive = new JarFileArchive(file)) {
-			Set<URL> urls = archive.getClassPathUrls(Archive.ALL_ENTRIES);
+		try (Archive jarArchive = new JarFileArchive(file)) {
+			Set<URL> urls = jarArchive.getClassPathUrls(Archive.ALL_ENTRIES);
 			assertThat(urls).hasSize(65537);
 		}
 	}
