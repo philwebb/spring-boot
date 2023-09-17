@@ -804,11 +804,14 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		private void addResourceSet(String resource) {
 			try {
-				if (isInsideNestedJar(resource)) {
-					// It's a nested jar but we now don't want the suffix because Tomcat
-					// is going to try and locate it as a root URL (not the resource
-					// inside it)
+				if (isInsideClassicNestedJar(resource)) {
+					// It's a classic nested jar but we now don't want the suffix because
+					// Tomcat is going to try and locate it as a root URL (not the
+					// resource inside it)
 					resource = resource.substring(0, resource.length() - 2);
+				}
+				if (resource.startsWith("jar:nested:")) {
+					System.err.println(resource);
 				}
 				URL url = new URL(resource);
 				String path = "/META-INF/resources";
@@ -816,10 +819,11 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			}
 			catch (Exception ex) {
 				// Ignore (probably not a directory)
+				ex.printStackTrace();
 			}
 		}
 
-		private boolean isInsideNestedJar(String dir) {
+		private boolean isInsideClassicNestedJar(String dir) {
 			return dir.indexOf("!/") < dir.lastIndexOf("!/");
 		}
 

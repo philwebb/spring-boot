@@ -109,7 +109,7 @@ class DocumentRoot {
 			else {
 				path = location.toURI().getPath();
 			}
-			int index = path.indexOf("!/");
+			int index = path.indexOf("!");
 			if (index != -1) {
 				path = path.substring(0, index);
 			}
