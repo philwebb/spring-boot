@@ -15,12 +15,9 @@
  */
 
 /**
- * System that allows self-contained JAR/WAR archives to be launched using
- * {@code java -jar}. Archives can include nested packaged dependency JARs (there is no
- * need to create shade style jars) and are executed without unpacking. The only
- * constraint is that nested JARs must be stored in the archive uncompressed.
+ * JAR URL support, including support for nested jars.
  *
- * @see org.springframework.boot.loader.launch.JarLauncher
- * @see org.springframework.boot.loader.launch.WarLauncher
+ * @see org.springframework.boot.loader.net.protocol.jar.JarUrl
+ * @see org.springframework.boot.loader.net.protocol.jar.Handler
  */
-package org.springframework.boot.loader.launch;
+package org.springframework.boot.loader.net.protocol.jar;

@@ -14,13 +14,34 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.loader.net.protocol.jar;
+
 /**
- * System that allows self-contained JAR/WAR archives to be launched using
- * {@code java -jar}. Archives can include nested packaged dependency JARs (there is no
- * need to create shade style jars) and are executed without unpacking. The only
- * constraint is that nested JARs must be stored in the archive uncompressed.
+ * {@link ThreadLocal} state for {@link Handler} optimizations.
  *
- * @see org.springframework.boot.loader.launch.JarLauncher
- * @see org.springframework.boot.loader.launch.WarLauncher
+ * @author Phillip Webb
  */
-package org.springframework.boot.loader.launch;
+final class Optimizations {
+
+	private static final ThreadLocal<Boolean> status = new ThreadLocal<>();
+
+	private Optimizations() {
+	}
+
+	static void enable(boolean readContents) {
+		status.set(readContents);
+	}
+
+	static void disable() {
+		status.remove();
+	}
+
+	static boolean isEnabled() {
+		return status.get() != null;
+	}
+
+	static boolean isEnabled(boolean readContents) {
+		return Boolean.valueOf(readContents).equals(status.get());
+	}
+
+}
