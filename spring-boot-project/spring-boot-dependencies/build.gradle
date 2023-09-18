@@ -1377,6 +1377,7 @@ bom {
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
 				"spring-boot-jarmode-layertools",
+				"spring-boot-loader",
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",
 				"spring-boot-properties-migrator",
