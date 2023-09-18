@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.loader.zip;
+
+import java.nio.file.Path;
+
 /**
- * System that allows self-contained JAR/WAR archives to be launched using
- * {@code java -jar}. Archives can include nested packaged dependency JARs (there is no
- * need to create shade style jars) and are executed without unpacking. The only
- * constraint is that nested JARs must be stored in the archive uncompressed.
- *
- * @see org.springframework.boot.loader.launch.JarLauncher
- * @see org.springframework.boot.loader.launch.WarLauncher
+ * @author pwebb
  */
-package org.springframework.boot.loader.launch;
+
+import org.junit.jupiter.api.Test;
+
+public class TempTests {
+
+	@Test
+	void testName() throws Exception {
+		ZipContent.open(Path
+			.of("/Users/pwebb/projects/spring-boot/code/3.2.x/spring-boot-tests/spring-boot-smoke-tests/spring-boot-smoke-test-ant/build/ant/libs/spring-boot-smoke-test-ant.jar"),
+				"BOOT-INF/lib/spring-boot-autoconfigure-jar-3.2.0-SNAPSHOT.jar");
+	}
+
+}

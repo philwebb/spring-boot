@@ -24,18 +24,19 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * {@link InflaterInputStream} that supports the writing of an extra "dummy" byte (which
- * is required with JDK 6) and returns accurate available() results.
+ * is required when using an {@link Inflater} with {@code nowrap}) and returns accurate
+ * available() results.
  *
  * @author Phillip Webb
  */
-class ZipInflaterInputStream extends InflaterInputStream {
+abstract class ZipInflaterInputStream extends InflaterInputStream {
 
 	private int available;
 
 	private boolean extraBytesWritten;
 
-	ZipInflaterInputStream(InputStream inputStream, int size) {
-		super(inputStream, new Inflater(true), getInflaterBufferSize(size));
+	ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
+		super(inputStream, inflater, getInflaterBufferSize(size));
 		this.available = size;
 	}
 
@@ -54,12 +55,6 @@ class ZipInflaterInputStream extends InflaterInputStream {
 			this.available -= result;
 		}
 		return result;
-	}
-
-	@Override
-	public void close() throws IOException {
-		super.close();
-		this.inf.end();
 	}
 
 	@Override

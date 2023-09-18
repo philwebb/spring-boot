@@ -824,7 +824,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 
 		private boolean isInsideNestedJar(String resource) {
-			return resource.startsWith("jar:file:") && resource.indexOf("!/") < resource.lastIndexOf("!/");
+			return (resource.startsWith("jar:file:") && resource.indexOf("!/") < resource.lastIndexOf("!/"))
+					|| resource.startsWith("jar:nested:");
 		}
 
 	}
