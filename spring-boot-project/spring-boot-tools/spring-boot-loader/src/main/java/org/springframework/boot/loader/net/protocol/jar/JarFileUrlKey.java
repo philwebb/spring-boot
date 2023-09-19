@@ -17,6 +17,8 @@
 package org.springframework.boot.loader.net.protocol.jar;
 
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Key generated from a jar file {@link URL} that can be used as a cache key.
@@ -24,6 +26,8 @@ import java.net.URL;
  * @author Phillip Webb
  */
 final class JarFileUrlKey {
+
+	private static final Map<URL, JarFileUrlKey> cache = new ConcurrentHashMap<>();
 
 	private final String value;
 
@@ -55,6 +59,10 @@ final class JarFileUrlKey {
 	 * @return a {@link JarFileUrlKey} instance
 	 */
 	static JarFileUrlKey get(URL url) {
+		return cache.computeIfAbsent(url, JarFileUrlKey::create);
+	}
+
+	private static JarFileUrlKey create(URL url) {
 		StringBuilder value = new StringBuilder();
 		String protocol = url.getProtocol();
 		String host = url.getHost();
