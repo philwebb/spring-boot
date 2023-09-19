@@ -18,6 +18,8 @@ package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.loader.net.util.UrlDecoder;
 
@@ -47,6 +49,8 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  * @since 3.2.0
  */
 public record NestedLocation(File file, String nestedEntryName) {
+
+	private static Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
 
 	public NestedLocation {
 		if (file == null) {
@@ -78,9 +82,14 @@ public record NestedLocation(File file, String nestedEntryName) {
 		if (index == -1) {
 			throw new IllegalArgumentException("'location' must contain '!'");
 		}
+		return cache.computeIfAbsent(location, (l) -> create(index, l));
+	}
+
+	private static NestedLocation create(int index, String location) {
 		String file = location.substring(0, index);
 		String nestedEntryName = location.substring(index + 1, location.length());
-		return new NestedLocation((!file.isEmpty()) ? new File(file) : null, nestedEntryName);
+		NestedLocation nestedLocation = new NestedLocation((!file.isEmpty()) ? new File(file) : null, nestedEntryName);
+		return nestedLocation;
 	}
 
 }
