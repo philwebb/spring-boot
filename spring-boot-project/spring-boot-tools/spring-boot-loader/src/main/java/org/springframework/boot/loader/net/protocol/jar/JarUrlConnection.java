@@ -22,6 +22,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.security.Permission;
 import java.util.List;
@@ -90,6 +91,9 @@ class JarUrlConnection extends java.net.JarURLConnection {
 		}
 		boolean useCaches = getUseCaches();
 		URL jarFileURL = getJarFileURL();
+		if (this.entryName != null && Boolean.TRUE.equals(useFastExceptions.get())) {
+			checkCachedForEntry(jarFileURL, this.entryName);
+		}
 		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
 		this.jarEntry = getJarEntry(jarFileURL);
 		boolean addedToCache = jarFiles.cacheIfAbsent(useCaches, jarFileURL, this.jarFile);
@@ -97,6 +101,19 @@ class JarUrlConnection extends java.net.JarURLConnection {
 			this.jarFileConnection = jarFiles.reconnect(this.jarFile, this.jarFileConnection);
 		}
 		this.connected = true;
+	}
+
+	/**
+	 * The {@link URLClassLoader} connect often to check if a resource exists, we can save
+	 * some object allocations by using the cached copy if we have one.
+	 * @param jarFileURL the jar file to check
+	 * @throws FileNotFoundException on a missing entry
+	 */
+	private void checkCachedForEntry(URL jarFileURL, String entryName) throws FileNotFoundException {
+		JarFile cachedJarFile = jarFiles.getCached(jarFileURL);
+		if (cachedJarFile != null && cachedJarFile.getJarEntry(entryName) == null) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
 	}
 
 	private JarEntry getJarEntry(URL jarFileUrl) throws IOException {
