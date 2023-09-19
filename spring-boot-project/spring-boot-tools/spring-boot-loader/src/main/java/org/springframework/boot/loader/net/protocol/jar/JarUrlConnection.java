@@ -107,6 +107,7 @@ class JarUrlConnection extends java.net.JarURLConnection {
 	 * The {@link URLClassLoader} connect often to check if a resource exists, we can save
 	 * some object allocations by using the cached copy if we have one.
 	 * @param jarFileURL the jar file to check
+	 * @param entryName the entry name to check
 	 * @throws FileNotFoundException on a missing entry
 	 */
 	private void checkCachedForEntry(URL jarFileURL, String entryName) throws FileNotFoundException {

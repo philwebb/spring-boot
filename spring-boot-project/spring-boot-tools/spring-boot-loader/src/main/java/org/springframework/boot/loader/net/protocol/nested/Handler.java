@@ -41,4 +41,11 @@ public class Handler extends URLStreamHandler {
 	public static void assertUrlIsNotMalformed(String url) {
 	}
 
+	/**
+	 * Clear any internal caches.
+	 */
+	public static void clearCache() {
+		NestedLocation.clearCache();
+	}
+
 }

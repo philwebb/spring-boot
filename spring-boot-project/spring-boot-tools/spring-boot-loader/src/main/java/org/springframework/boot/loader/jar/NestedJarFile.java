@@ -83,6 +83,10 @@ public class NestedJarFile extends JarFile {
 
 	private volatile boolean closed;
 
+	private volatile ManifestInfo manifestInfo;
+
+	private volatile MetaInfVersionsInfo metaInfVersionsInfo;
+
 	/**
 	 * Creates a new {@link NestedJarFile} instance to read from the specific
 	 * {@code File}.
@@ -225,18 +229,12 @@ public class NestedJarFile extends JarFile {
 	private ZipContent.Entry getVersionedContentEntry(String name) {
 		// NOTE: we can't call isMultiRelease() directly because it's a final method and
 		// it inspects the container jar. We use ManifestInfo instead.
-		ManifestInfo manifestInfo;
-		MetaInfVersionsInfo versionsInfo;
-		synchronized (this) {
-			ensureOpen();
-			manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
-			versionsInfo = this.resources.zipContent().getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
-		}
-		if (!manifestInfo.isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION >= this.version) {
+		if (!getManifestInfo().isMultiRelease() || name.startsWith(META_INF) || BASE_VERSION >= this.version) {
 			return null;
 		}
-		int[] versions = versionsInfo.versions();
-		String[] directories = versionsInfo.directories();
+		MetaInfVersionsInfo metaInfVersionsInfo = getMetaInfVersionsInfo();
+		int[] versions = metaInfVersionsInfo.versions();
+		String[] directories = metaInfVersionsInfo.directories();
 		for (int i = versions.length - 1; i >= 0; i--) {
 			if (versions[i] <= this.version) {
 				ZipContent.Entry entry = getContentEntry(directories[i], name);
@@ -262,6 +260,19 @@ public class NestedJarFile extends JarFile {
 		}
 	}
 
+	private ManifestInfo getManifestInfo() {
+		ManifestInfo manifestInfo = this.manifestInfo;
+		if (manifestInfo != null) {
+			return manifestInfo;
+		}
+		synchronized (this) {
+			ensureOpen();
+			manifestInfo = this.resources.zipContent().getInfo(ManifestInfo.class, this::getManifestInfo);
+		}
+		this.manifestInfo = manifestInfo;
+		return manifestInfo;
+	}
+
 	private ManifestInfo getManifestInfo(ZipContent zipContent) {
 		ZipContent.Entry contentEntry = zipContent.getEntry(MANIFEST_NAME);
 		if (contentEntry == null) {
@@ -276,6 +287,20 @@ public class NestedJarFile extends JarFile {
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	private MetaInfVersionsInfo getMetaInfVersionsInfo() {
+		MetaInfVersionsInfo metaInfVersionsInfo = this.metaInfVersionsInfo;
+		if (metaInfVersionsInfo != null) {
+			return metaInfVersionsInfo;
+		}
+		synchronized (this) {
+			ensureOpen();
+			metaInfVersionsInfo = this.resources.zipContent()
+				.getInfo(MetaInfVersionsInfo.class, MetaInfVersionsInfo::get);
+		}
+		this.metaInfVersionsInfo = metaInfVersionsInfo;
+		return metaInfVersionsInfo;
 	}
 
 	@Override
