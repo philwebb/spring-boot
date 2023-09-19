@@ -57,6 +57,8 @@ public class LaunchedClassLoader extends URLClassLoader {
 
 	private volatile DefinePackageCallType definePackageCallType;
 
+	private final URL[] urls;
+
 	/**
 	 * Create a new {@link LaunchedClassLoader} instance.
 	 * @param exploded if the underlying archive is exploded
@@ -78,6 +80,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 		super(urls, parent);
 		this.exploded = exploded;
 		this.rootArchive = rootArchive;
+		this.urls = urls;
 	}
 
 	@Override
@@ -166,6 +169,9 @@ public class LaunchedClassLoader extends URLClassLoader {
 	 * @param className the class name being found
 	 */
 	private void definePackageIfNecessary(String className) {
+		if (className.startsWith("java.")) {
+			return;
+		}
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot >= 0) {
 			String packageName = className.substring(0, lastDot);
@@ -194,7 +200,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 	private void definePackage(String className, String packageName) {
 		String packageEntryName = packageName.replace('.', '/') + "/";
 		String classEntryName = className.replace('.', '/') + ".class";
-		for (URL url : getURLs()) {
+		for (URL url : this.urls) {
 			try {
 				URLConnection connection = url.openConnection();
 				if (connection instanceof JarURLConnection jarURLConnection) {
@@ -279,6 +285,8 @@ public class LaunchedClassLoader extends URLClassLoader {
 		if (this.exploded) {
 			return;
 		}
+		org.springframework.boot.loader.net.protocol.jar.Handler.clearCache();
+		org.springframework.boot.loader.net.protocol.nested.Handler.clearCache();
 		for (URL url : getURLs()) {
 			try {
 				URLConnection connection = url.openConnection();

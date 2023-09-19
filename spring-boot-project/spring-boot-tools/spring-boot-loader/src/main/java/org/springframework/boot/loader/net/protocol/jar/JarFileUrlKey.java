@@ -80,4 +80,8 @@ final class JarFileUrlKey {
 		return new JarFileUrlKey(value.toString());
 	}
 
+	static void clearCache() {
+		cache.clear();
+	}
+
 }
