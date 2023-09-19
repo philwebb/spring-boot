@@ -64,12 +64,16 @@ class UrlJarFiles {
 	 */
 	JarFile getOrCreate(boolean useCaches, URL jarFileUrl) throws IOException {
 		if (useCaches) {
-			JarFile cached = this.cache.get(jarFileUrl);
+			JarFile cached = getCached(jarFileUrl);
 			if (cached != null) {
 				return cached;
 			}
 		}
 		return this.factory.createJarFile(jarFileUrl, this::onClose);
+	}
+
+	JarFile getCached(URL jarFileUrl) {
+		return this.cache.get(jarFileUrl);
 	}
 
 	/**
@@ -94,7 +98,7 @@ class UrlJarFiles {
 	 * @throws IOException on I/O error
 	 */
 	void closeIfNotCached(URL jarFileUrl, JarFile jarFile) throws IOException {
-		JarFile cached = this.cache.get(jarFileUrl);
+		JarFile cached = getCached(jarFileUrl);
 		if (cached != jarFile) {
 			jarFile.close();
 		}
