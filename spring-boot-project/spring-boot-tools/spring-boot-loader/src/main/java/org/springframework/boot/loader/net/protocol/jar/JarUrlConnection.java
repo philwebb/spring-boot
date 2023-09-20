@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.springframework.boot.loader.jar.NestedJarFile;
 import org.springframework.boot.loader.net.util.UrlDecoder;
 
 /**
@@ -331,12 +332,17 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				String entryName = UrlDecoder.decode(spec.substring(separator + 2, spec.length()));
 				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
 				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
-				if (jarFile.getJarEntry(entryName) == null) {
+				if (!hasEntry(jarFile, entryName)) {
 					return noFound(jarFile.getName(), entryName);
 				}
 			}
 		}
 		return new JarUrlConnection(url);
+	}
+
+	private static boolean hasEntry(JarFile jarFile, String name) {
+		return (jarFile instanceof NestedJarFile nestedJarFile) ? nestedJarFile.hasEntry(name)
+				: jarFile.getEntry(name) != null;
 	}
 
 	private static URLConnection noFound(String jarFileName, String entryName) throws IOException {
