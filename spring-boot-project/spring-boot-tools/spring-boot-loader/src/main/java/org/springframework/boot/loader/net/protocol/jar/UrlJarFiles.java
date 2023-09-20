@@ -76,10 +76,6 @@ class UrlJarFiles {
 		return this.cache.get(jarFileUrl);
 	}
 
-	JarFile getCached(String urlKey) {
-		return this.cache.getForUrlKey(urlKey);
-	}
-
 	/**
 	 * Cache the given {@link JarFile} if caching can be used and there is no existing
 	 * entry.
@@ -150,12 +146,6 @@ class UrlJarFiles {
 		 */
 		JarFile get(URL jarFileUrl) {
 			String urlKey = JarFileUrlKey.get(jarFileUrl);
-			synchronized (this) {
-				return this.jarFileUrlToJarFileCache.get(urlKey);
-			}
-		}
-
-		JarFile getForUrlKey(String urlKey) {
 			synchronized (this) {
 				return this.jarFileUrlToJarFileCache.get(urlKey);
 			}

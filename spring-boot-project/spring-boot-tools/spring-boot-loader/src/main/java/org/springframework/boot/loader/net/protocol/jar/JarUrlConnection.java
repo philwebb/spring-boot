@@ -29,6 +29,7 @@ import java.security.Permission;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -69,7 +70,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				}
 
 			});
-			NOT_FOUND_CONNECTION = new JarUrlConnection(NOT_FOUND_URL);
+			NOT_FOUND_CONNECTION = new JarUrlConnection(() -> FILE_NOT_FOUND_EXCEPTION);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
@@ -77,6 +78,8 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	private final String entryName;
+
+	private final Supplier<FileNotFoundException> notFound;
 
 	private JarFile jarFile;
 
@@ -89,10 +92,15 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	private JarUrlConnection(URL url) throws IOException {
 		super(url);
 		this.entryName = getEntryName();
-		if (url != NOT_FOUND_URL) {
-			this.jarFileConnection = getJarFileURL().openConnection();
-			this.jarFileConnection.setUseCaches(this.useCaches);
-		}
+		this.notFound = null;
+		this.jarFileConnection = getJarFileURL().openConnection();
+		this.jarFileConnection.setUseCaches(this.useCaches);
+	}
+
+	private JarUrlConnection(Supplier<FileNotFoundException> notFound) throws IOException {
+		super(NOT_FOUND_URL);
+		this.entryName = null;
+		this.notFound = notFound;
 	}
 
 	@Override
@@ -117,8 +125,8 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (this.connected) {
 			return;
 		}
-		if (getURL() == NOT_FOUND_URL) {
-			throw FILE_NOT_FOUND_EXCEPTION;
+		if (this.notFound != null) {
+			throw this.notFound.get();
 		}
 		boolean useCaches = getUseCaches();
 		URL jarFileURL = getJarFileURL();
@@ -311,22 +319,32 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	static URLConnection open(URL url) throws IOException {
-		if (Boolean.TRUE == useFastExceptions.get()) {
-			String spec = url.getFile();
+		String spec = url.getFile();
+		if (spec.startsWith("nested:")) {
 			int separator = spec.indexOf("!/");
 			boolean hasEntry = separator + 2 != spec.length();
 			if (separator != -1 && hasEntry) {
-				String urlKey = spec.substring(0, separator);
-				JarFile cached = jarFiles.getCached(urlKey);
-				if (cached != null) {
-					String entryName = UrlDecoder.decode(spec.substring(separator + 2, spec.length()));
-					if (cached.getJarEntry(entryName) == null) {
-						return NOT_FOUND_CONNECTION;
-					}
+				URL jarFileUrl = new URL(spec.substring(0, separator));
+				if ("runtime".equals(url.getRef())) {
+					jarFileUrl = new URL(jarFileUrl, "#runtime");
+				}
+				String entryName = UrlDecoder.decode(spec.substring(separator + 2, spec.length()));
+				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
+				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
+				if (jarFile.getJarEntry(entryName) == null) {
+					return noFound(jarFile.getName(), entryName);
 				}
 			}
 		}
 		return new JarUrlConnection(url);
+	}
+
+	private static URLConnection noFound(String jarFileName, String entryName) throws IOException {
+		if (Boolean.TRUE == useFastExceptions.get()) {
+			return NOT_FOUND_CONNECTION;
+		}
+		return new JarUrlConnection(
+				() -> new FileNotFoundException("JAR entry " + entryName + " not found in " + jarFileName));
 	}
 
 	/**
