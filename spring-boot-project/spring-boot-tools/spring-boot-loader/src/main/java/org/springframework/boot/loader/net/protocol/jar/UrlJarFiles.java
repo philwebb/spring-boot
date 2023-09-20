@@ -76,6 +76,10 @@ class UrlJarFiles {
 		return this.cache.get(jarFileUrl);
 	}
 
+	JarFile getCached(String urlKey) {
+		return this.cache.getForUrlKey(urlKey);
+	}
+
 	/**
 	 * Cache the given {@link JarFile} if caching can be used and there is no existing
 	 * entry.
@@ -135,7 +139,7 @@ class UrlJarFiles {
 	 */
 	private static class Cache {
 
-		private final Map<JarFileUrlKey, JarFile> jarFileUrlToJarFileCache = new HashMap<>();
+		private final Map<String, JarFile> jarFileUrlToJarFileCache = new HashMap<>();
 
 		private final Map<JarFile, URL> jarFileToJarFileUrlCache = new HashMap<>();
 
@@ -145,7 +149,13 @@ class UrlJarFiles {
 		 * @return the cached {@link JarFile} or {@code null}
 		 */
 		JarFile get(URL jarFileUrl) {
-			JarFileUrlKey urlKey = JarFileUrlKey.get(jarFileUrl);
+			String urlKey = JarFileUrlKey.get(jarFileUrl);
+			synchronized (this) {
+				return this.jarFileUrlToJarFileCache.get(urlKey);
+			}
+		}
+
+		JarFile getForUrlKey(String urlKey) {
 			synchronized (this) {
 				return this.jarFileUrlToJarFileCache.get(urlKey);
 			}
@@ -171,7 +181,7 @@ class UrlJarFiles {
 		 * they were already there
 		 */
 		boolean putIfAbsent(URL jarFileUrl, JarFile jarFile) {
-			JarFileUrlKey urlKey = JarFileUrlKey.get(jarFileUrl);
+			String urlKey = JarFileUrlKey.get(jarFileUrl);
 			synchronized (this) {
 				JarFile cached = this.jarFileUrlToJarFileCache.get(urlKey);
 				if (cached == null) {

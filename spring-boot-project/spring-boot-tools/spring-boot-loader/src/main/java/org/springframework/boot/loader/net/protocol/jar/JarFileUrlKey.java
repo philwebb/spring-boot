@@ -21,36 +21,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Key generated from a jar file {@link URL} that can be used as a cache key.
+ * Utility to generate a string key from a jar file {@link URL} that can be used as a
+ * cache key.
  *
  * @author Phillip Webb
  */
 final class JarFileUrlKey {
 
-	private static final Map<URL, JarFileUrlKey> cache = new ConcurrentHashMap<>();
+	private static final Map<URL, String> cache = new ConcurrentHashMap<>();
 
-	private final String value;
-
-	private JarFileUrlKey(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		return this.value.equals(((JarFileUrlKey) obj).value);
-	}
-
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return this.value;
+	private JarFileUrlKey() {
 	}
 
 	/**
@@ -58,18 +38,18 @@ final class JarFileUrlKey {
 	 * @param url the source URL
 	 * @return a {@link JarFileUrlKey} instance
 	 */
-	static JarFileUrlKey get(URL url) {
+	static String get(URL url) {
 		return cache.computeIfAbsent(url, JarFileUrlKey::create);
 	}
 
-	private static JarFileUrlKey create(URL url) {
+	private static String create(URL url) {
 		StringBuilder value = new StringBuilder();
 		String protocol = url.getProtocol();
 		String host = url.getHost();
 		int port = (url.getPort() != -1) ? url.getPort() : url.getDefaultPort();
 		String file = url.getFile();
-		value.append((protocol != null) ? protocol.toLowerCase() + "://" : "");
-		if (host != null) {
+		value.append((protocol != null) ? protocol.toLowerCase() + ":" : "");
+		if (host != null && !host.isEmpty()) {
 			value.append(host.toLowerCase());
 			value.append((port != -1) ? ":" + port : "");
 		}
@@ -77,7 +57,7 @@ final class JarFileUrlKey {
 		if ("runtime".equals(url.getRef())) {
 			value.append("#runtime");
 		}
-		return new JarFileUrlKey(value.toString());
+		return value.toString();
 	}
 
 	static void clearCache() {
