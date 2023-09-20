@@ -162,6 +162,18 @@ class ZipStringTests {
 		assertStartsWith("one/three/", "one/two/").isEqualTo(-1);
 	}
 
+	@Test
+	void zipStringWhenMultiCodePointAtBufferBoundary() throws Exception {
+		StringBuilder source = new StringBuilder();
+		for (int i = 0; i < ZipString.BUFFER_SIZE - 1; i++) {
+			source.append("A");
+		}
+		source.append("\u1EFF");
+		String charSequence = source.toString();
+		source.append("suffix");
+		assertStartsWith(source.toString(), charSequence);
+	}
+
 	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean addSlash)
 			throws Exception {
 		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));

@@ -36,7 +36,7 @@ final class ZipString {
 
 	private static final DebugLogger debug = DebugLogger.get(ZipString.class);
 
-	private static final int BUFFER_SIZE = 128;
+	static final int BUFFER_SIZE = 128;
 
 	private static final int[] INITIAL_BYTE_BITMASK = { 0x7F, 0x1F, 0x0F, 0x07 };
 
@@ -113,8 +113,10 @@ final class ZipString {
 			pos += count;
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
-				if (!(byteIndex + codePointSize - 1 < count)) {
-					// FIXME
+				if (isNotEnoughBytesRemaining(byteIndex, codePointSize, count)) {
+					pos--;
+					len++;
+					break;
 				}
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
 				byteIndex += codePointSize;
@@ -167,7 +169,6 @@ final class ZipString {
 	 */
 	static int startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) {
 		try {
-			// FIXME check if we actually use the int return
 			return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
 		}
 		catch (IOException ex) {
@@ -192,8 +193,10 @@ final class ZipString {
 			pos += count;
 			for (int byteIndex = 0; byteIndex < count;) {
 				int codePointSize = getCodePointSize(bytes, byteIndex);
-				if (!(byteIndex + codePointSize - 1 < count)) {
-					// FIXME
+				if (isNotEnoughBytesRemaining(byteIndex, codePointSize, count)) {
+					pos--;
+					len++;
+					break;
 				}
 				int codePoint = getCodePoint(bytes, byteIndex, codePointSize);
 				result += codePointSize;
@@ -223,6 +226,10 @@ final class ZipString {
 			}
 		}
 		return (charSequenceIndex >= charSequence.length()) ? result : -1;
+	}
+
+	private static boolean isNotEnoughBytesRemaining(int byteIndex, int codePointSize, int count) {
+		return !(byteIndex + codePointSize - 1 < count);
 	}
 
 	private static boolean endsWith(CharSequence charSequence, char ch) {
