@@ -24,6 +24,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -58,6 +60,8 @@ public class LaunchedClassLoader extends URLClassLoader {
 	private volatile DefinePackageCallType definePackageCallType;
 
 	private final URL[] urls;
+
+	private final Map<URL, JarFile> jarFiles = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a new {@link LaunchedClassLoader} instance.
@@ -202,20 +206,12 @@ public class LaunchedClassLoader extends URLClassLoader {
 		String classEntryName = className.replace('.', '/') + ".class";
 		for (URL url : this.urls) {
 			try {
-				URLConnection connection = url.openConnection();
-				if (connection instanceof JarURLConnection jarURLConnection) {
-					JarFile jarFile = jarURLConnection.getJarFile();
-					try {
-						if (jarFile.getEntry(classEntryName) != null && jarFile.getEntry(packageEntryName) != null
-								&& jarFile.getManifest() != null) {
-							definePackage(packageName, jarFile.getManifest(), url);
-							return;
-						}
-					}
-					finally {
-						if (!jarURLConnection.getUseCaches()) {
-							jarFile.close();
-						}
+				JarFile jarFile = getJarFile(url);
+				if (jarFile != null) {
+					if (jarFile.getEntry(classEntryName) != null && jarFile.getEntry(packageEntryName) != null
+							&& jarFile.getManifest() != null) {
+						definePackage(packageName, jarFile.getManifest(), url);
+						return;
 					}
 				}
 			}
@@ -223,6 +219,28 @@ public class LaunchedClassLoader extends URLClassLoader {
 				// Ignore
 			}
 		}
+
+	}
+
+	private JarFile getJarFile(URL url) throws IOException {
+		JarFile jarFile = this.jarFiles.get(url);
+		if (jarFile != null) {
+			return jarFile;
+		}
+		URLConnection connection = url.openConnection();
+		if (!(connection instanceof JarURLConnection)) {
+			return null;
+		}
+		connection.setUseCaches(false);
+		jarFile = ((JarURLConnection) connection).getJarFile();
+		synchronized (this.jarFiles) {
+			JarFile previous = this.jarFiles.putIfAbsent(url, jarFile);
+			if (previous != null) {
+				jarFile.close();
+				jarFile = previous;
+			}
+		}
+		return jarFile;
 	}
 
 	@Override
@@ -282,6 +300,11 @@ public class LaunchedClassLoader extends URLClassLoader {
 	 * {@code ClearCachesApplicationListener}.
 	 */
 	public void clearCache() {
+		try {
+			clearJarFiles();
+		}
+		catch (IOException ex) {
+		}
 		if (this.exploded) {
 			return;
 		}
@@ -304,6 +327,21 @@ public class LaunchedClassLoader extends URLClassLoader {
 		JarFile jarFile = connection.getJarFile();
 		if (jarFile instanceof NestedJarFile nestedJarFile) {
 			nestedJarFile.clearCache();
+		}
+	}
+
+	@Override
+	public void close() throws IOException {
+		super.close();
+		clearJarFiles();
+	}
+
+	private void clearJarFiles() throws IOException {
+		synchronized (this.jarFiles) {
+			for (JarFile jarFile : this.jarFiles.values()) {
+				jarFile.close();
+			}
+			this.jarFiles.clear();
 		}
 	}
 
