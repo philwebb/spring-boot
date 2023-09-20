@@ -42,7 +42,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
-		return new JarUrlConnection(url);
+		return JarUrlConnection.open(url);
 	}
 
 	@Override

@@ -24,11 +24,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.security.Permission;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.springframework.boot.loader.net.util.UrlDecoder;
 
 /**
  * {@link java.net.JarURLConnection} alternative to
@@ -39,7 +43,7 @@ import java.util.jar.JarFile;
  * @author Andy Wilkinson
  * @author Rostyslav Dudka
  */
-class JarUrlConnection extends java.net.JarURLConnection {
+final class JarUrlConnection extends java.net.JarURLConnection {
 
 	private static final ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
 
@@ -49,6 +53,28 @@ class JarUrlConnection extends java.net.JarURLConnection {
 
 	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
 			"Jar file or entry not found");
+
+	private static final URL NOT_FOUND_URL;
+
+	private static final JarUrlConnection NOT_FOUND_CONNECTION;
+	static {
+		try {
+			NOT_FOUND_URL = new URL("jar:", null, 0, "nested:!/", new URLStreamHandler() {
+
+				@Override
+				protected URLConnection openConnection(URL u) throws IOException {
+					// Stub URLStreamHandler to prevent the wrong JAR Handler from being
+					// Instantiated and cached.
+					return null;
+				}
+
+			});
+			NOT_FOUND_CONNECTION = new JarUrlConnection(NOT_FOUND_URL);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
 
 	private final String entryName;
 
@@ -60,11 +86,13 @@ class JarUrlConnection extends java.net.JarURLConnection {
 
 	private String contentType;
 
-	JarUrlConnection(URL url) throws IOException {
+	private JarUrlConnection(URL url) throws IOException {
 		super(url);
 		this.entryName = getEntryName();
-		this.jarFileConnection = getJarFileURL().openConnection();
-		this.jarFileConnection.setUseCaches(this.useCaches);
+		if (url != NOT_FOUND_URL) {
+			this.jarFileConnection = getJarFileURL().openConnection();
+			this.jarFileConnection.setUseCaches(this.useCaches);
+		}
 	}
 
 	@Override
@@ -88,6 +116,9 @@ class JarUrlConnection extends java.net.JarURLConnection {
 	public void connect() throws IOException {
 		if (this.connected) {
 			return;
+		}
+		if (getURL() == NOT_FOUND_URL) {
+			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		boolean useCaches = getUseCaches();
 		URL jarFileURL = getJarFileURL();
@@ -204,66 +235,97 @@ class JarUrlConnection extends java.net.JarURLConnection {
 
 	@Override
 	public String getHeaderField(String name) {
-		return this.jarFileConnection.getHeaderField(name);
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getHeaderField(name) : null;
 	}
 
 	@Override
 	public String getRequestProperty(String key) {
-		return this.jarFileConnection.getRequestProperty(key);
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getRequestProperty(key) : null;
 	}
 
 	@Override
 	public void setRequestProperty(String key, String value) {
-		this.jarFileConnection.setRequestProperty(key, value);
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setRequestProperty(key, value);
+		}
 	}
 
 	@Override
 	public void addRequestProperty(String key, String value) {
-		this.jarFileConnection.addRequestProperty(key, value);
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.addRequestProperty(key, value);
+		}
 	}
 
 	@Override
 	public Map<String, List<String>> getRequestProperties() {
-		return this.jarFileConnection.getRequestProperties();
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getRequestProperties()
+				: Collections.emptyMap();
 	}
 
 	@Override
 	public boolean getAllowUserInteraction() {
-		return this.jarFileConnection.getAllowUserInteraction();
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getAllowUserInteraction() : false;
 	}
 
 	@Override
 	public void setAllowUserInteraction(boolean allowuserinteraction) {
-		this.jarFileConnection.setAllowUserInteraction(allowuserinteraction);
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setAllowUserInteraction(allowuserinteraction);
+		}
 	}
 
 	@Override
 	public boolean getUseCaches() {
-		return this.jarFileConnection.getUseCaches();
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getUseCaches() : true;
 	}
 
 	@Override
 	public void setUseCaches(boolean usecaches) {
-		this.jarFileConnection.setUseCaches(usecaches);
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setUseCaches(usecaches);
+		}
 	}
 
 	@Override
 	public void setIfModifiedSince(long ifmodifiedsince) {
-		this.jarFileConnection.setIfModifiedSince(ifmodifiedsince);
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setIfModifiedSince(ifmodifiedsince);
+		}
 	}
 
 	@Override
 	public boolean getDefaultUseCaches() {
-		return this.jarFileConnection.getDefaultUseCaches();
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getDefaultUseCaches() : true;
 	}
 
 	@Override
 	public void setDefaultUseCaches(boolean defaultusecaches) {
-		this.jarFileConnection.setDefaultUseCaches(defaultusecaches);
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setDefaultUseCaches(defaultusecaches);
+		}
 	}
 
 	static void useFastExceptions(boolean useFastExceptions) {
 		JarUrlConnection.useFastExceptions.set(useFastExceptions);
+	}
+
+	static URLConnection open(URL url) throws IOException {
+		if (Boolean.TRUE == useFastExceptions.get()) {
+			String spec = url.getFile();
+			int separator = spec.indexOf("!/");
+			if (separator != -1 && separator + 2 != spec.length()) {
+				String urlKey = spec.substring(0, separator);
+				JarFile cached = jarFiles.getCached(urlKey);
+				if (cached != null) {
+					String entryName = UrlDecoder.decode(spec.substring(separator + 2, spec.length()));
+					if (cached.getJarEntry(entryName) == null) {
+						return NOT_FOUND_CONNECTION;
+					}
+				}
+			}
+		}
+		return new JarUrlConnection(url);
 	}
 
 	/**
