@@ -23,8 +23,10 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.jar.JarFile;
@@ -62,6 +64,8 @@ public class LaunchedClassLoader extends URLClassLoader {
 	private final URL[] urls;
 
 	private final Map<URL, JarFile> jarFiles = new ConcurrentHashMap<>();
+
+	private final Set<String> undefinablePackages = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	/**
 	 * Create a new {@link LaunchedClassLoader} instance.
@@ -202,6 +206,9 @@ public class LaunchedClassLoader extends URLClassLoader {
 	}
 
 	private void definePackage(String className, String packageName) {
+		if (this.undefinablePackages.contains(packageName)) {
+			return;
+		}
 		String packageEntryName = packageName.replace('.', '/') + "/";
 		String classEntryName = className.replace('.', '/') + ".class";
 		for (URL url : this.urls) {
@@ -219,7 +226,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 				// Ignore
 			}
 		}
-
+		this.undefinablePackages.add(packageName);
 	}
 
 	private JarFile getJarFile(URL url) throws IOException {
