@@ -218,6 +218,26 @@ public class NestedJarFile extends JarFile {
 		return getNestedJarEntry(name);
 	}
 
+	/**
+	 * Return if an entry with the given name exists.
+	 * @param name the name to check
+	 * @return if the entry exists
+	 */
+	public boolean hasEntry(String name) {
+		NestedJarEntry lastEntry = this.lastEntry;
+		if (lastEntry != null && name.equals(lastEntry.getName())) {
+			return true;
+		}
+		ZipContent.Entry entry = getVersionedContentEntry(name);
+		if (entry != null) {
+			return false;
+		}
+		synchronized (this) {
+			ensureOpen();
+			return this.resources.zipContent().hasEntry(null, name);
+		}
+	}
+
 	private NestedJarEntry getNestedJarEntry(String name) {
 		Objects.requireNonNull(name, "name");
 		NestedJarEntry lastEntry = this.lastEntry;

@@ -215,7 +215,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 			try {
 				JarFile jarFile = getJarFile(url);
 				if (jarFile != null) {
-					if (jarFile.getEntry(classEntryName) != null && jarFile.getEntry(packageEntryName) != null
+					if (hasEntry(jarFile, classEntryName) && hasEntry(jarFile, packageEntryName)
 							&& jarFile.getManifest() != null) {
 						definePackage(packageName, jarFile.getManifest(), url);
 						return;
@@ -227,6 +227,11 @@ public class LaunchedClassLoader extends URLClassLoader {
 			}
 		}
 		this.undefinablePackages.add(packageName);
+	}
+
+	private boolean hasEntry(JarFile jarFile, String name) {
+		return (jarFile instanceof NestedJarFile nestedJarFile) ? nestedJarFile.hasEntry(name)
+				: jarFile.getEntry(name) != null;
 	}
 
 	private JarFile getJarFile(URL url) throws IOException {

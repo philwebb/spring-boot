@@ -214,6 +214,27 @@ public final class ZipContent implements Closeable {
 	}
 
 	/**
+	 * Return if an entry with the given name exists.
+	 * @param namePrefix an optional prefix for the name
+	 * @param name the name of the entry to find
+	 * @return the entry or {@code null}
+	 */
+	public boolean hasEntry(CharSequence namePrefix, CharSequence name) {
+		int nameHash = nameHash(namePrefix, name);
+		int lookupIndex = getFirstLookupIndex(nameHash);
+		int size = size();
+		while (lookupIndex >= 0 && lookupIndex < size && this.nameHashLookups[lookupIndex] == nameHash) {
+			long pos = getCentralDirectoryFileHeaderRecordPos(lookupIndex);
+			ZipCentralDirectoryFileHeaderRecord centralRecord = loadZipCentralDirectoryFileHeaderRecord(pos);
+			if (hasName(lookupIndex, centralRecord, pos, namePrefix, name)) {
+				return true;
+			}
+			lookupIndex++;
+		}
+		return false;
+	}
+
+	/**
 	 * Return the entry at the specified index.
 	 * @param index the entry index
 	 * @return the entry
