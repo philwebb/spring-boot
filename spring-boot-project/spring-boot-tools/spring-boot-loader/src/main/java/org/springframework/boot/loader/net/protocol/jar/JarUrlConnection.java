@@ -177,7 +177,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (this.jarEntry == null) {
 			throwFileNotFound();
 		}
-		return new ConnectionInputStream(this.jarFile.getInputStream(this.jarEntry));
+		return new ConnectionInputStream();
 	}
 
 	private void throwFileNotFound() throws FileNotFoundException {
@@ -348,12 +348,74 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	/**
-	 * Connection {@link InputStream}.
+	 * Connection {@link InputStream}. This is not a {@link FilterInputStream} since
+	 * {@link URLClassLoader} often creates streams that it doesn't call.
 	 */
-	class ConnectionInputStream extends FilterInputStream {
+	class ConnectionInputStream extends InputStream {
 
-		ConnectionInputStream(InputStream in) {
-			super(in);
+		private volatile InputStream in;
+
+		@Override
+		public int read() throws IOException {
+			return in().read();
+		}
+
+		@Override
+		public int read(byte[] b) throws IOException {
+			return in().read(b);
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			return in().read(b, off, len);
+		}
+
+		@Override
+		public long skip(long n) throws IOException {
+			return in().skip(n);
+		}
+
+		@Override
+		public int available() throws IOException {
+			return in().available();
+		}
+
+		@Override
+		public boolean markSupported() {
+			try {
+				return in().markSupported();
+			}
+			catch (IOException ex) {
+				return false;
+			}
+		}
+
+		@Override
+		public synchronized void mark(int readlimit) {
+			try {
+				in().mark(readlimit);
+			}
+			catch (IOException ex) {
+			}
+		}
+
+		@Override
+		public synchronized void reset() throws IOException {
+			in().reset();
+		}
+
+		private InputStream in() throws IOException {
+			InputStream in = this.in;
+			if (in == null) {
+				synchronized (this) {
+					in = this.in;
+					if (in == null) {
+						in = JarUrlConnection.this.jarFile.getInputStream(JarUrlConnection.this.jarEntry);
+						this.in = in;
+					}
+				}
+			}
+			return in;
 		}
 
 		@Override
