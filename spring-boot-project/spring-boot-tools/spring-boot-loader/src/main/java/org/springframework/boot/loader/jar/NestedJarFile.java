@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.ByteBuffer;
+import java.nio.file.attribute.FileTime;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
+import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -75,11 +77,7 @@ public class NestedJarFile extends JarFile {
 
 	private final int version;
 
-	private String lastNamePrefix;
-
-	private String lastName;
-
-	private ZipContent.Entry lastContentEntry;
+	private volatile NestedJarEntry lastEntry;
 
 	private volatile boolean closed;
 
@@ -166,7 +164,7 @@ public class NestedJarFile extends JarFile {
 	public Stream<JarEntry> stream() {
 		synchronized (this) {
 			ensureOpen();
-			return streamContentEntries().map((contentEntry) -> contentEntry.as(NestedJarEntry::new));
+			return streamContentEntries().map((contentEntry) -> contentEntry.as(NestedJarEntry::new).lock());
 		}
 	}
 
@@ -221,9 +219,18 @@ public class NestedJarFile extends JarFile {
 
 	private NestedJarEntry getNestedJarEntry(String name) {
 		Objects.requireNonNull(name, "name");
+		NestedJarEntry lastEntry = this.lastEntry;
+		if (lastEntry != null && name.equals(lastEntry.getName())) {
+			return lastEntry;
+		}
 		ZipContent.Entry entry = getVersionedContentEntry(name);
 		entry = (entry != null) ? entry : getContentEntry(null, name);
-		return (entry != null) ? entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name)) : null;
+		if (entry == null) {
+			return null;
+		}
+		NestedJarEntry nestedJarEntry = entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name)).lock();
+		this.lastEntry = nestedJarEntry;
+		return nestedJarEntry;
 	}
 
 	private ZipContent.Entry getVersionedContentEntry(String name) {
@@ -249,14 +256,7 @@ public class NestedJarFile extends JarFile {
 	private ZipContent.Entry getContentEntry(String namePrefix, String name) {
 		synchronized (this) {
 			ensureOpen();
-			if (Objects.equals(namePrefix, this.lastNamePrefix) && Objects.equals(name, this.lastName)) {
-				return this.lastContentEntry;
-			}
-			ZipContent.Entry contentEntry = this.resources.zipContent().getEntry(namePrefix, name);
-			this.lastNamePrefix = namePrefix;
-			this.lastName = name;
-			this.lastContentEntry = contentEntry;
-			return contentEntry;
+			return this.resources.zipContent().getEntry(namePrefix, name);
 		}
 	}
 
@@ -385,9 +385,7 @@ public class NestedJarFile extends JarFile {
 	 */
 	public void clearCache() {
 		synchronized (this) {
-			this.lastNamePrefix = null;
-			this.lastName = null;
-			this.lastContentEntry = null;
+			this.lastEntry = null;
 		}
 	}
 
@@ -400,10 +398,89 @@ public class NestedJarFile extends JarFile {
 
 		private final String name;
 
+		private volatile boolean locked;
+
 		NestedJarEntry(ZipContent.Entry contentEntry, String name) {
 			super(contentEntry.getName());
 			this.contentEntry = contentEntry;
 			this.name = name;
+		}
+
+		@Override
+		public void setTime(long time) {
+			assertNotLocked();
+			super.setTime(time);
+		}
+
+		@Override
+		public void setTimeLocal(LocalDateTime time) {
+			assertNotLocked();
+			super.setTimeLocal(time);
+		}
+
+		@Override
+		public ZipEntry setLastModifiedTime(FileTime time) {
+			assertNotLocked();
+			return super.setLastModifiedTime(time);
+		}
+
+		@Override
+		public ZipEntry setLastAccessTime(FileTime time) {
+			assertNotLocked();
+			return super.setLastAccessTime(time);
+		}
+
+		@Override
+		public ZipEntry setCreationTime(FileTime time) {
+			assertNotLocked();
+			return super.setCreationTime(time);
+		}
+
+		@Override
+		public void setSize(long size) {
+			assertNotLocked();
+			super.setSize(size);
+		}
+
+		@Override
+		public void setCompressedSize(long csize) {
+			assertNotLocked();
+			super.setCompressedSize(csize);
+		}
+
+		@Override
+		public void setCrc(long crc) {
+			assertNotLocked();
+			super.setCrc(crc);
+		}
+
+		@Override
+		public void setMethod(int method) {
+			assertNotLocked();
+			super.setMethod(method);
+		}
+
+		@Override
+		public void setExtra(byte[] extra) {
+			assertNotLocked();
+			super.setExtra(extra);
+		}
+
+		@Override
+		public void setComment(String comment) {
+			assertNotLocked();
+			super.setComment(comment);
+		}
+
+		NestedJarEntry lock() {
+			this.locked = true;
+			return this;
+		}
+
+		private void assertNotLocked() {
+			if (this.locked) {
+				throw new IllegalStateException("Neste jar entries cannot be modified");
+			}
 		}
 
 		boolean isOwnedBy(NestedJarFile nestedJarFile) {
@@ -471,7 +548,7 @@ public class NestedJarFile extends JarFile {
 			}
 			synchronized (NestedJarFile.this) {
 				ensureOpen();
-				return this.zipContent.getEntry(this.cursor++).as(NestedJarEntry::new);
+				return this.zipContent.getEntry(this.cursor++).as(NestedJarEntry::new).lock();
 			}
 		}
 

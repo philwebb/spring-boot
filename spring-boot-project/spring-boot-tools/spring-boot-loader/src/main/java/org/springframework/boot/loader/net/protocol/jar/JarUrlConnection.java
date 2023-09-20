@@ -314,7 +314,8 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (Boolean.TRUE == useFastExceptions.get()) {
 			String spec = url.getFile();
 			int separator = spec.indexOf("!/");
-			if (separator != -1 && separator + 2 != spec.length()) {
+			boolean hasEntry = separator + 2 != spec.length();
+			if (separator != -1 && hasEntry) {
 				String urlKey = spec.substring(0, separator);
 				JarFile cached = jarFiles.getCached(urlKey);
 				if (cached != null) {
