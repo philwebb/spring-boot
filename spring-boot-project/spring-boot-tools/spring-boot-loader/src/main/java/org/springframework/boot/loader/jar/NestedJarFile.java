@@ -46,6 +46,7 @@ import org.springframework.boot.loader.log.DebugLogger;
 import org.springframework.boot.loader.ref.Cleaner;
 import org.springframework.boot.loader.zip.CloseableDataBlock;
 import org.springframework.boot.loader.zip.ZipContent;
+import org.springframework.boot.loader.zip.ZipContent.Entry;
 
 /**
  * Extended variant of {@link JarFile} that behaves in the same way but can open nested
@@ -164,7 +165,7 @@ public class NestedJarFile extends JarFile {
 	public Stream<JarEntry> stream() {
 		synchronized (this) {
 			ensureOpen();
-			return streamContentEntries().map((contentEntry) -> contentEntry.as(NestedJarEntry::new).lock());
+			return streamContentEntries().map((contentEntry) -> new NestedJarEntry(contentEntry));
 		}
 	}
 
@@ -228,7 +229,7 @@ public class NestedJarFile extends JarFile {
 		if (entry == null) {
 			return null;
 		}
-		NestedJarEntry nestedJarEntry = entry.as((realEntry, realName) -> new NestedJarEntry(realEntry, name)).lock();
+		NestedJarEntry nestedJarEntry = new NestedJarEntry(entry, name);
 		this.lastEntry = nestedJarEntry;
 		return nestedJarEntry;
 	}
@@ -394,11 +395,18 @@ public class NestedJarFile extends JarFile {
 	 */
 	private class NestedJarEntry extends java.util.jar.JarEntry {
 
+		private static final IllegalStateException CANNOT_BE_MODIFIED_EXCEPTION = new IllegalStateException(
+				"Neste jar entries cannot be modified");
+
 		private final ZipContent.Entry contentEntry;
 
 		private final String name;
 
-		private volatile boolean locked;
+		private volatile boolean populated;
+
+		NestedJarEntry(Entry contentEntry) {
+			this(contentEntry, contentEntry.getName());
+		}
 
 		NestedJarEntry(ZipContent.Entry contentEntry, String name) {
 			super(contentEntry.getName());
@@ -407,80 +415,123 @@ public class NestedJarFile extends JarFile {
 		}
 
 		@Override
+		public long getTime() {
+			populate();
+			return super.getTime();
+		}
+
+		@Override
+		public LocalDateTime getTimeLocal() {
+			populate();
+			return super.getTimeLocal();
+		}
+
+		@Override
 		public void setTime(long time) {
-			assertNotLocked();
-			super.setTime(time);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		@Override
 		public void setTimeLocal(LocalDateTime time) {
-			assertNotLocked();
-			super.setTimeLocal(time);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public FileTime getLastModifiedTime() {
+			populate();
+			return super.getLastModifiedTime();
 		}
 
 		@Override
 		public ZipEntry setLastModifiedTime(FileTime time) {
-			assertNotLocked();
-			return super.setLastModifiedTime(time);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public FileTime getLastAccessTime() {
+			populate();
+			return super.getLastAccessTime();
 		}
 
 		@Override
 		public ZipEntry setLastAccessTime(FileTime time) {
-			assertNotLocked();
-			return super.setLastAccessTime(time);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public FileTime getCreationTime() {
+			populate();
+			return super.getCreationTime();
 		}
 
 		@Override
 		public ZipEntry setCreationTime(FileTime time) {
-			assertNotLocked();
-			return super.setCreationTime(time);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public long getSize() {
+			return this.contentEntry.getUncompressedSize() & 0xFFFFFFFFL;
 		}
 
 		@Override
 		public void setSize(long size) {
-			assertNotLocked();
-			super.setSize(size);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public long getCompressedSize() {
+			populate();
+			return super.getCompressedSize();
 		}
 
 		@Override
 		public void setCompressedSize(long csize) {
-			assertNotLocked();
-			super.setCompressedSize(csize);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public long getCrc() {
+			populate();
+			return super.getCrc();
 		}
 
 		@Override
 		public void setCrc(long crc) {
-			assertNotLocked();
-			super.setCrc(crc);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public int getMethod() {
+			populate();
+			return super.getMethod();
 		}
 
 		@Override
 		public void setMethod(int method) {
-			assertNotLocked();
-			super.setMethod(method);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public byte[] getExtra() {
+			populate();
+			return super.getExtra();
 		}
 
 		@Override
 		public void setExtra(byte[] extra) {
-			assertNotLocked();
-			super.setExtra(extra);
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
+		}
+
+		@Override
+		public String getComment() {
+			populate();
+			return super.getComment();
 		}
 
 		@Override
 		public void setComment(String comment) {
-			assertNotLocked();
-			super.setComment(comment);
-		}
-
-		NestedJarEntry lock() {
-			this.locked = true;
-			return this;
-		}
-
-		private void assertNotLocked() {
-			if (this.locked) {
-				throw new IllegalStateException("Neste jar entries cannot be modified");
-			}
+			throw CANNOT_BE_MODIFIED_EXCEPTION;
 		}
 
 		boolean isOwnedBy(NestedJarFile nestedJarFile) {
@@ -521,6 +572,21 @@ public class NestedJarFile extends JarFile {
 			return this.contentEntry;
 		}
 
+		private void populate() {
+			boolean populated = this.populated;
+			if (!populated) {
+				ZipEntry entry = this.contentEntry.as(ZipEntry::new);
+				super.setMethod(entry.getMethod());
+				super.setTime(entry.getTime());
+				super.setCrc(entry.getCrc());
+				super.setCompressedSize(entry.getCompressedSize());
+				super.setSize(entry.getSize());
+				super.setExtra(entry.getExtra());
+				super.setComment(entry.getComment());
+				this.populated = true;
+			}
+		}
+
 	}
 
 	/**
@@ -548,7 +614,7 @@ public class NestedJarFile extends JarFile {
 			}
 			synchronized (NestedJarFile.this) {
 				ensureOpen();
-				return this.zipContent.getEntry(this.cursor++).as(NestedJarEntry::new).lock();
+				return new NestedJarEntry(this.zipContent.getEntry(this.cursor++));
 			}
 		}
 
