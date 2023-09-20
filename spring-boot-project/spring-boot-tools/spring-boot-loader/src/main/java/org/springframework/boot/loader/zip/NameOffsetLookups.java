@@ -29,9 +29,9 @@ class NameOffsetLookups {
 
 	public static final NameOffsetLookups NONE = new NameOffsetLookups(0, 0);
 
-	private int offset;
+	private final int offset;
 
-	private BitSet enabled;
+	private final BitSet enabled;
 
 	NameOffsetLookups(int offset, int size) {
 		this.offset = offset;

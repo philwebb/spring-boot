@@ -69,7 +69,7 @@ final class ZipString {
 	 * @return the hash
 	 */
 	static int hash(int initialHash, CharSequence charSequence, boolean addEndSlash) {
-		if (charSequence == null || charSequence.length() == 0) {
+		if (charSequence == null || charSequence.isEmpty()) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
 		boolean endsWithSlash = charSequence.charAt(charSequence.length() - 1) == '/';
@@ -103,7 +103,7 @@ final class ZipString {
 		if (len == 0) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
-		ByteBuffer buffer = ByteBuffer.allocate((len < BUFFER_SIZE) ? len : BUFFER_SIZE);
+		ByteBuffer buffer = ByteBuffer.allocate(Math.min(len, BUFFER_SIZE));
 		byte[] bytes = buffer.array();
 		int hash = 0;
 		char lastChar = 0;
@@ -184,7 +184,7 @@ final class ZipString {
 		int charSequenceIndex = 0;
 		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
 		int result = 0;
-		ByteBuffer buffer = ByteBuffer.allocate((len < BUFFER_SIZE) ? len : BUFFER_SIZE);
+		ByteBuffer buffer = ByteBuffer.allocate(Math.min(len, BUFFER_SIZE));
 		byte[] bytes = buffer.array();
 		while (len > 0) {
 			int count = readInBuffer(dataBlock, pos, buffer, len);
@@ -226,7 +226,7 @@ final class ZipString {
 	}
 
 	private static boolean endsWith(CharSequence charSequence, char ch) {
-		return charSequence.length() > 0 && charSequence.charAt(charSequence.length() - 1) == ch;
+		return !charSequence.isEmpty() && charSequence.charAt(charSequence.length() - 1) == ch;
 	}
 
 	private static char getChar(CharSequence charSequence, int index) {
@@ -275,9 +275,6 @@ final class ZipString {
 		}
 		if ((b & 0xE0) == 0xC0) {
 			return 2;
-		}
-		if ((b & 0xF0) == 0x0E) {
-			return 3;
 		}
 		return 4;
 	}

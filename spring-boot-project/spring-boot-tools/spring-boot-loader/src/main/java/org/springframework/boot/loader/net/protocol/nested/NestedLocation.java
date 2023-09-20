@@ -50,7 +50,7 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  */
 public record NestedLocation(File file, String nestedEntryName) {
 
-	private static Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
+	private static final Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
 
 	public NestedLocation {
 		if (file == null) {
@@ -87,7 +87,7 @@ public record NestedLocation(File file, String nestedEntryName) {
 
 	private static NestedLocation create(int index, String location) {
 		String file = location.substring(0, index);
-		String nestedEntryName = location.substring(index + 1, location.length());
+		String nestedEntryName = location.substring(index + 1);
 		return new NestedLocation((!file.isEmpty()) ? new File(file) : null, nestedEntryName);
 	}
 

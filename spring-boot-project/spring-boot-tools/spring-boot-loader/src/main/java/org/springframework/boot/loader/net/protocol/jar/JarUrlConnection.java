@@ -329,7 +329,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				if ("runtime".equals(url.getRef())) {
 					jarFileUrl = new URL(jarFileUrl, "#runtime");
 				}
-				String entryName = UrlDecoder.decode(spec.substring(separator + 2, spec.length()));
+				String entryName = UrlDecoder.decode(spec.substring(separator + 2));
 				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
 				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
 				if (!hasEntry(jarFile, entryName)) {
@@ -402,6 +402,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				in().mark(readlimit);
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 

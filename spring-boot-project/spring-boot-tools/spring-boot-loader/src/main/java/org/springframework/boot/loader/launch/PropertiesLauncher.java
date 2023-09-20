@@ -20,12 +20,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -195,9 +195,9 @@ public class PropertiesLauncher extends Launcher {
 		return getClass().getResourceAsStream(config);
 	}
 
-	private String handleUrl(String path) throws UnsupportedEncodingException {
+	private String handleUrl(String path) {
 		if (path.startsWith("jar:file:") || path.startsWith("file:")) {
-			path = URLDecoder.decode(path, "UTF-8");
+			path = URLDecoder.decode(path, StandardCharsets.UTF_8);
 			if (path.startsWith("file:")) {
 				path = path.substring("file:".length());
 				if (path.startsWith("//")) {
@@ -298,7 +298,7 @@ public class PropertiesLauncher extends Launcher {
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
-			path = (path == null || path.isEmpty()) ? "/" : path;
+			path = (path.isEmpty()) ? "/" : path;
 			paths.add(path);
 		}
 		if (paths.isEmpty()) {
@@ -408,6 +408,7 @@ public class PropertiesLauncher extends Launcher {
 				}
 			}
 			catch (IllegalStateException ex) {
+				// Ignore
 			}
 		}
 		// Otherwise try the root archive
@@ -519,7 +520,7 @@ public class PropertiesLauncher extends Launcher {
 		Archive archive = (file != null) ? new JarFileArchive(file) : this.archive;
 		try {
 			urls.addAll(archive.getClassPathUrls(includeByPrefix(path)));
-			if (!isJustArchive && (file != null) && (path == null || path.isEmpty() || ".".equals(path))) {
+			if (!isJustArchive && file != null && path.isEmpty()) {
 				urls.add(JarUrl.create(file));
 			}
 			return urls;

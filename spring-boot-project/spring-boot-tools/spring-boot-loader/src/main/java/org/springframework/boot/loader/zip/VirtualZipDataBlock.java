@@ -45,8 +45,8 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 		this.data = data;
 		List<DataBlock> parts = new ArrayList<>();
 		List<DataBlock> centralParts = new ArrayList<>();
-		int offset = 0;
-		int sizeOfCentralDirectory = 0;
+		long offset = 0;
+		long sizeOfCentralDirectory = 0;
 		for (int i = 0; i < centralRecords.length; i++) {
 			ZipCentralDirectoryFileHeaderRecord centralRecord = centralRecords[i];
 			int nameOffset = nameOffsetLookups.get(i);
@@ -58,12 +58,12 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 					centralRecord.offsetToLocalHeader());
 			DataBlock content = new DataPart(centralRecord.offsetToLocalHeader() + localRecord.size(),
 					centralRecord.compressedSize());
-			sizeOfCentralDirectory += addToCentral(centralParts, centralRecord, centralRecordPos, name, offset);
+			sizeOfCentralDirectory += addToCentral(centralParts, centralRecord, centralRecordPos, name, (int) offset);
 			offset += addToLocal(parts, localRecord, name, content);
 		}
 		parts.addAll(centralParts);
 		ZipEndOfCentralDirectoryRecord eocd = new ZipEndOfCentralDirectoryRecord((short) centralRecords.length,
-				sizeOfCentralDirectory, offset);
+				(int) sizeOfCentralDirectory, (int) offset);
 		parts.add(new ByteArrayDataBlock(eocd.asByteArray()));
 		setParts(parts);
 	}
@@ -103,9 +103,9 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 	 */
 	final class DataPart implements DataBlock {
 
-		private long offset;
+		private final long offset;
 
-		private long size;
+		private final long size;
 
 		DataPart(long offset, long size) {
 			this.offset = offset;

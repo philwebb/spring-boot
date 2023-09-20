@@ -78,7 +78,7 @@ class VirtualDataBlock implements DataBlock {
 		for (DataBlock part : this.parts) {
 			while (pos >= offset && pos < offset + part.size()) {
 				int count = part.read(dst, pos - offset);
-				result += (count < 0) ? 0 : count;
+				result += Math.max(count, 0);
 				if (count <= 0 || !dst.hasRemaining()) {
 					return result;
 				}

@@ -53,7 +53,7 @@ public class Handler extends URLStreamHandler {
 		int anchorIndex = spec.indexOf('#', limit);
 		SpecFormat format = SpecFormat.detect(spec, start, anchorIndex);
 		String path = format.extractPath(url, spec, start, limit);
-		String ref = (anchorIndex != -1) ? spec.substring(anchorIndex + 1, spec.length()) : null;
+		String ref = (anchorIndex != -1) ? spec.substring(anchorIndex + 1) : null;
 		setURL(url, PROTOCOL, "", -1, null, null, path, null, ref);
 	}
 

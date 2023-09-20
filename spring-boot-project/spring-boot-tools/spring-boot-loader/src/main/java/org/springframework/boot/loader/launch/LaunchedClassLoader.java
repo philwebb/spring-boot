@@ -130,6 +130,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 				return result;
 			}
 			catch (ClassNotFoundException ex) {
+				// Ignore
 			}
 		}
 		if (this.exploded) {
@@ -316,6 +317,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 			clearJarFiles();
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 		if (this.exploded) {
 			return;

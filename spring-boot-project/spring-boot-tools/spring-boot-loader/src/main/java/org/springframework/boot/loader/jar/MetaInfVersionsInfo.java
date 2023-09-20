@@ -74,12 +74,13 @@ final class MetaInfVersionsInfo {
 				int slash = name.indexOf('/', META_INF_VERSIONS.length());
 				String version = name.substring(META_INF_VERSIONS.length(), slash);
 				try {
-					Integer versionNumber = Integer.valueOf(version);
+					int versionNumber = Integer.parseInt(version);
 					if (versionNumber >= NestedJarFile.BASE_VERSION) {
 						versions.add(versionNumber);
 					}
 				}
 				catch (NumberFormatException ex) {
+					// Ignore
 				}
 			}
 		}

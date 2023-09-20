@@ -141,6 +141,7 @@ class JarFileArchive implements Archive {
 				return unpackDirectory;
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		throw new IllegalStateException("Failed to create unpack directory in directory '" + parent + "'");
@@ -153,7 +154,7 @@ class JarFileArchive implements Archive {
 	private void unpack(JarEntry entry, Path path) throws IOException {
 		createFile(path);
 		path.toFile().deleteOnExit();
-		try (InputStream inputStream = this.jarFile.getInputStream(entry)) {
+		try (InputStream ignored = this.jarFile.getInputStream(entry)) {
 			Files.copy(this.jarFile.getInputStream(entry), path, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}

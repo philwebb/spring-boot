@@ -88,8 +88,7 @@ class ExplodedArchive implements Archive {
 	public Set<URL> getClassPathUrls(Predicate<Entry> includeFilter, Predicate<Entry> directorySearchFilter)
 			throws IOException {
 		Set<URL> urls = new LinkedHashSet<>();
-		LinkedList<File> files = new LinkedList<>();
-		files.addAll(listFiles(this.rootDirectory));
+		LinkedList<File> files = new LinkedList<>(listFiles(this.rootDirectory));
 		while (!files.isEmpty()) {
 			File file = files.poll();
 			if (SKIPPED_NAMES.contains(file.getName())) {

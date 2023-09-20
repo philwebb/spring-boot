@@ -154,7 +154,7 @@ class NestedJarFileResources implements Runnable {
 		if (inflaterCache != null) {
 			try {
 				synchronized (inflaterCache) {
-					inflaterCache.stream().forEach(Inflater::end);
+					inflaterCache.forEach(Inflater::end);
 				}
 			}
 			finally {

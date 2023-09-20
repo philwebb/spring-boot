@@ -64,16 +64,14 @@ class ManifestInfo {
 	 */
 	boolean isMultiRelease() {
 		if (this.manifest == null) {
-			this.multiRelease = false;
+			return false;
 		}
-		Boolean multiRelease = this.multiRelease;
-		if (multiRelease != null) {
-			return multiRelease;
+		if (this.multiRelease != null) {
+			return this.multiRelease;
 		}
 		Attributes attributes = this.manifest.getMainAttributes();
-		multiRelease = attributes.containsKey(MULTI_RELEASE);
-		this.multiRelease = multiRelease;
-		return multiRelease;
+		this.multiRelease = attributes.containsKey(MULTI_RELEASE);
+		return this.multiRelease;
 	}
 
 }

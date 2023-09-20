@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A class path index file that provides an ordered classpath for exploded JARs.
@@ -33,11 +36,11 @@ final class ClassPathIndexFile {
 
 	private final File root;
 
-	private final List<String> lines;
+	private final Set<String> lines;
 
 	private ClassPathIndexFile(File root, List<String> lines) {
 		this.root = root;
-		this.lines = lines.stream().map(this::extractName).toList();
+		this.lines = lines.stream().map(this::extractName).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	private String extractName(String line) {

@@ -58,7 +58,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		this.classPathIndex = getClassPathIndex(this.archive);
 	}
 
-	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
+	ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
 		if (!archive.isExploded()) {
 			return null; // Regular archives already have a defined order
 		}

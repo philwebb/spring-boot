@@ -165,7 +165,7 @@ public class NestedJarFile extends JarFile {
 	public Stream<JarEntry> stream() {
 		synchronized (this) {
 			ensureOpen();
-			return streamContentEntries().map((contentEntry) -> new NestedJarEntry(contentEntry));
+			return streamContentEntries().map(NestedJarEntry::new);
 		}
 	}
 
@@ -193,6 +193,7 @@ public class NestedJarFile extends JarFile {
 		}
 		int versionNumberStartIndex = META_INF_VERSIONS.length();
 		int versionNumberEndIndex = name.indexOf('/', versionNumberStartIndex);
+		// TODO: This looks like a bug. Should && be a || ?
 		if (versionNumberEndIndex == -1 && versionNumberEndIndex == (name.length() - 1)) {
 			return null;
 		}
@@ -491,6 +492,7 @@ public class NestedJarFile extends JarFile {
 
 		@Override
 		public long getSize() {
+			// TODO: Why not cast to long here?
 			return this.contentEntry.getUncompressedSize() & 0xFFFFFFFFL;
 		}
 

@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  */
 class ByteArrayDataBlock implements DataBlock {
 
-	private byte[] bytes;
+	private final byte[] bytes;
 
 	/**
 	 * Create a new {@link ByteArrayDataBlock} backed by the given bytes.
@@ -49,7 +49,7 @@ class ByteArrayDataBlock implements DataBlock {
 	private int read(ByteBuffer dst, int pos) {
 		int remaining = dst.remaining();
 		int length = this.bytes.length - pos;
-		length = (length > remaining) ? remaining : length;
+		length = Math.min(length, remaining);
 		dst.put(this.bytes, pos, length);
 		return length;
 	}

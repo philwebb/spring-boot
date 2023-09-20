@@ -64,7 +64,7 @@ public final class ZipContent implements Closeable {
 
 	private static final String META_INF = "META-INF/";
 
-	private static byte[] SIGNATURE_SUFFIX = ".DSA".getBytes(StandardCharsets.UTF_8);
+	private static final byte[] SIGNATURE_SUFFIX = ".DSA".getBytes(StandardCharsets.UTF_8);
 
 	private static final DebugLogger debug = DebugLogger.get(ZipContent.class);
 
@@ -388,7 +388,7 @@ public final class ZipContent implements Closeable {
 	 * @param path the path of the zip or container zip
 	 * @param nestedEntryName the name of the nested entry to use or {@code null}
 	 */
-	private static record Source(Path path, String nestedEntryName) {
+	private record Source(Path path, String nestedEntryName) {
 
 		/**
 		 * Return if this is the source of a nested zip.
@@ -417,7 +417,7 @@ public final class ZipContent implements Closeable {
 
 		private final long centralDirectoryPos;
 
-		private int[] index;
+		private final int[] index;
 
 		private int[] nameHashLookups;
 
@@ -446,8 +446,7 @@ public final class ZipContent implements Closeable {
 					pos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
 					centralRecord.fileNameLength() - nameOffset, true);
 			this.nameHashLookups[this.cursor] = hash;
-			this.relativeCentralDirectoryOffsetLookups[this.cursor] = (int) ((pos - this.centralDirectoryPos)
-					& 0xFFFFFFFF);
+			this.relativeCentralDirectoryOffsetLookups[this.cursor] = (int) ((pos - this.centralDirectoryPos));
 			this.index[this.cursor] = this.cursor;
 			this.cursor++;
 		}
@@ -504,7 +503,7 @@ public final class ZipContent implements Closeable {
 			this.nameOffsetLookups.swap(i, j);
 		}
 
-		protected static void swap(int[] array, int i, int j) {
+		private static void swap(int[] array, int i, int j) {
 			int temp = array[i];
 			array[i] = array[j];
 			array[j] = temp;
@@ -563,7 +562,7 @@ public final class ZipContent implements Closeable {
 			if (numberOfEntries > 0xFFFFFFFFL) {
 				throw new IllegalStateException("Too many zip entries in " + source);
 			}
-			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) numberOfEntries & 0xFFFFFFFF);
+			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) numberOfEntries);
 			ByteBuffer signatureNameSuffixBuffer = ByteBuffer.allocate(SIGNATURE_SUFFIX.length);
 			boolean hasJarSignatureFile = false;
 			long pos = centralDirectoryPos;

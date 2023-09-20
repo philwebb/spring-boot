@@ -115,7 +115,7 @@ class UrlJarFiles {
 	URLConnection reconnect(JarFile jarFile, URLConnection existingConnection) throws IOException {
 		Boolean useCaches = (existingConnection != null) ? existingConnection.getUseCaches() : null;
 		URLConnection connection = openConnection(jarFile);
-		if (useCaches != null) {
+		if (useCaches != null && connection != null) {
 			connection.setUseCaches(useCaches);
 		}
 		return connection;
