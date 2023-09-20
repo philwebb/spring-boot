@@ -43,6 +43,8 @@ class NestedUrlConnection extends URLConnection {
 
 	private final Cleanable cleanup;
 
+	private long lastModified;
+
 	private FilePermission permission;
 
 	NestedUrlConnection(URL url) throws MalformedURLException {
@@ -104,27 +106,32 @@ class NestedUrlConnection extends URLConnection {
 
 	@Override
 	public Map<String, List<String>> getHeaderFields() {
+		initializeHeaders();
 		return super.getHeaderFields();
 	}
 
 	@Override
 	public String getHeaderField(String name) {
+		initializeHeaders();
 		return super.getHeaderField(name);
 	}
 
 	@Override
 	public String getHeaderField(int n) {
+		initializeHeaders();
 		return super.getHeaderField(n);
 	}
 
 	@Override
 	public String getHeaderFieldKey(int n) {
+		initializeHeaders();
 		return super.getHeaderFieldKey(n);
 	}
 
 	@Override
 	public long getLastModified() {
-		return 0;
+		initializeHeaders();
+		return this.lastModified;
 	}
 
 	@Override
@@ -133,6 +140,10 @@ class NestedUrlConnection extends URLConnection {
 			this.permission = new FilePermission(this.resources.getLocation().file().getCanonicalPath(), "read");
 		}
 		return this.permission;
+	}
+
+	private void initializeHeaders() {
+		// FIMXE
 	}
 
 	/**

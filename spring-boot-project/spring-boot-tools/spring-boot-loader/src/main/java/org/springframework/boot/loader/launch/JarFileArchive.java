@@ -154,8 +154,8 @@ class JarFileArchive implements Archive {
 	private void unpack(JarEntry entry, Path path) throws IOException {
 		createFile(path);
 		path.toFile().deleteOnExit();
-		try (InputStream ignored = this.jarFile.getInputStream(entry)) {
-			Files.copy(this.jarFile.getInputStream(entry), path, StandardCopyOption.REPLACE_EXISTING);
+		try (InputStream in = this.jarFile.getInputStream(entry)) {
+			Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 

@@ -35,7 +35,7 @@ class ManifestInfo {
 
 	private final Manifest manifest;
 
-	private Boolean multiRelease;
+	private volatile Boolean multiRelease;
 
 	/**
 	 * Create a new {@link ManifestInfo} instance.
@@ -66,12 +66,14 @@ class ManifestInfo {
 		if (this.manifest == null) {
 			return false;
 		}
-		if (this.multiRelease != null) {
-			return this.multiRelease;
+		Boolean multiRelease = this.multiRelease;
+		if (multiRelease != null) {
+			return multiRelease;
 		}
 		Attributes attributes = this.manifest.getMainAttributes();
-		this.multiRelease = attributes.containsKey(MULTI_RELEASE);
-		return this.multiRelease;
+		multiRelease = attributes.containsKey(MULTI_RELEASE);
+		this.multiRelease = multiRelease;
+		return multiRelease;
 	}
 
 }

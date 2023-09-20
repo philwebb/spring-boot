@@ -61,16 +61,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	private static final JarUrlConnection NOT_FOUND_CONNECTION;
 	static {
 		try {
-			NOT_FOUND_URL = new URL("jar:", null, 0, "nested:!/", new URLStreamHandler() {
-
-				@Override
-				protected URLConnection openConnection(URL u) {
-					// Stub URLStreamHandler to prevent the wrong JAR Handler from being
-					// Instantiated and cached.
-					return null;
-				}
-
-			});
+			NOT_FOUND_URL = new URL("jar:", null, 0, "nested:!/", new EmptyUrlStreamHandler());
 			NOT_FOUND_CONNECTION = new JarUrlConnection(() -> FILE_NOT_FOUND_EXCEPTION);
 		}
 		catch (IOException ex) {
@@ -435,6 +426,19 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 					JarUrlConnection.this.jarFile.close();
 				}
 			}
+		}
+
+	}
+
+	/**
+	 * Empty {@link URLStreamHandler} used to prevent the wrong JAR Handler from being
+	 * Instantiated and cached.
+	 */
+	private static class EmptyUrlStreamHandler extends URLStreamHandler {
+
+		@Override
+		protected URLConnection openConnection(URL url) {
+			return null;
 		}
 
 	}

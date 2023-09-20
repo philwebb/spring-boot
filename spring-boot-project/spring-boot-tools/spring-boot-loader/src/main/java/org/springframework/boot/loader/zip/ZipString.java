@@ -269,11 +269,14 @@ final class ZipString {
 
 	private static int getCodePointSize(byte[] bytes, int i) {
 		int b = bytes[i];
-		if ((b & 0x80) == 0x00) {
+		if ((b & 0b1_0000000) == 0b0_0000000) {
 			return 1;
 		}
-		if ((b & 0xE0) == 0xC0) {
+		if ((b & 0b111_00000) == 0b110_00000) {
 			return 2;
+		}
+		if ((b & 0b1111_0000) == 0b1110_0000) {
+			return 3;
 		}
 		return 4;
 	}

@@ -562,7 +562,7 @@ public final class ZipContent implements Closeable {
 			if (numberOfEntries > 0xFFFFFFFFL) {
 				throw new IllegalStateException("Too many zip entries in " + source);
 			}
-			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) numberOfEntries);
+			Loader loader = new Loader(source, null, data, centralDirectoryPos, (int) (numberOfEntries & 0xFFFFFFFFL));
 			ByteBuffer signatureNameSuffixBuffer = ByteBuffer.allocate(SIGNATURE_SUFFIX.length);
 			boolean hasJarSignatureFile = false;
 			long pos = centralDirectoryPos;

@@ -192,9 +192,8 @@ public class NestedJarFile extends JarFile {
 			return name;
 		}
 		int versionNumberStartIndex = META_INF_VERSIONS.length();
-		int versionNumberEndIndex = name.indexOf('/', versionNumberStartIndex);
-		// TODO: This looks like a bug. Should && be a || ?
-		if (versionNumberEndIndex == -1 && versionNumberEndIndex == (name.length() - 1)) {
+		int versionNumberEndIndex = (versionNumberStartIndex != -1) ? name.indexOf('/', versionNumberStartIndex) : -1;
+		if (versionNumberEndIndex == -1 || versionNumberEndIndex == (name.length() - 1)) {
 			return null;
 		}
 		try {
@@ -492,7 +491,6 @@ public class NestedJarFile extends JarFile {
 
 		@Override
 		public long getSize() {
-			// TODO: Why not cast to long here?
 			return this.contentEntry.getUncompressedSize() & 0xFFFFFFFFL;
 		}
 
