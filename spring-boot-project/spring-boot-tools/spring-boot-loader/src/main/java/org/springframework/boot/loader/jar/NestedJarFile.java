@@ -742,7 +742,7 @@ public class NestedJarFile extends JarFile {
 		}
 
 		@Override
-		public int available() throws IOException {
+		public int available() {
 			return (this.remaining < Integer.MAX_VALUE) ? (int) this.remaining : Integer.MAX_VALUE;
 		}
 

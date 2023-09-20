@@ -92,7 +92,7 @@ class JarFileArchive implements Archive {
 
 	private URL getNestedJarUrl(JarArchiveEntry archiveEntry) {
 		try {
-			JarEntry jarEntry = archiveEntry.getJarEntry();
+			JarEntry jarEntry = archiveEntry.jarEntry();
 			String comment = jarEntry.getComment();
 			if (comment != null && comment.startsWith(UNPACK_MARKER)) {
 				return getUnpackedNestedJarUrl(jarEntry);
@@ -186,22 +186,12 @@ class JarFileArchive implements Archive {
 	}
 
 	/**
-	 * {@link Archive.Entry} implementation backed by a {@link JarEntry}.
+	 * {@link Entry} implementation backed by a {@link JarEntry}.
 	 */
-	private static class JarArchiveEntry implements Entry {
-
-		private final JarEntry jarEntry;
-
-		JarArchiveEntry(JarEntry jarEntry) {
-			this.jarEntry = jarEntry;
-		}
-
-		JarEntry getJarEntry() {
-			return this.jarEntry;
-		}
+	private record JarArchiveEntry(JarEntry jarEntry) implements Entry {
 
 		@Override
-		public String getName() {
+		public String name() {
 			return this.jarEntry.getName();
 		}
 

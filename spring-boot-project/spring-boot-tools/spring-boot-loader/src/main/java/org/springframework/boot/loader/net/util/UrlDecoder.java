@@ -65,7 +65,7 @@ public final class UrlDecoder {
 			}
 			index = fillByteBuffer(byteBuffer, string, index, length);
 			decodeToCharBuffer(byteBuffer, charBuffer, decoder);
-			result.append(charBuffer.flip().toString());
+			result.append(charBuffer.flip());
 
 		}
 		return result.toString();

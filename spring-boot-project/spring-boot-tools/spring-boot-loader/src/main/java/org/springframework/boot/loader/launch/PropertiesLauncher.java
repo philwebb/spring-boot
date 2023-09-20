@@ -497,7 +497,6 @@ public class PropertiesLauncher extends Launcher {
 				|| (this.archive.isExploded() && this.archive.getRootDirectory().equals(this.homeDirectory))) {
 			return Collections.emptySet();
 		}
-		Set<URL> urls = new LinkedHashSet<>();
 		File file = null;
 		if (isJustArchive) {
 			File candidate = new File(this.homeDirectory, path);
@@ -519,7 +518,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 		Archive archive = (file != null) ? new JarFileArchive(file) : this.archive;
 		try {
-			urls.addAll(archive.getClassPathUrls(includeByPrefix(path)));
+			Set<URL> urls = new LinkedHashSet<>(archive.getClassPathUrls(includeByPrefix(path)));
 			if (!isJustArchive && file != null && path.isEmpty()) {
 				urls.add(JarUrl.create(file));
 			}
@@ -533,12 +532,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Predicate<Entry> includeByPrefix(String prefix) {
-		return (entry) -> (entry.isDirectory() && entry.getName().equals(prefix))
-				|| (isArchive(entry) && entry.getName().startsWith(prefix));
+		return (entry) -> (entry.isDirectory() && entry.name().equals(prefix))
+				|| (isArchive(entry) && entry.name().startsWith(prefix));
 	}
 
 	private boolean isArchive(Entry entry) {
-		return isArchive(entry.getName());
+		return isArchive(entry.name());
 	}
 
 	private boolean isArchive(String name) {

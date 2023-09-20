@@ -134,7 +134,7 @@ public interface Archive extends AutoCloseable {
 		 * Returns the name of the entry.
 		 * @return the name of the entry
 		 */
-		String getName();
+		String name();
 
 		/**
 		 * Returns {@code true} if the entry represents a directory.

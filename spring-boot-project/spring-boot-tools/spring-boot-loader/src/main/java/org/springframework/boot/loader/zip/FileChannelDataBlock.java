@@ -132,9 +132,8 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 * @param offset the start offset for the slice relative to this block
 	 * @param size the size of the new slice
 	 * @return a new {@link FileChannelDataBlock} instance
-	 * @throws IOException on I/O error
 	 */
-	FileChannelDataBlock slice(long offset, long size) throws IOException {
+	FileChannelDataBlock slice(long offset, long size) {
 		if (offset == 0 && size == this.size) {
 			return this;
 		}

@@ -106,7 +106,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		if (!isIncludedOnClassPath(entry)) {
 			return false;
 		}
-		return (this.classPathIndex == null) || !this.classPathIndex.containsEntry(entry.getName());
+		return (this.classPathIndex == null) || !this.classPathIndex.containsEntry(entry.name());
 	}
 
 	/**
@@ -115,7 +115,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @return {@code true} if the entry is a candidate for further searching
 	 */
 	protected boolean isSearchedDirectory(Archive.Entry entry) {
-		return ((getEntryPathPrefix() == null) || entry.getName().startsWith(getEntryPathPrefix()))
+		return ((getEntryPathPrefix() == null) || entry.name().startsWith(getEntryPathPrefix()))
 				&& !isIncludedOnClassPath(entry);
 	}
 

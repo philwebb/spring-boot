@@ -64,7 +64,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 			NOT_FOUND_URL = new URL("jar:", null, 0, "nested:!/", new URLStreamHandler() {
 
 				@Override
-				protected URLConnection openConnection(URL u) throws IOException {
+				protected URLConnection openConnection(URL u) {
 					// Stub URLStreamHandler to prevent the wrong JAR Handler from being
 					// Instantiated and cached.
 					return null;

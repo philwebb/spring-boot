@@ -54,9 +54,8 @@ class ExplodedArchive implements Archive {
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
 	 * @param rootDirectory the root directory
-	 * @throws IOException on IO error
 	 */
-	ExplodedArchive(File rootDirectory) throws IOException {
+	ExplodedArchive(File rootDirectory) {
 		if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source directory " + rootDirectory);
 		}
@@ -128,21 +127,7 @@ class ExplodedArchive implements Archive {
 	/**
 	 * {@link Entry} backed by a File.
 	 */
-	private static class FileArchiveEntry implements Entry {
-
-		private final String name;
-
-		private final File file;
-
-		FileArchiveEntry(String name, File file) {
-			this.name = name;
-			this.file = file;
-		}
-
-		@Override
-		public String getName() {
-			return this.name;
-		}
+	private record FileArchiveEntry(String name, File file) implements Entry {
 
 		@Override
 		public boolean isDirectory() {

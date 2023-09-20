@@ -153,7 +153,7 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 	 * @param pos the position of the record
 	 * @param endOfCentralDirectoryRecord the located end of central directory record
 	 */
-	static record Located(long pos, ZipEndOfCentralDirectoryRecord endOfCentralDirectoryRecord) {
+	record Located(long pos, ZipEndOfCentralDirectoryRecord endOfCentralDirectoryRecord) {
 
 	}
 

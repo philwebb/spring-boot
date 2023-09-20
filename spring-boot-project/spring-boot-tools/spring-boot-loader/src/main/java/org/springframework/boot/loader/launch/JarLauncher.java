@@ -38,7 +38,7 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 
 	@Override
 	protected boolean isIncludedOnClassPath(Archive.Entry entry) {
-		String name = entry.getName();
+		String name = entry.name();
 		if (entry.isDirectory()) {
 			return name.equals("BOOT-INF/classes/");
 		}

@@ -106,7 +106,7 @@ class ExplodedArchiveTests {
 
 	@Test
 	void getClassPathUrlsWhenHasSearchFilterReturnsUrls() throws Exception {
-		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES, (entry) -> !entry.getName().equals("d/"));
+		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES, (entry) -> !entry.name().equals("d/"));
 		assertThat(urls).contains(toUrl("nested.jar")).doesNotContain(toUrl("d/9.dat"));
 	}
 
@@ -153,7 +153,7 @@ class ExplodedArchiveTests {
 	}
 
 	private boolean entryNameIsNestedJar(Entry entry) {
-		return entry.getName().equals("nested.jar");
+		return entry.name().equals("nested.jar");
 	}
 
 }

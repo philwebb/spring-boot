@@ -107,7 +107,8 @@ record ZipCentralDirectoryFileHeaderRecord(short versionMadeBy, short versionNee
 	 * Decode MS-DOS Date Time details. See <a href=
 	 * "https://docs.microsoft.com/en-gb/windows/desktop/api/winbase/nf-winbase-dosdatetimetofiletime">
 	 * Microsoft's documentation</a> for more details of the format.
-	 * @param datetime the date and time
+	 * @param date the date
+	 * @param time the time
 	 * @return the date and time as milliseconds since the epoch
 	 */
 	private long decodeMsDosFormatDateTime(short date, short time) {

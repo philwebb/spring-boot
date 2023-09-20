@@ -255,8 +255,7 @@ final class ZipString {
 		}
 	}
 
-	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen)
-			throws IOException, EOFException {
+	private static int readInBuffer(DataBlock dataBlock, long pos, ByteBuffer buffer, int maxLen) throws IOException {
 		buffer.position(0);
 		if (buffer.remaining() > maxLen) {
 			buffer.limit(maxLen);
