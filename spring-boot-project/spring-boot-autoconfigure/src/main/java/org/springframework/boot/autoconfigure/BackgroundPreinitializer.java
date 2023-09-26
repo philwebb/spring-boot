@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.validation.Configuration;
 import jakarta.validation.Validation;
+import org.apache.catalina.authenticator.NonLoginAuthenticator;
+import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -107,6 +109,8 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 						runSafely(new JacksonInitializer());
 					}
 					runSafely(new CharsetInitializer());
+					runSafely(new TomcatInitializer());
+					runSafely(new Slf4jInitializer());
 					preinitializationComplete.countDown();
 				}
 
@@ -185,6 +189,25 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		@Override
 		public void run() {
 			StandardCharsets.UTF_8.name();
+		}
+
+	}
+
+	private static class TomcatInitializer implements Runnable {
+
+		@Override
+		public void run() {
+			new Rfc6265CookieProcessor();
+			new NonLoginAuthenticator();
+		}
+
+	}
+
+	private static class Slf4jInitializer implements Runnable {
+
+		@Override
+		public void run() {
+			org.slf4j.LoggerFactory.getILoggerFactory();
 		}
 
 	}
