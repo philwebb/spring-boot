@@ -36,7 +36,7 @@ final class ZipString {
 
 	private static final DebugLogger debug = DebugLogger.get(ZipString.class);
 
-	static final int BUFFER_SIZE = 128;
+	static final int BUFFER_SIZE = 512;
 
 	private static final int[] INITIAL_BYTE_BITMASK = { 0x7F, 0x1F, 0x0F, 0x07 };
 
