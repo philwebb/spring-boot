@@ -91,6 +91,7 @@ final class ZipString {
 
 	/**
 	 * Return a hash for bytes read from a {@link DataBlock}, optionally appending '/'.
+	 * @param buffer the buffer to use or {@code null}
 	 * @param dataBlock the source data block
 	 * @param pos the position in the data block where the string starts
 	 * @param len the number of bytes to read from the block
@@ -99,11 +100,11 @@ final class ZipString {
 	 * @return the hash
 	 * @throws IOException on I/O error
 	 */
-	static int hash(DataBlock dataBlock, long pos, int len, boolean addEndSlash) throws IOException {
+	static int hash(ByteBuffer buffer, DataBlock dataBlock, long pos, int len, boolean addEndSlash) throws IOException {
 		if (len == 0) {
 			return (!addEndSlash) ? EMPTY_HASH : EMPTY_SLASH_HASH;
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(Math.min(len, BUFFER_SIZE));
+		buffer = (buffer != null) ? buffer : ByteBuffer.allocate(BUFFER_SIZE);
 		byte[] bytes = buffer.array();
 		int hash = 0;
 		char lastChar = 0;
@@ -139,6 +140,7 @@ final class ZipString {
 	/**
 	 * Return if the bytes read from a {@link DataBlock} matches the give
 	 * {@link CharSequence}.
+	 * @param buffer the buffer to use or {@code null}
 	 * @param dataBlock the source data block
 	 * @param pos the position in the data block where the string starts
 	 * @param len the number of bytes to read from the block
@@ -147,9 +149,14 @@ final class ZipString {
 	 * with one
 	 * @return true if the contents are considered equal
 	 */
-	static boolean matches(DataBlock dataBlock, long pos, int len, CharSequence charSequence, boolean addSlash) {
+	static boolean matches(ByteBuffer buffer, DataBlock dataBlock, long pos, int len, CharSequence charSequence,
+			boolean addSlash) {
+		if (charSequence.isEmpty()) {
+			return true;
+		}
+		buffer = (buffer != null) ? buffer : ByteBuffer.allocate(BUFFER_SIZE);
 		try {
-			return compare(dataBlock, pos, len, charSequence,
+			return compare(buffer, dataBlock, pos, len, charSequence,
 					(!addSlash) ? CompareType.MATCHES : CompareType.MATCHES_ADDING_SLASH) != -1;
 		}
 		catch (IOException ex) {
@@ -160,6 +167,7 @@ final class ZipString {
 	/**
 	 * Returns if the bytes read from a {@link DataBlock} starts with the given
 	 * {@link CharSequence}.
+	 * @param buffer the buffer to use or {@code null}
 	 * @param dataBlock the source data block
 	 * @param pos the position in the data block where the string starts
 	 * @param len the number of bytes to read from the block
@@ -167,16 +175,20 @@ final class ZipString {
 	 * @return {@code -1} if the data block does not start with the char sequence, or a
 	 * positive number indicating the number of bytes that contain the starting chars
 	 */
-	static int startsWith(DataBlock dataBlock, long pos, int len, CharSequence charSequence) {
+	static int startsWith(ByteBuffer buffer, DataBlock dataBlock, long pos, int len, CharSequence charSequence) {
+		if (charSequence.isEmpty()) {
+			return 0;
+		}
+		buffer = (buffer != null) ? buffer : ByteBuffer.allocate(BUFFER_SIZE);
 		try {
-			return compare(dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
+			return compare(buffer, dataBlock, pos, len, charSequence, CompareType.STARTS_WITH);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
 	}
 
-	private static int compare(DataBlock dataBlock, long pos, int len, CharSequence charSequence,
+	private static int compare(ByteBuffer buffer, DataBlock dataBlock, long pos, int len, CharSequence charSequence,
 			CompareType compareType) throws IOException {
 		if (charSequence.isEmpty()) {
 			return 0;
@@ -185,7 +197,6 @@ final class ZipString {
 		int charSequenceIndex = 0;
 		int maxCharSequenceLength = (!addSlash) ? charSequence.length() : charSequence.length() + 1;
 		int result = 0;
-		ByteBuffer buffer = ByteBuffer.allocate(Math.min(len, BUFFER_SIZE));
 		byte[] bytes = buffer.array();
 		while (len > 0) {
 			int count = readInBuffer(dataBlock, pos, buffer, len);

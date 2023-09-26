@@ -283,15 +283,16 @@ public final class ZipContent implements Closeable {
 		int offset = this.nameOffsetLookups.get(lookupIndex);
 		pos += ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + offset;
 		int len = centralRecord.fileNameLength() - offset;
+		ByteBuffer buffer = ByteBuffer.allocate(ZipString.BUFFER_SIZE);
 		if (namePrefix != null) {
-			int startsWithNamePrefix = ZipString.startsWith(this.data, pos, len, namePrefix);
+			int startsWithNamePrefix = ZipString.startsWith(buffer, this.data, pos, len, namePrefix);
 			if (startsWithNamePrefix == -1) {
 				return false;
 			}
 			pos += startsWithNamePrefix;
 			len -= startsWithNamePrefix;
 		}
-		return ZipString.matches(this.data, pos, len, name, true);
+		return ZipString.matches(buffer, this.data, pos, len, name, true);
 	}
 
 	/**
@@ -408,6 +409,8 @@ public final class ZipContent implements Closeable {
 	 */
 	private static final class Loader {
 
+		private final ByteBuffer buffer = ByteBuffer.allocate(ZipString.BUFFER_SIZE);
+
 		private final Source source;
 
 		private final FileChannelDataBlock data;
@@ -439,7 +442,7 @@ public final class ZipContent implements Closeable {
 		private void add(ZipCentralDirectoryFileHeaderRecord centralRecord, long pos, boolean enableNameOffset)
 				throws IOException {
 			int nameOffset = this.nameOffsetLookups.enable(this.cursor, enableNameOffset);
-			int hash = ZipString.hash(this.data,
+			int hash = ZipString.hash(this.buffer, this.data,
 					pos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
 					centralRecord.fileNameLength() - nameOffset, true);
 			this.nameHashLookups[this.cursor] = hash;
@@ -567,8 +570,8 @@ public final class ZipContent implements Closeable {
 				ZipCentralDirectoryFileHeaderRecord centralRecord = ZipCentralDirectoryFileHeaderRecord.load(data, pos);
 				if (!hasJarSignatureFile) {
 					long filenamePos = pos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-					if (centralRecord.fileNameLength() > SIGNATURE_SUFFIX.length
-							&& ZipString.startsWith(data, filenamePos, centralRecord.fileNameLength(), META_INF) >= 0) {
+					if (centralRecord.fileNameLength() > SIGNATURE_SUFFIX.length && ZipString.startsWith(loader.buffer,
+							data, filenamePos, centralRecord.fileNameLength(), META_INF) >= 0) {
 						signatureNameSuffixBuffer.clear();
 						data.readFully(signatureNameSuffixBuffer,
 								filenamePos + centralRecord.fileNameLength() - SIGNATURE_SUFFIX.length);
@@ -631,10 +634,10 @@ public final class ZipContent implements Closeable {
 							.load(zip.data, pos);
 						long namePos = pos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
 						short nameLen = centralRecord.fileNameLength();
-						if (ZipString.startsWith(zip.data, namePos, nameLen, META_INF) != -1) {
+						if (ZipString.startsWith(loader.buffer, zip.data, namePos, nameLen, META_INF) != -1) {
 							loader.add(centralRecord, pos, false);
 						}
-						else if (ZipString.startsWith(zip.data, namePos, nameLen, directoryName) != -1) {
+						else if (ZipString.startsWith(loader.buffer, zip.data, namePos, nameLen, directoryName) != -1) {
 							loader.add(centralRecord, pos, true);
 						}
 					}
@@ -702,7 +705,8 @@ public final class ZipContent implements Closeable {
 			}
 			long pos = getCentralDirectoryFileHeaderRecordPos(this.lookupIndex)
 					+ ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET;
-			return ZipString.startsWith(ZipContent.this.data, pos, this.centralRecord.fileNameLength(), prefix) != -1;
+			return ZipString.startsWith(null, ZipContent.this.data, pos, this.centralRecord.fileNameLength(),
+					prefix) != -1;
 		}
 
 		/**

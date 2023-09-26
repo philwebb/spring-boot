@@ -85,7 +85,7 @@ class ZipStringTests {
 			}
 			case DATA_BLOCK -> {
 				ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
-				assertThat(ZipString.hash(dataBlock, 0, (int) dataBlock.size(), addEndSlash)).isEqualTo(expected);
+				assertThat(ZipString.hash(null, dataBlock, 0, (int) dataBlock.size(), addEndSlash)).isEqualTo(expected);
 
 			}
 		}
@@ -177,12 +177,12 @@ class ZipStringTests {
 	private AbstractBooleanAssert<?> assertMatches(String source, CharSequence charSequence, boolean addSlash)
 			throws Exception {
 		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
-		return assertThat(ZipString.matches(dataBlock, 0, (int) dataBlock.size(), charSequence, addSlash));
+		return assertThat(ZipString.matches(null, dataBlock, 0, (int) dataBlock.size(), charSequence, addSlash));
 	}
 
 	private AbstractIntegerAssert<?> assertStartsWith(String source, CharSequence charSequence) throws IOException {
 		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(source.getBytes(StandardCharsets.UTF_8));
-		return assertThat(ZipString.startsWith(dataBlock, 0, (int) dataBlock.size(), charSequence));
+		return assertThat(ZipString.startsWith(null, dataBlock, 0, (int) dataBlock.size(), charSequence));
 	}
 
 	enum HashSourceType {
