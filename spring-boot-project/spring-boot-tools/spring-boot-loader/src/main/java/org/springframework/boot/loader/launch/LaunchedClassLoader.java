@@ -96,12 +96,12 @@ public class LaunchedClassLoader extends URLClassLoader {
 		if (this.exploded) {
 			return super.findResource(name);
 		}
-		Handler.useFastConnectionExceptions(true);
+		Handler.enableOptimzation(false);
 		try {
 			return super.findResource(name);
 		}
 		finally {
-			Handler.useFastConnectionExceptions(false);
+			Handler.disableOptimization();
 		}
 	}
 
@@ -110,12 +110,12 @@ public class LaunchedClassLoader extends URLClassLoader {
 		if (this.exploded) {
 			return super.findResources(name);
 		}
-		Handler.useFastConnectionExceptions(true);
+		Handler.enableOptimzation(false);
 		try {
 			return new UseFastConnectionExceptionsEnumeration(super.findResources(name));
 		}
 		finally {
-			Handler.useFastConnectionExceptions(false);
+			Handler.enableOptimzation(false);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 		if (this.exploded) {
 			return super.loadClass(name, resolve);
 		}
-		Handler.useFastConnectionExceptions(true);
+		Handler.enableOptimzation(true);
 		try {
 			try {
 				definePackageIfNecessary(name);
@@ -147,7 +147,7 @@ public class LaunchedClassLoader extends URLClassLoader {
 			return super.loadClass(name, resolve);
 		}
 		finally {
-			Handler.useFastConnectionExceptions(false);
+			Handler.disableOptimization();
 		}
 	}
 
@@ -372,24 +372,24 @@ public class LaunchedClassLoader extends URLClassLoader {
 
 		@Override
 		public boolean hasMoreElements() {
-			Handler.useFastConnectionExceptions(true);
+			Handler.enableOptimzation(false);
 			try {
 				return this.delegate.hasMoreElements();
 			}
 			finally {
-				Handler.useFastConnectionExceptions(false);
+				Handler.disableOptimization();
 			}
 
 		}
 
 		@Override
 		public URL nextElement() {
-			Handler.useFastConnectionExceptions(true);
+			Handler.enableOptimzation(false);
 			try {
 				return this.delegate.nextElement();
 			}
 			finally {
-				Handler.useFastConnectionExceptions(false);
+				Handler.disableOptimization();
 			}
 		}
 

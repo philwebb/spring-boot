@@ -16,7 +16,9 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -122,13 +124,22 @@ public class Handler extends URLStreamHandler {
 	}
 
 	/**
-	 * Set if a generic static exception can be thrown when a URL cannot be connected.
-	 * This optimization is used during class loading to save creating lots of exceptions
-	 * which are then swallowed.
-	 * @param useFastConnectionExceptions if fast connection exceptions can be used.
+	 * Enables handler optimizations by returning singleton instances when possible. This
+	 * method is used during class loading to save creating lots of
+	 * {@link FileNotFoundException} and {@link InputStream} instances which are
+	 * ultimately never used. This method not intended for general use.
+	 * @param readContents the the contents of the {@link InputStream} needs to be read
+	 * @see #disableOptimization()
 	 */
-	public static void useFastConnectionExceptions(boolean useFastConnectionExceptions) {
-		JarUrlConnection.useFastExceptions(useFastConnectionExceptions);
+	public static void enableOptimzation(boolean readContents) {
+		JarHandlerOptimization.enable(readContents);
+	}
+
+	/**
+	 * Disable any previously {@link #enableOptimzation(boolean) enabled} optimizations.
+	 */
+	public static void disableOptimization() {
+		JarHandlerOptimization.disable();
 	}
 
 	/**
