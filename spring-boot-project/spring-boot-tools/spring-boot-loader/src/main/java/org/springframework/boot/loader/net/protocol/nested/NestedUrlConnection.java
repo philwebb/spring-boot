@@ -26,8 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Permission;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.boot.loader.ref.Cleaner;
 
@@ -38,6 +36,8 @@ import org.springframework.boot.loader.ref.Cleaner;
  * @author Phillip Webb
  */
 class NestedUrlConnection extends URLConnection {
+
+	private static final String CONTENT_TYPE = "application/zip";
 
 	private final NestedUrlConnectionResources resources;
 
@@ -68,26 +68,6 @@ class NestedUrlConnection extends URLConnection {
 	}
 
 	@Override
-	public void connect() throws IOException {
-		if (this.connected) {
-			return;
-		}
-		this.resources.connect();
-		this.connected = true;
-	}
-
-	@Override
-	public InputStream getInputStream() throws IOException {
-		connect();
-		return new ConnectionInputStream(this.resources.getInputStream());
-	}
-
-	@Override
-	public String getContentType() {
-		return "application/zip";
-	}
-
-	@Override
 	public int getContentLength() {
 		long contentLength = getContentLengthLong();
 		return (contentLength <= Integer.MAX_VALUE) ? (int) contentLength : -1;
@@ -105,32 +85,15 @@ class NestedUrlConnection extends URLConnection {
 	}
 
 	@Override
-	public Map<String, List<String>> getHeaderFields() {
-		initializeHeaders();
-		return super.getHeaderFields();
-	}
-
-	@Override
-	public String getHeaderField(String name) {
-		initializeHeaders();
-		return super.getHeaderField(name);
-	}
-
-	@Override
-	public String getHeaderField(int n) {
-		initializeHeaders();
-		return super.getHeaderField(n);
-	}
-
-	@Override
-	public String getHeaderFieldKey(int n) {
-		initializeHeaders();
-		return super.getHeaderFieldKey(n);
+	public String getContentType() {
+		return CONTENT_TYPE;
 	}
 
 	@Override
 	public long getLastModified() {
-		initializeHeaders();
+		if (this.lastModified == 0) {
+			this.lastModified = this.resources.getLocation().file().lastModified();
+		}
 		return this.lastModified;
 	}
 
@@ -142,8 +105,19 @@ class NestedUrlConnection extends URLConnection {
 		return this.permission;
 	}
 
-	private void initializeHeaders() {
-		// FIMXE
+	@Override
+	public InputStream getInputStream() throws IOException {
+		connect();
+		return new ConnectionInputStream(this.resources.getInputStream());
+	}
+
+	@Override
+	public void connect() throws IOException {
+		if (this.connected) {
+			return;
+		}
+		this.resources.connect();
+		this.connected = true;
 	}
 
 	/**

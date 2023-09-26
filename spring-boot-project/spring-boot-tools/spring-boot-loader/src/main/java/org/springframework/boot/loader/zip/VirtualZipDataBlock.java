@@ -53,7 +53,7 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			long centralRecordPos = centralRecordPositions[i];
 			DataBlock name = new DataPart(
 					centralRecordPos + ZipCentralDirectoryFileHeaderRecord.FILE_NAME_OFFSET + nameOffset,
-					centralRecord.fileNameLength() & 0xFFFF - nameOffset);
+					(centralRecord.fileNameLength() & 0xFFFF) - nameOffset);
 			ZipLocalFileHeaderRecord localRecord = ZipLocalFileHeaderRecord.load(this.data,
 					centralRecord.offsetToLocalHeader());
 			DataBlock content = new DataPart(centralRecord.offsetToLocalHeader() + localRecord.size(),
@@ -95,7 +95,7 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 
 	@Override
 	public void close() throws IOException {
-		// Virtual blocks don't change reference counts because they are cached
+		this.data.close();
 	}
 
 	/**
@@ -123,14 +123,14 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			if (remaining <= 0) {
 				return -1;
 			}
-			int originalDestinationLimit = -1;
+			int originalLimit = -1;
 			if (dst.remaining() > remaining) {
-				originalDestinationLimit = dst.limit();
+				originalLimit = dst.limit();
 				dst.limit(dst.position() + remaining);
 			}
 			int result = VirtualZipDataBlock.this.data.read(dst, this.offset + pos);
-			if (originalDestinationLimit != -1) {
-				dst.limit(originalDestinationLimit);
+			if (originalLimit != -1) {
+				dst.limit(originalLimit);
 			}
 			return result;
 		}

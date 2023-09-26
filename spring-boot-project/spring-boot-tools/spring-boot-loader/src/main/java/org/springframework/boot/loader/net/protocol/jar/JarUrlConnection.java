@@ -95,45 +95,6 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		this.notFound = notFound;
 	}
 
-	@Override
-	public JarFile getJarFile() throws IOException {
-		connect();
-		return this.jarFile;
-	}
-
-	@Override
-	public JarEntry getJarEntry() throws IOException {
-		connect();
-		return this.jarEntry;
-	}
-
-	@Override
-	public Permission getPermission() throws IOException {
-		return this.jarFileConnection.getPermission();
-	}
-
-	@Override
-	public void connect() throws IOException {
-		if (this.connected) {
-			return;
-		}
-		if (this.notFound != null) {
-			throw this.notFound.get();
-		}
-		boolean useCaches = getUseCaches();
-		URL jarFileURL = getJarFileURL();
-		if (this.entryName != null && Boolean.TRUE.equals(useFastExceptions.get())) {
-			checkCachedForEntry(jarFileURL, this.entryName);
-		}
-		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
-		this.jarEntry = getJarEntry(jarFileURL);
-		boolean addedToCache = jarFiles.cacheIfAbsent(useCaches, jarFileURL, this.jarFile);
-		if (addedToCache) {
-			this.jarFileConnection = jarFiles.reconnect(this.jarFile, this.jarFileConnection);
-		}
-		this.connected = true;
-	}
-
 	/**
 	 * The {@link URLClassLoader} connect often to check if a resource exists, we can save
 	 * some object allocations by using the cached copy if we have one.
@@ -161,22 +122,15 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public InputStream getInputStream() throws IOException {
+	public JarFile getJarFile() throws IOException {
 		connect();
-		if (this.entryName == null) {
-			throw NO_ENTRY_NAME_SPECIFIED_EXCEPTION;
-		}
-		if (this.jarEntry == null) {
-			throwFileNotFound();
-		}
-		return new ConnectionInputStream();
+		return this.jarFile;
 	}
 
-	private void throwFileNotFound() throws FileNotFoundException {
-		if (Boolean.TRUE.equals(useFastExceptions.get())) {
-			throw FILE_NOT_FOUND_EXCEPTION;
-		}
-		throw new FileNotFoundException("JAR entry " + this.entryName + " not found in " + this.jarFile.getName());
+	@Override
+	public JarEntry getJarEntry() throws IOException {
+		connect();
+		return this.jarEntry;
 	}
 
 	@Override
@@ -194,12 +148,6 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		catch (IOException ex) {
 			return -1;
 		}
-	}
-
-	@Override
-	public Object getContent() throws IOException {
-		connect();
-		return (this.entryName != null) ? super.getContent() : this.jarFile;
 	}
 
 	@Override
@@ -239,28 +187,26 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public String getRequestProperty(String key) {
-		return (this.jarFileConnection != null) ? this.jarFileConnection.getRequestProperty(key) : null;
+	public Object getContent() throws IOException {
+		connect();
+		return (this.entryName != null) ? super.getContent() : this.jarFile;
 	}
 
 	@Override
-	public void setRequestProperty(String key, String value) {
-		if (this.jarFileConnection != null) {
-			this.jarFileConnection.setRequestProperty(key, value);
+	public Permission getPermission() throws IOException {
+		return this.jarFileConnection.getPermission();
+	}
+
+	@Override
+	public InputStream getInputStream() throws IOException {
+		connect();
+		if (this.entryName == null) {
+			throw NO_ENTRY_NAME_SPECIFIED_EXCEPTION;
 		}
-	}
-
-	@Override
-	public void addRequestProperty(String key, String value) {
-		if (this.jarFileConnection != null) {
-			this.jarFileConnection.addRequestProperty(key, value);
+		if (this.jarEntry == null) {
+			throwFileNotFound();
 		}
-	}
-
-	@Override
-	public Map<String, List<String>> getRequestProperties() {
-		return (this.jarFileConnection != null) ? this.jarFileConnection.getRequestProperties()
-				: Collections.emptyMap();
+		return new ConnectionInputStream();
 	}
 
 	@Override
@@ -288,13 +234,6 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public void setIfModifiedSince(long ifmodifiedsince) {
-		if (this.jarFileConnection != null) {
-			this.jarFileConnection.setIfModifiedSince(ifmodifiedsince);
-		}
-	}
-
-	@Override
 	public boolean getDefaultUseCaches() {
 		return (this.jarFileConnection != null) ? this.jarFileConnection.getDefaultUseCaches() : true;
 	}
@@ -304,6 +243,67 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (this.jarFileConnection != null) {
 			this.jarFileConnection.setDefaultUseCaches(defaultusecaches);
 		}
+	}
+
+	@Override
+	public void setIfModifiedSince(long ifmodifiedsince) {
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setIfModifiedSince(ifmodifiedsince);
+		}
+	}
+
+	@Override
+	public String getRequestProperty(String key) {
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getRequestProperty(key) : null;
+	}
+
+	@Override
+	public void setRequestProperty(String key, String value) {
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.setRequestProperty(key, value);
+		}
+	}
+
+	@Override
+	public void addRequestProperty(String key, String value) {
+		if (this.jarFileConnection != null) {
+			this.jarFileConnection.addRequestProperty(key, value);
+		}
+	}
+
+	@Override
+	public Map<String, List<String>> getRequestProperties() {
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getRequestProperties()
+				: Collections.emptyMap();
+	}
+
+	@Override
+	public void connect() throws IOException {
+		if (this.connected) {
+			return;
+		}
+		if (this.notFound != null) {
+			throw this.notFound.get();
+		}
+		boolean useCaches = getUseCaches();
+		URL jarFileURL = getJarFileURL();
+		if (this.entryName != null && Boolean.TRUE.equals(useFastExceptions.get())) {
+			checkCachedForEntry(jarFileURL, this.entryName);
+		}
+		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
+		this.jarEntry = getJarEntry(jarFileURL);
+		boolean addedToCache = jarFiles.cacheIfAbsent(useCaches, jarFileURL, this.jarFile);
+		if (addedToCache) {
+			this.jarFileConnection = jarFiles.reconnect(this.jarFile, this.jarFileConnection);
+		}
+		this.connected = true;
+	}
+
+	private void throwFileNotFound() throws FileNotFoundException {
+		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
+		throw new FileNotFoundException("JAR entry " + this.entryName + " not found in " + this.jarFile.getName());
 	}
 
 	static void useFastExceptions(boolean useFastExceptions) {

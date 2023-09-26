@@ -48,8 +48,7 @@ class ByteArrayDataBlock implements DataBlock {
 
 	private int read(ByteBuffer dst, int pos) {
 		int remaining = dst.remaining();
-		int length = this.bytes.length - pos;
-		length = Math.min(length, remaining);
+		int length = Math.min(this.bytes.length - pos, remaining);
 		dst.put(this.bytes, pos, length);
 		return length;
 	}

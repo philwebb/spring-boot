@@ -28,6 +28,7 @@ import java.net.URLStreamHandler;
  *
  * @author Phillip Webb
  * @since 3.2.0
+ * @see org.springframework.boot.loader.net.protocol.Handlers
  */
 public class Handler extends URLStreamHandler {
 

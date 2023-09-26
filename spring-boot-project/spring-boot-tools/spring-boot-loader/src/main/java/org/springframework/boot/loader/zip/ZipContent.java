@@ -127,11 +127,8 @@ public final class ZipContent implements Closeable {
 	 * @throws IOException on I/O error
 	 */
 	public CloseableDataBlock openRawZipData() throws IOException {
-		if (this.nameOffsetLookups.hasAnyEnabled()) {
-			return getVirtualData();
-		}
 		this.data.open();
-		return this.data;
+		return (!this.nameOffsetLookups.hasAnyEnabled()) ? this.data : getVirtualData();
 	}
 
 	private CloseableDataBlock getVirtualData() throws IOException {
