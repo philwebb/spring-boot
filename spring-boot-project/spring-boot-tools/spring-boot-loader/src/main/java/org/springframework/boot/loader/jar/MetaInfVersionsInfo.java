@@ -19,6 +19,7 @@ package org.springframework.boot.loader.jar;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.IntFunction;
 
 import org.springframework.boot.loader.zip.ZipContent;
 
@@ -30,9 +31,9 @@ import org.springframework.boot.loader.zip.ZipContent;
  */
 final class MetaInfVersionsInfo {
 
-	private static final String META_INF_VERSIONS = NestedJarFile.META_INF_VERSIONS;
+	static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(Collections.emptySet());
 
-	private static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(Collections.emptySet());
+	private static final String META_INF_VERSIONS = NestedJarFile.META_INF_VERSIONS;
 
 	private final int[] versions;
 
@@ -65,10 +66,19 @@ final class MetaInfVersionsInfo {
 	 * @return the {@link MetaInfVersionsInfo}.
 	 */
 	static MetaInfVersionsInfo get(ZipContent zipContent) {
+		return get(zipContent.size(), zipContent::getEntry);
+	}
+
+	/**
+	 * Get {@link MetaInfVersionsInfo} for the given details.
+	 * @param size the number of entries
+	 * @param entries a function to get an entry from an index
+	 * @return the {@link MetaInfVersionsInfo}.
+	 */
+	static MetaInfVersionsInfo get(int size, IntFunction<ZipContent.Entry> entries) {
 		Set<Integer> versions = new TreeSet<>();
-		int size = zipContent.size();
 		for (int i = 0; i < size; i++) {
-			ZipContent.Entry contentEntry = zipContent.getEntry(i);
+			ZipContent.Entry contentEntry = entries.apply(i);
 			if (contentEntry.hasNameStartingWith(META_INF_VERSIONS) && !contentEntry.isDirectory()) {
 				String name = contentEntry.getName();
 				int slash = name.indexOf('/', META_INF_VERSIONS.length());
@@ -85,6 +95,7 @@ final class MetaInfVersionsInfo {
 			}
 		}
 		return (!versions.isEmpty()) ? new MetaInfVersionsInfo(versions) : NONE;
+
 	}
 
 }

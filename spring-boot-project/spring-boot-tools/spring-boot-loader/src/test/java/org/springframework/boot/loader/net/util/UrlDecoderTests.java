@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.net.protocol;
+package org.springframework.boot.loader.net.util;
 
 import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.loader.net.util.UrlDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

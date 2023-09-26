@@ -29,11 +29,11 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 /**
- * Creates a simple test jar.
+ * Support class to create or get test jars.
  *
  * @author Phillip Webb
  */
-public abstract class TestJarCreator {
+public abstract class TestJar {
 
 	private static final int BASE_VERSION = 8;
 
@@ -51,15 +51,22 @@ public abstract class TestJarCreator {
 		RUNTIME_VERSION = version;
 	}
 
-	public static void createTestJar(File file) throws Exception {
-		createTestJar(file, false);
+	public static void create(File file) throws Exception {
+		create(file, false);
 	}
 
-	public static void createTestJar(File file, boolean unpackNested) throws Exception {
+	public static void create(File file, boolean unpackNested) throws Exception {
+		create(file, unpackNested, false);
+	}
+
+	public static void create(File file, boolean unpackNested, boolean addSignatureFile) throws Exception {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			jarOutputStream.setComment("outer");
 			writeManifest(jarOutputStream, "j1");
+			if (addSignatureFile) {
+				writeEntry(jarOutputStream, "META-INF/some.DSA", 0);
+			}
 			writeEntry(jarOutputStream, "1.dat", 1);
 			writeEntry(jarOutputStream, "2.dat", 2);
 			writeDirEntry(jarOutputStream, "d/");
@@ -152,6 +159,16 @@ public abstract class TestJarCreator {
 		jarOutputStream.putNextEntry(new JarEntry(name));
 		jarOutputStream.write(new byte[] { (byte) data });
 		jarOutputStream.closeEntry();
+	}
+
+	public static File getSigned() {
+		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+		for (String entry : entries) {
+			if (entry.contains("bcprov")) {
+				return new File(entry);
+			}
+		}
+		return null;
 	}
 
 }

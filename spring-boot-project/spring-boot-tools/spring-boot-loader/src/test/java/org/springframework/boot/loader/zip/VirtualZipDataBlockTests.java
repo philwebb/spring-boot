@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -51,7 +51,7 @@ class VirtualZipDataBlockTests {
 	@BeforeEach
 	void setup() throws Exception {
 		this.file = new File(this.tempDir, "test.jar");
-		TestJarCreator.createTestJar(this.file);
+		TestJar.create(this.file);
 	}
 
 	@Test

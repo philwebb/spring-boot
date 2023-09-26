@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
-import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.util.StringUtils;
 
@@ -87,7 +87,7 @@ class ExplodedArchiveTests {
 	@Test
 	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
 		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES);
-		URL[] expectedUrls = TestJarCreator.expectedEntries().stream().map(this::toUrl).toArray(URL[]::new);
+		URL[] expectedUrls = TestJar.expectedEntries().stream().map(this::toUrl).toArray(URL[]::new);
 		assertThat(urls).containsExactlyInAnyOrder(expectedUrls);
 	}
 
@@ -116,7 +116,7 @@ class ExplodedArchiveTests {
 
 	private void createArchive(String directoryName) throws Exception {
 		File file = new File(this.tempDir, "test.jar");
-		TestJarCreator.createTestJar(file);
+		TestJar.create(file);
 		this.rootDirectory = (StringUtils.hasText(directoryName) ? new File(this.tempDir, directoryName)
 				: new File(this.tempDir, UUID.randomUUID().toString()));
 		try (JarFile jarFile = new JarFile(file)) {

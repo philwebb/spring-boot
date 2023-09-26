@@ -46,7 +46,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.ZipContent.Entry;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
@@ -76,7 +76,7 @@ class ZipContentTests {
 	@BeforeEach
 	void setup() throws Exception {
 		this.file = new File(this.tempDir, "test.jar");
-		TestJarCreator.createTestJar(this.file);
+		TestJar.create(this.file);
 		this.zipContent = ZipContent.open(this.file.toPath());
 	}
 

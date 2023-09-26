@@ -37,7 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
-import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -347,7 +347,7 @@ class PropertiesLauncherTests {
 	@Test // gh-21575
 	void loadResourceFromJarFile() throws Exception {
 		File file = new File(this.tempDir, "app.jar");
-		TestJarCreator.createTestJar(file);
+		TestJar.create(file);
 		System.setProperty("loader.home", this.tempDir.getAbsolutePath());
 		System.setProperty("loader.path", "app.jar");
 		this.launcher = new PropertiesLauncher();

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.launch.Archive.Entry;
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
-import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.util.FileCopyUtils;
 
@@ -82,7 +82,7 @@ class JarFileArchiveTests {
 	@Test
 	void getClassPathUrlsWhenNoPredicartesReturnsUrls() throws Exception {
 		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES);
-		URL[] expected = TestJarCreator.expectedEntries()
+		URL[] expected = TestJar.expectedEntries()
 			.stream()
 			.map((name) -> JarUrl.create(this.file, name))
 			.toArray(URL[]::new);
@@ -98,7 +98,7 @@ class JarFileArchiveTests {
 	@Test
 	void getClassPathUrlsWhenHasSearchFilterAllUrlsSinceSearchFilterIsNotUsed() throws Exception {
 		Set<URL> urls = this.archive.getClassPathUrls(Archive.ALL_ENTRIES, (entry) -> false);
-		URL[] expected = TestJarCreator.expectedEntries()
+		URL[] expected = TestJar.expectedEntries()
 			.stream()
 			.map((name) -> JarUrl.create(this.file, name))
 			.toArray(URL[]::new);
@@ -161,7 +161,7 @@ class JarFileArchiveTests {
 			this.archive.close();
 		}
 		this.file = new File(this.tempDir, "root.jar");
-		TestJarCreator.createTestJar(this.file, unpackNested);
+		TestJar.create(this.file, unpackNested);
 		this.archive = new JarFileArchive(this.file);
 	}
 

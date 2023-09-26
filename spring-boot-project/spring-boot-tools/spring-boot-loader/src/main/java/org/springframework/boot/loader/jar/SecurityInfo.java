@@ -33,7 +33,7 @@ import org.springframework.boot.loader.zip.ZipContent;
  */
 final class SecurityInfo {
 
-	private static final SecurityInfo NONE = new SecurityInfo(null, null);
+	static final SecurityInfo NONE = new SecurityInfo(null, null);
 
 	private final Certificate[][] certificateLookups;
 

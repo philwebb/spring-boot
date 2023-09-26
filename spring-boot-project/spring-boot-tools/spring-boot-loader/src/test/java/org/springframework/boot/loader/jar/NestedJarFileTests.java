@@ -36,7 +36,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.loader.ref.Cleaner;
-import org.springframework.boot.loader.testsupport.TestJarCreator;
+import org.springframework.boot.loader.testsupport.TestJar;
 import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.boot.loader.zip.ZipContent;
 import org.springframework.util.FileCopyUtils;
@@ -70,7 +70,7 @@ class NestedJarFileTests {
 	@BeforeEach
 	void setup() throws Exception {
 		this.file = new File(this.tempDir, "test.jar");
-		TestJarCreator.createTestJar(this.file);
+		TestJar.create(this.file);
 	}
 
 	@Test
@@ -318,7 +318,7 @@ class NestedJarFileTests {
 
 	@Test
 	void verifySignedJar() throws Exception {
-		File signedJarFile = getSignedJarFile();
+		File signedJarFile = TestJar.getSigned();
 		assertThat(signedJarFile).exists();
 		try (JarFile expected = new JarFile(signedJarFile)) {
 			try (NestedJarFile actual = new NestedJarFile(signedJarFile)) {
@@ -363,16 +363,6 @@ class NestedJarFileTests {
 				.containsExactly("META-INF/:META-INF/", "META-INF/MANIFEST.MF:META-INF/MANIFEST.MF",
 						"multi-release.dat:META-INF/versions/17/multi-release.dat");
 		}
-	}
-
-	private File getSignedJarFile() {
-		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
-		for (String entry : entries) {
-			if (entry.contains("bcprov")) {
-				return new File(entry);
-			}
-		}
-		return null;
 	}
 
 }

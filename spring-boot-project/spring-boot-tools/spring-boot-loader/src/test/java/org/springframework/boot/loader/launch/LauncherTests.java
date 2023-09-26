@@ -33,7 +33,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link Launcher} with jar mode support.
+ * Tests for {@link Launcher}.
  *
  * @author Phillip Webb
  */
