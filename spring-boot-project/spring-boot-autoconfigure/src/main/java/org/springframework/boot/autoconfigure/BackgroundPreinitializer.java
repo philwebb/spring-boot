@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -110,7 +111,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 					}
 					runSafely(new CharsetInitializer());
 					runSafely(new TomcatInitializer());
-					runSafely(new Slf4jInitializer());
+					runSafely(new JdkInitializer());
 					preinitializationComplete.countDown();
 				}
 
@@ -203,11 +204,11 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	}
 
-	private static class Slf4jInitializer implements Runnable {
+	private static class JdkInitializer implements Runnable {
 
 		@Override
 		public void run() {
-			org.slf4j.LoggerFactory.getILoggerFactory();
+			ZoneId.systemDefault();
 		}
 
 	}

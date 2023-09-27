@@ -17,15 +17,15 @@
 package org.springframework.boot.loader.net.protocol.jar;
 
 /**
- * {@link ThreadLocal} state for {@link Handler} optimization.
+ * {@link ThreadLocal} state for {@link Handler} optimizations.
  *
  * @author Phillip Webb
  */
-final class JarHandlerOptimization {
+final class Optimizations {
 
 	private static final ThreadLocal<Boolean> status = new ThreadLocal<>();
 
-	private JarHandlerOptimization() {
+	private Optimizations() {
 	}
 
 	static void enable(boolean readContents) {

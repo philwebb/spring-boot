@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.launch;
+package org.springframework.boot.loader.net.protocol.jar;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -29,21 +30,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 
 import org.springframework.boot.loader.jar.NestedJarFile;
-import org.springframework.boot.loader.net.protocol.jar.Handler;
+import org.springframework.boot.loader.launch.LaunchedClassLoader;
 
 /**
- * {@link ClassLoader} used by the {@link Launcher}.
+ * {@link URLClassLoader} with optimized support for Jar URLs.
  *
  * @author Phillip Webb
- * @author Dave Syer
  * @author Andy Wilkinson
  * @since 3.2.0
  */
-public abstract class NestedJarUrlClassLoader extends URLClassLoader {
+public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	private final URL[] urls;
 
-	private final boolean hasNestedJarUrls;
+	private final boolean hasJarUrls;
 
 	private final Map<URL, JarFile> jarFiles = new ConcurrentHashMap<>();
 
@@ -54,46 +54,46 @@ public abstract class NestedJarUrlClassLoader extends URLClassLoader {
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
-	public NestedJarUrlClassLoader(URL[] urls, ClassLoader parent) {
+	public JarUrlClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
-		this.hasNestedJarUrls = true; // FIXME;
 		this.urls = urls;
+		this.hasJarUrls = Arrays.stream(urls).anyMatch((url) -> "jar".equals(url.getProtocol()));
 	}
 
 	@Override
 	public URL findResource(String name) {
-		if (!this.hasNestedJarUrls) {
+		if (!this.hasJarUrls) {
 			return super.findResource(name);
 		}
-		Handler.enableOptimzation(false);
+		Optimizations.enable(false);
 		try {
 			return super.findResource(name);
 		}
 		finally {
-			Handler.disableOptimization();
+			Optimizations.disable();
 		}
 	}
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
-		if (!this.hasNestedJarUrls) {
+		if (!this.hasJarUrls) {
 			return super.findResources(name);
 		}
-		Handler.enableOptimzation(false);
+		Optimizations.enable(false);
 		try {
-			return new NestedJarUrlEnumeration(super.findResources(name));
+			return new OptimizedEnumeration(super.findResources(name));
 		}
 		finally {
-			Handler.enableOptimzation(false);
+			Optimizations.disable();
 		}
 	}
 
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		if (!this.hasNestedJarUrls) {
+		if (!this.hasJarUrls) {
 			return super.loadClass(name, resolve);
 		}
-		Handler.enableOptimzation(true);
+		Optimizations.enable(true);
 		try {
 			try {
 				definePackageIfNecessary(name);
@@ -104,7 +104,7 @@ public abstract class NestedJarUrlClassLoader extends URLClassLoader {
 			return super.loadClass(name, resolve);
 		}
 		finally {
-			Handler.disableOptimization();
+			Optimizations.disable();
 		}
 	}
 
@@ -245,34 +245,34 @@ public abstract class NestedJarUrlClassLoader extends URLClassLoader {
 	/**
 	 * {@link Enumeration} that uses fast connections.
 	 */
-	private static class NestedJarUrlEnumeration implements Enumeration<URL> {
+	private static class OptimizedEnumeration implements Enumeration<URL> {
 
 		private final Enumeration<URL> delegate;
 
-		NestedJarUrlEnumeration(Enumeration<URL> delegate) {
+		OptimizedEnumeration(Enumeration<URL> delegate) {
 			this.delegate = delegate;
 		}
 
 		@Override
 		public boolean hasMoreElements() {
-			Handler.enableOptimzation(false);
+			Optimizations.enable(false);
 			try {
 				return this.delegate.hasMoreElements();
 			}
 			finally {
-				Handler.disableOptimization();
+				Optimizations.disable();
 			}
 
 		}
 
 		@Override
 		public URL nextElement() {
-			Handler.enableOptimzation(false);
+			Optimizations.enable(false);
 			try {
 				return this.delegate.nextElement();
 			}
 			finally {
-				Handler.disableOptimization();
+				Optimizations.disable();
 			}
 		}
 

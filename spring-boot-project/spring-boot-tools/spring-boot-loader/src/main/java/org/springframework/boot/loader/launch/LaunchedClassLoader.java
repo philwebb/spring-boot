@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.function.Supplier;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.net.protocol.jar.JarUrlClassLoader;
+
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
  *
@@ -31,7 +33,7 @@ import java.util.jar.Manifest;
  * @author Andy Wilkinson
  * @since 3.2.0
  */
-public class LaunchedClassLoader extends NestedJarUrlClassLoader {
+public class LaunchedClassLoader extends JarUrlClassLoader {
 
 	private static final String JAR_MODE_PACKAGE_PREFIX = "org.springframework.boot.loader.jarmode.";
 

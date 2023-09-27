@@ -201,7 +201,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (this.entryName == null) {
 			throw new IOException("no entry name specified");
 		}
-		if (!getUseCaches() && this.entryName != null && JarHandlerOptimization.isEnabled(false)) {
+		if (!getUseCaches() && this.entryName != null && Optimizations.isEnabled(false)) {
 			JarFile cached = jarFiles.getCached(getJarFileURL());
 			if (cached != null) {
 				if (cached.getEntry(this.entryName) != null) {
@@ -295,7 +295,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		}
 		boolean useCaches = getUseCaches();
 		URL jarFileURL = getJarFileURL();
-		if (this.entryName != null && JarHandlerOptimization.isEnabled()) {
+		if (this.entryName != null && Optimizations.isEnabled()) {
 			checkCachedForEntry(jarFileURL, this.entryName);
 		}
 		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
@@ -308,7 +308,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	private void throwFileNotFound() throws FileNotFoundException {
-		if (JarHandlerOptimization.isEnabled()) {
+		if (Optimizations.isEnabled()) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		throw new FileNotFoundException("JAR entry " + this.entryName + " not found in " + this.jarFile.getName());
@@ -341,7 +341,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	private static URLConnection notFound(String jarFileName, String entryName) throws IOException {
-		if (JarHandlerOptimization.isEnabled()) {
+		if (Optimizations.isEnabled()) {
 			return NOT_FOUND_CONNECTION;
 		}
 		return new JarUrlConnection(
