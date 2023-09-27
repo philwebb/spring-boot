@@ -52,10 +52,68 @@ public class Handler extends URLStreamHandler {
 			throw new IllegalStateException("Nested JAR URLs are not supported");
 		}
 		int anchorIndex = spec.indexOf('#', limit);
-		SpecFormat format = SpecFormat.detect(spec, start, anchorIndex);
-		String path = format.extractPath(url, spec, start, limit);
+		String path = extractPath(url, spec, start, limit, anchorIndex);
 		String ref = (anchorIndex != -1) ? spec.substring(anchorIndex + 1) : null;
 		setURL(url, PROTOCOL, "", -1, null, null, path, null, ref);
+	}
+
+	private String extractPath(URL url, String spec, int start, int limit, int anchorIndex) {
+		if (anchorIndex == start) {
+			return extractAnchorOnlyPath(url);
+		}
+		if (spec.length() >= 4 && spec.regionMatches(true, 0, "jar:", 0, 4)) {
+			return extractAbsolutePath(spec, start, limit);
+		}
+		return extractRelativePath(url, spec, start, limit);
+	}
+
+	private String extractAnchorOnlyPath(URL url) {
+		return url.getPath();
+	}
+
+	private String extractAbsolutePath(String spec, int start, int limit) {
+		int indexOfSeparator = indexOfSeparator(spec, start, limit);
+		if (indexOfSeparator == -1) {
+			throw new IllegalStateException("no !/ in spec");
+		}
+		String innerUrl = spec.substring(start, indexOfSeparator);
+		assertInnerUrlIsNotMalformed(spec, innerUrl);
+		return spec.substring(start, limit);
+	}
+
+	private String extractRelativePath(URL url, String spec, int start, int limit) {
+		String contextPath = extractContextPath(url, spec, start);
+		String path = contextPath + spec.substring(start, limit);
+		return Canonicalizer.canonicalizeAfter(path, indexOfSeparator(path) + 1);
+	}
+
+	private String extractContextPath(URL url, String spec, int start) {
+		String contextPath = url.getPath();
+		if (spec.charAt(start) == '/') {
+			int indexOfContextPathSeparator = indexOfSeparator(contextPath);
+			if (indexOfContextPathSeparator == -1) {
+				throw new IllegalStateException("malformed context url:%s: no !/".formatted(url));
+			}
+			return contextPath.substring(0, indexOfContextPathSeparator + 1);
+		}
+		int lastSlash = contextPath.lastIndexOf('/');
+		if (lastSlash == -1) {
+			throw new IllegalStateException("malformed context url:%s".formatted(url));
+		}
+		return contextPath.substring(0, lastSlash + 1);
+	}
+
+	private void assertInnerUrlIsNotMalformed(String spec, String innerUrl) {
+		if (innerUrl.startsWith("nested:")) {
+			org.springframework.boot.loader.net.protocol.nested.Handler.assertUrlIsNotMalformed(innerUrl);
+			return;
+		}
+		try {
+			new URL(innerUrl);
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException("invalid url: %s (%s)".formatted(spec, ex));
+		}
 	}
 
 	@Override
@@ -126,113 +184,6 @@ public class Handler extends URLStreamHandler {
 	 */
 	public static void clearCache() {
 		JarFileUrlKey.clearCache();
-	}
-
-	/**
-	 * The supported spec formats.
-	 */
-	enum SpecFormat {
-
-		/**
-		 * The spec is an absolute reference (i.e. {@code jar:<url>}.
-		 */
-		ABSOLUTE {
-
-			@Override
-			String extractPath(URL url, String spec, int start, int limit) {
-				int indexOfSeparator = indexOfSeparator(spec, start, limit);
-				if (indexOfSeparator == -1) {
-					throw new IllegalStateException("no !/ in spec");
-				}
-				String innerUrl = spec.substring(start, indexOfSeparator);
-				assertInnerUrlIsNotMalformed(spec, innerUrl);
-				return spec.substring(start, limit);
-			}
-
-			private void assertInnerUrlIsNotMalformed(String spec, String innerUrl) {
-				if (innerUrl.startsWith("nested:")) {
-					org.springframework.boot.loader.net.protocol.nested.Handler.assertUrlIsNotMalformed(innerUrl);
-					return;
-				}
-				try {
-					new URL(innerUrl);
-				}
-				catch (MalformedURLException ex) {
-					throw new IllegalStateException("invalid url: %s (%s)".formatted(spec, ex));
-				}
-			}
-
-		},
-
-		/**
-		 * The spec is relative (i.e. {@code url + some/path/file.ext})
-		 */
-		RELATIVE {
-
-			@Override
-			String extractPath(URL url, String spec, int start, int limit) {
-				String contextPath = extractContextPath(url, spec, start);
-				String path = contextPath + spec.substring(start, limit);
-				return Canonicalizer.canonicalizeAfter(path, indexOfSeparator(path) + 1);
-			}
-
-			private String extractContextPath(URL url, String spec, int start) {
-				String contextPath = url.getPath();
-				if (spec.charAt(start) == '/') {
-					int indexOfContextPathSeparator = indexOfSeparator(contextPath);
-					if (indexOfContextPathSeparator == -1) {
-						throw new IllegalStateException("malformed context url:%s: no !/".formatted(url));
-					}
-					return contextPath.substring(0, indexOfContextPathSeparator + 1);
-				}
-				int lastSlash = contextPath.lastIndexOf('/');
-				if (lastSlash == -1) {
-					throw new IllegalStateException("malformed context url:%s".formatted(url));
-				}
-				return contextPath.substring(0, lastSlash + 1);
-			}
-
-		},
-
-		/**
-		 * The spec contains only an anchor (i.e. {@code url + #runtime}).
-		 */
-		ANCHOR_ONLY {
-
-			@Override
-			String extractPath(URL url, String spec, int start, int limit) {
-				return url.getPath();
-			}
-
-		};
-
-		/**
-		 * Extract the path that should be used with this format.
-		 * @param url the context URL
-		 * @param spec the spec to parse
-		 * @param start the position to begin spec parsing
-		 * @param limit the position to end spec parsing
-		 * @return the extracted path
-		 */
-		abstract String extractPath(URL url, String spec, int start, int limit);
-
-		/**
-		 * Detect that {@link SpecFormat} given a spec string.
-		 * @param spec the spec
-		 * @param start the position to begin spec parsing
-		 * @param anchorIndex the anchor index
-		 * @return the detected spec format
-		 */
-		static SpecFormat detect(String spec, int start, int anchorIndex) {
-			if (anchorIndex == start) {
-				return ANCHOR_ONLY;
-			}
-			if (spec.length() >= 4 && spec.regionMatches(true, 0, "jar:", 0, 4)) {
-				return ABSOLUTE;
-			}
-			return RELATIVE;
-		}
-
 	}
 
 }
