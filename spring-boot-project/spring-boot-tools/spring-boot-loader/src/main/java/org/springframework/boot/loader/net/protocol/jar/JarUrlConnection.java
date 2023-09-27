@@ -52,8 +52,6 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 
 	private static final InputStream emptyInputStream = new ByteArrayInputStream(new byte[0]);
 
-	private static final IOException NO_ENTRY_NAME_SPECIFIED_EXCEPTION = new IOException("no entry name specified");
-
 	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
 			"Jar file or entry not found");
 
@@ -201,7 +199,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		if (this.entryName == null) {
-			throw NO_ENTRY_NAME_SPECIFIED_EXCEPTION;
+			throw new IOException("no entry name specified");
 		}
 		if (!getUseCaches() && this.entryName != null && JarHandlerOptimization.isEnabled(false)) {
 			JarFile cached = jarFiles.getCached(getJarFileURL());
