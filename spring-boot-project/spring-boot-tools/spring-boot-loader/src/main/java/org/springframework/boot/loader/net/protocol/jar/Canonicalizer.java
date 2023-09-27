@@ -30,8 +30,8 @@ final class Canonicalizer {
 
 	static String canonicalizeAfter(String path, int pos) {
 		int pathLength = path.length();
-		boolean containsDotSlash = path.indexOf("./", pos) == -1;
-		if (pos >= pathLength || (containsDotSlash && path.charAt(pathLength - 1) != '.')) {
+		boolean noDotSlash = path.indexOf("./", pos) == -1;
+		if (pos >= pathLength || (noDotSlash && path.charAt(pathLength - 1) != '.')) {
 			return path;
 		}
 		String before = path.substring(0, pos);
