@@ -18,8 +18,10 @@ package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -156,9 +158,11 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		private final Object lock = new Object();
 
-		private volatile int referenceCount;
+		private int referenceCount;
 
-		private volatile FileChannel fileChannel;
+		private FileChannel fileChannel;
+
+		private MappedByteBuffer mapped;
 
 		ManagedFileChannel(Path path) {
 			if (!Files.isRegularFile(path)) {
@@ -168,7 +172,14 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		int read(ByteBuffer dst, long position) throws IOException {
-			return this.fileChannel.read(dst, position);
+			synchronized (this.lock) {
+				int offset = (int) position;
+				int length = (int) Math.min(this.fileChannel.size() - position, dst.remaining());
+				int dstPos = dst.position();
+				dst.put(dstPos, this.mapped, offset, length);
+				dst.position(dstPos + length);
+				return length;
+			}
 		}
 
 		void open() throws IOException {
@@ -176,6 +187,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
+					this.mapped = this.fileChannel.map(MapMode.READ_ONLY, 0, this.fileChannel.size());
 					if (tracker != null) {
 						tracker.openedFileChannel(this.path, this.fileChannel);
 					}
@@ -193,6 +205,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				this.referenceCount--;
 				if (this.referenceCount == 0) {
 					debug.log("Closing '%s'", this.path);
+					this.mapped = null;
 					this.fileChannel.close();
 					if (tracker != null) {
 						tracker.closedFileChannel(this.path, this.fileChannel);
