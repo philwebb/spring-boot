@@ -18,7 +18,6 @@ package org.springframework.boot.loader.zip;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -79,7 +78,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			originalDestinationLimit = dst.limit();
 			dst.limit(dst.position() + remaining);
 		}
-		int result = this.channel.read(dst, this.offset + pos);
+		int result = this.channel.read(dst, (int) (this.offset + pos));
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}
@@ -162,7 +161,9 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		private FileChannel fileChannel;
 
-		private MappedByteBuffer mapped;
+		private ByteBuffer mapped;
+
+		private int size;
 
 		ManagedFileChannel(Path path) {
 			if (!Files.isRegularFile(path)) {
@@ -171,13 +172,12 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			this.path = path;
 		}
 
-		int read(ByteBuffer dst, long position) throws IOException {
+		int read(ByteBuffer dst, int position) {
 			synchronized (this.lock) {
-				int offset = (int) position;
-				int length = (int) Math.min(this.fileChannel.size() - position, dst.remaining());
-				int dstPos = dst.position();
-				dst.put(dstPos, this.mapped, offset, length);
-				dst.position(dstPos + length);
+				int length = Math.min(this.size - position, dst.remaining());
+				int dstPosition = dst.position();
+				dst.put(dstPosition, this.mapped, position, length);
+				dst.position(dstPosition + length);
 				return length;
 			}
 		}
@@ -188,6 +188,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
 					this.mapped = this.fileChannel.map(MapMode.READ_ONLY, 0, this.fileChannel.size());
+					this.size = (int) this.fileChannel.size();
 					if (tracker != null) {
 						tracker.openedFileChannel(this.path, this.fileChannel);
 					}
