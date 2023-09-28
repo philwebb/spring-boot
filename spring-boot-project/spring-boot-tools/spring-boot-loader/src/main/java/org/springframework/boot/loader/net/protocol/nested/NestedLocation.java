@@ -28,16 +28,16 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  * nested entry.
  * <p>
  * The syntax of a nested JAR URL is: <pre>
- * nestedjar:&lt;path&gt;!{entry}
+ * nestedjar:&lt;path&gt;/!{entry}
  * </pre>
  * <p>
  * for example:
  * <p>
- * {@code nested:/home/example/my.jar!BOOT-INF/lib/my-nested.jar}
+ * {@code nested:/home/example/my.jar/!BOOT-INF/lib/my-nested.jar}
  * <p>
  * or:
  * <p>
- * {@code nested:/home/example/my.jar!BOOT-INF/classes/}
+ * {@code nested:/home/example/my.jar/!BOOT-INF/classes/}
  * <p>
  * The path must refer to a jar file on the file system. The entry refers to either an
  * uncompressed entry that contains the nested jar, or a directory entry. The entry must
@@ -78,9 +78,9 @@ public record NestedLocation(File file, String nestedEntryName) {
 		if (location == null || location.isEmpty()) {
 			throw new IllegalArgumentException("'location' must not be null and or empty");
 		}
-		int index = location.lastIndexOf('!');
+		int index = location.lastIndexOf("/!");
 		if (index == -1) {
-			throw new IllegalArgumentException("'location' must contain '!'");
+			throw new IllegalArgumentException("'location' must contain '/!'");
 		}
 		return cache.computeIfAbsent(location, (l) -> create(index, l));
 	}
