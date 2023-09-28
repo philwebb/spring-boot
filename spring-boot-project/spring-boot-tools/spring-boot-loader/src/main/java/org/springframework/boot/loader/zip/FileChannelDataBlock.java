@@ -163,18 +163,19 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		private ByteBuffer mapped;
 
-		private int size;
+		private final long size;
 
-		ManagedFileChannel(Path path) {
+		ManagedFileChannel(Path path) throws IOException {
 			if (!Files.isRegularFile(path)) {
 				throw new IllegalArgumentException(path + " must be a regular file");
 			}
 			this.path = path;
+			this.size = (int) Files.size(path);
 		}
 
 		int read(ByteBuffer dst, int position) {
 			synchronized (this.lock) {
-				int length = Math.min(this.size - position, dst.remaining());
+				int length = (int) Math.min(this.size - position, dst.remaining());
 				int dstPosition = dst.position();
 				dst.put(dstPosition, this.mapped, position, length);
 				dst.position(dstPosition + length);
@@ -188,7 +189,6 @@ class FileChannelDataBlock implements CloseableDataBlock {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
 					this.mapped = this.fileChannel.map(MapMode.READ_ONLY, 0, this.fileChannel.size());
-					this.size = (int) this.fileChannel.size();
 					if (tracker != null) {
 						tracker.openedFileChannel(this.path, this.fileChannel);
 					}

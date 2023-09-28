@@ -30,9 +30,9 @@ import org.springframework.boot.loader.testsupport.TestJar;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
 /**
@@ -50,7 +50,7 @@ class ArchiveTests {
 		Archive archive = mock(Archive.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
 		Predicate<Entry> includeFilter = (entry) -> false;
 		archive.getClassPathUrls(includeFilter);
-		verify(archive).getClassPathUrls(includeFilter, Archive.ALL_ENTRIES);
+		then(archive).should().getClassPathUrls(includeFilter, Archive.ALL_ENTRIES);
 	}
 
 	@Test
