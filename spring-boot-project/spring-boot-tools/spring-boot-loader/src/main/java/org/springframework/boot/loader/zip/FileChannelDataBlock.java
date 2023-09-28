@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -78,7 +77,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			originalDestinationLimit = dst.limit();
 			dst.limit(dst.position() + remaining);
 		}
-		int result = this.channel.read(dst, (int) (this.offset + pos));
+		int result = this.channel.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}
@@ -157,30 +156,19 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		private final Object lock = new Object();
 
-		private int referenceCount;
+		private volatile int referenceCount;
 
-		private FileChannel fileChannel;
+		private volatile FileChannel fileChannel;
 
-		private ByteBuffer mapped;
-
-		private final long size;
-
-		ManagedFileChannel(Path path) throws IOException {
+		ManagedFileChannel(Path path) {
 			if (!Files.isRegularFile(path)) {
 				throw new IllegalArgumentException(path + " must be a regular file");
 			}
 			this.path = path;
-			this.size = (int) Files.size(path);
 		}
 
-		int read(ByteBuffer dst, int position) {
-			synchronized (this.lock) {
-				int length = (int) Math.min(this.size - position, dst.remaining());
-				int dstPosition = dst.position();
-				dst.put(dstPosition, this.mapped, position, length);
-				dst.position(dstPosition + length);
-				return length;
-			}
+		int read(ByteBuffer dst, long position) throws IOException {
+			return this.fileChannel.read(dst, position);
 		}
 
 		void open() throws IOException {
@@ -188,7 +176,6 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
-					this.mapped = this.fileChannel.map(MapMode.READ_ONLY, 0, this.fileChannel.size());
 					if (tracker != null) {
 						tracker.openedFileChannel(this.path, this.fileChannel);
 					}
@@ -206,7 +193,6 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				this.referenceCount--;
 				if (this.referenceCount == 0) {
 					debug.log("Closing '%s'", this.path);
-					this.mapped = null;
 					this.fileChannel.close();
 					if (tracker != null) {
 						tracker.closedFileChannel(this.path, this.fileChannel);
