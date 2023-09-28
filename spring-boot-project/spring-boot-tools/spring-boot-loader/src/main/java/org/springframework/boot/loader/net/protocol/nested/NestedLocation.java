@@ -87,7 +87,7 @@ public record NestedLocation(File file, String nestedEntryName) {
 
 	private static NestedLocation create(int index, String location) {
 		String file = location.substring(0, index);
-		String nestedEntryName = location.substring(index + 1);
+		String nestedEntryName = location.substring(index + 2);
 		return new NestedLocation((!file.isEmpty()) ? new File(file) : null, nestedEntryName);
 	}
 
