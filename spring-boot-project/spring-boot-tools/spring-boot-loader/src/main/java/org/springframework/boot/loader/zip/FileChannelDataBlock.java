@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -78,7 +77,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			originalDestinationLimit = dst.limit();
 			dst.limit(dst.position() + remaining);
 		}
-		int result = this.channel.read(dst, (int) (this.offset + pos));
+		int result = this.channel.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}
@@ -153,32 +152,43 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 */
 	static class ManagedFileChannel {
 
-		private final Path path;
+		static final int BUFFER_SIZE = 1024 + 10;
 
-		private final Object lock = new Object();
+		private final Path path;
 
 		private int referenceCount;
 
 		private FileChannel fileChannel;
 
-		private ByteBuffer mapped;
+		private ByteBuffer buffer;
 
-		private final long size;
+		private long bufferPosition = -1;
 
-		ManagedFileChannel(Path path) throws IOException {
+		private int bufferSize;
+
+		private final Object lock = new Object();
+
+		ManagedFileChannel(Path path) {
 			if (!Files.isRegularFile(path)) {
 				throw new IllegalArgumentException(path + " must be a regular file");
 			}
 			this.path = path;
-			this.size = (int) Files.size(path);
 		}
 
-		int read(ByteBuffer dst, int position) {
+		int read(ByteBuffer dst, long position) throws IOException {
 			synchronized (this.lock) {
-				int length = (int) Math.min(this.size - position, dst.remaining());
-				int dstPosition = dst.position();
-				dst.put(dstPosition, this.mapped, position, length);
-				dst.position(dstPosition + length);
+				if (position < this.bufferPosition || position >= this.bufferPosition + this.bufferSize) {
+					this.buffer.clear();
+					this.bufferSize = this.fileChannel.read(this.buffer, position);
+					this.bufferPosition = position;
+				}
+				if (this.bufferSize <= 0) {
+					return this.bufferSize;
+				}
+				int offset = (int) (position - this.bufferPosition);
+				int length = Math.min(this.bufferSize - offset, dst.remaining());
+				dst.put(dst.position(), this.buffer, offset, length);
+				dst.position(dst.position() + length);
 				return length;
 			}
 		}
@@ -188,7 +198,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
-					this.mapped = this.fileChannel.map(MapMode.READ_ONLY, 0, this.fileChannel.size());
+					this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
 					if (tracker != null) {
 						tracker.openedFileChannel(this.path, this.fileChannel);
 					}
@@ -206,7 +216,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				this.referenceCount--;
 				if (this.referenceCount == 0) {
 					debug.log("Closing '%s'", this.path);
-					this.mapped = null;
+					this.buffer = null;
 					this.fileChannel.close();
 					if (tracker != null) {
 						tracker.closedFileChannel(this.path, this.fileChannel);

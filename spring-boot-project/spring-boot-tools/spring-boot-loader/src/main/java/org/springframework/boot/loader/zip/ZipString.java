@@ -279,7 +279,7 @@ final class ZipString {
 			buffer.limit(maxLen);
 		}
 		int count = dataBlock.read(buffer, pos);
-		if (count < 0) {
+		if (count <= 0) {
 			throw new EOFException();
 		}
 		return count;
