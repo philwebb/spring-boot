@@ -71,7 +71,7 @@ class LoaderIntegrationTests {
 	}
 
 	private File findApplication() {
-		String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-loader-tests-app");
+		String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-loader-classic-tests-app");
 		File jar = new File(name);
 		Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
 		return jar;
