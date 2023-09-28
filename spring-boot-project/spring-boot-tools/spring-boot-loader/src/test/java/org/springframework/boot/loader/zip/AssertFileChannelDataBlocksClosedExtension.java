@@ -75,10 +75,7 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 		}
 
 		void assertAllClosed() {
-			for (Cleanable cleanable : this.cleanup) {
-				cleanable.clean();
-			}
-			// this.cleanup.forEach(Cleanable::clean);
+			this.cleanup.forEach(Cleanable::clean);
 			assertThat(this.paths).as("open paths").isEmpty();
 		}
 
