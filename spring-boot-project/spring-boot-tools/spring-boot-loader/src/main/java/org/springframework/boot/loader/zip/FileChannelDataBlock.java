@@ -217,6 +217,8 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Closing '%s'", this.path);
 					this.buffer = null;
+					this.bufferPosition = -1;
+					this.bufferSize = 0;
 					this.fileChannel.close();
 					if (tracker != null) {
 						tracker.closedFileChannel(this.path, this.fileChannel);
