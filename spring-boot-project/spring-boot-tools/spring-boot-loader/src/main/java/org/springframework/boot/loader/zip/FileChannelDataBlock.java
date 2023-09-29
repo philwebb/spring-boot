@@ -152,7 +152,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 */
 	static class ManagedFileChannel {
 
-		static final int BUFFER_SIZE = 1024 + 10;
+		static final int BUFFER_SIZE = 1024 * 10;
 
 		private final Path path;
 
@@ -198,7 +198,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 				if (this.referenceCount == 0) {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
-					this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
+					this.buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 					if (tracker != null) {
 						tracker.openedFileChannel(this.path, this.fileChannel);
 					}

@@ -61,7 +61,7 @@ record ZipEndOfCentralDirectoryRecord(short numberOfThisDisk, short diskWhereCen
 
 	private static final int MAXIMUM_SIZE = MINIMUM_SIZE + MAXIMUM_COMMENT_LENGTH;
 
-	static final int BUFFER_SIZE = 512;
+	static final int BUFFER_SIZE = 256;
 
 	/**
 	 * The offset of the file comment relative to the record start position.
