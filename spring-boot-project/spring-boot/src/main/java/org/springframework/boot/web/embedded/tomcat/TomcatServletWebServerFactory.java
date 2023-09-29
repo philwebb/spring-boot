@@ -46,7 +46,6 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Valve;
 import org.apache.catalina.WebResource;
-import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.WebResourceRoot.ResourceSetType;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.Wrapper;
@@ -773,10 +772,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private final class StaticResourceConfigurer implements LifecycleListener {
 
-		private static final String WEB_APP_MOUNT = "/";
-
-		private static final String INTERNAL_PATH = "/META-INF/resources";
-
 		private final Context context;
 
 		private StaticResourceConfigurer(Context context) {
@@ -809,22 +804,23 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		private void addResourceSet(String resource) {
 			try {
-				WebResourceRoot root = this.context.getResources();
-				URL url = new URL(resource);
 				if (isInsideNestedJar(resource)) {
-					root.addJarResources(new NestedJarResourceSet(url, root, WEB_APP_MOUNT, INTERNAL_PATH));
+					// It's a nested jar but we now don't want the suffix because Tomcat
+					// is going to try and locate it as a root URL (not the resource
+					// inside it)
+					resource = resource.substring(0, resource.length() - 2);
 				}
-				else {
-					root.createWebResourceSet(ResourceSetType.RESOURCE_JAR, WEB_APP_MOUNT, url, INTERNAL_PATH);
-				}
+				URL url = new URL(resource);
+				String path = "/META-INF/resources";
+				this.context.getResources().createWebResourceSet(ResourceSetType.RESOURCE_JAR, "/", url, path);
 			}
 			catch (Exception ex) {
 				// Ignore (probably not a directory)
 			}
 		}
 
-		private boolean isInsideNestedJar(String resource) {
-			return resource.startsWith("jar:file:") && resource.indexOf("!/") < resource.lastIndexOf("!/");
+		private boolean isInsideNestedJar(String dir) {
+			return dir.indexOf("!/") < dir.lastIndexOf("!/");
 		}
 
 	}
