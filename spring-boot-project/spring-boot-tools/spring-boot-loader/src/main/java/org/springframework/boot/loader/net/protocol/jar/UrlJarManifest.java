@@ -46,8 +46,7 @@ class UrlJarManifest {
 			return null;
 		}
 		Manifest copy = new Manifest();
-		Attributes attr = copy.getMainAttributes();
-		attr.putAll((Map<?, ?>) manifest.getMainAttributes().clone());
+		copy.getMainAttributes().putAll((Map<?, ?>) manifest.getMainAttributes().clone());
 		manifest.getEntries().forEach((key, value) -> copy.getEntries().put(key, cloneAttributes(value)));
 		return copy;
 	}
@@ -69,7 +68,7 @@ class UrlJarManifest {
 		Object supplied = this.supplied;
 		if (supplied == null) {
 			supplied = this.supplier.getManifest();
-			this.supplied = supplied;
+			this.supplied = (supplied != null) ? supplied : NONE;
 		}
 		return (supplied != NONE) ? (Manifest) supplied : null;
 	}

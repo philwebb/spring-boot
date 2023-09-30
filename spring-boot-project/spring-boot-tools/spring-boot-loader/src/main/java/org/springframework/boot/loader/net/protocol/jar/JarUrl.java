@@ -78,12 +78,9 @@ public final class JarUrl {
 		}
 	}
 
-	private static String getJarReference(File jarFile, String nestedEntryName) {
-		String jarFilePath = jarFile.toURI().getPath();
-		if (nestedEntryName != null) {
-			return "nested:" + jarFilePath + "/!" + nestedEntryName;
-		}
-		return "file:" + jarFilePath;
+	private static String getJarReference(File file, String nestedEntryName) {
+		String jarFilePath = file.toURI().getPath();
+		return (nestedEntryName != null) ? "nested:" + jarFilePath + "/!" + nestedEntryName : "file:" + jarFilePath;
 	}
 
 }

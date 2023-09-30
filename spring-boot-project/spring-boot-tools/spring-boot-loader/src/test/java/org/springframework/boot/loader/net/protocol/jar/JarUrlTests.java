@@ -16,9 +16,16 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
-import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.jar.JarEntry;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JarUrl}.
@@ -27,9 +34,54 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class JarUrlTests {
 
+	@TempDir
+	File temp;
+
+	File jarFile;
+
+	String jarFileUrlPath;
+
+	@BeforeEach
+	void setup() throws MalformedURLException {
+		this.jarFile = new File(this.temp, "my.jar");
+		this.jarFileUrlPath = this.temp.toURI().toURL().toString().substring("file:".length());
+	}
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void createWithFileReturnsUrl() {
+		URL url = JarUrl.create(this.temp);
+		assertThat(url).hasToString("jar:file:%s!/".formatted(this.jarFileUrlPath));
+	}
+
+	@Test
+	void createWithFileAndEntryReturnsUrl() {
+		JarEntry entry = new JarEntry("lib.jar");
+		URL url = JarUrl.create(this.temp, entry);
+		assertThat(url).hasToString("jar:nested:%s/!lib.jar!/".formatted(this.jarFileUrlPath));
+	}
+
+	@Test
+	void createWithFileAndNullEntryReturnsUrl() {
+		URL url = JarUrl.create(this.temp, (JarEntry) null);
+		assertThat(url).hasToString("jar:file:%s!/".formatted(this.jarFileUrlPath));
+	}
+
+	@Test
+	void createWithFileAndNameReturnsUrl() {
+		URL url = JarUrl.create(this.temp, "lib.jar");
+		assertThat(url).hasToString("jar:nested:%s/!lib.jar!/".formatted(this.jarFileUrlPath));
+	}
+
+	@Test
+	void createWithFileAndNullNameReturnsUrl() {
+		URL url = JarUrl.create(this.temp, (String) null);
+		assertThat(url).hasToString("jar:file:%s!/".formatted(this.jarFileUrlPath));
+	}
+
+	@Test
+	void createWithFileNameAndPathReturnsUrl() {
+		URL url = JarUrl.create(this.temp, "lib.jar", "com/example/My.class");
+		assertThat(url).hasToString("jar:nested:%s/!lib.jar!/com/example/My.class".formatted(this.jarFileUrlPath));
 	}
 
 }

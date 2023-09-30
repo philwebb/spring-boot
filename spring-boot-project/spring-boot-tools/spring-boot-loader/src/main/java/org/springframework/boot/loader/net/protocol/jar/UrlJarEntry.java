@@ -30,7 +30,7 @@ class UrlJarEntry extends JarEntry {
 
 	private final UrlJarManifest manifest;
 
-	UrlJarEntry(JarEntry entry, UrlJarManifest manifest) {
+	private UrlJarEntry(JarEntry entry, UrlJarManifest manifest) {
 		super(entry);
 		this.manifest = manifest;
 	}

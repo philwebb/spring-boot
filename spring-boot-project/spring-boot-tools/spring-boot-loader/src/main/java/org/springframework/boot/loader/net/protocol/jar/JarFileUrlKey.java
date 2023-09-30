@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 final class JarFileUrlKey {
 
-	private static final Map<URL, String> cache = new ConcurrentHashMap<>();
+	private static volatile SoftReference<Map<URL, String>> cache;
 
 	private JarFileUrlKey() {
 	}
@@ -39,6 +40,11 @@ final class JarFileUrlKey {
 	 * @return a {@link JarFileUrlKey} instance
 	 */
 	static String get(URL url) {
+		Map<URL, String> cache = (JarFileUrlKey.cache != null) ? JarFileUrlKey.cache.get() : null;
+		if (cache == null) {
+			cache = new ConcurrentHashMap<>();
+			JarFileUrlKey.cache = new SoftReference<>(cache);
+		}
 		return cache.computeIfAbsent(url, JarFileUrlKey::create);
 	}
 
@@ -48,7 +54,8 @@ final class JarFileUrlKey {
 		String host = url.getHost();
 		int port = (url.getPort() != -1) ? url.getPort() : url.getDefaultPort();
 		String file = url.getFile();
-		value.append((protocol != null) ? protocol.toLowerCase() + ":" : "");
+		value.append(protocol.toLowerCase());
+		value.append(":");
 		if (host != null && !host.isEmpty()) {
 			value.append(host.toLowerCase());
 			value.append((port != -1) ? ":" + port : "");
@@ -61,7 +68,7 @@ final class JarFileUrlKey {
 	}
 
 	static void clearCache() {
-		cache.clear();
+		cache = null;
 	}
 
 }

@@ -16,9 +16,10 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Optimizations}.
@@ -27,9 +28,52 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class OptimizationsTests {
 
+	@AfterEach
+	void reset() {
+		Optimizations.disable();
+	}
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void defaultIsNotEnabled() {
+		assertThat(Optimizations.isEnabled()).isFalse();
+		assertThat(Optimizations.isEnabled(true)).isFalse();
+		assertThat(Optimizations.isEnabled(false)).isFalse();
+	}
+
+	@Test
+	void enableWithReadContentsEnables() {
+		Optimizations.enable(true);
+		assertThat(Optimizations.isEnabled()).isTrue();
+		assertThat(Optimizations.isEnabled(true)).isTrue();
+		assertThat(Optimizations.isEnabled(false)).isFalse();
+	}
+
+	@Test
+	void enableWithoutReadContentsEnables() {
+		Optimizations.enable(false);
+		assertThat(Optimizations.isEnabled()).isTrue();
+		assertThat(Optimizations.isEnabled(true)).isFalse();
+		assertThat(Optimizations.isEnabled(false)).isTrue();
+	}
+
+	@Test
+	void enableIsByThread() throws InterruptedException {
+		Optimizations.enable(true);
+		boolean[] enabled = new boolean[1];
+		Thread thread = new Thread(() -> enabled[0] = Optimizations.isEnabled());
+		thread.start();
+		thread.join();
+		assertThat(enabled[0]).isFalse();
+	}
+
+	@Test
+	void disableDisables() {
+		Optimizations.enable(true);
+		Optimizations.disable();
+		assertThat(Optimizations.isEnabled()).isFalse();
+		assertThat(Optimizations.isEnabled(true)).isFalse();
+		assertThat(Optimizations.isEnabled(false)).isFalse();
+
 	}
 
 }

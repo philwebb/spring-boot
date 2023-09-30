@@ -94,32 +94,6 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		this.notFound = notFound;
 	}
 
-	/**
-	 * The {@link URLClassLoader} connect often to check if a resource exists, we can save
-	 * some object allocations by using the cached copy if we have one.
-	 * @param jarFileURL the jar file to check
-	 * @param entryName the entry name to check
-	 * @throws FileNotFoundException on a missing entry
-	 */
-	private void checkCachedForEntry(URL jarFileURL, String entryName) throws FileNotFoundException {
-		JarFile cachedJarFile = jarFiles.getCached(jarFileURL);
-		if (cachedJarFile != null && cachedJarFile.getJarEntry(entryName) == null) {
-			throw FILE_NOT_FOUND_EXCEPTION;
-		}
-	}
-
-	private JarEntry getJarEntry(URL jarFileUrl) throws IOException {
-		if (this.entryName == null) {
-			return null;
-		}
-		JarEntry jarEntry = this.jarFile.getJarEntry(this.entryName);
-		if (jarEntry == null) {
-			jarFiles.closeIfNotCached(jarFileUrl, this.jarFile);
-			throwFileNotFound();
-		}
-		return jarEntry;
-	}
-
 	@Override
 	public JarFile getJarFile() throws IOException {
 		connect();
@@ -201,7 +175,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		if (this.entryName == null) {
 			throw new IOException("no entry name specified");
 		}
-		if (!getUseCaches() && this.entryName != null && Optimizations.isEnabled(false)) {
+		if (!getUseCaches() && Optimizations.isEnabled(false)) {
 			JarFile cached = jarFiles.getCached(getJarFileURL());
 			if (cached != null) {
 				if (cached.getEntry(this.entryName) != null) {
@@ -254,9 +228,9 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public void setIfModifiedSince(long ifmodifiedsince) {
+	public void setIfModifiedSince(long ifModifiedSince) {
 		if (this.jarFileConnection != null) {
-			this.jarFileConnection.setIfModifiedSince(ifmodifiedsince);
+			this.jarFileConnection.setIfModifiedSince(ifModifiedSince);
 		}
 	}
 
@@ -296,7 +270,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 		boolean useCaches = getUseCaches();
 		URL jarFileURL = getJarFileURL();
 		if (this.entryName != null && Optimizations.isEnabled()) {
-			checkCachedForEntry(jarFileURL, this.entryName);
+			assertCachedJarFileHasEntry(jarFileURL, this.entryName);
 		}
 		this.jarFile = jarFiles.getOrCreate(useCaches, jarFileURL);
 		this.jarEntry = getJarEntry(jarFileURL);
@@ -305,6 +279,32 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 			this.jarFileConnection = jarFiles.reconnect(this.jarFile, this.jarFileConnection);
 		}
 		this.connected = true;
+	}
+
+	/**
+	 * The {@link URLClassLoader} connects often to check if a resource exists, we can
+	 * save some object allocations by using the cached copy if we have one.
+	 * @param jarFileURL the jar file to check
+	 * @param entryName the entry name to check
+	 * @throws FileNotFoundException on a missing entry
+	 */
+	private void assertCachedJarFileHasEntry(URL jarFileURL, String entryName) throws FileNotFoundException {
+		JarFile cachedJarFile = jarFiles.getCached(jarFileURL);
+		if (cachedJarFile != null && cachedJarFile.getJarEntry(entryName) == null) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
+	}
+
+	private JarEntry getJarEntry(URL jarFileUrl) throws IOException {
+		if (this.entryName == null) {
+			return null;
+		}
+		JarEntry jarEntry = this.jarFile.getJarEntry(this.entryName);
+		if (jarEntry == null) {
+			jarFiles.closeIfNotCached(jarFileUrl, this.jarFile);
+			throwFileNotFound();
+		}
+		return jarEntry;
 	}
 
 	private void throwFileNotFound() throws FileNotFoundException {
@@ -328,7 +328,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
 				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
 				if (!hasEntry(jarFile, entryName)) {
-					return notFound(jarFile.getName(), entryName);
+					return notFoundConnection(jarFile.getName(), entryName);
 				}
 			}
 		}
@@ -340,7 +340,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				: jarFile.getEntry(name) != null;
 	}
 
-	private static URLConnection notFound(String jarFileName, String entryName) throws IOException {
+	private static URLConnection notFoundConnection(String jarFileName, String entryName) throws IOException {
 		if (Optimizations.isEnabled()) {
 			return NOT_FOUND_CONNECTION;
 		}
@@ -350,75 +350,10 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 
 	/**
 	 * Connection {@link InputStream}. This is not a {@link FilterInputStream} since
-	 * {@link URLClassLoader} often creates streams that it doesn't call.
+	 * {@link URLClassLoader} often creates streams that it doesn't call and we want to be
+	 * lazy about getting the underlying {@link InputStream}.
 	 */
-	class ConnectionInputStream extends InputStream {
-
-		private volatile InputStream in;
-
-		@Override
-		public int read() throws IOException {
-			return in().read();
-		}
-
-		@Override
-		public int read(byte[] b) throws IOException {
-			return in().read(b);
-		}
-
-		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			return in().read(b, off, len);
-		}
-
-		@Override
-		public long skip(long n) throws IOException {
-			return in().skip(n);
-		}
-
-		@Override
-		public int available() throws IOException {
-			return in().available();
-		}
-
-		@Override
-		public boolean markSupported() {
-			try {
-				return in().markSupported();
-			}
-			catch (IOException ex) {
-				return false;
-			}
-		}
-
-		@Override
-		public synchronized void mark(int readlimit) {
-			try {
-				in().mark(readlimit);
-			}
-			catch (IOException ex) {
-				// Ignore
-			}
-		}
-
-		@Override
-		public synchronized void reset() throws IOException {
-			in().reset();
-		}
-
-		private InputStream in() throws IOException {
-			InputStream in = this.in;
-			if (in == null) {
-				synchronized (this) {
-					in = this.in;
-					if (in == null) {
-						in = JarUrlConnection.this.jarFile.getInputStream(JarUrlConnection.this.jarEntry);
-						this.in = in;
-					}
-				}
-			}
-			return in;
-		}
+	class ConnectionInputStream extends LazyDelegatingInputStream {
 
 		@Override
 		public void close() throws IOException {
@@ -430,6 +365,11 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 					JarUrlConnection.this.jarFile.close();
 				}
 			}
+		}
+
+		@Override
+		protected InputStream getDelegateInputStream() throws IOException {
+			return JarUrlConnection.this.jarFile.getInputStream(JarUrlConnection.this.jarEntry);
 		}
 
 	}

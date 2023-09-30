@@ -16,9 +16,14 @@
 
 package org.springframework.boot.loader.net.protocol.jar;
 
+import java.net.URL;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.boot.loader.net.protocol.Handlers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JarFileUrlKey}.
@@ -27,9 +32,57 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class JarFileUrlKeyTests {
 
+	@BeforeAll
+	static void setup() {
+		Handlers.register();
+	}
+
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void getCreatesKey() throws Exception {
+		URL url = new URL("jar:nested:/my.jar/!mynested.jar!/my/path");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path");
+	}
+
+	@Test
+	void getWhenUppercaseProtocolCreatesKey() throws Exception {
+		URL url = new URL("JAR:nested:/my.jar/!mynested.jar!/my/path");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path");
+	}
+
+	@Test
+	void getWhenHasHostAndPortCreatesKey() throws Exception {
+		URL url = new URL("https://example.com:1234/test");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:1234/test");
+	}
+
+	@Test
+	void getWhenHasUppercaseHostCreatesKey() throws Exception {
+		URL url = new URL("https://EXAMPLE.com:1234/test");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:1234/test");
+	}
+
+	@Test
+	void getWhenHasNoPortCreatesKeyWithDefaultPort() throws Exception {
+		URL url = new URL("https://EXAMPLE.com/test");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:443/test");
+	}
+
+	@Test
+	void getWhenHasNoFileCreatesKey() throws Exception {
+		URL url = new URL("https://EXAMPLE.com");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("https:example.com:443");
+	}
+
+	@Test
+	void getWhenHasRuntimeRefCreatesKey() throws Exception {
+		URL url = new URL("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path#runtime");
+	}
+
+	@Test
+	void getWhenHasOtherRefCreatesKeyWithoutRef() throws Exception {
+		URL url = new URL("jar:nested:/my.jar/!mynested.jar!/my/path#example");
+		assertThat(JarFileUrlKey.get(url)).isEqualTo("jar:nested:/my.jar/!mynested.jar!/my/path");
 	}
 
 }
