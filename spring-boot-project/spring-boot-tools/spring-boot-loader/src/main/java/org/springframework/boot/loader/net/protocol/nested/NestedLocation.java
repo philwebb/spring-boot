@@ -56,7 +56,7 @@ public record NestedLocation(File file, String nestedEntryName) {
 		if (file == null) {
 			throw new IllegalArgumentException("'file' must not be null");
 		}
-		if (nestedEntryName == null || nestedEntryName.isEmpty()) {
+		if (nestedEntryName == null || nestedEntryName.trim().isEmpty()) {
 			throw new IllegalArgumentException("'nestedEntryName' must not be empty");
 		}
 	}
@@ -74,15 +74,15 @@ public record NestedLocation(File file, String nestedEntryName) {
 		return parse(UrlDecoder.decode(url.getPath()));
 	}
 
-	static NestedLocation parse(String location) {
-		if (location == null || location.isEmpty()) {
-			throw new IllegalArgumentException("'location' must not be null and or empty");
+	static NestedLocation parse(String path) {
+		if (path == null || path.isEmpty()) {
+			throw new IllegalArgumentException("'path' must not be empty");
 		}
-		int index = location.lastIndexOf("/!");
+		int index = path.lastIndexOf("/!");
 		if (index == -1) {
-			throw new IllegalArgumentException("'location' must contain '/!'");
+			throw new IllegalArgumentException("'path' must contain '/!'");
 		}
-		return cache.computeIfAbsent(location, (l) -> create(index, l));
+		return cache.computeIfAbsent(path, (l) -> create(index, l));
 	}
 
 	private static NestedLocation create(int index, String location) {

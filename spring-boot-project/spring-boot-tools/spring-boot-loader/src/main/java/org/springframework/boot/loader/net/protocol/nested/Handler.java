@@ -33,12 +33,22 @@ public class Handler extends URLStreamHandler {
 	// NOTE: in order to be found as a URL protocol handler, this class must be public,
 	// must be named Handler and must be in a package ending '.nested'
 
+	private static final String PREFIX = "nested:";
+
 	@Override
-	protected URLConnection openConnection(URL u) throws IOException {
-		return new NestedUrlConnection(u);
+	protected URLConnection openConnection(URL url) throws IOException {
+		return new NestedUrlConnection(url);
 	}
 
+	/**
+	 * Assert that the specified URL is a valid "nested" URL.
+	 * @param url the URL to check
+	 */
 	public static void assertUrlIsNotMalformed(String url) {
+		if (url == null || !url.startsWith(PREFIX)) {
+			throw new IllegalArgumentException("'url' must not be null and must use 'nested' protocol");
+		}
+		NestedLocation.parse(url.substring(PREFIX.length()));
 	}
 
 	/**

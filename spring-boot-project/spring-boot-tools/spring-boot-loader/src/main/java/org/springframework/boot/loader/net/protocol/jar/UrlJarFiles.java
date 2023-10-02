@@ -72,6 +72,11 @@ class UrlJarFiles {
 		return this.factory.createJarFile(jarFileUrl, this::onClose);
 	}
 
+	/**
+	 * Return the cached {@link JarFile} if available.
+	 * @param jarFileUrl the jar file URL
+	 * @return the cached jar or {@code null}
+	 */
 	JarFile getCached(URL jarFileUrl) {
 		return this.cache.get(jarFileUrl);
 	}
