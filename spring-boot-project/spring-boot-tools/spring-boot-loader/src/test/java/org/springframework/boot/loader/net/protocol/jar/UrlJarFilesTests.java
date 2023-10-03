@@ -130,7 +130,7 @@ class UrlJarFilesTests {
 	void closeIfNotCachedWhenNotCachedClosesJarFile() throws Exception {
 		JarFile jarFile = mock(JarFile.class);
 		this.jarFiles.closeIfNotCached(this.url, jarFile);
-		then(jarFile).should(never()).close();
+		then(jarFile).should().close();
 	}
 
 	@Test
