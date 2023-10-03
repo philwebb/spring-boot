@@ -828,10 +828,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			}
 		}
 
-		/**
-		 * @param resource
-		 * @throws MalformedURLException
-		 */
 		private void addClassicNestedResourceSet(String resource) throws MalformedURLException {
 			// It's a nested jar but we now don't want the suffix because Tomcat
 			// is going to try and locate it as a root URL (not the resource

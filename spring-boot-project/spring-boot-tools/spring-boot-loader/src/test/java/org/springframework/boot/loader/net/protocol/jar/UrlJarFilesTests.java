@@ -33,9 +33,9 @@ import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link UrlJarFiles}.
@@ -130,7 +130,7 @@ class UrlJarFilesTests {
 	void closeIfNotCachedWhenNotCachedClosesJarFile() throws Exception {
 		JarFile jarFile = mock(JarFile.class);
 		this.jarFiles.closeIfNotCached(this.url, jarFile);
-		verify(jarFile).close();
+		then(jarFile).should(never()).close();
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class UrlJarFilesTests {
 		JarFile jarFile = mock(JarFile.class);
 		this.jarFiles.cacheIfAbsent(true, this.url, jarFile);
 		this.jarFiles.closeIfNotCached(this.url, jarFile);
-		verify(jarFile, never()).close();
+		then(jarFile).should(never()).close();
 	}
 
 	@Test

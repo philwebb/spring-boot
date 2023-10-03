@@ -26,7 +26,7 @@ import java.util.zip.ZipEntry;
  *
  * @author Phillip Webb
  */
-class UrlJarEntry extends JarEntry {
+final class UrlJarEntry extends JarEntry {
 
 	private final UrlJarManifest manifest;
 
