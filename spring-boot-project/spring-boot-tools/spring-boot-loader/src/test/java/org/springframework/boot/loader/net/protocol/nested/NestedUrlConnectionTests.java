@@ -104,9 +104,9 @@ class NestedUrlConnectionTests {
 	}
 
 	@Test
-	void getContentTypeReturnsApplicationZip() throws Exception {
+	void getContentTypeReturnsJavaJar() throws Exception {
 		NestedUrlConnection connection = new NestedUrlConnection(this.url);
-		assertThat(connection.getContentType()).isEqualTo("application/zip");
+		assertThat(connection.getContentType()).isEqualTo("x-java/jar");
 	}
 
 	@Test

@@ -37,7 +37,7 @@ import org.springframework.boot.loader.ref.Cleaner;
  */
 class NestedUrlConnection extends URLConnection {
 
-	private static final String CONTENT_TYPE = "application/zip";
+	private static final String CONTENT_TYPE = "x-java/jar";
 
 	private final NestedUrlConnectionResources resources;
 

@@ -184,6 +184,7 @@ public class Handler extends URLStreamHandler {
 	 */
 	public static void clearCache() {
 		JarFileUrlKey.clearCache();
+		JarUrlConnection.clearCache();
 	}
 
 }

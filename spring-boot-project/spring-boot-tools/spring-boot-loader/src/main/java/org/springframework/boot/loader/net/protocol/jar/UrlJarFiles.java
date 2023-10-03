@@ -135,14 +135,18 @@ class UrlJarFiles {
 		this.cache.remove(jarFile);
 	}
 
+	void clearCache() {
+		this.cache.clear();
+	}
+
 	/**
 	 * Internal cache.
 	 */
 	private static class Cache {
 
-		private final Map<String, JarFile> jarFileUrlToJarFileCache = new HashMap<>();
+		private final Map<String, JarFile> jarFileUrlToJarFile = new HashMap<>();
 
-		private final Map<JarFile, URL> jarFileToJarFileUrlCache = new HashMap<>();
+		private final Map<JarFile, URL> jarFileToJarFileUrl = new HashMap<>();
 
 		/**
 		 * Get a {@link JarFile} from the cache given a jar file URL.
@@ -152,7 +156,7 @@ class UrlJarFiles {
 		JarFile get(URL jarFileUrl) {
 			String urlKey = JarFileUrlKey.get(jarFileUrl);
 			synchronized (this) {
-				return this.jarFileUrlToJarFileCache.get(urlKey);
+				return this.jarFileUrlToJarFile.get(urlKey);
 			}
 		}
 
@@ -163,7 +167,7 @@ class UrlJarFiles {
 		 */
 		URL get(JarFile jarFile) {
 			synchronized (this) {
-				return this.jarFileToJarFileUrlCache.get(jarFile);
+				return this.jarFileToJarFileUrl.get(jarFile);
 			}
 		}
 
@@ -178,10 +182,10 @@ class UrlJarFiles {
 		boolean putIfAbsent(URL jarFileUrl, JarFile jarFile) {
 			String urlKey = JarFileUrlKey.get(jarFileUrl);
 			synchronized (this) {
-				JarFile cached = this.jarFileUrlToJarFileCache.get(urlKey);
+				JarFile cached = this.jarFileUrlToJarFile.get(urlKey);
 				if (cached == null) {
-					this.jarFileUrlToJarFileCache.put(urlKey, jarFile);
-					this.jarFileToJarFileUrlCache.put(jarFile, jarFileUrl);
+					this.jarFileUrlToJarFile.put(urlKey, jarFile);
+					this.jarFileToJarFileUrl.put(jarFile, jarFileUrl);
 					return true;
 				}
 				return false;
@@ -194,10 +198,17 @@ class UrlJarFiles {
 		 */
 		void remove(JarFile jarFile) {
 			synchronized (this) {
-				URL removedUrl = this.jarFileToJarFileUrlCache.remove(jarFile);
+				URL removedUrl = this.jarFileToJarFileUrl.remove(jarFile);
 				if (removedUrl != null) {
-					this.jarFileUrlToJarFileCache.remove(JarFileUrlKey.get(removedUrl));
+					this.jarFileUrlToJarFile.remove(JarFileUrlKey.get(removedUrl));
 				}
+			}
+		}
+
+		void clear() {
+			synchronized (this) {
+				this.jarFileToJarFileUrl.clear();
+				this.jarFileUrlToJarFile.clear();
 			}
 		}
 
