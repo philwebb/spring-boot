@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -214,6 +215,17 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	@SuppressWarnings("removal")
 	protected final SslBundle getSslBundle() {
 		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
+	}
+
+	/**
+	 * Return the {@link SslBundle} that should be used with this server, registering a
+	 * callback for bundle updates.
+	 * @param onUpdate the callback for bundle updates
+	 * @return the SSL bundle
+	 */
+	@SuppressWarnings("removal")
+	protected final SslBundle getSslBundle(Consumer<SslBundle> onUpdate) {
+		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider, onUpdate);
 	}
 
 	/**

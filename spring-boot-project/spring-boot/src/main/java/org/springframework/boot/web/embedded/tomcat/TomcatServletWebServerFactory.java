@@ -62,6 +62,8 @@ import org.apache.catalina.util.SessionConfig;
 import org.apache.catalina.webresources.AbstractResourceSet;
 import org.apache.catalina.webresources.EmptyResource;
 import org.apache.catalina.webresources.StandardRoot;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
@@ -69,6 +71,7 @@ import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
@@ -103,6 +106,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Christoffer Sawicki
  * @author Dawid Antecki
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
@@ -110,6 +114,8 @@ import org.springframework.util.StringUtils;
  */
 public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory
 		implements ConfigurableTomcatWebServerFactory, ResourceLoaderAware {
+
+	private static final Log logger = LogFactory.getLog(TomcatServletWebServerFactory.class);
 
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
@@ -366,7 +372,15 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void customizeSsl(Connector connector) {
-		new SslConnectorCustomizer(getSsl().getClientAuth(), getSslBundle()).customize(connector);
+		SslBundle sslBundle = getSslBundle((updatedBundle) -> {
+			logger.debug("SSL Bundle has been updated, reloading SSL configuration");
+			customizeSsl(connector, updatedBundle);
+		});
+		customizeSsl(connector, sslBundle);
+	}
+
+	private void customizeSsl(Connector connector, SslBundle sslBundle) {
+		new SslConnectorCustomizer(getSsl().getClientAuth(), sslBundle).customize(connector);
 	}
 
 	/**

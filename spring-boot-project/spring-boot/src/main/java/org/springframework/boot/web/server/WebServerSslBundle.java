@@ -17,6 +17,7 @@
 package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
+import java.util.function.Consumer;
 
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
@@ -137,6 +138,25 @@ public final class WebServerSslBundle implements SslBundle {
 	@Deprecated(since = "3.1.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	public static SslBundle get(Ssl ssl, SslBundles sslBundles, SslStoreProvider sslStoreProvider) {
+		return get(ssl, sslBundles, sslStoreProvider, null);
+	}
+
+	/**
+	 * Get the {@link SslBundle} that should be used for the given {@link Ssl} and
+	 * {@link SslStoreProvider} instances.
+	 * @param ssl the source {@link Ssl} instance
+	 * @param sslBundles the bundles that should be used when {@link Ssl#getBundle()} is
+	 * set
+	 * @param sslStoreProvider the {@link SslStoreProvider} to use or {@code null}
+	 * @param onUpdate the callback, which is called when the {@link SslBundle} is updated
+	 * @return a {@link SslBundle} instance
+	 * @throws NoSuchSslBundleException if a bundle lookup fails
+	 * @deprecated since 3.1.0 for removal in 3.3.0 along with {@link SslStoreProvider}
+	 */
+	@Deprecated(since = "3.1.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public static SslBundle get(Ssl ssl, SslBundles sslBundles, SslStoreProvider sslStoreProvider,
+			Consumer<SslBundle> onUpdate) {
 		Assert.state(Ssl.isEnabled(ssl), "SSL is not enabled");
 		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
 		keyPassword = (keyPassword != null) ? keyPassword : ssl.getKeyPassword();
@@ -149,7 +169,7 @@ public final class WebServerSslBundle implements SslBundle {
 			Assert.state(sslBundles != null,
 					() -> "SSL bundle '%s' was requested but no SslBundles instance was provided"
 						.formatted(bundleName));
-			return sslBundles.getBundle(bundleName);
+			return sslBundles.getBundle(bundleName, onUpdate);
 		}
 		SslStoreBundle stores = createStoreBundle(ssl);
 		return new WebServerSslBundle(stores, keyPassword, ssl);

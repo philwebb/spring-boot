@@ -36,7 +36,7 @@ public abstract class SslBundleProperties {
 	private final Key key = new Key();
 
 	/**
-	 * Options for the SLL connection.
+	 * Options for the SSL connection.
 	 */
 	private final Options options = new Options();
 

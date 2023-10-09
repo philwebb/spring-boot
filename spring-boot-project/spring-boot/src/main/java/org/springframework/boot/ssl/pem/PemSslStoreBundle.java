@@ -17,6 +17,10 @@
 package org.springframework.boot.ssl.pem;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -26,7 +30,10 @@ import java.security.cert.X509Certificate;
 
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.pem.KeyVerifier.Result;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails.Type;
 import org.springframework.util.Assert;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -149,12 +156,14 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	}
 
 	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) {
-		String privateKeyContent = PemContent.load(details.privateKey());
+		String privateKeyContent = (details.getPrivateKeyType() == Type.PEM) ? details.privateKey()
+				: load(details.privateKey());
 		return PemPrivateKeyParser.parse(privateKeyContent, details.privateKeyPassword());
 	}
 
 	private static X509Certificate[] loadCertificates(PemSslStoreDetails details) {
-		String certificateContent = PemContent.load(details.certificate());
+		String certificateContent = (details.getCertificateType() == Type.PEM) ? details.certificate()
+				: load(details.certificate());
 		X509Certificate[] certificates = PemCertificateParser.parse(certificateContent);
 		Assert.state(certificates != null && certificates.length > 0, "Loaded certificates are empty");
 		return certificates;
@@ -177,6 +186,22 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			throws KeyStoreException {
 		for (int index = 0; index < certificates.length; index++) {
 			keyStore.setCertificateEntry(alias + "-" + index, certificates[index]);
+		}
+	}
+
+	private static String load(String location) {
+		if (location == null) {
+			return null;
+		}
+		try {
+			URL url = ResourceUtils.getURL(location);
+			try (Reader reader = new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)) {
+				return FileCopyUtils.copyToString(reader);
+			}
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(
+					"Error reading certificate or key from file '" + location + "':" + ex.getMessage(), ex);
 		}
 	}
 

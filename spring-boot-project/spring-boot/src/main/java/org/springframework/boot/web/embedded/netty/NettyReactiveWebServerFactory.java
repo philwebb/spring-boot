@@ -25,9 +25,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.Shutdown;
@@ -42,9 +45,12 @@ import org.springframework.util.Assert;
  * {@link ReactiveWebServerFactory} that can be used to create {@link NettyWebServer}s.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
+
+	private static final Log logger = LogFactory.getLog(NettyReactiveWebServerFactory.class);
 
 	private Set<NettyServerCustomizer> serverCustomizers = new LinkedHashSet<>();
 
@@ -170,7 +176,14 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		return new SslServerCustomizer(getHttp2(), getSsl().getClientAuth(), getSslBundle()).apply(httpServer);
+		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getHttp2(), getSsl().getClientAuth());
+		SslBundle sslBundle = getSslBundle((updatedBundle) -> {
+			logger.debug("SSL Bundle has been updated, reloading SSL configuration");
+			sslServerCustomizer.setSslBundle(updatedBundle);
+			sslServerCustomizer.reload();
+		});
+		sslServerCustomizer.setSslBundle(sslBundle);
+		return sslServerCustomizer.apply(httpServer);
 	}
 
 	private HttpProtocol[] listProtocols() {

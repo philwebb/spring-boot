@@ -38,12 +38,25 @@ public class JksSslBundleProperties extends SslBundleProperties {
 	 */
 	private final Store truststore = new Store();
 
+	/**
+	 * Whether to reload the SSL bundle.
+	 */
+	private boolean reloadOnUpdate;
+
 	public Store getKeystore() {
 		return this.keystore;
 	}
 
 	public Store getTruststore() {
 		return this.truststore;
+	}
+
+	public boolean isReloadOnUpdate() {
+		return this.reloadOnUpdate;
+	}
+
+	public void setReloadOnUpdate(boolean reloadOnUpdate) {
+		this.reloadOnUpdate = reloadOnUpdate;
 	}
 
 	/**

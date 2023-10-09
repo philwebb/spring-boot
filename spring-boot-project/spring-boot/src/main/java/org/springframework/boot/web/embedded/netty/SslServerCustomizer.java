@@ -21,11 +21,13 @@ import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.Http2SslContextSpec;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.AbstractProtocolSslContextSpec;
+import reactor.netty.tcp.SslProvider;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.Assert;
 
 /**
  * {@link NettyServerCustomizer} that configures SSL for the given Reactor Netty server
@@ -36,6 +38,7 @@ import org.springframework.boot.web.server.Ssl;
  * @author Chris Bono
  * @author Cyril Dangerville
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public class SslServerCustomizer implements NettyServerCustomizer {
@@ -44,7 +47,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private final Ssl.ClientAuth clientAuth;
 
-	private final SslBundle sslBundle;
+	private volatile SslBundle sslBundle;
+
+	private volatile SslProvider currentSslProvider;
+
+	SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth) {
+		this(http2, clientAuth, null);
+	}
 
 	public SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
 		this.http2 = http2;
@@ -52,13 +61,25 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		this.sslBundle = sslBundle;
 	}
 
+	void setSslBundle(SslBundle sslBundle) {
+		this.sslBundle = sslBundle;
+	}
+
 	@Override
 	public HttpServer apply(HttpServer server) {
 		AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec();
-		return server.secure((spec) -> spec.sslContext(sslContextSpec));
+		this.currentSslProvider = SslProvider.builder().sslContext(sslContextSpec).build();
+		return server.secure((spec) -> spec.sslContext(sslContextSpec)
+			.setSniAsyncMappings((domainName, promise) -> promise.setSuccess(this.currentSslProvider)));
+	}
+
+	void reload() {
+		AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec();
+		this.currentSslProvider = SslProvider.builder().sslContext(sslContextSpec).build();
 	}
 
 	protected AbstractProtocolSslContextSpec<?> createSslContextSpec() {
+		Assert.notNull(this.sslBundle, "sslBundle must not be null");
 		AbstractProtocolSslContextSpec<?> sslContextSpec = (this.http2 != null && this.http2.isEnabled())
 				? Http2SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory())
 				: Http11SslContextSpec.forServer(this.sslBundle.getManagers().getKeyManagerFactory());

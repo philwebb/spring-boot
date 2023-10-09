@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 
 /**
  * {@link SslBundleProperties} for PEM-encoded certificates and private keys.
@@ -40,6 +41,11 @@ public class PemSslBundleProperties extends SslBundleProperties {
 	private final Store truststore = new Store();
 
 	/**
+	 * Whether to reload the SSL bundle.
+	 */
+	private boolean reloadOnUpdate;
+
+	/**
 	 * Whether to verify that the private key matches the public key.
 	 */
 	private boolean verifyKeys;
@@ -50,6 +56,14 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 	public Store getTruststore() {
 		return this.truststore;
+	}
+
+	public boolean isReloadOnUpdate() {
+		return this.reloadOnUpdate;
+	}
+
+	public void setReloadOnUpdate(boolean reloadOnUpdate) {
+		this.reloadOnUpdate = reloadOnUpdate;
 	}
 
 	public boolean isVerifyKeys() {
@@ -115,6 +129,10 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 		public void setPrivateKeyPassword(String privateKeyPassword) {
 			this.privateKeyPassword = privateKeyPassword;
+		}
+
+		PemSslStoreDetails asPemSslStoreDetails() {
+			return new PemSslStoreDetails(this.type, this.certificate, this.privateKey, this.privateKeyPassword);
 		}
 
 	}

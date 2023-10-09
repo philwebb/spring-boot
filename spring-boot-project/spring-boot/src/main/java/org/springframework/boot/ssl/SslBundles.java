@@ -16,10 +16,13 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.function.Consumer;
+
 /**
  * A managed set of {@link SslBundle} instances that can be retrieved by name.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public interface SslBundles {
@@ -31,5 +34,16 @@ public interface SslBundles {
 	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
 	 */
 	SslBundle getBundle(String bundleName) throws NoSuchSslBundleException;
+
+	/**
+	 * Return an {@link SslBundle} with the provided name.
+	 * @param bundleName the bundle name
+	 * @param onUpdate the callback, which is called when the bundle is updated or
+	 * {@code null}
+	 * @return the bundle
+	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
+	 * @since 3.2.0
+	 */
+	SslBundle getBundle(String bundleName, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException;
 
 }

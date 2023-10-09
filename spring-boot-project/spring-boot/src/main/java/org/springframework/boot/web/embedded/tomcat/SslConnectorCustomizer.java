@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Cyril Dangerville
+ * @author Moritz Halbritter
  */
 class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 
@@ -66,15 +67,19 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	 * @param protocol the protocol
 	 */
 	void configureSsl(AbstractHttp11JsseProtocol<?> protocol) {
-		SslBundleKey key = this.sslBundle.getKey();
-		SslStoreBundle stores = this.sslBundle.getStores();
-		SslOptions options = this.sslBundle.getOptions();
 		protocol.setSSLEnabled(true);
 		SSLHostConfig sslHostConfig = new SSLHostConfig();
 		sslHostConfig.setHostName(protocol.getDefaultSSLHostConfigName());
-		sslHostConfig.setSslProtocol(this.sslBundle.getProtocol());
-		protocol.addSslHostConfig(sslHostConfig);
 		configureSslClientAuth(sslHostConfig);
+		applySslBundle(protocol, sslHostConfig);
+		protocol.addSslHostConfig(sslHostConfig, true);
+	}
+
+	private void applySslBundle(AbstractHttp11JsseProtocol<?> protocol, SSLHostConfig sslHostConfig) {
+		SslBundleKey key = this.sslBundle.getKey();
+		SslStoreBundle stores = this.sslBundle.getStores();
+		SslOptions options = this.sslBundle.getOptions();
+		sslHostConfig.setSslProtocol(this.sslBundle.getProtocol());
 		SSLHostConfigCertificate certificate = new SSLHostConfigCertificate(sslHostConfig, Type.UNDEFINED);
 		String keystorePassword = (stores.getKeyStorePassword() != null) ? stores.getKeyStorePassword() : "";
 		certificate.setCertificateKeystorePassword(keystorePassword);
@@ -89,17 +94,14 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 			String ciphers = StringUtils.arrayToCommaDelimitedString(options.getCiphers());
 			sslHostConfig.setCiphers(ciphers);
 		}
-		configureEnabledProtocols(protocol);
-		configureSslStoreProvider(protocol, sslHostConfig, certificate);
+		configureSslStoreProvider(protocol, sslHostConfig, certificate, stores);
+		configureEnabledProtocols(sslHostConfig, options);
 	}
 
-	private void configureEnabledProtocols(AbstractHttp11JsseProtocol<?> protocol) {
-		SslOptions options = this.sslBundle.getOptions();
+	private void configureEnabledProtocols(SSLHostConfig sslHostConfig, SslOptions options) {
 		if (options.getEnabledProtocols() != null) {
 			String enabledProtocols = StringUtils.arrayToDelimitedString(options.getEnabledProtocols(), "+");
-			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
-				sslHostConfig.setProtocols(enabledProtocols);
-			}
+			sslHostConfig.setProtocols(enabledProtocols);
 		}
 	}
 
@@ -107,12 +109,11 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		config.setCertificateVerification(ClientAuth.map(this.clientAuth, "none", "optional", "required"));
 	}
 
-	protected void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol, SSLHostConfig sslHostConfig,
-			SSLHostConfigCertificate certificate) {
+	private void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol, SSLHostConfig sslHostConfig,
+			SSLHostConfigCertificate certificate, SslStoreBundle stores) {
 		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
 				"SslStoreProvider can only be used with Http11NioProtocol");
 		try {
-			SslStoreBundle stores = this.sslBundle.getStores();
 			if (stores.getKeyStore() != null) {
 				certificate.setCertificateKeystore(stores.getKeyStore());
 			}

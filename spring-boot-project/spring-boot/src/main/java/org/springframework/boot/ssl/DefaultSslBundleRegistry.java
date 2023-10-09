@@ -16,20 +16,36 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
  * Default {@link SslBundleRegistry} implementation.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
+	private static final Log logger = LogFactory.getLog(DefaultSslBundleRegistry.class);
+
 	private final Map<String, SslBundle> bundles = new ConcurrentHashMap<>();
+
+	private final Map<String, List<Consumer<SslBundle>>> listeners = new ConcurrentHashMap<>();
+
+	private final Set<String> bundlesWithoutListeners = ConcurrentHashMap.newKeySet();
 
 	public DefaultSslBundleRegistry() {
 	}
@@ -48,12 +64,55 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 	@Override
 	public SslBundle getBundle(String name) {
+		return getBundle(name, null);
+	}
+
+	@Override
+	public SslBundle getBundle(String name, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException {
 		Assert.notNull(name, "Name must not be null");
 		SslBundle bundle = this.bundles.get(name);
 		if (bundle == null) {
 			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
 		}
+		addListener(name, onUpdate);
 		return bundle;
+	}
+
+	@Override
+	public void updateBundle(String name, SslBundle sslBundle) {
+		Assert.notNull(name, "Name must not be null");
+		SslBundle bundle = this.bundles.get(name);
+		if (bundle == null) {
+			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
+		}
+		this.bundles.put(name, sslBundle);
+		notifyListeners(name, sslBundle);
+		logMissingListeners(name);
+	}
+
+	private void notifyListeners(String name, SslBundle sslBundle) {
+		List<Consumer<SslBundle>> listeners = this.listeners.getOrDefault(name, Collections.emptyList());
+		for (Consumer<SslBundle> listener : listeners) {
+			listener.accept(sslBundle);
+		}
+	}
+
+	private void addListener(String name, Consumer<SslBundle> onUpdate) {
+		if (onUpdate == null) {
+			this.bundlesWithoutListeners.add(name);
+		}
+		else {
+			this.listeners.computeIfAbsent(name, (ignore) -> new CopyOnWriteArrayList<>()).add(onUpdate);
+		}
+	}
+
+	private void logMissingListeners(String name) {
+		if (logger.isWarnEnabled()) {
+			if (this.bundlesWithoutListeners.contains(name)) {
+				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updateable",
+						name));
+			}
+		}
 	}
 
 }
