@@ -16,10 +16,8 @@
 
 package org.springframework.boot.ssl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -41,11 +39,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 	private static final Log logger = LogFactory.getLog(DefaultSslBundleRegistry.class);
 
-	private final Map<String, SslBundle> bundles = new ConcurrentHashMap<>();
-
-	private final Map<String, List<Consumer<SslBundle>>> listeners = new ConcurrentHashMap<>();
-
-	private final Set<String> bundlesWithoutListeners = ConcurrentHashMap.newKeySet();
+	private final Map<String, RegisteredSslBundle> registeredBundles = new ConcurrentHashMap<>();
 
 	public DefaultSslBundleRegistry() {
 	}
@@ -58,68 +52,68 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	public void registerBundle(String name, SslBundle bundle) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(bundle, "Bundle must not be null");
-		SslBundle previous = this.bundles.putIfAbsent(name, bundle);
+		RegisteredSslBundle previous = this.registeredBundles.putIfAbsent(name, new RegisteredSslBundle(name, bundle));
 		Assert.state(previous == null, () -> "Cannot replace existing SSL bundle '%s'".formatted(name));
 	}
 
 	@Override
-	public void updateBundle(String name, SslBundle sslBundle) {
-		Assert.notNull(name, "Name must not be null");
-		// FIXME I think this isn't thread safe since someone could do a put after we do
-		// the get
-		SslBundle bundle = this.bundles.get(name);
-		if (bundle == null) {
-			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
-		}
-		this.bundles.put(name, sslBundle);
-		notifyListeners(name, sslBundle);
-		logMissingListeners(name);
-	}
-
-	private void notifyListeners(String name, SslBundle sslBundle) {
-		List<Consumer<SslBundle>> listeners = this.listeners.getOrDefault(name, Collections.emptyList());
-		for (Consumer<SslBundle> listener : listeners) {
-			listener.accept(sslBundle);
-		}
-	}
-
-	private void logMissingListeners(String name) {
-		if (logger.isWarnEnabled()) {
-			if (this.bundlesWithoutListeners.contains(name)) {
-				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updatable",
-						name));
-			}
-		}
+	public void updateBundle(String name, SslBundle updatedBundle) {
+		getRegistered(name).update(updatedBundle);
 	}
 
 	@Override
 	public SslBundle getBundle(String name) {
-		return getBundle(name, null);
-	}
-
-	private SslBundle getBundle(String name, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException {
-		Assert.notNull(name, "Name must not be null");
-		SslBundle bundle = this.bundles.get(name);
-		if (bundle == null) {
-			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
-		}
-		addListener(name, onUpdate);
-		return bundle;
+		return getRegistered(name).getBundle();
 	}
 
 	@Override
-	public void addBundleUpdateHandler(String bundleName, Consumer<SslBundle> bundleUpdateHandler)
-			throws NoSuchSslBundleException {
-		getBundle(bundleName, bundleUpdateHandler);
+	public void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException {
+		getRegistered(name).addUpdateHandler(updateHandler);
 	}
 
-	private void addListener(String name, Consumer<SslBundle> onUpdate) {
-		if (onUpdate == null) {
-			this.bundlesWithoutListeners.add(name);
+	private RegisteredSslBundle getRegistered(String name) throws NoSuchSslBundleException {
+		Assert.notNull(name, "Name must not be null");
+		RegisteredSslBundle registered = this.registeredBundles.get(name);
+		if (registered == null) {
+			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
 		}
-		else {
-			this.listeners.computeIfAbsent(name, (ignore) -> new CopyOnWriteArrayList<>()).add(onUpdate);
+		return registered;
+	}
+
+	private static class RegisteredSslBundle {
+
+		private final String name;
+
+		private volatile SslBundle bundle;
+
+		private volatile List<Consumer<SslBundle>> updateHandlers = new CopyOnWriteArrayList<>();
+
+		RegisteredSslBundle(String name, SslBundle bundle) {
+			this.name = name;
+			this.bundle = bundle;
 		}
+
+		public void update(SslBundle updatedBundle) {
+			Assert.notNull(updatedBundle, "UpdatedBundle must not be null");
+			this.bundle = updatedBundle;
+			if (this.updateHandlers.isEmpty()) {
+				// FIXME not quite right anymore since we really need to know a bundle was
+				// got but no lister was registered with it
+				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updatable",
+						this.name));
+			}
+			this.updateHandlers.forEach((handler) -> handler.accept(updatedBundle));
+		}
+
+		void addUpdateHandler(Consumer<SslBundle> updateHandler) {
+			Assert.notNull(updateHandler, "UpdateHandler must not be null");
+			this.updateHandlers.add(updateHandler);
+		}
+
+		SslBundle getBundle() {
+			return this.bundle;
+		}
+
 	}
 
 }

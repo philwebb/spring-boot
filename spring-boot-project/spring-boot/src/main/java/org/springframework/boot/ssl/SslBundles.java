@@ -29,20 +29,19 @@ public interface SslBundles {
 
 	/**
 	 * Return an {@link SslBundle} with the provided name.
-	 * @param bundleName the bundle name
+	 * @param name the bundle name
 	 * @return the bundle
 	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
 	 */
-	SslBundle getBundle(String bundleName) throws NoSuchSslBundleException;
+	SslBundle getBundle(String name) throws NoSuchSslBundleException;
 
 	/**
 	 * Add a handler to that will be called each time the named bundle is updated.
-	 * @param bundleName the bundle name
-	 * @param bundleUpdateHandler the handler that should be called
+	 * @param name the bundle name
+	 * @param updateHandler the handler that should be called
 	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
 	 * @since 3.2.0
 	 */
-	void addBundleUpdateHandler(String bundleName, Consumer<SslBundle> bundleUpdateHandler)
-			throws NoSuchSslBundleException;
+	void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException;
 
 }

@@ -35,9 +35,10 @@ public interface SslBundleRegistry {
 	/**
 	 * Updates an {@link SslBundle}.
 	 * @param name the bundle name
-	 * @param sslBundle the updated bundle
+	 * @param updatedBundle the updated bundle
+	 * @throws NoSuchSslBundleException if the bundle cannot be found
 	 * @since 3.2.0
 	 */
-	void updateBundle(String name, SslBundle sslBundle);
+	void updateBundle(String name, SslBundle updatedBundle) throws NoSuchSslBundleException;
 
 }
