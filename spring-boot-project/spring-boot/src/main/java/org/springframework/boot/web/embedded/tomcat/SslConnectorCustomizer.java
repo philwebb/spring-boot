@@ -50,7 +50,7 @@ class SslConnectorCustomizer {
 
 	private final Connector connector;
 
-	SslConnectorCustomizer(Log logger, ClientAuth clientAuth, Connector connector) {
+	SslConnectorCustomizer(Log logger, Connector connector, ClientAuth clientAuth) {
 		this.logger = logger;
 		this.clientAuth = clientAuth;
 		this.connector = connector;

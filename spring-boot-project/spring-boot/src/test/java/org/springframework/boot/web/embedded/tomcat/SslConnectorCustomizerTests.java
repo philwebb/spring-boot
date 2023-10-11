@@ -92,7 +92,7 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStorePassword("secret");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
 		Connector connector = this.tomcat.getConnector();
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(WebServerSslBundle.get(ssl));
 		this.tomcat.start();
 		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler().findSslHostConfigs();
@@ -107,7 +107,7 @@ class SslConnectorCustomizerTests {
 		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 		Connector connector = this.tomcat.getConnector();
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(WebServerSslBundle.get(ssl));
 		this.tomcat.start();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler().findSslHostConfigs()[0];
@@ -123,7 +123,7 @@ class SslConnectorCustomizerTests {
 		ssl.setEnabledProtocols(new String[] { "TLSv1.2" });
 		ssl.setCiphers(new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "BRAVO" });
 		Connector connector = this.tomcat.getConnector();
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(WebServerSslBundle.get(ssl));
 		this.tomcat.start();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler().findSslHostConfigs()[0];
@@ -141,7 +141,7 @@ class SslConnectorCustomizerTests {
 		KeyStore keyStore = loadStore();
 		given(sslStoreProvider.getKeyStore()).willReturn(keyStore);
 		Connector connector = this.tomcat.getConnector();
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(WebServerSslBundle.get(ssl, null, sslStoreProvider));
 		this.tomcat.start();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler().findSslHostConfigs()[0];
@@ -162,7 +162,7 @@ class SslConnectorCustomizerTests {
 		KeyStore trustStore = loadStore();
 		given(sslStoreProvider.getTrustStore()).willReturn(trustStore);
 		Connector connector = this.tomcat.getConnector();
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(WebServerSslBundle.get(ssl, null, sslStoreProvider));
 		this.tomcat.start();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler().findSslHostConfigs()[0];
@@ -180,7 +180,7 @@ class SslConnectorCustomizerTests {
 		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
 		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
 		Connector connector = this.tomcat.getConnector();
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, connector, ssl.getClientAuth());
 		customizer.customize(WebServerSslBundle.get(ssl, null, sslStoreProvider));
 		this.tomcat.start();
 		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
@@ -190,8 +190,8 @@ class SslConnectorCustomizerTests {
 	@Test
 	void customizeWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> {
-			SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, Ssl.ClientAuth.NONE,
-					this.tomcat.getConnector());
+			SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, this.tomcat.getConnector(),
+					Ssl.ClientAuth.NONE);
 			customizer.customize(WebServerSslBundle.get(new Ssl()));
 		}).withMessageContaining("SSL is enabled but no trust material is configured");
 	}
@@ -204,8 +204,8 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
 		assertThatIllegalStateException().isThrownBy(() -> {
-			SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(),
-					this.tomcat.getConnector());
+			SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, this.tomcat.getConnector(),
+					ssl.getClientAuth());
 			customizer.customize(WebServerSslBundle.get(ssl));
 		}).withMessageContaining("must be empty or null for PKCS11 hardware key stores");
 	}
@@ -216,8 +216,8 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStoreType("PKCS11");
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, ssl.getClientAuth(),
-				this.tomcat.getConnector());
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(this.logger, this.tomcat.getConnector(),
+				ssl.getClientAuth());
 		assertThatNoException().isThrownBy(() -> customizer.customize(WebServerSslBundle.get(ssl)));
 	}
 

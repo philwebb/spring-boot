@@ -371,7 +371,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void customizeSsl(Connector connector) {
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, getSsl().getClientAuth(), connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, connector, getSsl().getClientAuth());
 		customizer.customize(getSslBundle());
 		String sslBundleName = getSsl().getBundle();
 		if (StringUtils.hasText(sslBundleName)) {
