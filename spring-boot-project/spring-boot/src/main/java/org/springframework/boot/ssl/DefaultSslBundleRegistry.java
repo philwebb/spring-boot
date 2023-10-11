@@ -88,7 +88,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 		private volatile SslBundle bundle;
 
-		private volatile List<Consumer<SslBundle>> updateHandlers = new CopyOnWriteArrayList<>();
+		private final List<Consumer<SslBundle>> updateHandlers = new CopyOnWriteArrayList<>();
 
 		private final AtomicInteger getWithoutAddUpdateListener = new AtomicInteger();
 
@@ -102,7 +102,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 			this.bundle = updatedBundle;
 			if (this.getWithoutAddUpdateListener.get() == 0) {
 				logger.warn(LogMessage.format(
-						"SSL bundle '%s' has been updated but may be in use by a technolgy that doesn't support SSL reloading",
+						"SSL bundle '%s' has been updated but may be in use by a technology that doesn't support SSL reloading",
 						this.name));
 			}
 			this.updateHandlers.forEach((handler) -> handler.accept(updatedBundle));

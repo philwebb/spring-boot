@@ -375,8 +375,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		customizer.customize(getSslBundle());
 		String sslBundleName = getSsl().getBundle();
 		if (StringUtils.hasText(sslBundleName)) {
-			getSslBundles().addBundleUpdateHandler(sslBundleName,
-					(updatedSslBundle) -> customizer.update(updatedSslBundle));
+			getSslBundles().addBundleUpdateHandler(sslBundleName, customizer::update);
 		}
 	}
 

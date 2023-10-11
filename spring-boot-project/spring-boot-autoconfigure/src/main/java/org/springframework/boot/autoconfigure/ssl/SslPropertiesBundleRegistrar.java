@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -80,37 +79,33 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	private Set<Location> getLocations(JksSslBundleProperties properties) {
 		JksSslBundleProperties.Store keystore = properties.getKeystore();
 		JksSslBundleProperties.Store truststore = properties.getTruststore();
-		Set<Location> locations = new LinkedHashSet<>();
-		locations.add(new Location("keystore.location", keystore.getLocation()));
-		locations.add(new Location("truststore.location", truststore.getLocation()));
-		return locations;
+		return Set.of(new Location("keystore.location", keystore.getLocation()),
+				new Location("truststore.location", truststore.getLocation()));
 	}
 
 	private Set<Location> getLocations(PemSslBundleProperties properties) {
 		PemSslBundleProperties.Store keystore = properties.getKeystore();
 		PemSslBundleProperties.Store truststore = properties.getTruststore();
-		Set<Location> locations = new LinkedHashSet<>();
-		locations.add(new Location("keystore.private-key", keystore.getPrivateKey()));
-		locations.add(new Location("keystore.certificate", keystore.getCertificate()));
-		locations.add(new Location("truststore.private-key", truststore.getPrivateKey()));
-		locations.add(new Location("truststore.certificate", truststore.getCertificate()));
-		return locations;
+		return Set.of(new Location("keystore.private-key", keystore.getPrivateKey()),
+				new Location("keystore.certificate", keystore.getCertificate()),
+				new Location("truststore.private-key", truststore.getPrivateKey()),
+				new Location("truststore.certificate", truststore.getCertificate()));
 	}
 
 	private Path toPath(String bundleName, Location watchableLocation) {
 		String value = watchableLocation.value();
 		String field = watchableLocation.field();
 		Assert.state(!PEM_CONTENT.matcher(value).find(),
-				() -> "SSL bundle '%s' '$s' is not a URL and can't be watched".formatted(bundleName, field));
+				() -> "SSL bundle '%s' '%s' is not a URL and can't be watched".formatted(bundleName, field));
 		try {
 			URL url = ResourceUtils.getURL(value);
 			Assert.state("file".equalsIgnoreCase(url.getProtocol()),
-					() -> "SSL bundle '%s' '$s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
+					() -> "SSL bundle '%s' '%s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
 			return Path.of(url.getFile()).toAbsolutePath();
 		}
 		catch (FileNotFoundException ex) {
 			throw new UncheckedIOException(
-					"SSL bundle '%s' '$s' location '%s' cannot be watched".formatted(bundleName, field, value), ex);
+					"SSL bundle '%s' '%s' location '%s' cannot be watched".formatted(bundleName, field, value), ex);
 		}
 	}
 
