@@ -76,10 +76,11 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	private Set<Path> getPathsToWatch(String bundleName, JksSslBundleProperties properties) {
 		Set<Path> result = new HashSet<>();
 		if (properties.getKeystore().getLocation() != null) {
-			result.add(toPath(bundleName, "keystore.location", properties.getKeystore().getLocation()));
+			result.add(toPath(bundleName, new Location("keystore.location", properties.getKeystore().getLocation())));
 		}
 		if (properties.getTruststore().getLocation() != null) {
-			result.add(toPath(bundleName, "truststore.location", properties.getTruststore().getLocation()));
+			result
+				.add(toPath(bundleName, new Location("truststore.location", properties.getTruststore().getLocation())));
 		}
 		return result;
 	}
@@ -89,34 +90,40 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 		PemSslStoreDetails truststore = properties.getTruststore().asPemSslStoreDetails();
 		Set<Path> result = new HashSet<>();
 		if (keystore.privateKey() != null) {
-			result.add(toPath(bundleName, "keystore.private-key", keystore.privateKey()));
+			result.add(toPath(bundleName, new Location("keystore.private-key", keystore.privateKey())));
 		}
 		if (keystore.certificate() != null) {
-			result.add(toPath(bundleName, "keystore.certificate", keystore.certificate()));
+			result.add(toPath(bundleName, new Location("keystore.certificate", keystore.certificate())));
 		}
 		if (truststore.privateKey() != null) {
-			result.add(toPath(bundleName, "truststore.private-key", truststore.privateKey()));
+			result.add(toPath(bundleName, new Location("truststore.private-key", truststore.privateKey())));
 		}
 		if (truststore.certificate() != null) {
-			result.add(toPath(bundleName, "truststore.certificate", truststore.certificate()));
+			result.add(toPath(bundleName, new Location("truststore.certificate", truststore.certificate())));
 		}
 		return result;
 	}
 
-	private Path toPath(String bundleName, String field, String location) {
-		boolean isPemContent = PEM_CONTENT.matcher(location).find();
+	private Path toPath(String bundleName, Location watchableLocation) {
+		String value = watchableLocation.value();
+		String field = watchableLocation.field();
+		boolean isPemContent = PEM_CONTENT.matcher(value).find();
 		Assert.state(!isPemContent,
 				() -> "SSL bundle '%s' '$s' is not a URL and can't be watched".formatted(bundleName, field));
 		try {
-			URL url = ResourceUtils.getURL(location);
+			URL url = ResourceUtils.getURL(value);
 			Assert.state("file".equalsIgnoreCase(url.getProtocol()),
 					() -> "SSL bundle '%s' '$s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
 			return Path.of(url.getFile()).toAbsolutePath();
 		}
 		catch (FileNotFoundException ex) {
 			throw new UncheckedIOException(
-					"SSL bundle '%s' '$s' location '%s' cannot be watched".formatted(bundleName, field, location), ex);
+					"SSL bundle '%s' '$s' location '%s' cannot be watched".formatted(bundleName, field, value), ex);
 		}
+	}
+
+	private record Location(String field, String value) {
+
 	}
 
 }
