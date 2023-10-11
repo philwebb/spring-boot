@@ -72,10 +72,10 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	private Set<Path> getPathsToWatch(JksSslBundleProperties properties) {
 		Set<Path> result = new HashSet<>();
 		if (properties.getKeystore().getLocation() != null) {
-			result.add(toPath(properties.getKeystore().getLocation()));
+			result.add(toPath("Keystore", properties.getKeystore().getLocation()));
 		}
 		if (properties.getTruststore().getLocation() != null) {
-			result.add(toPath(properties.getTruststore().getLocation()));
+			result.add(toPath("Truststore", properties.getTruststore().getLocation()));
 		}
 		return result;
 	}
@@ -88,30 +88,30 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 			if (keystore.getPrivateKeyType() != Type.URL) {
 				throw new IllegalStateException("Keystore private key is not a URL and can't be watched");
 			}
-			result.add(toPath(keystore.privateKey()));
+			result.add(toPath("Keystore private key ", keystore.privateKey()));
 		}
 		if (keystore.certificate() != null) {
 			if (keystore.getCertificateType() != Type.URL) {
 				throw new IllegalStateException("Keystore certificate is not a URL and can't be watched");
 			}
-			result.add(toPath(keystore.certificate()));
+			result.add(toPath("Keystore certificate", keystore.certificate()));
 		}
 		if (truststore.privateKey() != null) {
 			if (truststore.getPrivateKeyType() != Type.URL) {
 				throw new IllegalStateException("Truststore private key is not a URL and can't be watched");
 			}
-			result.add(toPath(truststore.privateKey()));
+			result.add(toPath("Truststore private key", truststore.privateKey()));
 		}
 		if (truststore.certificate() != null) {
 			if (truststore.getCertificateType() != Type.URL) {
 				throw new IllegalStateException("Truststore certificate is not a URL and can't be watched");
 			}
-			result.add(toPath(truststore.certificate()));
+			result.add(toPath("Truststore certificate", truststore.certificate()));
 		}
 		return result;
 	}
 
-	private Path toPath(String location) {
+	private Path toPath(String name, String location) {
 		try {
 			URL url = ResourceUtils.getURL(location);
 			if (!"file".equals(url.getProtocol())) {
