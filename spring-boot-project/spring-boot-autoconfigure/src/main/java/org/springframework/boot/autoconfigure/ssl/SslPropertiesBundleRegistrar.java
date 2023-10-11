@@ -20,17 +20,18 @@ import java.io.FileNotFoundException;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link SslBundleRegistrar} that registers SSL bundles based
@@ -55,53 +56,45 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 
 	@Override
 	public void registerBundles(SslBundleRegistry registry) {
-		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::getPathsToWatch);
-		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::getPathsToWatch);
+		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::getLocations);
+		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::getLocations);
 	}
 
 	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
-			Function<P, SslBundle> bundleFactory, BiFunction<String, P, Set<Path>> watchedPathsSupplier) {
+			Function<P, SslBundle> bundleFactory, Function<P, Set<Location>> locationsSupplier) {
 		properties.forEach((bundleName, bundleProperties) -> {
 			SslBundle bundle = bundleFactory.apply(bundleProperties);
 			registry.registerBundle(bundleName, bundle);
 			if (bundleProperties.isReloadOnUpdate()) {
-				Set<Path> watchedPaths = watchedPathsSupplier.apply(bundleName, bundleProperties);
-				this.fileWatcher.watch(watchedPaths,
+				Set<Path> paths = locationsSupplier.apply(bundleProperties)
+					.stream()
+					.filter(Location::hasValue)
+					.map((location) -> toPath(bundleName, location))
+					.collect(Collectors.toSet());
+				this.fileWatcher.watch(paths,
 						(changes) -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
 			}
 		});
 	}
 
-	private Set<Path> getPathsToWatch(String bundleName, JksSslBundleProperties properties) {
+	private Set<Location> getLocations(JksSslBundleProperties properties) {
 		JksSslBundleProperties.Store keystore = properties.getKeystore();
 		JksSslBundleProperties.Store truststore = properties.getTruststore();
-		Set<Path> result = new HashSet<>();
-		if (properties.getKeystore().getLocation() != null) {
-			result.add(toPath(bundleName, new Location("keystore.location", keystore.getLocation())));
-		}
-		if (properties.getTruststore().getLocation() != null) {
-			result.add(toPath(bundleName, new Location("truststore.location", truststore.getLocation())));
-		}
-		return result;
+		Set<Location> locations = new LinkedHashSet<>();
+		locations.add(new Location("keystore.location", keystore.getLocation()));
+		locations.add(new Location("truststore.location", truststore.getLocation()));
+		return locations;
 	}
 
-	private Set<Path> getPathsToWatch(String bundleName, PemSslBundleProperties properties) {
+	private Set<Location> getLocations(PemSslBundleProperties properties) {
 		PemSslBundleProperties.Store keystore = properties.getKeystore();
 		PemSslBundleProperties.Store truststore = properties.getTruststore();
-		Set<Path> result = new HashSet<>();
-		if (keystore.getPrivateKey() != null) {
-			result.add(toPath(bundleName, new Location("keystore.private-key", keystore.getPrivateKey())));
-		}
-		if (keystore.getCertificate() != null) {
-			result.add(toPath(bundleName, new Location("keystore.certificate", keystore.getCertificate())));
-		}
-		if (truststore.getPrivateKey() != null) {
-			result.add(toPath(bundleName, new Location("truststore.private-key", truststore.getPrivateKey())));
-		}
-		if (truststore.getCertificate() != null) {
-			result.add(toPath(bundleName, new Location("truststore.certificate", truststore.getCertificate())));
-		}
-		return result;
+		Set<Location> locations = new LinkedHashSet<>();
+		locations.add(new Location("keystore.private-key", keystore.getPrivateKey()));
+		locations.add(new Location("keystore.certificate", keystore.getCertificate()));
+		locations.add(new Location("truststore.private-key", truststore.getPrivateKey()));
+		locations.add(new Location("truststore.certificate", truststore.getCertificate()));
+		return locations;
 	}
 
 	private Path toPath(String bundleName, Location watchableLocation) {
@@ -123,6 +116,10 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	}
 
 	private record Location(String field, String value) {
+
+		boolean hasValue() {
+			return StringUtils.hasText(this.value);
+		}
 
 	}
 
