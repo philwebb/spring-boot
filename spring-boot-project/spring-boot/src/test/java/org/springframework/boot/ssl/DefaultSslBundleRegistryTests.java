@@ -107,10 +107,10 @@ class DefaultSslBundleRegistryTests {
 	}
 
 	@Test
-	void updateBundleShouldNotifyListeners() {
+	void updateBundleShouldNotifyUpdateHandlers() {
 		AtomicReference<SslBundle> updatedBundle = new AtomicReference<>();
 		this.registry.registerBundle("test1", this.bundle1);
-		this.registry.getBundle("test1", updatedBundle::set);
+		this.registry.addBundleUpdateHandler("test1", updatedBundle::set);
 		this.registry.updateBundle("test1", this.bundle2);
 		Awaitility.await().untilAtomic(updatedBundle, Matchers.equalTo(this.bundle2));
 	}

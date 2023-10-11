@@ -97,8 +97,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		return getBundle(name, null);
 	}
 
-	@Override
-	public SslBundle getBundle(String name, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException {
+	private SslBundle getBundle(String name, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException {
 		Assert.notNull(name, "Name must not be null");
 		SslBundle bundle = this.bundles.get(name);
 		if (bundle == null) {

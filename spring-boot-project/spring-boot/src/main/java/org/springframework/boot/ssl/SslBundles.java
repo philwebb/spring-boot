@@ -36,19 +36,6 @@ public interface SslBundles {
 	SslBundle getBundle(String bundleName) throws NoSuchSslBundleException;
 
 	/**
-	 * Return an {@link SslBundle} with the provided name.
-	 * @param bundleName the bundle name
-	 * @param onUpdate the callback, which is called when the bundle is updated or
-	 * {@code null}
-	 * @return the bundle
-	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
-	 * @since 3.2.0
-	 */
-	SslBundle getBundle(String bundleName, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException;
-
-	// FIXME method above sort of does two things, gets and register a listener.
-
-	/**
 	 * Add a handler to that will be called each time the named bundle is updated.
 	 * @param bundleName the bundle name
 	 * @param bundleUpdateHandler the handler that should be called
