@@ -104,6 +104,10 @@ public record PemSslStoreDetails(String type, String certificate, String private
 		return content != null && PEM_HEADER.matcher(content).find() && PEM_FOOTER.matcher(content).find();
 	}
 
+	// FIXME Might be paying quite a high price for having this here.
+	// It's only used publically in SslPropertiesBundleRegistrar
+	// and we might be able to do something different there
+
 	/**
 	 * Type of key or certificate.
 	 */
