@@ -45,6 +45,11 @@ public abstract class SslBundleProperties {
 	 */
 	private String protocol = SslBundle.DEFAULT_PROTOCOL;
 
+	/**
+	 * Whether to reload the SSL bundle.
+	 */
+	private boolean reloadOnUpdate;
+
 	public Key getKey() {
 		return this.key;
 	}
@@ -59,6 +64,14 @@ public abstract class SslBundleProperties {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+
+	public boolean isReloadOnUpdate() {
+		return this.reloadOnUpdate;
+	}
+
+	public void setReloadOnUpdate(boolean reloadOnUpdate) {
+		this.reloadOnUpdate = reloadOnUpdate;
 	}
 
 	public static class Options {

@@ -41,11 +41,6 @@ public class PemSslBundleProperties extends SslBundleProperties {
 	private final Store truststore = new Store();
 
 	/**
-	 * Whether to reload the SSL bundle.
-	 */
-	private boolean reloadOnUpdate;
-
-	/**
 	 * Whether to verify that the private key matches the public key.
 	 */
 	private boolean verifyKeys;
@@ -56,14 +51,6 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 	public Store getTruststore() {
 		return this.truststore;
-	}
-
-	public boolean isReloadOnUpdate() {
-		return this.reloadOnUpdate;
-	}
-
-	public void setReloadOnUpdate(boolean reloadOnUpdate) {
-		this.reloadOnUpdate = reloadOnUpdate;
 	}
 
 	public boolean isVerifyKeys() {
