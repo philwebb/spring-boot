@@ -65,6 +65,8 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	@Override
 	public void updateBundle(String name, SslBundle sslBundle) {
 		Assert.notNull(name, "Name must not be null");
+		// FIXME I think this isn't thread safe since someone could do a put after we do
+		// the get
 		SslBundle bundle = this.bundles.get(name);
 		if (bundle == null) {
 			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
