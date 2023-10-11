@@ -84,7 +84,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	private void logMissingListeners(String name) {
 		if (logger.isWarnEnabled()) {
 			if (this.bundlesWithoutListeners.contains(name)) {
-				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updateable",
+				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updatable",
 						name));
 			}
 		}
