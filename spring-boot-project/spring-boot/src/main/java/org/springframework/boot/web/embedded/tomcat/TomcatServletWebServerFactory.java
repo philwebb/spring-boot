@@ -71,7 +71,6 @@ import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
@@ -372,15 +371,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void customizeSsl(Connector connector) {
-		SslBundle sslBundle = getSslBundle((updatedBundle) -> {
-			logger.debug("SSL Bundle has been updated, reloading SSL configuration");
-			customizeSsl(connector, updatedBundle);
-		});
-		customizeSsl(connector, sslBundle);
-	}
-
-	private void customizeSsl(Connector connector, SslBundle sslBundle) {
-		new SslConnectorCustomizer(getSsl().getClientAuth(), sslBundle).customize(connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, getSsl().getClientAuth(), connector);
+		customizer.customize(getSslBundle());
+		String sslBundleName = getSsl().getBundle();
+		if (StringUtils.hasText(sslBundleName)) {
+			getSslBundles().addBundleUpdateHandler(sslBundleName,
+					(updatedSslBundle) -> customizer.update(updatedSslBundle));
+		}
 	}
 
 	/**

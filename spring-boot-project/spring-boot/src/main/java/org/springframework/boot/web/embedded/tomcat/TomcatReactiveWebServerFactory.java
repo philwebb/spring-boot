@@ -43,7 +43,6 @@ import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -230,15 +229,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	private void customizeSsl(Connector connector) {
-		SslBundle sslBundle = getSslBundle((updatedBundle) -> {
-			logger.debug("SSL Bundle has been updated, reloading SSL configuration");
-			customizeSsl(connector, updatedBundle);
-		});
-		customizeSsl(connector, sslBundle);
-	}
-
-	private void customizeSsl(Connector connector, SslBundle sslBundle) {
-		new SslConnectorCustomizer(getSsl().getClientAuth(), sslBundle).customize(connector);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, getSsl().getClientAuth(), connector);
+		customizer.customize(getSslBundle());
+		String sslBundleName = getSsl().getBundle();
+		if (StringUtils.hasText(sslBundleName)) {
+			getSslBundles().addBundleUpdateHandler(sslBundleName,
+					(updatedSslBundle) -> customizer.update(updatedSslBundle));
+		}
 	}
 
 	@Override
