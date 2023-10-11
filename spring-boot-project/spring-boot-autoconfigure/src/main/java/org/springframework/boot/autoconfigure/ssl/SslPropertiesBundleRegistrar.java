@@ -100,8 +100,7 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	private Path toPath(String bundleName, Location watchableLocation) {
 		String value = watchableLocation.value();
 		String field = watchableLocation.field();
-		boolean isPemContent = PEM_CONTENT.matcher(value).find();
-		Assert.state(!isPemContent,
+		Assert.state(!PEM_CONTENT.matcher(value).find(),
 				() -> "SSL bundle '%s' '$s' is not a URL and can't be watched".formatted(bundleName, field));
 		try {
 			URL url = ResourceUtils.getURL(value);
