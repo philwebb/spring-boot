@@ -157,6 +157,7 @@ public final class WebServerSslBundle implements SslBundle {
 	@SuppressWarnings("removal")
 	public static SslBundle get(Ssl ssl, SslBundles sslBundles, SslStoreProvider sslStoreProvider,
 			Consumer<SslBundle> onUpdate) {
+		// FIXME can we get away without adding a new method here?
 		Assert.state(Ssl.isEnabled(ssl), "SSL is not enabled");
 		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
 		keyPassword = (keyPassword != null) ? keyPassword : ssl.getKeyPassword();
