@@ -73,13 +73,14 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	}
 
 	private Set<Path> getPathsToWatch(String bundleName, JksSslBundleProperties properties) {
+		JksSslBundleProperties.Store keystore = properties.getKeystore();
+		JksSslBundleProperties.Store truststore = properties.getTruststore();
 		Set<Path> result = new HashSet<>();
 		if (properties.getKeystore().getLocation() != null) {
-			result.add(toPath(bundleName, new Location("keystore.location", properties.getKeystore().getLocation())));
+			result.add(toPath(bundleName, new Location("keystore.location", keystore.getLocation())));
 		}
 		if (properties.getTruststore().getLocation() != null) {
-			result
-				.add(toPath(bundleName, new Location("truststore.location", properties.getTruststore().getLocation())));
+			result.add(toPath(bundleName, new Location("truststore.location", truststore.getLocation())));
 		}
 		return result;
 	}
