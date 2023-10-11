@@ -48,4 +48,14 @@ public interface SslBundles {
 
 	// FIXME method above sort of does two things, gets and register a listener.
 
+	/**
+	 * Add a handler to that will be called each time the named bundle is updated.
+	 * @param bundleName the bundle name
+	 * @param bundleUpdateHandler the handler that should be called
+	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
+	 * @since 3.2.0
+	 */
+	void addBundleUpdateHandler(String bundleName, Consumer<SslBundle> bundleUpdateHandler)
+			throws NoSuchSslBundleException;
+
 }

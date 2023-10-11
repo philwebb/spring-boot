@@ -108,6 +108,12 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		return bundle;
 	}
 
+	@Override
+	public void addBundleUpdateHandler(String bundleName, Consumer<SslBundle> bundleUpdateHandler)
+			throws NoSuchSslBundleException {
+		getBundle(bundleName, bundleUpdateHandler);
+	}
+
 	private void addListener(String name, Consumer<SslBundle> onUpdate) {
 		if (onUpdate == null) {
 			this.bundlesWithoutListeners.add(name);
