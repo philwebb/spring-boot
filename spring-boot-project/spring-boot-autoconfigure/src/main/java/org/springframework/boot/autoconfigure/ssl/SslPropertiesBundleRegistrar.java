@@ -23,12 +23,14 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
-import org.springframework.boot.ssl.pem.PemSslStoreDetails.Type;
+import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -40,6 +42,8 @@ import org.springframework.util.ResourceUtils;
  * @author Moritz Halbritter
  */
 class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
+
+	private static final Pattern PEM_CONTENT = Pattern.compile("-+BEGIN\\s+[^-]*-+", Pattern.CASE_INSENSITIVE);
 
 	private final SslProperties.Bundles properties;
 
@@ -57,70 +61,61 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	}
 
 	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
-			Function<P, SslBundle> bundleFactory, Function<P, Set<Path>> watchedPathsSupplier) {
+			Function<P, SslBundle> bundleFactory, BiFunction<String, P, Set<Path>> watchedPathsSupplier) {
 		properties.forEach((bundleName, bundleProperties) -> {
 			SslBundle bundle = bundleFactory.apply(bundleProperties);
 			registry.registerBundle(bundleName, bundle);
 			if (bundleProperties.isReloadOnUpdate()) {
-				Set<Path> watchedPaths = watchedPathsSupplier.apply(bundleProperties);
+				Set<Path> watchedPaths = watchedPathsSupplier.apply(bundleName, bundleProperties);
 				this.fileWatcher.watch(watchedPaths,
 						(changes) -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
 			}
 		});
 	}
 
-	private Set<Path> getPathsToWatch(JksSslBundleProperties properties) {
+	private Set<Path> getPathsToWatch(String bundleName, JksSslBundleProperties properties) {
 		Set<Path> result = new HashSet<>();
 		if (properties.getKeystore().getLocation() != null) {
-			result.add(toPath("Keystore", properties.getKeystore().getLocation()));
+			result.add(toPath(bundleName, "keystore.location", properties.getKeystore().getLocation()));
 		}
 		if (properties.getTruststore().getLocation() != null) {
-			result.add(toPath("Truststore", properties.getTruststore().getLocation()));
+			result.add(toPath(bundleName, "truststore.location", properties.getTruststore().getLocation()));
 		}
 		return result;
 	}
 
-	private Set<Path> getPathsToWatch(PemSslBundleProperties properties) {
+	private Set<Path> getPathsToWatch(String bundleName, PemSslBundleProperties properties) {
 		PemSslStoreDetails keystore = properties.getKeystore().asPemSslStoreDetails();
 		PemSslStoreDetails truststore = properties.getTruststore().asPemSslStoreDetails();
 		Set<Path> result = new HashSet<>();
 		if (keystore.privateKey() != null) {
-			if (keystore.getPrivateKeyType() != Type.URL) {
-				throw new IllegalStateException("Keystore private key is not a URL and can't be watched");
-			}
-			result.add(toPath("Keystore private key ", keystore.privateKey()));
+			result.add(toPath(bundleName, "keystore.private-key", keystore.privateKey()));
 		}
 		if (keystore.certificate() != null) {
-			if (keystore.getCertificateType() != Type.URL) {
-				throw new IllegalStateException("Keystore certificate is not a URL and can't be watched");
-			}
-			result.add(toPath("Keystore certificate", keystore.certificate()));
+			result.add(toPath(bundleName, "keystore.certificate", keystore.certificate()));
 		}
 		if (truststore.privateKey() != null) {
-			if (truststore.getPrivateKeyType() != Type.URL) {
-				throw new IllegalStateException("Truststore private key is not a URL and can't be watched");
-			}
-			result.add(toPath("Truststore private key", truststore.privateKey()));
+			result.add(toPath(bundleName, "truststore.private-key", truststore.privateKey()));
 		}
 		if (truststore.certificate() != null) {
-			if (truststore.getCertificateType() != Type.URL) {
-				throw new IllegalStateException("Truststore certificate is not a URL and can't be watched");
-			}
-			result.add(toPath("Truststore certificate", truststore.certificate()));
+			result.add(toPath(bundleName, "truststore.certificate", truststore.certificate()));
 		}
 		return result;
 	}
 
-	private Path toPath(String name, String location) {
+	private Path toPath(String bundleName, String field, String location) {
+		boolean isPemContent = PEM_CONTENT.matcher(location).find();
+		Assert.state(!isPemContent,
+				() -> "SSL bundle '%s' '$s' is not a URL and can't be watched".formatted(bundleName, field));
 		try {
 			URL url = ResourceUtils.getURL(location);
-			if (!"file".equals(url.getProtocol())) {
-				throw new IllegalStateException("Location '%s' doesn't point to a file".formatted(location));
-			}
+			Assert.state("file".equalsIgnoreCase(url.getProtocol()),
+					() -> "SSL bundle '%s' '$s' URL '%s' doesn't point to a file".formatted(bundleName, field, url));
 			return Path.of(url.getFile()).toAbsolutePath();
 		}
 		catch (FileNotFoundException ex) {
-			throw new UncheckedIOException("Failed to get URI to location '%s'".formatted(location), ex);
+			throw new UncheckedIOException(
+					"SSL bundle '%s' '$s' location '%s' cannot be watched".formatted(bundleName, field, location), ex);
 		}
 	}
 

@@ -69,16 +69,15 @@ public record PemSslStoreDetails(String type, String certificate, String private
 	 * @return the type of the private key
 	 * @since 3.2.0
 	 */
-	public Type getPrivateKeyType() {
+	Type getPrivateKeyType() {
 		return (isPemContent(this.privateKey)) ? Type.PEM : Type.URL;
 	}
 
 	/**
 	 * Returns the type of the certificate.
 	 * @return the type of the certificate
-	 * @since 3.2.0
 	 */
-	public Type getCertificateType() {
+	Type getCertificateType() {
 		return (isPemContent(this.certificate)) ? Type.PEM : Type.URL;
 	}
 
@@ -111,12 +110,13 @@ public record PemSslStoreDetails(String type, String certificate, String private
 	/**
 	 * Type of key or certificate.
 	 */
-	public enum Type {
+	enum Type {
 
 		/**
 		 * URL loadable by {@link ResourceUtils#getURL}.
 		 */
 		URL,
+
 		/**
 		 * PEM content.
 		 */
