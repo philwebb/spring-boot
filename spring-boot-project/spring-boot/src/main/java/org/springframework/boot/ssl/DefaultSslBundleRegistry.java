@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +34,7 @@ import org.springframework.util.Assert;
  *
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Phillip Webb
  * @since 3.1.0
  */
 public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
@@ -88,6 +90,8 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 		private volatile List<Consumer<SslBundle>> updateHandlers = new CopyOnWriteArrayList<>();
 
+		private final AtomicInteger getWithoutAddUpdateListener = new AtomicInteger();
+
 		RegisteredSslBundle(String name, SslBundle bundle) {
 			this.name = name;
 			this.bundle = bundle;
@@ -96,22 +100,23 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		public void update(SslBundle updatedBundle) {
 			Assert.notNull(updatedBundle, "UpdatedBundle must not be null");
 			this.bundle = updatedBundle;
-			if (this.updateHandlers.isEmpty()) {
-				// FIXME not quite right anymore since we really need to know a bundle was
-				// got but no lister was registered with it
-				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updatable",
+			if (this.getWithoutAddUpdateListener.get() == 0) {
+				logger.warn(LogMessage.format(
+						"SSL bundle '%s' has been updated but may be in use by a technolgy that doesn't support SSL reloading",
 						this.name));
 			}
 			this.updateHandlers.forEach((handler) -> handler.accept(updatedBundle));
 		}
 
+		SslBundle getBundle() {
+			this.getWithoutAddUpdateListener.incrementAndGet();
+			return this.bundle;
+		}
+
 		void addUpdateHandler(Consumer<SslBundle> updateHandler) {
 			Assert.notNull(updateHandler, "UpdateHandler must not be null");
 			this.updateHandlers.add(updateHandler);
-		}
-
-		SslBundle getBundle() {
-			return this.bundle;
+			this.getWithoutAddUpdateListener.decrementAndGet();
 		}
 
 	}
