@@ -273,6 +273,10 @@ class FileWatcher implements AutoCloseable {
 	record Change(Path path, Type type) {
 	}
 
+	// FIXME we might not need this for our implementation
+	// as I think it's not actually used. Might be useful if
+	// we ever make the class public, but it's package private at moment.
+
 	static class Changes implements Iterable<Change> {
 
 		private final List<Change> changes;
