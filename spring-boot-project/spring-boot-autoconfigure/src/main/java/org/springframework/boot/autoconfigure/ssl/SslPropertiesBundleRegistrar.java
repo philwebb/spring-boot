@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
-import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 
@@ -86,20 +85,20 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 	}
 
 	private Set<Path> getPathsToWatch(String bundleName, PemSslBundleProperties properties) {
-		PemSslStoreDetails keystore = properties.getKeystore().asPemSslStoreDetails();
-		PemSslStoreDetails truststore = properties.getTruststore().asPemSslStoreDetails();
+		PemSslBundleProperties.Store keystore = properties.getKeystore();
+		PemSslBundleProperties.Store truststore = properties.getTruststore();
 		Set<Path> result = new HashSet<>();
-		if (keystore.privateKey() != null) {
-			result.add(toPath(bundleName, new Location("keystore.private-key", keystore.privateKey())));
+		if (keystore.getPrivateKey() != null) {
+			result.add(toPath(bundleName, new Location("keystore.private-key", keystore.getPrivateKey())));
 		}
-		if (keystore.certificate() != null) {
-			result.add(toPath(bundleName, new Location("keystore.certificate", keystore.certificate())));
+		if (keystore.getCertificate() != null) {
+			result.add(toPath(bundleName, new Location("keystore.certificate", keystore.getCertificate())));
 		}
-		if (truststore.privateKey() != null) {
-			result.add(toPath(bundleName, new Location("truststore.private-key", truststore.privateKey())));
+		if (truststore.getPrivateKey() != null) {
+			result.add(toPath(bundleName, new Location("truststore.private-key", truststore.getPrivateKey())));
 		}
-		if (truststore.certificate() != null) {
-			result.add(toPath(bundleName, new Location("truststore.certificate", truststore.certificate())));
+		if (truststore.getCertificate() != null) {
+			result.add(toPath(bundleName, new Location("truststore.certificate", truststore.getCertificate())));
 		}
 		return result;
 	}

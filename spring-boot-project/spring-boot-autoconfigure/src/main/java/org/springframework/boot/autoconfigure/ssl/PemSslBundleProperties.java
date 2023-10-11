@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
-import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 
 /**
  * {@link SslBundleProperties} for PEM-encoded certificates and private keys.
@@ -116,10 +115,6 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 		public void setPrivateKeyPassword(String privateKeyPassword) {
 			this.privateKeyPassword = privateKeyPassword;
-		}
-
-		PemSslStoreDetails asPemSslStoreDetails() {
-			return new PemSslStoreDetails(this.type, this.certificate, this.privateKey, this.privateKeyPassword);
 		}
 
 	}
