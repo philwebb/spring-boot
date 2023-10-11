@@ -63,22 +63,6 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	}
 
 	@Override
-	public SslBundle getBundle(String name) {
-		return getBundle(name, null);
-	}
-
-	@Override
-	public SslBundle getBundle(String name, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException {
-		Assert.notNull(name, "Name must not be null");
-		SslBundle bundle = this.bundles.get(name);
-		if (bundle == null) {
-			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
-		}
-		addListener(name, onUpdate);
-		return bundle;
-	}
-
-	@Override
 	public void updateBundle(String name, SslBundle sslBundle) {
 		Assert.notNull(name, "Name must not be null");
 		SslBundle bundle = this.bundles.get(name);
@@ -97,21 +81,37 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		}
 	}
 
-	private void addListener(String name, Consumer<SslBundle> onUpdate) {
-		if (onUpdate == null) {
-			this.bundlesWithoutListeners.add(name);
-		}
-		else {
-			this.listeners.computeIfAbsent(name, (ignore) -> new CopyOnWriteArrayList<>()).add(onUpdate);
-		}
-	}
-
 	private void logMissingListeners(String name) {
 		if (logger.isWarnEnabled()) {
 			if (this.bundlesWithoutListeners.contains(name)) {
 				logger.warn(LogMessage.format("SSL bundle '%s' has been updated, but not all consumers are updateable",
 						name));
 			}
+		}
+	}
+
+	@Override
+	public SslBundle getBundle(String name) {
+		return getBundle(name, null);
+	}
+
+	@Override
+	public SslBundle getBundle(String name, Consumer<SslBundle> onUpdate) throws NoSuchSslBundleException {
+		Assert.notNull(name, "Name must not be null");
+		SslBundle bundle = this.bundles.get(name);
+		if (bundle == null) {
+			throw new NoSuchSslBundleException(name, "SSL bundle name '%s' cannot be found".formatted(name));
+		}
+		addListener(name, onUpdate);
+		return bundle;
+	}
+
+	private void addListener(String name, Consumer<SslBundle> onUpdate) {
+		if (onUpdate == null) {
+			this.bundlesWithoutListeners.add(name);
+		}
+		else {
+			this.listeners.computeIfAbsent(name, (ignore) -> new CopyOnWriteArrayList<>()).add(onUpdate);
 		}
 	}
 
