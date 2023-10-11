@@ -22,9 +22,10 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails.Type;
@@ -51,34 +52,21 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 
 	@Override
 	public void registerBundles(SslBundleRegistry registry) {
-		registerPemBundles(registry, this.properties.getPem());
-		registerJksBundles(registry, this.properties.getJks());
+		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::getPathsToWatch);
+		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::getPathsToWatch);
 	}
 
-	private void registerJksBundles(SslBundleRegistry registry, Map<String, JksSslBundleProperties> bundles) {
-		for (Entry<String, JksSslBundleProperties> bundle : bundles.entrySet()) {
-			String bundleName = bundle.getKey();
-			JksSslBundleProperties properties = bundle.getValue();
-			registry.registerBundle(bundleName, PropertiesSslBundle.get(properties));
-			if (properties.isReloadOnUpdate()) {
-				Set<Path> locations = getPathsToWatch(properties);
-				this.fileWatcher.watch(locations,
-						(changes) -> registry.updateBundle(bundleName, PropertiesSslBundle.get(properties)));
+	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
+			Function<P, SslBundle> bundleFactory, Function<P, Set<Path>> watchedPathsSupplier) {
+		properties.forEach((bundleName, bundleProperties) -> {
+			SslBundle bundle = bundleFactory.apply(bundleProperties);
+			registry.registerBundle(bundleName, bundle);
+			if (bundleProperties.isReloadOnUpdate()) {
+				Set<Path> watchedPaths = watchedPathsSupplier.apply(bundleProperties);
+				this.fileWatcher.watch(watchedPaths,
+						(changes) -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
 			}
-		}
-	}
-
-	private void registerPemBundles(SslBundleRegistry registry, Map<String, PemSslBundleProperties> bundles) {
-		for (Entry<String, PemSslBundleProperties> bundle : bundles.entrySet()) {
-			String bundleName = bundle.getKey();
-			PemSslBundleProperties properties = bundle.getValue();
-			registry.registerBundle(bundleName, PropertiesSslBundle.get(properties));
-			if (properties.isReloadOnUpdate()) {
-				Set<Path> locations = getPathsToWatch(properties);
-				this.fileWatcher.watch(locations,
-						(changes) -> registry.updateBundle(bundleName, PropertiesSslBundle.get(properties)));
-			}
-		}
+		});
 	}
 
 	private Set<Path> getPathsToWatch(JksSslBundleProperties properties) {
