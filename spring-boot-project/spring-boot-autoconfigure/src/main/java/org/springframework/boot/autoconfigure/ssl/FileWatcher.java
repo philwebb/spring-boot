@@ -131,7 +131,7 @@ class FileWatcher implements AutoCloseable {
 				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
 			}
 		}
-		Registration registration = new Registration(directories, files, callback);
+		Registration registration = new Registration(paths, callback);
 		for (WatchKey watchKey : watchKeys) {
 			this.registrations.computeIfAbsent(watchKey, (ignore) -> new CopyOnWriteArrayList<>()).add(registration);
 		}
@@ -235,15 +235,15 @@ class FileWatcher implements AutoCloseable {
 		stop();
 	}
 
-	private record Registration(Set<Path> directories, Set<Path> files, Runnable callback) {
+	private record Registration(Set<Path> paths, Runnable callback) {
 
 		boolean affectsFile(Path file) {
-			return this.files.contains(file) || isInDirectories(file);
+			return this.paths.contains(file) || isInDirectories(file);
 		}
 
 		private boolean isInDirectories(Path file) {
-			for (Path directory : this.directories) {
-				if (file.startsWith(directory)) {
+			for (Path path : this.paths) {
+				if (Files.isDirectory(path) && file.startsWith(path)) {
 					return true;
 				}
 			}
