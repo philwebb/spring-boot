@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
@@ -120,17 +119,16 @@ class FileWatcher implements AutoCloseable {
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
 		for (Path path : paths) {
-			Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
-			if (Files.isDirectory(realPath)) {
-				directories.add(realPath);
-				watchKeys.add(registerDirectory(realPath));
+			if (Files.isDirectory(path)) {
+				directories.add(path);
+				watchKeys.add(registerDirectory(path));
 			}
-			else if (Files.isRegularFile(realPath)) {
-				files.add(realPath);
-				watchKeys.add(registerFile(realPath));
+			else if (Files.isRegularFile(path)) {
+				files.add(path);
+				watchKeys.add(registerFile(path));
 			}
 			else {
-				throw new IOException("'%s' is neither a file nor a directory".formatted(realPath));
+				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
 			}
 		}
 		Registration registration = new Registration(directories, files, callback);
