@@ -16,9 +16,19 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent.Kind;
 import java.time.Duration;
 import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.util.Assert;
 
 /**
  * Watches files and directories and triggers a callback on change.
@@ -27,14 +37,83 @@ import java.util.Set;
  */
 class FileWatcher implements AutoCloseable {
 
+	private static final Log logger = LogFactory.getLog(FileWatcher.class);
+
+	private static final Kind<?>[] WATCHED_EVENTS = new Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE,
+			StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE };
+
+	private final Duration quietPeriod;
+
+	private final Object lock = new Object();
+
+	private volatile WatcherThread thread;
+
 	FileWatcher(Duration quietPeriod) {
+		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
+		this.quietPeriod = quietPeriod;
 	}
 
 	void watch(Set<Path> paths, Runnable action) {
+		Assert.notNull(paths, "Paths must not be null");
+		Assert.notNull(action, "Action must not be null");
+		if (paths.isEmpty()) {
+			return;
+		}
+		startIfNecessary();
+		try {
+			register(new Registration(paths, action));
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
+		}
+	}
+
+	private void register(Registration registration) throws IOException {
+	}
+
+	private void startIfNecessary() {
+		synchronized (this.lock) {
+			if (this.thread == null) {
+				this.thread = new WatcherThread();
+				this.thread.start();
+			}
+		}
 	}
 
 	@Override
 	public void close() throws Exception {
+		synchronized (this.lock) {
+			if (this.thread != null) {
+				this.thread.interrupt();
+				try {
+					this.thread.join();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				this.thread = null;
+			}
+		}
+	}
+
+	private record Registration(Set<Path> paths, Runnable action) {
+
+		boolean affectsFile(Path file) {
+			return this.paths.contains(file) || isInDirectories(file);
+		}
+
+		private boolean isInDirectories(Path file) {
+			for (Path path : this.paths) {
+				if (Files.isDirectory(path) && file.startsWith(path)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	private class WatcherThread extends Thread {
+
 	}
 
 	// @formatter:off
