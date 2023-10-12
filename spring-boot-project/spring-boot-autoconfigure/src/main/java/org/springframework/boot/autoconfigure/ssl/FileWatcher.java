@@ -31,7 +31,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -183,9 +182,8 @@ class FileWatcher implements AutoCloseable {
 
 	private void fireCallback(Map<Registration, List<Change>> accumulatedChanges) {
 		for (Entry<Registration, List<Change>> entry : accumulatedChanges.entrySet()) {
-			Changes changes = new Changes(entry.getValue());
-			if (!changes.isEmpty()) {
-				entry.getKey().callback().onChange(changes);
+			if (!entry.getValue().isEmpty()) {
+				entry.getKey().callback().onChange();
 			}
 		}
 	}
@@ -274,33 +272,10 @@ class FileWatcher implements AutoCloseable {
 	record Change(Path path, Type type) {
 	}
 
-	// FIXME we might not need this for our implementation
-	// as I think it's not actually used. Might be useful if
-	// we ever make the class public, but it's package private at moment.
-
-	static class Changes implements Iterable<Change> {
-
-		private final List<Change> changes;
-
-		Changes(List<Change> changes) {
-			this.changes = changes;
-		}
-
-		@Override
-		public Iterator<Change> iterator() {
-			return this.changes.iterator();
-		}
-
-		boolean isEmpty() {
-			return this.changes.isEmpty();
-		}
-
-	}
-
 	@FunctionalInterface
 	interface Callback {
 
-		void onChange(Changes changes);
+		void onChange();
 
 	}
 

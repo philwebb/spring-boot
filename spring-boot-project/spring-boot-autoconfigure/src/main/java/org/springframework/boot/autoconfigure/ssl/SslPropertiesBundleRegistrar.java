@@ -71,7 +71,7 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 					.map((location) -> toPath(bundleName, location))
 					.collect(Collectors.toSet());
 				this.fileWatcher.watch(paths,
-						(changes) -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
+						() -> registry.updateBundle(bundleName, bundleFactory.apply(bundleProperties)));
 			}
 		});
 	}

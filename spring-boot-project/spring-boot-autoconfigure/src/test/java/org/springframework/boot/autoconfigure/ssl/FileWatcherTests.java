@@ -20,21 +20,16 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.activemq.artemis.utils.collections.ConcurrentHashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.ssl.FileWatcher.Callback;
-import org.springframework.boot.autoconfigure.ssl.FileWatcher.Change;
-import org.springframework.boot.autoconfigure.ssl.FileWatcher.Changes;
-import org.springframework.boot.autoconfigure.ssl.FileWatcher.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -66,8 +61,7 @@ class FileWatcherTests {
 		WaitingCallback callback = new WaitingCallback();
 		this.fileWatcher.watch(Set.of(tempDir), callback);
 		Files.createFile(newFile);
-		Set<Change> changes = callback.waitForChanges();
-		assertThatHasChanges(changes, new Change(newFile, Type.CREATE));
+		callback.expectChanges();
 	}
 
 	@Test
@@ -77,8 +71,7 @@ class FileWatcherTests {
 		WaitingCallback callback = new WaitingCallback();
 		this.fileWatcher.watch(Set.of(tempDir), callback);
 		Files.delete(deletedFile);
-		Set<Change> changes = callback.waitForChanges();
-		assertThatHasChanges(changes, new Change(deletedFile, Type.DELETE));
+		callback.expectChanges();
 	}
 
 	@Test
@@ -88,8 +81,7 @@ class FileWatcherTests {
 		WaitingCallback callback = new WaitingCallback();
 		this.fileWatcher.watch(Set.of(tempDir), callback);
 		Files.writeString(deletedFile, "Some content");
-		Set<Change> changes = callback.waitForChanges();
-		assertThatHasChanges(changes, new Change(deletedFile, Type.MODIFY));
+		callback.expectChanges();
 	}
 
 	@Test
@@ -99,8 +91,7 @@ class FileWatcherTests {
 		WaitingCallback callback = new WaitingCallback();
 		this.fileWatcher.watch(Set.of(watchedFile), callback);
 		Files.writeString(watchedFile, "Some content");
-		Set<Change> changes = callback.waitForChanges();
-		assertThatHasChanges(changes, new Change(watchedFile, Type.MODIFY));
+		callback.expectChanges();
 	}
 
 	@Test
@@ -142,36 +133,34 @@ class FileWatcherTests {
 		}).doesNotThrowAnyException();
 	}
 
-	private void assertThatHasChanges(Set<Change> candidates, Change... changes) {
-		assertThat(candidates).containsAll(Arrays.asList(changes));
-	}
-
 	private static class WaitingCallback implements Callback {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		private final Set<Change> changes = new ConcurrentHashSet<>();
+		boolean changed = false;
 
 		@Override
-		public void onChange(Changes changes) {
-			for (Change change : changes) {
-				this.changes.add(change);
-			}
+		public void onChange() {
 			this.latch.countDown();
+			this.changed = true;
 		}
 
-		Set<Change> waitForChanges() throws InterruptedException {
-			if (!this.latch.await(10, TimeUnit.SECONDS)) {
-				fail("Timeout while waiting for changes");
-			}
-			return this.changes;
+		void expectChanges() throws InterruptedException {
+			waitForChanges(true);
+			assertThat(this.changed).as("changed").isTrue();
 		}
 
 		void expectNoChanges() throws InterruptedException {
-			if (!this.latch.await(100, TimeUnit.MILLISECONDS)) {
-				return;
+			waitForChanges(false);
+			assertThat(this.changed).as("changed").isFalse();
+		}
+
+		void waitForChanges(boolean fail) throws InterruptedException {
+			if (!this.latch.await(10, TimeUnit.SECONDS)) {
+				if (fail) {
+					fail("Timeout while waiting for changes");
+				}
 			}
-			assertThat(this.changes).isEmpty();
 		}
 
 	}
