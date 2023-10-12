@@ -43,8 +43,12 @@ public class SslAutoConfiguration {
 	}
 
 	@Bean
-	SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar() {
-		FileWatcher fileWatcher = new FileWatcher(this.sslProperties.getBundle().getWatch().getFile().getQuietPeriod());
+	FileWatcher fileWatcher() {
+		return new FileWatcher(this.sslProperties.getBundle().getWatch().getFile().getQuietPeriod());
+	}
+
+	@Bean
+	SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(FileWatcher fileWatcher) {
 		return new SslPropertiesBundleRegistrar(this.sslProperties, fileWatcher);
 	}
 
