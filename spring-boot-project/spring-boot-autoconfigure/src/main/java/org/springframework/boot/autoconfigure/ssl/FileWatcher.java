@@ -130,25 +130,6 @@ class FileWatcher implements AutoCloseable {
 		return directory.register(this.watchService, WATCHED_EVENTS);
 	}
 
-	void stop() {
-		synchronized (this.lifecycleLock) {
-			if (!this.running) {
-				return;
-			}
-			this.running = false;
-			this.thread.interrupt();
-			try {
-				this.thread.join();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			this.thread = null;
-			this.watchService = null;
-			this.registrations.clear();
-		}
-	}
-
 	private void threadMain(CountDownLatch started) {
 		logger.debug("Watch thread started");
 		try (WatchService watcher = FileSystems.getDefault().newWatchService()) {
@@ -212,7 +193,22 @@ class FileWatcher implements AutoCloseable {
 
 	@Override
 	public void close() {
-		stop();
+		synchronized (this.lifecycleLock) {
+			if (!this.running) {
+				return;
+			}
+			this.running = false;
+			this.thread.interrupt();
+			try {
+				this.thread.join();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			this.thread = null;
+			this.watchService = null;
+			this.registrations.clear();
+		}
 	}
 
 	private record Registration(Set<Path> paths, Runnable callback) {

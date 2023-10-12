@@ -124,8 +124,8 @@ class FileWatcherTests {
 		WaitingCallback callback = new WaitingCallback();
 		this.fileWatcher.watch(Set.of(tempDir), callback);
 		assertThatCode(() -> {
-			this.fileWatcher.stop();
-			this.fileWatcher.stop();
+			this.fileWatcher.close();
+			this.fileWatcher.close();
 		}).doesNotThrowAnyException();
 	}
 
