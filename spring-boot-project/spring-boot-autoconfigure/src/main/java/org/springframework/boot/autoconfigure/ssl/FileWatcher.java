@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
@@ -198,7 +199,7 @@ class FileWatcher implements AutoCloseable {
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
 		for (Path path : paths) {
-			Path realPath = path.toRealPath();
+			Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
 			if (Files.isDirectory(realPath)) {
 				directories.add(realPath);
 				watchKeys.add(registerDirectory(realPath, watchService));
