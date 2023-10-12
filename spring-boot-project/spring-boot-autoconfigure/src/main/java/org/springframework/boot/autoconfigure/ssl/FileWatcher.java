@@ -29,7 +29,6 @@ import java.nio.file.WatchService;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -115,33 +114,15 @@ class FileWatcher implements AutoCloseable {
 	}
 
 	private void registerWatchables(Registration registration) throws IOException {
-		Set<WatchKey> watchKeys = new HashSet<>();
-		Set<Path> directories = new HashSet<>();
-		Set<Path> files = new HashSet<>();
 		for (Path path : registration.paths()) {
-			if (Files.isDirectory(path)) {
-				directories.add(path);
-				watchKeys.add(registerDirectory(path));
-			}
-			else if (Files.isRegularFile(path)) {
-				files.add(path);
-				watchKeys.add(registerFile(path));
-			}
-			else {
+			if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
 				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
 			}
+			Path directory = Files.isDirectory(path) ? path : path.getParent();
+			WatchKey watchKey = register(directory);
+			this.registrations.computeIfAbsent(watchKey, (key) -> new CopyOnWriteArrayList<>()).add(registration);
 		}
-		for (WatchKey watchKey : watchKeys) {
-			this.registrations.computeIfAbsent(watchKey, (ignore) -> new CopyOnWriteArrayList<>()).add(registration);
-		}
-	}
 
-	private WatchKey registerFile(Path file) throws IOException {
-		return register(file.getParent());
-	}
-
-	private WatchKey registerDirectory(Path directory) throws IOException {
-		return register(directory);
 	}
 
 	private WatchKey register(Path directory) throws IOException {
