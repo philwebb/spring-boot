@@ -164,8 +164,7 @@ class FileWatcher implements AutoCloseable {
 		}
 	}
 
-	private void accumulateChanges(WatchKey key, Map<Registration, List<Change>> accumulatedChanges)
-			throws IOException {
+	private void accumulateChanges(WatchKey key, Map<Registration, List<Change>> accumulatedChanges) {
 		List<Registration> registrations = this.registrations.get(key);
 		Path directory = (Path) key.watchable();
 		for (WatchEvent<?> event : key.pollEvents()) {
@@ -267,6 +266,9 @@ class FileWatcher implements AutoCloseable {
 			throw new IllegalArgumentException("Unknown kind: " + kind);
 		}
 
+	}
+
+	record Change(Path path, Type type) {
 	}
 
 }
