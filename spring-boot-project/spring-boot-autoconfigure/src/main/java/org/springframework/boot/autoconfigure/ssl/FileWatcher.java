@@ -119,17 +119,6 @@ class FileWatcher implements AutoCloseable {
 	// @formatter:off
 
 //
-//	private static final Log logger = LogFactory.getLog(FileWatcher.class);
-//
-//	private static final Kind<?>[] WATCHED_EVENTS = new Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE,
-//			StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE };
-//
-//	private final Duration quietPeriod;
-//
-//	private final Object lifecycleLock = new Object();
-//
-//	private final Map<WatchKey, List<Registration>> registrations = new ConcurrentHashMap<>();
-//
 //	private volatile WatchService watchService;
 //
 //	private Thread thread;
