@@ -23,15 +23,18 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -129,22 +132,28 @@ class FileWatcher implements AutoCloseable {
 		@Override
 		public void run() {
 			logger.debug("Watch thread started");
+			Set<Runnable> actions = new HashSet<>();
 			while (this.running) {
 				try {
-					// long timeout = this.quietPeriod.toMillis();
-					// WatchKey key = watcher.poll(timeout, TimeUnit.MILLISECONDS);
-					// if (key == null) {
-					// // WatchService returned without any changes
-					// if (!accumulatedChanges.isEmpty()) {
-					// // We have queued changes, that means there were no changes
-					// // since the quiet period
-					// fireCallback(accumulatedChanges);
-					// accumulatedChanges.clear();
-					// }
-					// }
-					// else {
-					// accumulateChanges(key, accumulatedChanges);
-					// }
+					long timeout = FileWatcher.this.quietPeriod.toMillis();
+					WatchKey key = this.watchService.poll(timeout, TimeUnit.MILLISECONDS);
+					if (key == null) {
+						actions.forEach(Runnable::run); // FIXME what if they throw?
+						actions.clear();
+					}
+					else {
+						List<Registration> registrations = this.registrations.get(key);
+						Path directory = (Path) key.watchable();
+						for (WatchEvent<?> event : key.pollEvents()) {
+							Path file = directory.resolve((Path) event.context());
+							for (Registration registration : registrations) {
+								if (registration.affectsFile(file)) {
+									actions.add(registration.action());
+								}
+							}
+						}
+						key.reset();
+					}
 				}
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
