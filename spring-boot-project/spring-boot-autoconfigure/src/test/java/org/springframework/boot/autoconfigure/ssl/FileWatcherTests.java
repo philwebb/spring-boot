@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -31,7 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
@@ -105,11 +104,10 @@ class FileWatcherTests {
 	}
 
 	@Test
-	void shouldFailIfDirectoryOrFileDoesntExist(@TempDir Path tempDir) {
+	void shouldFailIfDirectoryOrFileDoesNotExist(@TempDir Path tempDir) {
 		Path directory = tempDir.resolve("dir1");
-		assertThatThrownBy(() -> this.fileWatcher.watch(Set.of(directory), new WaitingCallback()))
-			.isInstanceOf(UncheckedIOException.class)
-			.hasMessageMatching("Failed to register paths for watching: \\[.+/dir1]");
+		assertThatIOException().isThrownBy(() -> this.fileWatcher.watch(Set.of(directory), new WaitingCallback()))
+			.withMessageMatching("Failed to register paths for watching: \\[.+/dir1]");
 	}
 
 	@Test
