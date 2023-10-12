@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.time.Duration;
@@ -46,13 +45,11 @@ import org.springframework.util.Assert;
  * Watches files and directories and triggers a callback on change.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class FileWatcher implements AutoCloseable {
 
 	private static final Log logger = LogFactory.getLog(FileWatcher.class);
-
-	private static final Kind<?>[] WATCHED_EVENTS = new Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE,
-			StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE };
 
 	private final Duration quietPeriod;
 
@@ -60,11 +57,21 @@ class FileWatcher implements AutoCloseable {
 
 	private volatile WatcherThread thread;
 
+	/**
+	 * Create a new {@link FileWatcher} instance.
+	 * @param quietPeriod the duration that no file changes should occur before triggering
+	 * actions
+	 */
 	FileWatcher(Duration quietPeriod) {
 		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
 		this.quietPeriod = quietPeriod;
 	}
 
+	/**
+	 * Watch the given files or directories for changes.
+	 * @param paths the files or directories to watch
+	 * @param action the action to take when changes are detected
+	 */
 	void watch(Set<Path> paths, Runnable action) {
 		Assert.notNull(paths, "Paths must not be null");
 		Assert.notNull(action, "Action must not be null");
@@ -102,6 +109,9 @@ class FileWatcher implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * The watcher thread used to check for changes.
+	 */
 	private class WatcherThread extends Thread implements Closeable {
 
 		private final WatchService watchService = FileSystems.getDefault().newWatchService();
@@ -111,7 +121,7 @@ class FileWatcher implements AutoCloseable {
 		private volatile boolean running = true;
 
 		WatcherThread() throws IOException {
-			FileWatcher.this.thread.setName(FileWatcher.class.getName());
+			FileWatcher.this.thread.setName("ssl-bundle-watcher");
 			setDaemon(true);
 			setUncaughtExceptionHandler(this::onThreadException);
 		}
@@ -120,7 +130,7 @@ class FileWatcher implements AutoCloseable {
 			logger.error("Uncaught exception in file watcher thread", throwable);
 		}
 
-		private void register(Registration registration) throws IOException {
+		void register(Registration registration) throws IOException {
 			for (Path path : registration.paths()) {
 				if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
 					throw new IOException("'%s' is neither a file nor a directory".formatted(path));
@@ -133,7 +143,8 @@ class FileWatcher implements AutoCloseable {
 
 		private WatchKey register(Path directory) throws IOException {
 			logger.debug(LogMessage.format("Registering '%s'", directory));
-			return directory.register(this.watchService, WATCHED_EVENTS);
+			return directory.register(this.watchService, StandardWatchEventKinds.ENTRY_CREATE,
+					StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
 		}
 
 		@Override
@@ -145,7 +156,7 @@ class FileWatcher implements AutoCloseable {
 					long timeout = FileWatcher.this.quietPeriod.toMillis();
 					WatchKey key = this.watchService.poll(timeout, TimeUnit.MILLISECONDS);
 					if (key == null) {
-						actions.forEach(Runnable::run); // FIXME what if they throw?
+						actions.forEach((action) -> runSafely(action));
 						actions.clear();
 					}
 					else {
@@ -158,6 +169,15 @@ class FileWatcher implements AutoCloseable {
 				}
 			}
 			logger.debug("Watch thread stopped");
+		}
+
+		private void runSafely(Runnable action) {
+			try {
+				action.run();
+			}
+			catch (Throwable ex) {
+				logger.error("Unexpected SSL reload error", ex);
+			}
 		}
 
 		private void accumulate(WatchKey key, Set<Runnable> actions) {
@@ -176,10 +196,14 @@ class FileWatcher implements AutoCloseable {
 		@Override
 		public void close() throws IOException {
 			this.running = false;
+			this.watchService.close();
 		}
 
 	}
 
+	/**
+	 * An individual watch registration.
+	 */
 	private record Registration(Set<Path> paths, Runnable action) {
 
 		boolean manages(Path file) {
