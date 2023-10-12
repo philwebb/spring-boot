@@ -56,8 +56,6 @@ class FileWatcher implements AutoCloseable {
 	private static final Kind<?>[] WATCHED_EVENTS = new Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE,
 			StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE };
 
-	private final String threadName;
-
 	private final Duration quietPeriod;
 
 	private final Object lifecycleLock = new Object();
@@ -70,10 +68,8 @@ class FileWatcher implements AutoCloseable {
 
 	private boolean running = false;
 
-	FileWatcher(String threadName, Duration quietPeriod) {
-		Assert.notNull(threadName, "ThreadName must not be null");
+	FileWatcher(Duration quietPeriod) {
 		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
-		this.threadName = threadName;
 		this.quietPeriod = quietPeriod;
 	}
 
@@ -99,7 +95,7 @@ class FileWatcher implements AutoCloseable {
 			}
 			CountDownLatch started = new CountDownLatch(1);
 			this.thread = new Thread(() -> this.threadMain(started));
-			this.thread.setName(this.threadName);
+			this.thread.setName("ssl-bundle-watcher");
 			this.thread.setDaemon(true);
 			this.thread.setUncaughtExceptionHandler(this::onThreadException);
 			this.running = true;

@@ -44,7 +44,7 @@ class FileWatcherTests {
 
 	@BeforeEach
 	void setUp() {
-		this.fileWatcher = new FileWatcher("filewatcher-test-", Duration.ofMillis(10));
+		this.fileWatcher = new FileWatcher(Duration.ofMillis(10));
 	}
 
 	@AfterEach
