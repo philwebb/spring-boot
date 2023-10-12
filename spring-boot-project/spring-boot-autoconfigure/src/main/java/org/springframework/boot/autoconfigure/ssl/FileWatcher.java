@@ -200,11 +200,11 @@ class FileWatcher implements AutoCloseable {
 			Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
 			if (Files.isDirectory(realPath)) {
 				directories.add(realPath);
-				watchKeys.add(registerDirectory(realPath, this.watchService));
+				watchKeys.add(registerDirectory(realPath));
 			}
 			else if (Files.isRegularFile(realPath)) {
 				files.add(realPath);
-				watchKeys.add(registerFile(realPath, this.watchService));
+				watchKeys.add(registerFile(realPath));
 			}
 			else {
 				throw new IOException("'%s' is neither a file nor a directory".formatted(realPath));
@@ -216,17 +216,17 @@ class FileWatcher implements AutoCloseable {
 		}
 	}
 
-	private WatchKey registerFile(Path file, WatchService watchService) throws IOException {
-		return register(file.getParent(), watchService);
+	private WatchKey registerFile(Path file) throws IOException {
+		return register(file.getParent());
 	}
 
-	private WatchKey registerDirectory(Path directory, WatchService watchService) throws IOException {
-		return register(directory, watchService);
+	private WatchKey registerDirectory(Path directory) throws IOException {
+		return register(directory);
 	}
 
-	private WatchKey register(Path directory, WatchService watchService) throws IOException {
+	private WatchKey register(Path directory) throws IOException {
 		logger.debug(LogMessage.format("Registering '%s'", directory));
-		return directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+		return directory.register(this.watchService, StandardWatchEventKinds.ENTRY_CREATE,
 				StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
 	}
 
