@@ -111,6 +111,13 @@ class FileWatcher implements AutoCloseable {
 		private volatile boolean running = true;
 
 		WatcherThread() throws IOException {
+			FileWatcher.this.thread.setName(FileWatcher.class.getName());
+			setDaemon(true);
+			setUncaughtExceptionHandler(this::onThreadException);
+		}
+
+		private void onThreadException(Thread thread, Throwable throwable) {
+			logger.error("Uncaught exception in file watcher thread", throwable);
 		}
 
 		private void register(Registration registration) throws IOException {
@@ -183,62 +190,5 @@ class FileWatcher implements AutoCloseable {
 			return this.paths.stream().filter(Files::isDirectory).anyMatch((path) -> file.startsWith(path));
 		}
 	}
-
-	// @formatter:off
-
-//
-//	private volatile WatchService watchService;
-//
-//	private Thread thread;
-//
-//	private boolean running = false;
-//
-//	FileWatcher(Duration quietPeriod) {
-//		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
-//		this.quietPeriod = quietPeriod;
-//	}
-//
-//	void watch(Set<Path> paths, Runnable callback) {
-//		Assert.notNull(paths, "Paths must not be null");
-//		Assert.notNull(callback, "Callback must not be null");
-//		if (paths.isEmpty()) {
-//			return;
-//		}
-//		startIfNecessary();
-//		try {
-//			registerWatchables(new Registration(paths, callback));
-//		}
-//		catch (IOException ex) {
-//			throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
-//		}
-//	}
-//
-//	private void startIfNecessary() {
-//		synchronized (this.lifecycleLock) {
-//			if (this.running) {
-//				return;
-//			}
-//			CountDownLatch started = new CountDownLatch(1);
-//			this.thread = new Thread(() -> this.threadMain(started));
-//			this.thread.setName("ssl-bundle-watcher");
-//			this.thread.setDaemon(true);
-//			this.thread.setUncaughtExceptionHandler(this::onThreadException);
-//			this.running = true;
-//			this.thread.start();
-//			try {
-//				started.await();
-//			}
-//			catch (InterruptedException ex) {
-//				Thread.currentThread().interrupt();
-//			}
-//		}
-//	}
-//
-//	private void onThreadException(Thread thread, Throwable throwable) {
-//		logger.error("Uncaught exception in file watcher thread", throwable);
-//	}
-//
-
-	// @formatter:on
 
 }
