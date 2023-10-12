@@ -86,7 +86,7 @@ class FileWatcher implements AutoCloseable {
 		}
 		startIfNecessary();
 		try {
-			registerWatchables(paths, callback);
+			registerWatchables(new Registration(paths, callback));
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
@@ -112,10 +112,6 @@ class FileWatcher implements AutoCloseable {
 				Thread.currentThread().interrupt();
 			}
 		}
-	}
-
-	private void registerWatchables(Set<Path> paths, Runnable callback) throws IOException {
-		registerWatchables(new Registration(paths, callback));
 	}
 
 	private void registerWatchables(Registration registration) throws IOException {
