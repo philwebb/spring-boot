@@ -84,7 +84,7 @@ class FileWatcher implements AutoCloseable {
 		}
 		startIfNecessary();
 		try {
-			registerWatchables(callback, paths);
+			registerWatchables(paths, callback);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
@@ -192,7 +192,7 @@ class FileWatcher implements AutoCloseable {
 		logger.error("Uncaught exception in file watcher thread", throwable);
 	}
 
-	private void registerWatchables(Runnable callback, Set<Path> paths) throws IOException {
+	private void registerWatchables(Set<Path> paths, Runnable callback) throws IOException {
 		Set<WatchKey> watchKeys = new HashSet<>();
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
@@ -210,7 +210,7 @@ class FileWatcher implements AutoCloseable {
 				throw new IOException("'%s' is neither a file nor a directory".formatted(realPath));
 			}
 		}
-		Registration registration = new Registration(callback, directories, files);
+		Registration registration = new Registration(directories, files, callback);
 		for (WatchKey watchKey : watchKeys) {
 			this.registrations.computeIfAbsent(watchKey, (ignore) -> new CopyOnWriteArrayList<>()).add(registration);
 		}
@@ -235,7 +235,7 @@ class FileWatcher implements AutoCloseable {
 		stop();
 	}
 
-	private record Registration(Runnable callback, Set<Path> directories, Set<Path> files) {
+	private record Registration(Set<Path> directories, Set<Path> files, Runnable callback) {
 
 		boolean affectsFile(Path file) {
 			return this.files.contains(file) || isInDirectories(file);
