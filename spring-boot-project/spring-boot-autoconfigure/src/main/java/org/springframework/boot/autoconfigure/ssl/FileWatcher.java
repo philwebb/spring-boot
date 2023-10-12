@@ -115,11 +115,14 @@ class FileWatcher implements AutoCloseable {
 	}
 
 	private void registerWatchables(Set<Path> paths, Runnable callback) throws IOException {
-		Registration registration = new Registration(paths, callback);
+		registerWatchables(new Registration(paths, callback));
+	}
+
+	private void registerWatchables(Registration registration) throws IOException {
 		Set<WatchKey> watchKeys = new HashSet<>();
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
-		for (Path path : paths) {
+		for (Path path : registration.paths()) {
 			if (Files.isDirectory(path)) {
 				directories.add(path);
 				watchKeys.add(registerDirectory(path));
