@@ -16,13 +16,16 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -66,11 +69,11 @@ class FileWatcher implements AutoCloseable {
 			return;
 		}
 		synchronized (this.lock) {
-			if (this.thread == null) {
-				this.thread = new WatcherThread();
-				this.thread.start();
-			}
 			try {
+				if (this.thread == null) {
+					this.thread = new WatcherThread();
+					this.thread.start();
+				}
 				this.thread.register(new Registration(paths, action));
 			}
 			catch (IOException ex) {
@@ -83,6 +86,7 @@ class FileWatcher implements AutoCloseable {
 	public void close() throws Exception {
 		synchronized (this.lock) {
 			if (this.thread != null) {
+				this.thread.close();
 				this.thread.interrupt();
 				try {
 					this.thread.join();
@@ -95,9 +99,16 @@ class FileWatcher implements AutoCloseable {
 		}
 	}
 
-	private class WatcherThread extends Thread {
+	private class WatcherThread extends Thread implements Closeable {
+
+		private final WatchService watchService = FileSystems.getDefault().newWatchService();
 
 		private final Map<WatchKey, List<Registration>> registrations = new ConcurrentHashMap<>();
+
+		private volatile boolean running = true;
+
+		WatcherThread() throws IOException {
+		}
 
 		private void register(Registration registration) throws IOException {
 			for (Path path : registration.paths()) {
@@ -113,6 +124,38 @@ class FileWatcher implements AutoCloseable {
 		private WatchKey register(Path directory) throws IOException {
 			logger.debug(LogMessage.format("Registering '%s'", directory));
 			return directory.register(this.watchService, WATCHED_EVENTS);
+		}
+
+		@Override
+		public void run() {
+			logger.debug("Watch thread started");
+			while (this.running) {
+				try {
+					// long timeout = this.quietPeriod.toMillis();
+					// WatchKey key = watcher.poll(timeout, TimeUnit.MILLISECONDS);
+					// if (key == null) {
+					// // WatchService returned without any changes
+					// if (!accumulatedChanges.isEmpty()) {
+					// // We have queued changes, that means there were no changes
+					// // since the quiet period
+					// fireCallback(accumulatedChanges);
+					// accumulatedChanges.clear();
+					// }
+					// }
+					// else {
+					// accumulateChanges(key, accumulatedChanges);
+					// }
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+			}
+			logger.debug("Watch thread stopped");
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.running = false;
 		}
 
 	}
