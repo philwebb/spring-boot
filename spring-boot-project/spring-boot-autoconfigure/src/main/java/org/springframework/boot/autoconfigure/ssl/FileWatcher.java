@@ -50,8 +50,6 @@ class FileWatcher implements AutoCloseable {
 
 	private final Duration quietPeriod;
 
-	private final Map<WatchKey, List<Registration>> registrations = new ConcurrentHashMap<>();
-
 	private final Object lock = new Object();
 
 	private volatile WatcherThread thread;
@@ -67,36 +65,16 @@ class FileWatcher implements AutoCloseable {
 		if (paths.isEmpty()) {
 			return;
 		}
-		startIfNecessary();
-		try {
-			register(new Registration(paths, action));
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
-		}
-	}
-
-	private void register(Registration registration) throws IOException {
-		for (Path path : registration.paths()) {
-			if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
-				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
-			}
-			Path directory = Files.isDirectory(path) ? path : path.getParent();
-			WatchKey watchKey = register(directory);
-			this.registrations.computeIfAbsent(watchKey, (key) -> new CopyOnWriteArrayList<>()).add(registration);
-		}
-	}
-
-	private WatchKey register(Path directory) throws IOException {
-		logger.debug(LogMessage.format("Registering '%s'", directory));
-		return directory.register(this.watchService, WATCHED_EVENTS);
-	}
-
-	private void startIfNecessary() {
 		synchronized (this.lock) {
 			if (this.thread == null) {
 				this.thread = new WatcherThread();
 				this.thread.start();
+			}
+			try {
+				this.thread.register(new Registration(paths, action));
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
 			}
 		}
 	}
@@ -117,6 +95,28 @@ class FileWatcher implements AutoCloseable {
 		}
 	}
 
+	private class WatcherThread extends Thread {
+
+		private final Map<WatchKey, List<Registration>> registrations = new ConcurrentHashMap<>();
+
+		private void register(Registration registration) throws IOException {
+			for (Path path : registration.paths()) {
+				if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
+					throw new IOException("'%s' is neither a file nor a directory".formatted(path));
+				}
+				Path directory = Files.isDirectory(path) ? path : path.getParent();
+				WatchKey watchKey = register(directory);
+				this.registrations.computeIfAbsent(watchKey, (key) -> new CopyOnWriteArrayList<>()).add(registration);
+			}
+		}
+
+		private WatchKey register(Path directory) throws IOException {
+			logger.debug(LogMessage.format("Registering '%s'", directory));
+			return directory.register(this.watchService, WATCHED_EVENTS);
+		}
+
+	}
+
 	private record Registration(Set<Path> paths, Runnable action) {
 
 		boolean affectsFile(Path file) {
@@ -131,10 +131,6 @@ class FileWatcher implements AutoCloseable {
 			}
 			return false;
 		}
-	}
-
-	private class WatcherThread extends Thread {
-
 	}
 
 	// @formatter:off
