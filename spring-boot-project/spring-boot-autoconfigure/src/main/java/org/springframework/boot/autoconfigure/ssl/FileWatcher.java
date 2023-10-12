@@ -70,15 +70,15 @@ class FileWatcher implements AutoCloseable {
 	private boolean running = false;
 
 	FileWatcher(String threadName, Duration quietPeriod) {
-		Assert.notNull(threadName, "threadName must not be null");
-		Assert.notNull(quietPeriod, "quietPeriod must not be null");
+		Assert.notNull(threadName, "ThreadName must not be null");
+		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
 		this.threadName = threadName;
 		this.quietPeriod = quietPeriod;
 	}
 
 	void watch(Set<Path> paths, Runnable callback) {
-		Assert.notNull(callback, "callback must not be null");
-		Assert.notNull(paths, "paths must not be null");
+		Assert.notNull(paths, "Paths must not be null");
+		Assert.notNull(callback, "Callback must not be null");
 		if (paths.isEmpty()) {
 			return;
 		}
