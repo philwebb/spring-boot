@@ -22,12 +22,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchKey;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -43,6 +49,8 @@ class FileWatcher implements AutoCloseable {
 			StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE };
 
 	private final Duration quietPeriod;
+
+	private final Map<WatchKey, List<Registration>> registrations = new ConcurrentHashMap<>();
 
 	private final Object lock = new Object();
 
@@ -69,6 +77,19 @@ class FileWatcher implements AutoCloseable {
 	}
 
 	private void register(Registration registration) throws IOException {
+		for (Path path : registration.paths()) {
+			if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
+				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
+			}
+			Path directory = Files.isDirectory(path) ? path : path.getParent();
+			WatchKey watchKey = register(directory);
+			this.registrations.computeIfAbsent(watchKey, (key) -> new CopyOnWriteArrayList<>()).add(registration);
+		}
+	}
+
+	private WatchKey register(Path directory) throws IOException {
+		logger.debug(LogMessage.format("Registering '%s'", directory));
+		return directory.register(this.watchService, WATCHED_EVENTS);
 	}
 
 	private void startIfNecessary() {
@@ -166,17 +187,6 @@ class FileWatcher implements AutoCloseable {
 //		}
 //	}
 //
-//	private void registerWatchables(Registration registration) throws IOException {
-//		for (Path path : registration.paths()) {
-//			if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
-//				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
-//			}
-//			Path directory = Files.isDirectory(path) ? path : path.getParent();
-//			WatchKey watchKey = register(directory);
-//			this.registrations.computeIfAbsent(watchKey, (key) -> new CopyOnWriteArrayList<>()).add(registration);
-//		}
-//
-//	}
 //
 //	private WatchKey register(Path directory) throws IOException {
 //		logger.debug(LogMessage.format("Registering '%s'", directory));
