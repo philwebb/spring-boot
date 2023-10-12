@@ -172,7 +172,7 @@ class FileWatcher implements AutoCloseable {
 			for (Registration registration : registrations) {
 				if (registration.affectsFile(file)) {
 					accumulatedChanges.computeIfAbsent(registration, (ignore) -> new ArrayList<>())
-						.add(new Change(file, Type.from(event.kind())));
+						.add(new Change(file, event.kind()));
 				}
 			}
 		}
@@ -249,26 +249,7 @@ class FileWatcher implements AutoCloseable {
 		}
 	}
 
-	enum Type {
-
-		CREATE, MODIFY, DELETE;
-
-		private static Type from(Kind<?> kind) {
-			if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-				return CREATE;
-			}
-			if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-				return DELETE;
-			}
-			if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-				return MODIFY;
-			}
-			throw new IllegalArgumentException("Unknown kind: " + kind);
-		}
-
-	}
-
-	record Change(Path path, Type type) {
+	record Change(Path path, Kind<?> kind) {
 	}
 
 }
