@@ -55,6 +55,9 @@ class FileWatcher implements AutoCloseable {
 
 	private static final Log logger = LogFactory.getLog(FileWatcher.class);
 
+	private static final Kind<?>[] WATCHED_EVENTS = new Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE,
+			StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE };
+
 	private final String threadName;
 
 	private final Duration quietPeriod;
@@ -226,8 +229,7 @@ class FileWatcher implements AutoCloseable {
 
 	private WatchKey register(Path directory) throws IOException {
 		logger.debug(LogMessage.format("Registering '%s'", directory));
-		return directory.register(this.watchService, StandardWatchEventKinds.ENTRY_CREATE,
-				StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+		return directory.register(this.watchService, WATCHED_EVENTS);
 	}
 
 	@Override
