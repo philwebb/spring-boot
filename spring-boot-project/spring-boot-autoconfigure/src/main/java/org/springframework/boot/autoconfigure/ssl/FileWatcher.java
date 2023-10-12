@@ -84,7 +84,7 @@ class FileWatcher implements AutoCloseable {
 		}
 		startIfNecessary();
 		try {
-			registerWatchables(callback, paths, this.watchService);
+			registerWatchables(callback, paths);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
@@ -139,7 +139,8 @@ class FileWatcher implements AutoCloseable {
 			Map<Registration, List<Change>> accumulatedChanges = new HashMap<>();
 			while (this.running) {
 				try {
-					WatchKey key = watcher.poll(this.quietPeriod.toMillis(), TimeUnit.MILLISECONDS);
+					long timeout = this.quietPeriod.toMillis();
+					WatchKey key = watcher.poll(timeout, TimeUnit.MILLISECONDS);
 					if (key == null) {
 						// WatchService returned without any changes
 						if (!accumulatedChanges.isEmpty()) {
@@ -191,7 +192,7 @@ class FileWatcher implements AutoCloseable {
 		logger.error("Uncaught exception in file watcher thread", throwable);
 	}
 
-	private void registerWatchables(Runnable callback, Set<Path> paths, WatchService watchService) throws IOException {
+	private void registerWatchables(Runnable callback, Set<Path> paths) throws IOException {
 		Set<WatchKey> watchKeys = new HashSet<>();
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
@@ -199,11 +200,11 @@ class FileWatcher implements AutoCloseable {
 			Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
 			if (Files.isDirectory(realPath)) {
 				directories.add(realPath);
-				watchKeys.add(registerDirectory(realPath, watchService));
+				watchKeys.add(registerDirectory(realPath, this.watchService));
 			}
 			else if (Files.isRegularFile(realPath)) {
 				files.add(realPath);
-				watchKeys.add(registerFile(realPath, watchService));
+				watchKeys.add(registerFile(realPath, this.watchService));
 			}
 			else {
 				throw new IOException("'%s' is neither a file nor a directory".formatted(realPath));
@@ -235,6 +236,7 @@ class FileWatcher implements AutoCloseable {
 	}
 
 	private record Registration(Runnable callback, Set<Path> directories, Set<Path> files) {
+
 		boolean affectsFile(Path file) {
 			return this.files.contains(file) || isInDirectories(file);
 		}
