@@ -142,16 +142,7 @@ class FileWatcher implements AutoCloseable {
 						actions.clear();
 					}
 					else {
-						List<Registration> registrations = this.registrations.get(key);
-						Path directory = (Path) key.watchable();
-						for (WatchEvent<?> event : key.pollEvents()) {
-							Path file = directory.resolve((Path) event.context());
-							for (Registration registration : registrations) {
-								if (registration.affectsFile(file)) {
-									actions.add(registration.action());
-								}
-							}
-						}
+						accumulate(key, actions);
 						key.reset();
 					}
 				}
@@ -160,6 +151,19 @@ class FileWatcher implements AutoCloseable {
 				}
 			}
 			logger.debug("Watch thread stopped");
+		}
+
+		private void accumulate(WatchKey key, Set<Runnable> actions) {
+			List<Registration> registrations = this.registrations.get(key);
+			Path directory = (Path) key.watchable();
+			for (WatchEvent<?> event : key.pollEvents()) {
+				Path file = directory.resolve((Path) event.context());
+				for (Registration registration : registrations) {
+					if (registration.affectsFile(file)) {
+						actions.add(registration.action());
+					}
+				}
+			}
 		}
 
 		@Override
