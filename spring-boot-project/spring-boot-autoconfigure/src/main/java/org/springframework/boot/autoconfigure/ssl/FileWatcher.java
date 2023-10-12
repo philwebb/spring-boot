@@ -159,7 +159,7 @@ class FileWatcher implements AutoCloseable {
 			for (WatchEvent<?> event : key.pollEvents()) {
 				Path file = directory.resolve((Path) event.context());
 				for (Registration registration : registrations) {
-					if (registration.affectsFile(file)) {
+					if (registration.manages(file)) {
 						actions.add(registration.action());
 					}
 				}
@@ -175,17 +175,12 @@ class FileWatcher implements AutoCloseable {
 
 	private record Registration(Set<Path> paths, Runnable action) {
 
-		boolean affectsFile(Path file) {
+		boolean manages(Path file) {
 			return this.paths.contains(file) || isInDirectories(file);
 		}
 
 		private boolean isInDirectories(Path file) {
-			for (Path path : this.paths) {
-				if (Files.isDirectory(path) && file.startsWith(path)) {
-					return true;
-				}
-			}
-			return false;
+			return this.paths.stream().filter(Files::isDirectory).anyMatch((path) -> file.startsWith(path));
 		}
 	}
 
