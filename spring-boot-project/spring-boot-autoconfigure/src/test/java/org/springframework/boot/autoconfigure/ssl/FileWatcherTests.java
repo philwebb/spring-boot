@@ -154,7 +154,7 @@ class FileWatcherTests {
 		}
 
 		void waitForChanges(boolean fail) throws InterruptedException {
-			if (!this.latch.await(10, TimeUnit.SECONDS)) {
+			if (!this.latch.await(5, TimeUnit.SECONDS)) {
 				if (fail) {
 					fail("Timeout while waiting for changes");
 				}
