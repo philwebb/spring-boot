@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class FileWatcher implements AutoCloseable {
+class FileWatcher implements Closeable {
 
 	private static final Log logger = LogFactory.getLog(FileWatcher.class);
 
@@ -93,7 +93,7 @@ class FileWatcher implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		synchronized (this.lock) {
 			if (this.thread != null) {
 				this.thread.close();
@@ -121,7 +121,7 @@ class FileWatcher implements AutoCloseable {
 		private volatile boolean running = true;
 
 		WatcherThread() throws IOException {
-			FileWatcher.this.thread.setName("ssl-bundle-watcher");
+			setName("ssl-bundle-watcher");
 			setDaemon(true);
 			setUncaughtExceptionHandler(this::onThreadException);
 		}

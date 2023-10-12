@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -48,7 +49,7 @@ class FileWatcherTests {
 	}
 
 	@AfterEach
-	void tearDown() {
+	void tearDown() throws IOException {
 		this.fileWatcher.close();
 	}
 
