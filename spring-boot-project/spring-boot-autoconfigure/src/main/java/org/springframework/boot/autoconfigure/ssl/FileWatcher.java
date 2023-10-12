@@ -115,6 +115,7 @@ class FileWatcher implements AutoCloseable {
 	}
 
 	private void registerWatchables(Set<Path> paths, Runnable callback) throws IOException {
+		Registration registration = new Registration(paths, callback);
 		Set<WatchKey> watchKeys = new HashSet<>();
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
@@ -131,7 +132,6 @@ class FileWatcher implements AutoCloseable {
 				throw new IOException("'%s' is neither a file nor a directory".formatted(path));
 			}
 		}
-		Registration registration = new Registration(paths, callback);
 		for (WatchKey watchKey : watchKeys) {
 			this.registrations.computeIfAbsent(watchKey, (ignore) -> new CopyOnWriteArrayList<>()).add(registration);
 		}
