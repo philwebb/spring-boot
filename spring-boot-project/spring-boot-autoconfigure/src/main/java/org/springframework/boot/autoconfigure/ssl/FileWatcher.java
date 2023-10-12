@@ -76,7 +76,7 @@ class FileWatcher implements AutoCloseable {
 		this.quietPeriod = quietPeriod;
 	}
 
-	void watch(Set<Path> paths, Callback callback) {
+	void watch(Set<Path> paths, Runnable callback) {
 		Assert.notNull(callback, "callback must not be null");
 		Assert.notNull(paths, "paths must not be null");
 		if (paths.isEmpty()) {
@@ -183,7 +183,7 @@ class FileWatcher implements AutoCloseable {
 	private void fireCallback(Map<Registration, List<Change>> accumulatedChanges) {
 		for (Entry<Registration, List<Change>> entry : accumulatedChanges.entrySet()) {
 			if (!entry.getValue().isEmpty()) {
-				entry.getKey().callback().onChange();
+				entry.getKey().callback().run();
 			}
 		}
 	}
@@ -192,7 +192,7 @@ class FileWatcher implements AutoCloseable {
 		logger.error("Uncaught exception in file watcher thread", throwable);
 	}
 
-	private void registerWatchables(Callback callback, Set<Path> paths, WatchService watchService) throws IOException {
+	private void registerWatchables(Runnable callback, Set<Path> paths, WatchService watchService) throws IOException {
 		Set<WatchKey> watchKeys = new HashSet<>();
 		Set<Path> directories = new HashSet<>();
 		Set<Path> files = new HashSet<>();
@@ -235,7 +235,7 @@ class FileWatcher implements AutoCloseable {
 		stop();
 	}
 
-	private record Registration(Callback callback, Set<Path> directories, Set<Path> files) {
+	private record Registration(Runnable callback, Set<Path> directories, Set<Path> files) {
 		boolean affectsFile(Path file) {
 			return this.files.contains(file) || isInDirectories(file);
 		}
@@ -266,16 +266,6 @@ class FileWatcher implements AutoCloseable {
 			}
 			throw new IllegalArgumentException("Unknown kind: " + kind);
 		}
-
-	}
-
-	record Change(Path path, Type type) {
-	}
-
-	@FunctionalInterface
-	interface Callback {
-
-		void onChange();
 
 	}
 

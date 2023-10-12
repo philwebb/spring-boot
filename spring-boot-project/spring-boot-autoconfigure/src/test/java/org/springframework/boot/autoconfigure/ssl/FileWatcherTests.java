@@ -29,8 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.autoconfigure.ssl.FileWatcher.Callback;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -133,14 +131,14 @@ class FileWatcherTests {
 		}).doesNotThrowAnyException();
 	}
 
-	private static class WaitingCallback implements Callback {
+	private static class WaitingCallback implements Runnable {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
 		boolean changed = false;
 
 		@Override
-		public void onChange() {
+		public void run() {
 			this.latch.countDown();
 			this.changed = true;
 		}
