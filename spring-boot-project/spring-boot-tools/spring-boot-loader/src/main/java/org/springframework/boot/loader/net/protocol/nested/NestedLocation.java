@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.net.protocol.nested;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,6 +73,19 @@ public record NestedLocation(File file, String nestedEntryName) {
 			throw new IllegalArgumentException("'url' must not be null and must use 'nested' protocol");
 		}
 		return parse(UrlDecoder.decode(url.getPath()));
+	}
+
+	/**
+	 * Create a new {@link NestedLocation} from the given URI.
+	 * @param uri the nested URI
+	 * @return a new {@link NestedLocation} instance
+	 * @throws IllegalArgumentException if the URI is not valid
+	 */
+	public static NestedLocation fromUri(URI uri) {
+		if (uri == null || !"nested".equalsIgnoreCase(uri.getScheme())) {
+			throw new IllegalArgumentException("'url' must not be null and must use 'nested' scheme");
+		}
+		return parse(UrlDecoder.decode(uri.getPath()));
 	}
 
 	static NestedLocation parse(String path) {

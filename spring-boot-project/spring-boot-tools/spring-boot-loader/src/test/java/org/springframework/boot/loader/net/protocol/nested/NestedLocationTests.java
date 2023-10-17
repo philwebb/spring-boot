@@ -63,7 +63,7 @@ class NestedLocationTests {
 
 	@Test
 	void fromUrlWhenUrlIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> NestedLocation.fromUrl(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> NestedLocation.fromUri(null))
 			.withMessageContaining("'url' must not be null");
 	}
 
