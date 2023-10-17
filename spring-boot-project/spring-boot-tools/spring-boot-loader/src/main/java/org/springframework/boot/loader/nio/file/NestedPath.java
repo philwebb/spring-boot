@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.ProviderMismatchException;
 import java.nio.file.WatchEvent.Kind;
@@ -28,8 +29,13 @@ import java.nio.file.WatchEvent.Modifier;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
+import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
+
 /**
- * @author pwebb
+ * {@link Path} implementation for {@link NestedLocation nested} jar files.
+ *
+ * @author Phillip Webb
+ * @see NestedFileSystemProvider
  */
 final class NestedPath implements Path {
 
@@ -42,11 +48,11 @@ final class NestedPath implements Path {
 		this.nestedEntryName = nestedEntryName;
 	}
 
-	Path jarPath() {
-		return this.fileSystem.jarPath();
+	Path getJarPath() {
+		return this.fileSystem.getJarPath();
 	}
 
-	String nestedEntryName() {
+	String getNestedEntryName() {
 		return this.nestedEntryName;
 	}
 
@@ -124,7 +130,7 @@ final class NestedPath implements Path {
 	@Override
 	public URI toUri() {
 		try {
-			String jarFilePath = this.fileSystem.jarPath().toUri().getPath();
+			String jarFilePath = this.fileSystem.getJarPath().toUri().getPath();
 			return new URI("nested:" + jarFilePath + "/!" + this.nestedEntryName);
 		}
 		catch (URISyntaxException ex) {
@@ -151,6 +157,25 @@ final class NestedPath implements Path {
 	public int compareTo(Path other) {
 		NestedPath otherNestedPath = cast(other);
 		return this.nestedEntryName.compareTo(otherNestedPath.nestedEntryName);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "";
+	}
+
+	void assertExists() throws NoSuchFileException {
+		throw new NoSuchFileException(toString());
 	}
 
 	static NestedPath cast(Path path) {

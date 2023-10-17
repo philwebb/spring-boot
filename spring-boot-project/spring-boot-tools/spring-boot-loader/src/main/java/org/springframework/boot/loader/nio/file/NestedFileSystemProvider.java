@@ -43,9 +43,10 @@ import java.util.Set;
 import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
 
 /**
- * {@link FileSystemProvider} to support {@link NestedLocation nested} jar files.
+ * {@link FileSystemProvider} implementation for {@link NestedLocation nested} jar files.
  *
  * @author Phillip Webb
+ * @since 3.2.0
  */
 public class NestedFileSystemProvider extends FileSystemProvider {
 
@@ -93,7 +94,7 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs)
 			throws IOException {
 		NestedPath nestedPath = NestedPath.cast(path);
-		return new NestedSeekableByteChannel(nestedPath.jarPath(), nestedPath.nestedEntryName());
+		return new NestedByteChannel(nestedPath.getJarPath(), nestedPath.getNestedEntryName());
 	}
 
 	@Override
@@ -103,7 +104,7 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 
 	@Override
 	public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
-		throw new NotDirectoryException(NestedPath.cast(dir).toString());
+		throw new ReadOnlyFileSystemException();
 	}
 
 	@Override
@@ -133,32 +134,38 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 
 	@Override
 	public FileStore getFileStore(Path path) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub"); // FIXME
+		NestedPath nestedPath = NestedPath.cast(path);
+		nestedPath.assertExists();
+		return new NestedFileStore(nestedPath.getFileSystem());
 	}
 
 	@Override
 	public void checkAccess(Path path, AccessMode... modes) throws IOException {
-		Path jarPath = NestedPath.cast(path).jarPath();
+		Path jarPath = getJarPath(path);
 		jarPath.getFileSystem().provider().checkAccess(jarPath, modes);
 	}
 
 	@Override
 	public <V extends FileAttributeView> V getFileAttributeView(Path path, Class<V> type, LinkOption... options) {
-		Path jarPath = NestedPath.cast(path).jarPath();
+		Path jarPath = getJarPath(path);
 		return jarPath.getFileSystem().provider().getFileAttributeView(jarPath, type, options);
 	}
 
 	@Override
 	public <A extends BasicFileAttributes> A readAttributes(Path path, Class<A> type, LinkOption... options)
 			throws IOException {
-		Path jarPath = NestedPath.cast(path).jarPath();
+		Path jarPath = getJarPath(path);
 		return jarPath.getFileSystem().provider().readAttributes(jarPath, type, options);
 	}
 
 	@Override
 	public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
-		Path jarPath = NestedPath.cast(path).jarPath();
+		Path jarPath = getJarPath(path);
 		return jarPath.getFileSystem().provider().readAttributes(jarPath, attributes, options);
+	}
+
+	protected Path getJarPath(Path path) {
+		return NestedPath.cast(path).getJarPath();
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 import org.springframework.boot.loader.testsupport.TestJar;
+import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@AssertFileChannelDataBlocksClosed
 class NestedFileSystemZipFileSystemIntegrationTests {
 
 	@TempDir
@@ -44,20 +46,22 @@ class NestedFileSystemZipFileSystemIntegrationTests {
 
 	@Test
 	void zip() throws Exception {
-		File jar = new File(this.temp, "test.jar");
-		TestJar.create(jar);
-		URI uri = JarUrl.create(jar).toURI();
-		FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
-		assertThat(Files.readAllBytes(fs.getPath("1.dat"))).containsExactly(0x1);
+		File file = new File(this.temp, "test.jar");
+		TestJar.create(file);
+		URI uri = JarUrl.create(file).toURI();
+		try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+			assertThat(Files.readAllBytes(fs.getPath("1.dat"))).containsExactly(0x1);
+		}
 	}
 
 	@Test
 	void nestedZip() throws Exception {
-		File jar = new File(this.temp, "test.jar");
-		TestJar.create(jar);
-		URI uri = JarUrl.create(jar, "nested.jar").toURI();
-		FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap());
-		assertThat(Files.readAllBytes(fs.getPath("3.dat"))).containsExactly(0x3);
+		File file = new File(this.temp, "test.jar");
+		TestJar.create(file);
+		URI uri = JarUrl.create(file, "nested.jar").toURI();
+		try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+			assertThat(Files.readAllBytes(fs.getPath("3.dat"))).containsExactly(0x3);
+		}
 	}
 
 }

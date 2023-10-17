@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.nio.file;
 
 import java.io.IOException;
+import java.nio.file.ClosedFileSystemException;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -27,7 +28,11 @@ import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 import java.util.Set;
 
+import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
+
 /**
+ * {@link FileSystem} implementation for {@link NestedLocation nested} jar files.
+ *
  * @author Phillip Webb
  * @see NestedFileSystemProvider
  */
@@ -42,6 +47,9 @@ class NestedFileSystem extends FileSystem {
 	private volatile boolean closed;
 
 	NestedFileSystem(NestedFileSystemProvider provider, Path jarPath) {
+		if (provider == null || jarPath == null) {
+			throw new IllegalArgumentException("Provider and JarPath must not be null");
+		}
 		this.provider = provider;
 		this.jarPath = jarPath;
 	}
@@ -51,7 +59,7 @@ class NestedFileSystem extends FileSystem {
 		return this.provider;
 	}
 
-	Path jarPath() {
+	Path getJarPath() {
 		return this.jarPath;
 	}
 
@@ -75,26 +83,30 @@ class NestedFileSystem extends FileSystem {
 
 	@Override
 	public String getSeparator() {
-		return "";
+		return "/!";
 	}
 
 	@Override
 	public Iterable<Path> getRootDirectories() {
+		assertNotClosed();
 		return Collections.emptySet();
 	}
 
 	@Override
 	public Iterable<FileStore> getFileStores() {
+		assertNotClosed();
 		return Collections.emptySet();
 	}
 
 	@Override
 	public Set<String> supportedFileAttributeViews() {
+		assertNotClosed();
 		return SUPPORTED_FILE_ATTRIBUTE_VIEWS;
 	}
 
 	@Override
 	public Path getPath(String first, String... more) {
+		assertNotClosed();
 		if (first == null || first.isBlank() || more.length != 0) {
 			throw new IllegalArgumentException("Nested paths must contain a single element");
 		}
@@ -114,6 +126,34 @@ class NestedFileSystem extends FileSystem {
 	@Override
 	public WatchService newWatchService() throws IOException {
 		throw new UnsupportedOperationException("Nested paths do not support the WacherService");
+	}
+
+	@Override
+	public String toString() {
+		return this.jarPath.toAbsolutePath().toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return this.jarPath.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		NestedFileSystem other = (NestedFileSystem) obj;
+		return this.jarPath.equals(other.jarPath);
+	}
+
+	private void assertNotClosed() {
+		if (this.closed) {
+			throw new ClosedFileSystemException();
+		}
 	}
 
 }
