@@ -27,10 +27,11 @@ import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.ReadOnlyFileSystemException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
@@ -59,11 +60,11 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	public FileSystem newFileSystem(URI uri, Map<String, ?> env) throws IOException {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		synchronized (this.fileSystems) {
-			if (this.fileSystems.containsKey(location)) {
+			if (this.fileSystems.containsKey(location.path())) {
 				throw new FileSystemAlreadyExistsException();
 			}
 			NestedFileSystem fileSystem = new NestedFileSystem(this, null);
-			this.fileSystems.put(location, fileSystem);
+			this.fileSystems.put(location.path(), fileSystem);
 			return fileSystem;
 		}
 	}
@@ -72,7 +73,7 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	public FileSystem getFileSystem(URI uri) {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		synchronized (this.fileSystems) {
-			NestedFileSystem fileSystem = this.fileSystems.get(location);
+			NestedFileSystem fileSystem = this.fileSystems.get(location.path());
 			if (fileSystem == null) {
 				throw new FileSystemNotFoundException();
 			}
@@ -83,90 +84,86 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	@Override
 	public Path getPath(URI uri) {
 		NestedLocation location = NestedLocation.fromUri(uri);
-		try {
-			NestedFileSystem fileSystem = new NestedFileSystem(this, location.file().toPath().toRealPath());
-			return new NestedPath(fileSystem, location.nestedEntryName());
-		}
-		catch (IOException ex) {
-			throw new FileSystemNotFoundException();
-		}
+		NestedFileSystem fileSystem = this.fileSystems.computeIfAbsent(location.path(),
+				(path) -> new NestedFileSystem(this, path));
+		return fileSystem.getPath(location.nestedEntryName());
 	}
 
 	@Override
 	public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs)
 			throws IOException {
-		NestedPath nestedPath = asNestedPath(path);
+		NestedPath nestedPath = NestedPath.cast(path);
 		return new NestedSeekableByteChannel(nestedPath.jarPath(), nestedPath.nestedEntryName());
 	}
 
 	@Override
 	public DirectoryStream<Path> newDirectoryStream(Path dir, Filter<? super Path> filter) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new NotDirectoryException(NestedPath.cast(dir).toString());
 	}
 
 	@Override
 	public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new NotDirectoryException(NestedPath.cast(dir).toString());
 	}
 
 	@Override
 	public void delete(Path path) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new ReadOnlyFileSystemException();
 	}
 
 	@Override
 	public void copy(Path source, Path target, CopyOption... options) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new ReadOnlyFileSystemException();
 	}
 
 	@Override
 	public void move(Path source, Path target, CopyOption... options) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new ReadOnlyFileSystemException();
 	}
 
 	@Override
 	public boolean isSameFile(Path path, Path path2) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return path.equals(path2);
 	}
 
 	@Override
 	public boolean isHidden(Path path) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return false;
 	}
 
 	@Override
 	public FileStore getFileStore(Path path) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new UnsupportedOperationException("Auto-generated method stub"); // FIXME
 	}
 
 	@Override
 	public void checkAccess(Path path, AccessMode... modes) throws IOException {
-		// FIXME
+		Path jarPath = NestedPath.cast(path).jarPath();
+		jarPath.getFileSystem().provider().checkAccess(jarPath, modes);
 	}
 
 	@Override
 	public <V extends FileAttributeView> V getFileAttributeView(Path path, Class<V> type, LinkOption... options) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		Path jarPath = NestedPath.cast(path).jarPath();
+		return jarPath.getFileSystem().provider().getFileAttributeView(jarPath, type, options);
 	}
 
 	@Override
 	public <A extends BasicFileAttributes> A readAttributes(Path path, Class<A> type, LinkOption... options)
 			throws IOException {
-		return Files.readAttributes(asNestedPath(path).jarPath(), type, options);
-	}
-
-	private NestedPath asNestedPath(Path path) {
-		return NestedPath.cast(path);
+		Path jarPath = NestedPath.cast(path).jarPath();
+		return jarPath.getFileSystem().provider().readAttributes(jarPath, type, options);
 	}
 
 	@Override
 	public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		Path jarPath = NestedPath.cast(path).jarPath();
+		return jarPath.getFileSystem().provider().readAttributes(jarPath, attributes, options);
 	}
 
 	@Override
 	public void setAttribute(Path path, String attribute, Object value, LinkOption... options) throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new ReadOnlyFileSystemException();
 	}
 
 }

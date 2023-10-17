@@ -24,6 +24,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -32,11 +33,13 @@ import java.util.Set;
  */
 class NestedFileSystem extends FileSystem {
 
-	// FIXME this is going to hold a reference to the actual jar file
+	private static final Set<String> SUPPORTED_FILE_ATTRIBUTE_VIEWS = Set.of("basic");
 
 	private final NestedFileSystemProvider provider;
 
 	private final Path jarPath;
+
+	private volatile boolean closed;
 
 	NestedFileSystem(NestedFileSystemProvider provider, Path jarPath) {
 		this.provider = provider;
@@ -54,56 +57,63 @@ class NestedFileSystem extends FileSystem {
 
 	@Override
 	public void close() throws IOException {
+		if (this.closed) {
+			return;
+		}
+		this.closed = true;
 	}
 
 	@Override
 	public boolean isOpen() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return !this.closed;
 	}
 
 	@Override
 	public boolean isReadOnly() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return true;
 	}
 
 	@Override
 	public String getSeparator() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return "";
 	}
 
 	@Override
 	public Iterable<Path> getRootDirectories() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return Collections.emptySet();
 	}
 
 	@Override
 	public Iterable<FileStore> getFileStores() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return Collections.emptySet();
 	}
 
 	@Override
 	public Set<String> supportedFileAttributeViews() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return SUPPORTED_FILE_ATTRIBUTE_VIEWS;
 	}
 
 	@Override
 	public Path getPath(String first, String... more) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		if (first == null || first.isBlank() || more.length != 0) {
+			throw new IllegalArgumentException("Nested paths must contain a single element");
+		}
+		return new NestedPath(this, first);
 	}
 
 	@Override
 	public PathMatcher getPathMatcher(String syntaxAndPattern) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new UnsupportedOperationException("Nested paths do not support path matchers");
 	}
 
 	@Override
 	public UserPrincipalLookupService getUserPrincipalLookupService() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new UnsupportedOperationException("Nested paths do not have a user principal lookup service");
 	}
 
 	@Override
 	public WatchService newWatchService() throws IOException {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		throw new UnsupportedOperationException("Nested paths do not support the WacherService");
 	}
 
 }
