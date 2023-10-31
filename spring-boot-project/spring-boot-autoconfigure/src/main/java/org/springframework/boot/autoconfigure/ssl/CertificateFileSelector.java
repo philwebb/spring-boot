@@ -113,8 +113,8 @@ public interface CertificateFileSelector {
 		Assert.notNull(clock, "Clock must not be null");
 		Instant now = clock.instant();
 		return forMatching((bundleName, candidate) -> {
-			Instant notBefore = candidate.firstCertificate().getNotBefore().toInstant();
-			Instant notAfter = candidate.firstCertificate().getNotAfter().toInstant();
+			Instant notBefore = candidate.leafCertificate().getNotBefore().toInstant();
+			Instant notAfter = candidate.leafCertificate().getNotAfter().toInstant();
 			return now.isAfter(notBefore) && now.isBefore(notAfter);
 		});
 	}
@@ -194,7 +194,7 @@ public interface CertificateFileSelector {
 	static <C extends Comparable<C>> CertificateFileSelector usingLeafCertificateField(
 			Function<X509Certificate, C> fieldValueExtractor) {
 		Assert.notNull(fieldValueExtractor, "FieldValueExtractor must not be null");
-		return using((certificateFile) -> fieldValueExtractor.apply(certificateFile.firstCertificate()));
+		return using((certificateFile) -> fieldValueExtractor.apply(certificateFile.leafCertificate()));
 	}
 
 	/**

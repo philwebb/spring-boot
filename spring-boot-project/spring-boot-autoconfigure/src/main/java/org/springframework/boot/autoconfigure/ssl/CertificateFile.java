@@ -44,10 +44,11 @@ public record CertificateFile(Path path, List<X509Certificate> certificates) {
 	}
 
 	/**
-	 * Return the first certificate from the {@link #certificates()}.
+	 * Return the leaf certificate which by convention is the first element in
+	 * {@link #certificates()}.
 	 * @return the primary certificate
 	 */
-	public X509Certificate firstCertificate() {
+	public X509Certificate leafCertificate() {
 		return certificates().get(0);
 	}
 

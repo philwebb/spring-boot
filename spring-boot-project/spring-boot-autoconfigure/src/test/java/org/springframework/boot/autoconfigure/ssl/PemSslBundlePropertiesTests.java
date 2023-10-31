@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties.Store.Select.SelectCertificate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PemSslBundleProperties}.
@@ -27,9 +32,40 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class PemSslBundlePropertiesTests {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	@Nested
+	class SelectCertificateTests {
+
+		@Test
+		void usingFileCreationTimeSelectsUsingFileCreationTime() {
+			testSelect(SelectCertificate.USING_FILE_CREATION_TIME, 2);
+		}
+
+		@Test
+		void usingValidityPeriodStartSelectsUsingLeafCertificateValidityPeriodStart() {
+			testSelect(SelectCertificate.USING_VALIDITY_PERIOD_START, 0);
+		}
+
+		@Test
+		void usingValidityPeriodEndUsingFileCreationTimeSelectsUsingLeafCertificateValidityPeriodEnd() {
+			testSelect(SelectCertificate.USING_VALIDITY_PERIOD_END, 1);
+		}
+
+		private void testSelect(SelectCertificate select, int expected) {
+			List<CertificateFile> candidates = MockCertificateFiles.create((files) -> {
+				files.add("0").withValidityOffsets(-10, 10);
+				files.add("1").withValidityOffsets(-20, 20);
+				files.add("2").withValidityOffsets(-10, 10).withCreationTimeOffset(100);
+				files.add("3").withValidityOffsets(-20, -10).withCreationTimeOffset(200);
+			});
+			CertificateFile selected = select.getSelector().selectCertificateFile("bundle", candidates);
+			assertThat(candidates.indexOf(selected)).isEqualTo(expected);
+		}
+
+	}
+
+	@Nested
+	class SelectPrivateKeyTests {
+
 	}
 
 }

@@ -85,7 +85,7 @@ class CertificateFileTests {
 	void firstCertificateReturnsFirstCertificate() {
 		List<X509Certificate> certificates = List.of(this.certificates.get(0), mock(X509Certificate.class));
 		CertificateFile certificateFile = new CertificateFile(this.pemFile, certificates);
-		assertThat(certificateFile.firstCertificate()).isEqualTo(certificates.get(0));
+		assertThat(certificateFile.leafCertificate()).isEqualTo(certificates.get(0));
 	}
 
 	@Test
