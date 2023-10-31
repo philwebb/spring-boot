@@ -58,7 +58,7 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		private String type;
 
 		/**
-		 * Location or content of the certificate in PEM format.
+		 * Location or content of the certificate or certificate chain in PEM format.
 		 */
 		private String certificate;
 
@@ -76,6 +76,8 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		 * Whether to verify that the private key matches the public key.
 		 */
 		private boolean verifyKeys;
+
+		private Select select = new Select();
 
 		public String getType() {
 			return this.type;
@@ -115,6 +117,10 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 		public void setVerifyKeys(boolean verifyKeys) {
 			this.verifyKeys = verifyKeys;
+		}
+
+		public Select getSelect() {
+			return this.select;
 		}
 
 	}
