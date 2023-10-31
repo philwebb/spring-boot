@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link PemContent}.
@@ -37,9 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PemContentTests {
 
 	@Test
-	void getCertificateWhenNoCertificatesReturnsEmptyList() {
+	void getCertificateWhenNoCertificatesThrowsException() {
 		PemContent content = PemContent.of("");
-		assertThat(content.getCertificates()).isEmpty();
+		assertThatIllegalStateException().isThrownBy(content::getCertificates)
+			.withMessage("Missing certificates or unrecognized format");
 	}
 
 	@Test
@@ -53,9 +55,10 @@ class PemContentTests {
 	}
 
 	@Test
-	void getPrivateKeyWhenNoKeyReturnsNull() {
+	void getPrivateKeyWhenNoKeyThrowsException() {
 		PemContent content = PemContent.of("");
-		assertThat(content.getPrivateKey()).isNull();
+		assertThatIllegalStateException().isThrownBy(content::getPrivateKey)
+			.withMessage("Missing private key or unrecognized format");
 	}
 
 	@Test

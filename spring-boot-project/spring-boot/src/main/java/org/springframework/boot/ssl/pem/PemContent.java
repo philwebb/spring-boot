@@ -58,15 +58,16 @@ public final class PemContent {
 	 * Parse and return all {@link X509Certificate certificates} from the PEM content.
 	 * Most PEM files either contain a single certificate or a certificate chain.
 	 * @return the certificates
+	 * @throws IllegalStateException if no certificates could be loaded
 	 */
 	public List<X509Certificate> getCertificates() {
 		return PemCertificateParser.parse(this.text);
 	}
 
 	/**
-	 * Parse and return the {@link PrivateKey private keys} from the PEM content or
-	 * {@code null} if there is no private key.
+	 * Parse and return the {@link PrivateKey private keys} from the PEM content.
 	 * @return the private keys
+	 * @throws IllegalStateException if no private key could be loaded
 	 */
 	public PrivateKey getPrivateKey() {
 		return getPrivateKey(null);
