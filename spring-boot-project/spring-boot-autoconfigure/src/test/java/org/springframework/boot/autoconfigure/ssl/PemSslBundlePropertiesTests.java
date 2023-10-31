@@ -56,10 +56,10 @@ class PemSslBundlePropertiesTests {
 
 		private void testSelect(SelectCertificate select, int expected) {
 			List<CertificateFile> candidates = MockCertificateFiles.create((files) -> {
-				files.add("0").withValidityOffsets(-10, 10);
-				files.add("1").withValidityOffsets(-20, 20);
-				files.add("2").withValidityOffsets(-10, 10).withCreationTimeOffset(100);
-				files.add("3").withValidityOffsets(-20, -10).withCreationTimeOffset(200);
+				files.add("0").withValidityOffsets(-100, 100);
+				files.add("1").withValidityOffsets(-200, 200);
+				files.add("2").withValidityOffsets(-100, 100).withCreationTimeOffset(100);
+				files.add("3").withValidityOffsets(-200, -100).withCreationTimeOffset(200);
 			});
 			CertificateFile selected = select.getSelector().selectCertificateFile("bundle", candidates);
 			assertThat(candidates.indexOf(selected)).isEqualTo(expected);
