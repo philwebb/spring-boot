@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.List;
 
+import org.ehcache.shadow.org.terracotta.utilities.io.Files;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,6 +31,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -69,16 +71,14 @@ class CertificateFileTests {
 	@Test
 	void createWhenCertificatesIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CertificateFile(this.pemFile, null))
-			.withMessageContaining("does not contain any certificates")
-			.withMessageContaining(this.pemFile.toString());
+			.withMessage("Certificates must not be empty");
 	}
 
 	@Test
 	void createWhenCertificatesIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new CertificateFile(this.pemFile, Collections.emptyList()))
-			.withMessageContaining("does not contain any certificates")
-			.withMessageContaining(this.pemFile.toString());
+			.withMessage("Certificates must not be empty");
 	}
 
 	@Test
@@ -92,6 +92,15 @@ class CertificateFileTests {
 	void toStringReturnsPath() {
 		CertificateFile certificateFile = new CertificateFile(this.pemFile, this.certificates);
 		assertThat(certificateFile).hasToString("'" + this.pemFile.toString() + "'");
+	}
+
+	@Test
+	void loadFromPemFileWhenNoCertificatesThrowsException() throws Exception {
+		Path file = this.temp.resolve("empty");
+		Files.createFile(file);
+		assertThatIllegalStateException().isThrownBy(() -> CertificateFile.loadFromPemFile(file))
+			.withMessageContaining("Cannot load certificates from PEM file")
+			.withMessageContaining(file.toString());
 	}
 
 	@Test

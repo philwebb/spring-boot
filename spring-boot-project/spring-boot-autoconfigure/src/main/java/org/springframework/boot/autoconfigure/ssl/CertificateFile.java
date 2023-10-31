@@ -40,7 +40,7 @@ public record CertificateFile(Path path, List<X509Certificate> certificates) {
 	public CertificateFile {
 		Assert.notNull(path, "Path must not be null");
 		Assert.isTrue(Files.isRegularFile(path), "Path '%s' must be a regular file".formatted(path));
-		Assert.isTrue(!CollectionUtils.isEmpty(certificates), "Certificate must not be empty");
+		Assert.isTrue(!CollectionUtils.isEmpty(certificates), "Certificates must not be empty");
 	}
 
 	/**
@@ -63,9 +63,13 @@ public record CertificateFile(Path path, List<X509Certificate> certificates) {
 	 * @throws IOException on IO error
 	 */
 	static CertificateFile loadFromPemFile(Path path) throws IOException {
-		List<X509Certificate> certificates = PemContent.load(path).getCertificates();
-		Assert.state(!CollectionUtils.isEmpty(certificates), () -> "PEM file '%s' does not contain any certificates");
-		return new CertificateFile(path, certificates);
+		try {
+			List<X509Certificate> certificates = PemContent.load(path).getCertificates();
+			return new CertificateFile(path, certificates);
+		}
+		catch (IllegalStateException ex) {
+			throw new IllegalStateException("Cannot load certificates from PEM file '%s'".formatted(path));
+		}
 	}
 
 }

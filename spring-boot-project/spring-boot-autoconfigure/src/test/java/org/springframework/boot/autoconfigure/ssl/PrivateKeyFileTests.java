@@ -29,6 +29,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link PrivateKeyFile}.
@@ -77,11 +78,12 @@ class PrivateKeyFileTests {
 	}
 
 	@Test
-	void loadFromPemFileWhenNoCertificatesThrowsException() throws Exception {
+	void loadFromPemFileWhenNoPrivateKeyThrowsException() throws Exception {
 		Path file = this.temp.resolve("empty");
 		Files.createFile(file);
-		PrivateKeyFile certificateFile = PrivateKeyFile.loadFromPemFile(file, null);
-		assertThat(certificateFile.privateKey()).isEqualTo(this.privateKey);
+		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyFile.loadFromPemFile(file, null))
+			.withMessageContaining("Cannot load private key from PEM file")
+			.withMessageContaining(file.toString());
 	}
 
 	@Test

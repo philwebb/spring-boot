@@ -54,9 +54,13 @@ public record PrivateKeyFile(Path path, PrivateKey privateKey) {
 	 * @throws IOException on IO error
 	 */
 	static PrivateKeyFile loadFromPemFile(Path path, String privateKeyPassword) throws IOException {
-		PrivateKey privateKey = PemContent.load(path).getPrivateKey(privateKeyPassword);
-		Assert.state(privateKey != null, () -> "PEM file '%s' does not contain a private key");
-		return new PrivateKeyFile(path, privateKey);
+		try {
+			PrivateKey privateKey = PemContent.load(path).getPrivateKey(privateKeyPassword);
+			return new PrivateKeyFile(path, privateKey);
+		}
+		catch (IllegalStateException ex) {
+			throw new IllegalStateException("Cannot load private key from PEM file '%s'".formatted(path));
+		}
 	}
 
 }
