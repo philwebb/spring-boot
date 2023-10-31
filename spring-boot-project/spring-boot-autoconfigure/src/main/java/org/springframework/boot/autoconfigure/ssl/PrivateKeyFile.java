@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.PrivateKey;
 
@@ -33,6 +34,12 @@ import org.springframework.util.Assert;
  * @since 3.2.0
  */
 public record PrivateKeyFile(Path path, PrivateKey privateKey) {
+
+	public PrivateKeyFile {
+		Assert.notNull(path, "Path must not be null");
+		Assert.isTrue(Files.isRegularFile(path), "Path '%s' must be a regular file".formatted(path));
+		Assert.isTrue(privateKey != null, "PrivateKey must not be null");
+	}
 
 	@Override
 	public String toString() {

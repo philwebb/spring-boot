@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -29,7 +30,9 @@ import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 
+import org.ehcache.shadow.org.terracotta.utilities.io.Files;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +51,9 @@ class CertificateFileSelectorTests {
 	private static final Instant NOW = Instant.parse("2000-01-01T00:00:00Z");
 
 	private static final Clock FIXED_CLOCK = Clock.fixed(NOW, ZoneId.of("UTC"));
+
+	@TempDir
+	private Path temp;
 
 	@Test
 	void forBundlesWithNamesLimitsToBundleNames() {
@@ -98,8 +104,8 @@ class CertificateFileSelectorTests {
 	void usingLeafCertificateValidityPeriodStartSelectsBasedOnNotBeforeField() {
 		CertificateFileSelector selector = CertificateFileSelector.usingLeafCertificateValidityPeriodStart();
 		CertificateFile c1 = createCertificateFile("a", -30, 10);
-		CertificateFile c2 = createCertificateFile("a", -10, 10);
-		CertificateFile c3 = createCertificateFile("a", -20, 10);
+		CertificateFile c2 = createCertificateFile("b", -10, 10);
+		CertificateFile c3 = createCertificateFile("c", -20, 10);
 		List<CertificateFile> candidates = List.of(c1, c2, c3);
 		assertThat(selector.selectCertificateFile(candidates)).isEqualTo(c2);
 		assertThat(selector.selectCertificateFile("name", candidates)).isEqualTo(c2);
@@ -109,8 +115,8 @@ class CertificateFileSelectorTests {
 	void usingLeafCertificateValidityPeriodEndSelectsBasedOnNotAfterField() {
 		CertificateFileSelector selector = CertificateFileSelector.usingLeafCertificateValidityPeriodEnd();
 		CertificateFile c1 = createCertificateFile("a", -10, 10);
-		CertificateFile c2 = createCertificateFile("a", -10, 30);
-		CertificateFile c3 = createCertificateFile("a", -10, 20);
+		CertificateFile c2 = createCertificateFile("b", -10, 30);
+		CertificateFile c3 = createCertificateFile("c", -10, 20);
 		List<CertificateFile> candidates = List.of(c1, c2, c3);
 		assertThat(selector.selectCertificateFile(candidates)).isEqualTo(c2);
 		assertThat(selector.selectCertificateFile("name", candidates)).isEqualTo(c2);
@@ -121,8 +127,8 @@ class CertificateFileSelectorTests {
 		CertificateFileSelector selector = CertificateFileSelector
 			.usingLeafCertificateField(X509Certificate::getNotAfter);
 		CertificateFile c1 = createCertificateFile("a", -10, 10);
-		CertificateFile c2 = createCertificateFile("a", -10, 30);
-		CertificateFile c3 = createCertificateFile("a", -10, 20);
+		CertificateFile c2 = createCertificateFile("b", -10, 30);
+		CertificateFile c3 = createCertificateFile("c", -10, 20);
 		List<CertificateFile> candidates = List.of(c1, c2, c3);
 		assertThat(selector.selectCertificateFile(candidates)).isEqualTo(c2);
 		assertThat(selector.selectCertificateFile("name", candidates)).isEqualTo(c2);
@@ -133,8 +139,8 @@ class CertificateFileSelectorTests {
 		CertificateFileSelector selector = CertificateFileSelector
 			.using((candidate) -> candidate.firstCertificate().getNotAfter());
 		CertificateFile c1 = createCertificateFile("a", -10, 10);
-		CertificateFile c2 = createCertificateFile("a", -10, 30);
-		CertificateFile c3 = createCertificateFile("a", -10, 20);
+		CertificateFile c2 = createCertificateFile("b", -10, 30);
+		CertificateFile c3 = createCertificateFile("c", -10, 20);
 		List<CertificateFile> candidates = List.of(c1, c2, c3);
 		assertThat(selector.selectCertificateFile(candidates)).isEqualTo(c2);
 		assertThat(selector.selectCertificateFile("name", candidates)).isEqualTo(c2);
@@ -145,8 +151,8 @@ class CertificateFileSelectorTests {
 		CertificateFileSelector selector = CertificateFileSelector
 			.using(Comparator.comparing((candidate) -> candidate.firstCertificate().getNotAfter()));
 		CertificateFile c1 = createCertificateFile("a", -10, 10);
-		CertificateFile c2 = createCertificateFile("a", -10, 30);
-		CertificateFile c3 = createCertificateFile("a", -10, 20);
+		CertificateFile c2 = createCertificateFile("b", -10, 30);
+		CertificateFile c3 = createCertificateFile("c", -10, 20);
 		List<CertificateFile> candidates = List.of(c1, c2, c3);
 		assertThat(selector.selectCertificateFile(candidates)).isEqualTo(c2);
 		assertThat(selector.selectCertificateFile("name", candidates)).isEqualTo(c2);
@@ -215,11 +221,19 @@ class CertificateFileSelectorTests {
 		given(fileSystem.provider()).willReturn(provider);
 		given(provider.readAttributes(path, BasicFileAttributes.class)).willReturn(attributes);
 		given(attributes.creationTime()).willReturn(FileTime.from(creationTime));
+		given(attributes.isRegularFile()).willReturn(true);
 		return path;
 	}
 
-	private CertificateFile createCertificateFile(String path, int notBeforeDelta, int notAfterDelta) {
-		return createCertificateFile(Path.of(path), notBeforeDelta, notAfterDelta);
+	private CertificateFile createCertificateFile(String name, int notBeforeDelta, int notAfterDelta) {
+		try {
+			Path path = this.temp.resolve(name);
+			Files.createFile(path);
+			return createCertificateFile(path, notBeforeDelta, notAfterDelta);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	private CertificateFile createCertificateFile(Path path, int notBeforeDelta, int notAfterDelta) {

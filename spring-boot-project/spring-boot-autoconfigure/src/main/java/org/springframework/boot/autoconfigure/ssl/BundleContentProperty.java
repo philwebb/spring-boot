@@ -48,7 +48,8 @@ record BundleContentProperty(String name, String value) {
 	 */
 	DirectoryStream<Path> getDirectoryGlobMatches() throws IOException {
 		Path path = toPath();
-		Assert.state(!isDirectoryGlob(), () -> "Property '%s' must contain a directory glob pattern".formatted(name()));
+		Assert.state(isDirectoryGlob(path),
+				() -> "Property '%s' must contain a directory glob pattern".formatted(name()));
 		return Files.newDirectoryStream(path.getParent(), path.getFileName().toString());
 	}
 
@@ -67,7 +68,7 @@ record BundleContentProperty(String name, String value) {
 	boolean isDirectoryGlob() {
 		if (hasValue() && !isPemContent()) {
 			try {
-				return isDirectoryGlob(Path.of(toUrl().toURI()));
+				return isDirectoryGlob(toPath());
 			}
 			catch (Exception ex) {
 				return false;

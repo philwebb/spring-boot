@@ -17,12 +17,14 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.springframework.boot.ssl.pem.PemContent;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * A certificate file that contains {@link X509Certificate X509 certificates}.
@@ -36,14 +38,16 @@ import org.springframework.util.Assert;
 public record CertificateFile(Path path, List<X509Certificate> certificates) {
 
 	public CertificateFile {
-		Assert.state(!certificates.isEmpty(), () -> "File '%s' does not contain any certificates");
+		Assert.notNull(path, "Path must not be null");
+		Assert.isTrue(Files.isRegularFile(path), "Path '%s' must be a regular file".formatted(path));
+		Assert.isTrue(!CollectionUtils.isEmpty(certificates), "Certificate must not be empty");
 	}
 
 	/**
 	 * Return the first certificate from the {@link #certificates()}.
 	 * @return the primary certificate
 	 */
-	X509Certificate firstCertificate() {
+	public X509Certificate firstCertificate() {
 		return certificates().get(0);
 	}
 
@@ -59,7 +63,9 @@ public record CertificateFile(Path path, List<X509Certificate> certificates) {
 	 * @throws IOException on IO error
 	 */
 	static CertificateFile loadFromPemFile(Path path) throws IOException {
-		return new CertificateFile(path, PemContent.load(path).getCertificates());
+		List<X509Certificate> certificates = PemContent.load(path).getCertificates();
+		Assert.state(!CollectionUtils.isEmpty(certificates), () -> "PEM file '%s' does not contain any certificates");
+		return new CertificateFile(path, certificates);
 	}
 
 }

@@ -128,6 +128,8 @@ class SslAutoConfigurationTests {
 			});
 	}
 
+	// FIXME selector tests
+
 	@Configuration
 	@EnableConfigurationProperties(CustomSslProperties.class)
 	public static class CustomSslBundleConfiguration {

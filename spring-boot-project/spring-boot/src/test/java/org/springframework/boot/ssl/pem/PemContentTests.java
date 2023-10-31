@@ -37,6 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PemContentTests {
 
 	@Test
+	void getCertificateWhenNoCertificatesReturnsEmptyList() {
+		PemContent content = PemContent.of("");
+		assertThat(content.getCertificates()).isEmpty();
+	}
+
+	@Test
 	void getCertificateReturnsCertificates() throws Exception {
 		PemContent content = PemContent.load(getClass().getResource("/test-cert-chain.pem"));
 		List<X509Certificate> certificates = content.getCertificates();
@@ -44,6 +50,12 @@ class PemContentTests {
 		assertThat(certificates).hasSize(2);
 		assertThat(certificates.get(0).getType()).isEqualTo("X.509");
 		assertThat(certificates.get(1).getType()).isEqualTo("X.509");
+	}
+
+	@Test
+	void getPrivateKeyWhenNoKeyReturnsNull() {
+		PemContent content = PemContent.of("");
+		assertThat(content.getPrivateKey()).isNull();
 	}
 
 	@Test

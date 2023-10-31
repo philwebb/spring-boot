@@ -123,6 +123,100 @@ public class PemSslBundleProperties extends SslBundleProperties {
 			return this.select;
 		}
 
+		/**
+		 * Properties used to select certificate and key selection when multiple
+		 * candidates exist.
+		 */
+		public static class Select {
+
+			/**
+			 * Which selection method to use when multiple certificate candidates are
+			 * found.
+			 */
+			private SelectCertificate certificate = SelectCertificate.USING_VALIDITY_PERIOD_START;
+
+			/**
+			 * Which selection method to use when multiple private key candidates are
+			 * found.
+			 */
+			private SelectPrivateKey privateKey = SelectPrivateKey.USING_FILE_NAME;
+
+			public SelectCertificate getCertificate() {
+				return this.certificate;
+			}
+
+			public void setCertificate(SelectCertificate certificate) {
+				this.certificate = certificate;
+			}
+
+			public SelectPrivateKey getPrivateKey() {
+				return this.privateKey;
+			}
+
+			public void setPrivateKey(SelectPrivateKey privateKey) {
+				this.privateKey = privateKey;
+			}
+
+			public enum SelectCertificate {
+
+				/**
+				 * Select using the latest file creation time of in-date leaf
+				 * certificates.
+				 */
+				USING_FILE_CREATION_TIME(CertificateFileSelector.usingFileCreationTime()),
+
+				/**
+				 * Select using the maximum validity period start (the 'not before' field)
+				 * of in-date leaf certificates. This is usually the most recently created
+				 * certificate.
+				 */
+				USING_VALIDITY_PERIOD_START(CertificateFileSelector.usingLeafCertificateValidityPeriodStart()),
+
+				/**
+				 * Select using the maximum validity period end (the 'not after' field) of
+				 * in-date leaf certificates. This is usually the longest usable
+				 * certificate.
+				 */
+				USING_VALIDITY_PERIOD_END(CertificateFileSelector.usingLeafCertificateValidityPeriodEnd());
+
+				private final CertificateFileSelector selector;
+
+				SelectCertificate(CertificateFileSelector selector) {
+					this.selector = selector.forInDateLeafCertificates();
+				}
+
+				CertificateFileSelector getSelector() {
+					return this.selector;
+				}
+
+			}
+
+			public enum SelectPrivateKey {
+
+				/**
+				 * Select using the file with the same basename as the certificate file.
+				 */
+				USING_FILE_NAME(PrivateKeyFileSelector.usingFileName()),
+
+				/**
+				 * Select using the private key that matches the selected certificate.
+				 */
+				USING_CERTIFICATE_MATCH(PrivateKeyFileSelector.usingCertificateMatch());
+
+				private final PrivateKeyFileSelector selector;
+
+				SelectPrivateKey(PrivateKeyFileSelector selector) {
+					this.selector = selector;
+				}
+
+				PrivateKeyFileSelector getSelector() {
+					return this.selector;
+				}
+
+			}
+
+		}
+
 	}
 
 }
