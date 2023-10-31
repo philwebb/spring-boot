@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -34,22 +35,28 @@ import static org.mockito.Mockito.mock;
  */
 class MockPath {
 
-	static Path create(String name) throws IOException {
+	static Path create(String name) {
 		return create(name, Instant.now());
 	}
 
-	static Path create(String name, Instant creationTime) throws IOException {
-		Path path = mock(Path.class);
-		FileSystem fileSystem = mock(FileSystem.class);
-		FileSystemProvider provider = mock(FileSystemProvider.class);
-		BasicFileAttributes attributes = mock(BasicFileAttributes.class);
-		given(path.toString()).willReturn(name);
-		given(path.getFileSystem()).willReturn(fileSystem);
-		given(fileSystem.provider()).willReturn(provider);
-		given(provider.readAttributes(path, BasicFileAttributes.class)).willReturn(attributes);
-		given(attributes.creationTime()).willReturn(FileTime.from(creationTime));
-		given(attributes.isRegularFile()).willReturn(true);
-		return path;
+	static Path create(String name, Instant creationTime) {
+		try {
+			Path path = mock(Path.class);
+			FileSystem fileSystem = mock(FileSystem.class);
+			FileSystemProvider provider = mock(FileSystemProvider.class);
+			BasicFileAttributes attributes = mock(BasicFileAttributes.class);
+			given(path.toString()).willReturn(name);
+			given(path.getFileSystem()).willReturn(fileSystem);
+			given(path.getFileName()).willReturn(path);
+			given(fileSystem.provider()).willReturn(provider);
+			given(provider.readAttributes(path, BasicFileAttributes.class)).willReturn(attributes);
+			given(attributes.creationTime()).willReturn(FileTime.from(creationTime));
+			given(attributes.isRegularFile()).willReturn(true);
+			return path;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 }

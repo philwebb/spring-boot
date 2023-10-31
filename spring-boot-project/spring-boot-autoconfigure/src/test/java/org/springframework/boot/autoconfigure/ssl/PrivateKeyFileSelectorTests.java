@@ -16,17 +16,12 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ehcache.shadow.org.terracotta.utilities.io.Files;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -41,23 +36,15 @@ import static org.mockito.Mockito.mock;
  */
 class PrivateKeyFileSelectorTests {
 
-	@TempDir
-	Path temp;
+	private static final Instant NOW = Instant.parse("2000-01-01T00:00:00Z");
 
 	private final CertificateFile certificateFile = mock(CertificateFile.class);
-
-	private Path emptyFile;
-
-	@BeforeEach
-	void setup() throws Exception {
-		this.emptyFile = Files.createFile(this.temp.resolve("empty"));
-	}
 
 	@Test
 	void forBundlesWithNamesLimitsToBundleNames() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.of((certificateFile, candidates) -> candidates.get(0))
 			.forBundles("a", "b");
-		List<PrivateKeyFile> candidates = List.of(mock(PrivateKeyFile.class));
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> files.add("a"));
 		assertThat(selector.selectPrivateKeyFile(this.certificateFile, candidates)).isEqualTo(candidates.get(0));
 		assertThat(selector.selectPrivateKeyFile("a", this.certificateFile, candidates)).isEqualTo(candidates.get(0));
 		assertThat(selector.selectPrivateKeyFile("b", this.certificateFile, candidates)).isEqualTo(candidates.get(0));
@@ -68,7 +55,7 @@ class PrivateKeyFileSelectorTests {
 	void forBundlesWithPredicateLimitsToBundles() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.of((certificateFile, candidates) -> candidates.get(0))
 			.forBundles((name) -> name.startsWith("a"));
-		List<PrivateKeyFile> candidates = List.of(mock(PrivateKeyFile.class));
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> files.add("a"));
 		assertThat(selector.selectPrivateKeyFile(this.certificateFile, candidates)).isEqualTo(candidates.get(0));
 		assertThat(selector.selectPrivateKeyFile("aa", this.certificateFile, candidates)).isEqualTo(candidates.get(0));
 		assertThat(selector.selectPrivateKeyFile("ab", this.certificateFile, candidates)).isEqualTo(candidates.get(0));
@@ -76,58 +63,69 @@ class PrivateKeyFileSelectorTests {
 	}
 
 	@Test
-	void usingFileNameWhenHasSingleMatchReturnsFile() throws IOException {
+	void usingFileNameWhenHasSingleMatchReturnsFile() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingFileName();
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("c.key"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("c.key");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThat(selector.selectPrivateKeyFile(certificateFile, candidates)).isSameAs(candidates.get(1));
 	}
 
 	@Test
-	void usingFileNameWhenHasMultipleMatchesThrowsException() throws IOException {
+	void usingFileNameWhenHasMultipleMatchesThrowsException() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingFileName();
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("b.pkf"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("b.pkf");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThatIllegalStateException().isThrownBy(() -> selector.selectPrivateKeyFile(certificateFile, candidates))
 			.withMessageContaining("Unable to select")
-			.withMessageContaining("/b.key")
-			.withMessageContaining("/b.pkf");
+			.withMessageContaining("b.key")
+			.withMessageContaining("b.pkf");
 	}
 
 	@Test
-	void usingUniquePathMatchWhenHasSingleMatchReturnsFile() throws IOException {
+	void usingUniquePathMatchWhenHasSingleMatchReturnsFile() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingUniquePathMatch(
 				(certificatePath, privateKeyPath) -> privateKeyPath.getFileName().toString().startsWith("b"));
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("c.key"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("c.key");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThat(selector.selectPrivateKeyFile(certificateFile, candidates)).isSameAs(candidates.get(1));
 	}
 
 	@Test
-	void usingUniquePathMatchNameWhenHasMultipleMatchesThrowsException() throws IOException {
+	void usingUniquePathMatchNameWhenHasMultipleMatchesThrowsException() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingUniquePathMatch(
 				(certificatePath, privateKeyPath) -> privateKeyPath.getFileName().toString().startsWith("b"));
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("b.pkf"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("b.pkf");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThatIllegalStateException().isThrownBy(() -> selector.selectPrivateKeyFile(certificateFile, candidates))
 			.withMessageContaining("Unable to select")
-			.withMessageContaining("/b.key")
-			.withMessageContaining("/b.pkf");
+			.withMessageContaining("b.key")
+			.withMessageContaining("b.pkf");
 	}
 
 	@CertificateMatchingTest
 	void usingCertificateMatchWhenSingleMatchReturnsPrivateKey(CertificateMatchingTestSource source) {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingCertificateMatch();
-		List<PrivateKey> candidatePrivateKeys = new ArrayList<>(source.nonMatchingPrivateKeys());
-		candidatePrivateKeys.add(source.privateKey());
-		List<PrivateKeyFile> candidates = candidatePrivateKeys.stream()
-			.map((privateKey) -> new PrivateKeyFile(this.emptyFile, privateKey))
-			.toList();
-		CertificateFile certificateFile = new CertificateFile(this.emptyFile, List.of(source.matchingCertificate()));
+		List<PrivateKey> privateKeys = new ArrayList<>(source.nonMatchingPrivateKeys());
+		privateKeys.add(source.privateKey());
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.createFromPrivateKeys(NOW, privateKeys);
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "cert.crt",
+				source.matchingCertificate());
 		assertThat(selector.selectPrivateKeyFile("bundle", certificateFile, candidates))
 			.isEqualTo(candidates.get(candidates.size() - 1));
 	}
@@ -135,13 +133,12 @@ class PrivateKeyFileSelectorTests {
 	@CertificateMatchingTest
 	void usingCertificateMatchWhenMultipleMatchThrowsException(CertificateMatchingTestSource source) {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingCertificateMatch();
-		List<PrivateKey> candidatePrivateKeys = new ArrayList<>(source.nonMatchingPrivateKeys());
-		candidatePrivateKeys.add(source.privateKey());
-		candidatePrivateKeys.add(source.privateKey());
-		List<PrivateKeyFile> candidates = candidatePrivateKeys.stream()
-			.map((privateKey) -> new PrivateKeyFile(this.emptyFile, privateKey))
-			.toList();
-		CertificateFile certificateFile = new CertificateFile(this.emptyFile, List.of(source.matchingCertificate()));
+		List<PrivateKey> privateKeys = new ArrayList<>(source.nonMatchingPrivateKeys());
+		privateKeys.add(source.privateKey());
+		privateKeys.add(source.privateKey());
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.createFromPrivateKeys(NOW, privateKeys);
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "cert.crt",
+				source.matchingCertificate());
 		assertThatIllegalStateException()
 			.isThrownBy(() -> selector.selectPrivateKeyFile("bundle", certificateFile, candidates))
 			.withMessageContaining("Unable to select PrivateKey due to multiple matches");
@@ -150,11 +147,10 @@ class PrivateKeyFileSelectorTests {
 	@CertificateMatchingTest
 	void usingCertificateMatchWhenNoneMatchReturnsNull(CertificateMatchingTestSource source) {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingCertificateMatch();
-		List<PrivateKeyFile> candidates = source.nonMatchingPrivateKeys()
-			.stream()
-			.map((privateKey) -> new PrivateKeyFile(this.emptyFile, privateKey))
-			.toList();
-		CertificateFile certificateFile = new CertificateFile(this.emptyFile, List.of(source.matchingCertificate()));
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.createFromPrivateKeys(NOW,
+				source.nonMatchingPrivateKeys());
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "cert.crt",
+				source.matchingCertificate());
 		assertThat(selector.selectPrivateKeyFile("bundle", certificateFile, candidates)).isNull();
 	}
 
@@ -165,36 +161,45 @@ class PrivateKeyFileSelectorTests {
 	}
 
 	@Test
-	void usingUniqueMatchWhenNoMatchesReturnsNull() throws IOException {
+	void usingUniqueMatchWhenNoMatchesReturnsNull() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingUniqueMatch((certificatePath,
 				privateKeyPath) -> privateKeyPath.path().getFileName().toString().startsWith("spring"));
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("c.key"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("c.key");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThat(selector.selectPrivateKeyFile(certificateFile, candidates)).isNull();
 	}
 
 	@Test
-	void usingUniqueMatchWhenSingleMatchReturnsFile() throws IOException {
+	void usingUniqueMatchWhenSingleMatchReturnsFile() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingUniqueMatch(
 				(certificatePath, privateKeyPath) -> privateKeyPath.path().getFileName().toString().startsWith("b"));
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("c.key"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("c.key");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThat(selector.selectPrivateKeyFile(certificateFile, candidates)).isSameAs(candidates.get(1));
 	}
 
 	@Test
-	void usingUniqueMatchWhenMultipleMatchesThrowsException() throws Exception {
+	void usingUniqueMatchWhenMultipleMatchesThrowsException() {
 		PrivateKeyFileSelector selector = PrivateKeyFileSelector.usingUniqueMatch(
 				(certificatePath, privateKeyPath) -> privateKeyPath.path().getFileName().toString().startsWith("b"));
-		List<PrivateKeyFile> candidates = List.of(createPrivateKeyFile("a.key"), createPrivateKeyFile("b.key"),
-				createPrivateKeyFile("b.pkf"));
-		CertificateFile certificateFile = createCertificateFile("b.crt");
+		List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create(NOW, (files) -> {
+			files.add("a.key");
+			files.add("b.key");
+			files.add("b.pkf");
+		});
+		CertificateFile certificateFile = MockCertificateFiles.createSingle(NOW, "b.crt");
 		assertThatIllegalStateException().isThrownBy(() -> selector.selectPrivateKeyFile(certificateFile, candidates))
 			.withMessageContaining("Unable to select")
-			.withMessageContaining("/b.key")
-			.withMessageContaining("/b.pkf");
+			.withMessageContaining("b.key")
+			.withMessageContaining("b.pkf");
 	}
 
 	@Test
@@ -207,20 +212,6 @@ class PrivateKeyFileSelectorTests {
 	void ofReturnsSelector() {
 		PrivateKeyFileSelector selector = (certificateFile, candidates) -> candidates.get(0);
 		assertThat(PrivateKeyFileSelector.of(selector)).isSameAs(selector);
-	}
-
-	private PrivateKeyFile createPrivateKeyFile(String filename) throws IOException {
-		Path path = this.temp.resolve(filename);
-		Files.createFile(path);
-		PrivateKey privateKey = mock(PrivateKey.class);
-		return new PrivateKeyFile(path, privateKey);
-	}
-
-	private CertificateFile createCertificateFile(String filename) throws IOException {
-		Path path = this.temp.resolve(filename);
-		Files.createFile(path);
-		X509Certificate certificate = mock(X509Certificate.class);
-		return new CertificateFile(path, List.of(certificate));
 	}
 
 }

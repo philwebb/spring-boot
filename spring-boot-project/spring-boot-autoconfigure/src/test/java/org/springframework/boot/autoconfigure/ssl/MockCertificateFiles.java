@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -54,6 +53,18 @@ class MockCertificateFiles {
 		return this.files.stream().map(ThrowingFunction.of(File::create)).toList();
 	}
 
+	static CertificateFile createSingle(String filename) {
+		return createSingle(Instant.now(), filename, null);
+	}
+
+	static CertificateFile createSingle(Instant now, String filename) {
+		return createSingle(now, filename, null);
+	}
+
+	static CertificateFile createSingle(Instant now, String filename, X509Certificate certificate) {
+		return create(now, (files) -> files.add(filename).withCertificate(certificate)).get(0);
+	}
+
 	static List<CertificateFile> create(Consumer<MockCertificateFiles> files) {
 		return create(Instant.now(), files);
 	}
@@ -74,6 +85,8 @@ class MockCertificateFiles {
 
 		private Instant certificateNotAfter;
 
+		private X509Certificate certificate;
+
 		private File(String name) {
 			this.name = name;
 			this.certificateNotBefore = MockCertificateFiles.this.now;
@@ -92,11 +105,19 @@ class MockCertificateFiles {
 			return this;
 		}
 
-		private CertificateFile create() throws IOException {
+		File withCertificate(X509Certificate certificate) {
+			this.certificate = certificate;
+			return this;
+		}
+
+		private CertificateFile create() {
 			return new CertificateFile(MockPath.create(this.name, this.creationTime), createCertificates());
 		}
 
 		private List<X509Certificate> createCertificates() {
+			if (this.certificate != null) {
+				return List.of(this.certificate);
+			}
 			X509Certificate certificate = Mockito.mock(X509Certificate.class);
 			given(certificate.getNotBefore()).willReturn(java.util.Date.from(this.certificateNotBefore));
 			given(certificate.getNotAfter()).willReturn(java.util.Date.from(this.certificateNotAfter));

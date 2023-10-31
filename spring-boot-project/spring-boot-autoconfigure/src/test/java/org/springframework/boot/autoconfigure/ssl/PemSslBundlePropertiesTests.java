@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.security.PrivateKey;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties.Store.Select.SelectCertificate;
+import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties.Store.Select.SelectPrivateKey;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,6 +69,29 @@ class PemSslBundlePropertiesTests {
 
 	@Nested
 	class SelectPrivateKeyTests {
+
+		@Test
+		void usingFileNameSelectsUsingFileName() {
+			PrivateKeyFileSelector selector = SelectPrivateKey.USING_FILE_NAME.getSelector();
+			List<PrivateKeyFile> candidates = MockPrivateKeyFiles.create((files) -> {
+				files.add("a.key");
+				files.add("b.key");
+				files.add("c.key");
+			});
+			CertificateFile certificateFile = MockCertificateFiles.createSingle("b.crt");
+			assertThat(selector.selectPrivateKeyFile(certificateFile, candidates)).isEqualTo(candidates.get(1));
+		}
+
+		@CertificateMatchingTest
+		void usingCertificateMatchSelectsUsingMatchingCertificate(CertificateMatchingTestSource source) {
+			PrivateKeyFileSelector selector = SelectPrivateKey.USING_CERTIFICATE_MATCH.getSelector();
+			List<PrivateKey> privateKeys = new ArrayList<>(source.nonMatchingPrivateKeys());
+			privateKeys.add(1, source.privateKey());
+			List<PrivateKeyFile> candidates = MockPrivateKeyFiles.createFromPrivateKeys(privateKeys);
+			CertificateFile certificateFile = MockCertificateFiles.createSingle(Instant.now(), "b.crt",
+					source.matchingCertificate());
+			assertThat(selector.selectPrivateKeyFile(certificateFile, candidates)).isEqualTo(candidates.get(1));
+		}
 
 	}
 
