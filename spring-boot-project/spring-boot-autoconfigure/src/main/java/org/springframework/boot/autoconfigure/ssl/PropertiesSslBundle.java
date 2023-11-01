@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.ssl;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties.Store;
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -38,6 +39,7 @@ import org.springframework.util.Assert;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public final class PropertiesSslBundle implements SslBundle {
@@ -99,13 +101,22 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(PemSslBundleProperties properties) {
+		return get(null, properties, (bundleName, storePropertyName, storeProperties) -> {
+			PemSslStoreDetails storeDetails = new PemSslStoreDetails(storeProperties.getType(),
+					storeProperties.getCertificate(), storeProperties.getPrivateKey(),
+					storeProperties.getPrivateKeyPassword());
+			return PemSslStore.load(storeDetails);
+		});
+	}
+
+	static SslBundle get(String bundleName, PemSslBundleProperties properties, PemSslStoreFactory storeFactory) {
 		try {
-			PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore());
+			PemSslStore keyStore = getPemSslStore(bundleName, storeFactory, "keystore", properties.getKeystore());
 			if (keyStore != null) {
 				keyStore = keyStore.withAlias(properties.getKey().getAlias())
 					.withPassword(properties.getKey().getPassword());
 			}
-			PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore());
+			PemSslStore trustStore = getPemSslStore(bundleName, storeFactory, "truststore", properties.getTruststore());
 			SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
 			return new PropertiesSslBundle(storeBundle, properties);
 		}
@@ -114,20 +125,15 @@ public final class PropertiesSslBundle implements SslBundle {
 		}
 	}
 
-	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties)
-			throws IOException {
-		PemSslStore pemSslStore = PemSslStore.load(asPemSslStoreDetails(properties));
-		if (properties.isVerifyKeys()) {
+	private static PemSslStore getPemSslStore(String bundleName, PemSslStoreFactory storeFactory,
+			String storePropertyName, Store storeProperties) throws IOException {
+		PemSslStore pemSslStore = storeFactory.getPemSslStore(bundleName, storePropertyName, storeProperties);
+		if (storeProperties.isVerifyKeys()) {
 			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
 			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
 					"Private key matches none of the certificates in the chain");
 		}
 		return pemSslStore;
-	}
-
-	private static PemSslStoreDetails asPemSslStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
-				properties.getPrivateKeyPassword());
 	}
 
 	/**

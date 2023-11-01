@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -42,21 +43,25 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 
 	private final FileWatcher fileWatcher;
 
-	SslPropertiesBundleRegistrar(SslProperties properties, FileWatcher fileWatcher) {
+	private final PemSslStoreFactory pemSslStoreFactory;
+
+	SslPropertiesBundleRegistrar(SslProperties properties, FileWatcher fileWatcher,
+			PemSslStoreFactory pemSslStoreFactory) {
 		this.properties = properties.getBundle();
 		this.fileWatcher = fileWatcher;
+		this.pemSslStoreFactory = pemSslStoreFactory;
 	}
 
 	@Override
 	public void registerBundles(SslBundleRegistry registry) {
-		registerBundles(registry, this.properties.getPem(), PropertiesSslBundle::get, this::watchedPemPaths);
-		registerBundles(registry, this.properties.getJks(), PropertiesSslBundle::get, this::watchedJksPaths);
+		registerBundles(registry, this.properties.getPem(), this::pemPropertiesSslBundle, this::watchedPemPaths);
+		registerBundles(registry, this.properties.getJks(), this::jksPropertiesSslBundle, this::watchedJksPaths);
 	}
 
 	private <P extends SslBundleProperties> void registerBundles(SslBundleRegistry registry, Map<String, P> properties,
-			Function<P, SslBundle> bundleFactory, Function<P, Set<Path>> watchedPaths) {
+			BiFunction<String, P, SslBundle> bundleFactory, Function<P, Set<Path>> watchedPaths) {
 		properties.forEach((bundleName, bundleProperties) -> {
-			Supplier<SslBundle> bundleSupplier = () -> bundleFactory.apply(bundleProperties);
+			Supplier<SslBundle> bundleSupplier = () -> bundleFactory.apply(bundleName, bundleProperties);
 			try {
 				registry.registerBundle(bundleName, bundleSupplier.get());
 				if (bundleProperties.isReloadOnUpdate()) {
@@ -78,6 +83,14 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 		catch (RuntimeException ex) {
 			throw new IllegalStateException("Unable to watch for reload on update", ex);
 		}
+	}
+
+	private SslBundle jksPropertiesSslBundle(String bundleName, JksSslBundleProperties properties) {
+		return PropertiesSslBundle.get(properties);
+	}
+
+	private SslBundle pemPropertiesSslBundle(String bundleName, PemSslBundleProperties properties) {
+		return PropertiesSslBundle.get(bundleName, properties, this.pemSslStoreFactory);
 	}
 
 	private Set<Path> watchedJksPaths(JksSslBundleProperties properties) {

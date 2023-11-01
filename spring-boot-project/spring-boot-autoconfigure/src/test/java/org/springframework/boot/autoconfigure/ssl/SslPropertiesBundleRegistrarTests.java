@@ -50,9 +50,10 @@ class SslPropertiesBundleRegistrarTests {
 
 	@BeforeEach
 	void setUp() {
+		PemSslStoreFactory pemSslStoreFactory = new DefaultPemSslStoreFactory();
 		this.properties = new SslProperties();
 		this.fileWatcher = Mockito.mock(FileWatcher.class);
-		this.registrar = new SslPropertiesBundleRegistrar(this.properties, this.fileWatcher);
+		this.registrar = new SslPropertiesBundleRegistrar(this.properties, this.fileWatcher, pemSslStoreFactory);
 		this.registry = Mockito.mock(SslBundleRegistry.class);
 	}
 

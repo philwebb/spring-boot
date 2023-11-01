@@ -48,8 +48,12 @@ public class SslAutoConfiguration {
 	}
 
 	@Bean
-	SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(FileWatcher fileWatcher) {
-		return new SslPropertiesBundleRegistrar(this.sslProperties, fileWatcher);
+	SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(FileWatcher fileWatcher,
+			ObjectProvider<CertificateFileSelector> certificateFileSelectors,
+			ObjectProvider<PrivateKeyFileSelector> privateKeyFileSelectors) {
+		DefaultPemSslStoreFactory pemSslStoreFactory = new DefaultPemSslStoreFactory(
+				certificateFileSelectors.orderedStream().toList(), privateKeyFileSelectors.orderedStream().toList());
+		return new SslPropertiesBundleRegistrar(this.sslProperties, fileWatcher, pemSslStoreFactory);
 	}
 
 	@Bean

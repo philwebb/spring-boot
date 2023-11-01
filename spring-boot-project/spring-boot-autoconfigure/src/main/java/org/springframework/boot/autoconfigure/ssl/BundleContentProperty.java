@@ -17,7 +17,10 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.springframework.boot.ssl.pem.PemContent;
@@ -31,9 +34,52 @@ import org.springframework.util.StringUtils;
  *
  * @param name the configuration property name (excluding any prefix)
  * @param value the configuration property value
+ * @author Moritz Halbritter
  * @author Phillip Webb
  */
 record BundleContentProperty(String name, String value) {
+
+	/**
+	 * Return a {@link DirectoryStream} of paths that match the property value when when
+	 * treated as a glob pattern.
+	 * @return the matching paths
+	 * @throws IOException on IO error
+	 * @throws IllegalStateException if the value is not a directory glob pattern
+	 */
+	DirectoryStream<Path> getDirectoryGlobMatches() throws IOException {
+		Path path = toPath();
+		Assert.state(isDirectoryGlob(path),
+				() -> "Property '%s' must contain a directory glob pattern".formatted(name()));
+		return Files.newDirectoryStream(path.getParent(), path.getFileName().toString());
+	}
+
+	/**
+	 * Assert that the property value is not a directory glob pattern.
+	 */
+	void assertIsNotDirectoryGlob() {
+		Assert.state(!isDirectoryGlob(),
+				() -> "Property '%s' cannot contain a directory glob pattern".formatted(name()));
+	}
+
+	/**
+	 * Return if the property value is a directory glob pattern.
+	 * @return if the value is a directory glob pattern.
+	 */
+	boolean isDirectoryGlob() {
+		if (hasValue() && !isPemContent()) {
+			try {
+				return isDirectoryGlob(toPath());
+			}
+			catch (Exception ex) {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	private boolean isDirectoryGlob(Path path) {
+		return path.getFileName().toString().contains("*");
+	}
 
 	/**
 	 * Return if the property value is PEM content.
@@ -56,8 +102,15 @@ record BundleContentProperty(String name, String value) {
 		return ResourceUtils.getURL(this.value);
 	}
 
+	/**
+	 * Return the property as {@link Path} that can be watched. For directory glob
+	 * patterns this will be the directory otherwise it will be an individual file.
+	 * @return the path to watch
+	 * @throws IllegalStateException if the property value is not a directory glob pattern
+	 * or file.
+	 */
 	Path toWatchPath() {
-		return toPath();
+		return (!isDirectoryGlob()) ? toPath() : toPath().getParent();
 	}
 
 	private Path toPath() {

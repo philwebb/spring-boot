@@ -77,7 +77,38 @@ When used to secure a client-side connection, a `truststore` is typically config
                 certificate: "classpath:server.crt"
 ----
 
+TIP: The `certificate` and `private-key` properties may also use PEM text values directly rather than referring to a location to load.
+
 See {spring-boot-autoconfigure-module-code}/ssl/PemSslBundleProperties.java[PemSslBundleProperties] for the full set of supported properties.
+
+
+
+[[features.ssl.pem.directory]]
+==== Using Glob Patterns and Content Selection
+When a `certificate` or `private-key` property refers to a local directory, it is possible to use a glob pattern rather than an explicit file reference.
+This feature is especially useful when combined with <<features#features.ssl.reloading, SSL bundle reloading>> as it allows new files to be added without replacing the old ones.
+
+Any glob pattern supported by `java.nio.file.Files.newDirectoryStream(...)` method may be used to select multiple candidates that may provide certificate or key content.
+For example, the following configuration selects all certificate files with a `.crt` extension and all private keys with a `.key` extension:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+    spring:
+      ssl:
+        bundle:
+          pem:
+            mybundle:
+              keystore:
+                certificate: "*.crt"
+                private-key: "*.key"
+----
+
+A number of different strategies are provided to select the actual single file that should be used from the found candidates.
+By default, the certificate is selected based on the maximum "not before" validity period (which is usually the most recently created certificate).
+The private key is selected when it has a file basename that matches the selected certificate.
+
+If you want a different strategy you can use the configprop:spring.ssl.bundle.pem.mybundle.select.certificate[] and configprop:spring.ssl.bundle.pem.mybundle.select.private-key[] properties.
+You can also register implementations of `org.springframework.boot.autoconfigure.ssl.CertificateFileSelector` and `org.springframework.boot.autoconfigure.ssl.PrivateKeyFileSelector` as beans if you want a custom selection strategy.
 
 
 
