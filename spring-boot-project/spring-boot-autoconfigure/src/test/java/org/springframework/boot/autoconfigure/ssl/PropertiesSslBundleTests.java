@@ -40,6 +40,8 @@ class PropertiesSslBundleTests {
 
 	private static final char[] EMPTY_KEY_PASSWORD = new char[] {};
 
+	private PemSslStoreFactory pemSslStoreFactory = new DefaultPemSslStoreFactory();
+
 	@Test
 	void pemPropertiesAreMappedToSslBundle() throws Exception {
 		PemSslBundleProperties properties = new PemSslBundleProperties();
@@ -57,7 +59,7 @@ class PropertiesSslBundleTests {
 			.setPrivateKey("classpath:org/springframework/boot/autoconfigure/ssl/ed25519-key.pem");
 		properties.getTruststore().setPrivateKeyPassword("secret");
 		properties.getTruststore().setType("PKCS12");
-		SslBundle sslBundle = PropertiesSslBundle.get(properties);
+		SslBundle sslBundle = PropertiesSslBundle.get("testBundle", properties, this.pemSslStoreFactory);
 		assertThat(sslBundle.getKey().getAlias()).isEqualTo("alias");
 		assertThat(sslBundle.getKey().getPassword()).isEqualTo("secret");
 		assertThat(sslBundle.getOptions().getCiphers()).containsExactlyInAnyOrder("cipher1", "cipher2", "cipher3");

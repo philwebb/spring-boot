@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.ssl;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+import org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties.Store;
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -38,6 +39,7 @@ import org.springframework.util.Assert;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public final class PropertiesSslBundle implements SslBundle {
@@ -99,7 +101,39 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(PemSslBundleProperties properties) {
-		return new PropertiesSslBundle(asSslStoreBundle(properties), properties);
+		return get(null, properties, (bundleName, storePropertyName, storeProperties) -> {
+			PemSslStoreDetails storeDetails = new PemSslStoreDetails(storeProperties.getType(),
+					storeProperties.getCertificate(), storeProperties.getPrivateKey(),
+					storeProperties.getPrivateKeyPassword());
+			return PemSslStore.load(storeDetails);
+		});
+	}
+
+	static SslBundle get(String bundleName, PemSslBundleProperties properties, PemSslStoreFactory storeFactory) {
+		try {
+			PemSslStore keyStore = getPemSslStore(bundleName, storeFactory, "keystore", properties.getKeystore());
+			if (keyStore != null) {
+				keyStore = keyStore.withAlias(properties.getKey().getAlias())
+					.withPassword(properties.getKey().getPassword());
+			}
+			PemSslStore trustStore = getPemSslStore(bundleName, storeFactory, "truststore", properties.getTruststore());
+			SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
+			return new PropertiesSslBundle(storeBundle, properties);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	private static PemSslStore getPemSslStore(String bundleName, PemSslStoreFactory storeFactory,
+			String storePropertyName, Store storeProperties) throws IOException {
+		PemSslStore pemSslStore = storeFactory.getPemSslStore(bundleName, storePropertyName, storeProperties);
+		if (storeProperties.isVerifyKeys()) {
+			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
+			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
+					"Private key matches none of the certificates in the chain");
+		}
+		return pemSslStore;
 	}
 
 	/**
@@ -108,38 +142,8 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(JksSslBundleProperties properties) {
-		return new PropertiesSslBundle(asSslStoreBundle(properties), properties);
-	}
-
-	private static SslStoreBundle asSslStoreBundle(PemSslBundleProperties properties) {
-		PemSslStore keyStore = asPemSslStore(properties.getKeystore());
-		if (keyStore != null) {
-			keyStore = keyStore.withAlias(properties.getKey().getAlias())
-				.withPassword(properties.getKey().getPassword());
-		}
-		PemSslStore trustStore = asPemSslStore(properties.getTruststore());
-		return new PemSslStoreBundle(keyStore, trustStore);
-	}
-
-	private static PemSslStore asPemSslStore(PemSslBundleProperties.Store properties) {
-		try {
-			PemSslStoreDetails details = asStoreDetails(properties);
-			PemSslStore pemSslStore = PemSslStore.load(details);
-			if (properties.isVerifyKeys()) {
-				CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
-				Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
-						"Private key matches none of the certificates in the chain");
-			}
-			return pemSslStore;
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private static PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
-				properties.getPrivateKeyPassword());
+		SslStoreBundle storeBundle = asSslStoreBundle(properties);
+		return new PropertiesSslBundle(storeBundle, properties);
 	}
 
 	private static SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {
