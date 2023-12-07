@@ -185,7 +185,15 @@ class FileChannelDataBlock implements CloseableDataBlock {
 					}
 					catch (ClosedByInterruptException ex) {
 						repairFileChannel();
-						throw ex;
+						boolean interrupted = Thread.interrupted();
+						try {
+							this.bufferSize = this.fileChannel.read(this.buffer, position);
+						}
+						finally {
+							if (interrupted) {
+								Thread.currentThread().interrupt();
+							}
+						}
 					}
 					this.bufferPosition = position;
 				}
