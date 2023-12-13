@@ -1,5 +1,6 @@
 plugins {
 	id "java"
+	id "org.antora"
 	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
@@ -44,6 +45,17 @@ javadocJar {
 
 sourcesJar {
 	enabled = false
+}
+
+// FIXME make convention?
+antora {
+	playbook = 'local-antora-playbook.yml'
+	options = [fetch: !project.gradle.startParameter.offline, stacktrace: true]
+}
+
+
+task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
+	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
 }
 
 plugins.withType(EclipsePlugin) {
@@ -206,10 +218,6 @@ dependencies {
 	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
-task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
-	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
 task aggregatedJavadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
@@ -304,6 +312,17 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	output = file("$buildDir/example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()
+}
+
+task collectConfigurationMetadataFiles(type: Copy) {
+	from project.configurations.configurationProperties
+	eachFile {
+		it.path = it.file
+				.toString()
+				.replaceFirst('/build/(?:classes|resources)/java/main/', '/')
+				.replaceFirst('^.*/([^/]+)/META-INF/(spring-configuration-metadata\\.json)$', '$1/$2')
+	}
+	into layout.buildDirectory.dir('collectConfigurationMetadataFiles')
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
@@ -456,10 +475,10 @@ syncDocumentationSourceForAsciidoctorPdf {
 	}
 }
 
-task zip(type: Zip) {
-	dependsOn asciidoctor,
-			asciidoctorMultipage,
-			asciidoctorPdf,
+
+
+task zipAdoc(type: Zip) {
+	dependsOn "antora", asciidoctor, asciidoctorMultipage, asciidoctorPdf,
 			configurations.gradlePluginDocumentation,
 			configurations.actuatorApiDocumentation,
 			configurations.mavenPluginDocumentation
@@ -495,14 +514,64 @@ task zip(type: Zip) {
 	}
 }
 
+tasks.withType(io.spring.gradle.antora.GenerateAntoraYmlTask) {
+	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
+	dependsOn dependencyVersions
+	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
+	asciidocAttributes = project.provider(() -> getAsciidocAttributes(dependencyVersions.versionConstraints))
+}
+
+def getAsciidocAttributes(def versionConstraints) {
+		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
+		if (securityVersion.endsWith("-SNAPSHOT")) {
+			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
+		}
+		return [
+			"hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
+			"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+			"jooq-version": versionConstraints["org.jooq:jooq"],
+			"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
+			"native-build-tools-version": nativeBuildToolsVersion,
+			"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
+			"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
+			"spring-boot-version": project.version,
+			"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
+			"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
+			"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
+			"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
+			"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
+			"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
+			"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
+			"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
+			"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
+			"spring-framework-version": versionConstraints["org.springframework:spring-core"],
+			"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
+			"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
+			"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
+			"spring-security-version": securityVersion,
+			"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
+			"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
+			"remote-spring-application-output": getRelativeExamplesPath( runRemoteSpringApplicationExample.outputs),
+			"spring-application-output": getRelativeExamplesPath( runSpringApplicationExample.outputs),
+			"logging-format-output": getRelativeExamplesPath(runLoggingFormatExample.outputs)
+		]
+}
+
+def getRelativeExamplesPath(var outputs) {
+	def fileName = outputs.files.singleFile.name
+	'example$example-output/' + fileName
+}
+
 artifacts {
-	archives zip
+	archives zipAdoc
 }
 
 publishing {
 	publications {
 		maven(MavenPublication) {
-			artifact zip
+			artifact zipAdoc
 		}
 	}
 }

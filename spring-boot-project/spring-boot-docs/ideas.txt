@@ -1,0 +1,110 @@
+== LAYOUT
+
+Home (home)
+About The Documentation (book)
+Getting Help (question)
+Upgrading (rocket)
+Legal (law)
+
+Tutorials
+	Developing Your First Application
+
+Reference Guides
+	Developing with Spring Boot
+	Core Features
+	Web
+	Data
+	Messaging
+	IO
+	Container Images
+	Production-ready Features
+	Deploying Applications
+	GraalVM Native Image Support
+
+How-to Guides
+	Spring Boot Application
+	Properties and Configuration
+	Embedded Web Servers
+	Spring MVC
+	Jersey
+	HTTP Clients
+	Logging
+	Data Access
+	Database Initialization
+	NoSQL
+	Messaging
+	Batch Applications
+	Actuator
+	Security
+	Hot Swapping
+	Testing
+	Build
+	Ahead-of-time Processing
+	Traditional Deployment
+	Docker Compose
+
+Build Tool Plugins
+	Overview
+	Maven Plugin
+	Gradle Plugin
+	Ant
+	Supporting Other Build Tools
+
+Spring Boot CLI
+	Overview
+
+Rest APIs
+	Actuator
+
+Java APIs
+	Spring Boot
+	Maven Plugin
+	Gradle Plugin
+
+Dunno
+	Configuration Metadata
+	Executable Jar Format
+
+Appendix
+	Common Application Properties
+	Auto-configuration Classes
+	Test Auto-configuration Annotations
+	Dependency Versions
+
+== Navigation
+
+
+Groups :: List<Group>
+
+Group ::
+	root    :: Boolean
+	node    :: String
+	title   :: String
+	include :: List<Include>
+
+Include ::
+	node  :: String
+	title :: String
+	level :: Level
+	icon  :: String
+
+Level :: { ROOT, CHILDREN }
+
+Example:
+
+groups:
+- root: true
+  include:
+  - node: index
+  - node: about
+  - node: legal
+    icon: hammer
+- node: bar/baz
+- title: Build Tools
+  include:
+  - node: maven
+  - node: gradle
+  - node: other
+    level: children
+
+

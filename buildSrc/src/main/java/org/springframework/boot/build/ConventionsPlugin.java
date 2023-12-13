@@ -46,6 +46,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		new NoHttpConventions().apply(project);
 		new JavaConventions().apply(project);
 		new MavenPublishingConventions().apply(project);
+		new AntoraConventions().apply(project);
 		new AsciidoctorConventions().apply(project);
 		new KotlinConventions().apply(project);
 		new WarConventions().apply(project);

@@ -158,7 +158,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		DocumentPluginGoals task = project.getTasks().create("documentPluginGoals", DocumentPluginGoals.class);
 		File pluginXml = new File(generatePluginDescriptorTask.getOutputs().getFiles().getSingleFile(), "plugin.xml");
 		task.setPluginXml(pluginXml);
-		task.setOutputDir(new File(project.getBuildDir(), "docs/generated/goals/"));
+		task.setOutputDir(new File(project.getBuildDir(), "generated/docs/maven-plugin-goals/"));
 		task.dependsOn(generatePluginDescriptorTask);
 	}
 

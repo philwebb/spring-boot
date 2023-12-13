@@ -106,7 +106,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println();
 			writer.println();
 			writer.printf("[[%s]]%n", sectionId);
-			writer.printf("= `%s:%s`%n", plugin.getGoalPrefix(), mojo.getGoal());
+			writer.printf("= `%s:%s`%n%n", plugin.getGoalPrefix(), mojo.getGoal());
 			writer.printf("`%s:%s:%s`%n", plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
 			writer.println();
 			writer.println(mojo.getDescription());
@@ -118,6 +118,7 @@ public class DocumentPluginGoals extends DefaultTask {
 				writer.println();
 				writer.printf("[[%s.required-parameters]]%n", sectionId);
 				writer.println("== Required parameters");
+				writer.println();
 				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
 			List<Parameter> optionalParameters = parameters.stream()
@@ -128,12 +129,14 @@ public class DocumentPluginGoals extends DefaultTask {
 				writer.println();
 				writer.printf("[[%s.optional-parameters]]%n", sectionId);
 				writer.println("== Optional parameters");
+				writer.println();
 				writeParametersTable(writer, detailsSectionId, optionalParameters);
 			}
 			writer.println();
 			writer.println();
 			writer.printf("[[%s]]%n", detailsSectionId);
 			writer.println("== Parameter details");
+			writer.println();
 			writeParameterDetails(writer, parameters, detailsSectionId);
 		}
 	}

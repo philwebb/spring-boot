@@ -1,6 +1,7 @@
 plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
+	id "org.antora"
 	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-repository"

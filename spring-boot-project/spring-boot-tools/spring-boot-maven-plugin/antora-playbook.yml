@@ -1,0 +1,38 @@
+antora:
+  extensions:
+  - '@antora/collector-extension'
+  - id: '@antora/atlas-extension'
+    require: '@antora/atlas-extension'
+    enabled: false
+  - '@opendevise/antora-release-line-extension'
+  - require: '@springio/antora-extensions/tabs-migration-extension'
+    unwrap_example_block: always
+site:
+  title: Spring Boot
+content:
+  sources:
+    - url: ./../../..
+      branches: HEAD
+      start_path: spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
+      version: development
+asciidoc:
+  attributes:
+    page-pagination: ''
+    hide-uri-scheme: '@'
+    tabs-sync-option: '@'
+    chomp: 'all'
+  extensions:
+    - '@asciidoctor/tabs'
+    - '@springio/asciidoctor-extensions'
+    - '@springio/asciidoctor-extensions/configuration-properties-extension'
+    - '@springio/asciidoctor-extensions/section-ids-extension'
+  sourcemap: true
+urls:
+  latest_version_segment: ''
+runtime:
+  log:
+    failure_level: warn
+ui:
+  bundle:
+    url: https://github.com/spring-io/antora-ui-spring/releases/download/latest/ui-bundle.zip
+    snapshot: true
