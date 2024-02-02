@@ -31,6 +31,8 @@ import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.logback.JsonEncoder.CommonFormats;
+import org.springframework.util.StringUtils;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -44,6 +46,7 @@ import org.springframework.boot.logging.LogFile;
  * @author Robert Thornton
  * @author Scott Frederick
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class DefaultLogbackConfiguration {
 
@@ -79,6 +82,7 @@ class DefaultLogbackConfiguration {
 					+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr(%applicationName[%15.15t]){faint} "
 					+ "%clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} "
 					+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
+		config.getContext().putProperty("CONSOLE_LOG_JSON", resolve(config, "${CONSOLE_LOG_JSON:-}"));
 		String defaultCharset = Charset.defaultCharset().name();
 		config.getContext()
 			.putProperty("CONSOLE_LOG_CHARSET", resolve(config, "${CONSOLE_LOG_CHARSET:-" + defaultCharset + "}"));
@@ -91,6 +95,7 @@ class DefaultLogbackConfiguration {
 		config.getContext()
 			.putProperty("FILE_LOG_CHARSET", resolve(config, "${FILE_LOG_CHARSET:-" + defaultCharset + "}"));
 		config.getContext().putProperty("FILE_LOG_THRESHOLD", resolve(config, "${FILE_LOG_THRESHOLD:-TRACE}"));
+		config.getContext().putProperty("FILE_LOG_JSON", resolve(config, "${FILE_LOG_JSON:-}"));
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -107,11 +112,19 @@ class DefaultLogbackConfiguration {
 		filter.setLevel(resolve(config, "${CONSOLE_LOG_THRESHOLD}"));
 		filter.start();
 		appender.addFilter(filter);
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
-		encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
-		config.start(encoder);
-		appender.setEncoder(encoder);
+		String jsonFormat = resolve(config, "${CONSOLE_LOG_JSON}");
+		if (StringUtils.hasLength(jsonFormat)) {
+			JsonEncoder encoder = new JsonEncoder(CommonFormats.parse(jsonFormat));
+			config.start(encoder);
+			appender.setEncoder(encoder);
+		}
+		else {
+			PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+			encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
+			encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
+			config.start(encoder);
+			appender.setEncoder(encoder);
+		}
 		config.appender("CONSOLE", appender);
 		return appender;
 	}
@@ -122,11 +135,19 @@ class DefaultLogbackConfiguration {
 		filter.setLevel(resolve(config, "${FILE_LOG_THRESHOLD}"));
 		filter.start();
 		appender.addFilter(filter);
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
-		encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
-		appender.setEncoder(encoder);
-		config.start(encoder);
+		String jsonFormat = resolve(config, "${FILE_LOG_JSON}");
+		if (StringUtils.hasLength(jsonFormat)) {
+			JsonEncoder encoder = new JsonEncoder(CommonFormats.parse(jsonFormat));
+			config.start(encoder);
+			appender.setEncoder(encoder);
+		}
+		else {
+			PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+			encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
+			encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
+			appender.setEncoder(encoder);
+			config.start(encoder);
+		}
 		appender.setFile(logFile);
 		setRollingPolicy(appender, config);
 		config.appender("FILE", appender);
