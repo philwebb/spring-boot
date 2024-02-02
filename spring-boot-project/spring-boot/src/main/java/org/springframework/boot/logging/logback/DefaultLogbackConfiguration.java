@@ -114,7 +114,7 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String jsonFormat = resolve(config, "${CONSOLE_LOG_JSON}");
 		if (StringUtils.hasLength(jsonFormat)) {
-			JsonEncoder encoder = new JsonEncoder(CommonFormats.parse(jsonFormat));
+			JsonEncoder encoder = createJsonEncoder(jsonFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -129,6 +129,10 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
+	private static JsonEncoder createJsonEncoder(String jsonFormat) {
+		return new JsonEncoder(CommonFormats.parse(jsonFormat), ProcessHandle.current().pid(), null, null);
+	}
+
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		ThresholdFilter filter = new ThresholdFilter();
@@ -137,7 +141,7 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String jsonFormat = resolve(config, "${FILE_LOG_JSON}");
 		if (StringUtils.hasLength(jsonFormat)) {
-			JsonEncoder encoder = new JsonEncoder(CommonFormats.parse(jsonFormat));
+			JsonEncoder encoder = createJsonEncoder(jsonFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
