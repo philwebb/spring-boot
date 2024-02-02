@@ -26,10 +26,12 @@ import java.util.Map.Entry;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
 import org.slf4j.event.KeyValuePair;
 
+import org.springframework.boot.logging.logback.JsonEncoder.Format.Context;
 import org.springframework.boot.logging.logback.JsonEncoder.Format.Field;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -45,14 +47,23 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 	private final Format format;
 
+	private final Context formatContext;
+
 	JsonEncoder(Format format) {
 		this.format = format;
+		this.formatContext = new Context(this.throwableProxyConverter);
 	}
 
 	@Override
 	public void start() {
 		super.start();
 		this.throwableProxyConverter.start();
+	}
+
+	@Override
+	public void stop() {
+		this.throwableProxyConverter.stop();
+		super.stop();
 	}
 
 	@Override
@@ -64,7 +75,7 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 	public byte[] encode(ILoggingEvent event) {
 		StringBuilder output = new StringBuilder();
 		output.append('{');
-		for (Field field : this.format.getFields(event)) {
+		for (Field field : this.format.getFields(this.formatContext, event)) {
 			writeField(field, output);
 		}
 		removeTrailingComma(output);
@@ -162,7 +173,7 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 	interface Format {
 
-		Iterable<Field> getFields(ILoggingEvent event);
+		Iterable<Field> getFields(Context context, ILoggingEvent event);
 
 		record Field(String key, String value, boolean escapeKey, boolean escapeValue) {
 			static Field escaped(String key, String value) {
@@ -178,13 +189,16 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 			}
 		}
 
+		record Context(ThrowableProxyConverter throwableProxyConverter) {
+		}
+
 	}
 
 	enum CommonFormats implements Format {
 
 		ECS {
 			@Override
-			public Iterable<Field> getFields(ILoggingEvent event) {
+			public Iterable<Field> getFields(Context context, ILoggingEvent event) {
 				List<Field> fields = new ArrayList<>();
 				fields.add(Field.verbatim("@timestamp", Instant.ofEpochMilli(event.getTimeStamp()).toString()));
 				fields.add(Field.verbatim("log.level", event.getLevel().toString()));
@@ -194,9 +208,16 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 				fields.add(Field.escapedValue("log.logger", event.getLoggerName()));
 				addMdc(event, fields);
 				addKeyValuePairs(event, fields);
+				IThrowableProxy throwable = event.getThrowableProxy();
+				if (throwable != null) {
+					fields.add(Field.verbatim("error.type", throwable.getClassName()));
+					fields.add(Field.escapedValue("error.message", throwable.getMessage()));
+					fields
+						.add(Field.escapedValue("error.stack_trace", context.throwableProxyConverter().convert(event)));
+				}
 				return fields;
 				// TODO: Service name, service version, service env, service node name,
-				// event dataset, stacktrace
+				// event dataset
 			}
 
 			private void addKeyValuePairs(ILoggingEvent event, List<Field> fields) {

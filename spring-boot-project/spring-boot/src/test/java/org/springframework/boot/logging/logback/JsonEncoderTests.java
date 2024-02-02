@@ -25,6 +25,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.classic.util.LogbackMDCAdapter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,20 +103,39 @@ class JsonEncoderTests {
 					.trim());
 	}
 
+	@Test
+	void shouldAddStacktrace() {
+		String message = encode(event(Level.ERROR, "Some message", new RuntimeException("Boom")));
+		assertThat(message).startsWith(
+				"""
+						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"ERROR","message":"Some message","ecs.version":"1.2.0","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","error.type":"java.lang.RuntimeException","error.message":"Boom","error.stack_trace":"java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.logback.JsonEncoderTests.shouldAddStacktrace(
+						"""
+					.trim());
+	}
+
 	private String encode(ILoggingEvent event) {
-		return new String(this.jsonEncoder.encode(event), StandardCharsets.UTF_8);
+		return new String(this.jsonEncoder.encode(event), StandardCharsets.UTF_8).trim();
 	}
 
 	private ILoggingEvent event(Level level, String message) {
 		return event(level, message, Collections.emptyMap());
 	}
 
+	private ILoggingEvent event(Level level, String message, Throwable throwable) {
+		return event(level, message, Collections.emptyMap(), Collections.emptyMap(), throwable);
+	}
+
 	private ILoggingEvent event(Level level, String message, Map<String, String> mdc) {
-		return event(level, message, mdc, Collections.emptyMap());
+		return event(level, message, mdc, Collections.emptyMap(), null);
 	}
 
 	private ILoggingEvent event(Level level, String message, Map<String, String> mdc,
 			Map<String, Object> keyValuePairs) {
+		return event(level, message, mdc, keyValuePairs, null);
+	}
+
+	private ILoggingEvent event(Level level, String message, Map<String, String> mdc, Map<String, Object> keyValuePairs,
+			Throwable exception) {
 		LoggingEvent event = new LoggingEvent();
 		event.setMDCPropertyMap(mdc);
 		event.setLoggerContext(this.loggerContext);
@@ -128,6 +148,9 @@ class JsonEncoderTests {
 			.stream()
 			.map((entry) -> new KeyValuePair(entry.getKey(), entry.getValue()))
 			.toList());
+		if (exception != null) {
+			event.setThrowableProxy(new ThrowableProxy(exception));
+		}
 		return event;
 	}
 
