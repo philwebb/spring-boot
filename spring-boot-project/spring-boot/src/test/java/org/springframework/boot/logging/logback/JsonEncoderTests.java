@@ -54,6 +54,10 @@ class JsonEncoderTests {
 		this.loggerContext = new LoggerContext();
 		this.loggerContext.setMDCAdapter(new LogbackMDCAdapter());
 		this.jsonEncoder = new JsonEncoder(CommonFormats.ECS);
+		initializeJsonEncoder();
+	}
+
+	private void initializeJsonEncoder() {
 		this.jsonEncoder.setContext(this.loggerContext);
 		this.jsonEncoder.start();
 	}
@@ -68,7 +72,7 @@ class JsonEncoderTests {
 		String message = encode(event(Level.INFO, "Some message"));
 		assertThat(message).isEqualTo(
 				"""
-						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"INFO","message":"Some message","ecs.version":"1.2.0","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests"}
+						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"INFO","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","message":"Some message","ecs.version":"1.2.0"}
 						"""
 					.trim());
 	}
@@ -78,7 +82,7 @@ class JsonEncoderTests {
 		String message = encode(event(Level.TRACE, "Some message\r\n\t\f\b\\\""));
 		assertThat(message).isEqualTo(
 				"""
-						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"TRACE","message":"Some message\\r\\n\\t\\f\\b\\\\\\"","ecs.version":"1.2.0","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests"}
+						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"TRACE","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","message":"Some message\\r\\n\\t\\f\\b\\\\\\"","ecs.version":"1.2.0"}
 						"""
 					.trim());
 	}
@@ -88,7 +92,7 @@ class JsonEncoderTests {
 		String message = encode(event(Level.WARN, "Some message", Map.of("mdc-k1", "mdc-v1")));
 		assertThat(message).isEqualTo(
 				"""
-						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"WARN","message":"Some message","ecs.version":"1.2.0","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","mdc-k1":"mdc-v1"}
+						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"WARN","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","message":"Some message","mdc-k1":"mdc-v1","ecs.version":"1.2.0"}
 						"""
 					.trim());
 	}
@@ -98,7 +102,7 @@ class JsonEncoderTests {
 		String message = encode(event(Level.ERROR, "Some message", Collections.emptyMap(), Map.of("kvp-k1", "kvp-v1")));
 		assertThat(message).isEqualTo(
 				"""
-						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"ERROR","message":"Some message","ecs.version":"1.2.0","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","kvp-k1":"kvp-v1"}
+						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"ERROR","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","message":"Some message","kvp-k1":"kvp-v1","ecs.version":"1.2.0"}
 						"""
 					.trim());
 	}
@@ -108,7 +112,7 @@ class JsonEncoderTests {
 		String message = encode(event(Level.ERROR, "Some message", new RuntimeException("Boom")));
 		assertThat(message).startsWith(
 				"""
-						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"ERROR","message":"Some message","ecs.version":"1.2.0","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","error.type":"java.lang.RuntimeException","error.message":"Boom","error.stack_trace":"java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.logback.JsonEncoderTests.shouldAddStacktrace(
+						{"@timestamp":"2020-02-02T01:01:01Z","log.level":"ERROR","process.thread.name":"main","log.logger":"org.springframework.boot.logging.logback.JsonEncoderTests","message":"Some message","error.type":"java.lang.RuntimeException","error.message":"Boom","error.stack_trace":"java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.logback.JsonEncoderTests.shouldAddStacktrace(
 						"""
 					.trim());
 	}
