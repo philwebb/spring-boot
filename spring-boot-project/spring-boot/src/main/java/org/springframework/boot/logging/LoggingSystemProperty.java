@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,11 @@ public enum LoggingSystemProperty {
 	CONSOLE_CHARSET("CONSOLE_LOG_CHARSET", "logging.charset.console"),
 
 	/**
+	 * Logging system property for the console JSON format.
+	 */
+	CONSOLE_JSON_FORMAT("CONSOLE_LOG_JSON", "logging.json.console"),
+
+	/**
 	 * Logging system property for the file log charset.
 	 */
 	FILE_CHARSET("FILE_LOG_CHARSET", "logging.charset.file"),
@@ -79,6 +84,11 @@ public enum LoggingSystemProperty {
 	 * Logging system property for the file log pattern.
 	 */
 	FILE_PATTERN("FILE_LOG_PATTERN", "logging.pattern.file"),
+
+	/**
+	 * Logging system property for the file JSON format.
+	 */
+	FILE_JSON_FORMAT("FILE_LOG_JSON", "logging.json.file"),
 
 	/**
 	 * Logging system property for the log level pattern.
