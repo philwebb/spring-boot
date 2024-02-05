@@ -31,6 +31,12 @@ public enum LoggingSystemProperty {
 	APPLICATION_NAME("LOGGED_APPLICATION_NAME"),
 
 	/**
+	 * Logging system property for the verbatim application name (without spaces and
+	 * brackets).
+	 */
+	VERBATIM_APPLICATION_NAME("APPLICATION_NAME"),
+
+	/**
 	 * Logging system property for the process ID.
 	 */
 	PID("PID"),
