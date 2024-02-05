@@ -248,12 +248,14 @@ public class LoggingSystemProperties {
 	}
 
 	private void setApplicationNameSystemProperty(PropertyResolver resolver) {
-		if (resolver.getProperty("logging.include-application-name", Boolean.class, Boolean.TRUE)) {
-			String applicationName = resolver.getProperty("spring.application.name");
-			if (StringUtils.hasText(applicationName)) {
+		String applicationName = resolver.getProperty("spring.application.name");
+		if (StringUtils.hasText(applicationName)) {
+			if (resolver.getProperty("logging.include-application-name", Boolean.class, Boolean.TRUE)) {
 				setSystemProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName(),
 						"[%s] ".formatted(applicationName));
 			}
+			setSystemProperty(LoggingSystemProperty.VERBATIM_APPLICATION_NAME.getEnvironmentVariableName(),
+					applicationName);
 		}
 	}
 

@@ -114,7 +114,7 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String jsonFormat = resolve(config, "${CONSOLE_LOG_JSON}");
 		if (StringUtils.hasLength(jsonFormat)) {
-			JsonEncoder encoder = createJsonEncoder(jsonFormat);
+			JsonEncoder encoder = createJsonEncoder(config, jsonFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -129,10 +129,6 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
-	private static JsonEncoder createJsonEncoder(String jsonFormat) {
-		return new JsonEncoder(CommonFormats.parse(jsonFormat), ProcessHandle.current().pid(), null, null);
-	}
-
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		ThresholdFilter filter = new ThresholdFilter();
@@ -141,7 +137,7 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String jsonFormat = resolve(config, "${FILE_LOG_JSON}");
 		if (StringUtils.hasLength(jsonFormat)) {
-			JsonEncoder encoder = createJsonEncoder(jsonFormat);
+			JsonEncoder encoder = createJsonEncoder(config, jsonFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -156,6 +152,13 @@ class DefaultLogbackConfiguration {
 		setRollingPolicy(appender, config);
 		config.appender("FILE", appender);
 		return appender;
+	}
+
+	private JsonEncoder createJsonEncoder(LogbackConfigurator config, String jsonFormat) {
+		long pid = resolveLong(config, "${PID:--1}");
+		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
+		return new JsonEncoder(CommonFormats.parse(jsonFormat), pid,
+				StringUtils.hasLength(applicationName) ? applicationName : null, null);
 	}
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config) {
@@ -179,6 +182,10 @@ class DefaultLogbackConfiguration {
 
 	private int resolveInt(LogbackConfigurator config, String val) {
 		return Integer.parseInt(resolve(config, val));
+	}
+
+	private long resolveLong(LogbackConfigurator config, String val) {
+		return Long.parseLong(resolve(config, val));
 	}
 
 	private FileSize resolveFileSize(LogbackConfigurator config, String val) {
