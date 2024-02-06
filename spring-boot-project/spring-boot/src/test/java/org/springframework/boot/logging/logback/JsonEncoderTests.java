@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.KeyValuePair;
 
-import org.springframework.boot.logging.logback.JsonEncoder.CommonFormats;
+import org.springframework.boot.logging.logback.JsonEncoder.CommonJsonFormats;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +53,7 @@ class JsonEncoderTests {
 	void setUp() {
 		this.loggerContext = new LoggerContext();
 		this.loggerContext.setMDCAdapter(new LogbackMDCAdapter());
-		this.jsonEncoder = new JsonEncoder(CommonFormats.ECS);
+		this.jsonEncoder = new JsonEncoder(CommonJsonFormats.ecs());
 		initializeJsonEncoder();
 	}
 

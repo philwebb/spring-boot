@@ -18,10 +18,11 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Supplier;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -30,8 +31,13 @@ import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
 import org.slf4j.event.KeyValuePair;
 
-import org.springframework.boot.logging.logback.JsonEncoder.JsonFormat.Context;
-import org.springframework.boot.logging.logback.JsonEncoder.JsonFormat.Field;
+import org.springframework.beans.BeanUtils;
+import org.springframework.boot.logging.json.Field;
+import org.springframework.boot.logging.json.JsonFormat;
+import org.springframework.boot.logging.json.Key;
+import org.springframework.boot.logging.json.Value;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -40,27 +46,77 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Moritz Halbritter
  */
-class JsonEncoder extends EncoderBase<ILoggingEvent> {
+public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
 
-	private final JsonFormat format;
+	private LogbackJsonFormat format;
 
-	private final Context formatContext;
+	private Long pid;
 
-	JsonEncoder(JsonFormat format) {
+	private String serviceName;
+
+	private String serviceVersion;
+
+	public JsonEncoder() {
+		// Needed for Logback XML configuration
+		this(null, null, null, null);
+	}
+
+	public JsonEncoder(LogbackJsonFormat format) {
 		this(format, null, null, null);
 	}
 
-	JsonEncoder(JsonFormat format, Long pid, String serviceName, String serviceVersion) {
+	public JsonEncoder(LogbackJsonFormat format, Long pid, String serviceName, String serviceVersion) {
 		this.format = format;
-		this.formatContext = new Context(pid, serviceName, serviceVersion, this.throwableProxyConverter);
+		this.pid = pid;
+		this.serviceName = serviceName;
+		this.serviceVersion = serviceVersion;
+	}
+
+	/**
+	 * Sets the format. Accepts either a common format ID, or a fully qualified class
+	 * name.
+	 * @param format the format
+	 */
+	public void setFormat(String format) {
+		LogbackJsonFormat commonFormat = CommonJsonFormats.create(format);
+		if (commonFormat != null) {
+			this.format = commonFormat;
+		}
+		else if (ClassUtils.isPresent(format, null)) {
+			this.format = BeanUtils.instantiateClass(ClassUtils.resolveClassName(format, null),
+					LogbackJsonFormat.class);
+		}
+		else {
+			throw new IllegalArgumentException(
+					"Unknown format '%s'. Common formats are: %s".formatted(format, CommonJsonFormats.names()));
+		}
+	}
+
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public void setServiceVersion(String serviceVersion) {
+		this.serviceVersion = serviceVersion;
 	}
 
 	@Override
 	public void start() {
+		Assert.state(this.format != null, "Format has not been set");
 		super.start();
 		this.throwableProxyConverter.start();
+		if (this.pid != null) {
+			this.format.setPid(this.pid);
+		}
+		this.format.setServiceName(this.serviceName);
+		this.format.setServiceVersion(this.serviceVersion);
+		this.format.setThrowableProxyConverter(this.throwableProxyConverter);
 	}
 
 	@Override
@@ -78,7 +134,7 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 	public byte[] encode(ILoggingEvent event) {
 		StringBuilder output = new StringBuilder();
 		output.append('{');
-		for (Field field : this.format.getFields(this.formatContext, event)) {
+		for (Field field : this.format.getFields(event)) {
 			field.write(output);
 			output.append(',');
 		}
@@ -101,145 +157,106 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		return null;
 	}
 
-	interface JsonFormat {
+	public static abstract class LogbackJsonFormat implements JsonFormat<ILoggingEvent> {
 
-		Iterable<Field> getFields(Context context, ILoggingEvent event);
+		private Long pid = null;
 
-		record Context(Long pid, String serviceName, String serviceVersion,
-				ThrowableProxyConverter throwableProxyConverter) {
-		}
+		private String serviceName;
 
-		interface Field {
+		private String serviceVersion;
 
-			void write(StringBuilder output);
+		private ThrowableProxyConverter throwableProxyConverter;
 
-		}
-
-	}
-
-	static final class StandardField implements JsonFormat.Field {
-
-		private final Key key;
-
-		private final Value value;
-
-		private StandardField(Key key, Value value) {
-			this.key = key;
-			this.value = value;
+		@Override
+		public void setPid(long pid) {
+			this.pid = pid;
 		}
 
 		@Override
-		public void write(StringBuilder output) {
-			output.append('\"');
-			this.key.write(output);
-			output.append("\":");
-			this.value.write(output);
+		public void setServiceName(String serviceName) {
+			this.serviceName = serviceName;
 		}
 
-		static StandardField of(Key key, Value value) {
-			return new StandardField(key, value);
+		@Override
+		public void setServiceVersion(String serviceVersion) {
+			this.serviceVersion = serviceVersion;
 		}
 
-	}
-
-	interface Key {
-
-		void write(StringBuilder output);
-
-		static Key verbatim(String key) {
-			return (output) -> output.append(key);
+		public void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter) {
+			this.throwableProxyConverter = throwableProxyConverter;
 		}
 
-		static Key escaped(String key) {
-			return (output) -> JsonHelper.escape(key, output);
+		public Long getPid() {
+			return this.pid;
 		}
 
-	}
-
-	interface Value {
-
-		void write(StringBuilder output);
-
-		static Value verbatim(String value) {
-			return (output) -> output.append('\"').append(value).append('\"');
+		public String getServiceName() {
+			return this.serviceName;
 		}
 
-		static Value escaped(String value) {
-			return (output) -> {
-				output.append('\"');
-				JsonHelper.escape(value, output);
-				output.append('\"');
-			};
+		public String getServiceVersion() {
+			return this.serviceVersion;
 		}
 
-		static Value of(long value) {
-			return (output) -> output.append(value);
+		public ThrowableProxyConverter getThrowableProxyConverter() {
+			return this.throwableProxyConverter;
 		}
 
 	}
 
-	private static final class JsonHelper {
+	static final class CommonJsonFormats {
 
-		private JsonHelper() {
+		private static final Map<String, Supplier<LogbackJsonFormat>> FORMATS = Map.of("ecs", CommonJsonFormats::ecs);
+
+		static EcsJsonFormat ecs() {
+			return new EcsJsonFormat();
 		}
 
-		static void escape(String text, StringBuilder output) {
-			for (int i = 0; i < text.length(); i++) {
-				char c = text.charAt(i);
-				escape(c, output);
-			}
+		static Set<String> names() {
+			return FORMATS.keySet();
 		}
 
-		static void escape(char c, StringBuilder output) {
-			// TODO: More JSON \\u escaping, see
-			// co.elastic.logging.JsonUtils#quoteAsString(java.lang.CharSequence, int,
-			// int,
-			// java.lang.StringBuilder)
-			switch (c) {
-				case '\b' -> output.append("\\b");
-				case '\t' -> output.append("\\t");
-				case '\f' -> output.append("\\f");
-				case '\n' -> output.append("\\n");
-				case '\r' -> output.append("\\r");
-				case '"' -> output.append("\\\"");
-				case '\\' -> output.append("\\\\");
-				default -> output.append(c);
-			}
+		/**
+		 * Returns a new instance of the requested {@link LogbackJsonFormat}. Returns
+		 * {@code null} if the format isn't known.
+		 * @param format the requested format
+		 * @return a new instance of the request format or{@code null} if the format isn't
+		 * known.
+		 */
+		static LogbackJsonFormat create(String format) {
+			Assert.notNull(format, "Format must not be null");
+			return FORMATS.get(format.toLowerCase()).get();
 		}
 
-	}
+		private static final class EcsJsonFormat extends LogbackJsonFormat {
 
-	enum CommonFormats implements JsonFormat {
-
-		ECS {
 			@Override
-			public Iterable<Field> getFields(Context context, ILoggingEvent event) {
+			public Iterable<Field> getFields(ILoggingEvent event) {
 				List<Field> fields = new ArrayList<>();
-				fields.add(StandardField.of(Key.verbatim("@timestamp"), Value.verbatim(event.getInstant().toString())));
-				fields.add(StandardField.of(Key.verbatim("log.level"), Value.verbatim(event.getLevel().toString())));
-				if (context.pid() != null) {
-					fields.add(StandardField.of(Key.verbatim("process.pid"), Value.of(context.pid())));
+				fields.add(Field.of(Key.verbatim("@timestamp"), Value.verbatim(event.getInstant().toString())));
+				fields.add(Field.of(Key.verbatim("log.level"), Value.verbatim(event.getLevel().toString())));
+				if (getPid() != null) {
+					fields.add(Field.of(Key.verbatim("process.pid"), Value.of(getPid())));
 				}
-				fields.add(StandardField.of(Key.verbatim("process.thread.name"), Value.escaped(event.getThreadName())));
-				if (context.serviceName() != null) {
-					fields.add(StandardField.of(Key.verbatim("service.name"), Value.escaped(context.serviceName())));
+				fields.add(Field.of(Key.verbatim("process.thread.name"), Value.escaped(event.getThreadName())));
+				if (getServiceName() != null) {
+					fields.add(Field.of(Key.verbatim("service.name"), Value.escaped(getServiceName())));
 				}
-				if (context.serviceVersion() != null) {
-					fields.add(
-							StandardField.of(Key.verbatim("service.version"), Value.escaped(context.serviceVersion())));
+				if (getServiceVersion() != null) {
+					fields.add(Field.of(Key.verbatim("service.version"), Value.escaped(getServiceVersion())));
 				}
-				fields.add(StandardField.of(Key.verbatim("log.logger"), Value.escaped(event.getLoggerName())));
-				fields.add(StandardField.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
+				fields.add(Field.of(Key.verbatim("log.logger"), Value.escaped(event.getLoggerName())));
+				fields.add(Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
 				addMdc(event, fields);
 				addKeyValuePairs(event, fields);
 				IThrowableProxy throwable = event.getThrowableProxy();
 				if (throwable != null) {
-					fields.add(StandardField.of(Key.verbatim("error.type"), Value.verbatim(throwable.getClassName())));
-					fields.add(StandardField.of(Key.verbatim("error.message"), Value.escaped(throwable.getMessage())));
-					fields.add(StandardField.of(Key.verbatim("error.stack_trace"),
-							Value.escaped(context.throwableProxyConverter().convert(event))));
+					fields.add(Field.of(Key.verbatim("error.type"), Value.verbatim(throwable.getClassName())));
+					fields.add(Field.of(Key.verbatim("error.message"), Value.escaped(throwable.getMessage())));
+					fields.add(Field.of(Key.verbatim("error.stack_trace"),
+							Value.escaped(getThrowableProxyConverter().convert(event))));
 				}
-				fields.add(StandardField.of(Key.verbatim("ecs.version"), Value.verbatim("1.2.0")));
+				fields.add(Field.of(Key.verbatim("ecs.version"), Value.verbatim("1.2.0")));
 				return fields;
 				// TODO: Service name, service version, service env, service node name,
 				// event dataset
@@ -251,7 +268,7 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 					return;
 				}
 				for (KeyValuePair keyValuePair : keyValuePairs) {
-					fields.add(StandardField.of(Key.escaped(keyValuePair.key),
+					fields.add(Field.of(Key.escaped(keyValuePair.key),
 							Value.escaped(ObjectUtils.nullSafeToString(keyValuePair.value))));
 				}
 			}
@@ -262,19 +279,10 @@ class JsonEncoder extends EncoderBase<ILoggingEvent> {
 					return;
 				}
 				for (Entry<String, String> entry : mdc.entrySet()) {
-					fields.add(StandardField.of(Key.escaped(entry.getKey()), Value.escaped(entry.getValue())));
+					fields.add(Field.of(Key.escaped(entry.getKey()), Value.escaped(entry.getValue())));
 				}
 			}
-		};
 
-		static JsonFormat parse(String input) {
-			for (CommonFormats value : values()) {
-				if (value.name().equalsIgnoreCase(input)) {
-					return value;
-				}
-			}
-			throw new IllegalArgumentException(
-					"Unknown format '%s'. Known formats: %s".formatted(input, Arrays.toString(values())));
 		}
 
 	}
