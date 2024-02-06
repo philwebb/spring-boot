@@ -31,7 +31,6 @@ import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.boot.logging.LogFile;
-import org.springframework.boot.logging.logback.JsonEncoder.CommonFormats;
 import org.springframework.util.StringUtils;
 
 /**
@@ -154,11 +153,13 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
-	private JsonEncoder createJsonEncoder(LogbackConfigurator config, String jsonFormat) {
+	private JsonEncoder createJsonEncoder(LogbackConfigurator config, String format) {
 		long pid = resolveLong(config, "${PID:--1}");
 		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
-		return new JsonEncoder(CommonFormats.parse(jsonFormat), pid,
+		JsonEncoder encoder = new JsonEncoder(null, pid,
 				StringUtils.hasLength(applicationName) ? applicationName : null, null);
+		encoder.setFormat(format);
+		return encoder;
 	}
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config) {

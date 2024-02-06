@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+	<appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${CONSOLE_LOG_THRESHOLD}</level>
+		</filter>
+		<encoder class="org.springframework.boot.logging.logback.JsonEncoder">
+			<pid>${PID}</pid>
+			<format>ECS</format>
+		</encoder>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="JSON_CONSOLE" />
+	</root>
+</configuration>
