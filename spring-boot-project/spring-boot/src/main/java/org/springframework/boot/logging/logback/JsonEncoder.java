@@ -58,20 +58,26 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 	private String serviceVersion;
 
+	private String serviceNodeName;
+
+	private String serviceEnvironment;
+
 	public JsonEncoder() {
-		// Needed for Logback XML configuration
-		this(null, null, null, null);
+		// Constructor needed for Logback XML configuration
+		this(null);
 	}
 
 	public JsonEncoder(LogbackJsonFormat format) {
-		this(format, null, null, null);
+		this(format, null, null, null, null, null);
 	}
 
-	public JsonEncoder(LogbackJsonFormat format, Long pid, String serviceName, String serviceVersion) {
+	public JsonEncoder(LogbackJsonFormat format, Long pid, String serviceName, String serviceVersion, String serviceNodeName, String serviceEnvironment) {
 		this.format = format;
 		this.pid = pid;
 		this.serviceName = serviceName;
 		this.serviceVersion = serviceVersion;
+		this.serviceNodeName = serviceNodeName;
+		this.serviceEnvironment = serviceEnvironment;
 	}
 
 	/**
@@ -106,6 +112,14 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		this.serviceVersion = serviceVersion;
 	}
 
+	public void setServiceNodeName(String serviceNodeName) {
+		this.serviceNodeName = serviceNodeName;
+	}
+
+	public void setServiceEnvironment(String serviceEnvironment) {
+		this.serviceEnvironment = serviceEnvironment;
+	}
+
 	@Override
 	public void start() {
 		Assert.state(this.format != null, "Format has not been set");
@@ -116,6 +130,8 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		}
 		this.format.setServiceName(this.serviceName);
 		this.format.setServiceVersion(this.serviceVersion);
+		this.format.setServiceEnvironment(this.serviceEnvironment);
+		this.format.setServiceNodeName(this.serviceNodeName);
 		this.format.setThrowableProxyConverter(this.throwableProxyConverter);
 	}
 
@@ -157,7 +173,11 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		return null;
 	}
 
-	public static abstract class LogbackJsonFormat implements JsonFormat<ILoggingEvent> {
+	public interface LogbackJsonFormat extends JsonFormat<ILoggingEvent> {
+		void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter);
+	}
+
+	static abstract class BaseLogbackJsonFormat implements LogbackJsonFormat {
 
 		private Long pid = null;
 
@@ -166,6 +186,10 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		private String serviceVersion;
 
 		private ThrowableProxyConverter throwableProxyConverter;
+
+		private String serviceNodeName;
+
+		private String serviceEnvironment;
 
 		@Override
 		public void setPid(long pid) {
@@ -182,26 +206,44 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 			this.serviceVersion = serviceVersion;
 		}
 
+		@Override
 		public void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter) {
 			this.throwableProxyConverter = throwableProxyConverter;
 		}
 
-		public Long getPid() {
+		@Override
+		public void setServiceNodeName(String serviceNodeName) {
+			this.serviceNodeName = serviceNodeName;
+		}
+
+		@Override
+		public void setServiceEnvironment(String serviceEnvironment) {
+			this.serviceEnvironment = serviceEnvironment;
+		}
+
+		Long getPid() {
 			return this.pid;
 		}
 
-		public String getServiceName() {
+		String getServiceName() {
 			return this.serviceName;
 		}
 
-		public String getServiceVersion() {
+		String getServiceVersion() {
 			return this.serviceVersion;
 		}
 
-		public ThrowableProxyConverter getThrowableProxyConverter() {
+		ThrowableProxyConverter getThrowableProxyConverter() {
 			return this.throwableProxyConverter;
 		}
 
+		String getServiceNodeName() {
+			return this.serviceNodeName;
+		}
+
+		String getServiceEnvironment() {
+			return this.serviceEnvironment;
+		}
 	}
 
 	static final class CommonJsonFormats {
@@ -228,7 +270,7 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 			return FORMATS.get(format.toLowerCase()).get();
 		}
 
-		private static final class EcsJsonFormat extends LogbackJsonFormat {
+		private static final class EcsJsonFormat extends BaseLogbackJsonFormat {
 
 			@Override
 			public Iterable<Field> getFields(ILoggingEvent event) {
@@ -245,6 +287,12 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 				if (getServiceVersion() != null) {
 					fields.add(Field.of(Key.verbatim("service.version"), Value.escaped(getServiceVersion())));
 				}
+				if (getServiceEnvironment() != null) {
+					fields.add(Field.of(Key.verbatim("service.environment"), Value.escaped(getServiceEnvironment())));
+				}
+				if (getServiceNodeName() != null) {
+					fields.add(Field.of(Key.verbatim("service.node.name"), Value.escaped(getServiceNodeName())));
+				}
 				fields.add(Field.of(Key.verbatim("log.logger"), Value.escaped(event.getLoggerName())));
 				fields.add(Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
 				addMdc(event, fields);
@@ -256,9 +304,9 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 					fields.add(Field.of(Key.verbatim("error.stack_trace"),
 							Value.escaped(getThrowableProxyConverter().convert(event))));
 				}
-				fields.add(Field.of(Key.verbatim("ecs.version"), Value.verbatim("1.2.0")));
+				fields.add(Field.of(Key.verbatim("ecs.version"), Value.verbatim("8.11")));
 				return fields;
-				// TODO: Service name, service version, service env, service node name,
+				// TODO: service env, service node name,
 				// event dataset
 			}
 

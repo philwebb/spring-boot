@@ -34,6 +34,12 @@ public interface JsonFormat<E> {
 	default void setServiceVersion(String serviceVersion) {
 	}
 
+	default void setServiceNodeName(String serviceNodeName) {
+	}
+
+	default void setServiceEnvironment(String serviceEnvironment) {
+	}
+
 	/**
 	 * Returns the fields to write.
 	 * @param event the event to log
