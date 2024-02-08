@@ -21,18 +21,21 @@ import java.util.List;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
 import org.springframework.boot.logging.json.Field;
-import org.springframework.boot.logging.json.JsonFormat;
 import org.springframework.boot.logging.json.Key;
 import org.springframework.boot.logging.json.Value;
+import org.springframework.boot.logging.logback.JsonEncoder.LogbackJsonFormat;
 
 /**
+ * A custom implementation of a JSON format.
+ *
  * @author Moritz Halbritter
  */
-class CustomJsonFormat implements JsonFormat<ILoggingEvent> {
+class CustomJsonFormat implements LogbackJsonFormat {
 
 	@Override
 	public Iterable<Field> getFields(ILoggingEvent event) {
-		return List.of(Field.of(Key.verbatim("epoch"), Value.of(event.getInstant().toEpochMilli())));
+		return List.of(Field.of(Key.verbatim("epoch"), Value.of(event.getInstant().toEpochMilli())),
+				Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
 	}
 
 }

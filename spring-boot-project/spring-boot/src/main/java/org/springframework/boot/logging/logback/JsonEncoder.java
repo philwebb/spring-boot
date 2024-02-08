@@ -45,6 +45,7 @@ import org.springframework.util.ObjectUtils;
  * {@link Encoder Logback encoder} which encodes to JSON-based formats.
  *
  * @author Moritz Halbritter
+ * @since 3.3.0
  */
 public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
@@ -71,7 +72,8 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		this(format, null, null, null, null, null);
 	}
 
-	public JsonEncoder(LogbackJsonFormat format, Long pid, String serviceName, String serviceVersion, String serviceNodeName, String serviceEnvironment) {
+	public JsonEncoder(LogbackJsonFormat format, Long pid, String serviceName, String serviceVersion,
+			String serviceNodeName, String serviceEnvironment) {
 		this.format = format;
 		this.pid = pid;
 		this.serviceName = serviceName;
@@ -174,10 +176,13 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 	}
 
 	public interface LogbackJsonFormat extends JsonFormat<ILoggingEvent> {
-		void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter);
+
+		default void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter) {
+		}
+
 	}
 
-	static abstract class BaseLogbackJsonFormat implements LogbackJsonFormat {
+	abstract static class BaseLogbackJsonFormat implements LogbackJsonFormat {
 
 		private Long pid = null;
 
@@ -185,11 +190,11 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 		private String serviceVersion;
 
-		private ThrowableProxyConverter throwableProxyConverter;
-
 		private String serviceNodeName;
 
 		private String serviceEnvironment;
+
+		private ThrowableProxyConverter throwableProxyConverter;
 
 		@Override
 		public void setPid(long pid) {
@@ -244,6 +249,7 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		String getServiceEnvironment() {
 			return this.serviceEnvironment;
 		}
+
 	}
 
 	static final class CommonJsonFormats {
@@ -267,7 +273,11 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		 */
 		static LogbackJsonFormat create(String format) {
 			Assert.notNull(format, "Format must not be null");
-			return FORMATS.get(format.toLowerCase()).get();
+			Supplier<LogbackJsonFormat> factory = FORMATS.get(format.toLowerCase());
+			if (factory == null) {
+				return null;
+			}
+			return factory.get();
 		}
 
 		private static final class EcsJsonFormat extends BaseLogbackJsonFormat {
