@@ -157,7 +157,7 @@ class DefaultLogbackConfiguration {
 		long pid = resolveLong(config, "${PID:--1}");
 		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
 		JsonEncoder encoder = new JsonEncoder(null, pid,
-				StringUtils.hasLength(applicationName) ? applicationName : null, null);
+				StringUtils.hasLength(applicationName) ? applicationName : null, null, null, null);
 		encoder.setFormat(format);
 		return encoder;
 	}

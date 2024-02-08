@@ -6,8 +6,11 @@
 			<level>${CONSOLE_LOG_THRESHOLD}</level>
 		</filter>
 		<encoder class="org.springframework.boot.logging.logback.JsonEncoder">
-			<pid>${PID}</pid>
 			<format>ECS</format>
+			<pid>${PID}</pid>
+			<serviceName>${APPLICATION_NAME}</serviceName>
+			<serviceNodeName>node-1</serviceNodeName>
+			<serviceEnvironment>production</serviceEnvironment>
 		</encoder>
 	</appender>
 
