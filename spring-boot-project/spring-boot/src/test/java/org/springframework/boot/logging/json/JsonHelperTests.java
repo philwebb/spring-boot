@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  */
 class JsonHelperTests {
+
 	@Test
 	void shouldEscapeControlChars() {
 		String escaped = escape("\b\t\f\n\r");
@@ -49,4 +50,5 @@ class JsonHelperTests {
 		JsonHelper.escape(input, result);
 		return result.toString();
 	}
+
 }

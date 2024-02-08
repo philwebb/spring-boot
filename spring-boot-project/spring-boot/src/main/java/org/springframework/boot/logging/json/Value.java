@@ -18,6 +18,9 @@ package org.springframework.boot.logging.json;
 
 /**
  * A JSON value.
+ *
+ * @author Moritz Halbritter
+ * @since 3.3.0
  */
 public interface Value {
 
@@ -49,6 +52,11 @@ public interface Value {
 		};
 	}
 
+	/**
+	 * Creates a value of the given {@code long}.
+	 * @param value the long value
+	 * @return the created value
+	 */
 	static Value of(long value) {
 		return (output) -> output.append(value);
 	}
