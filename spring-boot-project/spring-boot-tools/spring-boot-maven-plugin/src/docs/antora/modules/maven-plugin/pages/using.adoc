@@ -58,7 +58,7 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/using/different-versions-pom.xml[tags=different-versions]
+include::example$using/different-versions-pom.xml[tags=different-versions]
 ----
 
 Browse the {version-properties-appendix}[`Dependency versions Appendix`] in the Spring Boot reference for a complete list of dependency version properties.
@@ -74,7 +74,7 @@ If you do not want to use the `spring-boot-starter-parent`, you can still keep t
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/using/no-starter-parent-pom.xml[tags=no-starter-parent]
+include::example$using/no-starter-parent-pom.xml[tags=no-starter-parent]
 ----
 
 The preceding sample setup does not let you override individual dependencies by using properties, as explained above.
@@ -83,7 +83,7 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/using/no-starter-parent-override-dependencies-pom.xml[tags=no-starter-parent-override-dependencies]
+include::example$using/no-starter-parent-override-dependencies-pom.xml[tags=no-starter-parent-override-dependencies]
 ----
 
 
@@ -103,7 +103,7 @@ If you want to both have a default while allowing it to be overridden on the com
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/using/default-and-override-pom.xml[tags=default-and-override]
+include::example$using/default-and-override-pom.xml[tags=default-and-override]
 ----
 
 The above makes sure that `local` and `dev` are enabled by default.

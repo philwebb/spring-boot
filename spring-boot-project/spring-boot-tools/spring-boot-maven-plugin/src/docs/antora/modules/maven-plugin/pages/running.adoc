@@ -20,7 +20,7 @@ To enable it, just add the following dependency to your project:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/devtools-pom.xml[tags=devtools]
+include::example$running/devtools-pom.xml[tags=devtools]
 ----
 
 When `devtools` is running, it detects change when you recompile your application and automatically refreshes it.
@@ -40,7 +40,7 @@ You can restore it at any time by configuring your project:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/hot-refresh-pom.xml[tags=hot-refresh]
+include::example$running/hot-refresh-pom.xml[tags=hot-refresh]
 ----
 
 When `addResources` is enabled, any `src/main/resources` directory will be added to the application classpath when you run the application and any duplicate found in the classes output will be removed.
@@ -76,7 +76,7 @@ The following configuration suspend the process until a debugger has joined on p
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/debug-pom.xml[tags=debug]
+include::example$running/debug-pom.xml[tags=debug]
 ----
 
 These arguments can be specified on the command line as well:
@@ -95,7 +95,7 @@ The following example sets `property1` to `test` and `property2` to 42:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/system-properties-pom.xml[tags=system-properties]
+include::example$running/system-properties-pom.xml[tags=system-properties]
 ----
 
 If the value is empty or not defined (that is `<my-property/`>), the system property is set with an empty String as the value.
@@ -121,7 +121,7 @@ The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/environment-variables-pom.xml[tags=environment-variables]
+include::example$running/environment-variables-pom.xml[tags=environment-variables]
 ----
 
 If the value is empty or not defined (that is `<MY_ENV/`>), the env variable is set with an empty String as the value.
@@ -141,7 +141,7 @@ The following example sets two arguments: `property1` and `property2=42`:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/application-arguments-pom.xml[tags=application-arguments]
+include::example$running/application-arguments-pom.xml[tags=application-arguments]
 ----
 
 On the command-line, arguments are separated by a space the same way `jvmArguments` are.
@@ -163,7 +163,7 @@ The following configuration enables the `local` and `dev` profiles:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/running/active-profiles-pom.xml[tags=active-profiles]
+include::example$running/active-profiles-pom.xml[tags=active-profiles]
 ----
 
 The profiles to enable can be specified on the command line as well, make sure to separate them with a comma, as shown in the following example:

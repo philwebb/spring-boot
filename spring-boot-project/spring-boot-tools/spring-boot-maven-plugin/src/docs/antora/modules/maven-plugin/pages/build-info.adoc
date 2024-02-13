@@ -6,7 +6,7 @@ It also allows you to add an arbitrary number of additional properties, as shown
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/build-info/pom.xml[tags=build-info]
+include::example$build-info/pom.xml[tags=build-info]
 ----
 
 This configuration will generate a `build-info.properties` at the expected location with three additional keys.

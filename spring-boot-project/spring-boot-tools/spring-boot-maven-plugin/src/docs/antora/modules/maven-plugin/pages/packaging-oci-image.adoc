@@ -12,7 +12,7 @@ It is possible to automate the creation of an image whenever the `package` phase
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/pom.xml[tags=packaging-oci-image]
+include::example$packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
 
 NOTE: Use `build-image-no-fork` when binding the goal to the package lifecycle.
@@ -277,7 +277,7 @@ If you need to customize the builder used to create the image or the run image u
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/custom-image-builder-pom.xml[tags=custom-image-builder]
+include::example$packaging-oci-image/custom-image-builder-pom.xml[tags=custom-image-builder]
 ----
 
 This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`, and the run image named `mine/java-cnb-run` and the tag `latest`.
@@ -299,7 +299,7 @@ The following is an example of {paketo-java-reference}/#configuring-the-jvm-vers
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/build-image-example-builder-configuration-pom.xml[tags=build-image-example-builder-configuration]
+include::example$packaging-oci-image/build-image-example-builder-configuration-pom.xml[tags=build-image-example-builder-configuration]
 ----
 
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
@@ -307,7 +307,7 @@ When using the Paketo builder, this can be accomplished by setting the `HTTPS_PR
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/paketo-pom.xml[tags=paketo]
+include::example$packaging-oci-image/paketo-pom.xml[tags=paketo]
 ----
 
 
@@ -321,7 +321,7 @@ Environment variable modifications that should be stored in the image and applie
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runtime-jvm-configuration]
+include::example$packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runtime-jvm-configuration]
 ----
 
 
@@ -333,7 +333,7 @@ You can take control over the name, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/custom-image-name-pom.xml[tags=custom-image-name]
+include::example$packaging-oci-image/custom-image-name-pom.xml[tags=custom-image-name]
 ----
 
 NOTE: This configuration does not provide an explicit tag so `latest` is used.
@@ -358,7 +358,7 @@ The following example instructs the builder to use a custom buildpack packaged i
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/buildpacks-pom.xml[tags=buildpacks]
+include::example$packaging-oci-image/buildpacks-pom.xml[tags=buildpacks]
 ----
 
 Buildpacks can be specified in any of the forms shown below.
@@ -403,7 +403,7 @@ If `docker.publishRegistry` credentials are configured and include a `url` param
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-pom.xml[tags=docker]
+include::example$packaging-oci-image/docker-pom.xml[tags=docker]
 ----
 
 The `publish` option can be specified on the command line as well, as shown in this example:
@@ -429,7 +429,7 @@ and reference the properties in the XML configuration:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
+include::example$packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
 ----
 
 
@@ -444,7 +444,7 @@ The cache volumes can be configured to use alternative names to give more contro
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/caches-pom.xml[tags=caches]
+include::example$packaging-oci-image/caches-pom.xml[tags=caches]
 ----
 
 Builders and buildpacks need a location to store temporary files during image building.
@@ -454,7 +454,7 @@ The caches and the build workspace can be configured to use bind mounts instead 
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/bind-caches-pom.xml[tags=caches]
+include::example$packaging-oci-image/bind-caches-pom.xml[tags=caches]
 ----
 
 
@@ -474,7 +474,7 @@ The plugin can also be configured to use the minikube daemon by providing connec
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-minikube-pom.xml[tags=docker-minikube]
+include::example$packaging-oci-image/docker-minikube-pom.xml[tags=docker-minikube]
 ----
 
 
@@ -487,7 +487,7 @@ The plugin can be configured to use podman local connection by providing connect
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-podman-pom.xml[tags=docker-podman]
+include::example$packaging-oci-image/docker-podman-pom.xml[tags=docker-podman]
 ----
 
 TIP: With the `colima` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
@@ -503,7 +503,7 @@ The plugin can also be configured to use Colima daemon by providing connection d
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
+include::example$packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
 ----
 
 
@@ -514,12 +514,12 @@ If the builder or run image are stored in a private Docker registry that support
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-registry-authentication-pom.xml[tags=docker-registry-authentication]
+include::example$packaging-oci-image/docker-registry-authentication-pom.xml[tags=docker-registry-authentication]
 ----
 
 If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging-oci-image/docker-token-authentication-pom.xml[tags=docker-token-authentication]
+include::example$packaging-oci-image/docker-token-authentication-pom.xml[tags=docker-token-authentication]
 ----

@@ -5,7 +5,7 @@ To make sure that the lifecycle of your Spring Boot application is properly mana
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/integration-tests/pom.xml[tags=integration-tests]
+include::example$integration-tests/pom.xml[tags=integration-tests]
 ----
 
 Such setup can now use the https://maven.apache.org/surefire/maven-failsafe-plugin[failsafe-plugin] to run your integration tests as you would expect.
@@ -26,7 +26,7 @@ If you are not using the parent POM, you should configure Failsafe in the same w
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/integration-tests/failsafe-pom.xml[tags=failsafe]
+include::example$integration-tests/failsafe-pom.xml[tags=failsafe]
 ----
 
 include::goals/start.adoc[leveloffset=+1]
@@ -49,7 +49,7 @@ The example below showcases how you could achieve the same feature using the htt
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/integration-tests/random-port-pom.xml[tags=random-port]
+include::example$integration-tests/random-port-pom.xml[tags=random-port]
 ----
 
 You can now retrieve the `test.server.port` system property in any of your integration test to create a proper `URL` to the server.
@@ -64,7 +64,7 @@ This example shows how you can customize the port in case `9001` is already used
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/integration-tests/customize-jmx-port-pom.xml[tags=customize-jmx-port]
+include::example$integration-tests/customize-jmx-port-pom.xml[tags=customize-jmx-port]
 ----
 
 TIP: If you need to configure the JMX port, make sure to do so in the global configuration as shown above so that it is shared by both goals.
@@ -79,7 +79,7 @@ This example shows how you can skip integration tests with a command-line proper
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/integration-tests/skip-integration-tests-pom.xml[tags=skip-integration-tests]
+include::example$integration-tests/skip-integration-tests-pom.xml[tags=skip-integration-tests]
 ----
 
 By default, the integration tests will run but this setup allows you to easily disable them on the command-line as follows:

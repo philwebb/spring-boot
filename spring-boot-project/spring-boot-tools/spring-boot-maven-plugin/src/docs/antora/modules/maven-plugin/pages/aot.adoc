@@ -15,7 +15,7 @@ To configure your application to use this feature, add an execution for the `pro
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/aot/pom.xml[tags=aot]
+include::example$aot/pom.xml[tags=aot]
 ----
 
 As the `BeanFactory` is fully prepared at build-time, conditions are also evaluated.
@@ -41,7 +41,7 @@ To benefit from the `native` profile, a module that represents an application sh
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/aot-native/pom.xml[tags=aot-native]
+include::example$aot-native/pom.xml[tags=aot-native]
 ----
 
 A single project can trigger the generation of a native image on the command-line using either {spring-boot-reference}/#native-image.developing-your-first-application.buildpacks.maven[Cloud Native Buildpacks] or {spring-boot-reference}/#native-image.developing-your-first-application.native-build-tools.maven[Native Image Build Tools].
@@ -52,14 +52,14 @@ To bind Cloud Native Buildpacks during the `package` phase, add the following to
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/aot-native-profile-buildpacks/pom.xml[tags=profile]
+include::example$aot-native-profile-buildpacks/pom.xml[tags=profile]
 ----
 
 The example below does the same for Native Build Tools:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/aot-native-profile-nbt/pom.xml[tags=profile]
+include::example$aot-native-profile-nbt/pom.xml[tags=profile]
 ----
 
 Once the above is in place, you can build your multi-modules project and generate a native image in the relevant sub-modules, as shown in the following example:
@@ -86,7 +86,7 @@ To configure your application to use this feature, add an execution for the `pro
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/aot-test/pom.xml[tags=aot]
+include::example$aot-test/pom.xml[tags=aot]
 ----
 
 TIP: If you are using `spring-boot-starter-parent`, this execution is automatically configured if you enable the `nativeTest` profile.
