@@ -1,9 +1,0 @@
-name: spring-boot
-ext:
-  zip_contents_collector:
-    include:
-    - name: spring-boot-maven-plugin
-      classifier: javadoc
-      destination: content-catalog
-      module: spring-boot-maven-plugin
-      path: java-api
