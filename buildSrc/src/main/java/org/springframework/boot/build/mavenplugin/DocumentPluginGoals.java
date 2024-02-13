@@ -92,7 +92,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println("| Goal | Description");
 			writer.println();
 			for (Mojo mojo : plugin.getMojos()) {
-				writer.printf("| <<%s,%s:%s>>%n", goalSectionId(mojo), plugin.getGoalPrefix(), mojo.getGoal());
+				writer.printf("| xref:%s[%s:%s]%n", goalSectionId(mojo), plugin.getGoalPrefix(), mojo.getGoal());
 				writer.printf("| %s%n", mojo.getDescription());
 				writer.println();
 			}
@@ -103,8 +103,6 @@ public class DocumentPluginGoals extends DefaultTask {
 	private void documentMojo(Plugin plugin, Mojo mojo) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(new File(this.outputDir, mojo.getGoal() + ".adoc")))) {
 			String sectionId = goalSectionId(mojo);
-			writer.println();
-			writer.println();
 			writer.printf("[[%s]]%n", sectionId);
 			writer.printf("= `%s:%s`%n%n", plugin.getGoalPrefix(), mojo.getGoal());
 			writer.printf("`%s:%s:%s`%n", plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
@@ -114,6 +112,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			List<Parameter> requiredParameters = parameters.stream().filter(Parameter::isRequired).toList();
 			String detailsSectionId = sectionId + ".parameter-details";
 			if (!requiredParameters.isEmpty()) {
+				writer.println();
 				writer.println();
 				writer.println();
 				writer.printf("[[%s.required-parameters]]%n", sectionId);
@@ -127,11 +126,13 @@ public class DocumentPluginGoals extends DefaultTask {
 			if (!optionalParameters.isEmpty()) {
 				writer.println();
 				writer.println();
+				writer.println();
 				writer.printf("[[%s.optional-parameters]]%n", sectionId);
 				writer.println("== Optional parameters");
 				writer.println();
 				writeParametersTable(writer, detailsSectionId, optionalParameters);
 			}
+			writer.println();
 			writer.println();
 			writer.println();
 			writer.printf("[[%s]]%n", detailsSectionId);
@@ -157,7 +158,7 @@ public class DocumentPluginGoals extends DefaultTask {
 		writer.println();
 		for (Parameter parameter : parameters) {
 			String name = parameter.getName();
-			writer.printf("| <<%s.%s,%s>>%n", detailsSectionId, parameterId(name), name);
+			writer.printf("| xref:%s.%s[%s]%n", detailsSectionId, parameterId(name), name);
 			writer.printf("| `%s`%n", typeNameToJavadocLink(shortTypeName(parameter.getType()), parameter.getType()));
 			String defaultValue = parameter.getDefaultValue();
 			if (defaultValue != null) {
