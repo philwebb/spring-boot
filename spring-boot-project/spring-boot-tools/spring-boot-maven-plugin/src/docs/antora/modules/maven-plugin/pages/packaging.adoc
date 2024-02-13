@@ -12,7 +12,7 @@ include::../maven/packaging/repackage-pom.xml[tags=repackage]
 TIP: If you are using `spring-boot-starter-parent`, such execution is already pre-configured with a `repackage` execution ID so that only the plugin definition should be added.
 
 The example above repackages a `jar` or `war` archive that is built during the package phase of the Maven lifecycle, including any `provided` dependencies that are defined in the project.
-If some of these dependencies need to be excluded, you can use one of the `exclude` options; see the <<packaging.examples.exclude-dependency,dependency exclusion>> for more details.
+If some of these dependencies need to be excluded, you can use one of the `exclude` options; see the xref:packaging.adoc#packaging.examples.exclude-dependency[dependency exclusion] for more details.
 
 The original (that is non-executable) artifact is renamed to `.original` by default but it is also possible to keep the original artifact using a custom classifier.
 

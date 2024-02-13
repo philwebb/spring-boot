@@ -7,13 +7,13 @@ The plugin includes a run goal which can be used to launch your application from
 	$ mvn spring-boot:run
 ----
 
-Application arguments can be specified using the `arguments` parameter, see <<run.examples.using-application-arguments,using application arguments>> for more details.
+Application arguments can be specified using the `arguments` parameter, see xref:running.adoc#run.examples.using-application-arguments[using application arguments] for more details.
 
 The application is executed in a forked process and setting properties on the command-line will not affect the application.
-If you need to specify some JVM arguments (that is for debugging purposes), you can use the `jvmArguments` parameter, see <<run.examples.debug,Debug the application>> for more details.
-There is also explicit support for <<run.examples.system-properties,system properties>> and <<run.examples.environment-variables,environment variables>>.
+If you need to specify some JVM arguments (that is for debugging purposes), you can use the `jvmArguments` parameter, see xref:running.adoc#run.examples.debug[Debug the application] for more details.
+There is also explicit support for xref:running.adoc#run.examples.system-properties[system properties] and xref:running.adoc#run.examples.environment-variables[environment variables].
 
-As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run.examples.specify-active-profiles,Specify active profiles>>.
+As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see xref:running.adoc#run.examples.specify-active-profiles[Specify active profiles].
 
 Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
 To enable it, just add the following dependency to your project:
@@ -51,7 +51,7 @@ It is also a helpful way of allowing your front end developers to work without n
 NOTE: A side effect of using this feature is that filtering of resources at build time will not work.
 
 In order to be consistent with the `repackage` goal, the `run` goal builds the classpath in such a way that any dependency that is excluded in the plugin's configuration gets excluded from the classpath as well.
-For more details, see <<packaging.examples.exclude-dependency,the dedicated example>>.
+For more details, see xref:packaging.adoc#packaging.examples.exclude-dependency[the dedicated example].
 
 Sometimes it is useful to run a test variant of your application.
 For example, if you want to {spring-boot-reference}/#features.testing.testcontainers.at-development-time[use Testcontainers at development time] or make use of some test stubs.
