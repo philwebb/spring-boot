@@ -9,6 +9,7 @@ NOTE: For an overview of GraalVM Native Images support in Spring Boot, check the
 The Spring Boot Maven plugin offers goals that can be used to perform AOT processing on both application and test code.
 
 
+
 [[aot.processing-applications]]
 == Processing Applications
 To configure your application to use this feature, add an execution for the `process-aot` goal, as shown in the following example:
@@ -22,6 +23,7 @@ As the `BeanFactory` is fully prepared at build-time, conditions are also evalua
 This has an important difference compared to what a regular Spring Boot application does at runtime.
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
 The `process-aot` goal shares a number of properties with the xref:running.adoc[run goal] for that reason.
+
 
 
 [[aot.processing-applications.using-the-native-profile]]
@@ -72,9 +74,8 @@ Once the above is in place, you can build your multi-modules project and generat
 NOTE: A "relevant" sub-module is a module that represents a Spring Boot application.
 Such module must define the Native Build Tools and Spring Boot plugins as described above.
 
-
-
 include::goals/process-aot.adoc[leveloffset=+1]
+
 
 
 [[aot.processint-tests]]

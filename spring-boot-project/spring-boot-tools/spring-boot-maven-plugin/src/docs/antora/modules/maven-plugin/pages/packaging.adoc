@@ -1,5 +1,6 @@
 [[packaging]]
 = Packaging Executable Archives
+
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
 
 Packaging an executable archive is performed by the `repackage` goal, as shown in the following example:

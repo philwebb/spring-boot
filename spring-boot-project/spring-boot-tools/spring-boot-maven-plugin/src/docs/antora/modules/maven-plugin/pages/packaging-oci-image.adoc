@@ -1,5 +1,6 @@
 [[build-image]]
 = Packaging OCI Images
+
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
 Images can be built on the command-line using the `build-image` goal.
 This makes sure that the package lifecycle has run before the image is created.
@@ -247,7 +248,6 @@ For more details, see also xref:packaging-oci-image.adoc#build-image.examples[ex
 
 [[build-image.customization.tags]]
 === Tags format
-
 The values provided to the `tags` option should be *full* image references.
 The accepted format is `[domainHost:port/][path/]name[:tag][@digest]`.
 
