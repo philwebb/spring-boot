@@ -27,12 +27,7 @@ import org.antora.gradle.AntoraExtension;
 import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.api.Project;
-import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenPublication;
-import org.gradle.api.tasks.PathSensitivity;
-import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskContainer;
-import org.gradle.api.tasks.bundling.Zip;
 
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 
@@ -44,18 +39,15 @@ import org.springframework.boot.build.artifacts.ArtifactRelease;
  */
 public class AntoraConventions {
 
-	private static final String ANTORA_VERSION = "3.2.0-alpha.2";
+	private static final String ANTORA_VERSION = "3.2.0-alpha.4";
 
 	private static final String ANTORA_SOURCE = "src/docs/antora";
 
 	private static final Map<String, String> PACKAGES;
 	static {
 		Map<String, String> packages = new LinkedHashMap<>();
-		packages.put("@antora/atlas-extension", "1.0.0-alpha.2");
-		packages.put("@antora/collector-extension", "1.0.0-alpha.3");
 		packages.put("@asciidoctor/tabs", "1.0.0-beta.6");
-		packages.put("@opendevise/antora-release-line-extension", "1.0.0");
-		packages.put("@springio/antora-extensions", "1.8.1");
+		packages.put("@springio/antora-extensions", "1.8.2");
 		packages.put("@springio/asciidoctor-extensions", "1.0.0-alpha.9");
 		PACKAGES = Collections.unmodifiableMap(packages);
 	}
@@ -69,8 +61,7 @@ public class AntoraConventions {
 		TaskContainer tasks = project.getTasks();
 		tasks.withType(GenerateAntoraYmlTask.class,
 				(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask));
-		// tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project,
-		// antoraTask));
+		tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
 		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class));
 	}
 
@@ -98,47 +89,12 @@ public class AntoraConventions {
 	}
 
 	private void configureAntoraTask(Project project, AntoraTask antoraTask) {
-		Sync syncGeneratedContentTask = createSyncGeneratedContentTask(project);
-		Sync syncContentTask = createSyncContentTask(project, syncGeneratedContentTask);
-		configurePublishGeneratedContent(project, syncGeneratedContentTask);
-		antoraTask.dependsOn(syncContentTask);
-		antoraTask.getInputs()
-			.dir(syncContentTask.getDestinationDir())
-			.withPathSensitivity(PathSensitivity.RELATIVE)
-			.withPropertyName("synced antora content");
-	}
-
-	private Sync createSyncGeneratedContentTask(Project project) {
-		Sync syncTask = project.getTasks().create("syncGeneratedAntoraContent", Sync.class);
-		File destination = new File(project.getBuildDir(), "generated/antora");
-		syncTask.setDestinationDir(destination);
-		project.getTasks().withType(GenerateAntoraYmlTask.class).forEach(syncTask::from);
-		return syncTask;
-	}
-
-	private Sync createSyncContentTask(Project project, Sync syncGeneratedContentTask) {
-		Sync syncTask = project.getTasks().create("syncAntoraContent", Sync.class);
-		syncTask.setDestinationDir(new File(project.getBuildDir(), "antora"));
-		syncTask.from(syncGeneratedContentTask);
-		syncTask.from(project.file(ANTORA_SOURCE), (spec) -> spec.exclude("**/antora.yml"));
-		return syncTask;
-	}
-
-	private void configurePublishGeneratedContent(Project project, Sync syncGeneratedContentTask) {
-		Zip zipTask = project.getTasks().create("zipGeneratedAntoraContent", Zip.class);
-		zipTask.dependsOn(syncGeneratedContentTask);
-		zipTask.from(syncGeneratedContentTask);
-		zipTask.getArchiveFileName().convention("generated-antora-content.zip");
-		project.getArtifacts().add("archives", zipTask);
-		PublishingExtension publishingExtension = project.getExtensions().getByType(PublishingExtension.class);
-		publishingExtension.getPublications()
-			.withType(MavenPublication.class,
-					(mavenPublication) -> mavenPublication.artifact(zipTask).setClassifier("antora"));
 	}
 
 	private void configureAntoraExtension(AntoraExtension antoraExtension) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
+		antoraExtension.getOptions().addAll("--log-level", "all");
 	}
 
 }

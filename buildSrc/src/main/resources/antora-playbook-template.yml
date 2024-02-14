@@ -1,19 +1,9 @@
 antora:
   extensions:
+  - require: '@opendevise/antora-release-line-extension'
   - require: '@springio/antora-extensions/tabs-migration-extension'
     unwrap_example_block: always
-  - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
-    version_file: gradle.properties
-    locations:
-    - url: spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/build/generated/antora-content/${name}-${version}-${classifier}.zip
-site:
   title: Spring Boot
-content:
-  sources:
-    - url: ./../../..
-      branches: HEAD
-      start_path: spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
-      version: 3.3.0-SNAPSHOT
 asciidoc:
   sourcemap: true
   attributes:
