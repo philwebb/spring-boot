@@ -58,9 +58,9 @@ Sometimes it is useful to run a test variant of your application.
 For example, if you want to {spring-boot-reference}/#features.testing.testcontainers.at-development-time[use Testcontainers at development time] or make use of some test stubs.
 Use the `test-run` goal with many of the same features and configuration options as `run` for this purpose.
 
-include::goals/run.adoc[leveloffset=+1]
+include::partial$goals/run.adoc[leveloffset=+1]
 
-include::goals/test-run.adoc[leveloffset=+1]
+include::partial$goals/test-run.adoc[leveloffset=+1]
 
 
 

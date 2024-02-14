@@ -15,4 +15,4 @@ This configuration will generate a `build-info.properties` at the expected locat
 NOTE: `java.version` is expected to be a regular property available in the project.
 It will be interpolated as you would expect.
 
-include::goals/build-info.adoc[leveloffset=+1]
+include::partial$goals/build-info.adoc[leveloffset=+1]

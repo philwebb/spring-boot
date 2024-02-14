@@ -74,7 +74,7 @@ Once the above is in place, you can build your multi-modules project and generat
 NOTE: A "relevant" sub-module is a module that represents a Spring Boot application.
 Such module must define the Native Build Tools and Spring Boot plugins as described above.
 
-include::goals/process-aot.adoc[leveloffset=+1]
+include::partial$goals/process-aot.adoc[leveloffset=+1]
 
 
 
@@ -94,4 +94,4 @@ TIP: If you are using `spring-boot-starter-parent`, this execution is automatica
 
 As with application AOT processing, the `BeanFactory` is fully prepared at build-time.
 
-include::goals/process-test-aot.adoc[leveloffset=+1]
+include::partial$goals/process-test-aot.adoc[leveloffset=+1]

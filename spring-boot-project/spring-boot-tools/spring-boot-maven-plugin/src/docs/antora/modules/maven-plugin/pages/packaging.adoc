@@ -120,7 +120,7 @@ Then claiming any remaining classes and resources for the `application` layer.
 NOTE: The order that `<into>` blocks are defined is often different from the order that the layers are written.
 For this reason the `<layerOrder>` element must always be included and _must_ cover all layers referenced by the `<into>` blocks.
 
-include::goals/repackage.adoc[leveloffset=+1]
+include::partial$goals/repackage.adoc[leveloffset=+1]
 
 
 

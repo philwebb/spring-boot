@@ -30,9 +30,9 @@ If you are not using the parent POM, you should configure Failsafe in the same w
 include::example$integration-tests/failsafe-pom.xml[tags=failsafe]
 ----
 
-include::goals/start.adoc[leveloffset=+1]
+include::partial$goals/start.adoc[leveloffset=+1]
 
-include::goals/stop.adoc[leveloffset=+1]
+include::partial$goals/stop.adoc[leveloffset=+1]
 
 
 
