@@ -93,7 +93,7 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 }
 
 tasks.named('test') {
-	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
+	inputs.dir('src/docs/antora/modules/gradle-plugin/examples').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
