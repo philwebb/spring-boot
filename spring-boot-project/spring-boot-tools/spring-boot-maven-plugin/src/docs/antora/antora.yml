@@ -20,3 +20,5 @@ asciidoc:
     paketo-java-reference: '{paketo-reference}/buildpacks/language-family-buildpacks/java'
     buildpacks-reference: https://buildpacks.io/docs
     spring-boot-xsd-version: 3.3.0-SNAPSHOT
+nav:
+- modules/maven-plugin/nav.adoc 
