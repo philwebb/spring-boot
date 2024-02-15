@@ -9,7 +9,6 @@ description = "Spring Boot Maven Plugin"
 
 configurations {
 	dependenciesBom
-	antoraContent
 }
 
 dependencies {
@@ -158,5 +157,7 @@ publishing {
 		}
 	}
 }
+
+// FIXME xsd version needs to be generated
 
 
