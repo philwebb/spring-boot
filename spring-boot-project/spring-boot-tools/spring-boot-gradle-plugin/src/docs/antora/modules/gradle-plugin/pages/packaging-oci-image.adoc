@@ -267,13 +267,13 @@ If you need to customize the builder used to create the image or the run image u
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-builder.gradle[tags=builder]
+include::example$packaging/boot-build-image-builder.gradle[tags=builder]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-builder.gradle.kts[tags=builder]
+include::example$packaging/boot-build-image-builder.gradle.kts[tags=builder]
 ----
 
 This configuration will use a builder image with the name `mine/java-cnb-builder` and the tag `latest`, and the run image named `mine/java-cnb-run` and the tag `latest`.
@@ -296,13 +296,13 @@ The following is an example of {paketo-java-reference}/#configuring-the-jvm-vers
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-env.gradle[tags=env]
+include::example$packaging/boot-build-image-env.gradle[tags=env]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-env.gradle.kts[tags=env]
+include::example$packaging/boot-build-image-env.gradle.kts[tags=env]
 ----
 
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
@@ -311,13 +311,13 @@ When using the Paketo builder, this can be accomplished by setting the `HTTPS_PR
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-env-proxy.gradle[tags=env]
+include::example$packaging/boot-build-image-env-proxy.gradle[tags=env]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-env-proxy.gradle.kts[tags=env]
+include::example$packaging/boot-build-image-env-proxy.gradle.kts[tags=env]
 ----
 
 
@@ -332,13 +332,13 @@ Environment variable modifications that should be stored in the image and applie
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-env-runtime.gradle[tags=env-runtime]
+include::example$packaging/boot-build-image-env-runtime.gradle[tags=env-runtime]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-env-runtime.gradle.kts[tags=env-runtime]
+include::example$packaging/boot-build-image-env-runtime.gradle.kts[tags=env-runtime]
 ----
 
 
@@ -351,13 +351,13 @@ You can take control over the name by setting task properties, as shown in the f
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-name.gradle[tags=image-name]
+include::example$packaging/boot-build-image-name.gradle[tags=image-name]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-name.gradle.kts[tags=image-name]
+include::example$packaging/boot-build-image-name.gradle.kts[tags=image-name]
 ----
 
 Note that this configuration does not provide an explicit tag so `latest` is used.
@@ -383,13 +383,13 @@ The following example instructs the builder to use a custom buildpack packaged i
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-buildpacks.gradle[tags=buildpacks]
+include::example$packaging/boot-build-image-buildpacks.gradle[tags=buildpacks]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-buildpacks.gradle.kts[tags=buildpacks]
+include::example$packaging/boot-build-image-buildpacks.gradle.kts[tags=buildpacks]
 ----
 
 Buildpacks can be specified in any of the forms shown below.
@@ -435,13 +435,13 @@ If `docker.publishRegistry` credentials are configured and include a `url` prope
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-publish.gradle[tags=publish]
+include::example$packaging/boot-build-image-publish.gradle[tags=publish]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-publish.gradle.kts[tags=publish]
+include::example$packaging/boot-build-image-publish.gradle.kts[tags=publish]
 ----
 
 The publish option can be specified on the command line as well, as shown in this example:
@@ -464,13 +464,13 @@ The cache volumes can be configured to use alternative names to give more contro
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-caches.gradle[tags=caches]
+include::example$packaging/boot-build-image-caches.gradle[tags=caches]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-caches.gradle.kts[tags=caches]
+include::example$packaging/boot-build-image-caches.gradle.kts[tags=caches]
 ----
 
 Builders and buildpacks need a location to store temporary files during image building.
@@ -481,13 +481,13 @@ The caches and the build workspace can be configured to use bind mounts instead 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-bind-caches.gradle[tags=caches]
+include::example$packaging/boot-build-image-bind-caches.gradle[tags=caches]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-bind-caches.gradle.kts[tags=caches]
+include::example$packaging/boot-build-image-bind-caches.gradle.kts[tags=caches]
 ----
 
 
@@ -508,13 +508,13 @@ The plugin can also be configured to use the minikube daemon by providing connec
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-docker-host.gradle[tags=docker-host]
+include::example$packaging/boot-build-image-docker-host.gradle[tags=docker-host]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
+include::example$packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
 ----
 
 
@@ -528,13 +528,13 @@ The plugin can be configured to use podman local connection by providing connect
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-docker-host-podman.gradle[tags=docker-host]
+include::example$packaging/boot-build-image-docker-host-podman.gradle[tags=docker-host]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-docker-host-podman.gradle.kts[tags=docker-host]
+include::example$packaging/boot-build-image-docker-host-podman.gradle.kts[tags=docker-host]
 ----
 
 TIP: With the `podman` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
@@ -551,13 +551,13 @@ The plugin can also be configured to use Colima daemon by providing connection d
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-docker-host-colima.gradle[tags=docker-host]
+include::example$packaging/boot-build-image-docker-host-colima.gradle[tags=docker-host]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-docker-host-colima.gradle.kts[tags=docker-host]
+include::example$packaging/boot-build-image-docker-host-colima.gradle.kts[tags=docker-host]
 ----
 
 
@@ -569,13 +569,13 @@ If the builder or run image are stored in a private Docker registry that support
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-docker-auth-user.gradle[tags=docker-auth-user]
+include::example$packaging/boot-build-image-docker-auth-user.gradle[tags=docker-auth-user]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-docker-auth-user.gradle.kts[tags=docker-auth-user]
+include::example$packaging/boot-build-image-docker-auth-user.gradle.kts[tags=docker-auth-user]
 ----
 
 If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.builderRegistry` as shown in the following example:
@@ -583,11 +583,11 @@ If the builder or run image is stored in a private Docker registry that supports
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-build-image-docker-auth-token.gradle[tags=docker-auth-token]
+include::example$packaging/boot-build-image-docker-auth-token.gradle[tags=docker-auth-token]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-build-image-docker-auth-token.gradle.kts[tags=docker-auth-token]
+include::example$packaging/boot-build-image-docker-auth-token.gradle.kts[tags=docker-auth-token]
 ----

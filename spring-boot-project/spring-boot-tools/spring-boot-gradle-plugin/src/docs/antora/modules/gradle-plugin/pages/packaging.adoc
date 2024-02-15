@@ -29,13 +29,13 @@ To do so, the embedded servlet container dependencies should be added to the `pr
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
+include::example$packaging/war-container-dependency.gradle[tags=dependencies]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/war-container-dependency.gradle.kts[tags=dependencies]
+include::example$packaging/war-container-dependency.gradle.kts[tags=dependencies]
 ----
 
 This ensures that they are package in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
@@ -54,13 +54,13 @@ If you prefer that the executable archive, rather than the plain archive, uses a
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-and-jar-classifiers.gradle[tags=classifiers]
+include::example$packaging/boot-jar-and-jar-classifiers.gradle[tags=classifiers]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-and-jar-classifiers.gradle.kts[tags=classifiers]
+include::example$packaging/boot-jar-and-jar-classifiers.gradle.kts[tags=classifiers]
 ----
 
 Alternatively, if you prefer that the plain archive isn't built at all, disable its task as shown in the following example for the `jar` task:
@@ -68,13 +68,13 @@ Alternatively, if you prefer that the plain archive isn't built at all, disable 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/only-boot-jar.gradle[tags=disable-jar]
+include::example$packaging/only-boot-jar.gradle[tags=disable-jar]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/only-boot-jar.gradle.kts[tags=disable-jar]
+include::example$packaging/only-boot-jar.gradle.kts[tags=disable-jar]
 ----
 
 WARNING: Do not disable the `jar` task when creating native images.
@@ -99,13 +99,13 @@ The main class can also be configured explicitly using the task's `mainClass` pr
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
+include::example$packaging/boot-jar-main-class.gradle[tags=main-class]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-main-class.gradle.kts[tags=main-class]
+include::example$packaging/boot-jar-main-class.gradle.kts[tags=main-class]
 ----
 
 Alternatively, the main class name can be configured project-wide using the `mainClass` property of the Spring Boot DSL:
@@ -113,13 +113,13 @@ Alternatively, the main class name can be configured project-wide using the `mai
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
+include::example$packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/spring-boot-dsl-main-class.gradle.kts[tags=main-class]
+include::example$packaging/spring-boot-dsl-main-class.gradle.kts[tags=main-class]
 ----
 
 If the {application-plugin}[`application` plugin] has been applied its `mainClass` property must be configured and can be used for the same purpose:
@@ -127,13 +127,13 @@ If the {application-plugin}[`application` plugin] has been applied its `mainClas
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/application-plugin-main-class.gradle[tags=main-class]
+include::example$packaging/application-plugin-main-class.gradle[tags=main-class]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/application-plugin-main-class.gradle.kts[tags=main-class]
+include::example$packaging/application-plugin-main-class.gradle.kts[tags=main-class]
 ----
 
 Lastly, the `Start-Class` attribute can be configured on the task's manifest:
@@ -141,13 +141,13 @@ Lastly, the `Start-Class` attribute can be configured on the task's manifest:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class]
+include::example$packaging/boot-jar-manifest-main-class.gradle[tags=main-class]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
+include::example$packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
 ----
 
 NOTE: If the main class is written in Kotlin, the name of the generated Java class should be used.
@@ -166,13 +166,13 @@ If you want to include dependencies declared in the `developmentOnly` configurat
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-war-include-devtools.gradle[tags=include-devtools]
+include::example$packaging/boot-war-include-devtools.gradle[tags=include-devtools]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-war-include-devtools.gradle.kts[tags=include-devtools]
+include::example$packaging/boot-war-include-devtools.gradle.kts[tags=include-devtools]
 ----
 
 
@@ -188,13 +188,13 @@ Libraries can be identified as requiring unpacking using Ant-style patterns that
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-requires-unpack.gradle[tags=requires-unpack]
+include::example$packaging/boot-jar-requires-unpack.gradle[tags=requires-unpack]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
+include::example$packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
 ----
 
 For more control a closure can also be used.
@@ -217,13 +217,13 @@ To use this feature, the inclusion of the launch script must be enabled:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
+include::example$packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-include-launch-script.gradle.kts[tags=include-launch-script]
+include::example$packaging/boot-jar-include-launch-script.gradle.kts[tags=include-launch-script]
 ----
 
 This will add Spring Boot's default launch script to the archive.
@@ -233,13 +233,13 @@ The values can be customized using the `properties` property:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
+include::example$packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-launch-script-properties.gradle.kts[tags=launch-script-properties]
+include::example$packaging/boot-jar-launch-script-properties.gradle.kts[tags=launch-script-properties]
 ----
 
 If the default launch script does not meet your needs, the `script` property can be used to provide a custom launch script:
@@ -247,13 +247,13 @@ If the default launch script does not meet your needs, the `script` property can
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
+include::example$packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-launch-script]
+include::example$packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-launch-script]
 ----
 
 
@@ -265,13 +265,13 @@ To use the `PropertiesLauncher` to launch an executable jar or war, configure th
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-war-properties-launcher.gradle[tags=properties-launcher]
+include::example$packaging/boot-war-properties-launcher.gradle[tags=properties-launcher]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=properties-launcher]
+include::example$packaging/boot-war-properties-launcher.gradle.kts[tags=properties-launcher]
 ----
 
 
@@ -300,13 +300,13 @@ To disable this feature, you can do so in the following manner:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-layered-disabled.gradle[tags=layered]
+include::example$packaging/boot-jar-layered-disabled.gradle[tags=layered]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
+include::example$packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
 ----
 
 When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
@@ -316,13 +316,13 @@ If you wish to exclude this dependency, you can do so in the following manner:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
+include::example$packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
+include::example$packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
 ----
 
 
@@ -337,13 +337,13 @@ The following example shows how the default ordering described above can be defi
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-layered-custom.gradle[tags=layered]
+include::example$packaging/boot-jar-layered-custom.gradle[tags=layered]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-layered-custom.gradle.kts[tags=layered]
+include::example$packaging/boot-jar-layered-custom.gradle.kts[tags=layered]
 ----
 
 The `layered` DSL is defined using three parts:

@@ -10,13 +10,13 @@ The tasks are configured automatically when the {nbt-gradle-plugin}[GraalVM Nati
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/aot/apply-native-image-plugin.gradle[]
+include::example$aot/apply-native-image-plugin.gradle[]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/aot/apply-native-image-plugin.gradle.kts[]
+include::example$aot/apply-native-image-plugin.gradle.kts[]
 ----
 
 

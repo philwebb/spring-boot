@@ -12,13 +12,13 @@ The easiest way to use the task is through the plugin's DSL:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/integrating-with-actuator/build-info-basic.gradle[tags=build-info]
+include::example$integrating-with-actuator/build-info-basic.gradle[tags=build-info]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/integrating-with-actuator/build-info-basic.gradle.kts[tags=build-info]
+include::example$integrating-with-actuator/build-info-basic.gradle.kts[tags=build-info]
 ----
 
 This will configure a {build-info-javadoc}[`BuildInfo`] task named `bootBuildInfo` and, if it exists, make the Java plugin's `classes` task depend upon it.
@@ -51,13 +51,13 @@ The properties can be customized using the DSL:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/integrating-with-actuator/build-info-custom-values.gradle[tags=custom-values]
+include::example$integrating-with-actuator/build-info-custom-values.gradle[tags=custom-values]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
+include::example$integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
 ----
 
 To exclude any of the default properties from the generated build information, add its name to the excludes.
@@ -66,13 +66,13 @@ For example, the `time` property can be excluded as follows:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/integrating-with-actuator/build-info-exclude-time.gradle[tags=exclude-time]
+include::example$integrating-with-actuator/build-info-exclude-time.gradle[tags=exclude-time]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/integrating-with-actuator/build-info-exclude-time.gradle.kts[tags=exclude-time]
+include::example$integrating-with-actuator/build-info-exclude-time.gradle.kts[tags=exclude-time]
 ----
 
 The default value for `build.time` is the instant at which the project is being built.
@@ -86,13 +86,13 @@ Additional properties can also be added to the build information:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/integrating-with-actuator/build-info-additional.gradle[tags=additional]
+include::example$integrating-with-actuator/build-info-additional.gradle[tags=additional]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/integrating-with-actuator/build-info-additional.gradle.kts[tags=additional]
+include::example$integrating-with-actuator/build-info-additional.gradle.kts[tags=additional]
 ----
 
 An additional property's value can be computed lazily by using a `Provider`.

@@ -8,13 +8,13 @@ The plugin is https://plugins.gradle.org/plugin/org.springframework.boot[publish
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/getting-started/apply-plugin-release.gradle[]
+include::example$getting-started/apply-plugin-release.gradle[]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
+include::example$getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
 ifeval::["{artifact-release-type}" == "milestone"]
@@ -25,13 +25,13 @@ To configure Gradle to use the milestones repository, add the following to your 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/getting-started/milestone-settings.gradle[]
+include::example$getting-started/milestone-settings.gradle[]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/getting-started/milestone-settings.gradle.kts[]
+include::example$getting-started/milestone-settings.gradle.kts[]
 ----
 
 The plugin can then be applied using the `plugins` block:
@@ -39,13 +39,13 @@ The plugin can then be applied using the `plugins` block:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/getting-started/apply-plugin-release.gradle[]
+include::example$getting-started/apply-plugin-release.gradle[]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
+include::example$getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
 ifeval::["{artifact-release-type}" == "snapshot"]
@@ -56,13 +56,13 @@ To configure Gradle to use the snapshots repository, add the following to your `
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/getting-started/snapshot-settings.gradle[]
+include::example$getting-started/snapshot-settings.gradle[]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/getting-started/snapshot-settings.gradle.kts[]
+include::example$getting-started/snapshot-settings.gradle.kts[]
 ----
 
 The plugin can then be applied using the `plugins` block:
@@ -70,13 +70,13 @@ The plugin can then be applied using the `plugins` block:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/getting-started/apply-plugin-release.gradle[]
+include::example$getting-started/apply-plugin-release.gradle[]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
+include::example$getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
 
@@ -89,13 +89,13 @@ For example:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/getting-started/typical-plugins.gradle[tags=apply]
+include::example$getting-started/typical-plugins.gradle[tags=apply]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/getting-started/typical-plugins.gradle.kts[tags=apply]
+include::example$getting-started/typical-plugins.gradle.kts[tags=apply]
 ----
 
 To learn more about how the Spring Boot plugin behaves when other plugins are applied please see the section on xref:reacting.adoc[reacting to other plugins].

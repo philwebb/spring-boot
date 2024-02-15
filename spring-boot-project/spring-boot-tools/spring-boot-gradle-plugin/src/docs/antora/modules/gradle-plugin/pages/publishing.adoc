@@ -12,13 +12,13 @@ For example, to publish the artifact produced by the default `bootJar` task:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/publishing/maven-publish.gradle[tags=publishing]
+include::example$publishing/maven-publish.gradle[tags=publishing]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/publishing/maven-publish.gradle.kts[tags=publishing]
+include::example$publishing/maven-publish.gradle.kts[tags=publishing]
 ----
 
 
