@@ -55,6 +55,10 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers")
 }
 
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
+}
+
 gradlePlugin {
 	plugins {
 		springBootPlugin {
@@ -111,6 +115,20 @@ javadoc {
 	}
 }
 
-toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
+def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "antora-aggregate-content"
 }
+
+def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "antora-catalog-content"
+	from(javadoc) {
+		into "api/java"
+	}
+}
+
+tasks.named("antora") {
+	dependsOn zipAntoraAggregateContent, zipAntoraCatalogContent
+}
+
