@@ -97,4 +97,4 @@ include::../gradle/getting-started/typical-plugins.gradle[tags=apply]
 include::../gradle/getting-started/typical-plugins.gradle.kts[tags=apply]
 ----
 
-To learn more about how the Spring Boot plugin behaves when other plugins are applied please see the section on <<reacting-to-other-plugins, reacting to other plugins>>.
+To learn more about how the Spring Boot plugin behaves when other plugins are applied please see the section on xref:reacting.adoc[reacting to other plugins].
