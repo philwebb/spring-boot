@@ -22,7 +22,7 @@ include::example$aot/pom.xml[tags=aot]
 As the `BeanFactory` is fully prepared at build-time, conditions are also evaluated.
 This has an important difference compared to what a regular Spring Boot application does at runtime.
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
-The `process-aot` goal shares a number of properties with the xref:running.adoc[run goal] for that reason.
+The `process-aot` goal shares a number of properties with the xref:run.adoc[run goal] for that reason.
 
 
 
@@ -33,7 +33,7 @@ If you use `spring-boot-starter-parent` as the `parent` of your project, a `nati
 The `native` profile configures the following:
 
 * Execution of `process-aot` when the Spring Boot Maven Plugin is applied on a project.
-* Suitable settings so that xref:packaging-oci-image.adoc[build-image] generates a native image.
+* Suitable settings so that xref:build-image.adoc[build-image] generates a native image.
 * Sensible defaults for the {nbt-reference}[Native Build Tools Maven Plugin], in particular:
 ** Making sure the plugin uses the raw classpath, and not the main jar file as it does not understand our repackaged jar format.
 ** Validate that a suitable GraalVM version is available.

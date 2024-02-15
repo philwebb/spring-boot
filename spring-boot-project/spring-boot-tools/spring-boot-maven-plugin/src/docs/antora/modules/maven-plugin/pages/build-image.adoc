@@ -77,7 +77,7 @@ The following table summarizes the available parameters:
 | When `true`, the value of the `host` property will be provided to the container that is created for the CNB builder (optional)
 |===
 
-For more details, see also xref:packaging-oci-image.adoc#build-image.examples.docker[examples].
+For more details, see also xref:build-image.adoc#build-image.examples.docker[examples].
 
 
 
@@ -111,7 +111,7 @@ The following table summarizes the available parameters for `docker.builderRegis
 | Identity token for the Docker image registry user. Required for token authentication.
 |===
 
-For more details, see also xref:packaging-oci-image.adoc#build-image.examples.docker[examples].
+For more details, see also xref:build-image.adoc#build-image.examples.docker[examples].
 
 
 
@@ -201,7 +201,7 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | `tags`
 | One or more additional tags to apply to the generated image.
 The values provided to the `tags` option should be *full* image references.
-See xref:packaging-oci-image.adoc#build-image.customization.tags[the tags section] for more details.
+See xref:build-image.adoc#build-image.customization.tags[the tags section] for more details.
 |
 
 | `buildWorkspace`
@@ -240,9 +240,9 @@ Application contents will also be in this location in the generated image.
 
 NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
-You can override this behaviour as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
+You can override this behaviour as shown in the xref:build-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
 
-For more details, see also xref:packaging-oci-image.adoc#build-image.examples[examples].
+For more details, see also xref:build-image.adoc#build-image.examples[examples].
 
 
 
