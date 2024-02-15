@@ -92,7 +92,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println("| Goal | Description");
 			writer.println();
 			for (Mojo mojo : plugin.getMojos()) {
-				writer.printf("| xref:%s[%s:%s]%n", goalSectionId(mojo), plugin.getGoalPrefix(), mojo.getGoal());
+				writer.printf("| xref:%s[%s:%s]%n", goalSectionId(mojo, false), plugin.getGoalPrefix(), mojo.getGoal());
 				writer.printf("| %s%n", mojo.getDescription());
 				writer.println();
 			}
@@ -102,7 +102,7 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	private void documentMojo(Plugin plugin, Mojo mojo) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(new File(this.outputDir, mojo.getGoal() + ".adoc")))) {
-			String sectionId = goalSectionId(mojo);
+			String sectionId = goalSectionId(mojo, true);
 			writer.printf("[[%s]]%n", sectionId);
 			writer.printf("= `%s:%s`%n%n", plugin.getGoalPrefix(), mojo.getGoal());
 			writer.printf("`%s:%s:%s`%n", plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
@@ -142,13 +142,13 @@ public class DocumentPluginGoals extends DefaultTask {
 		}
 	}
 
-	private String goalSectionId(Mojo mojo) {
+	private String goalSectionId(Mojo mojo, boolean innerReference) {
 		String goalSection = this.goalSections.get(mojo.getGoal());
 		if (goalSection == null) {
 			throw new IllegalStateException("Goal '" + mojo.getGoal() + "' has not be assigned to a section");
 		}
 		String sectionId = goalSection + "." + mojo.getGoal() + "-goal";
-		return sectionId;
+		return (!innerReference) ? goalSection + "#" + sectionId : sectionId;
 	}
 
 	private void writeParametersTable(PrintWriter writer, String detailsSectionId, List<Parameter> parameters) {
@@ -158,7 +158,7 @@ public class DocumentPluginGoals extends DefaultTask {
 		writer.println();
 		for (Parameter parameter : parameters) {
 			String name = parameter.getName();
-			writer.printf("| xref:%s.%s[%s]%n", detailsSectionId, parameterId(name), name);
+			writer.printf("| <<%s.%s,%s>>%n", detailsSectionId, parameterId(name), name);
 			writer.printf("| `%s`%n", typeNameToJavadocLink(shortTypeName(parameter.getType()), parameter.getType()));
 			String defaultValue = parameter.getDefaultValue();
 			if (defaultValue != null) {
