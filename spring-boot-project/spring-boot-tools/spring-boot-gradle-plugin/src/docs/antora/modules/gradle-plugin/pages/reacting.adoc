@@ -1,5 +1,6 @@
 [[reacting-to-other-plugins]]
 = Reacting to Other Plugins
+
 When another plugin is applied the Spring Boot plugin reacts by making various changes to the project's configuration.
 This section describes those changes.
 

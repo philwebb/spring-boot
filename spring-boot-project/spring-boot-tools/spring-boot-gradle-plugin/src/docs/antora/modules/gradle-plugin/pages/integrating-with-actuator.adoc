@@ -75,7 +75,6 @@ include::../gradle/integrating-with-actuator/build-info-exclude-time.gradle[tags
 include::../gradle/integrating-with-actuator/build-info-exclude-time.gradle.kts[tags=exclude-time]
 ----
 
-
 The default value for `build.time` is the instant at which the project is being built.
 A side-effect of this is that the task will never be up-to-date.
 As a result, builds will take longer as more tasks, including the project's tests, will have to be executed.

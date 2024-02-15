@@ -1,5 +1,6 @@
 [[aot]]
 = Ahead-of-Time Processing
+
 Spring AOT is a process that analyzes your code at build-time in order to generate an optimized version of it.
 It is most often used to help generate GraalVM native images.
 
@@ -19,6 +20,7 @@ include::../gradle/aot/apply-native-image-plugin.gradle.kts[]
 ----
 
 
+
 [[aot.processing-applications]]
 == Processing Applications
 Based on your `@SpringBootApplication`-annotated main class, the `processAot` task generates a persistent view of the beans that are going to be contributed at runtime in a way that bean instantiation is as straightforward as possible.
@@ -31,6 +33,7 @@ For instance, if you want to opt-in or opt-out for certain features, you need to
 To this end, the `processAot` task is a {gradle-dsl}/org.gradle.api.tasks.JavaExec.html[`JavaExec`] task and can be configured with environment variables, system properties, and arguments as needed.
 
 The `nativeCompile` task of the GraalVM Native Image plugin is automatically configured to use the output of the `processAot` task.
+
 
 
 [[aot.processing-tests]]

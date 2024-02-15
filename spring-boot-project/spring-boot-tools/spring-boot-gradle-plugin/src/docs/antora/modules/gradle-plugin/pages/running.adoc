@@ -1,5 +1,6 @@
 [[running-your-application]]
 = Running your Application with Gradle
+
 To run your application without first building an archive use the `bootRun` task:
 
 [source,bash,indent=0,subs="verbatim"]
