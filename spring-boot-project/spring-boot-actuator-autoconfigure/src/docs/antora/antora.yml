@@ -7,3 +7,4 @@ ext:
 asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT
+    spring-integration-docs: FIXME

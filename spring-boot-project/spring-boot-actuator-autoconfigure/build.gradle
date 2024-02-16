@@ -225,3 +225,9 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 }
 
+
+tasks.named("antora") {
+	dependsOn zipAntoraAggregateContent
+}
+
+

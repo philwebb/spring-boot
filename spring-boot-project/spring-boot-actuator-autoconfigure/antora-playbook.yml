@@ -5,7 +5,7 @@ antora:
   - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
     version_file: gradle.properties
     locations:
-    - url: spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/build/generated/docs/antora-content/${name}-${version}-${classifier}.zip
+    - url: spring-boot-project/spring-boot-actuator-autoconfigure/build/generated/docs/antora-content/${name}-${version}-${classifier}.zip
 site:
   title: Spring Boot
 content:
