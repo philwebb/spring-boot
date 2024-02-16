@@ -1,7 +1,6 @@
 plugins {
 	id "java-library"
 	id "org.antora"
-	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.conventions"
@@ -16,9 +15,6 @@ configurations {
 }
 
 dependencies {
-	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
-
 	api(project(":spring-boot-project:spring-boot-actuator"))
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
@@ -200,34 +196,6 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
 }
 
-asciidoctor {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorPdf
-	duplicatesStrategy "fail"
-	from(asciidoctorPdf.outputDir) {
-		into "pdf"
-		rename { "spring-boot-actuator-web-api.pdf" }
-	}
-	from(asciidoctor.outputDir) {
-		into "htmlsingle"
-	}
-}
-
-artifacts {
-	documentation zip
-}
-
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
@@ -244,20 +212,4 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	predictiveSelection {
 		enabled = false
 	}
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	dependsOn dependencyVersions
-	doFirst {
-		def versionConstraints = dependencyVersions.versionConstraints
-		def toAntoraVersion = version -> {
-			String formatted = version.split("\\.").take(2).join('.')
-			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
-		}
-		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
-		String integrationDocs = String.format("https://docs.spring.io/spring-integration/reference/%s", toAntoraVersion(integrationVersion))
-		attributes "spring-integration-docs": integrationDocs
-	}
-	dependsOn documentationTest
-	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }
