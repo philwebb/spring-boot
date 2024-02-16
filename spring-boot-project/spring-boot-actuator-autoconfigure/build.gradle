@@ -204,12 +204,24 @@ tasks.named("test") {
 }
 
 def documentationTest = tasks.register("documentationTest", Test) {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
 		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
 	}
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	outputs.dir("${buildDir}/generated-snippets")
 	predictiveSelection {
 		enabled = false
 	}
 }
+
+def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
+	inputs.dir("${buildDir}/generated-snippets")
+		.withPathSensitivity(PathSensitivity.RELATIVE)
+		.withPropertyName("generatedSnippets")
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "antora-aggregate-content"
+	from("${buildDir}/generated-snippets") {
+		into "modules/api/partials/actuator"
+	}
+}
+
