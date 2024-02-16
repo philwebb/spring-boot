@@ -3,10 +3,39 @@ ext:
   zip_contents_collector:
     include:
     - name: spring-boot-gradle-plugin
-      classifier: antora-aggregate-content
-    - name: spring-boot-gradle-plugin
       classifier: antora-catalog-content
-      module: maven-gradle
+      module: gradle-plugin
       destination: content-catalog
+asciidoc:
+  attributes:
+    gradle-project-version: 3.3.0-SNAPSHOT
+    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
+    spring-boot-reference: '{spring-boot-docs}/reference/htmlsingle'
+    api-documentation: '{spring-boot-docs}/gradle-plugin/api'
+    native-build-tools-version: FIXME
+    nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/{native-build-tools-version}/gradle-plugin.html
+    gradle-dsl: https://docs.gradle.org/current/dsl
+    gradle-api: https://docs.gradle.org/current/javadoc
+    gradle-userguide: https://docs.gradle.org/current/userguide
+    kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
+    groovy-plugin: '{gradle-userguide}/groovy_plugin.html'
+    java-plugin: '{gradle-userguide}/java_plugin.html'
+    war-plugin: '{gradle-userguide}/war_plugin.html'
+    maven-plugin: '{gradle-userguide}/maven_plugin.html'
+    maven-publish-plugin: '{gradle-userguide}/maven_publish_plugin.html'
+    dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
+    build-info-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html'
+    version-properties-appendix: '{spring-boot-reference}/#dependency-versions-properties'
+    dependency-management-plugin-documentation: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/'
+    dependency-management-plugin-version: FIXME
+    buildpacks-reference: https://buildpacks.io/docs
+    boot-build-image-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html'
+    spring-boot-api: '{spring-boot-docs}/api/org/springframework/boot'
+    paketo-reference: https://paketo.io/docs
+    paketo-java-reference: '{paketo-reference}/buildpacks/language-family-buildpacks/java'
+    boot-jar-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html'
+    boot-war-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html'
+    boot-run-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html'
+    application-plugin: '{gradle-userguide}/application_plugin.html'
 nav:
 - modules/gradle-plugin/nav.adoc 

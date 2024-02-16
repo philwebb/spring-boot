@@ -96,10 +96,6 @@ tasks.named('test') {
 	inputs.dir('src/docs/antora/modules/gradle-plugin/examples').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
 }
 
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes "native-build-tools-version": nativeBuildToolsVersion
-}
-
 javadoc {
 	options {
 		author = true
@@ -115,11 +111,6 @@ javadoc {
 	}
 }
 
-def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "antora-aggregate-content"
-}
-
 def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "antora-catalog-content"
@@ -129,6 +120,6 @@ def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 }
 
 tasks.named("antora") {
-	dependsOn zipAntoraAggregateContent, zipAntoraCatalogContent
+	dependsOn zipAntoraCatalogContent
 }
 
