@@ -1,5 +1,6 @@
 [[caches]]
 = Caches (`caches`)
+
 The `caches` endpoint provides access to the application's caches.
 
 

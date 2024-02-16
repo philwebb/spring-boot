@@ -1,5 +1,6 @@
 [[heapdump]]
 = Heap Dump (`heapdump`)
+
 The `heapdump` endpoint provides a heap dump from the application's JVM.
 
 

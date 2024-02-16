@@ -1,5 +1,6 @@
 [[threaddump]]
 = Thread Dump (`threaddump`)
+
 The `threaddump` endpoint provides a thread dump from the application's JVM.
 
 

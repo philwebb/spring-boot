@@ -1,5 +1,6 @@
 [[audit-events]]
 = Audit Events (`auditevents`)
+
 The `auditevents` endpoint provides information about the application's audit events.
 
 

@@ -1,5 +1,6 @@
 [[startup]]
 = Application Startup (`startup`)
+
 The `startup` endpoint provides information about the application's startup sequence.
 
 

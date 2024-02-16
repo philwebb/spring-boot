@@ -1,5 +1,6 @@
 [[info]]
 = Info (`info`)
+
 The `info` endpoint provides general information about the application.
 
 

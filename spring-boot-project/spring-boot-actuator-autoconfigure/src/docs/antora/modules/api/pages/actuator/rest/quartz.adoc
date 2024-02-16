@@ -1,5 +1,6 @@
 [[quartz]]
 = Quartz (`quartz`)
+
 The `quartz` endpoint provides information about jobs and triggers that are managed by the Quartz Scheduler.
 
 

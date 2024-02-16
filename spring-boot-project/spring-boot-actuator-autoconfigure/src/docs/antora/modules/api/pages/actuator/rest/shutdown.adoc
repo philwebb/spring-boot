@@ -1,5 +1,6 @@
 [[shutdown]]
 = Shutdown (`shutdown`)
+
 The `shutdown` endpoint is used to shut down the application.
 
 

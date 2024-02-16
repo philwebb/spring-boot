@@ -1,5 +1,6 @@
 [[mappings]]
 = Mappings (`mappings`)
+
 The `mappings` endpoint provides information about the application's request mappings.
 
 

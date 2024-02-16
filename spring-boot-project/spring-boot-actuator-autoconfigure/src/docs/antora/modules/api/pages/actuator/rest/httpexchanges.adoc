@@ -1,5 +1,6 @@
 [[httpexchanges]]
 = HTTP Exchanges (`httpexchanges`)
+
 The `httpexchanges` endpoint provides information about HTTP request-response exchanges.
 
 

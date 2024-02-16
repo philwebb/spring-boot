@@ -1,5 +1,6 @@
 [[metrics]]
 = Metrics (`metrics`)
+
 The `metrics` endpoint provides access to application metrics.
 
 

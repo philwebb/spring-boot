@@ -1,5 +1,6 @@
 [[prometheus]]
 = Prometheus (`prometheus`)
+
 The `prometheus` endpoint provides Spring Boot application's metrics in the format required for scraping by a Prometheus server.
 
 

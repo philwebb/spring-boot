@@ -1,5 +1,6 @@
 [[configprops]]
 = Configuration Properties (`configprops`)
+
 The `configprops` endpoint provides information about the application's `@ConfigurationProperties` beans.
 
 

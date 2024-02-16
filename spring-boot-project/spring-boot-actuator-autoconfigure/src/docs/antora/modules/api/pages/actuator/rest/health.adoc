@@ -1,5 +1,6 @@
 [[health]]
 = Health (`health`)
+
 The `health` endpoint provides detailed information about the health of the application.
 
 

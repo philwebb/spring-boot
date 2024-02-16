@@ -1,5 +1,6 @@
 [[liquibase]]
 = Liquibase (`liquibase`)
+
 The `liquibase` endpoint provides information about database change sets applied by Liquibase.
 
 

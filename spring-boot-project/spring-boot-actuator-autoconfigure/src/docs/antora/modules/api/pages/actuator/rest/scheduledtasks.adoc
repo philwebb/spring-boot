@@ -1,5 +1,6 @@
 [[scheduled-tasks]]
 = Scheduled Tasks (`scheduledtasks`)
+
 The `scheduledtasks` endpoint provides information about the application's scheduled tasks.
 
 
