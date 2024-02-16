@@ -42,7 +42,7 @@ include::partial$actuator/rest/metrics/metric/http-response.adoc[]
 
 [[metrics.retrieving-metric.query-parameters]]
 === Query Parameters
-The endpoint uses query parameters to xref:endpoints/metrics.adoc#metrics.drilling-down[drill down] into a metric by using its tags.
+The endpoint uses query parameters to xref:actuator/rest/metrics.adoc#metrics.drilling-down[drill down] into a metric by using its tags.
 The following table shows the single supported query parameter:
 
 [cols="2,4"]
