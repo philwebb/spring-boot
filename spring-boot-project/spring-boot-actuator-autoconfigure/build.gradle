@@ -221,7 +221,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "antora-aggregate-content"
 	from("${buildDir}/generated-snippets") {
-		into "modules/api/partials/actuator"
+		into "modules/api/partials/actuator/rest"
 	}
 }
 
