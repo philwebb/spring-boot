@@ -4,8 +4,6 @@ Andy Wilkinson; Stephane Nicoll
 v{gradle-project-version}
 :!version-label:
 :doctype: book
-:toc: left
-:toclevels: 4
 :numbered:
 :icons: font
 :hide-uri-scheme:
