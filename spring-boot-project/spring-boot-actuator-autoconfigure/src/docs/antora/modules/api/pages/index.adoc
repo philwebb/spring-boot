@@ -20,8 +20,8 @@ This API documentation describes Spring Boot Actuators web endpoints.
 == Overview
 Before you proceed, you should read the following topics:
 
-* <<overview.endpoint-urls>>
-* <<overview.timestamps>>
+* xref:index.adoc#overview.endpoint-urls[URLs]
+* xref:index.adoc#overview.timestamps[Timestamps]
 
 NOTE: In order to get the correct JSON responses documented below, Jackson must be available.
 

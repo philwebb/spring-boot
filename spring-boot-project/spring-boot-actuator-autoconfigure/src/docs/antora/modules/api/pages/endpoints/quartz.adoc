@@ -182,7 +182,7 @@ include::{snippets}/quartz/trigger-details-cron/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The structure of the common elements of the response was xref:endpoints/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to cron triggers:
 
 [cols="2,1,3"]
@@ -199,7 +199,7 @@ include::{snippets}/quartz/trigger-details-simple/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The structure of the common elements of the response was xref:endpoints/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to simple triggers:
 
 [cols="2,1,3"]
@@ -216,7 +216,7 @@ include::{snippets}/quartz/trigger-details-daily-time-interval/http-response.ado
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The structure of the common elements of the response was xref:endpoints/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to daily time interval triggers:
 
 [cols="2,1,3"]
@@ -233,7 +233,7 @@ include::{snippets}/quartz/trigger-details-calendar-interval/http-response.adoc[
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The structure of the common elements of the response was xref:endpoints/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to calendar interval triggers:
 
 [cols="2,1,3"]
@@ -250,7 +250,7 @@ include::{snippets}/quartz/trigger-details-custom/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was <<quartz.trigger.common-response-structure,described previously>>.
+The structure of the common elements of the response was xref:endpoints/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to custom triggers:
 
 [cols="2,1,3"]
