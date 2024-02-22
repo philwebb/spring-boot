@@ -81,7 +81,7 @@ include::partial$goals/process-aot.adoc[leveloffset=+1]
 [[aot.processint-tests]]
 == Processing Tests
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
-Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitialzer` code.
+Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitializer` code.
 
 To configure your application to use this feature, add an execution for the `process-test-aot` goal, as shown in the following example:
 
