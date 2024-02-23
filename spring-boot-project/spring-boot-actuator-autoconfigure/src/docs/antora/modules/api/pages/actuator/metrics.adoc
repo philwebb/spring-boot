@@ -9,11 +9,11 @@ The `metrics` endpoint provides access to application metrics.
 == Retrieving Metric Names
 To retrieve the names of the available metrics, make a `GET` request to `/actuator/metrics`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/metrics/names/curl-request.adoc[]
+include::partial$actuator/metrics/names/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/metrics/names/http-response.adoc[]
+include::partial$actuator/metrics/names/http-response.adoc[]
 
 
 
@@ -23,7 +23,7 @@ The response contains details of the metric names.
 The following table describes the structure of the response:
 
 [cols="3,1,2"]
-include::partial$actuator/rest/metrics/names/response-fields.adoc[]
+include::partial$actuator/metrics/names/response-fields.adoc[]
 
 
 
@@ -31,22 +31,22 @@ include::partial$actuator/rest/metrics/names/response-fields.adoc[]
 == Retrieving a Metric
 To retrieve a metric, make a `GET` request to `/actuator/metrics/{metric.name}`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/metrics/metric/curl-request.adoc[]
+include::partial$actuator/metrics/metric/curl-request.adoc[]
 
 The preceding example retrieves information about the metric named `jvm.memory.max`.
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/metrics/metric/http-response.adoc[]
+include::partial$actuator/metrics/metric/http-response.adoc[]
 
 
 
 [[metrics.retrieving-metric.query-parameters]]
 === Query Parameters
-The endpoint uses query parameters to xref:actuator/rest/metrics.adoc#metrics.drilling-down[drill down] into a metric by using its tags.
+The endpoint uses query parameters to xref:actuator/metrics.adoc#metrics.drilling-down[drill down] into a metric by using its tags.
 The following table shows the single supported query parameter:
 
 [cols="2,4"]
-include::partial$actuator/rest/metrics/metric-with-tags/query-parameters.adoc[]
+include::partial$actuator/metrics/metric-with-tags/query-parameters.adoc[]
 
 
 
@@ -55,7 +55,7 @@ include::partial$actuator/rest/metrics/metric-with-tags/query-parameters.adoc[]
 The response contains details of the metric.
 The following table describes the structure of the response:
 
-include::partial$actuator/rest/metrics/metric/response-fields.adoc[]
+include::partial$actuator/metrics/metric/response-fields.adoc[]
 
 
 
@@ -63,9 +63,9 @@ include::partial$actuator/rest/metrics/metric/response-fields.adoc[]
 == Drilling Down
 To drill down into a metric, make a `GET` request to `/actuator/metrics/{metric.name}` using the `tag` query parameter, as shown in the following curl-based example:
 
-include::partial$actuator/rest/metrics/metric-with-tags/curl-request.adoc[]
+include::partial$actuator/metrics/metric-with-tags/curl-request.adoc[]
 
 The preceding example retrieves the `jvm.memory.max` metric, where the `area` tag has a value of `nonheap` and the `id` attribute has a value of `Compressed Class Space`.
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/metrics/metric-with-tags/http-response.adoc[]
+include::partial$actuator/metrics/metric-with-tags/http-response.adoc[]

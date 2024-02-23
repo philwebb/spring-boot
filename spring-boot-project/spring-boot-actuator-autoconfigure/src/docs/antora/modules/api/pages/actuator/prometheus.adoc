@@ -9,20 +9,20 @@ The `prometheus` endpoint provides Spring Boot application's metrics in the form
 == Retrieving All Metrics
 To retrieve all metrics, make a `GET` request to `/actuator/prometheus`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/prometheus/all/curl-request.adoc[]
+include::partial$actuator/prometheus/all/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/prometheus/all/http-response.adoc[]
+include::partial$actuator/prometheus/all/http-response.adoc[]
 
 The default response content type is `text/plain;version=0.0.4`.
 The endpoint can also produce `application/openmetrics-text;version=1.0.0` when called with an appropriate `Accept` header, as shown in the following curl-based example:
 
-include::partial$actuator/rest/prometheus/openmetrics/curl-request.adoc[]
+include::partial$actuator/prometheus/openmetrics/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/prometheus/openmetrics/http-response.adoc[]
+include::partial$actuator/prometheus/openmetrics/http-response.adoc[]
 
 
 
@@ -32,7 +32,7 @@ The endpoint uses query parameters to limit the samples that it returns.
 The following table shows the supported query parameters:
 
 [cols="2,4"]
-include::partial$actuator/rest/prometheus/names/query-parameters.adoc[]
+include::partial$actuator/prometheus/names/query-parameters.adoc[]
 
 
 
@@ -40,9 +40,9 @@ include::partial$actuator/rest/prometheus/names/query-parameters.adoc[]
 == Retrieving Filtered Metrics
 To retrieve metrics matching specific names, make a `GET` request to `/actuator/prometheus` with the `includedNames` query parameter, as shown in the following curl-based example:
 
-include::partial$actuator/rest/prometheus/names/curl-request.adoc[]
+include::partial$actuator/prometheus/names/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/prometheus/names/http-response.adoc[]
+include::partial$actuator/prometheus/names/http-response.adoc[]
 

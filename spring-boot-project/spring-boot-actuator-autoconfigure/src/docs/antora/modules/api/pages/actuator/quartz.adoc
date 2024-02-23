@@ -10,11 +10,11 @@ The `quartz` endpoint provides information about jobs and triggers that are mana
 Jobs and triggers are managed in groups.
 To retrieve the list of registered job and trigger groups, make a `GET` request to `/actuator/quartz`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/report/curl-request.adoc[]
+include::partial$actuator/quartz/report/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/quartz/report/http-response.adoc[]
+include::partial$actuator/quartz/report/http-response.adoc[]
 
 
 
@@ -24,7 +24,7 @@ The response contains the groups names for registered jobs and triggers.
 The following table describes the structure of the response:
 
 [cols="3,1,3"]
-include::partial$actuator/rest/quartz/report/response-fields.adoc[]
+include::partial$actuator/quartz/report/response-fields.adoc[]
 
 
 
@@ -32,11 +32,11 @@ include::partial$actuator/rest/quartz/report/response-fields.adoc[]
 == Retrieving Registered Job Names
 To retrieve the list of registered job names, make a `GET` request to `/actuator/quartz/jobs`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/jobs/curl-request.adoc[]
+include::partial$actuator/quartz/jobs/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/quartz/jobs/http-response.adoc[]
+include::partial$actuator/quartz/jobs/http-response.adoc[]
 
 
 
@@ -46,7 +46,7 @@ The response contains the registered job names for each group.
 The following table describes the structure of the response:
 
 [cols="3,1,3"]
-include::partial$actuator/rest/quartz/jobs/response-fields.adoc[]
+include::partial$actuator/quartz/jobs/response-fields.adoc[]
 
 
 
@@ -54,11 +54,11 @@ include::partial$actuator/rest/quartz/jobs/response-fields.adoc[]
 == Retrieving Registered Trigger Names
 To retrieve the list of registered trigger names, make a `GET` request to `/actuator/quartz/triggers`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/triggers/curl-request.adoc[]
+include::partial$actuator/quartz/triggers/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/quartz/triggers/http-response.adoc[]
+include::partial$actuator/quartz/triggers/http-response.adoc[]
 
 
 
@@ -68,7 +68,7 @@ The response contains the registered trigger names for each group.
 The following table describes the structure of the response:
 
 [cols="3,1,3"]
-include::partial$actuator/rest/quartz/triggers/response-fields.adoc[]
+include::partial$actuator/quartz/triggers/response-fields.adoc[]
 
 
 
@@ -76,12 +76,12 @@ include::partial$actuator/rest/quartz/triggers/response-fields.adoc[]
 == Retrieving Overview of a Job Group
 To retrieve an overview of the jobs in a particular group, make a `GET` request to `/actuator/quartz/jobs/\{groupName}`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/job-group/curl-request.adoc[]
+include::partial$actuator/quartz/job-group/curl-request.adoc[]
 
 The preceding example retrieves the summary for jobs in the `samples` group.
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/quartz/job-group/http-response.adoc[]
+include::partial$actuator/quartz/job-group/http-response.adoc[]
 
 
 
@@ -91,7 +91,7 @@ The response contains an overview of jobs in a particular group.
 The following table describes the structure of the response:
 
 [cols="3,1,3"]
-include::partial$actuator/rest/quartz/job-group/response-fields.adoc[]
+include::partial$actuator/quartz/job-group/response-fields.adoc[]
 
 
 
@@ -100,12 +100,12 @@ include::partial$actuator/rest/quartz/job-group/response-fields.adoc[]
 
 To retrieve an overview of the triggers in a particular group, make a `GET` request to `/actuator/quartz/triggers/\{groupName}`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/trigger-group/curl-request.adoc[]
+include::partial$actuator/quartz/trigger-group/curl-request.adoc[]
 
 The preceding example retrieves the summary for triggers in the `tests` group.
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/quartz/trigger-group/http-response.adoc[]
+include::partial$actuator/quartz/trigger-group/http-response.adoc[]
 
 
 
@@ -116,7 +116,7 @@ Trigger implementation specific details are available.
 The following table describes the structure of the response:
 
 [cols="3,1,3"]
-include::partial$actuator/rest/quartz/trigger-group/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-group/response-fields.adoc[]
 
 
 
@@ -124,12 +124,12 @@ include::partial$actuator/rest/quartz/trigger-group/response-fields.adoc[]
 == Retrieving Details of a Job
 To retrieve the details about a particular job, make a `GET` request to `/actuator/quartz/jobs/\{groupName}/\{jobName}`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/job-details/curl-request.adoc[]
+include::partial$actuator/quartz/job-details/curl-request.adoc[]
 
 The preceding example retrieves the details of the job identified by the `samples` group and `jobOne` name.
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/quartz/job-details/http-response.adoc[]
+include::partial$actuator/quartz/job-details/http-response.adoc[]
 
 If a key in the data map is identified as sensitive, its value is sanitized.
 
@@ -142,7 +142,7 @@ The triggers are sorted by next fire time and priority.
 The following table describes the structure of the response:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/job-details/response-fields.adoc[]
+include::partial$actuator/quartz/job-details/response-fields.adoc[]
 
 
 
@@ -150,7 +150,7 @@ include::partial$actuator/rest/quartz/job-details/response-fields.adoc[]
 == Retrieving Details of a Trigger
 To retrieve the details about a particular trigger, make a `GET` request to `/actuator/quartz/triggers/\{groupName}/\{triggerName}`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/quartz/trigger-details-cron/curl-request.adoc[]
+include::partial$actuator/quartz/trigger-details-cron/curl-request.adoc[]
 
 The preceding example retrieves the details of trigger identified by the `samples` group and `example` name.
 
@@ -170,7 +170,7 @@ There are five supported types:
 The following table describes the structure of the common elements of the response:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/trigger-details-common/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-details-common/response-fields.adoc[]
 
 
 
@@ -179,15 +179,15 @@ include::partial$actuator/rest/quartz/trigger-details-common/response-fields.ado
 A cron trigger defines the cron expression that is used to determine when it has to fire.
 The resulting response for such a trigger implementation is similar to the following:
 
-include::partial$actuator/rest/quartz/trigger-details-cron/http-response.adoc[]
+include::partial$actuator/quartz/trigger-details-cron/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was xref:actuator/rest/quartz.adoc#quartz.trigger.common-response-structure[described previously].
+The structure of the common elements of the response was xref:actuator/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to cron triggers:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/trigger-details-cron/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-details-cron/response-fields.adoc[]
 
 
 
@@ -196,15 +196,15 @@ include::partial$actuator/rest/quartz/trigger-details-cron/response-fields.adoc[
 A simple trigger is used to fire a Job at a given moment in time, and optionally repeated at a specified interval.
 The resulting response for such a trigger implementation is similar to the following:
 
-include::partial$actuator/rest/quartz/trigger-details-simple/http-response.adoc[]
+include::partial$actuator/quartz/trigger-details-simple/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was xref:actuator/rest/quartz.adoc#quartz.trigger.common-response-structure[described previously].
+The structure of the common elements of the response was xref:actuator/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to simple triggers:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/trigger-details-simple/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-details-simple/response-fields.adoc[]
 
 
 
@@ -213,15 +213,15 @@ include::partial$actuator/rest/quartz/trigger-details-simple/response-fields.ado
 A daily time interval trigger is used to fire a Job based upon daily repeating time intervals.
 The resulting response for such a trigger implementation is similar to the following:
 
-include::partial$actuator/rest/quartz/trigger-details-daily-time-interval/http-response.adoc[]
+include::partial$actuator/quartz/trigger-details-daily-time-interval/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was xref:actuator/rest/quartz.adoc#quartz.trigger.common-response-structure[described previously].
+The structure of the common elements of the response was xref:actuator/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to daily time interval triggers:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/trigger-details-daily-time-interval/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-details-daily-time-interval/response-fields.adoc[]
 
 
 
@@ -230,15 +230,15 @@ include::partial$actuator/rest/quartz/trigger-details-daily-time-interval/respon
 A calendar interval trigger is used to fire a Job based upon repeating calendar time intervals.
 The resulting response for such a trigger implementation is similar to the following:
 
-include::partial$actuator/rest/quartz/trigger-details-calendar-interval/http-response.adoc[]
+include::partial$actuator/quartz/trigger-details-calendar-interval/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was xref:actuator/rest/quartz.adoc#quartz.trigger.common-response-structure[described previously].
+The structure of the common elements of the response was xref:actuator/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to calendar interval triggers:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/trigger-details-calendar-interval/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-details-calendar-interval/response-fields.adoc[]
 
 
 
@@ -247,12 +247,12 @@ include::partial$actuator/rest/quartz/trigger-details-calendar-interval/response
 A custom trigger is any other implementation.
 The resulting response for such a trigger implementation is similar to the following:
 
-include::partial$actuator/rest/quartz/trigger-details-custom/http-response.adoc[]
+include::partial$actuator/quartz/trigger-details-custom/http-response.adoc[]
 
 
 Much of the response is common to all trigger types.
-The structure of the common elements of the response was xref:actuator/rest/quartz.adoc#quartz.trigger.common-response-structure[described previously].
+The structure of the common elements of the response was xref:actuator/quartz.adoc#quartz.trigger.common-response-structure[described previously].
 The following table describes the structure of the parts of the response that are specific to custom triggers:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/quartz/trigger-details-custom/response-fields.adoc[]
+include::partial$actuator/quartz/trigger-details-custom/response-fields.adoc[]

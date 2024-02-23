@@ -15,11 +15,11 @@ The application startup steps can either be retrieved as a snapshot (`GET`) or d
 === Retrieving a snapshot of the Application Startup Steps
 To retrieve the steps recorded so far during the application startup phase, make a `GET` request to `/actuator/startup`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/startup-snapshot/curl-request.adoc[]
+include::partial$actuator/startup-snapshot/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/startup-snapshot/http-response.adoc[]
+include::partial$actuator/startup-snapshot/http-response.adoc[]
 
 
 
@@ -27,11 +27,11 @@ include::partial$actuator/rest/startup-snapshot/http-response.adoc[]
 === Draining the Application Startup Steps
 To drain and return the steps recorded so far during the application startup phase, make a `POST` request to `/actuator/startup`, as shown in the following curl-based example:
 
-include::partial$actuator/rest/startup/curl-request.adoc[]
+include::partial$actuator/startup/curl-request.adoc[]
 
 The resulting response is similar to the following:
 
-include::partial$actuator/rest/startup/http-response.adoc[]
+include::partial$actuator/startup/http-response.adoc[]
 
 
 
@@ -41,4 +41,4 @@ The response contains details of the application startup steps.
 The following table describes the structure of the response:
 
 [cols="2,1,3"]
-include::partial$actuator/rest/startup/response-fields.adoc[]
+include::partial$actuator/startup/response-fields.adoc[]

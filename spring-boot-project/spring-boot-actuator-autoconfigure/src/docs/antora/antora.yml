@@ -1,4 +1,5 @@
 name: spring-boot
+title: Spring Boot
 ext:
   zip_contents_collector:
     include:
@@ -8,3 +9,5 @@ asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-integration-docs: FIXME
+nav:
+- modules/api/nav.adoc 

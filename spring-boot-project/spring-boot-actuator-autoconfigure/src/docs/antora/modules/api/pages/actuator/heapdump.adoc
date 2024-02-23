@@ -15,6 +15,6 @@ and on OpenJ9 it is https://www.eclipse.org/openj9/docs/dump_heapdump/#portable-
 Typically, you should save the response to disk for subsequent analysis.
 When using curl, this can be achieved by using the `-O` option, as shown in the following example:
 
-include::partial$actuator/rest/heapdump/curl-request.adoc[]
+include::partial$actuator/heapdump/curl-request.adoc[]
 
 The preceding example results in a file named `heapdump` being written to the current working directory.
