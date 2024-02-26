@@ -1,7 +1,6 @@
 plugins {
 	id "java"
 	id "org.antora"
-	id "org.asciidoctor.jvm.convert"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id 'org.jetbrains.kotlin.jvm'
@@ -10,11 +9,8 @@ plugins {
 description = "Spring Boot Docs"
 
 configurations {
-	actuatorApiDocumentation
 	autoConfiguration
 	configurationProperties
-	gradlePluginDocumentation
-	mavenPluginDocumentation
 	remoteSpringApplicationExample
 	springApplicationExample
 	testSlices
@@ -47,13 +43,6 @@ sourcesJar {
 	enabled = false
 }
 
-// FIXME make convention?
-antora {
-	playbook = 'local-antora-playbook.yml'
-	options = [fetch: !project.gradle.startParameter.offline, stacktrace: true]
-}
-
-
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
 	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
 }
@@ -65,8 +54,6 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
-
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
@@ -88,8 +75,6 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
-
-	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
@@ -195,8 +180,6 @@ dependencies {
 	implementation("org.testcontainers:mongodb")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
-
-	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
 	remoteSpringApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	remoteSpringApplicationExample(project(":spring-boot-project:spring-boot-devtools"))
@@ -325,253 +308,8 @@ task collectConfigurationMetadataFiles(type: Copy) {
 	into layout.buildDirectory.dir('collectConfigurationMetadataFiles')
 }
 
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
-	dependsOn dependencyVersions
-	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	asciidoctorj {
-		fatalWarnings = ['^((?!successfully validated).)*$']
-	}
-	doFirst {
-		def versionConstraints = dependencyVersions.versionConstraints
-		def toAntoraVersion = version -> {
-			String formatted = version.split("\\.").take(2).join('.')
-			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
-		}
-		attributes  "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
-					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
-					"jooq-version": versionConstraints["org.jooq:jooq"],
-					"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
-					"native-build-tools-version": nativeBuildToolsVersion,
-					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
-					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
-					"spring-batch-version-antora": toAntoraVersion(versionConstraints["org.springframework.batch:spring-batch-core"]),
-					"spring-boot-version": project.version,
-					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
-					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
-					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
-					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
-					"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
-					"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
-					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
-					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
-					"spring-framework-version-antora": toAntoraVersion(versionConstraints["org.springframework:spring-core"]),
-					"spring-graphql-version-antora": toAntoraVersion(versionConstraints["org.springframework.graphql:spring-graphql"]),
-					"spring-integration-version-antora": toAntoraVersion(versionConstraints["org.springframework.integration:spring-integration-core"]),
-					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
-					"spring-pulsar-version": versionConstraints["org.springframework.pulsar:spring-pulsar"],
-					"spring-security-version-antora": toAntoraVersion(versionConstraints["org.springframework.security:spring-security-core"]),
-					"spring-authorization-server-version-antora": toAntoraVersion(versionConstraints["org.springframework.security:spring-security-oauth2-authorization-server"]),
-					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
-					"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
-					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
-					"spring-application-output": runSpringApplicationExample.outputs.files.singleFile,
-					"logging-format-output": runLoggingFormatExample.outputs.files.singleFile
-	}
-}
-
-asciidoctor {
-	sources {
-		include "*.singleadoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "*.singleadoc"
-	}
-}
-
-task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "*.adoc"
-	}
-}
-
-syncDocumentationSourceForAsciidoctor {
-	dependsOn documentTestSlices
-	dependsOn documentStarters
-	dependsOn documentAutoConfigurationClasses
-	dependsOn documentDependencyVersions
-	dependsOn documentVersionProperties
-	dependsOn documentConfigurationProperties
-	dependsOn documentDevtoolsPropertyDefaults
-	from("${buildDir}/docs/generated") {
-		into "asciidoc"
-	}
-	from("src/main/java") {
-		into "main/java"
-	}
-	from("src/test/java") {
-		into "test/java"
-	}
-	from("src/main/kotlin") {
-		into "main/kotlin"
-	}
-	from("src/main/groovy") {
-		into "main/groovy"
-	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
-}
-
-syncDocumentationSourceForAsciidoctorMultipage {
-	dependsOn documentTestSlices
-	dependsOn documentStarters
-	dependsOn documentAutoConfigurationClasses
-	dependsOn documentDependencyVersions
-	dependsOn documentVersionProperties
-	dependsOn documentConfigurationProperties
-	dependsOn documentDevtoolsPropertyDefaults
-	from("${buildDir}/docs/generated") {
-		into "asciidoc"
-	}
-	from("src/main/java") {
-		into "main/java"
-	}
-	from("src/test/java") {
-		into "test/java"
-	}
-	from("src/main/kotlin") {
-		into "main/kotlin"
-	}
-	from("src/main/groovy") {
-		into "main/groovy"
-	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
-}
-
-syncDocumentationSourceForAsciidoctorPdf {
-	dependsOn documentTestSlices
-	dependsOn documentStarters
-	dependsOn documentAutoConfigurationClasses
-	dependsOn documentDependencyVersions
-	dependsOn documentVersionProperties
-	dependsOn documentConfigurationProperties
-	dependsOn documentDevtoolsPropertyDefaults
-	from("${buildDir}/docs/generated") {
-		into "asciidoc"
-	}
-	from("src/main/java") {
-		into "main/java"
-	}
-	from("src/test/java") {
-		into "test/java"
-	}
-	from("src/main/kotlin") {
-		into "main/kotlin"
-	}
-	from("src/main/groovy") {
-		into "main/groovy"
-	}
-	from("src/main/resources") {
-		into "main/resources"
-	}
-}
-
-
-
-task zipAdoc(type: Zip) {
-	dependsOn "antora", asciidoctor, asciidoctorMultipage, asciidoctorPdf,
-			configurations.gradlePluginDocumentation,
-			configurations.actuatorApiDocumentation,
-			configurations.mavenPluginDocumentation
-	duplicatesStrategy "fail"
-	from(asciidoctor.outputDir) {
-		into "reference/htmlsingle"
-	}
-	from(asciidoctorPdf.outputDir) {
-		into "reference/pdf"
-		include "index.pdf"
-		rename { "spring-boot-reference.pdf" }
-	}
-	from(asciidoctorMultipage.outputDir) {
-		into "reference/html"
-	}
-	from(aggregatedJavadoc) {
-		into "api"
-	}
-	into("gradle-plugin") {
-		from {
-			zipTree(configurations.gradlePluginDocumentation.singleFile)
-		}
-	}
-	into("actuator-api") {
-		from {
-			zipTree(configurations.actuatorApiDocumentation.singleFile)
-		}
-	}
-	into("maven-plugin") {
-		from {
-			zipTree(configurations.mavenPluginDocumentation.singleFile)
-		}
-	}
-}
-
-tasks.withType(io.spring.gradle.antora.GenerateAntoraYmlTask) {
-	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
-	dependsOn dependencyVersions
-	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
-	asciidocAttributes = project.provider(() -> getAsciidocAttributes(dependencyVersions.versionConstraints))
-}
-
-def getAsciidocAttributes(def versionConstraints) {
-		def securityVersion = versionConstraints["org.springframework.security:spring-security-core"]
-		if (securityVersion.endsWith("-SNAPSHOT")) {
-			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
-		}
-		return [
-			"hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
-			"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
-			"jooq-version": versionConstraints["org.jooq:jooq"],
-			"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
-			"native-build-tools-version": nativeBuildToolsVersion,
-			"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
-			"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
-			"spring-boot-version": project.version,
-			"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
-			"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
-			"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
-			"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
-			"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
-			"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
-			"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
-			"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
-			"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-			"spring-framework-version": versionConstraints["org.springframework:spring-core"],
-			"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
-			"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
-			"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
-			"spring-security-version": securityVersion,
-			"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
-			"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
-			"remote-spring-application-output": getRelativeExamplesPath( runRemoteSpringApplicationExample.outputs),
-			"spring-application-output": getRelativeExamplesPath( runSpringApplicationExample.outputs),
-			"logging-format-output": getRelativeExamplesPath(runLoggingFormatExample.outputs)
-		]
-}
-
 def getRelativeExamplesPath(var outputs) {
 	def fileName = outputs.files.singleFile.name
 	'example$example-output/' + fileName
 }
 
-artifacts {
-	archives zipAdoc
-}
-
-publishing {
-	publications {
-		maven(MavenPublication) {
-			artifact zipAdoc
-		}
-	}
-}
