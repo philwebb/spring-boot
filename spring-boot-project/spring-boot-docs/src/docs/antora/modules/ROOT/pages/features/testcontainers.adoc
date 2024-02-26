@@ -19,7 +19,7 @@ For example, if your main application is in `src/main/java/com/example/MyApplica
 
 The `TestMyApplication` class can use the `SpringApplication.from(...)` method to launch the real application:
 
-include::code:launch/TestMyApplication[]
+include-code::launch/TestMyApplication[]
 
 You'll also need to define the `Container` instances that you want to start along with your application.
 To do this, you need to make sure that the `spring-boot-testcontainers` module has been added as a `test` dependency.
@@ -30,7 +30,7 @@ See xref:features/testing.adoc#features.testing.testcontainers.service-connectio
 
 A typical Testcontainers configuration would look like this:
 
-include::code:test/MyContainersConfiguration[]
+include-code::test/MyContainersConfiguration[]
 
 NOTE: The lifecycle of `Container` beans is automatically managed by Spring Boot.
 Containers will be started and stopped automatically.
@@ -40,7 +40,7 @@ By default `sequential` startup is used, but you may also choose `parallel` if y
 
 Once you have defined your test configuration, you can use the `with(...)` method to attach it to your test launcher:
 
-include::code:test/TestMyApplication[]
+include-code::test/TestMyApplication[]
 
 You can now launch `TestMyApplication` as you would any regular Java `main` method application to start your application and the containers that it needs to run.
 
@@ -56,7 +56,7 @@ It allows you to add properties that will become available once your container h
 
 A typical configuration would look like this:
 
-include::code:MyContainersConfiguration[]
+include-code::MyContainersConfiguration[]
 
 NOTE: Using a `@ServiceConnection` is recommended whenever possible, however, dynamic properties can be a useful fallback for technologies that don't yet have `@ServiceConnection` support.
 
@@ -70,12 +70,12 @@ They can also be declared on a parent class or on an interface that the test imp
 
 For example, the following `MyContainers` interface declares `mongo` and `neo4j` containers:
 
-include::code:MyContainers[]
+include-code::MyContainers[]
 
 If you already have containers defined in this way, or you just prefer this style, you can import these declaration classes rather than defining you containers as `@Bean` methods.
 To do so, add the `@ImportTestcontainers` annotation to your test configuration class:
 
-include::code:MyContainersConfiguration[]
+include-code::MyContainersConfiguration[]
 
 TIP: If you don't intend to use the xref:features/testing.adoc#features.testing.testcontainers.service-connections[service connections feature] but want to use xref:features/testing.adoc#features.testing.testcontainers.dynamic-properties[`@DynamicPropertySource`] instead, remove the `@ServiceConnection` annotation from the `Container` fields.
 You can also add `@DynamicPropertySource` annotated methods to your declaration class.
@@ -88,7 +88,7 @@ When using devtools, you can annotate beans and bean methods with `@RestartScope
 Such beans won't be recreated when the devtools restart the application.
 This is especially useful for Testcontainer `Container` beans, as they keep their state despite the application restart.
 
-include::code:MyContainersConfiguration[]
+include-code::MyContainersConfiguration[]
 
 WARNING: If you're using Gradle and want to use this feature, you need to change the configuration of the `spring-boot-devtools` dependency from `developmentOnly` to `testAndDevelopmentOnly`.
 With the default scope of `developmentOnly`, the `bootTestRun` task will not pick up changes in your code, as the devtools are not active.

@@ -22,7 +22,7 @@ Spring Boot is configuring that builder to share HTTP resources and reflect code
 
 The following code shows a typical example:
 
-include::code:MyService[]
+include-code::MyService[]
 
 
 
@@ -73,7 +73,7 @@ The `WebClientSsl` interface provides access to any xref:features/ssl.adoc#featu
 
 The following code shows a typical example:
 
-include::code:MyService[]
+include-code::MyService[]
 
 
 
@@ -89,7 +89,7 @@ Spring Boot is configuring that builder with `HttpMessageConverters` and an appr
 
 The following code shows a typical example:
 
-include::code:MyService[]
+include-code::MyService[]
 
 
 
@@ -116,11 +116,11 @@ The `RestClientSsl` interface provides access to any xref:features/ssl.adoc#feat
 
 The following code shows a typical example:
 
-include::code:MyService[]
+include-code::MyService[]
 
 If you need to apply other customization in addition to an SSL bundle, you can use the `ClientHttpRequestFactorySettings` class with `ClientHttpRequestFactories`:
 
-include::code:settings/MyService[]
+include-code::settings/MyService[]
 
 
 
@@ -135,7 +135,7 @@ The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConv
 
 The following code shows a typical example:
 
-include::code:MyService[]
+include-code::MyService[]
 
 `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
 For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
@@ -154,14 +154,14 @@ All such beans are automatically registered with the auto-configured `RestTempla
 
 The following example shows a customizer that configures the use of a proxy for all hosts except `192.168.0.5`:
 
-include::code:MyRestTemplateCustomizer[]
+include-code::MyRestTemplateCustomizer[]
 
 Finally, you can define your own `RestTemplateBuilder` bean.
 Doing so will replace the auto-configured builder.
 If you want any `RestTemplateCustomizer` beans to be applied to your custom builder, as the auto-configuration would have done, configure it using a `RestTemplateBuilderConfigurer`.
 The following example exposes a `RestTemplateBuilder` that matches what Spring Boot's auto-configuration would have done, except that custom connect and read timeouts are also specified:
 
-include::code:MyRestTemplateBuilderConfiguration[]
+include-code::MyRestTemplateBuilderConfiguration[]
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
 In addition to replacing the auto-configured builder, this also prevents any `RestTemplateCustomizer` beans from being used.
@@ -172,7 +172,7 @@ In addition to replacing the auto-configured builder, this also prevents any `Re
 === RestTemplate SSL Support
 If you need custom SSL configuration on the `RestTemplate`, you can apply an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to the `RestTemplateBuilder` as shown in this example:
 
-include::code:MyService[]
+include-code::MyService[]
 
 
 

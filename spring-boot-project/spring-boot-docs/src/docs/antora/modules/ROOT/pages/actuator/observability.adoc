@@ -7,7 +7,7 @@ It consists of the three pillars logging, metrics and traces.
 For metrics and traces, Spring Boot uses https://micrometer.io/docs/observation[Micrometer Observation].
 To create your own observations (which will lead to metrics and traces), you can inject an `ObservationRegistry`.
 
-include::code:MyCustomObservation[]
+include-code::MyCustomObservation[]
 
 NOTE: Low cardinality tags will be added to metrics and traces, while high cardinality tags will only be added to traces.
 
@@ -69,7 +69,7 @@ TIP: If you want to prevent Spring Security from reporting observations, set the
 If you need greater control over the prevention of observations, you can register beans of type `ObservationPredicate`.
 Observations are only reported if all the `ObservationPredicate` beans return `true` for that observation.
 
-include::code:MyObservationPredicate[]
+include-code::MyObservationPredicate[]
 
 The preceding example will prevent all observations whose name contains "denied".
 

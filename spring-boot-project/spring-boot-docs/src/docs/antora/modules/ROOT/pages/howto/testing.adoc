@@ -11,7 +11,7 @@ This section answers common questions about testing.
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
-include::code:MySecurityTests[]
+include-code::MySecurityTests[]
 
 Spring Security provides comprehensive integration with Spring MVC Test, and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
 

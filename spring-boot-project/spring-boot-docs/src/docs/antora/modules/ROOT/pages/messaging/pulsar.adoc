@@ -100,7 +100,7 @@ If the topic already exists, the bean is ignored.
 == Sending a Message
 Spring's `PulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
 
-include::code:MyBean[]
+include-code::MyBean[]
 
 The `PulsarTemplate` relies on a `PulsarProducerFactory` to create the underlying Pulsar producer.
 Spring Boot auto-configuration also provides this producer factory, which by default, caches the producers that it creates.
@@ -118,7 +118,7 @@ If you need more control over the message being sent, you can pass in a `TypedMe
 == Sending a Message Reactively
 When the Reactive auto-configuration is activated, Spring's `ReactivePulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
 
-include::code:MyBean[]
+include-code::MyBean[]
 
 The `ReactivePulsarTemplate` relies on a `ReactivePulsarSenderFactory` to actually create the underlying sender.
 Spring Boot auto-configuration also provides this sender factory, which by default, caches the producers that it creates.
@@ -137,7 +137,7 @@ If you need more control over the message being sent, you can pass in a `Message
 When the Apache Pulsar infrastructure is present, any bean can be annotated with `@PulsarListener` to create a listener endpoint.
 The following component creates a listener endpoint on the `someTopic` topic:
 
-include::code:MyBean[]
+include-code::MyBean[]
 
 Spring Boot auto-configuration provides all the components necessary for `PulsarListener`, such as the `PulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying Pulsar consumers.
 You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
@@ -153,7 +153,7 @@ You can also customize a single listener by setting the `consumerCustomizer` att
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, any bean can be annotated with `@ReactivePulsarListener` to create a reactive listener endpoint.
 The following component creates a reactive listener endpoint on the `someTopic` topic:
 
-include::code:MyBean[]
+include-code::MyBean[]
 
 Spring Boot auto-configuration provides all the components necessary for `ReactivePulsarListener`, such as the `ReactivePulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying reactive Pulsar consumers.
 You can configure these components by specifying any of the `spring.pulsar.listener.*` and `spring.pulsar.consumer.*` prefixed application properties.
@@ -172,7 +172,7 @@ When you use a reader to connect to a topic you need to specify which message th
 When the Apache Pulsar infrastructure is present, any bean can be annotated with `@PulsarReader` to consume messages using a reader.
 The following component creates a reader endpoint that starts reading messages from the beginning of the `someTopic` topic:
 
-include::code:MyBean[]
+include-code::MyBean[]
 
 The `@PulsarReader` relies on a `PulsarReaderFactory` to create the underlying Pulsar reader.
 Spring Boot auto-configuration provides this reader factory which can be customized by setting any of the `spring.pulsar.reader.*` prefixed application properties.
@@ -188,7 +188,7 @@ You can also customize a single listener by setting the `readerCustomizer` attri
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, Spring's `ReactivePulsarReaderFactory` is provided, and you can use it to create a reader in order to read messages in a reactive fashion.
 The following component creates a reader using the provided factory and reads a single message from 5 minutes ago from the `someTopic` topic:
 
-include::code:MyBean[]
+include-code::MyBean[]
 
 Spring Boot auto-configuration provides this reader factory which can be customized by setting any of the `spring.pulsar.reader.*` prefixed application properties.
 

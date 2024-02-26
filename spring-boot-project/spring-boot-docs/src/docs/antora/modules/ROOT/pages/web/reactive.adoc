@@ -11,15 +11,15 @@ Unlike Spring MVC, it does not require the servlet API, is fully asynchronous an
 Spring WebFlux comes in two flavors: functional and annotation-based.
 The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
 
-include::code:MyRestController[]
+include-code::MyRestController[]
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web/webflux.html[reference documentation].
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
-include::code:MyRoutingConfiguration[]
+include-code::MyRoutingConfiguration[]
 
-include::code:MyUserHandler[]
+include-code::MyUserHandler[]
 
 "`WebFlux.fn`" is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web/webflux-functional.html[reference documentation].
 
@@ -84,7 +84,7 @@ For example, `+spring.jackson.*+` configuration keys are applied to the Jackson 
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
-include::code:MyCodecsConfiguration[]
+include-code::MyCodecsConfiguration[]
 
 You can also leverage xref:features/json.adoc#features.json.jackson.custom-serializers-and-deserializers[Boot's custom JSON serializers and deserializers].
 
@@ -188,7 +188,7 @@ For that, you can add a bean of type `ErrorAttributes`.
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because an `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
-include::code:MyErrorWebExceptionHandler[]
+include-code::MyErrorWebExceptionHandler[]
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
 
@@ -290,12 +290,12 @@ If you need to programmatically configure your reactive web server, you can regi
 `WebServerFactoryCustomizer` provides access to the `ConfigurableReactiveWebServerFactory`, which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
-include::code:MyWebServerFactoryCustomizer[]
+include-code::MyWebServerFactoryCustomizer[]
 
 `JettyReactiveWebServerFactory`, `NettyReactiveWebServerFactory`, `TomcatReactiveWebServerFactory`, and `UndertowReactiveWebServerFactory` are dedicated variants of `ConfigurableReactiveWebServerFactory` that have additional customization setter methods for Jetty, Reactor Netty, Tomcat, and Undertow respectively.
 The following example shows how to customize `NettyReactiveWebServerFactory` that provides access to Reactor Netty-specific configuration options:
 
-include::code:MyNettyWebServerFactoryCustomizer[]
+include-code::MyNettyWebServerFactoryCustomizer[]
 
 
 
