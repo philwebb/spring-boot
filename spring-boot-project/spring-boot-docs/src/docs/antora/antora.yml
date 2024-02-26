@@ -3,8 +3,10 @@ title: Spring Boot
 ext:
   zip_contents_collector:
     include:
-    - name: spring-boot-actuator-autoconfigure
+    - name: spring-boot-docs
       classifier: antora-aggregate-content
 asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT
+    include-java: ROOT:example$java/org/springframework/boot/docs
+    include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs

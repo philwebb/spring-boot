@@ -313,3 +313,16 @@ def getRelativeExamplesPath(var outputs) {
 	'example$example-output/' + fileName
 }
 
+
+def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "antora-aggregate-content"
+	from("src/main") {
+		into "modules/ROOT/examples"
+	}
+}
+
+tasks.named("antora") {
+	dependsOn zipAntoraAggregateContent
+}
+
