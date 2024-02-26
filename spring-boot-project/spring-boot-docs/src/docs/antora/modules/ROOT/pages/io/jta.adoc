@@ -15,7 +15,7 @@ If you are within a JTA environment and still want to use local transactions, yo
 If you package your Spring Boot application as a `war` or `ear` file and deploy it to a Jakarta EE application server, you can use your application server's built-in transaction manager.
 Spring Boot tries to auto-configure a transaction manager by looking at common JNDI locations (`java:comp/UserTransaction`, `java:comp/TransactionManager`, and so on).
 When using a transaction service provided by your application server, you generally also want to ensure that all resources are managed by the server and exposed over JNDI.
-Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the <<data#data.sql.datasource.jndi, configprop:spring.datasource.jndi-name[] property>> to configure your `DataSource`.
+Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the xref:data/sql.adoc#data.sql.datasource.jndi[configprop:spring.datasource.jndi-name[] property] to configure your `DataSource`.
 
 
 

@@ -21,7 +21,7 @@ TIP: We recommend that you follow Java's recommended package naming conventions 
 [[using.structuring-your-code.locating-the-main-class]]
 == Locating the Main Application Class
 We generally recommend that you locate your main application class in a root package above other classes.
-The <<using#using.using-the-springbootapplication-annotation, `@SpringBootApplication` annotation>> is often placed on your main class, and it implicitly defines a base "`search package`" for certain items.
+The xref:using/using-the-springbootapplication-annotation.adoc[`@SpringBootApplication` annotation] is often placed on your main class, and it implicitly defines a base "`search package`" for certain items.
 For example, if you are writing a JPA application, the package of the `@SpringBootApplication` annotated class is used to search for `@Entity` items.
 Using a root package also allows component scan to apply only on your project.
 

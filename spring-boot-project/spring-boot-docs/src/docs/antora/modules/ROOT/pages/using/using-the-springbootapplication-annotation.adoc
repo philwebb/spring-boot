@@ -4,10 +4,10 @@
 Many Spring Boot developers like their apps to use auto-configuration, component scan and be able to define extra configuration on their "application class".
 A single `@SpringBootApplication` annotation can be used to enable those three features, that is:
 
-* `@EnableAutoConfiguration`: enable <<using#using.auto-configuration,Spring Boot's auto-configuration mechanism>>
-* `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using#using.structuring-your-code,the best practices>>)
+* `@EnableAutoConfiguration`: enable xref:using/auto-configuration.adoc[Spring Boot's auto-configuration mechanism]
+* `@ComponentScan`: enable `@Component` scan on the package where the application is located (see xref:using/structuring-your-code.adoc[the best practices])
 * `@SpringBootConfiguration`: enable registration of extra beans in the context or the import of additional configuration classes.
-An alternative to Spring's standard `@Configuration` that aids <<features#features.testing.spring-boot-applications.detecting-configuration,configuration detection>> in your integration tests.
+An alternative to Spring's standard `@Configuration` that aids xref:features/testing.adoc#features.testing.spring-boot-applications.detecting-configuration[configuration detection] in your integration tests.
 
 include::code:springapplication/MyApplication[]
 

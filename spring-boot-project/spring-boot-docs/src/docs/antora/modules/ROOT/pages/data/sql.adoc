@@ -11,7 +11,7 @@ The {spring-framework}[Spring Framework] provides extensive support for working 
 Java's `javax.sql.DataSource` interface provides a standard method of working with database connections.
 Traditionally, a `DataSource` uses a `URL` along with some credentials to establish a database connection.
 
-TIP: See <<howto#howto.data-access.configure-custom-datasource,the "`How-to`" section>> for more advanced examples, typically to take full control over the configuration of the DataSource.
+TIP: See xref:howto/data-access.adoc#howto.data-access.configure-custom-datasource[the "`How-to`" section] for more advanced examples, typically to take full control over the configuration of the DataSource.
 
 
 
@@ -21,7 +21,7 @@ It is often convenient to develop applications by using an in-memory embedded da
 Obviously, in-memory databases do not provide persistent storage.
 You need to populate your database when your application starts and be prepared to throw away data when your application ends.
 
-TIP: The "`How-to`" section includes a <<howto#howto.data-initialization, section on how to initialize a database>>.
+TIP: The "`How-to`" section includes a xref:howto/data-initialization.adoc[section on how to initialize a database].
 
 Spring Boot can auto-configure embedded https://www.h2database.com[H2], https://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
 You need not provide any connection URLs.
@@ -90,7 +90,7 @@ NOTE: For a pooling `DataSource` to be created, we need to be able to verify tha
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
-These are the standard options that work regardless of <<features#data.sql.datasource.connection-pool, the actual implementation>>.
+These are the standard options that work regardless of xref:data/sql.adoc#data.sql.datasource.connection-pool[the actual implementation].
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 See the documentation of the connection pool implementation you are using for more details.
 
@@ -207,7 +207,7 @@ You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing D
 === Entity Classes
 Traditionally, JPA "`Entity`" classes are specified in a `persistence.xml` file.
 With Spring Boot, this file is not necessary and "`Entity Scanning`" is used instead.
-By default the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
+By default the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 
 Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
 A typical entity class resembles the following example:
@@ -215,7 +215,7 @@ A typical entity class resembles the following example:
 include::code:City[]
 
 TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
-See the "`<<howto#howto.data-access.separate-entity-definitions-from-spring-configuration>>`" how-to.
+See the "`xref:howto/data-access.adoc#howto.data-access.separate-entity-definitions-from-spring-configuration[Separate @Entity Definitions from Spring Configuration]`" how-to.
 
 
 
@@ -228,7 +228,7 @@ For example, a `CityRepository` interface might declare a `findAllByState(String
 For more complex queries, you can annotate your method with Spring Data's {spring-data-jpa-api}/repository/Query.html[`Query`] annotation.
 
 Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
-If you use auto-configuration, the <<using#using.auto-configuration.packages,auto-configuration packages>> are searched for repositories.
+If you use auto-configuration, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are searched for repositories.
 
 TIP: You can customize the locations to look for repositories using `@EnableJpaRepositories`.
 
@@ -325,7 +325,7 @@ The console is auto-configured when the following conditions are met:
 
 * You are developing a servlet-based web application.
 * `com.h2database:h2` is on the classpath.
-* You are using <<using#using.devtools,Spring Boot's developer tools>>.
+* You are using xref:using/devtools.adoc[Spring Boot's developer tools].
 
 TIP: If you are not using Spring Boot's developer tools but would still like to make use of H2's console, you can configure the configprop:spring.h2.console.enabled[] property with a value of `true`.
 
@@ -462,7 +462,7 @@ TIP: You do not need to specify a driver class name, since Spring Boot obtains t
 NOTE: At least the url should be provided.
 Information specified in the URL takes precedence over individual properties, that is `name`, `username`, `password` and pooling options.
 
-TIP: The "`How-to`" section includes a <<howto#howto.data-initialization.using-basic-sql-scripts, section on how to initialize a database>>.
+TIP: The "`How-to`" section includes a xref:howto/data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[section on how to initialize a database].
 
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options are taken from the application configuration:
@@ -480,7 +480,7 @@ If you want to retain the JDBC `DataSource` auto-configuration, and are comforta
 
 [[data.sql.r2dbc.embedded]]
 === Embedded Database Support
-Similarly to <<features#data.sql.datasource.embedded,the JDBC support>>, Spring Boot can automatically configure an embedded database for reactive usage.
+Similarly to xref:data/sql.adoc#data.sql.datasource.embedded[the JDBC support], Spring Boot can automatically configure an embedded database for reactive usage.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use, as shown in the following example:
 
@@ -518,7 +518,7 @@ For example, a `CityRepository` interface might declare a `findAllByState(String
 For more complex queries, you can annotate your method with Spring Data's {spring-data-r2dbc-api}/repository/Query.html[`Query`] annotation.
 
 Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
-If you use auto-configuration, the <<using#using.auto-configuration.packages,auto-configuration packages>> are searched for repositories.
+If you use auto-configuration, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are searched for repositories.
 
 The following example shows a typical Spring Data repository interface definition:
 

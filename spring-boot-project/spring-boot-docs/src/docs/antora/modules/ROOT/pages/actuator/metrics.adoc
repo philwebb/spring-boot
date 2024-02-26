@@ -3,25 +3,25 @@
 
 Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports {micrometer-docs}[numerous monitoring systems], including:
 
-- <<actuator#actuator.metrics.export.appoptics,AppOptics>>
-- <<actuator#actuator.metrics.export.atlas,Atlas>>
-- <<actuator#actuator.metrics.export.datadog,Datadog>>
-- <<actuator#actuator.metrics.export.dynatrace,Dynatrace>>
-- <<actuator#actuator.metrics.export.elastic,Elastic>>
-- <<actuator#actuator.metrics.export.ganglia,Ganglia>>
-- <<actuator#actuator.metrics.export.graphite,Graphite>>
-- <<actuator#actuator.metrics.export.humio,Humio>>
-- <<actuator#actuator.metrics.export.influx,Influx>>
-- <<actuator#actuator.metrics.export.jmx,JMX>>
-- <<actuator#actuator.metrics.export.kairos,KairosDB>>
-- <<actuator#actuator.metrics.export.newrelic,New Relic>>
-- <<actuator#actuator.metrics.export.otlp,OpenTelemetry>>
-- <<actuator#actuator.metrics.export.prometheus,Prometheus>>
-- <<actuator#actuator.metrics.export.signalfx,SignalFx>>
-- <<actuator#actuator.metrics.export.simple,Simple (in-memory)>>
-- <<actuator#actuator.metrics.export.stackdriver,Stackdriver>>
-- <<actuator#actuator.metrics.export.statsd,StatsD>>
-- <<actuator#actuator.metrics.export.wavefront,Wavefront>>
+- xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[AppOptics]
+- xref:actuator/metrics.adoc#actuator.metrics.export.atlas[Atlas]
+- xref:actuator/metrics.adoc#actuator.metrics.export.datadog[Datadog]
+- xref:actuator/metrics.adoc#actuator.metrics.export.dynatrace[Dynatrace]
+- xref:actuator/metrics.adoc#actuator.metrics.export.elastic[Elastic]
+- xref:actuator/metrics.adoc#actuator.metrics.export.ganglia[Ganglia]
+- xref:actuator/metrics.adoc#actuator.metrics.export.graphite[Graphite]
+- xref:actuator/metrics.adoc#actuator.metrics.export.humio[Humio]
+- xref:actuator/metrics.adoc#actuator.metrics.export.influx[Influx]
+- xref:actuator/metrics.adoc#actuator.metrics.export.jmx[JMX]
+- xref:actuator/metrics.adoc#actuator.metrics.export.kairos[KairosDB]
+- xref:actuator/metrics.adoc#actuator.metrics.export.newrelic[New Relic]
+- xref:actuator/metrics.adoc#actuator.metrics.export.otlp[OpenTelemetry]
+- xref:actuator/metrics.adoc#actuator.metrics.export.prometheus[Prometheus]
+- xref:actuator/metrics.adoc#actuator.metrics.export.signalfx[SignalFx]
+- xref:actuator/metrics.adoc#actuator.metrics.export.simple[Simple (in-memory)]
+- xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[Stackdriver]
+- xref:actuator/metrics.adoc#actuator.metrics.export.statsd[StatsD]
+- xref:actuator/metrics.adoc#actuator.metrics.export.wavefront[Wavefront]
 
 TIP: To learn more about Micrometer's capabilities, see its {micrometer-docs}[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
 
@@ -73,7 +73,7 @@ You can apply customizations to particular registry implementations by being mor
 
 include::code:specifictype/MyMeterRegistryConfiguration[]
 
-Spring Boot also <<actuator#actuator.metrics.supported,configures built-in instrumentation>> that you can control through configuration or dedicated annotation markers.
+Spring Boot also xref:actuator/metrics.adoc#actuator.metrics.supported[configures built-in instrumentation] that you can control through configuration or dedicated annotation markers.
 
 
 
@@ -506,7 +506,7 @@ You can provide the location of the https://opentelemetry.io/[OpenTelemetry metr
 {micrometer-implementation-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
 Spring Boot provides an actuator endpoint at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
 
-TIP: By default, the endpoint is not available and must be exposed. See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
+TIP: By default, the endpoint is not available and must be exposed. See xref:actuator/endpoints.adoc#actuator.endpoints.exposing[exposing endpoints] for more details.
 
 The following example `scrape_config` adds to `prometheus.yml`:
 
@@ -573,7 +573,7 @@ You can also change the interval at which metrics are sent to SignalFx:
 [[actuator.metrics.export.simple]]
 === Simple
 Micrometer ships with a simple, in-memory backend that is automatically used as a fallback if no other registry is configured.
-This lets you see what metrics are collected in the <<actuator#actuator.metrics.endpoint,metrics endpoint>>.
+This lets you see what metrics are collected in the xref:actuator/metrics.adoc#actuator.metrics.endpoint[metrics endpoint].
 
 The in-memory backend disables itself as soon as you use any other available backend.
 You can also disable it explicitly:
@@ -765,7 +765,7 @@ To replace the default tags, provide a `@Bean` that implements `ServerRequestObs
 
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
-Applications can opt in and record exceptions by <<web#web.servlet.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt in and record exceptions by xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling[setting handled exceptions as request attributes].
 
 By default, all requests are handled.
 To customize the filter, provide a `@Bean` that implements `FilterRegistrationBean<ServerHttpObservationFilter>`.
@@ -784,7 +784,7 @@ To add to the default tags, provide a `@Bean` that extends `DefaultServerRequest
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
-Applications can opt in and record exceptions by <<web#web.reactive.webflux.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt in and record exceptions by xref:web/reactive.adoc#web.reactive.webflux.error-handling[setting handled exceptions as request attributes].
 
 
 
@@ -1182,7 +1182,7 @@ For more details on the concepts behind `percentiles-histogram`, `percentiles`, 
 == Metrics Endpoint
 Spring Boot provides a `metrics` endpoint that you can use diagnostically to examine the metrics collected by an application.
 The endpoint is not available by default and must be exposed.
-See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
+See xref:actuator/endpoints.adoc#actuator.endpoints.exposing[exposing endpoints] for more details.
 
 Navigating to `/actuator/metrics` displays a list of available meter names.
 You can drill down to view information about a particular meter by providing its name as a selector -- for example, `/actuator/metrics/jvm.memory.max`.

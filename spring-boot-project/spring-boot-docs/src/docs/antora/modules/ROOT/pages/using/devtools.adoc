@@ -26,7 +26,7 @@ To include devtools support, add the module dependency to your build, as shown i
 ----
 
 CAUTION: Devtools might cause classloading issues, in particular in multi-module projects.
-<<using#using.devtools.diagnosing-classloading-issues>> explains how to diagnose and solve them.
+xref:using/devtools.adoc#using.devtools.diagnosing-classloading-issues[Diagnosing Classloading Issues] explains how to diagnose and solve them.
 
 NOTE: Developer tools are automatically disabled when running a fully packaged application.
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
@@ -38,7 +38,7 @@ To disable devtools, exclude the dependency or set the `-Dspring.devtools.restar
 TIP: Flagging the dependency as optional in Maven or using the `developmentOnly` configuration in Gradle (as shown above) prevents devtools from being transitively applied to other modules that use your project.
 
 TIP: Repackaged archives do not contain devtools by default.
-If you want to use a <<using#using.devtools.remote-applications,certain remote devtools feature>>, you need to include it.
+If you want to use a xref:using/devtools.adoc#using.devtools.remote-applications[certain remote devtools feature], you need to include it.
 When using the Maven plugin, set the `excludeDevtools` property to `false`.
 When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
@@ -46,19 +46,19 @@ When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executa
 
 [[using.devtools.diagnosing-classloading-issues]]
 == Diagnosing Classloading Issues
-As described in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
+As described in the xref:using/devtools.adoc#using.devtools.restart.restart-vs-reload[null] section, restart functionality is implemented by using two classloaders.
 For most applications, this approach works well.
 However, it can sometimes cause classloading issues, in particular in multi-module projects.
 
-To diagnose whether the classloading issues are indeed caused by devtools and its two classloaders, <<using#using.devtools.restart.disable,try disabling restart>>.
-If this solves your problems, <<using#using.devtools.restart.customizing-the-classload,customize the restart classloader>> to include your entire project.
+To diagnose whether the classloading issues are indeed caused by devtools and its two classloaders, xref:using/devtools.adoc#using.devtools.restart.disable[try disabling restart].
+If this solves your problems, xref:using/devtools.adoc#using.devtools.restart.customizing-the-classload[customize the restart classloader] to include your entire project.
 
 
 
 [[using.devtools.property-defaults]]
 == Property Defaults
 Several of the libraries supported by Spring Boot use caches to improve performance.
-For example, <<web#web.servlet.spring-mvc.template-engines,template engines>> cache compiled templates to avoid repeatedly parsing template files.
+For example, xref:web/servlet.adoc#web.servlet.spring-mvc.template-engines[template engines] cache compiled templates to avoid repeatedly parsing template files.
 Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
 
 While caching is very beneficial in production, it can be counter-productive during development, preventing you from seeing the changes you just made in your application.
@@ -85,7 +85,7 @@ If you wish to log all request details (including potentially sensitive informat
 Applications that use `spring-boot-devtools` automatically restart whenever files on the classpath change.
 This can be a useful feature when working in an IDE, as it gives a very fast feedback loop for code changes.
 By default, any entry on the classpath that points to a directory is monitored for changes.
-Note that certain resources, such as static assets and view templates, <<using#using.devtools.restart.excluding-resources, do not need to restart the application>>.
+Note that certain resources, such as static assets and view templates, xref:using/devtools.adoc#using.devtools.restart.excluding-resources[do not need to restart the application].
 
 .Triggering a restart
 ****
@@ -102,7 +102,7 @@ NOTE: If you are restarting with Maven or Gradle using the build plugin you must
 If you disable forking, the isolated application classloader used by devtools will not be created and restarts will not operate properly.
 
 TIP: Automatic restart works very well when used with LiveReload.
-<<using#using.devtools.livereload,See the LiveReload section>> for details.
+xref:using/devtools.adoc#using.devtools.livereload[See the LiveReload section] for details.
 If you use JRebel, automatic restarts are disabled in favor of dynamic class reloading.
 Other devtools features (such as LiveReload and property overrides) can still be used.
 
@@ -151,7 +151,7 @@ To disable the logging of the report, set the following property:
 === Excluding Resources
 Certain resources do not necessarily need to trigger a restart when they are changed.
 For example, Thymeleaf templates can be edited in-place.
-By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public`, or `/templates` does not trigger a restart but does trigger a <<using#using.devtools.livereload, live reload>>.
+By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public`, or `/templates` does not trigger a restart but does trigger a xref:using/devtools.adoc#using.devtools.livereload[live reload].
 If you want to customize these exclusions, you can use the configprop:spring.devtools.restart.exclude[] property.
 For example, to exclude only `/static` and `/public` you would set the following property:
 
@@ -171,7 +171,7 @@ TIP: If you want to keep those defaults and _add_ additional exclusions, use the
 === Watching Additional Paths
 You may want your application to be restarted or reloaded when you make changes to files that are not on the classpath.
 To do so, use the configprop:spring.devtools.restart.additional-paths[] property to configure additional paths to watch for changes.
-You can use the configprop:spring.devtools.restart.exclude[] property <<using#using.devtools.restart.excluding-resources, described earlier>> to control whether changes beneath the additional paths trigger a full restart or a <<using#using.devtools.livereload, live reload>>.
+You can use the configprop:spring.devtools.restart.exclude[] property xref:using/devtools.adoc#using.devtools.restart.excluding-resources[described earlier] to control whether changes beneath the additional paths trigger a full restart or a xref:using/devtools.adoc#using.devtools.livereload[live reload].
 
 
 
@@ -218,7 +218,7 @@ Then your `trigger-file` property would be:
 
 Restarts will now only happen when the `src/main/resources/.reloadtrigger` is updated.
 
-TIP: You might want to set `spring.devtools.restart.trigger-file` as a <<using#using.devtools.globalsettings,global setting>>, so that all your projects behave in the same way.
+TIP: You might want to set `spring.devtools.restart.trigger-file` as a xref:using/devtools.adoc#using.devtools.globalsettings[global setting], so that all your projects behave in the same way.
 
 Some IDEs have features that save you from needing to update your trigger file manually.
 https://spring.io/tools[Spring Tools for Eclipse] and https://www.jetbrains.com/idea/[IntelliJ IDEA (Ultimate Edition)] both have such support.
@@ -229,7 +229,7 @@ For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring
 
 [[using.devtools.restart.customizing-the-classload]]
 === Customizing the Restart Classloader
-As described earlier in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
+As described earlier in the xref:using/devtools.adoc#using.devtools.restart.restart-vs-reload[null] section, restart functionality is implemented by using two classloaders.
 If this causes issues, you might need to customize what gets loaded by which classloader.
 
 By default, any open project in your IDE is loaded with the "`restart`" classloader, and any regular `.jar` file is loaded with the "`base`" classloader.
@@ -279,7 +279,7 @@ NOTE: You can only run one LiveReload server at a time.
 Before starting your application, ensure that no other LiveReload servers are running.
 If you start multiple applications from your IDE, only the first has LiveReload support.
 
-WARNING: To trigger LiveReload when a file changes, <<using#using.devtools.restart>> must be enabled.
+WARNING: To trigger LiveReload when a file changes, xref:using/devtools.adoc#using.devtools.restart[Automatic Restart] must be enabled.
 
 
 
@@ -292,7 +292,7 @@ You can configure global devtools settings by adding any of the following files 
 . `spring-boot-devtools.yml`
 
 Any properties added to these files apply to _all_ Spring Boot applications on your machine that use devtools.
-For example, to configure restart to always use a <<using#using.devtools.restart.triggerfile, trigger file>>, you would add the following property to your `spring-boot-devtools` file:
+For example, to configure restart to always use a xref:using/devtools.adoc#using.devtools.restart.triggerfile[trigger file], you would add the following property to your `spring-boot-devtools` file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -312,7 +312,7 @@ This allows you to share the devtools global configuration with applications tha
 ====
 Profiles are not supported in devtools properties/yaml files.
 
-Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<features#features.external-config.files.profile-specific, profile-specific configuration files>>.
+Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of xref:features/external-config.adoc#features.external-config.files.profile-specific[profile-specific configuration files].
 Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.config.activate.on-profile` documents in both YAML and Properties files are not supported.
 ====
 
@@ -406,7 +406,7 @@ TIP: If you need to use a proxy to access the remote application, configure the 
 
 [[using.devtools.remote-applications.update]]
 === Remote Update
-The remote client monitors your application classpath for changes in the same way as the <<using#using.devtools.restart,local restart>>.
+The remote client monitors your application classpath for changes in the same way as the xref:using/devtools.adoc#using.devtools.restart[local restart].
 Any updated resource is pushed to the remote application and (_if required_) triggers a restart.
 This can be helpful if you iterate on a feature that uses a cloud service that you do not have locally.
 Generally, remote updates and restarts are much quicker than a full rebuild and deploy cycle.
@@ -418,7 +418,7 @@ The next batch can’t be sent to the application, since the server is restartin
 This is typically manifested by a warning in the `RemoteSpringApplication` logs about failing to upload some of the classes, and a consequent retry.
 But it may also lead to application code inconsistency and failure to restart after the first batch of changes is uploaded.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment.
-See the <<using#using.devtools.globalsettings.configuring-file-system-watcher>> section for configuring these properties.
+See the xref:using/devtools.adoc#using.devtools.globalsettings.configuring-file-system-watcher[Configuring File System Watcher] section for configuring these properties.
 
 NOTE: Files are only monitored when the remote client is running.
 If you change a file before starting the remote client, it is not pushed to the remote server.

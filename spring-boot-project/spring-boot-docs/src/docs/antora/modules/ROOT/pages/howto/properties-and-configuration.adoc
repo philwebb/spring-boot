@@ -138,7 +138,7 @@ The application sources are:
 
 [[howto.properties-and-configuration.external-properties-location]]
 == Change the Location of External Properties of an Application
-By default, properties from different sources are added to the Spring `Environment` in a defined order (see "`<<features#features.external-config>>`" in the '`Spring Boot features`' section for the exact order).
+By default, properties from different sources are added to the Spring `Environment` in a defined order (see "`xref:features/external-config.adoc[Externalized Configuration]`" in the '`Spring Boot features`' section for the exact order).
 
 You can also provide the following System properties (or environment variables) to change the behavior:
 
@@ -149,7 +149,7 @@ You can also provide the following System properties (or environment variables) 
 No matter what you set in the environment, Spring Boot always loads `application.properties` as described above.
 By default, if YAML is used, then files with the '`.yaml`' and '`.yml`' extension are also added to the list.
 
-TIP: If you want detailed information about the files that are being loaded you can <<features#features.logging.log-levels, set the logging level>> of `org.springframework.boot.context.config` to `trace`.
+TIP: If you want detailed information about the files that are being loaded you can xref:features/logging.adoc#features.logging.log-levels[set the logging level] of `org.springframework.boot.context.config` to `trace`.
 
 
 
@@ -202,7 +202,7 @@ The preceding example YAML corresponds to the following `application.properties`
 	server.port=9000
 ----
 
-See "`<<features#features.external-config.yaml>>`" in the '`Spring Boot features`' section for more information about YAML.
+See "`xref:features/external-config.adoc#features.external-config.yaml[Working With YAML]`" in the '`Spring Boot features`' section for more information about YAML.
 
 
 
@@ -228,7 +228,7 @@ In Spring Boot, you can also set the active profile in `application.properties`,
 A value set this way is replaced by the System property or environment variable setting but not by the `SpringApplicationBuilder.profiles()` method.
 Thus, the latter Java API can be used to augment the profiles without changing the defaults.
 
-See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section for more information.
+See "`xref:features/profiles.adoc[Profiles]`" in the "`Spring Boot features`" section for more information.
 
 
 
@@ -246,13 +246,13 @@ In Spring Boot, you can also set the default profile name in `application.proper
 	    default: "dev"
 ----
 
-See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section for more information.
+See "`xref:features/profiles.adoc[Profiles]`" in the "`Spring Boot features`" section for more information.
 
 
 
 [[howto.properties-and-configuration.change-configuration-depending-on-the-environment]]
 == Change Configuration Depending on the Environment
-Spring Boot supports multi-document YAML and Properties files (see <<features#features.external-config.files.multi-document>> for details) which can be activated conditionally based on the active profiles.
+Spring Boot supports multi-document YAML and Properties files (see xref:features/external-config.adoc#features.external-config.files.multi-document[Working With Multi-Document Files] for details) which can be activated conditionally based on the active profiles.
 
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
 If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
@@ -293,6 +293,6 @@ There is not (and technically cannot be) an exhaustive list of all supported pro
 
 A running application with the Actuator features has a `configprops` endpoint that shows all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<application-properties#appendix.application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
+The appendix includes an xref:application-properties.adoc[`application.properties`] example with a list of the most common properties supported by Spring Boot.
 The definitive list comes from searching the source code for `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of `Binder`.
-For more about the exact ordering of loading properties, see "<<features#features.external-config>>".
+For more about the exact ordering of loading properties, see "xref:features/external-config.adoc[Externalized Configuration]".

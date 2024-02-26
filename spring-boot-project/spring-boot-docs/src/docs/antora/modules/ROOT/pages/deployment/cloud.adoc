@@ -14,7 +14,7 @@ It minimizes divergence between development and production environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs to run packaged within it.
 
-In this section, we look at what it takes to get the <<getting-started#getting-started.first-application, application that we developed>> in the "`Getting Started`" section up and running in the Cloud.
+In this section, we look at what it takes to get the xref:getting-started/first-application.adoc[application that we developed] in the "`Getting Started`" section up and running in the Cloud.
 
 
 
@@ -109,7 +109,7 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
 You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
 
-Spring Boot helps you to <<features#features.spring-application.application-availability,manage the state of your application>> and export it with <<actuator#actuator.endpoints.kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+Spring Boot helps you to xref:features/spring-application.adoc#features.spring-application.application-availability[manage the state of your application] and export it with xref:actuator/endpoints.adoc#actuator.endpoints.kubernetes-probes[HTTP Kubernetes Probes using Actuator].
 
 
 
@@ -134,7 +134,7 @@ The preStop handler can be configured by using the PodSpec in the pod's configur
 	          command: ["sh", "-c", "sleep 10"]
 ----
 
-Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<web#web.graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+Once the pre-stop hook has completed, SIGTERM will be sent to the container and xref:web/graceful-shutdown.adoc[graceful shutdown] will begin, allowing any remaining in-flight requests to complete.
 
 NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specified time called the termination grace period (the default for which is 30 seconds).
 If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.

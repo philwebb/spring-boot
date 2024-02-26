@@ -105,7 +105,7 @@ These features are described in several enums (in Jackson) that map onto propert
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
-Note that, thanks to the use of <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>>, the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
+Note that, thanks to the use of xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding], the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
 
 This environment-based configuration is applied to the auto-configured `Jackson2ObjectMapperBuilder` bean and applies to any mappers created by using the builder, including the auto-configured `ObjectMapper` bean.
 
@@ -122,7 +122,7 @@ If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter`, they 
 Also, a convenience bean of type `HttpMessageConverters` is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
-See the "`<<howto#howto.spring-mvc.customize-responsebody-rendering>>`" section and the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the "`xref:howto/spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[Customize the @ResponseBody Rendering]`" section and the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 

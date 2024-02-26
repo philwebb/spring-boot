@@ -33,7 +33,7 @@ The name of the default profile is `default` and it can be tuned using the confi
 ----
 
 `spring.profiles.active` and `spring.profiles.default` can only be used in non-profile specific documents.
-This means they cannot be included in <<features#features.external-config.files.profile-specific,profile specific files>> or <<features#features.external-config.files.activation-properties,documents activated>> by `spring.config.activate.on-profile`.
+This means they cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
 
 For example, the second document configuration is invalid:
 
@@ -77,9 +77,9 @@ For example, when an application with the following properties is run, the commo
 ----
 
 WARNING: Similar to `spring.profiles.active`, `spring.profiles.include` can only be used in non-profile specific documents.
-This means it cannot be included in <<features#features.external-config.files.profile-specific,profile specific files>> or <<features#features.external-config.files.activation-properties,documents activated>> by `spring.config.activate.on-profile`.
+This means it cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
 
-Profile groups, which are described in the <<features#features.profiles.groups,next section>> can also be used to add active profiles if a given profile is active.
+Profile groups, which are described in the xref:features/profiles.adoc#features.profiles.groups[next section] can also be used to add active profiles if a given profile is active.
 
 
 
@@ -117,4 +117,4 @@ It is also possible to activate profiles by using Spring's `ConfigurableEnvironm
 [[features.profiles.profile-specific-configuration-files]]
 == Profile-specific Configuration Files
 Profile-specific variants of both `application.properties` (or `application.yaml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
-See "<<features#features.external-config.files.profile-specific>>" for details.
+See "xref:features/external-config.adoc#features.external-config.files.profile-specific[Profile Specific Files]" for details.

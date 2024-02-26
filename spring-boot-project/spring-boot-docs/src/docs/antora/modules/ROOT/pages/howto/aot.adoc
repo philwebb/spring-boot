@@ -8,7 +8,7 @@ This section addresses those questions.
 == Conditions
 
 Ahead-of-time processing optimizes the application and evaluates {spring-framework-api}/context/annotation/Conditional.html[conditions] based on the environment at build time.
-<<features#features.profiles,Profiles>> are implemented through conditions and are therefore affected, too.
+xref:features/profiles.adoc[Profiles] are implemented through conditions and are therefore affected, too.
 
 If you want beans that are created based on a condition in an ahead-of-time optimized application, you have to set up the environment when building the application.
 The beans which are created while ahead-of-time processing at build time are then always created when running the application and can't be switched off.

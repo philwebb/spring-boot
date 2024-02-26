@@ -6,4 +6,4 @@ To learn more about the APIs used to perform the processing, browse the `org.spr
 
 For known limitations with Spring and GraalVM, please see the {github-wiki}/Spring-Boot-with-GraalVM[Spring Boot wiki].
 
-The next section goes on to cover the _<<cli#cli, Spring Boot CLI>>_.
+The next section goes on to cover the _xref:cli.adoc[Spring Boot CLI]_.

@@ -79,7 +79,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see "`<<web#web.servlet.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
+For more details, see "`xref:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
 
 
 
@@ -185,7 +185,7 @@ The following example shows setting SSL properties using PEM-encoded certificate
 	    trust-certificate: "classpath:ca-cert.crt"
 ----
 
-Alternatively, the SSL trust material can be configured in an <<features#features.ssl,SSL bundle>> and applied to the web server as shown in this example:
+Alternatively, the SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the web server as shown in this example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -207,7 +207,7 @@ You can enable HTTP/2 support in your Spring Boot application with the configpro
 Both `h2` (HTTP/2 over TLS) and `h2c` (HTTP/2 over TCP) are supported.
 To use `h2`, SSL must also be enabled.
 When SSL is not enabled, `h2c` will be used.
-You may, for example, want to use `h2c` when your application is <<howto.webserver.use-behind-a-proxy-server,running behind a proxy server>> that is performing TLS termination.
+You may, for example, want to use `h2c` when your application is xref:howto/webserver.adoc#howto.webserver.use-behind-a-proxy-server[running behind a proxy server] that is performing TLS termination.
 
 
 
@@ -254,9 +254,9 @@ Undertow supports `h2c` and `h2` out of the box.
 [[howto.webserver.configure]]
 == Configure the Web Server
 Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` or `application.yaml` file.
-See "`<<howto#howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
+See "`xref:howto/properties-and-configuration.adoc#howto.properties-and-configuration.discover-build-in-options-for-external-properties[Discover Built-in Options for External Properties]`").
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
-See the list of <<application-properties#appendix.application-properties>>.
+See the list of xref:application-properties.adoc[Common Application Properties].
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
 However, if a configuration key does not exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
@@ -304,8 +304,8 @@ When you do so, auto-configured customizers are still applied on your custom fac
 == Add a Servlet, Filter, or Listener to an Application
 In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
 
-* <<howto#howto.webserver.add-servlet-filter-listener.spring-bean>>
-* <<howto#howto.webserver.add-servlet-filter-listener.using-scanning>>
+* xref:howto/webserver.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[Add a Servlet, Filter, or Listener by Using a Spring Bean]
+* xref:howto/webserver.adoc#howto.webserver.add-servlet-filter-listener.using-scanning[Add Servlets, Filters, and Listeners by Using Classpath Scanning]
 
 
 
@@ -325,13 +325,13 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 This aligns with the servlet specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`<<web#web.servlet.embedded-container.servlets-filters-listeners.beans>>`" section.
+Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`xref:web/servlet.adoc#web.servlet.embedded-container.servlets-filters-listeners.beans[Registering Servlets, Filters, and Listeners as Spring Beans]`" section.
 
 
 
 [[howto.webserver.add-servlet-filter-listener.spring-bean.disable]]
 ==== Disable Registration of a Servlet or Filter
-As <<howto#howto.webserver.add-servlet-filter-listener.spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
+As xref:howto/webserver.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[described earlier], any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
 include::code:MyFilterConfiguration[]

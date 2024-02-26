@@ -1,5 +1,5 @@
 [[messaging.whats-next]]
 = What to Read Next
 
-The next section describes how to enable <<io#io, IO capabilities>> in your application.
-You can read about <<io#io.caching, caching>>, <<io#io.email, mail>>, <<io#io.validation, validation>>, <<io#io.rest-client, rest clients>> and more in this section.
+The next section describes how to enable xref:io.adoc[IO capabilities] in your application.
+You can read about xref:io/caching.adoc[caching], xref:io/email.adoc[mail], xref:io/validation.adoc[validation], xref:io/rest-client.adoc[rest clients] and more in this section.

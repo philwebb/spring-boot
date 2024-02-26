@@ -3,6 +3,6 @@
 
 Finally, we have a few topics for more advanced users:
 
-* *Spring Boot Applications Deployment:* <<deployment#deployment.cloud, Cloud Deployment>> | <<deployment#deployment.installing, OS Service>>
-* *Build tool plugins:* <<build-tool-plugins#build-tool-plugins.maven, Maven>> | <<build-tool-plugins#build-tool-plugins.gradle, Gradle>>
-* *Appendix:* <<application-properties#appendix.application-properties,Application Properties>> | <<configuration-metadata#appendix.configuration-metadata,Configuration Metadata>> | <<auto-configuration-classes#appendix.auto-configuration-classes,Auto-configuration Classes>> | <<test-auto-configuration#appendix.test-auto-configuration,Test Auto-configuration Annotations>> | <<executable-jar#appendix.executable-jar,Executable Jars>> | <<dependency-versions#appendix.dependency-versions,Dependency Versions>>
+* *Spring Boot Applications Deployment:* xref:deployment/cloud.adoc[Cloud Deployment] | xref:deployment/installing.adoc[OS Service]
+* *Build tool plugins:* xref:build-tool-plugins/maven.adoc[Maven] | xref:build-tool-plugins/gradle.adoc[Gradle]
+* *Appendix:* xref:application-properties.adoc[Application Properties] | xref:configuration-metadata.adoc[Configuration Metadata] | xref:auto-configuration-classes.adoc[Auto-configuration Classes] | xref:test-auto-configuration.adoc[Test Auto-configuration Annotations] | xref:executable-jar.adoc[Executable Jars] | xref:dependency-versions.adoc[Dependency Versions]

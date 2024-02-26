@@ -217,7 +217,7 @@ For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springf
 
 NOTE: The above approach will only work for package level logging.
 Since relaxed binding always converts environment variables to lowercase, it is not possible to configure logging for an individual class in this way.
-If you need to configure logging for a class, you can use <<features#features.external-config.application-json, the `SPRING_APPLICATION_JSON`>> variable.
+If you need to configure logging for a class, you can use xref:features/external-config.adoc#features.external-config.application-json[the `SPRING_APPLICATION_JSON`] variable.
 
 
 
@@ -403,7 +403,7 @@ See the default configurations in `spring-boot.jar` for examples:
 
 [TIP]
 ====
-If you want to use a placeholder in a logging property, you should use <<features#features.external-config.files.property-placeholders,Spring Boot's syntax>> and not the syntax of the underlying framework.
+If you want to use a placeholder in a logging property, you should use xref:features/external-config.adoc#features.external-config.files.property-placeholders[Spring Boot's syntax] and not the syntax of the underlying framework.
 Notably, if you use Logback, you should use `:` as the delimiter between a property name and its default value and not use `:-`.
 ====
 

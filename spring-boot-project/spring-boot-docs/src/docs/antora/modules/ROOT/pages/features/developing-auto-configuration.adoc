@@ -5,7 +5,7 @@ If you work in a company that develops shared libraries, or if you work on an op
 Auto-configuration classes can be bundled in external jars and still be picked up by Spring Boot.
 
 Auto-configuration can be associated to a "`starter`" that provides the auto-configuration code as well as the typical libraries that you would use with it.
-We first cover what you need to know to build your own auto-configuration and then we move on to the <<features#features.developing-auto-configuration.custom-starter,typical steps required to create a custom starter>>.
+We first cover what you need to know to build your own auto-configuration and then we move on to the xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.custom-starter[typical steps required to create a custom starter].
 
 
 
@@ -59,12 +59,12 @@ The `@ConditionalOnMissingBean` annotation is one common example that is used to
 Spring Boot includes a number of `@Conditional` annotations that you can reuse in your own code by annotating `@Configuration` classes or individual `@Bean` methods.
 These annotations include:
 
-* <<features#features.developing-auto-configuration.condition-annotations.class-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.bean-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.property-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.resource-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.web-application-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.spel-conditions>>
+* xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.class-conditions[Class Conditions]
+* xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.bean-conditions[Bean Conditions]
+* xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.property-conditions[Property Conditions]
+* xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.resource-conditions[Resource Conditions]
+* xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.web-application-conditions[Web Application Conditions]
+* xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.condition-annotations.spel-conditions[SpEL Expression Conditions]
 
 
 
@@ -247,7 +247,7 @@ Here are some rules we follow internally to make sure descriptions are consisten
 * Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
 
-Make sure to <<configuration-metadata#appendix.configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
+Make sure to xref:configuration-metadata/annotation-processor.adoc[trigger meta-data generation] so that IDE assistance is available for your keys as well.
 You may want to review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make sure your keys are properly documented.
 Using your own starter in a compatible IDE is also a good idea to validate that quality of the metadata.
 

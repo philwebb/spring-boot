@@ -89,7 +89,7 @@ If you need more control over the configuration, consider registering one or mor
 [[messaging.pulsar.admin.auth]]
 === Authentication
 When accessing a Pulsar cluster that requires authentication, the admin client requires the same security configuration as the regular Pulsar client.
-You can use the aforementioned <<messaging.pulsar.connecting.auth,authentication configuration>> by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
+You can use the aforementioned xref:messaging/pulsar.adoc#messaging.pulsar.connecting.auth[authentication configuration] by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
 
 TIP: To create a topic on startup, add a bean of type `PulsarTopic`.
 If the topic already exists, the bean is ignored.

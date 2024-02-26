@@ -53,7 +53,7 @@ Run `man systemctl` for more details.
 
 [[deployment.installing.init-d]]
 == Installation as an init.d Service (System V)
-To use your application as `init.d` service, configure its build to produce a <<deployment#deployment.installing, fully executable jar>>.
+To use your application as `init.d` service, configure its build to produce a xref:deployment/installing.adoc[fully executable jar].
 
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
 Currently, some tools do not accept this format, so you may not always be able to use this technique.
@@ -162,7 +162,7 @@ One way to protect against this is to make it immutable by using `chattr`, as sh
 
 This will prevent any user, including root, from modifying the jar.
 
-If root is used to control the application's service and you <<deployment#deployment.installing.init-d.script-customization.when-running.conf-file, use a `.conf` file>> to customize its startup, the `.conf` file is read and evaluated by the root user.
+If root is used to control the application's service and you xref:deployment/installing.adoc#deployment.installing.init-d.script-customization.when-running.conf-file[use a `.conf` file] to customize its startup, the `.conf` file is read and evaluated by the root user.
 It should be secured accordingly.
 Use `chmod` so that the file can only be read by the owner and use `chown` to make root the owner, as shown in the following example:
 
@@ -292,7 +292,7 @@ The following property substitutions are supported with the default script:
 
 [[deployment.installing.init-d.script-customization.when-running]]
 ==== Customizing a Script When It Runs
-For items of the script that need to be customized _after_ the jar has been written, you can use environment variables or a <<deployment#deployment.installing.init-d.script-customization.when-running.conf-file, config file>>.
+For items of the script that need to be customized _after_ the jar has been written, you can use environment variables or a xref:deployment/installing.adoc#deployment.installing.init-d.script-customization.when-running.conf-file[config file].
 
 The following environment properties are supported with the default script:
 
@@ -370,7 +370,7 @@ For example, a jar named `/var/myapp/myapp.jar` uses the configuration file name
 
 TIP:  If you do not like having the config file next to the jar file, you can set a `CONF_FOLDER` environment variable to customize the location of the config file.
 
-To learn about securing this file appropriately, see <<deployment#deployment.installing.init-d.securing,the guidelines for securing an init.d service>>.
+To learn about securing this file appropriately, see xref:deployment/installing.adoc#deployment.installing.init-d.securing[the guidelines for securing an init.d service].
 
 
 

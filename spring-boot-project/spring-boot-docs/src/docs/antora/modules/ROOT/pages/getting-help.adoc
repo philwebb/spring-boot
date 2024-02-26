@@ -4,7 +4,7 @@ include::attributes.adoc[]
 
 If you have trouble with Spring Boot, we would like to help.
 
-* Try the <<howto#howto, How-to documents>>.
+* Try the xref:howto.adoc[How-to documents].
 They provide solutions to the most common questions.
 * Learn the Spring basics.
 Spring Boot builds on many other Spring projects.

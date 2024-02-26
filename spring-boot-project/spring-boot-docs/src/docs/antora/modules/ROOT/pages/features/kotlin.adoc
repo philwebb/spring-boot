@@ -109,7 +109,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 [[features.kotlin.configuration-properties]]
 == @ConfigurationProperties
-`@ConfigurationProperties` when used in combination with <<features#features.external-config.typesafe-configuration-properties.constructor-binding,constructor binding>> supports classes with immutable `val` properties as shown in the following example:
+`@ConfigurationProperties` when used in combination with xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[constructor binding] supports classes with immutable `val` properties as shown in the following example:
 
 [source,kotlin,indent=0,subs="verbatim"]
 ----
@@ -126,7 +126,7 @@ data class KotlinExampleProperties(
 }
 ----
 
-TIP: To generate <<configuration-metadata#appendix.configuration-metadata.annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
+TIP: To generate xref:configuration-metadata/annotation-processor.adoc[your own metadata] using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
 
 
@@ -138,7 +138,7 @@ JUnit 5 enables a test class to be instantiated once and reused for all of the c
 This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
-If you need the `MockK` equivalent of the Mockito specific <<features#features.testing.spring-boot-applications.mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
+If you need the `MockK` equivalent of the Mockito specific xref:features/testing.adoc#features.testing.spring-boot-applications.mocking-beans[`@MockBean` and `@SpyBean` annotations], you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
 
 
 

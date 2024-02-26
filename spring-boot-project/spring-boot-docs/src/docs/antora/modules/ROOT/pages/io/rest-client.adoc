@@ -13,12 +13,12 @@ If you have Spring WebFlux on your classpath we recommend that you use `WebClien
 The `WebClient` interface provides a functional style API and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
 
-TIP: If you are not writing a reactive Spring WebFlux application you can use the <<io#io.rest-client.restclient,`RestClient`>> instead of a `WebClient`.
+TIP: If you are not writing a reactive Spring WebFlux application you can use the xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient`] instead of a `WebClient`.
 This provides a similar functional API, but is blocking rather than reactive.
 
 Spring Boot creates and pre-configures a prototype `WebClient.Builder` bean for you.
 It is strongly advised to inject it in your components and use it to create `WebClient` instances.
-Spring Boot is configuring that builder to share HTTP resources and reflect codecs setup in the same fashion as the server ones (see <<web#web.reactive.webflux.httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
+Spring Boot is configuring that builder to share HTTP resources and reflect codecs setup in the same fashion as the server ones (see xref:web/reactive.adoc#web.reactive.webflux.httpcodecs[WebFlux HTTP codecs auto-configuration]), and more.
 
 The following code shows a typical example:
 
@@ -69,7 +69,7 @@ In that case, no auto-configuration or `WebClientCustomizer` is applied.
 === WebClient SSL Support
 If you need custom SSL configuration on the `ClientHttpConnector` used by the `WebClient`, you can inject a `WebClientSsl` instance that can be used with the builder's `apply` method.
 
-The `WebClientSsl` interface provides access to any <<features#features.ssl.bundles,SSL bundles>> that you have defined in your `application.properties` or `application.yaml` file.
+The `WebClientSsl` interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
 
 The following code shows a typical example:
 
@@ -112,7 +112,7 @@ In that case, no auto-configuration or `RestClientCustomizer` is applied.
 === RestClient SSL Support
 If you need custom SSL configuration on the `ClientHttpRequestFactory` used by the `RestClient`, you can inject a `RestClientSsl` instance that can be used with the builder's `apply` method.
 
-The `RestClientSsl` interface provides access to any <<features#features.ssl.bundles,SSL bundles>> that you have defined in your `application.properties` or `application.yaml` file.
+The `RestClientSsl` interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
 
 The following code shows a typical example:
 
@@ -170,7 +170,7 @@ In addition to replacing the auto-configured builder, this also prevents any `Re
 
 [[io.rest-client.resttemplate.ssl]]
 === RestTemplate SSL Support
-If you need custom SSL configuration on the `RestTemplate`, you can apply an <<features#features.ssl.bundles,SSL bundle>> to the `RestTemplateBuilder` as shown in this example:
+If you need custom SSL configuration on the `RestTemplate`, you can apply an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to the `RestTemplateBuilder` as shown in this example:
 
 include::code:MyService[]
 

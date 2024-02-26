@@ -9,31 +9,31 @@ This document is also available as {spring-boot-docs}/htmlsingle/[a single HTML 
 The reference documentation consists of the following sections:
 
 [horizontal]
-<<legal#legal,Legal>> :: Legal information.
-<<getting-help#getting-help,Getting Help>> :: Resources for getting help.
-<<documentation#documentation,Documentation Overview>> :: About the Documentation, First Steps, and more.
-<<getting-started#getting-started,Getting Started>> :: Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, and Developing Your First Spring Boot Application
-<<upgrading#upgrading,Upgrading Spring Boot Applications>> :: Upgrading from 1.x, Upgrading to a new feature release, and Upgrading the Spring Boot CLI.
-<<using#using,Using Spring Boot>> :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, DevTools, and more.
-<<features#features,Core Features>> :: Profiles, Logging, Internationalization, Task Execution and Scheduling, Testing, and more.
-<<web#web,Web>> :: Servlet Web, Reactive Web, Embedded Container Support, Graceful Shutdown, and more.
-<<data#data,Data>> :: SQL and NOSQL data access.
-<<io#io,IO>> :: Caching, Quartz Scheduler, REST clients, Sending email, Spring Web Services, and more.
-<<messaging#messaging,Messaging>> :: JMS, AMQP, Apache Kafka, Apache Pulsar, RSocket, WebSocket, and Spring Integration.
-<<container-images#container-images,Container Images>> :: Efficient container images and Building container images with Dockerfiles and Cloud Native Buildpacks.
-<<actuator#actuator,Production-ready Features>> :: Monitoring, Metrics, Auditing, and more.
-<<deployment#deployment,Deploying Spring Boot Applications>> :: Deploying to the Cloud, and Installing as a Unix application.
-<<native-image#native-image,GraalVM Native Image Support>> :: Create a native executable from your application using GraalVM
-<<cli#cli,Spring Boot CLI>> :: Installing the CLI, Using the CLI, Configuring the CLI, and more.
-<<build-tool-plugins#build-tool-plugins,Build Tool Plugins>> :: Maven Plugin, Gradle Plugin, Antlib, and more.
-<<howto#howto,"`How-to`" Guides>> :: Application Development, Configuration, Embedded Servers, Data Access, and many more.
+xref:legal.adoc[Legal] :: Legal information.
+xref:getting-help.adoc[Getting Help] :: Resources for getting help.
+xref:documentation.adoc[Documentation Overview] :: About the Documentation, First Steps, and more.
+xref:getting-started.adoc[Getting Started] :: Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, and Developing Your First Spring Boot Application
+xref:upgrading.adoc[Upgrading Spring Boot Applications] :: Upgrading from 1.x, Upgrading to a new feature release, and Upgrading the Spring Boot CLI.
+xref:using.adoc[Using Spring Boot] :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, DevTools, and more.
+xref:features.adoc[Core Features] :: Profiles, Logging, Internationalization, Task Execution and Scheduling, Testing, and more.
+xref:web.adoc[Web] :: Servlet Web, Reactive Web, Embedded Container Support, Graceful Shutdown, and more.
+xref:documentation/data.adoc[Data] :: SQL and NOSQL data access.
+xref:io.adoc[IO] :: Caching, Quartz Scheduler, REST clients, Sending email, Spring Web Services, and more.
+xref:messaging.adoc[Messaging] :: JMS, AMQP, Apache Kafka, Apache Pulsar, RSocket, WebSocket, and Spring Integration.
+xref:documentation/container-images.adoc[Container Images] :: Efficient container images and Building container images with Dockerfiles and Cloud Native Buildpacks.
+xref:howto/actuator.adoc[Production-ready Features] :: Monitoring, Metrics, Auditing, and more.
+xref:deployment.adoc[Deploying Spring Boot Applications] :: Deploying to the Cloud, and Installing as a Unix application.
+xref:native-image.adoc[GraalVM Native Image Support] :: Create a native executable from your application using GraalVM
+xref:cli.adoc[Spring Boot CLI] :: Installing the CLI, Using the CLI, Configuring the CLI, and more.
+xref:build-tool-plugins.adoc[Build Tool Plugins] :: Maven Plugin, Gradle Plugin, Antlib, and more.
+xref:howto.adoc["`How-to`" Guides] :: Application Development, Configuration, Embedded Servers, Data Access, and many more.
 
 The reference documentation has the following appendices:
 
 [horizontal]
-<<application-properties#appendix.application-properties,Application Properties>> :: Common application properties that you can use to configure your application.
-<<configuration-metadata#appendix.configuration-metadata,Configuration Metadata>> :: Metadata that you can use to describe configuration properties.
-<<auto-configuration-classes#appendix.auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
-<<test-auto-configuration#appendix.test-auto-configuration,Test Auto-configuration Annotations>> :: Test auto-configuration annotations that you can use to test slices of your application.
-<<executable-jar#appendix.executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
-<<dependency-versions#appendix.dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.
+xref:application-properties.adoc[Application Properties] :: Common application properties that you can use to configure your application.
+xref:configuration-metadata.adoc[Configuration Metadata] :: Metadata that you can use to describe configuration properties.
+xref:auto-configuration-classes.adoc[Auto-configuration Classes] :: Auto-configuration classes provided by Spring Boot.
+xref:test-auto-configuration.adoc[Test Auto-configuration Annotations] :: Test auto-configuration annotations that you can use to test slices of your application.
+xref:executable-jar.adoc[Executable Jars] :: Spring Boot's executable jars, their launchers, and their format.
+xref:dependency-versions.adoc[Dependency Versions] :: Details of the dependencies that are managed by Spring Boot.
