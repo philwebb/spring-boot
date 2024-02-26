@@ -1,5 +1,6 @@
 [[using.spring-beans-and-dependency-injection]]
-== Spring Beans and Dependency Injection
+= Spring Beans and Dependency Injection
+
 You are free to use any of the standard Spring Framework techniques to define your beans and their injected dependencies.
 We generally recommend using constructor injection to wire up dependencies and `@ComponentScan` to find beans.
 

@@ -1,5 +1,6 @@
 [[messaging.amqp]]
-== AMQP
+= AMQP
+
 The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for message-oriented middleware.
 The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions.
 Spring Boot offers several conveniences for working with AMQP through RabbitMQ, including the `spring-boot-starter-amqp` "`Starter`".
@@ -7,7 +8,7 @@ Spring Boot offers several conveniences for working with AMQP through RabbitMQ, 
 
 
 [[messaging.amqp.rabbitmq]]
-=== RabbitMQ Support
+== RabbitMQ Support
 https://www.rabbitmq.com/[RabbitMQ] is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol.
 Spring uses RabbitMQ to communicate through the AMQP protocol.
 
@@ -48,7 +49,7 @@ TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-
 
 
 [[messaging.amqp.sending]]
-=== Sending a Message
+== Sending a Message
 Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
 include::code:MyBean[]
@@ -78,7 +79,7 @@ If you need to create more `RabbitTemplate` instances or if you want to override
 
 
 [[messaging.amqp.sending-stream]]
-=== Sending a Message To A Stream
+== Sending a Message To A Stream
 To send a message to a particular stream, specify the name of the stream, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -96,7 +97,7 @@ If you need to create more `RabbitStreamTemplate` instances or if you want to ov
 
 
 [[messaging.amqp.receiving]]
-=== Receiving a Message
+== Receiving a Message
 When the Rabbit infrastructure is present, any bean can be annotated with `@RabbitListener` to create a listener endpoint.
 If no `RabbitListenerContainerFactory` has been defined, a default `SimpleRabbitListenerContainerFactory` is automatically configured and you can switch to a direct container using the configprop:spring.rabbitmq.listener.type[] property.
 If a `MessageConverter` or a `MessageRecoverer` bean is defined, it is automatically associated with the default factory.

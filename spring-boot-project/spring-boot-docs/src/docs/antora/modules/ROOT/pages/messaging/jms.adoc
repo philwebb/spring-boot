@@ -1,5 +1,6 @@
 [[messaging.jms]]
-== JMS
+= JMS
+
 The `jakarta.jms.ConnectionFactory` interface provides a standard method of creating a `jakarta.jms.Connection` for interacting with a JMS broker.
 Although Spring needs a `ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
 (See the {spring-framework-docs}/integration/jms.html[relevant section] of the Spring Framework reference documentation for details.)
@@ -8,7 +9,7 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 
 
 [[messaging.jms.activemq]]
-=== ActiveMQ "Classic" Support
+== ActiveMQ "Classic" Support
 When https://activemq.apache.org/components/classic[ActiveMQ "Classic"] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
 
 NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ "Classic" instance are provided, as is the Spring infrastructure to integrate with JMS.
@@ -54,7 +55,7 @@ By default, ActiveMQ "Classic" creates a destination if it does not yet exist so
 
 
 [[messaging.jms.artemis]]
-=== ActiveMQ Artemis Support
+== ActiveMQ Artemis Support
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that https://activemq.apache.org/components/artemis/[ActiveMQ Artemis] is available on the classpath.
 If the broker is present, an embedded broker is automatically started and configured (unless the mode property has been explicitly set).
 The supported modes are `embedded` (to make explicit that an embedded broker is required and that an error should occur if the broker is not available on the classpath) and `native` (to connect to a broker using the `netty` transport protocol).
@@ -107,7 +108,7 @@ No JNDI lookup is involved, and destinations are resolved against their names, u
 
 
 [[messaging.jms.jndi]]
-=== Using a JNDI ConnectionFactory
+== Using a JNDI ConnectionFactory
 If you are running your application in an application server, Spring Boot tries to locate a JMS `ConnectionFactory` by using JNDI.
 By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
 You can use the configprop:spring.jms.jndi-name[] property if you need to specify an alternative location, as shown in the following example:
@@ -122,7 +123,7 @@ You can use the configprop:spring.jms.jndi-name[] property if you need to specif
 
 
 [[messaging.jms.sending]]
-=== Sending a Message
+== Sending a Message
 Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
 include::code:MyBean[]
@@ -133,7 +134,7 @@ If a `DestinationResolver` or a `MessageConverter` bean is defined, it is associ
 
 
 [[messaging.jms.receiving]]
-=== Receiving a Message
+== Receiving a Message
 
 When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to create a listener endpoint.
 If no `JmsListenerContainerFactory` has been defined, a default one is configured automatically.

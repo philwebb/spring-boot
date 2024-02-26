@@ -1,5 +1,6 @@
 [[appendix.configuration-metadata.format]]
-== Metadata Format
+= Metadata Format
+
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
 They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
 
@@ -87,7 +88,7 @@ For example, when a developer is configuring the configprop:spring.jpa.hibernate
 
 
 [[appendix.configuration-metadata.format.group]]
-=== Group Attributes
+== Group Attributes
 The JSON object contained in the `groups` array can contain the attributes shown in the following table:
 
 [cols="1,1,4"]
@@ -128,7 +129,7 @@ The JSON object contained in the `groups` array can contain the attributes shown
 
 
 [[appendix.configuration-metadata.format.property]]
-=== Property Attributes
+== Property Attributes
 The JSON object contained in the `properties` array can contain the attributes described in the following table:
 
 [cols="1,1,4"]
@@ -226,7 +227,7 @@ Doing so is particularly useful when a `replacement` is provided.
 
 
 [[appendix.configuration-metadata.format.hints]]
-=== Hint Attributes
+== Hint Attributes
 The JSON object contained in the `hints` array can contain the attributes shown in the following table:
 
 [cols="1,1,4"]
@@ -289,7 +290,7 @@ The JSON object contained in the `providers` attribute of each `hint` element ca
 
 
 [[appendix.configuration-metadata.format.repeated-items]]
-=== Repeated Metadata Items
+== Repeated Metadata Items
 Objects with the same "`property`" and "`group`" name can appear multiple times within a metadata file.
 For example, you could bind two separate classes to the same prefix, with each having potentially overlapping property names.
 While the same names appearing in the metadata multiple times should not be common, consumers of metadata should take care to ensure that they support it.

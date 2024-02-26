@@ -1,5 +1,6 @@
 [[messaging.kafka]]
-== Apache Kafka Support
+= Apache Kafka Support
+
 https://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of the `spring-kafka` project.
 
 Kafka configuration is controlled by external configuration properties in `spring.kafka.*`.
@@ -22,7 +23,7 @@ See {spring-boot-autoconfigure-module-code}/kafka/KafkaProperties.java[`KafkaPro
 
 
 [[messaging.kafka.sending]]
-=== Sending a Message
+== Sending a Message
 Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in your own beans, as shown in the following example:
 
 include::code:MyBean[]
@@ -33,7 +34,7 @@ Also, if a `RecordMessageConverter` bean is defined, it is automatically associa
 
 
 [[messaging.kafka.receiving]]
-=== Receiving a Message
+== Receiving a Message
 When the Apache Kafka infrastructure is present, any bean can be annotated with `@KafkaListener` to create a listener endpoint.
 If no `KafkaListenerContainerFactory` has been defined, a default one is automatically configured with keys defined in `spring.kafka.listener.*`.
 
@@ -52,7 +53,7 @@ TIP: A custom `ChainedKafkaTransactionManager` must be marked `@Primary` as it u
 
 
 [[messaging.kafka.streams]]
-=== Kafka Streams
+== Kafka Streams
 Spring for Apache Kafka provides a factory bean to create a `StreamsBuilder` object and manage the lifecycle of its streams.
 Spring Boot auto-configures the required `KafkaStreamsConfiguration` bean as long as `kafka-streams` is on the classpath and Kafka Streams is enabled by the `@EnableKafkaStreams` annotation.
 
@@ -73,7 +74,7 @@ You can customize this behavior using the configprop:spring.kafka.streams.auto-s
 
 
 [[messaging.kafka.additional-properties]]
-=== Additional Kafka Properties
+== Additional Kafka Properties
 The properties supported by auto configuration are shown in the <<application-properties#appendix.application-properties.integration, "`Integration Properties`">> section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
 See the Apache Kafka documentation for details.
@@ -139,7 +140,7 @@ IMPORTANT: Properties set in this way override any configuration item that Sprin
 
 
 [[messaging.kafka.embedded]]
-=== Testing with Embedded Kafka
+== Testing with Embedded Kafka
 Spring for Apache Kafka provides a convenient way to test projects with an embedded Apache Kafka broker.
 To use this feature, annotate a test class with `@EmbeddedKafka` from the `spring-kafka-test` module.
 For more information, please see the Spring for Apache Kafka {spring-kafka-docs}testing.html#ekb[reference manual].

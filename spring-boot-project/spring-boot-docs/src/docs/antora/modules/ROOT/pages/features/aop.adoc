@@ -1,5 +1,6 @@
 [[features.aop]]
-== Aspect-Oriented Programming
+= Aspect-Oriented Programming
+
 Spring Boot provides auto-configuration for aspect-oriented programming (AOP).
 You can learn more about AOP with Spring in the {spring-framework-docs}/core/aop-api.html[Spring Framework reference documentation].
 

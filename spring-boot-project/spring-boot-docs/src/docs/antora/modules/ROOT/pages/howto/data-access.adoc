@@ -1,12 +1,13 @@
 [[howto.data-access]]
-== Data Access
+= Data Access
+
 Spring Boot includes a number of starters for working with data sources.
 This section answers questions related to doing so.
 
 
 
 [[howto.data-access.configure-custom-datasource]]
-=== Configure a Custom DataSource
+== Configure a Custom DataSource
 To configure your own `DataSource`, define a `@Bean` of that type in your configuration.
 Spring Boot reuses your `DataSource` anywhere one is required, including database initialization.
 If you need to externalize some settings, you can bind your `DataSource` to the environment (see "`<<features#features.external-config.typesafe-configuration-properties.third-party-configuration>>`").
@@ -106,7 +107,7 @@ See "`<<data#data.sql.datasource>>`" in the "`Spring Boot features`" section and
 
 
 [[howto.data-access.configure-two-datasources]]
-=== Configure Two DataSources
+== Configure Two DataSources
 If you need to configure multiple data sources, you can apply the same tricks that are described in the previous section.
 You must, however, mark one of the `DataSource` instances as `@Primary`, because various auto-configurations down the road expect to be able to get one by type.
 
@@ -148,7 +149,7 @@ Note that each `configuration` sub namespace provides advanced settings based on
 
 
 [[howto.data-access.spring-data-repositories]]
-=== Use Spring Data Repositories
+== Use Spring Data Repositories
 Spring Data can create implementations of `@Repository` interfaces of various flavors.
 Spring Boot handles all of that for you, as long as those `@Repository` annotations are included in one of the <<using#using.auto-configuration.packages,auto-configuration packages>>, typically the package (or a sub-package) of your main application class that is annotated with `@SpringBootApplication` or `@EnableAutoConfiguration`.
 
@@ -164,7 +165,7 @@ For more about Spring Data, see the {spring-data}[Spring Data project page].
 
 
 [[howto.data-access.separate-entity-definitions-from-spring-configuration]]
-=== Separate @Entity Definitions from Spring Configuration
+== Separate @Entity Definitions from Spring Configuration
 Spring Boot determines the location of your `@Entity` definitions by scanning the <<using#using.auto-configuration.packages,auto-configuration packages>>.
 For more control, use the `@EntityScan` annotation, as shown in the following example:
 
@@ -173,7 +174,7 @@ include::code:MyApplication[]
 
 
 [[howto.data-access.jpa-properties]]
-=== Configure JPA Properties
+== Configure JPA Properties
 Spring Data JPA already provides some vendor-independent configuration options (such as those for SQL logging), and Spring Boot exposes those options and a few more for Hibernate as external configuration properties.
 Some of them are automatically detected according to the context so you should not have to set them.
 
@@ -213,7 +214,7 @@ This takes precedence to anything that is applied by the auto-configuration.
 
 
 [[howto.data-access.configure-hibernate-naming-strategy]]
-=== Configure Hibernate Naming Strategy
+== Configure Hibernate Naming Strategy
 Hibernate uses {hibernate-docs}#naming[two different naming strategies] to map names from the object model to the corresponding database names.
 The fully qualified class name of the physical and the implicit strategy implementations can be configured by setting the `spring.jpa.hibernate.naming.physical-strategy` and `spring.jpa.hibernate.naming.implicit-strategy` properties, respectively.
 Alternatively, if `ImplicitNamingStrategy` or `PhysicalNamingStrategy` beans are available in the application context, Hibernate will be automatically configured to use them.
@@ -242,7 +243,7 @@ See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguratio
 
 
 [[howto.data-access.configure-hibernate-second-level-caching]]
-=== Configure Hibernate Second-Level Caching
+== Configure Hibernate Second-Level Caching
 Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
@@ -258,7 +259,7 @@ For details, see {hibernate-docs}#caching-provider-jcache[the Hibernate user gui
 
 
 [[howto.data-access.dependency-injection-in-hibernate-components]]
-=== Use Dependency Injection in Hibernate Components
+== Use Dependency Injection in Hibernate Components
 By default, Spring Boot registers a `BeanContainer` implementation that uses the `BeanFactory` so that converters and entity listeners can use regular dependency injection.
 
 You can disable or tune this behavior by registering a `HibernatePropertiesCustomizer` that removes or changes the `hibernate.resource.beans.container` property.
@@ -266,7 +267,7 @@ You can disable or tune this behavior by registering a `HibernatePropertiesCusto
 
 
 [[howto.data-access.use-custom-entity-manager]]
-=== Use a Custom EntityManagerFactory
+== Use a Custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add a `@Bean` named '`entityManagerFactory`'.
 Spring Boot auto-configuration switches off its entity manager in the presence of a bean of that type.
 
@@ -274,7 +275,7 @@ Spring Boot auto-configuration switches off its entity manager in the presence o
 
 [[howto.data-access.use-multiple-entity-managers]]
 [[howto.data-access.use-multiple-entity-managers]]
-=== Using Multiple EntityManagerFactories
+== Using Multiple EntityManagerFactories
 If you need to use JPA against multiple data sources, you likely need one `EntityManagerFactory` per data source.
 The `LocalContainerEntityManagerFactoryBean` from Spring ORM allows you to configure an `EntityManagerFactory` for your needs.
 You can also reuse `JpaProperties` to bind settings for each `EntityManagerFactory`, as shown in the following example:
@@ -302,7 +303,7 @@ include::code:CustomerConfiguration[]
 
 
 [[howto.data-access.use-traditional-persistence-xml]]
-=== Use a Traditional persistence.xml File
+== Use a Traditional persistence.xml File
 Spring Boot will not search for or use a `META-INF/persistence.xml` by default.
 If you prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the persistence unit name there.
 
@@ -311,7 +312,7 @@ See {spring-boot-autoconfigure-module-code}/orm/jpa/JpaBaseConfiguration.java[`J
 
 
 [[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
-=== Use Spring Data JPA and Mongo Repositories
+== Use Spring Data JPA and Mongo Repositories
 Spring Data JPA and Spring Data Mongo can both automatically create `Repository` implementations for you.
 If they are both present on the classpath, you might have to do some extra configuration to tell Spring Boot which repositories to create.
 The most explicit way to do that is to use the standard Spring Data `+@EnableJpaRepositories+` and `+@EnableMongoRepositories+` annotations and provide the location of your `Repository` interfaces.
@@ -325,7 +326,7 @@ To work with them, change the names of the annotations and flags accordingly.
 
 
 [[howto.data-access.customize-spring-data-web-support]]
-=== Customize Spring Data's Web Support
+== Customize Spring Data's Web Support
 Spring Data provides web support that simplifies the use of Spring Data repositories in a web application.
 Spring Boot provides properties in the `spring.data.web` namespace for customizing its configuration.
 Note that if you are using Spring Data REST, you must use the properties in the `spring.data.rest` namespace instead.
@@ -333,7 +334,7 @@ Note that if you are using Spring Data REST, you must use the properties in the 
 
 
 [[howto.data-access.exposing-spring-data-repositories-as-rest]]
-=== Expose Spring Data Repositories as REST Endpoint
+== Expose Spring Data Repositories as REST Endpoint
 Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
 provided Spring MVC has been enabled for the application.
 
@@ -346,7 +347,7 @@ If you need to specify an order, make sure it is higher than 0.
 
 
 [[howto.data-access.configure-a-component-that-is-used-by-jpa]]
-=== Configure a Component that is Used by JPA
+== Configure a Component that is Used by JPA
 If you want to configure a component that JPA uses, then you need to ensure that the component is initialized before JPA.
 When the component is auto-configured, Spring Boot takes care of this for you.
 For example, when Flyway is auto-configured, Hibernate is configured to depend upon Flyway so that Flyway has a chance to initialize the database before Hibernate tries to use it.
@@ -359,7 +360,7 @@ include::code:ElasticsearchEntityManagerFactoryDependsOnPostProcessor[]
 
 
 [[howto.data-access.configure-jooq-with-multiple-datasources]]
-=== Configure jOOQ with Two DataSources
+== Configure jOOQ with Two DataSources
 If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
 See {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
 

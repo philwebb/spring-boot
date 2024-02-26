@@ -1,5 +1,6 @@
 [[documentation.first-steps]]
-== First Steps
+= First Steps
+
 If you are getting started with Spring Boot or 'Spring' in general, start with <<getting-started#getting-started, the following topics>>:
 
 * *From scratch:* <<getting-started#getting-started.introducing-spring-boot, Overview>> | <<getting-started#getting-started.system-requirements, Requirements>> | <<getting-started#getting-started.installing, Installation>>

@@ -1,5 +1,6 @@
 [[data.nosql]]
-== Working with NoSQL Technologies
+= Working with NoSQL Technologies
+
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
 
 * {spring-data-cassandra}[Cassandra]
@@ -21,7 +22,7 @@ Spring Boot also provides auto-configuration for the InfluxDB client but it is d
 
 
 [[data.nosql.redis]]
-=== Redis
+== Redis
 https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
 Spring Boot offers basic auto-configuration for the https://github.com/lettuce-io/lettuce-core/[Lettuce] and https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 
@@ -34,7 +35,7 @@ TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for
 
 
 [[data.nosql.redis.connecting]]
-==== Connecting to Redis
+=== Connecting to Redis
 You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
 The following listing shows an example of such a bean:
 
@@ -88,14 +89,14 @@ Custom SSL trust material can be configured in an <<features#features.ssl,SSL bu
 
 
 [[data.nosql.mongodb]]
-=== MongoDB
+== MongoDB
 https://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a JSON-like schema instead of traditional table-based relational data.
 Spring Boot offers several conveniences for working with MongoDB, including the `spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive` "`Starters`".
 
 
 
 [[data.nosql.mongodb.connecting]]
-==== Connecting to a MongoDB Database
+=== Connecting to a MongoDB Database
 To access MongoDB databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
@@ -180,7 +181,7 @@ The auto-configuration configures this factory automatically if Netty is availab
 
 
 [[data.nosql.mongodb.template]]
-==== MongoTemplate
+=== MongoTemplate
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
@@ -191,7 +192,7 @@ See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Ja
 
 
 [[data.nosql.mongodb.repositories]]
-==== Spring Data MongoDB Repositories
+=== Spring Data MongoDB Repositories
 Spring Data includes repository support for MongoDB.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed automatically, based on method names.
 
@@ -209,14 +210,14 @@ TIP: For complete details of Spring Data MongoDB, including its rich object mapp
 
 
 [[data.nosql.neo4j]]
-=== Neo4j
+== Neo4j
 https://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data model of nodes connected by first class relationships, which is better suited for connected big data than traditional RDBMS approaches.
 Spring Boot offers several conveniences for working with Neo4j, including the `spring-boot-starter-data-neo4j` "`Starter`".
 
 
 
 [[data.nosql.neo4j.connecting]]
-==== Connecting to a Neo4j Database
+=== Connecting to a Neo4j Database
 To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Driver`.
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
 The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
@@ -243,7 +244,7 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 
 
 [[data.nosql.neo4j.repositories]]
-==== Spring Data Neo4j Repositories
+=== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
 For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}[reference documentation].
 
@@ -271,7 +272,7 @@ include::code:MyNeo4jConfiguration[]
 
 
 [[data.nosql.elasticsearch]]
-=== Elasticsearch
+== Elasticsearch
 https://www.elastic.co/products/elasticsearch[Elasticsearch] is an open source, distributed, RESTful search and analytics engine.
 Spring Boot offers basic auto-configuration for Elasticsearch clients.
 
@@ -286,7 +287,7 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 
 
 [[data.nosql.elasticsearch.connecting-using-rest]]
-==== Connecting to Elasticsearch Using REST clients
+=== Connecting to Elasticsearch Using REST clients
 Elasticsearch ships two different REST clients that you can use to query a cluster: the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/java-rest-low.html[low-level client] from the `org.elasticsearch.client:elasticsearch-rest-client` module and the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html[Java API client] from the `co.elastic.clients:elasticsearch-java` module.
 Additionally, Spring Boot provides support for a reactive client from the `org.springframework.data:spring-data-elasticsearch` module.
 By default, the clients will target `http://localhost:9200`.
@@ -303,7 +304,7 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 ----
 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
-===== Connecting to Elasticsearch Using RestClient
+==== Connecting to Elasticsearch Using RestClient
 If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
 In addition to the properties described previously, to fine-tune the `RestClient` you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
 To take full control over the clients' configuration, define a `RestClientBuilder` bean.
@@ -325,7 +326,7 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
-===== Connecting to Elasticsearch Using ElasticsearchClient
+==== Connecting to Elasticsearch Using ElasticsearchClient
 If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an `ElasticsearchClient` bean.
 
 The `ElasticsearchClient` uses a transport that depends upon the previously described `RestClient`.
@@ -335,7 +336,7 @@ Furthermore, you can define a `RestClientOptions` bean to take further control o
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.reactiveclient]]
-===== Connecting to Elasticsearch using ReactiveElasticsearchClient
+==== Connecting to Elasticsearch using ReactiveElasticsearchClient
 {spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
 If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`.
 
@@ -346,7 +347,7 @@ Furthermore, you can define a `RestClientOptions` bean to take further control o
 
 
 [[data.nosql.elasticsearch.connecting-using-spring-data]]
-==== Connecting to Elasticsearch by Using Spring Data
+=== Connecting to Elasticsearch by Using Spring Data
 To connect to Elasticsearch, an `ElasticsearchClient` bean must be defined,
 auto-configured by Spring Boot or manually provided by the application (see previous sections).
 With this configuration in place, an
@@ -361,7 +362,7 @@ They are the reactive equivalent of the other REST clients.
 
 
 [[data.nosql.elasticsearch.repositories]]
-==== Spring Data Elasticsearch Repositories
+=== Spring Data Elasticsearch Repositories
 Spring Data includes repository support for Elasticsearch.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed for you automatically based on method names.
 
@@ -394,7 +395,7 @@ You can choose to disable the repositories support with the following property:
 
 
 [[data.nosql.cassandra]]
-=== Cassandra
+== Cassandra
 https://cassandra.apache.org/[Cassandra] is an open source, distributed database management system designed to handle large amounts of data across many commodity servers.
 Spring Boot offers auto-configuration for Cassandra and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-cassandra[Spring Data Cassandra].
 There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the dependencies in a convenient way.
@@ -402,7 +403,7 @@ There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the d
 
 
 [[data.nosql.cassandra.connecting]]
-==== Connecting to Cassandra
+=== Connecting to Cassandra
 You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
 The `spring.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
@@ -479,7 +480,7 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 
 
 [[data.nosql.cassandra.repositories]]
-==== Spring Data Cassandra Repositories
+=== Spring Data Cassandra Repositories
 Spring Data includes basic repository support for Cassandra.
 Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
 
@@ -492,7 +493,7 @@ TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.
 
 
 [[data.nosql.couchbase]]
-=== Couchbase
+== Couchbase
 https://www.couchbase.com/[Couchbase] is an open-source, distributed, multi-model NoSQL document-oriented database that is optimized for interactive applications.
 Spring Boot offers auto-configuration for Couchbase and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
 There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-couchbase-reactive` "`Starters`" for collecting the dependencies in a convenient way.
@@ -500,7 +501,7 @@ There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-cou
 
 
 [[data.nosql.couchbase.connecting]]
-==== Connecting to Couchbase
+=== Connecting to Couchbase
 You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
@@ -534,7 +535,7 @@ To take more control, one or more `ClusterEnvironmentBuilderCustomizer` beans ca
 
 
 [[data.nosql.couchbase.repositories]]
-==== Spring Data Couchbase Repositories
+=== Spring Data Couchbase Repositories
 Spring Data includes repository support for Couchbase.
 
 Repositories and documents are found through scanning.
@@ -572,7 +573,7 @@ include::code:MyCouchbaseConfiguration[]
 
 
 [[data.nosql.ldap]]
-=== LDAP
+== LDAP
 https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an IP network.
 Spring Boot offers auto-configuration for any compliant LDAP server as well as support for the embedded in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 
@@ -582,7 +583,7 @@ There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the depend
 
 
 [[data.nosql.ldap.connecting]]
-==== Connecting to an LDAP Server
+=== Connecting to an LDAP Server
 To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -604,7 +605,7 @@ Make sure to flag your customized `ContextSource` as `@Primary` so that the auto
 
 
 [[data.nosql.ldap.repositories]]
-==== Spring Data LDAP Repositories
+=== Spring Data LDAP Repositories
 Spring Data includes repository support for LDAP.
 
 Repositories and documents are found through scanning.
@@ -621,7 +622,7 @@ include::code:MyBean[]
 
 
 [[data.nosql.ldap.embedded]]
-==== Embedded In-memory LDAP Server
+=== Embedded In-memory LDAP Server
 For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
 
@@ -660,7 +661,7 @@ If you have custom attributes, you can use configprop:spring.ldap.embedded.valid
 
 
 [[data.nosql.influxdb]]
-=== InfluxDB
+== InfluxDB
 WARNING: Auto-configuration for InfluxDB is deprecated and scheduled for removal in Spring Boot 3.4 in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
 
 https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
@@ -668,7 +669,7 @@ https://www.influxdata.com/[InfluxDB] is an open-source time series database opt
 
 
 [[data.nosql.influxdb.connecting]]
-==== Connecting to InfluxDB
+=== Connecting to InfluxDB
 Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set using configprop:spring.influx.url[deprecated].
 
 If the connection to InfluxDB requires a user and password, you can set the configprop:spring.influx.user[deprecated] and configprop:spring.influx.password[deprecated] properties accordingly.

@@ -1,5 +1,6 @@
 [[io.hazelcast]]
-== Hazelcast
+= Hazelcast
+
 If https://hazelcast.com/[Hazelcast] is on the classpath and a suitable configuration is found, Spring Boot auto-configures a `HazelcastInstance` that you can inject in your application.
 
 Spring Boot first attempts to create a client by checking the following configuration options:

@@ -1,5 +1,6 @@
 [[features.logging]]
-== Logging
+= Logging
+
 Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal logging but leaves the underlying log implementation open.
 Default configurations are provided for {java-api}/java.logging/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4j2], and https://logback.qos.ch/[Logback].
 In each case, loggers are pre-configured to use console output with optional file output also available.
@@ -17,7 +18,7 @@ This prevents logging performed by the container or other applications that have
 
 
 [[features.logging.log-format]]
-=== Log Format
+== Log Format
 The default log output from Spring Boot resembles the following example:
 
 [indent=0]
@@ -44,7 +45,7 @@ TIP: If you have a configprop:spring.application.name[] property but don't want 
 
 
 [[features.logging.console-output]]
-=== Console Output
+== Console Output
 The default log configuration echoes messages to the console as they are written.
 By default, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged.
 You can also enable a "`debug`" mode by starting your application with a `--debug` flag.
@@ -65,7 +66,7 @@ Doing so enables trace logging for a selection of core loggers (embedded contain
 
 
 [[features.logging.console-output.color-coded]]
-==== Color-coded Output
+=== Color-coded Output
 If your terminal supports ANSI, color output is used to aid readability.
 You can set `spring.output.ansi.enabled` to a {spring-boot-module-api}/ansi/AnsiOutput.Enabled.html[supported value] to override the auto-detection.
 
@@ -122,7 +123,7 @@ The following colors and styles are supported:
 
 
 [[features.logging.file-output]]
-=== File Output
+== File Output
 By default, Spring Boot logs only to the console and does not write log files.
 If you want to write log files in addition to the console output, you need to set a configprop:logging.file.name[] or configprop:logging.file.path[] property (for example, in your `application.properties`).
 
@@ -159,7 +160,7 @@ As a result, specific configuration keys (such as `logback.configurationFile` fo
 
 
 [[features.logging.file-rotation]]
-=== File Rotation
+== File Rotation
 If you are using the Logback, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
 For all other logging system, you will need to configure rotation settings directly yourself (for example, if you use Log4j2 then you could add a `log4j2.xml` or `log4j2-spring.xml` file).
 
@@ -187,7 +188,7 @@ The following rotation policy properties are supported:
 
 
 [[features.logging.log-levels]]
-=== Log Levels
+== Log Levels
 All the supported logging systems can have the logger levels set in the Spring `Environment` (for example, in `application.properties`) by using `+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF.
 The `root` logger can be configured by using `logging.level.root`.
 
@@ -221,7 +222,7 @@ If you need to configure logging for a class, you can use <<features#features.ex
 
 
 [[features.logging.log-groups]]
-=== Log Groups
+== Log Groups
 It is often useful to be able to group related loggers together so that they can all be configured at the same time.
 For example, you might commonly change the logging levels for _all_ Tomcat related loggers, but you can not easily remember top level packages.
 
@@ -260,7 +261,7 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 
 
 [[features.logging.shutdown-hook]]
-=== Using a Log Shutdown Hook
+== Using a Log Shutdown Hook
 In order to release logging resources when your application terminates, a shutdown hook that will trigger log system cleanup when the JVM exits is provided.
 This shutdown hook is registered automatically unless your application is deployed as a war file.
 If your application has complex context hierarchies the shutdown hook may not meet your needs.
@@ -279,7 +280,7 @@ You can set the property in your `application.properties` or `application.yaml` 
 
 
 [[features.logging.custom-log-configuration]]
-=== Custom Log Configuration
+== Custom Log Configuration
 The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring `Environment` property: configprop:logging.config[].
 
 You can force Spring Boot to use a particular logging system by using the `org.springframework.boot.logging.LoggingSystem` system property.
@@ -421,7 +422,7 @@ For example, if you use `logging.pattern.level=user:%X\{user} %5p`, then the def
 
 
 [[features.logging.logback-extensions]]
-=== Logback Extensions
+== Logback Extensions
 Spring Boot includes a number of extensions to Logback that can help with advanced configuration.
 You can use these extensions in your `logback-spring.xml` configuration file.
 
@@ -440,7 +441,7 @@ If you attempt to do so, making changes to the configuration file results in an 
 
 
 [[features.logging.logback-extensions.profile-specific]]
-==== Profile-specific Configuration
+=== Profile-specific Configuration
 The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
@@ -467,7 +468,7 @@ The following listing shows three sample profiles:
 
 
 [[features.logging.logback-extensions.environment-properties]]
-==== Environment Properties
+=== Environment Properties
 The `<springProperty>` tag lets you expose properties from the Spring `Environment` for use within Logback.
 Doing so can be useful if you want to access values from your `application.properties` file in your Logback configuration.
 The tag works in a similar way to Logback's standard `<property>` tag.
@@ -492,7 +493,7 @@ However, properties can be added to the `Environment` by using the relaxed rules
 
 
 [[features.logging.log4j2-extensions]]
-=== Log4j2 Extensions
+== Log4j2 Extensions
 Spring Boot includes a number of extensions to Log4j2 that can help with advanced configuration.
 You can use these extensions in any `log4j2-spring.xml` configuration file.
 
@@ -505,7 +506,7 @@ You should make sure not to include the `org.apache.logging.log4j:log4j-spring-b
 
 
 [[features.logging.log4j2-extensions.profile-specific]]
-==== Profile-specific Configuration
+=== Profile-specific Configuration
 The `<SpringProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<Configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
@@ -532,7 +533,7 @@ The following listing shows three sample profiles:
 
 
 [[features.logging.log4j2-extensions.environment-properties-lookup]]
-==== Environment Properties Lookup
+=== Environment Properties Lookup
 If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
 Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
 
@@ -550,7 +551,7 @@ NOTE: The lookup key should be specified in kebab case (such as `my.property-nam
 
 
 [[features.logging.log4j2-extensions.environment-property-source]]
-==== Log4j2 System Properties
+=== Log4j2 System Properties
 Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used to configure various items.
 For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
 

@@ -1,5 +1,6 @@
 [[documentation.native-images]]
-== GraalVM Native Images
+= GraalVM Native Images
+
 Spring Boot applications can be converted into native executables using GraalVM.
 You can read more about our native image support here:
 

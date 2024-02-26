@@ -1,5 +1,6 @@
 [[features.profiles]]
-== Profiles
+= Profiles
+
 Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
 Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked with `@Profile` to limit when it is loaded, as shown in the following example:
 
@@ -55,7 +56,7 @@ For example, the second document configuration is invalid:
 
 
 [[features.profiles.adding-active-profiles]]
-=== Adding Active Profiles
+== Adding Active Profiles
 The configprop:spring.profiles.active[] property follows the same ordering rules as other properties: The highest `PropertySource` wins.
 This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
 
@@ -83,7 +84,7 @@ Profile groups, which are described in the <<features#features.profiles.groups,n
 
 
 [[features.profiles.groups]]
-=== Profile Groups
+== Profile Groups
 Occasionally the profiles that you define and use in your application are too fine-grained and become cumbersome to use.
 For example, you might have `proddb` and `prodmq` profiles that you use to enable database and messaging features independently.
 
@@ -107,13 +108,13 @@ Our application can now be started using `--spring.profiles.active=production` t
 
 
 [[features.profiles.programmatically-setting-profiles]]
-=== Programmatically Setting Profiles
+== Programmatically Setting Profiles
 You can programmatically set active profiles by calling `SpringApplication.setAdditionalProfiles(...)` before your application runs.
 It is also possible to activate profiles by using Spring's `ConfigurableEnvironment` interface.
 
 
 
 [[features.profiles.profile-specific-configuration-files]]
-=== Profile-specific Configuration Files
+== Profile-specific Configuration Files
 Profile-specific variants of both `application.properties` (or `application.yaml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
 See "<<features#features.external-config.files.profile-specific>>" for details.

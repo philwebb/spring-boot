@@ -1,5 +1,6 @@
 [[actuator.micrometer-tracing]]
-== Tracing
+= Tracing
+
 Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io/docs/tracing[Micrometer Tracing], a facade for popular tracer libraries.
 
 TIP: To learn more about Micrometer Tracing capabilities, see its https://micrometer.io/docs/tracing[reference documentation].
@@ -7,7 +8,7 @@ TIP: To learn more about Micrometer Tracing capabilities, see its https://microm
 
 
 [[actuator.micrometer-tracing.tracers]]
-=== Supported Tracers
+== Supported Tracers
 Spring Boot ships auto-configuration for the following tracers:
 
 * https://opentelemetry.io/[OpenTelemetry] with https://zipkin.io/[Zipkin],  https://docs.wavefront.com/[Wavefront], or https://opentelemetry.io/docs/reference/specification/protocol/[OTLP]
@@ -16,7 +17,7 @@ Spring Boot ships auto-configuration for the following tracers:
 
 
 [[actuator.micrometer-tracing.getting-started]]
-=== Getting Started
+== Getting Started
 We need an example application that we can use to get started with tracing.
 For our purposes, the simple "`Hello World!`" web application that's covered in the "`<<getting-started#getting-started.first-application>>`" section will suffice.
 We're going to use the OpenTelemetry tracer with Zipkin as trace backend.
@@ -68,7 +69,7 @@ Press the "Show" button to see the details of that trace.
 
 
 [[actuator.micrometer-tracing.logging]]
-=== Logging Correlation IDs
+== Logging Correlation IDs
 Correlation IDs provide a helpful way to link lines in your log files to spans/traces.
 If you are using Micrometer Tracing, Spring Boot will include correlation IDs in your logs by default.
 
@@ -92,7 +93,7 @@ It's also worth mentioning that configprop:logging.pattern.correlation[] contain
 
 
 [[actuator.micrometer-tracing.propagating-traces]]
-=== Propagating Traces
+== Propagating Traces
 To automatically propagate traces over the network, use the auto-configured <<io#io.rest-client.resttemplate, `RestTemplateBuilder`>> or <<io#io.rest-client.webclient, `WebClient.Builder`>> to construct the client.
 
 WARNING: If you create the `WebClient` or the `RestTemplate` without using the auto-configured builders, automatic trace propagation won't work!
@@ -100,7 +101,7 @@ WARNING: If you create the `WebClient` or the `RestTemplate` without using the a
 
 
 [[actuator.micrometer-tracing.tracer-implementations]]
-=== Tracer Implementations
+== Tracer Implementations
 As Micrometer Tracer supports multiple tracer implementations, there are multiple dependency combinations possible with Spring Boot.
 
 All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency.
@@ -108,7 +109,7 @@ All tracer implementations need the `org.springframework.boot:spring-boot-starte
 
 
 [[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
-==== OpenTelemetry With Zipkin
+=== OpenTelemetry With Zipkin
 Tracing with OpenTelemetry and reporting to Zipkin requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
@@ -119,7 +120,7 @@ Use the `management.zipkin.tracing.*` configuration properties to configure repo
 
 
 [[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
-==== OpenTelemetry With Wavefront
+=== OpenTelemetry With Wavefront
 Tracing with OpenTelemetry and reporting to Wavefront requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
@@ -130,7 +131,7 @@ Use the `management.wavefront.*` configuration properties to configure reporting
 
 
 [[actuator.micrometer-tracing.tracer-implementations.otel-otlp]]
-==== OpenTelemetry With OTLP
+=== OpenTelemetry With OTLP
 Tracing with OpenTelemetry and reporting using OTLP requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
@@ -141,7 +142,7 @@ Use the `management.otlp.tracing.*` configuration properties to configure report
 
 
 [[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
-==== OpenZipkin Brave With Zipkin
+=== OpenZipkin Brave With Zipkin
 Tracing with OpenZipkin Brave and reporting to Zipkin requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
@@ -154,7 +155,7 @@ Use the `management.zipkin.tracing.*` configuration properties to configure repo
 
 
 [[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
-==== OpenZipkin Brave With Wavefront
+=== OpenZipkin Brave With Wavefront
 Tracing with OpenZipkin Brave and reporting to Wavefront requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
@@ -165,12 +166,12 @@ Use the `management.wavefront.*` configuration properties to configure reporting
 
 
 [[actuator.micrometer-tracing.micrometer-observation]]
-=== Integration with Micrometer Observation
+== Integration with Micrometer Observation
 
 A `TracingAwareMeterObservationHandler` is automatically registered on the `ObservationRegistry`, which creates spans for every completed observation.
 
 [[actuator.micrometer-tracing.creating-spans]]
-=== Creating Custom Spans
+== Creating Custom Spans
 You can create your own spans by starting an observation.
 For this, inject `ObservationRegistry` into your component:
 
@@ -183,7 +184,7 @@ TIP: If you want to create a span without creating a metric, you need to use the
 
 
 [[actuator.micrometer-tracing.baggage]]
-=== Baggage
+== Baggage
 You can create baggage with the `Tracer` API:
 
 include::code:CreatingBaggage[]
@@ -200,7 +201,7 @@ For the example above, setting this property to `baggage1` results in an MDC ent
 
 
 [[actuator.micrometer-tracing.tests]]
-=== Tests
+== Tests
 
 Tracing components which are reporting data are not auto-configured when using `@SpringBootTest`.
 See <<features#features.testing.spring-boot-applications.tracing, the testing section>> for more details.

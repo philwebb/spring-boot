@@ -1,5 +1,6 @@
 [[features.json]]
-== JSON
+= JSON
+
 Spring Boot provides integration with three JSON mapping libraries:
 
 - Gson
@@ -11,7 +12,7 @@ Jackson is the preferred and default library.
 
 
 [[features.json.jackson]]
-=== Jackson
+== Jackson
 Auto-configuration for Jackson is provided and Jackson is part of `spring-boot-starter-json`.
 When Jackson is on the classpath an `ObjectMapper` bean is automatically configured.
 Several configuration properties are provided for <<howto#howto.spring-mvc.customize-jackson-objectmapper,customizing the configuration of the `ObjectMapper`>>.
@@ -19,7 +20,7 @@ Several configuration properties are provided for <<howto#howto.spring-mvc.custo
 
 
 [[features.json.jackson.custom-serializers-and-deserializers]]
-==== Custom Serializers and Deserializers
+=== Custom Serializers and Deserializers
 If you use Jackson to serialize and deserialize JSON data, you might want to write your own `JsonSerializer` and `JsonDeserializer` classes.
 Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes it easier to directly register Spring Beans.
 
@@ -41,7 +42,7 @@ include::code:object/MyJsonComponent[]
 
 
 [[features.json.jackson.mixins]]
-==== Mixins
+=== Mixins
 Jackson has support for mixins that can be used to mix additional annotations into those already declared on a target class.
 Spring Boot's Jackson auto-configuration will scan your application's packages for classes annotated with `@JsonMixin` and register them with the auto-configured `ObjectMapper`.
 The registration is performed by Spring Boot's `JsonMixinModule`.
@@ -49,7 +50,7 @@ The registration is performed by Spring Boot's `JsonMixinModule`.
 
 
 [[features.json.gson]]
-=== Gson
+== Gson
 Auto-configuration for Gson is provided.
 When Gson is on the classpath a `Gson` bean is automatically configured.
 Several `+spring.gson.*+` configuration properties are provided for customizing the configuration.
@@ -58,7 +59,7 @@ To take more control, one or more `GsonBuilderCustomizer` beans can be used.
 
 
 [[features.json.json-b]]
-=== JSON-B
+== JSON-B
 Auto-configuration for JSON-B is provided.
 When the JSON-B API and an implementation are on the classpath a `Jsonb` bean will be automatically configured.
 The preferred JSON-B implementation is Eclipse Yasson for which dependency management is provided.

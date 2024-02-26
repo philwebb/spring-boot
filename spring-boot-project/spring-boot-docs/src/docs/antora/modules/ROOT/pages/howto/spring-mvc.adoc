@@ -1,5 +1,6 @@
 [[howto.spring-mvc]]
-== Spring MVC
+= Spring MVC
+
 Spring Boot has a number of starters that include Spring MVC.
 Note that some starters include a dependency on Spring MVC rather than include it directly.
 This section answers common questions about Spring MVC and Spring Boot.
@@ -7,7 +8,7 @@ This section answers common questions about Spring MVC and Spring Boot.
 
 
 [[howto.spring-mvc.write-json-rest-service]]
-=== Write a JSON REST Service
+== Write a JSON REST Service
 Any Spring `@RestController` in a Spring Boot application should render JSON response by default as long as Jackson2 is on the classpath, as shown in the following example:
 
 include::code:MyController[]
@@ -18,7 +19,7 @@ Note that, in a browser, you might sometimes see XML responses, because browsers
 
 
 [[howto.spring-mvc.write-xml-rest-service]]
-=== Write an XML REST Service
+== Write an XML REST Service
 If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpath, you can use it to render XML responses.
 The previous example that we used for JSON would work.
 To use the Jackson XML renderer, add the following dependency to your project:
@@ -50,7 +51,7 @@ NOTE: To get the server to render XML instead of JSON, you might have to send an
 
 
 [[howto.spring-mvc.customize-jackson-objectmapper]]
-=== Customize the Jackson ObjectMapper
+== Customize the Jackson ObjectMapper
 Spring MVC (client and server side) uses `HttpMessageConverters` to negotiate content conversion in an HTTP exchange.
 If Jackson is on the classpath, you already get the default converter(s) provided by `Jackson2ObjectMapperBuilder`, an instance of which is auto-configured for you.
 
@@ -126,7 +127,7 @@ See the "`<<howto#howto.spring-mvc.customize-responsebody-rendering>>`" section 
 
 
 [[howto.spring-mvc.customize-responsebody-rendering]]
-=== Customize the @ResponseBody Rendering
+== Customize the @ResponseBody Rendering
 Spring uses `HttpMessageConverters` to render `@ResponseBody` (or responses from `@RestController`).
 You can contribute additional converters by adding beans of the appropriate type in a Spring Boot context.
 If a bean you add is of a type that would have been included by default anyway (such as `MappingJackson2HttpMessageConverter` for JSON conversions), it replaces the default value.
@@ -142,7 +143,7 @@ See the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfigurat
 
 
 [[howto.spring-mvc.multipart-file-uploads]]
-=== Handling Multipart File Uploads
+== Handling Multipart File Uploads
 Spring Boot embraces the servlet 5 `jakarta.servlet.http.Part` API to support uploading files.
 By default, Spring Boot configures Spring MVC with a maximum size of 1MB per file and a maximum of 10MB of file data in a single request.
 You may override these values, the location to which intermediate data is stored (for example, to the `/tmp` directory), and the threshold past which data is flushed to disk by using the properties exposed in the `MultipartProperties` class.
@@ -157,7 +158,7 @@ NOTE: It is recommended to use the container's built-in support for multipart up
 
 
 [[howto.spring-mvc.switch-off-dispatcherservlet]]
-=== Switch Off the Spring MVC DispatcherServlet
+== Switch Off the Spring MVC DispatcherServlet
 By default, all content is served from the root of your application (`/`).
 If you would rather map to a different path, you can configure one as follows:
 
@@ -177,14 +178,14 @@ Configuring the `DispatcherServlet` yourself is unusual but if you really need t
 
 
 [[howto.spring-mvc.switch-off-default-configuration]]
-=== Switch off the Default MVC Configuration
+== Switch off the Default MVC Configuration
 The easiest way to take complete control over MVC configuration is to provide your own `@Configuration` with the `@EnableWebMvc` annotation.
 Doing so leaves all MVC configuration in your hands.
 
 
 
 [[howto.spring-mvc.customize-view-resolvers]]
-=== Customize ViewResolvers
+== Customize ViewResolvers
 A `ViewResolver` is a core component of Spring MVC, translating view names in `@Controller` to actual `View` implementations.
 Note that `ViewResolvers` are mainly used in UI applications, rather than REST-style services (a `View` is not used to render a `@ResponseBody`).
 There are many implementations of `ViewResolver` to choose from, and Spring on its own is not opinionated about which ones you should use.

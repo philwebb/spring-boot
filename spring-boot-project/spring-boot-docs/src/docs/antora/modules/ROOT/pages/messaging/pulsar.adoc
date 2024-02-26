@@ -1,5 +1,6 @@
 [[messaging.pulsar]]
-== Apache Pulsar Support
+= Apache Pulsar Support
+
 https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configuration of the {spring-pulsar-docs}[Spring for Apache Pulsar] project.
 
 Spring Boot will auto-configure and register the classic (imperative) Spring for Apache Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
@@ -10,7 +11,7 @@ There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive`
 
 
 [[messaging.pulsar.connecting]]
-=== Connecting to Pulsar
+== Connecting to Pulsar
 When you use the Pulsar starter, Spring Boot will auto-configure and register a `PulsarClient` bean.
 
 By default, the application tries to connect to a local Pulsar instance at `pulsar://localhost:6650`.
@@ -25,7 +26,7 @@ If you need more control over the configuration, consider registering one or mor
 
 
 [[messaging.pulsar.connecting.auth]]
-==== Authentication
+=== Authentication
 To connect to a Pulsar cluster that requires authentication, you need to specify which authentication plugin to use by setting the `pluginClassName` and any parameters required by the plugin.
 You can set the parameters as a map of parameter names to parameter values.
 The following example shows how to configure the `AuthenticationOAuth2` plugin.
@@ -58,7 +59,7 @@ If you use environment variables for the parameters then you will need to follow
 
 
 [[messaging.pulsar.connecting.ssl]]
-==== SSL
+=== SSL
 By default, Pulsar clients communicate with Pulsar services in plain text.
 You can follow {spring-pulsar-docs}reference/pulsar.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
 
@@ -67,7 +68,7 @@ For complete details on the client and authentication see the Spring for Apache 
 
 
 [[messaging.pulsar.connecting-reactive]]
-=== Connecting to Pulsar Reactively
+== Connecting to Pulsar Reactively
 When the Reactive auto-configuration is activated, Spring Boot will auto-configure and register a `ReactivePulsarClient` bean.
 
 The `ReactivePulsarClient` adapts an instance of the previously described `PulsarClient`.
@@ -76,7 +77,7 @@ Therefore, follow the previous section to configure the `PulsarClient` used by t
 
 
 [[messaging.pulsar.admin]]
-=== Connecting to Pulsar Administration
+== Connecting to Pulsar Administration
 Spring for Apache Pulsar's `PulsarAdministration` client is also auto-configured.
 
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
@@ -86,7 +87,7 @@ If you need more control over the configuration, consider registering one or mor
 
 
 [[messaging.pulsar.admin.auth]]
-==== Authentication
+=== Authentication
 When accessing a Pulsar cluster that requires authentication, the admin client requires the same security configuration as the regular Pulsar client.
 You can use the aforementioned <<messaging.pulsar.connecting.auth,authentication configuration>> by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
 
@@ -96,7 +97,7 @@ If the topic already exists, the bean is ignored.
 
 
 [[messaging.pulsar.sending]]
-=== Sending a Message
+== Sending a Message
 Spring's `PulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include::code:MyBean[]
@@ -114,7 +115,7 @@ If you need more control over the message being sent, you can pass in a `TypedMe
 
 
 [[messaging.pulsar.sending-reactive]]
-=== Sending a Message Reactively
+== Sending a Message Reactively
 When the Reactive auto-configuration is activated, Spring's `ReactivePulsarTemplate` is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include::code:MyBean[]
@@ -132,7 +133,7 @@ If you need more control over the message being sent, you can pass in a `Message
 
 
 [[messaging.pulsar.receiving]]
-=== Receiving a Message
+== Receiving a Message
 When the Apache Pulsar infrastructure is present, any bean can be annotated with `@PulsarListener` to create a listener endpoint.
 The following component creates a listener endpoint on the `someTopic` topic:
 
@@ -148,7 +149,7 @@ You can also customize a single listener by setting the `consumerCustomizer` att
 
 
 [[messaging.pulsar.receiving-reactive]]
-=== Receiving a Message Reactively
+== Receiving a Message Reactively
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, any bean can be annotated with `@ReactivePulsarListener` to create a reactive listener endpoint.
 The following component creates a reactive listener endpoint on the `someTopic` topic:
 
@@ -164,7 +165,7 @@ You can also customize a single listener by setting the `consumerCustomizer` att
 
 
 [[messaging.pulsar.reading]]
-=== Reading a Message
+== Reading a Message
 The Pulsar reader interface enables applications to manually manage cursors.
 When you use a reader to connect to a topic you need to specify which message the reader begins reading from when it connects to a topic.
 
@@ -183,7 +184,7 @@ You can also customize a single listener by setting the `readerCustomizer` attri
 
 
 [[messaging.pulsar.reading-reactive]]
-=== Reading a Message Reactively
+== Reading a Message Reactively
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, Spring's `ReactivePulsarReaderFactory` is provided, and you can use it to create a reader in order to read messages in a reactive fashion.
 The following component creates a reader using the provided factory and reads a single message from 5 minutes ago from the `someTopic` topic:
 
@@ -202,7 +203,7 @@ TIP: For more details on any of the above components and to discover other avail
 
 
 [[messaging.pulsar.additional-properties]]
-=== Additional Pulsar Properties
+== Additional Pulsar Properties
 The properties supported by auto-configuration are shown in the <<application-properties#appendix.application-properties.integration, "`Integration Properties`">> section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.

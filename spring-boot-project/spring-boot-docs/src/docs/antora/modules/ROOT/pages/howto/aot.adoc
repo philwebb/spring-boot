@@ -1,11 +1,11 @@
 [[howto.aot]]
-== Ahead-of-time processing
+= Ahead-of-time processing
 
 A number of questions often arise when people use the ahead-of-time processing of Spring Boot applications.
 This section addresses those questions.
 
 [[howto.aot.conditions]]
-=== Conditions
+== Conditions
 
 Ahead-of-time processing optimizes the application and evaluates {spring-framework-api}/context/annotation/Conditional.html[conditions] based on the environment at build time.
 <<features#features.profiles,Profiles>> are implemented through conditions and are therefore affected, too.

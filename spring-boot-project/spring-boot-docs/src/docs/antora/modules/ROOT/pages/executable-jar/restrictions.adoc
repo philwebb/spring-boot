@@ -1,5 +1,6 @@
 [[appendix.executable-jar.restrictions]]
-== Executable Jar Restrictions
+= Executable Jar Restrictions
+
 You need to consider the following restrictions when working with a Spring Boot Loader packaged application:
 
 

@@ -1,5 +1,6 @@
 [[documentation.container-images]]
-== Container Images
+= Container Images
+
 Spring Boot provides first-class support for building efficient container images. You can read more about it here:
 
 * *Efficient Container Images:* <<container-images#container-images.efficient-images, Tips to optimize container images such as Docker images>>

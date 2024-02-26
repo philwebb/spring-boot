@@ -1,5 +1,6 @@
 [[web.security]]
-== Spring Security
+= Spring Security
+
 If {spring-security}[Spring Security] is on the classpath, then web applications are secured by default.
 Spring Boot relies on Spring Security’s content-negotiation strategy to determine whether to use `httpBasic` or `formLogin`.
 To add method-level security to a web application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
@@ -31,7 +32,7 @@ You can provide a different `AuthenticationEventPublisher` by adding a bean for 
 
 
 [[web.security.spring-mvc]]
-=== MVC Security
+== MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
 `SecurityAutoConfiguration` imports `SpringBootWebSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
 
@@ -54,7 +55,7 @@ Spring Boot provides convenience methods that can be used to override access rul
 
 
 [[web.security.spring-webflux]]
-=== WebFlux Security
+== WebFlux Security
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
 The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
 `ReactiveSecurityAutoConfiguration` imports `WebFluxSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
@@ -82,13 +83,13 @@ include::code:MyWebFluxSecurityConfiguration[]
 
 
 [[web.security.oauth2]]
-=== OAuth2
+== OAuth2
 https://oauth.net/2/[OAuth2] is a widely used authorization framework that is supported by Spring.
 
 
 
 [[web.security.oauth2.client]]
-==== Client
+=== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up OAuth2/Open ID Connect clients.
 This configuration makes use of the properties under `OAuth2ClientProperties`.
 The same properties are applicable to both servlet and reactive applications.
@@ -172,7 +173,7 @@ For production environments, consider using a `JdbcOAuth2AuthorizedClientService
 
 
 [[web.security.oauth2.client.common-providers]]
-===== OAuth2 Client Registration for Common Providers
+==== OAuth2 Client Registration for Common Providers
 For common OAuth2 and OpenID providers, including Google, Github, Facebook, and Okta, we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta`, respectively).
 
 If you do not need to customize these providers, you can set the `provider` attribute to the one for which you need to infer defaults.
@@ -199,7 +200,7 @@ In other words, the two configurations in the following example use the Google p
 
 
 [[web.security.oauth2.server]]
-==== Resource Server
+=== Resource Server
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can set up an OAuth2 Resource Server.
 For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, as shown in the following examples:
 
@@ -263,7 +264,7 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 
 [[web.security.oauth2.authorization-server]]
-==== Authorization Server
+=== Authorization Server
 If you have `spring-security-oauth2-authorization-server` on your classpath, you can take advantage of some auto-configuration to set up a Servlet-based OAuth2 Authorization Server.
 
 You can register multiple OAuth2 clients under the `spring.security.oauth2.authorizationserver.client` prefix, as shown in the following example:
@@ -332,12 +333,12 @@ Additional information can be found in the {spring-authorization-server-docs}/ge
 
 
 [[web.security.saml2]]
-=== SAML 2.0
+== SAML 2.0
 
 
 
 [[web.security.saml2.relying-party]]
-==== Relying Party
+=== Relying Party
 If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
 This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
 

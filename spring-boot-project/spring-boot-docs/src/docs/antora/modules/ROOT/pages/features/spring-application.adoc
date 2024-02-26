@@ -1,5 +1,6 @@
 [[features.spring-application]]
-== SpringApplication
+= SpringApplication
+
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
@@ -25,7 +26,7 @@ TIP: To add additional logging during startup, you can override `logStartupInfo(
 
 
 [[features.spring-application.startup-failure]]
-=== Startup Failure
+== Startup Failure
 If your application fails to start, registered `FailureAnalyzers` get a chance to provide a dedicated error message and a concrete action to fix the problem.
 For instance, if you start a web application on port `8080` and that port is already in use, you should see something similar to the following message:
 
@@ -59,7 +60,7 @@ For instance, if you are running your application by using `java -jar`, you can 
 
 
 [[features.spring-application.lazy-initialization]]
-=== Lazy Initialization
+== Lazy Initialization
 `SpringApplication` allows an application to be initialized lazily.
 When lazy initialization is enabled, beans are created as they are needed rather than during application startup.
 As a result, enabling lazy initialization can reduce the time that it takes your application to start.
@@ -85,7 +86,7 @@ TIP: If you want to disable lazy initialization for certain beans while using la
 
 
 [[features.spring-application.banner]]
-=== Customizing the Banner
+== Customizing the Banner
 The banner that is printed on start up can be changed by adding a `banner.txt` file to your classpath or by setting the configprop:spring.banner.location[] property to the location of such a file.
 If the file has an encoding other than UTF-8, you can set `spring.banner.charset`.
 
@@ -140,7 +141,7 @@ This will initialize the `application.*` banner properties before building the c
 
 
 [[features.spring-application.customizing-spring-application]]
-=== Customizing SpringApplication
+== Customizing SpringApplication
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
@@ -157,7 +158,7 @@ For a complete list of the configuration options, see the {spring-boot-module-ap
 
 
 [[features.spring-application.fluent-builder-api]]
-=== Fluent Builder API
+== Fluent Builder API
 If you need to build an `ApplicationContext` hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a "`fluent`" builder API, you can use the `SpringApplicationBuilder`.
 
 The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
@@ -171,7 +172,7 @@ See the {spring-boot-module-api}/builder/SpringApplicationBuilder.html[`SpringAp
 
 
 [[features.spring-application.application-availability]]
-=== Application Availability
+== Application Availability
 When deployed on platforms, applications can provide information about their availability to the platform using infrastructure such as https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes Probes].
 Spring Boot includes out-of-the box support for the commonly used "`liveness`" and "`readiness`" availability states.
 If you are using Spring Boot's "`actuator`" support then these states are exposed as health endpoint groups.
@@ -181,7 +182,7 @@ In addition, you can also obtain availability states by injecting the `Applicati
 
 
 [[features.spring-application.application-availability.liveness]]
-==== Liveness State
+=== Liveness State
 The "`Liveness`" state of an application tells whether its internal state allows it to work correctly, or recover by itself if it is currently failing.
 A broken "`Liveness`" state means that the application is in a state that it cannot recover from, and the infrastructure should restart the application.
 
@@ -195,7 +196,7 @@ An application is considered live as soon as the context has been refreshed, see
 
 
 [[features.spring-application.application-availability.readiness]]
-==== Readiness State
+=== Readiness State
 The "`Readiness`" state of an application tells whether the application is ready to handle traffic.
 A failing "`Readiness`" state tells the platform that it should not route traffic to the application for now.
 This typically happens during startup, while `CommandLineRunner` and `ApplicationRunner` components are being processed, or at any time if the application decides that it is too busy for additional traffic.
@@ -207,7 +208,7 @@ TIP: Tasks expected to run during startup should be executed by `CommandLineRunn
 
 
 [[features.spring-application.application-availability.managing]]
-==== Managing the Application Availability State
+=== Managing the Application Availability State
 Application components can retrieve the current availability state at any time, by injecting the `ApplicationAvailability` interface and calling methods on it.
 More often, applications will want to listen to state updates or update the state of the application.
 
@@ -225,7 +226,7 @@ You can get more guidance about <<deployment#deployment.cloud.kubernetes,deployi
 
 
 [[features.spring-application.application-events-and-listeners]]
-=== Application Events and Listeners
+== Application Events and Listeners
 In addition to the usual Spring Framework events, such as {spring-framework-api}/context/event/ContextRefreshedEvent.html[`ContextRefreshedEvent`], a `SpringApplication` sends some additional application events.
 
 [NOTE]
@@ -277,7 +278,7 @@ The context can be injected by implementing `ApplicationContextAware` or, if the
 
 
 [[features.spring-application.web-environment]]
-=== Web Environment
+== Web Environment
 A `SpringApplication` attempts to create the right type of `ApplicationContext` on your behalf.
 The algorithm used to determine a `WebApplicationType` is the following:
 
@@ -295,7 +296,7 @@ TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NON
 
 
 [[features.spring-application.application-arguments]]
-=== Accessing Application Arguments
+== Accessing Application Arguments
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
@@ -307,7 +308,7 @@ This lets you also inject single application arguments by using the `@Value` ann
 
 
 [[features.spring-application.command-line-runner]]
-=== Using the ApplicationRunner or CommandLineRunner
+== Using the ApplicationRunner or CommandLineRunner
 If you need to run some specific code once the `SpringApplication` has started, you can implement the `ApplicationRunner` or `CommandLineRunner` interfaces.
 Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
 
@@ -324,7 +325,7 @@ If several `CommandLineRunner` or `ApplicationRunner` beans are defined that mus
 
 
 [[features.spring-application.application-exit]]
-=== Application Exit
+== Application Exit
 Each `SpringApplication` registers a shutdown hook with the JVM to ensure that the `ApplicationContext` closes gracefully on exit.
 All the standard Spring lifecycle callbacks (such as the `DisposableBean` interface or the `@PreDestroy` annotation) can be used.
 
@@ -342,7 +343,7 @@ To control the order in which the generators are called, additionally implement 
 
 
 [[features.spring-application.admin]]
-=== Admin Features
+== Admin Features
 It is possible to enable admin-related features for the application by specifying the configprop:spring.application.admin.enabled[] property.
 This exposes the {spring-boot-module-code}/admin/SpringApplicationAdminMXBean.java[`SpringApplicationAdminMXBean`] on the platform `MBeanServer`.
 You could use this feature to administer your Spring Boot application remotely.
@@ -353,7 +354,7 @@ TIP: If you want to know on which HTTP port the application is running, get the 
 
 
 [[features.spring-application.startup-tracking]]
-=== Application Startup tracking
+== Application Startup tracking
 During the application startup, the `SpringApplication` and the `ApplicationContext` perform many tasks related to the application lifecycle,
 the beans lifecycle or even processing application events.
 With {spring-framework-api}/core/metrics/ApplicationStartup.html[`ApplicationStartup`], Spring Framework  {spring-framework-docs}/core/beans/context-introduction.html#context-functionality-startup[allows you to track the application startup sequence with `StartupStep` objects].
@@ -381,7 +382,7 @@ Spring Boot can also be configured to expose a {spring-boot-actuator-restapi-doc
 
 
 [[features.spring-application.virtual-threads]]
-=== Virtual threads
+== Virtual threads
 If you're running on Java 21 or up, you can enable virtual threads by setting the property configprop:spring.threads.virtual.enabled[] to `true`.
 
 Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[reading the official Java virtual threads documentation].

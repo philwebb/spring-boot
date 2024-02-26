@@ -1,5 +1,6 @@
 [[native-image.whats-next]]
-== What to Read Next
+= What to Read Next
+
 If you want to learn more about the ahead-of-time processing provided by our build plugins, see the {spring-boot-maven-plugin-docs}[Maven] and {spring-boot-gradle-plugin-docs}[Gradle] plugin documentation.
 To learn more about the APIs used to perform the processing, browse the `org.springframework.aot.generate` and `org.springframework.beans.factory.aot` packages of the Spring Framework sources.
 

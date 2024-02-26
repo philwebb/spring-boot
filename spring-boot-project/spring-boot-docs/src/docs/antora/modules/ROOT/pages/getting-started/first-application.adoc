@@ -1,5 +1,6 @@
 [[getting-started.first-application]]
-== Developing Your First Spring Boot Application
+= Developing Your First Spring Boot Application
+
 This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
 You can choose between Maven or Gradle as the build system.
 
@@ -16,7 +17,7 @@ Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[star
 
 
 [[getting-started.first-application.prerequisites]]
-=== Prerequisites
+== Prerequisites
 Before we begin, open a terminal and run the following commands to ensure that you have a valid version of Java installed:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -33,7 +34,7 @@ Subsequent instructions assume that you have created a suitable directory and th
 
 
 [[getting-started.first-application.prerequisites.maven]]
-==== Maven
+=== Maven
 If you want to use Maven, ensure that you have Maven installed:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -47,7 +48,7 @@ If you want to use Maven, ensure that you have Maven installed:
 
 
 [[getting-started.first-application.prerequisites.gradle]]
-==== Gradle
+=== Gradle
 If you want to use Gradle, ensure that you have Gradle installed:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -71,7 +72,7 @@ If you want to use Gradle, ensure that you have Gradle installed:
 
 
 [[getting-started.first-application.pom]]
-=== Setting up the project with Maven
+== Setting up the project with Maven
 We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
 Open your favorite text editor and add the following:
@@ -131,7 +132,7 @@ For simplicity, we continue to use a plain text editor for this example.
 
 
 [[getting-started.first-application.gradle]]
-=== Setting up the project with Gradle
+== Setting up the project with Gradle
 We need to start by creating a Gradle `build.gradle` file.
 The `build.gradle` is the build script that is used to build your project.
 Open your favorite text editor and add the following:
@@ -170,14 +171,14 @@ For simplicity, we continue to use a plain text editor for this example.
 
 
 [[getting-started.first-application.dependencies]]
-=== Adding Classpath Dependencies
+== Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
 "`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
 
 
 
 [[getting-started.first-application.dependencies.maven]]
-==== Maven
+=== Maven
 Most Spring Boot applications use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
 It also provides a <<using#using.build-systems.dependency-management,`dependency-management`>> section so that you can omit `version` tags for "`blessed`" dependencies.
@@ -211,7 +212,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 
 
 [[getting-started.first-application.dependencies.gradle]]
-==== Gradle
+=== Gradle
 Most Spring Boot applications use the `org.springframework.boot` Gradle plugin.
 This plugin provides useful defaults and Gradle tasks.
 The `io.spring.dependency-management` Gradle plugin provides <<using#using.build-systems.dependency-management, dependency management>> so that you can omit `version` tags for "`blessed`" dependencies.
@@ -246,7 +247,7 @@ If you run `gradle dependencies` again, you see that there are now a number of a
 
 
 [[getting-started.first-application.code]]
-=== Writing the Code
+== Writing the Code
 To finish our application, we need to create a single Java file.
 By default, Maven and Gradle compile sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
 
@@ -259,7 +260,7 @@ We step through the important parts in the next few sections.
 
 
 [[getting-started.first-application.code.mvc-annotations]]
-==== The @RestController and @RequestMapping Annotations
+=== The @RestController and @RequestMapping Annotations
 The first annotation on our `MyApplication` class is `@RestController`.
 This is known as a _stereotype_ annotation.
 It provides hints for people reading the code and for Spring that the class plays a specific role.
@@ -275,7 +276,7 @@ See the {spring-framework-docs}/web/webmvc.html[MVC section] in the Spring Refer
 
 
 [[getting-started.first-application.code.spring-boot-application]]
-==== The @SpringBootApplication Annotation
+=== The @SpringBootApplication Annotation
 The second class-level annotation is `@SpringBootApplication`.
 This annotation is known as a _meta-annotation_, it combines `@SpringBootConfiguration`, `@EnableAutoConfiguration` and `@ComponentScan`.
 
@@ -293,7 +294,7 @@ Spring Boot still does its best to auto-configure your application.
 
 
 [[getting-started.first-application.code.main-method]]
-==== The "`main`" Method
+=== The "`main`" Method
 The final part of our application is the `main` method.
 This is a standard method that follows the Java convention for an application entry point.
 Our main method delegates to Spring Boot's `SpringApplication` class by calling `run`.
@@ -304,12 +305,12 @@ The `args` array is also passed through to expose any command-line arguments.
 
 
 [[getting-started.first-application.run]]
-=== Running the Example
+== Running the Example
 
 
 
 [[getting-started.first-application.run.maven]]
-==== Maven
+=== Maven
 At this point, your application should work.
 Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goal that you can use to start the application.
 Type `mvn spring-boot:run` from the root project directory to start the application.
@@ -344,7 +345,7 @@ To gracefully exit the application, press `ctrl-c`.
 
 
 [[getting-started.first-application.run.gradle]]
-==== Gradle
+=== Gradle
 At this point, your application should work.
 Since you used the `org.springframework.boot` Gradle plugin, you have a useful `bootRun` goal that you can use to start the application.
 Type `gradle bootRun` from the root project directory to start the application.
@@ -379,7 +380,7 @@ To gracefully exit the application, press `ctrl-c`.
 
 
 [[getting-started.first-application.executable-jar]]
-=== Creating an Executable Jar
+== Creating an Executable Jar
 We finish our example by creating a completely self-contained executable jar file that we could run in production.
 Executable jars (sometimes called "`uber jars`" or "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.
 
@@ -399,7 +400,7 @@ Spring Boot takes a <<executable-jar#appendix.executable-jar, different approach
 
 
 [[getting-started.first-application.executable-jar.maven]]
-==== Maven
+=== Maven
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.
 To do so, insert the following lines just below the `dependencies` section:
 
@@ -476,7 +477,7 @@ As before, to exit the application, press `ctrl-c`.
 
 
 [[getting-started.first-application.executable-jar.gradle]]
-==== Gradle
+=== Gradle
 To create an executable jar, we need to run `gradle bootJar` from the command line, as follows:
 
 [source,shell,indent=0,subs="verbatim,attributes"]

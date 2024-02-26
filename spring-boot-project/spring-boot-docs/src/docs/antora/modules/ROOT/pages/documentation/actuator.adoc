@@ -1,5 +1,6 @@
 [[documentation.actuator]]
-== Moving to Production
+= Moving to Production
+
 When you are ready to push your Spring Boot application to production, we have <<actuator#actuator, some tricks>> that you might like:
 
 * *Management endpoints:* <<actuator#actuator.endpoints, Overview>>

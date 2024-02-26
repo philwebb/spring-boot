@@ -1,5 +1,6 @@
 [[using.devtools]]
-== Developer Tools
+= Developer Tools
+
 Spring Boot includes an additional set of tools that can make the application development experience a little more pleasant.
 The `spring-boot-devtools` module can be included in any project to provide additional development-time features.
 To include devtools support, add the module dependency to your build, as shown in the following listings for Maven and Gradle:
@@ -44,7 +45,7 @@ When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executa
 
 
 [[using.devtools.diagnosing-classloading-issues]]
-=== Diagnosing Classloading Issues
+== Diagnosing Classloading Issues
 As described in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
 For most applications, this approach works well.
 However, it can sometimes cause classloading issues, in particular in multi-module projects.
@@ -55,7 +56,7 @@ If this solves your problems, <<using#using.devtools.restart.customizing-the-cla
 
 
 [[using.devtools.property-defaults]]
-=== Property Defaults
+== Property Defaults
 Several of the libraries supported by Spring Boot use caches to improve performance.
 For example, <<web#web.servlet.spring-mvc.template-engines,template engines>> cache compiled templates to avoid repeatedly parsing template files.
 Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
@@ -80,7 +81,7 @@ If you wish to log all request details (including potentially sensitive informat
 
 
 [[using.devtools.restart]]
-=== Automatic Restart
+== Automatic Restart
 Applications that use `spring-boot-devtools` automatically restart whenever files on the classpath change.
 This can be a useful feature when working in an IDE, as it gives a very fast feedback loop for code changes.
 By default, any entry on the classpath that points to a directory is monitored for changes.
@@ -130,7 +131,7 @@ These work by rewriting classes as they are loaded to make them more amenable to
 
 
 [[using.devtools.restart.logging-condition-delta]]
-==== Logging Changes in Condition Evaluation
+=== Logging Changes in Condition Evaluation
 By default, each time your application restarts, a report showing the condition evaluation delta is logged.
 The report shows the changes to your application's auto-configuration as you make changes such as adding or removing beans and setting configuration properties.
 
@@ -147,7 +148,7 @@ To disable the logging of the report, set the following property:
 
 
 [[using.devtools.restart.excluding-resources]]
-==== Excluding Resources
+=== Excluding Resources
 Certain resources do not necessarily need to trigger a restart when they are changed.
 For example, Thymeleaf templates can be edited in-place.
 By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public`, or `/templates` does not trigger a restart but does trigger a <<using#using.devtools.livereload, live reload>>.
@@ -167,7 +168,7 @@ TIP: If you want to keep those defaults and _add_ additional exclusions, use the
 
 
 [[using.devtools.restart.watching-additional-paths]]
-==== Watching Additional Paths
+=== Watching Additional Paths
 You may want your application to be restarted or reloaded when you make changes to files that are not on the classpath.
 To do so, use the configprop:spring.devtools.restart.additional-paths[] property to configure additional paths to watch for changes.
 You can use the configprop:spring.devtools.restart.exclude[] property <<using#using.devtools.restart.excluding-resources, described earlier>> to control whether changes beneath the additional paths trigger a full restart or a <<using#using.devtools.livereload, live reload>>.
@@ -175,7 +176,7 @@ You can use the configprop:spring.devtools.restart.exclude[] property <<using#us
 
 
 [[using.devtools.restart.disable]]
-==== Disabling Restart
+=== Disabling Restart
 If you do not want to use the restart feature, you can disable it by using the configprop:spring.devtools.restart.enabled[] property.
 In most cases, you can set this property in your `application.properties` (doing so still initializes the restart classloader, but it does not watch for file changes).
 
@@ -186,7 +187,7 @@ include::code:MyApplication[]
 
 
 [[using.devtools.restart.triggerfile]]
-==== Using a Trigger File
+=== Using a Trigger File
 If you work with an IDE that continuously compiles changed files, you might prefer to trigger restarts only at specific times.
 To do so, you can use a "`trigger file`", which is a special file that must be modified when you want to actually trigger a restart check.
 
@@ -227,7 +228,7 @@ For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring
 
 
 [[using.devtools.restart.customizing-the-classload]]
-==== Customizing the Restart Classloader
+=== Customizing the Restart Classloader
 As described earlier in the <<using#using.devtools.restart.restart-vs-reload>> section, restart functionality is implemented by using two classloaders.
 If this causes issues, you might need to customize what gets loaded by which classloader.
 
@@ -257,7 +258,7 @@ You can package files inside your project, or in the libraries that the project 
 
 
 [[using.devtools.restart.limitations]]
-==== Known Limitations
+=== Known Limitations
 Restart functionality does not work well with objects that are deserialized by using a standard `ObjectInputStream`.
 If you need to deserialize data, you may need to use Spring's `ConfigurableObjectInputStream` in combination with `Thread.currentThread().getContextClassLoader()`.
 
@@ -267,7 +268,7 @@ If you find such a problem, you need to request a fix with the original authors.
 
 
 [[using.devtools.livereload]]
-=== LiveReload
+== LiveReload
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used to trigger a browser refresh when a resource is changed.
 LiveReload browser extensions are freely available for Chrome, Firefox and Safari.
 You can find these extensions by searching 'LiveReload' in the marketplace or store of your chosen browser.
@@ -283,7 +284,7 @@ WARNING: To trigger LiveReload when a file changes, <<using#using.devtools.resta
 
 
 [[using.devtools.globalsettings]]
-=== Global Settings
+== Global Settings
 You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` directory:
 
 . `spring-boot-devtools.properties`
@@ -318,7 +319,7 @@ Profile specific filenames (of the form `spring-boot-devtools-<profile>.properti
 
 
 [[using.devtools.globalsettings.configuring-file-system-watcher]]
-==== Configuring File System Watcher
+=== Configuring File System Watcher
 {spring-boot-devtools-module-code}/filewatch/FileSystemWatcher.java[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
@@ -337,7 +338,7 @@ The monitored classpath directories are now polled every 2 seconds for changes, 
 
 
 [[using.devtools.remote-applications]]
-=== Remote Applications
+== Remote Applications
 The Spring Boot developer tools are not limited to local development.
 You can also use several features when running applications remotely.
 Remote support is opt-in as enabling it can be a security risk.
@@ -374,7 +375,7 @@ NOTE: Remote devtools is not supported for Spring WebFlux applications.
 
 
 [[using.devtools.remote-applications.client]]
-==== Running the Remote Client Application
+=== Running the Remote Client Application
 The remote client application is designed to be run from within your IDE.
 You need to run `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as the remote project that you connect to.
 The application's single required argument is the remote URL to which it connects.
@@ -404,7 +405,7 @@ TIP: If you need to use a proxy to access the remote application, configure the 
 
 
 [[using.devtools.remote-applications.update]]
-==== Remote Update
+=== Remote Update
 The remote client monitors your application classpath for changes in the same way as the <<using#using.devtools.restart,local restart>>.
 Any updated resource is pushed to the remote application and (_if required_) triggers a restart.
 This can be helpful if you iterate on a feature that uses a cloud service that you do not have locally.

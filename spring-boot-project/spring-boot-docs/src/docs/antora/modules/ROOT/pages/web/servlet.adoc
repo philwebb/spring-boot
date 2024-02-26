@@ -1,11 +1,12 @@
 [[web.servlet]]
-== Servlet Web Applications
+= Servlet Web Applications
+
 If you want to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC or Jersey.
 
 
 
 [[web.servlet.spring-mvc]]
-=== The "`Spring Web MVC Framework`"
+== The "`Spring Web MVC Framework`"
 The {spring-framework-docs}/web/webmvc.html[Spring Web MVC framework] (often referred to as "`Spring MVC`") is a rich "`model view controller`" web framework.
 Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
@@ -29,7 +30,7 @@ Beans can be ordered if you need to apply a precedence.
 
 
 [[web.servlet.spring-mvc.auto-configuration]]
-==== Spring MVC Auto-configuration
+=== Spring MVC Auto-configuration
 Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
 It replaces the need for `@EnableWebMvc` and the two cannot be used together.
 In addition to Spring MVC's defaults, the auto-configuration provides the following features:
@@ -54,7 +55,7 @@ Alternatively, add your own `@Configuration`-annotated `DelegatingWebMvcConfigur
 
 
 [[web.servlet.spring-mvc.conversion-service]]
-==== Spring MVC Conversion Service
+=== Spring MVC Conversion Service
 Spring MVC uses a different `ConversionService` to the one used to convert values from your `application.properties` or `application.yaml` file.
 It means that `Period`, `Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
 
@@ -80,7 +81,7 @@ When not configured, the following defaults are used:
 
 
 [[web.servlet.spring-mvc.message-converters]]
-==== HttpMessageConverters
+=== HttpMessageConverters
 Spring MVC uses the `HttpMessageConverter` interface to convert HTTP requests and responses.
 Sensible defaults are included out of the box.
 For example, objects can be automatically converted to JSON (by using the Jackson library) or XML (by using the Jackson XML extension, if available, or by using JAXB if the Jackson XML extension is not available).
@@ -96,14 +97,14 @@ You can also override default converters in the same way.
 
 
 [[web.servlet.spring-mvc.message-codes]]
-==== MessageCodesResolver
+=== MessageCodesResolver
 Spring MVC has a strategy for generating error codes for rendering error messages from binding errors: `MessageCodesResolver`.
 If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in {spring-framework-api}/validation/DefaultMessageCodesResolver.Format.html[`DefaultMessageCodesResolver.Format`]).
 
 
 
 [[web.servlet.spring-mvc.static-content]]
-==== Static Content
+=== Static Content
 By default, Spring Boot serves static content from a directory called `/static` (or `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root of the `ServletContext`.
 It uses the `ResourceHttpRequestHandler` from Spring MVC so that you can modify that behavior by adding your own `WebMvcConfigurer` and overriding the `addResourceHandlers` method.
 
@@ -192,7 +193,7 @@ This feature has been thoroughly described in a dedicated https://spring.io/blog
 
 
 [[web.servlet.spring-mvc.welcome-page]]
-==== Welcome Page
+=== Welcome Page
 Spring Boot supports both static and templated welcome pages.
 It first looks for an `index.html` file in the configured static content locations.
 If one is not found, it then looks for an `index` template.
@@ -215,14 +216,14 @@ The ordering is defined by the order of `HandlerMapping` beans which is by defau
 
 
 [[web.servlet.spring-mvc.favicon]]
-==== Custom Favicon
+=== Custom Favicon
 As with other static resources, Spring Boot checks for a `favicon.ico` in the configured static content locations.
 If such a file is present, it is automatically used as the favicon of the application.
 
 
 
 [[web.servlet.spring-mvc.content-negotiation]]
-==== Path Matching and Content Negotiation
+=== Path Matching and Content Negotiation
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
 
 Spring Boot chooses to disable suffix pattern matching by default, which means that requests like `"GET /projects/spring-boot.json"` will not be matched to `@GetMapping("/projects/spring-boot")` mappings.
@@ -287,14 +288,14 @@ For a `NoHandlerFoundException` to be thrown, you must also set configprop:sprin
 
 
 [[web.servlet.spring-mvc.binding-initializer]]
-==== ConfigurableWebBindingInitializer
+=== ConfigurableWebBindingInitializer
 Spring MVC uses a `WebBindingInitializer` to initialize a `WebDataBinder` for a particular request.
 If you create your own `ConfigurableWebBindingInitializer` `@Bean`, Spring Boot automatically configures Spring MVC to use it.
 
 
 
 [[web.servlet.spring-mvc.template-engines]]
-==== Template Engines
+=== Template Engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
 Spring MVC supports a variety of templating technologies, including Thymeleaf, FreeMarker, and JSPs.
 Also, many other templating engines include their own Spring MVC integrations.
@@ -319,7 +320,7 @@ If you have this problem, you can reorder the classpath in the IDE to place the 
 
 
 [[web.servlet.spring-mvc.error-handling]]
-==== Error Handling
+=== Error Handling
 By default, Spring Boot provides an `/error` mapping that handles all errors in a sensible way, and it is registered as a "`global`" error page in the servlet container.
 For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
 For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
@@ -361,7 +362,7 @@ Applications can ensure that such exceptions are recorded with the observations 
 
 
 [[web.servlet.spring-mvc.error-handling.error-pages]]
-===== Custom Error Pages
+==== Custom Error Pages
 If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
 Error pages can either be static HTML (that is, added under any of the static resource directories) or be built by using templates.
 The name of the file should be the exact status code or a series mask.
@@ -406,7 +407,7 @@ The `ErrorController` then picks up any unhandled exceptions.
 
 
 [[web.servlet.spring-mvc.error-handling.error-pages-without-spring-mvc]]
-===== Mapping Error Pages Outside of Spring MVC
+==== Mapping Error Pages Outside of Spring MVC
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
@@ -421,7 +422,7 @@ Note that the default `FilterRegistrationBean` does not include the `ERROR` disp
 
 
 [[web.servlet.spring-mvc.error-handling.in-a-war-deployment]]
-===== Error Handling in a WAR Deployment
+==== Error Handling in a WAR Deployment
 When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
 This is necessary as the servlet specification does not provide an API for registering error pages.
 Depending on the container that you are deploying your war file to and the technologies that your application uses, some additional configuration may be required.
@@ -433,7 +434,7 @@ You should disable this behavior by setting `com.ibm.ws.webcontainer.invokeFlush
 
 
 [[web.servlet.spring-mvc.cors]]
-==== CORS Support
+=== CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible way what kind of cross-domain requests are authorized, instead of using some less secure and less powerful approaches such as IFRAME or JSONP.
 
 As of version 4.2, Spring MVC {spring-framework-docs}/web/webmvc-cors.html[supports CORS].
@@ -445,7 +446,7 @@ include::code:MyCorsConfiguration[]
 
 
 [[web.servlet.jersey]]
-=== JAX-RS and Jersey
+== JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the available implementations instead of Spring MVC.
 https://jersey.github.io/[Jersey] and https://cxf.apache.org/[Apache CXF] work quite well out of the box.
 CXF requires you to register its `Servlet` or `Filter` as a `@Bean` in your application context.
@@ -487,7 +488,7 @@ Both the servlet and the filter registrations can be given init parameters by us
 
 
 [[web.servlet.embedded-container]]
-=== Embedded Servlet Container Support
+== Embedded Servlet Container Support
 For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
 Most developers use the appropriate "`Starter`" to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port `8080`.
@@ -495,13 +496,13 @@ By default, the embedded server listens for HTTP requests on port `8080`.
 
 
 [[web.servlet.embedded-container.servlets-filters-listeners]]
-==== Servlets, Filters, and Listeners
+=== Servlets, Filters, and Listeners
 When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the servlet spec, either by using Spring beans or by scanning for servlet components.
 
 
 
 [[web.servlet.embedded-container.servlets-filters-listeners.beans]]
-===== Registering Servlets, Filters, and Listeners as Spring Beans
+==== Registering Servlets, Filters, and Listeners as Spring Beans
 Any `Servlet`, `Filter`, or servlet `*Listener` instance that is a Spring bean is registered with the embedded container.
 This can be particularly convenient if you want to refer to a value from your `application.properties` during configuration.
 
@@ -527,7 +528,7 @@ If you need to register a `Filter` that interacts with other beans, consider usi
 
 
 [[web.servlet.embedded-container.context-initializer]]
-==== Servlet Context Initialization
+=== Servlet Context Initialization
 Embedded servlet containers do not directly execute the `jakarta.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
 This is an intentional design decision intended to reduce the risk that third party libraries designed to run inside a war may break Spring Boot applications.
 
@@ -537,7 +538,7 @@ The single `onStartup` method provides access to the `ServletContext` and, if ne
 
 
 [[web.servlet.embedded-container.context-initializer.scanning]]
-===== Scanning for Servlets, Filters, and listeners
+==== Scanning for Servlets, Filters, and listeners
 When using an embedded container, automatic registration of classes annotated with `@WebServlet`, `@WebFilter`, and `@WebListener` can be enabled by using `@ServletComponentScan`.
 
 TIP: `@ServletComponentScan` has no effect in a standalone container, where the container's built-in discovery mechanisms are used instead.
@@ -545,7 +546,7 @@ TIP: `@ServletComponentScan` has no effect in a standalone container, where the 
 
 
 [[web.servlet.embedded-container.application-context]]
-==== The ServletWebServerApplicationContext
+=== The ServletWebServerApplicationContext
 Under the hood, Spring Boot uses a different type of `ApplicationContext` for embedded servlet container support.
 The `ServletWebServerApplicationContext` is a special type of `WebApplicationContext` that bootstraps itself by searching for a single `ServletWebServerFactory` bean.
 Usually a `TomcatServletWebServerFactory`, `JettyServletWebServerFactory`, or `UndertowServletWebServerFactory` has been auto-configured.
@@ -567,7 +568,7 @@ include::{docs-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean
 
 
 [[web.servlet.embedded-container.customizing]]
-==== Customizing Embedded Servlet Containers
+=== Customizing Embedded Servlet Containers
 Common servlet container settings can be configured by using Spring `Environment` properties.
 Usually, you would define the properties in your `application.properties` or `application.yaml` file.
 
@@ -588,7 +589,7 @@ TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`
 
 
 [[web.servlet.embedded-container.customizing.samesite]]
-===== SameSite Cookies
+==== SameSite Cookies
 The `SameSite` cookie attribute can be used by web browsers to control if and how cookies are submitted in cross-site requests.
 The attribute is particularly relevant for modern web browsers which have started to change the default value that is used when the attribute is missing.
 
@@ -618,7 +619,7 @@ include::code:MySameSiteConfiguration[]
 
 
 [[web.servlet.embedded-container.customizing.encoding]]
-===== Character Encoding
+==== Character Encoding
 The character encoding behavior of the embedded servlet container for request and response handling can be configured using the `server.servlet.encoding.*` configuration properties.
 
 When a request's `Accept-Language` header indicates a locale for the request it will be automatically mapped to a charset by the servlet container.
@@ -640,7 +641,7 @@ This is equivalent to a `<locale-encoding-mapping-list>` entry in a `web.xml` fi
 
 
 [[web.servlet.embedded-container.customizing.programmatic]]
-===== Programmatic Customization
+==== Programmatic Customization
 If you need to programmatically configure your embedded servlet container, you can register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
 `WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
@@ -655,7 +656,7 @@ include::code:MyTomcatWebServerFactoryCustomizer[]
 
 
 [[web.servlet.embedded-container.customizing.direct]]
-===== Customizing ConfigurableServletWebServerFactory Directly
+==== Customizing ConfigurableServletWebServerFactory Directly
 For more advanced use cases that require you to extend from `ServletWebServerFactory`, you can expose a bean of such type yourself.
 
 Setters are provided for many configuration options.
@@ -667,7 +668,7 @@ NOTE: Auto-configured customizers are still applied on your custom factory, so u
 
 
 [[web.servlet.embedded-container.jsp-limitations]]
-==== JSP Limitations
+=== JSP Limitations
 When running a Spring Boot application that uses an embedded servlet container (and is packaged as an executable archive), there are some limitations in the JSP support.
 
 * With Jetty and Tomcat, it should work if you use war packaging.

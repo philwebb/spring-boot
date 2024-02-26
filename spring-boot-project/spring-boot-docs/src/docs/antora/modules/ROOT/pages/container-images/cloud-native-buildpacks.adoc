@@ -1,5 +1,6 @@
 [[container-images.buildpacks]]
-== Cloud Native Buildpacks
+= Cloud Native Buildpacks
+
 Dockerfiles are just one way to build docker images.
 Another way to build docker images is directly from your Maven or Gradle plugin, using buildpacks.
 If you’ve ever used an application platform such as Cloud Foundry or Heroku then you’ve probably used a buildpack.

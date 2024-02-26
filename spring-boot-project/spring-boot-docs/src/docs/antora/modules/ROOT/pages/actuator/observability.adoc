@@ -1,5 +1,6 @@
 [[actuator.observability]]
-== Observability
+= Observability
+
 Observability is the ability to observe the internal state of a running system from the outside.
 It consists of the three pillars logging, metrics and traces.
 
@@ -29,7 +30,7 @@ To enable it, add the `io.r2dbc:r2dbc-proxy` dependency to your project.
 
 
 [[actuator.observability.common-tags]]
-=== Common tags
+== Common tags
 Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
 Common tags are applied to all observations as low cardinality tags and can be configured, as the following example shows:
 
@@ -45,7 +46,7 @@ Common tags are applied to all observations as low cardinality tags and can be c
 The preceding example adds `region` and `stack` tags to all observations with a value of `us-east-1` and `prod`, respectively.
 
 [[actuator.observability.preventing-observations]]
-=== Preventing Observations
+== Preventing Observations
 
 If you'd like to prevent some observations from being reported, you can use the configprop:management.observations.enable[] properties:
 
@@ -75,7 +76,7 @@ The preceding example will prevent all observations whose name contains "denied"
 
 
 [[actuator.observability.opentelemetry]]
-=== OpenTelemetry Support
+== OpenTelemetry Support
 Spring Boot's actuator module includes basic support for https://opentelemetry.io/[OpenTelemetry].
 
 It provides a bean of type `OpenTelemetry`, and if there are beans of type `SdkTracerProvider`, `ContextPropagators`, `SdkLoggerProvider` or `SdkMeterProvider` in the application context, they automatically get registered.
@@ -91,6 +92,6 @@ The next sections will provide more details about logging, metrics and traces.
 
 
 [[actuator.observability.annotations]]
-=== Micrometer Observation Annotations support
+== Micrometer Observation Annotations support
 To enable scanning of metrics and tracing annotations like `@Timed`, `@Counted`, `@MeterTag` and `@NewSpan` annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
 This feature is supported Micrometer directly, please refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer] and {micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.

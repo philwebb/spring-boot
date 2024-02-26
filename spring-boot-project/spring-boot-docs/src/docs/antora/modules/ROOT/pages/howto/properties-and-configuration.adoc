@@ -1,18 +1,19 @@
 [[howto.properties-and-configuration]]
-== Properties and Configuration
+= Properties and Configuration
+
 This section includes topics about setting and reading properties and configuration settings and their interaction with Spring Boot applications.
 
 
 
 [[howto.properties-and-configuration.expand-properties]]
-=== Automatically Expand Properties at Build Time
+== Automatically Expand Properties at Build Time
 Rather than hardcoding some properties that are also specified in your project's build configuration, you can automatically expand them by instead using the existing build configuration.
 This is possible in both Maven and Gradle.
 
 
 
 [[howto.properties-and-configuration.expand-properties.maven]]
-==== Automatic Property Expansion Using Maven
+=== Automatic Property Expansion Using Maven
 You can automatically expand properties from the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
@@ -66,7 +67,7 @@ If that property is not set to `false`, these may be expanded by the build.
 
 
 [[howto.properties-and-configuration.expand-properties.gradle]]
-==== Automatic Property Expansion Using Gradle
+=== Automatic Property Expansion Using Gradle
 You can automatically expand properties from the Gradle project by configuring the Java plugin's `processResources` task to do so, as shown in the following example:
 
 [source,gradle,indent=0,subs="verbatim"]
@@ -92,7 +93,7 @@ To use Spring property placeholders together with automatic expansion, escape th
 
 
 [[howto.properties-and-configuration.externalize-configuration]]
-=== Externalize the Configuration of SpringApplication
+== Externalize the Configuration of SpringApplication
 A `SpringApplication` has bean property setters, so you can use its Java API as you create the application to modify its behavior.
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
@@ -136,7 +137,7 @@ The application sources are:
 
 
 [[howto.properties-and-configuration.external-properties-location]]
-=== Change the Location of External Properties of an Application
+== Change the Location of External Properties of an Application
 By default, properties from different sources are added to the Spring `Environment` in a defined order (see "`<<features#features.external-config>>`" in the '`Spring Boot features`' section for the exact order).
 
 You can also provide the following System properties (or environment variables) to change the behavior:
@@ -153,7 +154,7 @@ TIP: If you want detailed information about the files that are being loaded you 
 
 
 [[howto.properties-and-configuration.short-command-line-arguments]]
-=== Use '`Short`' Command Line Arguments
+== Use '`Short`' Command Line Arguments
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to set configuration properties on the command line.
 You can enable this behavior by using placeholders in `application.properties`, as shown in the following example:
 
@@ -172,7 +173,7 @@ In those two platforms, the `PORT` environment variable is set automatically and
 
 
 [[howto.properties-and-configuration.yaml]]
-=== Use YAML for External Properties
+== Use YAML for External Properties
 YAML is a superset of JSON and, as such, is a convenient syntax for storing external properties in a hierarchical format, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim"]
@@ -206,7 +207,7 @@ See "`<<features#features.external-config.yaml>>`" in the '`Spring Boot features
 
 
 [[howto.properties-and-configuration.set-active-spring-profiles]]
-=== Set the Active Spring Profiles
+== Set the Active Spring Profiles
 The Spring `Environment` has an API for this, but you would normally set a System property (configprop:spring.profiles.active[]) or an OS environment variable (configprop:spring.profiles.active[format=envvar]).
 Also, you can launch your application with a `-D` argument (remember to put it before the main class or jar archive), as follows:
 
@@ -232,7 +233,7 @@ See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section f
 
 
 [[howto.properties-and-configuration.set-default-spring-profile-name]]
-=== Set the Default Profile Name
+== Set the Default Profile Name
 The default profile is a profile that is enabled if no profile is active.
 By default, the name of the default profile is `default`, but it could be changed using a System property (configprop:spring.profiles.default[]) or an OS environment variable (configprop:spring.profiles.default[format=envvar]).
 
@@ -250,7 +251,7 @@ See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section f
 
 
 [[howto.properties-and-configuration.change-configuration-depending-on-the-environment]]
-=== Change Configuration Depending on the Environment
+== Change Configuration Depending on the Environment
 Spring Boot supports multi-document YAML and Properties files (see <<features#features.external-config.files.multi-document>> for details) which can be activated conditionally based on the active profiles.
 
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
@@ -286,7 +287,7 @@ Later values override earlier values.
 
 
 [[howto.properties-and-configuration.discover-build-in-options-for-external-properties]]
-=== Discover Built-in Options for External Properties
+== Discover Built-in Options for External Properties
 Spring Boot binds external properties from `application.properties` (or YAML files and other places) into an application at runtime.
 There is not (and technically cannot be) an exhaustive list of all supported properties in a single location, because contributions can come from additional jar files on your classpath.
 

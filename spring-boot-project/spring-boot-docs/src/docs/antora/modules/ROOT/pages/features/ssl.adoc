@@ -1,12 +1,13 @@
 [[features.ssl]]
-== SSL
+= SSL
+
 Spring Boot provides the ability to configure SSL trust material that can be applied to several types of connections in order to support secure communications.
 Configuration properties with the prefix `spring.ssl.bundle` can be used to specify named sets of trust material and associated information.
 
 
 
 [[features.ssl.jks]]
-=== Configuring SSL With Java KeyStore Files
+== Configuring SSL With Java KeyStore Files
 Configuration properties with the prefix `spring.ssl.bundle.jks` can be used to configure bundles of trust material created with the Java `keytool` utility and stored in Java KeyStore files in the JKS or PKCS12 format.
 Each bundle has a user-provided name that can be used to reference the bundle.
 
@@ -46,7 +47,7 @@ See {spring-boot-autoconfigure-module-code}/ssl/JksSslBundleProperties.java[JksS
 
 
 [[features.ssl.pem]]
-=== Configuring SSL With PEM-encoded Certificates
+== Configuring SSL With PEM-encoded Certificates
 Configuration properties with the prefix `spring.ssl.bundle.pem` can be used to configure bundles of trust material in the form of PEM-encoded text.
 Each bundle has a user-provided name that can be used to reference the bundle.
 
@@ -109,14 +110,14 @@ See {spring-boot-autoconfigure-module-code}/ssl/PemSslBundleProperties.java[PemS
 
 
 [[features.ssl.applying]]
-=== Applying SSL Bundles
+== Applying SSL Bundles
 Once configured using properties, SSL bundles can be referred to by name in configuration properties for various types of connections that are auto-configured by Spring Boot.
 See the sections on <<howto#howto.webserver.configure-ssl,embedded web servers>>, <<data#data,data technologies>>, and <<io#io.rest-client,REST clients>> for further information.
 
 
 
 [[features.ssl.bundles]]
-=== Using SSL Bundles
+== Using SSL Bundles
 Spring Boot auto-configures a bean of type `SslBundles` that provides access to each of the named bundles configured using the `spring.ssl.bundle` properties.
 
 An `SslBundle` can be retrieved from the auto-configured `SslBundles` bean and used to create objects that are used to configure SSL connectivity in client libraries.
@@ -135,7 +136,7 @@ include::code:MyComponent[]
 
 
 [[features.ssl.reloading]]
-=== Reloading SSL bundles
+== Reloading SSL bundles
 SSL bundles can be reloaded when the key material changes.
 The component consuming the bundle has to be compatible with reloadable SSL bundles.
 Currently the following components are compatible:

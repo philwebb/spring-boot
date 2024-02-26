@@ -1,12 +1,13 @@
 [[howto.traditional-deployment]]
-== Traditional Deployment
+= Traditional Deployment
+
 Spring Boot supports traditional deployment as well as more modern forms of deployment.
 This section answers common questions about traditional deployment.
 
 
 
 [[howto.traditional-deployment.war]]
-=== Create a Deployable War File
+== Create a Deployable War File
 
 WARNING: Because Spring WebFlux does not strictly depend on the servlet API and applications are deployed by default on an embedded Reactor Netty server, War deployment is not supported for WebFlux applications.
 
@@ -69,7 +70,7 @@ This means that, in addition to being deployable to a servlet container, you can
 
 
 [[howto.traditional-deployment.convert-existing-application]]
-=== Convert an Existing Application to Spring Boot
+== Convert an Existing Application to Spring Boot
 To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
 Spring MVC web applications are generally amenable to first creating a deployable war application and then migrating it later to an executable war or jar.
 See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on Converting a jar to a war].
@@ -127,7 +128,7 @@ In that case, we suggest https://stackoverflow.com/questions/tagged/spring-boot[
 
 
 [[howto.traditional-deployment.weblogic]]
-===  Deploying a WAR to WebLogic
+==  Deploying a WAR to WebLogic
 To deploy a Spring Boot application to WebLogic, you must ensure that your servlet initializer *directly* implements `WebApplicationInitializer` (even if you extend from a base class that already implements it).
 
 A typical initializer for WebLogic should resemble the following example:

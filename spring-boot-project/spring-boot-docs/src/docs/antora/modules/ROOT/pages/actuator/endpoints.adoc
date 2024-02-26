@@ -1,5 +1,6 @@
 [[actuator.endpoints]]
-== Endpoints
+= Endpoints
+
 Actuator endpoints let you monitor and interact with your application.
 Spring Boot includes a number of built-in endpoints and lets you add your own.
 For example, the `health` endpoint provides basic application health information.
@@ -117,7 +118,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 
 
 [[actuator.endpoints.enabling]]
-=== Enabling Endpoints
+== Enabling Endpoints
 By default, all endpoints except for `shutdown` are enabled.
 To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
 The following example enables the `shutdown` endpoint:
@@ -149,7 +150,7 @@ If you want to change only the technologies over which an endpoint is exposed, u
 
 
 [[actuator.endpoints.exposing]]
-=== Exposing Endpoints
+== Exposing Endpoints
 By default, only the health endpoint is exposed over HTTP and JMX.
 Since Endpoints may contain sensitive information, you should carefully consider when to expose them.
 
@@ -210,7 +211,7 @@ TIP: If you want to implement your own strategy for when endpoints are exposed, 
 
 
 [[actuator.endpoints.security]]
-=== Security
+== Security
 For security purposes, only the `/health` endpoint is exposed over HTTP by default.
 You can use the configprop:management.endpoints.web.exposure.include[] property to configure the endpoints that are exposed.
 
@@ -251,7 +252,7 @@ Since Spring Boot's security configuration backs off completely in the presence 
 
 
 [[actuator.endpoints.security.csrf]]
-==== Cross Site Request Forgery Protection
+=== Cross Site Request Forgery Protection
 Since Spring Boot relies on Spring Security's defaults, CSRF protection is turned on by default.
 This means that the actuator endpoints that require a `POST` (shutdown and loggers endpoints), a `PUT`, or a `DELETE` get a 403 (forbidden) error when the default security configuration is in use.
 
@@ -262,7 +263,7 @@ You can find additional information about CSRF protection in the {spring-securit
 
 
 [[actuator.endpoints.caching]]
-=== Configuring Endpoints
+== Configuring Endpoints
 Endpoints automatically cache responses to read operations that do not take any parameters.
 To configure the amount of time for which an endpoint caches a response, use its `cache.time-to-live` property.
 The following example sets the time-to-live of the `beans` endpoint's cache to 10 seconds:
@@ -281,7 +282,7 @@ NOTE: The `management.endpoint.<name>` prefix uniquely identifies the endpoint t
 
 
 [[actuator.endpoints.sanitization]]
-=== Sanitize Sensitive Values
+== Sanitize Sensitive Values
 Information returned by the `/env`, `/configprops` and `/quartz` endpoints can be sensitive, so by default values are always fully sanitized (replaced by `+******+`).
 
 Values can only be viewed in an unsanitized form when:
@@ -317,7 +318,7 @@ NOTE: This example assumes that no `<<howto#howto.actuator.customizing-sanitizat
 
 
 [[actuator.endpoints.hypermedia]]
-=== Hypermedia for Actuator Web Endpoints
+== Hypermedia for Actuator Web Endpoints
 A "`discovery page`" is added with links to all the endpoints.
 The "`discovery page`" is available on `/actuator` by default.
 
@@ -339,7 +340,7 @@ When the management context path is set to `/`, the discovery page is disabled t
 
 
 [[actuator.endpoints.cors]]
-=== CORS Support
+== CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] that lets you specify in a flexible way what kind of cross-domain requests are authorized.
 If you use Spring MVC or Spring WebFlux, you can configure Actuator's web endpoints to support such scenarios.
 
@@ -361,7 +362,7 @@ TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpo
 
 
 [[actuator.endpoints.implementing-custom]]
-=== Implementing Custom Endpoints
+== Implementing Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over JMX and, in a web application, over HTTP as well.
 Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring WebFlux.
 If both Jersey and Spring MVC are available, Spring MVC is used.
@@ -382,7 +383,7 @@ Finally, if you need access to web-framework-specific functionality, you can imp
 
 
 [[actuator.endpoints.implementing-custom.input]]
-==== Receiving Input
+=== Receiving Input
 Operations on an endpoint receive input through their parameters.
 When exposed over the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
 When exposed over JMX, the parameters are mapped to the parameters of the MBean's operations.
@@ -413,27 +414,27 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 
 
 [[actuator.endpoints.implementing-custom.input.conversion]]
-===== Input Type Conversion
+==== Input Type Conversion
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
 Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
 
 
 
 [[actuator.endpoints.implementing-custom.web]]
-==== Custom Web Endpoints
+=== Custom Web Endpoints
 Operations on an `@Endpoint`, `@WebEndpoint`, or `@EndpointWebExtension` are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
 If both Jersey and Spring MVC are available, Spring MVC is used.
 
 
 
 [[actuator.endpoints.implementing-custom.web.request-predicates]]
-===== Web Endpoint Request Predicates
+==== Web Endpoint Request Predicates
 A request predicate is automatically generated for each operation on a web-exposed endpoint.
 
 
 
 [[actuator.endpoints.implementing-custom.web.path-predicates]]
-===== Path
+==== Path
 The path of the predicate is determined by the ID of the endpoint and the base path of the web-exposed endpoints.
 The default base path is `/actuator`.
 For example, an endpoint with an ID of `sessions` uses `/actuator/sessions` as its path in the predicate.
@@ -446,7 +447,7 @@ If you want to capture all remaining path elements, you can add `@Selector(Match
 
 
 [[actuator.endpoints.implementing-custom.web.method-predicates]]
-===== HTTP method
+==== HTTP method
 The HTTP method of the predicate is determined by the operation type, as shown in the following table:
 
 [cols="3, 1"]
@@ -466,14 +467,14 @@ The HTTP method of the predicate is determined by the operation type, as shown i
 
 
 [[actuator.endpoints.implementing-custom.web.consumes-predicates]]
-===== Consumes
+==== Consumes
 For a `@WriteOperation` (HTTP `POST`) that uses the request body, the `consumes` clause of the predicate is `application/vnd.spring-boot.actuator.v2+json, application/json`.
 For all other operations, the `consumes` clause is empty.
 
 
 
 [[actuator.endpoints.implementing-custom.web.produces-predicates]]
-===== Produces
+==== Produces
 The `produces` clause of the predicate can be determined by the `produces` attribute of the `@DeleteOperation`, `@ReadOperation`, and `@WriteOperation` annotations.
 The attribute is optional.
 If it is not used, the `produces` clause is determined automatically.
@@ -485,7 +486,7 @@ For all other operations, the `produces` clause is `application/vnd.spring-boot.
 
 
 [[actuator.endpoints.implementing-custom.web.response-status]]
-===== Web Endpoint Response Status
+==== Web Endpoint Response Status
 The default response status for an endpoint operation depends on the operation type (read, write, or delete) and what, if anything, the operation returns.
 
 If a `@ReadOperation` returns a value, the response status will be 200 (OK).
@@ -499,7 +500,7 @@ If an operation is invoked without a required parameter or with a parameter that
 
 
 [[actuator.endpoints.implementing-custom.web.range-requests]]
-===== Web Endpoint Range Requests
+==== Web Endpoint Range Requests
 You can use an HTTP range request to request part of an HTTP resource.
 When using Spring MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource` automatically support range requests.
 
@@ -508,7 +509,7 @@ NOTE: Range requests are not supported when using Jersey.
 
 
 [[actuator.endpoints.implementing-custom.web.security]]
-===== Web Endpoint Security
+==== Web Endpoint Security
 An operation on a web endpoint or a web-specific endpoint extension can receive the current `java.security.Principal` or `org.springframework.boot.actuate.endpoint.SecurityContext` as a method parameter.
 The former is typically used in conjunction with `@Nullable` to provide different behavior for authenticated and unauthenticated users.
 The latter is typically used to perform authorization checks by using its `isUserInRole(String)` method.
@@ -516,7 +517,7 @@ The latter is typically used to perform authorization checks by using its `isUse
 
 
 [[actuator.endpoints.implementing-custom.servlet]]
-==== Servlet Endpoints
+=== Servlet Endpoints
 A servlet can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
 Servlet endpoints provide deeper integration with the servlet container but at the expense of portability.
 They are intended to be used to expose an existing servlet as an endpoint.
@@ -525,7 +526,7 @@ For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be pref
 
 
 [[actuator.endpoints.implementing-custom.controller]]
-==== Controller Endpoints
+=== Controller Endpoints
 You can use `@ControllerEndpoint` and `@RestControllerEndpoint` to implement an endpoint that is exposed only by Spring MVC or Spring WebFlux.
 Methods are mapped by using the standard annotations for Spring MVC and Spring WebFlux, such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.
 Controller endpoints provide deeper integration with Spring's web frameworks but at the expense of portability.
@@ -534,7 +535,7 @@ The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever poss
 
 
 [[actuator.endpoints.health]]
-=== Health Information
+== Health Information
 You can use health information to check the status of your running application.
 It is often used by monitoring software to alert someone when a production system goes down.
 The information exposed by the `health` endpoint depends on the configprop:management.endpoint.health.show-details[] and configprop:management.endpoint.health.show-components[] properties, which can be configured with one of the following values:
@@ -578,7 +579,7 @@ TIP: You can use the `HealthContributorRegistry` to register and unregister heal
 
 
 [[actuator.endpoints.health.auto-configured-health-indicators]]
-==== Auto-configured HealthIndicators
+=== Auto-configured HealthIndicators
 When appropriate, Spring Boot auto-configures the `HealthIndicators` listed in the following table.
 You can also enable or disable selected indicators by configuring `management.health.key.enabled`,
 with the `key` listed in the following table:
@@ -668,7 +669,7 @@ Additional `HealthIndicators` are available but are not enabled by default:
 
 
 [[actuator.endpoints.health.writing-custom-health-indicators]]
-==== Writing Custom HealthIndicators
+=== Writing Custom HealthIndicators
 To provide custom health information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] interface.
 You need to provide an implementation of the `health()` method and return a `Health` response.
 The `Health` response should include a status and can optionally include additional details to be displayed.
@@ -742,7 +743,7 @@ The following table shows the default status mappings for the built-in statuses:
 
 
 [[actuator.endpoints.health.reactive-health-indicators]]
-==== Reactive Health Indicators
+=== Reactive Health Indicators
 For reactive applications, such as those that use Spring WebFlux, `ReactiveHealthContributor` provides a non-blocking contract for getting application health.
 Similar to a traditional `HealthContributor`, health information is collected from the content of a {spring-boot-actuator-module-code}/health/ReactiveHealthContributorRegistry.java[`ReactiveHealthContributorRegistry`] (by default, all {spring-boot-actuator-module-code}/health/HealthContributor.java[`HealthContributor`] and {spring-boot-actuator-module-code}/health/ReactiveHealthContributor.java[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
 Regular `HealthContributors` that do not check against a reactive API are executed on the elastic scheduler.
@@ -760,7 +761,7 @@ TIP: To handle the error automatically, consider extending from `AbstractReactiv
 
 
 [[actuator.endpoints.health.auto-configured-reactive-health-indicators]]
-==== Auto-configured ReactiveHealthIndicators
+=== Auto-configured ReactiveHealthIndicators
 When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndicators`:
 
 [cols="2,4,6"]
@@ -798,7 +799,7 @@ Also, any `HealthIndicator` that is not handled explicitly is wrapped automatica
 
 
 [[actuator.endpoints.health.groups]]
-==== Health Groups
+=== Health Groups
 It is sometimes useful to organize health indicators into groups that you can use for different purposes.
 
 To create a health indicator group, you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
@@ -884,7 +885,7 @@ The path must be a single path segment.
 
 
 [[actuator.endpoints.health.datasource]]
-==== DataSource Health
+=== DataSource Health
 The `DataSource` health indicator shows the health of both standard data sources and routing data source beans.
 The health of a routing data source includes the health of each of its target data sources.
 In the health endpoint's response, each of a routing data source's targets is named by using its routing key.
@@ -893,7 +894,7 @@ If you prefer not to include routing data sources in the indicator's output, set
 
 
 [[actuator.endpoints.kubernetes-probes]]
-=== Kubernetes Probes
+== Kubernetes Probes
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
 Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet calls those probes and reacts to the result.
 
@@ -949,7 +950,7 @@ Paths can be customized using the `additional-path` property on each group, see 
 
 
 [[actuator.endpoints.kubernetes-probes.external-state]]
-==== Checking External State With Kubernetes Probes
+=== Checking External State With Kubernetes Probes
 Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
 This means that all the <<actuator#actuator.endpoints.health.groups, health groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
@@ -988,7 +989,7 @@ Also, if an application uses Kubernetes https://kubernetes.io/docs/tasks/run-app
 
 
 [[actuator.endpoints.kubernetes-probes.lifecycle]]
-==== Application Lifecycle and Probe States
+=== Application Lifecycle and Probe States
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
 There is a significant difference between the `AvailabilityState` (which is the in-memory, internal state of the application)
 and the actual probe (which exposes that state).
@@ -1054,14 +1055,14 @@ TIP: See <<deployment#deployment.cloud.kubernetes.container-lifecycle,Kubernetes
 
 
 [[actuator.endpoints.info]]
-=== Application Information
+== Application Information
 Application information exposes various information collected from all {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] beans defined in your `ApplicationContext`.
 Spring Boot includes a number of auto-configured `InfoContributor` beans, and you can write your own.
 
 
 
 [[actuator.endpoints.info.auto-configured-info-contributors]]
-==== Auto-configured InfoContributors
+=== Auto-configured InfoContributors
 When appropriate, Spring auto-configures the following `InfoContributor` beans:
 
 [cols="1,4,8,4"]
@@ -1113,7 +1114,7 @@ Alternatively, to disable every contributor that is usually enabled by default, 
 
 
 [[actuator.endpoints.info.custom-application-information]]
-==== Custom Application Information
+=== Custom Application Information
 When the `env` contributor is enabled, you can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
 All `Environment` properties under the `info` key are automatically exposed.
 For example, you could add the following settings to your `application.properties` file:
@@ -1148,7 +1149,7 @@ Assuming you use Maven, you could rewrite the preceding example as follows:
 
 
 [[actuator.endpoints.info.git-commit-information]]
-==== Git Commit Information
+=== Git Commit Information
 Another useful feature of the `info` endpoint is its ability to publish information about the state of your `git` source code repository when the project was built.
 If a `GitProperties` bean is available, you can use the `info` endpoint to expose these properties.
 
@@ -1180,7 +1181,7 @@ To disable the git commit information from the `info` endpoint completely, set t
 
 
 [[actuator.endpoints.info.build-information]]
-==== Build Information
+=== Build Information
 If a `BuildProperties` bean is available, the `info` endpoint can also publish information about your build.
 This happens if a `META-INF/build-info.properties` file is available in the classpath.
 
@@ -1190,25 +1191,25 @@ See "<<howto#howto.build.generate-info,how to generate build information>>" for 
 
 
 [[actuator.endpoints.info.java-information]]
-==== Java Information
+=== Java Information
 The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
 
 
 
 [[actuator.endpoints.info.os-information]]
-==== OS Information
+=== OS Information
 The `info` endpoint publishes information about your Operating System, see {spring-boot-module-api}/info/OsInfo.html[`OsInfo`] for more details.
 
 
 
 [[actuator.endpoints.info.process-information]]
-==== Process Information
+=== Process Information
 The `info` endpoint publishes information about your process, see {spring-boot-module-api}/info/ProcessInfo.html[`Process`] for more details.
 
 
 
 [[actuator.endpoints.info.writing-custom-info-contributors]]
-==== Writing Custom InfoContributors
+=== Writing Custom InfoContributors
 To provide custom application information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] interface.
 
 The following example contributes an `example` entry with a single value:

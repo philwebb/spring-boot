@@ -1,5 +1,6 @@
 [[container-images.efficient-images]]
-== Efficient Container Images
+= Efficient Container Images
+
 It is easily possible to package a Spring Boot uber jar as a docker image.
 However, there are various downsides to copying and running the uber jar as is in the docker image.
 There’s always a certain amount of overhead when running a uber jar without unpacking it, and in a containerized environment this can be noticeable.
@@ -9,7 +10,7 @@ If you put jar files in the layer before your application classes, Docker often 
 
 
 [[container-images.efficient-images.layering]]
-=== Layering Docker Images
+== Layering Docker Images
 To make it easier to create optimized Docker images, Spring Boot supports adding a layer index file to the jar.
 It provides a list of layers and the parts of the jar that should be contained within them.
 The list of layers in the index is ordered based on the order in which the layers should be added to the Docker/OCI image.

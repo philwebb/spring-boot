@@ -1,5 +1,6 @@
 [[documentation.advanced]]
-== Advanced Topics
+= Advanced Topics
+
 Finally, we have a few topics for more advanced users:
 
 * *Spring Boot Applications Deployment:* <<deployment#deployment.cloud, Cloud Deployment>> | <<deployment#deployment.installing, OS Service>>

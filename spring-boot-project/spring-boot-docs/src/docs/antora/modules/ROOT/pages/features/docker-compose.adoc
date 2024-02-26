@@ -1,5 +1,6 @@
 [[features.docker-compose]]
-== Docker Compose Support
+= Docker Compose Support
+
 Docker Compose is a popular technology that can be used to define and manage multiple containers for services that your application needs.
 A `compose.yml` file is typically created next to your application which defines and configures service containers.
 
@@ -44,14 +45,14 @@ To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
 
 
 [[features.docker-compose.prerequisites]]
-=== Prerequisites
+== Prerequisites
 You need to have the `docker` and `docker compose` (or `docker-compose`) CLI applications on your path.
 The minimum supported Docker Compose version is 2.2.0.
 
 
 
 [[features.docker-compose.service-connections]]
-=== Service Connections
+== Service Connections
 A service connection is a connection to any remote service.
 Spring Boot’s auto-configuration can consume the details of a service connection and use them to establish a connection to a remote service.
 When doing so, the connection details take precedence over any connection-related configuration properties.
@@ -118,7 +119,7 @@ The following service connections are currently supported:
 
 
 [[features.docker-compose.custom-images]]
-=== Custom Images
+== Custom Images
 Sometimes you may need to use your own version of an image to provide a service.
 You can use any custom image as long as it behaves in the same way as the standard image.
 Specifically, any environment variables that the standard image supports must also be used in your custom image.
@@ -142,7 +143,7 @@ For example:
 
 
 [[features.docker-compose.skipping]]
-=== Skipping Specific Containers
+== Skipping Specific Containers
 If you have a container image defined in your `compose.yml` that you don’t want connected to your application you can use a label to ignore it.
 Any container with labeled with `org.springframework.boot.ignore` will be ignored by Spring Boot.
 
@@ -162,7 +163,7 @@ For example:
 
 
 [[features.docker-compose.specific-file]]
-=== Using a Specific Compose File
+== Using a Specific Compose File
 If your compose file is not in the same directory as your application, or if it’s named differently, you can use configprop:spring.docker.compose.file[] in your `application.properties` or `application.yaml` to point to a different file.
 Properties can be defined as an exact path or a path that’s relative to your application.
 
@@ -179,7 +180,7 @@ For example:
 
 
 [[features.docker-compose.readiness]]
-=== Waiting for Container Readiness
+== Waiting for Container Readiness
 Containers started by Docker Compose may take some time to become fully ready.
 The recommended way of checking for readiness is to add a `healthcheck` section under the service definition in your `compose.yml` file.
 
@@ -219,7 +220,7 @@ The overall timeout can be configured using configprop:spring.docker.compose.rea
 
 
 [[features.docker-compose.lifecycle]]
-=== Controlling the Docker Compose Lifecycle
+== Controlling the Docker Compose Lifecycle
 By default Spring Boot calls `docker compose up` when your application starts and `docker compose stop` when it's shut down.
 If you prefer to have different lifecycle management you can use the configprop:spring.docker.compose.lifecycle-management[] property.
 
@@ -250,7 +251,7 @@ The following example shows how lifecycle management can be configured:
 
 
 [[features.docker-compose.profiles]]
-=== Activating Docker Compose Profiles
+== Activating Docker Compose Profiles
 Docker Compose profiles are similar to Spring profiles in that they let you adjust your Docker Compose configuration for specific environments.
 If you want to activate a specific Docker Compose profile you can use the configprop:spring.docker.compose.profiles.active[] property in your `application.properties` or `application.yaml` file:
 
