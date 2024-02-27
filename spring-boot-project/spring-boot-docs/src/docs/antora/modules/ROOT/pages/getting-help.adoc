@@ -1,6 +1,5 @@
 [[getting-help]]
 = Getting Help
-include::attributes.adoc[]
 
 If you have trouble with Spring Boot, we would like to help.
 

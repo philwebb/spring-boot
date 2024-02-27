@@ -3,4 +3,4 @@
 
 The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 
-include::documented-auto-configuration-classes/spring-boot-actuator-autoconfigure.adoc[]
+include::partial$/auto-configuration-classes/spring-boot-actuator-autoconfigure.adoc[]

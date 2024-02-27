@@ -87,4 +87,13 @@ asciidoc:
     spring-data-couchbase: FIXME
     spring-data-cassandra: FIXME
     ant-docs: FIXME
-        
+    micrometer-tracing-docs: FIXME
+    micrometer-concepts-docs: FIXME
+    spring-boot-actuator-restapi-pdfdocs: FIXME
+    lettuce-docs: FIXME
+    spring-integration-docs: FIXME
+    micrometer-implementation-docs: FIXME
+    dynatrace-docs: FIXME
+    micrometer-docs: FIXME
+    spring-boot-actuator-module-code: FIXME
+    

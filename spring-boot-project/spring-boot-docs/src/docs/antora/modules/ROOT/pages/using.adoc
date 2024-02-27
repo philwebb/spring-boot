@@ -1,8 +1,5 @@
 [[using]]
 = Developing with Spring Boot
-include::attributes.adoc[]
-
-
 
 This section goes into more detail about how you should use Spring Boot.
 It covers topics such as build systems, auto-configuration, and how to run your applications.
@@ -11,24 +8,3 @@ Although there is nothing particularly special about Spring Boot (it is just ano
 
 If you are starting out with Spring Boot, you should probably read the _xref:getting-started.adoc[Getting Started]_ guide before diving into this section.
 
-
-
-include::using/build-systems.adoc[]
-
-include::using/structuring-your-code.adoc[]
-
-include::using/configuration-classes.adoc[]
-
-include::using/auto-configuration.adoc[]
-
-include::using/spring-beans-and-dependency-injection.adoc[]
-
-include::using/using-the-springbootapplication-annotation.adoc[]
-
-include::using/running-your-application.adoc[]
-
-include::using/devtools.adoc[]
-
-include::using/packaging-for-production.adoc[]
-
-include::using/whats-next.adoc[]

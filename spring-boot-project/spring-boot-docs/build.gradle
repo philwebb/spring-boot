@@ -238,33 +238,33 @@ task aggregatedJavadoc(type: Javadoc) {
 
 task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
-	outputFile = file("${buildDir}/docs/generated/test-auto-configuration/documented-slices.adoc")
+	outputFile = file("${buildDir}/generated/docs/test-auto-configuration/documented-slices.adoc")
 }
 
 task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
-	outputDir = file("${buildDir}/docs/generated/using/starters/")
+	outputDir = file("${buildDir}/generated/docs/using/starters/")
 }
 
 task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
 	autoConfiguration = configurations.autoConfiguration
-	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/documented-auto-configuration-classes/")
+	outputDir = file("${buildDir}/generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
 task documentDependencyVersionCoordinates(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
 	dependsOn dependencyVersions
 	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
-	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-coordinates.adoc")
+	outputFile = file("${buildDir}/generated/docs/dependency-versions/documented-coordinates.adoc")
 }
 
 task documentDependencyVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
 	dependsOn dependencyVersions
 	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
-	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-properties.adoc")
+	outputFile = file("${buildDir}/generated/docs/dependency-versions/documented-properties.adoc")
 }
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/docs/generated/")
+	outputDir = file("${buildDir}/generated/docs/")
 }
 
 task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}

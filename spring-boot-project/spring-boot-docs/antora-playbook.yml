@@ -24,7 +24,8 @@ asciidoc:
   extensions:
     - '@asciidoctor/tabs'
     - '@springio/asciidoctor-extensions'
-    - '@springio/asciidoctor-extensions/configuration-properties-extension'
+    - '/Users/pwebb/projects/asciidoctor-extensions/lib/configuration-properties-extension.js'
+    
 urls:
   latest_version_segment: ''
 runtime:
