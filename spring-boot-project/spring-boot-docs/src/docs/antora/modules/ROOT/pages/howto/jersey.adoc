@@ -11,7 +11,7 @@ This prevents Jersey from committing the response before Spring Security has had
 
 The `jersey.config.server.response.setStatusOverSendError` property must be set to `true` on the application's `ResourceConfig` bean, as shown in the following example:
 
-include-code::springsecurity/JerseySetStatusOverSendErrorConfig[]
+include-code::JerseySetStatusOverSendErrorConfig[]
 
 
 

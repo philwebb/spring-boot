@@ -23,7 +23,7 @@ The default log output from Spring Boot resembles the following example:
 
 [indent=0]
 ----
-include::{logging-format-output}[]
+include::partial$logging/logging-format.txt[]
 ----
 
 The following items are output:

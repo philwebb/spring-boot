@@ -250,13 +250,13 @@ task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoc
 	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
-task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
+task documentDependencyVersionCoordinates(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
 	dependsOn dependencyVersions
 	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
 	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-coordinates.adoc")
 }
 
-task documentVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
+task documentDependencyVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
 	dependsOn dependencyVersions
 	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
 	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-properties.adoc")
@@ -323,6 +323,24 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 	from(documentStarters) {
 		into "modules/ROOT/partials/starters"
+	}
+	from(documentTestSlices) {
+		into "modules/ROOT/partials/slices"
+	}
+	from(runSpringApplicationExample) {
+		into "modules/ROOT/partials/application"
+	}
+	from(runLoggingFormatExample) {
+		into "modules/ROOT/partials/logging"
+	}
+	from(documentDependencyVersionCoordinates) {
+		into "modules/ROOT/partials/dependency-versions"
+	}
+	from(documentDependencyVersionProperties) {
+		into "modules/ROOT/partials/dependency-versions"
+	}
+	from(documentAutoConfigurationClasses) {
+		into "modules/ROOT/partials/auto-configuration-classes"
 	}
 }
 

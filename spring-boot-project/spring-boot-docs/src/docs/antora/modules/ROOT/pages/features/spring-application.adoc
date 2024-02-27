@@ -10,7 +10,7 @@ When your application starts, you should see something similar to the following 
 
 [indent=0,subs="verbatim,attributes"]
 ----
-include::{spring-application-output}[]
+include::partial$application/spring-application.txt[]
 ----
 
 
