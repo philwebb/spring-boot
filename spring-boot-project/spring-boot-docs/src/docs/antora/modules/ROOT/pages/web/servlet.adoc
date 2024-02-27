@@ -454,10 +454,7 @@ Jersey has some native Spring support, so we also provide auto-configuration sup
 
 To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `ResourceConfig` in which you register all the endpoints, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/jersey/MyJerseyConfig.java[]
-----
+include-code::MyJerseyConfig[]
 
 WARNING: Jersey's support for scanning executable archives is rather limited.
 For example, it cannot scan for endpoints in a package found in a xref:deployment/installing.adoc[fully executable jar file] or in `WEB-INF/classes` when running an executable war file.
@@ -467,10 +464,7 @@ For more advanced customizations, you can also register an arbitrary number of b
 
 All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` and others), as shown in the following example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/jersey/MyEndpoint.java[]
-----
+include-code::MyEndpoint[]
 
 Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
 By default, the Jersey servlet is registered and mapped to `/*`.
@@ -560,10 +554,7 @@ One way to get around this is to inject `ApplicationContext` as a dependency of 
 Another way is to use a callback once the server has started.
 This can be done using an `ApplicationListener` which listens for the `ApplicationStartedEvent` as follows:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean.java[]
-----
+include-code::MyDemoBean[]
 
 
 

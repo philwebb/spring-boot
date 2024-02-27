@@ -11,3 +11,15 @@ asciidoc:
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
     spring-authorization-server-docs: FIXME
+    spring-boot-for-apache-geode-docs: FIXME
+    spring-boot-for-apache-geode: FIXME
+    spring-session: FIXME
+    spring-boot-module-api: FIXME
+    spring-security-docs: FIXME
+    spring-security: FIXME
+    spring-graphql-docs: FIXME
+    spring-framework-docs: FIXME
+    spring-graphql: FIXME
+    spring-boot-autoconfigure-module-code: FIXME
+    spring-framework-api: FIXME
+    gradle-docs: FIXME

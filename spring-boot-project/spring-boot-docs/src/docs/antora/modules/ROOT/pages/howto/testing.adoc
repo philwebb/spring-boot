@@ -26,10 +26,7 @@ Slice tests work by restricting Spring Framework's component scanning to a limit
 For any beans that are not created through component scanning, for example, beans that are created using the `@Bean` annotation, slice tests will not be able to include/exclude them from the application context.
 Consider this example:
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/howto/testing/slicetests/MyConfiguration.java[]
-----
+include-code::MyConfiguration[]
 
 For a `@WebMvcTest` for an application with the above `@Configuration` class, you might expect to have the `SecurityFilterChain` bean in the application context so that you can test if your controller endpoints are secured properly.
 However, `MyConfiguration` is not picked up by @WebMvcTest's component scanning filter because it doesn't match any of the types specified by the filter.
@@ -37,15 +34,9 @@ You can include the configuration explicitly by annotating the test class with `
 This will load all the beans in `MyConfiguration` including the `BasicDataSource` bean which isn't required when testing the web tier.
 Splitting the configuration class into two will enable importing just the security configuration.
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/howto/testing/slicetests/MySecurityConfiguration.java[]
-----
+include-code::MySecurityConfiguration[]
 
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/howto/testing/slicetests/MyDatasourceConfiguration.java[]
-----
+include-code::MyDatasourceConfiguration[]
 
 Having a single configuration class can be inefficient when beans of a certain domain need to be included in slice tests.
 Instead, structuring the application's configuration as multiple granular classes with beans for a specific domain can enable importing them only for specific slice tests.

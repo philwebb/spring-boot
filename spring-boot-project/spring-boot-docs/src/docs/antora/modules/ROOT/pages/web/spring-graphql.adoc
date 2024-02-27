@@ -43,7 +43,7 @@ In the following sections, we'll consider this sample GraphQL schema, defining t
 
 [source,json,indent=0,subs="verbatim,quotes"]
 ----
-include::{docs-resources}/graphql/schema.graphqls[]
+include::ROOT:example$resources/graphql/schema.graphqls[]
 ----
 
 NOTE: By default, https://spec.graphql.org/draft/#sec-Introspection[field introspection] will be allowed on the schema as it is required for tools such as GraphiQL.
