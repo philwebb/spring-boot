@@ -34,3 +34,5 @@ runtime:
 ui:
   bundle:
     url: /Users/pwebb/projects/antora-ui-spring/build/ui-bundle.zip
+    snapshot: true
+
