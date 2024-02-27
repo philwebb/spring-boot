@@ -129,17 +129,17 @@ For example, a third-party starter project called `thirdpartyproject` would typi
 The following application starters are provided by Spring Boot under the `org.springframework.boot` group:
 
 .Spring Boot application starters
-include::starters/application-starters.adoc[]
+include::partial$starters/application-starters.adoc[]
 
 In addition to the application starters, the following starters can be used to add _xref:howto/actuator.adoc[production ready]_ features:
 
 .Spring Boot production starters
-include::starters/production-starters.adoc[]
+include::partial$starters/production-starters.adoc[]
 
 Finally, Spring Boot also includes the following starters that can be used if you want to exclude or swap specific technical facets:
 
 .Spring Boot technical starters
-include::starters/technical-starters.adoc[]
+include::partial$starters/technical-starters.adoc[]
 
 To learn how to swap technical facets, please see the how-to documentation for xref:howto/webserver.adoc#howto.webserver.use-another[swapping web server] and xref:howto/logging.adoc#howto.logging.log4j[logging system].
 

@@ -297,17 +297,6 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 	normalizeTomcatPort()
 }
 
-task collectConfigurationMetadataFiles(type: Copy) {
-	from project.configurations.configurationProperties
-	eachFile {
-		it.path = it.file
-				.toString()
-				.replaceFirst('/build/(?:classes|resources)/java/main/', '/')
-				.replaceFirst('^.*/([^/]+)/META-INF/(spring-configuration-metadata\\.json)$', '$1/$2')
-	}
-	into layout.buildDirectory.dir('collectConfigurationMetadataFiles')
-}
-
 def getRelativeExamplesPath(var outputs) {
 	def fileName = outputs.files.singleFile.name
 	'example$example-output/' + fileName
@@ -330,7 +319,10 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 		into "modules/ROOT/examples"
 	}
 	from(documentDevtoolsPropertyDefaults) {
-		into "modules/ROOT/partials"
+		into "modules/ROOT/partials/propertydefaults"
+	}
+	from(documentStarters) {
+		into "modules/ROOT/partials/starters"
 	}
 }
 
