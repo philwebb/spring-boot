@@ -25,7 +25,6 @@ asciidoc:
     - '@asciidoctor/tabs'
     - '@springio/asciidoctor-extensions'
     - '@springio/asciidoctor-extensions/configuration-properties-extension'
-    - '@springio/asciidoctor-extensions/section-ids-extension'
 urls:
   latest_version_segment: ''
 runtime:

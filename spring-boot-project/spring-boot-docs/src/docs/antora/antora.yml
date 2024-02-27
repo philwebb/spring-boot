@@ -10,3 +10,4 @@ asciidoc:
     gradle-project-version: 3.3.0-SNAPSHOT
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
+    spring-authorization-server-docs: FIXME
