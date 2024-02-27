@@ -326,6 +326,12 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 				.replaceFirst('^.*/([^/]+)/META-INF/(spring-configuration-metadata\\.json)$', 'modules/ROOT/partials/$1/$2')
 		}
 	}
+	from(runRemoteSpringApplicationExample) {
+		into "modules/ROOT/examples"
+	}
+	from(documentDevtoolsPropertyDefaults) {
+		into "modules/ROOT/partials"
+	}
 }
 
 tasks.named("antora") {

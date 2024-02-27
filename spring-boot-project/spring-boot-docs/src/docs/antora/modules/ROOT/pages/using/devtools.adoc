@@ -70,7 +70,7 @@ Rather than needing to set these properties manually, the `spring-boot-devtools`
 
 The following table lists all the properties that are applied:
 
-include::devtools-property-defaults.adoc[]
+include::partial$devtools-property-defaults.adoc[]
 
 NOTE: If you do not want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
 
@@ -392,7 +392,7 @@ A running remote client might resemble the following listing:
 
 [indent=0,subs="verbatim,attributes"]
 ----
-include::{remote-spring-application-output}[]
+include::example$remote-spring-application.txt[]
 ----
 
 NOTE: Because the remote client is using the same classpath as the real application it can directly read application properties.

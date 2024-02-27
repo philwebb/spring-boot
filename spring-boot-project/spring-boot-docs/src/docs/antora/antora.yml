@@ -23,3 +23,12 @@ asciidoc:
     spring-boot-autoconfigure-module-code: FIXME
     spring-framework-api: FIXME
     gradle-docs: FIXME
+    spring-boot-devtools-module-code: FIXME
+    spring-boot-gradle-plugin-docs: FIXME
+    spring-boot-latest-code: FIXME
+    spring-boot-version: FIXME
+    spring-boot-gradle-plugin-api: FIXME
+    spring-boot-gradle-plugin-pdfdocs: FIXME
+    spring-boot-maven-plugin-api: FIXME
+    spring-boot-maven-plugin-pdfdocs: FIXME
+    spring-boot-maven-plugin-docs: FIXME
