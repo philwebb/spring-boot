@@ -123,7 +123,8 @@ public class BomExtension {
 						this.project, this.libraries, libraryHandler.groups)
 				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
-				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment));
+				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment,
+				libraryHandler.links));
 	}
 
 	public void effectiveBomArtifact() {
@@ -457,7 +458,7 @@ public class BomExtension {
 		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
 			return (version) -> {
 				PlaceholderResolver resolver = (name) -> "version".equals(name) ? version.toString() : null;
-				return new PropertyPlaceholderHelper("${", "}").replacePlaceholders(linkTemplate, resolver);
+				return new PropertyPlaceholderHelper("{", "}").replacePlaceholders(linkTemplate, resolver);
 			};
 		}
 

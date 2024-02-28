@@ -17,6 +17,7 @@
 package org.springframework.boot.build.bom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Function;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -59,6 +62,8 @@ public class Library {
 
 	private final VersionAlignment versionAlignment;
 
+	private final Map<String, Function<LibraryVersion, String>> links;
+
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
 	 * {@code groups}.
@@ -70,9 +75,11 @@ public class Library {
 	 * @param prohibitedVersions version of the library that are prohibited
 	 * @param considerSnapshots whether to consider snapshots
 	 * @param versionAlignment version alignment, if any, for the library
+	 * @param links a list of HTTP links relevant to the library
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
-			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment) {
+			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment,
+			Map<String, Function<LibraryVersion, String>> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -82,6 +89,7 @@ public class Library {
 		this.prohibitedVersions = prohibitedVersions;
 		this.considerSnapshots = considerSnapshots;
 		this.versionAlignment = versionAlignment;
+		this.links = Collections.unmodifiableMap(links);
 	}
 
 	public String getName() {
@@ -114,6 +122,12 @@ public class Library {
 
 	public VersionAlignment getVersionAlignment() {
 		return this.versionAlignment;
+	}
+
+	public Map<String, String> getLinks() {
+		Map<String, String> links = new TreeMap<>();
+		this.links.forEach((name, linkFactory) -> links.put(name, linkFactory.apply(this.version)));
+		return Collections.unmodifiableMap(links);
 	}
 
 	/**
@@ -185,8 +199,12 @@ public class Library {
 		}
 
 		public int[] componentInts() {
-			// FIXME
-			return null;
+			return Arrays.stream(toString().split("\\.")).mapToInt(Integer::parseInt).toArray();
+		}
+
+		@Override
+		public String toString() {
+			return this.version.toString();
 		}
 
 	}

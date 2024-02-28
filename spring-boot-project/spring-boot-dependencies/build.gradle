@@ -87,7 +87,7 @@ bom {
 			]
 		}
 		links {
-			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-${version}")
+			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-{version}")
 		}
 	}
 	library("AspectJ", "1.9.21") {
