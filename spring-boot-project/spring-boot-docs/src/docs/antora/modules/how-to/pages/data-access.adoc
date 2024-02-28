@@ -10,7 +10,7 @@ This section answers questions related to doing so.
 == Configure a Custom DataSource
 To configure your own `DataSource`, define a `@Bean` of that type in your configuration.
 Spring Boot reuses your `DataSource` anywhere one is required, including database initialization.
-If you need to externalize some settings, you can bind your `DataSource` to the environment (see "`xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.third-party-configuration[Third-party Configuration]`").
+If you need to externalize some settings, you can bind your `DataSource` to the environment (see "`xref:ROOT:features/external-config.adoc#features.external-config.typesafe-configuration-properties.third-party-configuration[Third-party Configuration]`").
 
 The following example shows how to define a data source in a bean:
 
@@ -102,7 +102,7 @@ This example uses a more generic `configuration` sub namespace as the example do
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type` has no effect.
 In practice, the builder is initialized with whatever value you might set there and then overridden by the call to `.type()`.
 
-See "`xref:data/sql.adoc#data.sql.datasource[Configure a DataSource]`" in the "`Spring Boot features`" section and the {spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
+See "`xref:ROOT:data/sql.adoc#data.sql.datasource[Configure a DataSource]`" in the "`Spring Boot features`" section and the {spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
 
 
@@ -151,13 +151,13 @@ Note that each `configuration` sub namespace provides advanced settings based on
 [[howto.data-access.spring-data-repositories]]
 == Use Spring Data Repositories
 Spring Data can create implementations of `@Repository` interfaces of various flavors.
-Spring Boot handles all of that for you, as long as those `@Repository` annotations are included in one of the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages], typically the package (or a sub-package) of your main application class that is annotated with `@SpringBootApplication` or `@EnableAutoConfiguration`.
+Spring Boot handles all of that for you, as long as those `@Repository` annotations are included in one of the xref:ROOT:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages], typically the package (or a sub-package) of your main application class that is annotated with `@SpringBootApplication` or `@EnableAutoConfiguration`.
 
 For many applications, all you need is to put the right Spring Data dependencies on your classpath.
 There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, and various other starters for supported technologies.
 To get started, create some repository interfaces to handle your `@Entity` objects.
 
-Spring Boot determines the location of your `@Repository` definitions by scanning the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
+Spring Boot determines the location of your `@Repository` definitions by scanning the xref:ROOT:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
 For more control, use the `@Enable…Repositories` annotations from Spring Data.
 
 For more about Spring Data, see the {spring-data}[Spring Data project page].
@@ -166,7 +166,7 @@ For more about Spring Data, see the {spring-data}[Spring Data project page].
 
 [[howto.data-access.separate-entity-definitions-from-spring-configuration]]
 == Separate @Entity Definitions from Spring Configuration
-Spring Boot determines the location of your `@Entity` definitions by scanning the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
+Spring Boot determines the location of your `@Entity` definitions by scanning the xref:ROOT:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
 For more control, use the `@EntityScan` annotation, as shown in the following example:
 
 include-code::MyApplication[]

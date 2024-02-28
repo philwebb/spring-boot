@@ -227,7 +227,7 @@ If you need to test these lower-level concerns, you can start a fully running se
 If you need to start a full running server, we recommend that you use random ports.
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
-The `@LocalServerPort` annotation can be used to xref:howto/webserver.adoc#howto.webserver.discover-port[inject the actual port used] into your test.
+The `@LocalServerPort` annotation can be used to xref:how-to:webserver.adoc#howto.webserver.discover-port[inject the actual port used] into your test.
 For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
 
 include-code::MyRandomPortWebTestClientTests[]
@@ -415,7 +415,7 @@ If you define your own `webDriver` scope you may find it stops working when you 
 
 If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer` beans.
 Instead of disabling security completely for such tests, you can use Spring Security's test support.
-More details on how to use Spring Security's `MockMvc` support can be found in this _xref:howto/testing.adoc#howto.testing.with-spring-security[Testing With Spring Security]_ how-to section.
+More details on how to use Spring Security's `MockMvc` support can be found in this _xref:how-to:testing.adoc#howto.testing.with-spring-security[Testing With Spring Security]_ how-to section.
 
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run xref:features/testing.adoc#features.testing.spring-boot-applications.with-running-server[full end-to-end tests with an actual server].
 
@@ -908,7 +908,7 @@ include-code::MyMongoConfiguration[]
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
 The latter approach lets you enable it in one of your tests, if necessary, with the `@Import` annotation.
-See xref:howto/testing.adoc#howto.testing.slice-tests[this how-to section] for more details on when you might want to enable specific `@Configuration` classes for slice tests.
+See xref:how-to:testing.adoc#howto.testing.slice-tests[this how-to section] for more details on when you might want to enable specific `@Configuration` classes for slice tests.
 
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:

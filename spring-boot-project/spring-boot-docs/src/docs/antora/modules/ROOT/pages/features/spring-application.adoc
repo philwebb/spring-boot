@@ -45,7 +45,7 @@ For instance, if you start a web application on port `8080` and that port is alr
 	Identify and stop the process that is listening on port 8080 or configure this application to listen on another port.
 ----
 
-NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations, and you can xref:howto/application.adoc#howto.application.failure-analyzer[add your own].
+NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations, and you can xref:how-to:application.adoc#howto.application.failure-analyzer[add your own].
 
 If no failure analyzers are able to handle the exception, you can still display the full conditions report to better understand what went wrong.
 To do so, you need to xref:features/external-config.adoc[enable the `debug` property] or xref:features/logging.adoc#features.logging.log-levels[enable `DEBUG` logging] for `org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener`.

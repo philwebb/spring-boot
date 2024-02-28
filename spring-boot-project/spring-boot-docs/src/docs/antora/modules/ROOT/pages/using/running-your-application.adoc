@@ -93,4 +93,4 @@ JVM hot swapping is somewhat limited with the bytecode that it can replace.
 For a more complete solution, https://www.jrebel.com/products/jrebel[JRebel] can be used.
 
 The `spring-boot-devtools` module also includes support for quick application restarts.
-See the xref:howto/hotswapping.adoc[Hot swapping "`How-to`"] for details.
+See the xref:how-to:hotswapping.adoc[Hot swapping "`How-to`"] for details.

@@ -4,4 +4,4 @@
 You should now have a good understanding of Spring Boot's xref:features.adoc[core features] and the various technologies that Spring Boot provides support for through auto-configuration.
 
 The next few sections go into detail about deploying applications to cloud platforms.
-You can read about xref:documentation/container-images.adoc[building container images] in the next section or skip to the xref:howto/actuator.adoc[production-ready features] section.
+You can read about xref:documentation/container-images.adoc[building container images] in the next section or skip to the xref:how-to:actuator.adoc[production-ready features] section.

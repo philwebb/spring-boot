@@ -288,7 +288,7 @@ Information returned by the `/env`, `/configprops` and `/quartz` endpoints can b
 Values can only be viewed in an unsanitized form when:
 
 - The `show-values` property has been set to something other than `NEVER`
-- No custom `xref:howto/actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans apply
+- No custom `xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans apply
 
 The `show-values` property can be configured for sanitizable endpoints to one of the following values:
 
@@ -313,7 +313,7 @@ Unauthorized users, or users without the `admin` role, will see only sanitized v
 	      roles: "admin"
 ----
 
-NOTE: This example assumes that no `xref:howto/actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans have been defined.
+NOTE: This example assumes that no `xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans have been defined.
 
 
 
@@ -1131,7 +1131,7 @@ For example, you could add the following settings to your `application.propertie
 
 [TIP]
 ====
-Rather than hardcoding those values, you could also xref:howto/properties-and-configuration.adoc#howto.properties-and-configuration.expand-properties[expand info properties at build time].
+Rather than hardcoding those values, you could also xref:how-to:properties-and-configuration.adoc#howto.properties-and-configuration.expand-properties[expand info properties at build time].
 
 Assuming you use Maven, you could rewrite the preceding example as follows:
 
@@ -1154,7 +1154,7 @@ Another useful feature of the `info` endpoint is its ability to publish informat
 If a `GitProperties` bean is available, you can use the `info` endpoint to expose these properties.
 
 TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
-See "xref:howto/build.adoc#howto.build.generate-git-info[how to generate git information]" for more detail.
+See "xref:how-to:build.adoc#howto.build.generate-git-info[how to generate git information]" for more detail.
 
 By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
 If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
@@ -1186,7 +1186,7 @@ If a `BuildProperties` bean is available, the `info` endpoint can also publish i
 This happens if a `META-INF/build-info.properties` file is available in the classpath.
 
 TIP: The Maven and Gradle plugins can both generate that file.
-See "xref:howto/build.adoc#howto.build.generate-info[how to generate build information]" for more details.
+See "xref:how-to:build.adoc#howto.build.generate-info[how to generate build information]" for more details.
 
 
 

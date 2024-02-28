@@ -46,7 +46,7 @@ So instead, when using Spring Boot to create native images, a closed-world is as
 A closed-world assumption implies, besides xref:native-image/introducing-graalvm-native-images.adoc#native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments[the limitations created by GraalVM itself], the following restrictions:
 
 * The beans defined in your application cannot change at runtime, meaning:
-- The Spring `@Profile` annotation and profile-specific configuration xref:howto/aot.adoc#howto.aot.conditions[have limitations].
+- The Spring `@Profile` annotation and profile-specific configuration xref:how-to:aot.adoc#howto.aot.conditions[have limitations].
 - Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
 
 When these restrictions are in place, it becomes possible for Spring to perform ahead-of-time processing during build-time and generate additional assets that GraalVM can use.

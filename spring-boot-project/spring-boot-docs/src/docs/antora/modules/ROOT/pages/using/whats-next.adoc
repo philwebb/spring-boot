@@ -2,4 +2,4 @@
 = What to Read Next
 
 You should now understand how you can use Spring Boot and some best practices that you should follow.
-You can now go on to learn about specific _xref:features.adoc[Spring Boot features]_ in depth, or you could skip ahead and read about the "`xref:howto/actuator.adoc[production ready]`" aspects of Spring Boot.
+You can now go on to learn about specific _xref:features.adoc[Spring Boot features]_ in depth, or you could skip ahead and read about the "`xref:how-to:actuator.adoc[production ready]`" aspects of Spring Boot.

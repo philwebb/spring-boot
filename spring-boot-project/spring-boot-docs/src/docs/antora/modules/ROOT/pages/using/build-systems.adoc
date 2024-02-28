@@ -102,7 +102,7 @@ A typical `build.xml` looks like the following example:
 	</project>
 ----
 
-TIP: If you do not want to use the `spring-boot-antlib` module, see the _xref:howto/build.adoc#howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib[Build an Executable Archive From Ant without Using spring-boot-antlib]_ "`How-to`" .
+TIP: If you do not want to use the `spring-boot-antlib` module, see the _xref:how-to:build.adoc#howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib[Build an Executable Archive From Ant without Using spring-boot-antlib]_ "`How-to`" .
 
 
 
@@ -131,7 +131,7 @@ The following application starters are provided by Spring Boot under the `org.sp
 .Spring Boot application starters
 include::partial$starters/application-starters.adoc[]
 
-In addition to the application starters, the following starters can be used to add _xref:howto/actuator.adoc[production ready]_ features:
+In addition to the application starters, the following starters can be used to add _xref:how-to:actuator.adoc[production ready]_ features:
 
 .Spring Boot production starters
 include::partial$starters/production-starters.adoc[]
@@ -141,6 +141,6 @@ Finally, Spring Boot also includes the following starters that can be used if yo
 .Spring Boot technical starters
 include::partial$starters/technical-starters.adoc[]
 
-To learn how to swap technical facets, please see the how-to documentation for xref:howto/webserver.adoc#howto.webserver.use-another[swapping web server] and xref:howto/logging.adoc#howto.logging.log4j[logging system].
+To learn how to swap technical facets, please see the how-to documentation for xref:how-to:webserver.adoc#howto.webserver.use-another[swapping web server] and xref:how-to:logging.adoc#howto.logging.log4j[logging system].
 
 TIP: For a list of additional community contributed starters, see the {spring-boot-latest-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.

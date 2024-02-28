@@ -64,7 +64,7 @@ If you use Gradle, the following example marks the servlet container (Tomcat, in
 TIP: `providedRuntime` is preferred to Gradle's `compileOnly` configuration.
 Among other limitations, `compileOnly` dependencies are not on the test classpath, so any web-based integration tests fail.
 
-If you use the xref:build-tool-plugins.adoc[Spring Boot build tools], marking the embedded servlet container dependency as provided produces an executable war file with the provided dependencies packaged in a `lib-provided` directory.
+If you use the xref:ROOT:build-tool-plugins.adoc[Spring Boot build tools], marking the embedded servlet container dependency as provided produces an executable war file with the provided dependencies packaged in a `lib-provided` directory.
 This means that, in addition to being deployable to a servlet container, you can also run your application by using `java -jar` on the command line.
 
 
@@ -118,7 +118,7 @@ Servlet 3.0+ applications might translate pretty easily if they already use the 
 Normally, all the code from an existing `WebApplicationInitializer` can be moved into a `SpringBootServletInitializer`.
 If your existing application has more than one `ApplicationContext` (for example, if it uses `AbstractDispatcherServletInitializer`) then you might be able to combine all your context sources into a single `SpringApplication`.
 The main complication you might encounter is if combining does not work and you need to maintain the context hierarchy.
-See the xref:howto/application.adoc#howto.application.context-hierarchy[entry on building a hierarchy] for examples.
+See the xref:application.adoc#howto.application.context-hierarchy[entry on building a hierarchy] for examples.
 An existing parent context that contains web-specific features usually needs to be broken up so that all the `ServletContextAware` components are in the child context.
 
 Applications that are not already Spring applications might be convertible to Spring Boot applications, and the previously mentioned guidance may help.

@@ -274,8 +274,8 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to (`server.address`), and so on.
 * Error management: Location of the error page (`server.error.path`) and so on.
-* xref:howto/webserver.adoc#howto.webserver.configure-ssl[SSL]
-* xref:howto/webserver.adoc#howto.webserver.enable-response-compression[HTTP compression]
+* xref:how-to:webserver.adoc#howto.webserver.configure-ssl[SSL]
+* xref:how-to:webserver.adoc#howto.webserver.enable-response-compression[HTTP compression]
 
 Spring Boot tries as much as possible to expose common settings, but this is not always possible.
 For those cases, dedicated namespaces such as `server.netty.*` offer server-specific customizations.
