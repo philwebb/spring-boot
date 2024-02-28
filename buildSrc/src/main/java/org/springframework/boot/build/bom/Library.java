@@ -184,6 +184,11 @@ public class Library {
 			return this.version;
 		}
 
+		public int[] componentInts() {
+			// FIXME
+			return null;
+		}
+
 	}
 
 	/**

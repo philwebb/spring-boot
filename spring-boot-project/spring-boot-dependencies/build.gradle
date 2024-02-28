@@ -49,6 +49,10 @@ bom {
 					"activemq-web"
 			]
 		}
+		links {
+			releaseNotes { version -> "https://activemq.apache.org/components/classic/download/classic-%02d-%02d-%02d"
+				.formatted(version.componentInts()) }
+		}
 	}
 	library("Angus Mail", "2.0.2") {
 		group("org.eclipse.angus") {
@@ -81,6 +85,9 @@ bom {
 				"artemis-server",
 				"artemis-service-extensions"
 			]
+		}
+		links {
+			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-${version}")
 		}
 	}
 	library("AspectJ", "1.9.21") {
@@ -1473,6 +1480,12 @@ bom {
 			imports = [
 				"spring-framework-bom"
 			]
+		}
+		links {
+			site("https://spring.io/projects/spring-framework")
+			javadoc("https://docs.spring.io/spring-framework/docs/{version}/javadoc-api")
+			reference("https://docs.spring.io/spring-framework/reference/{version}")
+			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
 	library("Spring GraphQL", "1.3.0-M1") {
