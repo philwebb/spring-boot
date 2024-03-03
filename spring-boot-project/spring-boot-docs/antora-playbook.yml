@@ -1,5 +1,6 @@
 antora:
   extensions:
+  - require: '/Users/pwebb/projects/antora-xref-fragments-extension/packages/xref-fragments-extension'
   - require: '@springio/antora-extensions/tabs-migration-extension'
     unwrap_example_block: always
   - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
@@ -30,7 +31,7 @@ urls:
   latest_version_segment: ''
 runtime:
   log:
-    failure_level: warn
+    failure_level: error
 ui:
   bundle:
     url: /Users/pwebb/projects/antora-ui-spring/build/ui-bundle.zip
