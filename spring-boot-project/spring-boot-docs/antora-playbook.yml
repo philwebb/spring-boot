@@ -31,7 +31,7 @@ urls:
   latest_version_segment: ''
 runtime:
   log:
-    failure_level: error
+    failure_level: warn
 ui:
   bundle:
     url: /Users/pwebb/projects/antora-ui-spring/build/ui-bundle.zip

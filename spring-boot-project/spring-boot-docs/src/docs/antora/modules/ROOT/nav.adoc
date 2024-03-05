@@ -4,7 +4,9 @@
 * Upgrading
 * Tutorials
 * Reference Guides
-* How-to Guides
+
+include::how-to:partial$nav.adoc[]
+
 * Build Tool Plugins
 * Spring Boot CLI
 * REST APIs

@@ -4,4 +4,4 @@
 If you are interested in how the build tool plugins work, you can look at the {spring-boot-code}/spring-boot-project/spring-boot-tools[`spring-boot-tools`] module on GitHub.
 More technical details of the executable jar format are covered in xref:executable-jar.adoc[the appendix].
 
-If you have specific build-related questions, see the "`xref:howto.adoc[how-to]`" guides.
+If you have specific build-related questions, see the "`xref:how-to:index.adoc[how-to]`" guides.

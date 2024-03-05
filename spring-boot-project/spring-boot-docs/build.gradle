@@ -264,7 +264,7 @@ task documentDependencyVersionProperties(type: org.springframework.boot.build.co
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/generated/docs/")
+	outputDir = file("${buildDir}/generated/docs/application-properties")
 }
 
 task documentDevtoolsPropertyDefaults(type: org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
@@ -341,6 +341,9 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 	from(documentAutoConfigurationClasses) {
 		into "modules/ROOT/partials/auto-configuration-classes"
+	}
+	from(documentConfigurationProperties) {
+		into "modules/ROOT/partials/configuration-properties"
 	}
 }
 
