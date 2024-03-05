@@ -11,7 +11,7 @@ plugins {
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	documentation
+	documentationZips
 }
 
 dependencies {
@@ -226,9 +226,18 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 }
 
-
 tasks.named("antora") {
 	dependsOn zipAntoraAggregateContent
 }
 
+artifacts {
+	documentationZips zipAntoraAggregateContent
+}
 
+publishing {
+	publications {
+		getByName("maven") {
+			artifact zipAntoraAggregateContent
+		}
+	}
+}

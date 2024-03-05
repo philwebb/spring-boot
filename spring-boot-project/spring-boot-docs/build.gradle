@@ -14,17 +14,8 @@ configurations {
 	remoteSpringApplicationExample
 	springApplicationExample
 	testSlices
-	asciidoctorExtensions {
-		resolutionStrategy {
-			eachDependency { dependency ->
-				// Downgrade SnakeYAML as Asciidoctor fails due to an incompatibility
-				// in the Pysch gem
-				if (dependency.requested.group.equals("org.yaml")) {
-					dependency.useVersion("1.33")
-				}
-			}
-		}
-	}
+	documentationZips
+	documentationZips.transitive = false
 }
 
 jar {
@@ -54,14 +45,6 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-devtools"))
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-docker-compose"))
-	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-testcontainers"))
-
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
@@ -189,6 +172,8 @@ dependencies {
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
+	documentationZips(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentationZips"));
+
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")
@@ -302,6 +287,11 @@ def getRelativeExamplesPath(var outputs) {
 	'example$example-output/' + fileName
 }
 
+def copyDocumentationZips = tasks.register("copyDocumentationZips", Sync) {
+	into layout.buildDirectory.dir('generated/docs/antora-content')
+	from configurations.documentationZips
+}
+
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "antora-aggregate-content"
@@ -348,6 +338,13 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 }
 
 tasks.named("antora") {
-	dependsOn zipAntoraAggregateContent
+	dependsOn copyDocumentationZips, zipAntoraAggregateContent
 }
 
+publishing {
+	publications {
+		getByName("maven") {
+			artifact zipAntoraAggregateContent
+		}
+	}
+}
