@@ -13,7 +13,9 @@ content:
   sources:
     - url: ./../..
       branches: HEAD
-      start_path: spring-boot-project/spring-boot-docs/src/docs/antora
+      start_paths: 
+      - spring-boot-project/spring-boot-docs/src/docs/antora
+      - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
       version: 3.3.0-SNAPSHOT
 asciidoc:
   sourcemap: true

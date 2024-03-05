@@ -10,4 +10,4 @@ asciidoc:
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-integration-docs: FIXME
 nav:
-- modules/api/nav.adoc 
+- modules/rest-api/actuator-nav.adoc 

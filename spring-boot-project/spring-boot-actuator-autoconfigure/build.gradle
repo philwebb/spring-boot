@@ -215,6 +215,7 @@ def documentationTest = tasks.register("documentationTest", Test) {
 }
 
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
+	dependsOn documentationTest
 	inputs.dir("${buildDir}/generated-snippets")
 		.withPathSensitivity(PathSensitivity.RELATIVE)
 		.withPropertyName("generatedSnippets")

@@ -53,8 +53,8 @@ Build Tool Plugins
 Spring Boot CLI
 	Overview
 
-Rest APIs
-	Actuator
+REST APIs
+	Actuator REST API
 
 Java APIs
 	Spring Boot
