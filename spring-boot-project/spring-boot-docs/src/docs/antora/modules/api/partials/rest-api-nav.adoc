@@ -1,5 +1,5 @@
-* xref:rest-api:index.adoc[]
+* xref:api:rest/index.adoc[]
 +
 --
-include::rest-api:partial$actuator-rest-api-nav.adoc[]
+include::api:partial$actuator-rest-api-nav.adoc[]
 --

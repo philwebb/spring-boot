@@ -340,7 +340,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 def zipApiAntoraCatalogContent = tasks.register("zipApiAntoraCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "api-antora-catalog-content"
-	from(javadoc) {
+	from(aggregatedJavadoc) {
 		into "java"
 	}
 }

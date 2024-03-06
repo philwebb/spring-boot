@@ -1,5 +1,6 @@
 [[overview]]
-= Actuator API
+= Actuator REST API
+:navtitle: Actuator
 
 This API documentation describes Spring Boot Actuators web endpoints.
 

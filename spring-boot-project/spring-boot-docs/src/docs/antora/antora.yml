@@ -5,7 +5,6 @@ ext:
     include:
     - name: spring-boot-docs
       classifier: antora-aggregate-content
-    include:
     - name: spring-boot-docs
       classifier: api-antora-catalog-content
       module: api

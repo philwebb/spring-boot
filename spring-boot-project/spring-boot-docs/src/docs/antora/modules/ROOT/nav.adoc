@@ -7,7 +7,7 @@ include::reference:partial$reference-nav.adoc[]
 include::how-to:partial$how-to-nav.adoc[]
 include::build-tool-plugin:partial$build-tool-plugin-nav.adoc[]
 include::cli:partial$cli-nav.adoc[]
-include::rest-api:partial$rest-api-nav.adoc[]
+include::api:partial$rest-api-nav.adoc[]
 * Java APIs
 * Specifications
 * Appendix
