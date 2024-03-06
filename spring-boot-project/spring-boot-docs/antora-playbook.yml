@@ -1,6 +1,8 @@
 antora:
   extensions:
   - require: '/Users/pwebb/projects/antora-xref-fragments-extension/packages/xref-fragments-extension'
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: spring-boot
   - require: '@springio/antora-extensions/tabs-migration-extension'
     unwrap_example_block: always
   - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
