@@ -11,7 +11,7 @@ plugins {
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	documentationZips
+	antoraContent
 }
 
 dependencies {
@@ -220,7 +220,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 		.withPathSensitivity(PathSensitivity.RELATIVE)
 		.withPropertyName("generatedSnippets")
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "antora-aggregate-content"
+	archiveClassifier = "actuator-rest-api-aggregate-content"
 	from("${buildDir}/generated-snippets") {
 		into "modules/api/partials/rest/actuator"
 	}
@@ -231,13 +231,6 @@ tasks.named("antora") {
 }
 
 artifacts {
-	documentationZips zipAntoraAggregateContent
+	antoraContent zipAntoraAggregateContent
 }
 
-publishing {
-	publications {
-		getByName("maven") {
-			artifact zipAntoraAggregateContent
-		}
-	}
-}

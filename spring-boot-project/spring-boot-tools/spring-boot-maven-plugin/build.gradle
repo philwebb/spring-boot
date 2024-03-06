@@ -9,6 +9,7 @@ description = "Spring Boot Maven Plugin"
 
 configurations {
 	dependenciesBom
+	antoraContent
 }
 
 dependencies {
@@ -131,7 +132,7 @@ tasks.named("documentPluginGoals") {
 
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "antora-aggregate-content"
+	archiveClassifier = "maven-plugin-aggregate-content"
 	from(documentPluginGoals) {
 		into "modules/maven-plugin/partials/goals"
 	}
@@ -139,7 +140,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 
 def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "antora-catalog-content"
+	archiveClassifier = "maven-plugin-catalog-content"
 	from(javadoc) {
 		into "api/java"
 	}
@@ -149,13 +150,10 @@ tasks.named("antora") {
 	dependsOn zipAntoraAggregateContent, zipAntoraCatalogContent
 }
 
-publishing {
-	publications {
-		getByName("maven") {
-			artifact zipAntoraAggregateContent
-			artifact zipAntoraCatalogContent
-		}
-	}
+artifacts {
+	antoraContent zipAntoraAggregateContent
+	antoraContent zipAntoraCatalogContent
+
 }
 
 // FIXME xsd version needs to be generated

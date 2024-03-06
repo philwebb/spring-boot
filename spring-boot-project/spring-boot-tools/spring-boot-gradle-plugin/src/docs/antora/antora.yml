@@ -3,8 +3,8 @@ title: Spring Boot
 ext:
   zip_contents_collector:
     include:
-    - name: spring-boot-gradle-plugin
-      classifier: antora-catalog-content
+    - name: gradle-plugin
+      classifier: catalog-content
       module: gradle-plugin
       destination: content-catalog
 asciidoc:

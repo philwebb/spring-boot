@@ -3,8 +3,8 @@ title: Spring Boot
 ext:
   zip_contents_collector:
     include:
-    - name: spring-boot-actuator-autoconfigure
-      classifier: antora-aggregate-content
+    - name: actuator-rest-api
+      classifier: aggregate-content
 asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT

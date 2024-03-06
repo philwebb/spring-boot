@@ -10,7 +10,7 @@ plugins {
 description = "Spring Boot Gradle Plugins"
 
 configurations {
-	documentation
+	antoraContent
 	"testCompileClasspath" {
 		// Downgrade SLF4J is required for tests to run in Eclipse
 		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
@@ -113,7 +113,7 @@ javadoc {
 
 def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "antora-catalog-content"
+	archiveClassifier = "gradle-plugin-catalog-content"
 	from(javadoc) {
 		into "api/java"
 	}
@@ -121,5 +121,9 @@ def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 
 tasks.named("antora") {
 	dependsOn zipAntoraCatalogContent
+}
+
+artifacts {
+	antoraContent zipAntoraCatalogContent
 }
 

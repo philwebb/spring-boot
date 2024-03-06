@@ -3,10 +3,10 @@ title: Spring Boot
 ext:
   zip_contents_collector:
     include:
-    - name: spring-boot-maven-plugin
-      classifier: antora-aggregate-content
-    - name: spring-boot-maven-plugin
-      classifier: antora-catalog-content
+    - name: maven-plugin
+      classifier: aggregate-content
+    - name: maven-plugin
+      classifier: catalog-content
       module: maven-plugin
       destination: content-catalog
 asciidoc:
