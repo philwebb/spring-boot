@@ -337,14 +337,23 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 }
 
+def zipApiAntoraCatalogContent = tasks.register("zipApiAntoraCatalogContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "api-antora-catalog-content"
+	from(javadoc) {
+		into "java"
+	}
+}
+
 tasks.named("antora") {
-	dependsOn copyDocumentationZips, zipAntoraAggregateContent
+	dependsOn copyDocumentationZips, zipAntoraAggregateContent, zipApiAntoraCatalogContent
 }
 
 publishing {
 	publications {
 		getByName("maven") {
 			artifact zipAntoraAggregateContent
+			artifact zipApiAntoraCatalogContent
 		}
 	}
 }

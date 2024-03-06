@@ -5,6 +5,10 @@ ext:
     include:
     - name: spring-boot-docs
       classifier: antora-aggregate-content
+    include:
+    - name: spring-boot-docs
+      classifier: api-antora-catalog-content
+      module: api
 asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT
