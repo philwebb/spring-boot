@@ -328,7 +328,7 @@ TIP: Spring Boot auto-configures an `InMemoryRegisteredClientRepository` which i
 The `InMemoryRegisteredClientRepository` has limited capabilities and we recommend using it only for development environments.
 For production environments, consider using a `JdbcRegisteredClientRepository` or creating your own implementation of `RegisteredClientRepository`.
 
-Additional information can be found in the {spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {spring-authorization-server-docs}/index.html[Spring Authorization Server Reference Guide].
+Additional information can be found in the {url-spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {spring-authorization-server-docs}/index.html[Spring Authorization Server Reference Guide].
 
 
 

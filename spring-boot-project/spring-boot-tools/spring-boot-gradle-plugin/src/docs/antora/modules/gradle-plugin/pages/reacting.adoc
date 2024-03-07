@@ -70,7 +70,7 @@ When Gradle's {url-gradle-docs-application-plugin}[`application` plugin] is appl
 
 [[reacting-to-other-plugins.nbt]]
 == Reacting to the GraalVM Native Image Plugin
-When the {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
+When the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
 
 . Applies the `org.springframework.boot.aot` plugin that:
 .. Registers `aot` and `aotTest` source sets.

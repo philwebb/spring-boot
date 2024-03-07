@@ -3,7 +3,7 @@
 
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
 
-* {spring-data-cassandra}[Cassandra]
+* {url-spring-data-cassandra-site}[Cassandra]
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-elasticsearch}[Elasticsearch]
 * {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
@@ -13,7 +13,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-redis}[Redis]
 
 Of these, Spring Boot provides auto-configuration for Cassandra, Couchbase, Elasticsearch, LDAP, MongoDB, Neo4J and Redis.
-Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
+Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
 You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {spring-data}.
 
@@ -397,7 +397,7 @@ You can choose to disable the repositories support with the following property:
 [[data.nosql.cassandra]]
 == Cassandra
 https://cassandra.apache.org/[Cassandra] is an open source, distributed database management system designed to handle large amounts of data across many commodity servers.
-Spring Boot offers auto-configuration for Cassandra and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-cassandra[Spring Data Cassandra].
+Spring Boot offers auto-configuration for Cassandra and the abstractions on top of it provided by {url-spring-data-cassandra-site}[Spring Data Cassandra].
 There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the dependencies in a convenient way.
 
 
@@ -542,7 +542,7 @@ Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableCouchbaseRepositories` and `@EntityScan` respectively.
 
-For complete details of Spring Data Couchbase, see the {spring-data-couchbase-docs}[reference documentation].
+For complete details of Spring Data Couchbase, see the {url-spring-data-couchbase-docs}[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
 This happens when a `Cluster` is available, as described above, and a bucket name has been specified:

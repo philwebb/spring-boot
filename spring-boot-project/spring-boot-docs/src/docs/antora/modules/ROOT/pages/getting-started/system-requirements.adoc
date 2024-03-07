@@ -55,5 +55,5 @@ The following versions are supported:
 | {version-graal}
 
 | Native Build Tools
-| {native-build-tools-version}
+| {version-native-build-tools}
 |===

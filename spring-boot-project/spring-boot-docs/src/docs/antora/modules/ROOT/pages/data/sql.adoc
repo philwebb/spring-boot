@@ -227,7 +227,7 @@ For example, a `CityRepository` interface might declare a `findAllByState(String
 
 For more complex queries, you can annotate your method with Spring Data's {spring-data-jpa-api}/repository/Query.html[`Query`] annotation.
 
-Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
+Spring Data repositories usually extend from the {url-spring-data-commons-javadoc}/repository/Repository.html[`Repository`] or {url-spring-data-commons-javadoc}/repository/CrudRepository.html[`CrudRepository`] interfaces.
 If you use auto-configuration, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are searched for repositories.
 
 TIP: You can customize the locations to look for repositories using `@EnableJpaRepositories`.
@@ -517,7 +517,7 @@ For example, a `CityRepository` interface might declare a `findAllByState(String
 
 For more complex queries, you can annotate your method with Spring Data's {spring-data-r2dbc-api}/repository/Query.html[`Query`] annotation.
 
-Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
+Spring Data repositories usually extend from the {url-spring-data-commons-javadoc}/repository/Repository.html[`Repository`] or {url-spring-data-commons-javadoc}/repository/CrudRepository.html[`CrudRepository`] interfaces.
 If you use auto-configuration, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are searched for repositories.
 
 The following example shows a typical Spring Data repository interface definition:

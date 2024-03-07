@@ -34,7 +34,7 @@ The `native` profile configures the following:
 
 * Execution of `process-aot` when the Spring Boot Maven Plugin is applied on a project.
 * Suitable settings so that xref:build-image.adoc[build-image] generates a native image.
-* Sensible defaults for the {nbt-reference}[Native Build Tools Maven Plugin], in particular:
+* Sensible defaults for the {url-native-build-tools-docs-maven-plugin}[Native Build Tools Maven Plugin], in particular:
 ** Making sure the plugin uses the raw classpath, and not the main jar file as it does not understand our repackaged jar format.
 ** Validate that a suitable GraalVM version is available.
 ** Download third-party reachability metadata.

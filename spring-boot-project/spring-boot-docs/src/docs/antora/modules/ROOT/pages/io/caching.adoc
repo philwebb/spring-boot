@@ -47,7 +47,7 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 . xref:io/caching.adoc#io.caching.provider.cache2k[Cache2k]
 . xref:io/caching.adoc#io.caching.provider.simple[Simple]
 
-Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
+Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
 
 TIP: If the `CacheManager` is auto-configured by Spring Boot, it is possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
 Use this property if you need to xref:io/caching.adoc#io.caching.provider.none[use no-op caches] in certain environments (such as tests).

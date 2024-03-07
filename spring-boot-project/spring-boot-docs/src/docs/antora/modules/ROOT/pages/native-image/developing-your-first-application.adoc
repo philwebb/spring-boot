@@ -156,7 +156,7 @@ You can use them to perform a variety of GraalVM tasks, including generating a n
 [[native-image.developing-your-first-application.native-build-tools.prerequisites]]
 === Prerequisites
 To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
-You can either download it manually on the {liberica-nik-download}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
+You can either download it manually on the {url-download-liberica-nik}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.linux-macos]]
 ==== Linux and macOS
@@ -185,7 +185,7 @@ Verify that the correct version has been configured by checking the output of `j
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.windows]]
 ==== Windows
 
-On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[these instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or {liberica-nik-download}[Liberica Native Image Kit] in version {version-graal}, the Visual Studio Build Tools and the Windows SDK.
+On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[these instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or {url-download-liberica-nik}[Liberica Native Image Kit] in version {version-graal}, the Visual Studio Build Tools and the Windows SDK.
 Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
 
 

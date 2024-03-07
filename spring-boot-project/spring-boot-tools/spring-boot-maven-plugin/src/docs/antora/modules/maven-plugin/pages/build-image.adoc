@@ -295,7 +295,7 @@ The builder and run image can be specified on the command line as well, as shown
 === Builder Configuration
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
-The following is an example of {paketo-java-reference}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
+The following is an example of {url-paketo-docs-java-buildpack}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
@@ -314,10 +314,10 @@ include::example$packaging-oci-image/paketo-pom.xml[tags=paketo]
 
 [[build-image.examples.runtime-jvm-configuration]]
 === Runtime JVM Configuration
-Paketo Java buildpacks {paketo-java-reference}/#runtime-jvm-configuration[configure the JVM runtime environment] by setting the `JAVA_TOOL_OPTIONS` environment variable.
+Paketo Java buildpacks {url-paketo-docs-java-buildpack}/#runtime-jvm-configuration[configure the JVM runtime environment] by setting the `JAVA_TOOL_OPTIONS` environment variable.
 The buildpack-provided `JAVA_TOOL_OPTIONS` value can be modified to customize JVM runtime behavior when the application image is launched in a container.
 
-Environment variable modifications that should be stored in the image and applied to every deployment can be set as described in the {paketo-reference}/buildpacks/configuration/#environment-variables[Paketo documentation] and shown in the following example:
+Environment variable modifications that should be stored in the image and applied to every deployment can be set as described in the {url-paketo-docs}/buildpacks/configuration/#environment-variables[Paketo documentation] and shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----

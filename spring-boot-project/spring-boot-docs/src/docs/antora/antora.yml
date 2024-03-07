@@ -10,16 +10,31 @@ ext:
 asciidoc:
   attributes:
     # FIXME these will be generated
+    version-dependency-management-plugin: FIXME
+    version-hibernate: FIXME
+    version-native-build-tools: 0.10.1
     url-dependency-management-plugin-docs: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html'
     url-dependency-management-plugin-site: https://github.com/spring-gradle-plugins/dependency-management-plugin
     url-artifact-repository: https://example.com/FIXME
-    version-dependency-management-plugin: FIXME
-    version-hibernate: FIXME
     url-hibernate-userguide: https://docs.jboss.org/hibernate/orm/{version-hibernate}/userguide/html_single/Hibernate_User_Guide.html
     url-jooq-docs: https://www.jooq.org/doc/3.19.4/manual-single-page
     url-kotlin-docs: https://kotlinlang.org/docs/reference
+    url-lettuce-docs: 'https://lettuce.io/core/6.3.1.RELEASE/reference/index.html'
+    url-micrometer-docs: 'https://docs.micrometer.io/micrometer/reference/1.13/index.html'
+    url-micrometer-tracing-docs: https://docs.micrometer.io/tracing/reference
+    url-spring-amqp-javadoc: https://example.com/FIXME 
+    url-spring-authorization-server-docs: https://example.com/FIXME
+    url-spring-batch-javadoc: https://example.com/FIXME
+    url-spring-batch-docs: https://example.com/FIXME
+    url-spring-batch-site: https://example.com/FIXME
+    
+    # FIXME these are from version constraints
+    version-spring-data-commons: FIXME
+    version-spring-data-couchbase: FIXME
+    
     # FIXME these are added manually
     version-graal: 22.3
+	version-spring-boot-for-apache-geode=2.0.x
     url-ant-docs: https://ant.apache.org/manual
     url-buildpacks-docs: https://buildpacks.io/docs
     url-dynatrace-docs: https://docs.dynatrace.com/docs
@@ -33,6 +48,20 @@ asciidoc:
     url-gradle-dsl: https://docs.gradle.org/current/dsl
     url-gradle-javadoc: https://docs.gradle.org/current/javadoc
     url-kotlin-docs-kotlin-plugin: '{url-kotlin-docs}/using-gradle.html'
+    url-micrometer-docs-concepts: '{url-micrometer-docs}/concepts'
+    url-micrometer-docs-implementations: '{url-micrometer-docs}/implementations'
+    url-download-liberica-nik: https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17
+    url-native-build-tools-docs: 'https://graalvm.github.io/native-build-tools/{version-native-build-tools}'
+    url-native-build-tools-docs-gradle-plugin: '{url-native-build-tools-docs}/gradle-plugin.html'
+    url-native-build-tools-docs-maven-plugin: '{url-native-build-tools-docs}/maven-plugin.html'
+    url-paketo-docs: https://paketo.io/docs
+    url-paketo-docs-java-buildpack: '{url-paketo-docs}/buildpacks/language-family-buildpacks/java'
+    url-spring-boot-for-apache-geode-docs: 'https://docs.spring.io/spring-boot-data-geode-build/{version-spring-boot-for-apache-geode}/reference/html5/'
+    url-spring-boot-for-apache-geode-site: 'https://github.com/spring-projects/spring-boot-data-geode'
+    url-spring-data-cassandra-site: https://spring.io/projects/spring-data-cassandra
+    url-spring-data-commons-javadoc: 'https://docs.spring.io/spring-data/commons/docs/{version-spring-data-commons}/api/org/springframework/data'
+    url-spring-data-couchbase-docs: 'https://docs.spring.io/spring-data/couchbase/docs/{version-spring-data-couchbase}/reference/html/'
+    
     # FIXME TODO
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
@@ -48,25 +77,6 @@ asciidoc:
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
     java-api: FIXME
-    # FIXME HERE DOWN
-    lettuce-docs: FIXME
-    liberica-nik-download: FIXME
-    maven-plugin: '{url-gradle-docs}/maven_plugin.html'
-    maven-publish-plugin: '{url-gradle-docs}/maven_publish_plugin.html'
-    micrometer-concepts-docs: FIXME
-    micrometer-docs: FIXME
-    micrometer-implementation-docs: FIXME
-    micrometer-tracing-docs: FIXME
-    native-build-tools-version: FIXME
-    nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/{native-build-tools-version}/gradle-plugin.html
-    nbt-reference: 'https://graalvm.github.io/native-build-tools/latest/maven-plugin.html'
-    paketo-reference: https://paketo.io/docs
-    paketo-java-reference: '{paketo-reference}/buildpacks/language-family-buildpacks/java'
-    spring-amqp-api: FIXME
-    spring-authorization-server-docs: FIXME
-    spring-batch-api: FIXME
-    spring-batch-docs: FIXME
-    spring-batch: FIXME
     spring-boot-actuator-autoconfigure-module-code: FIXME
     spring-boot-actuator-module-code: FIXME
     spring-boot-actuator-restapi-docs: FIXME
@@ -76,8 +86,6 @@ asciidoc:
     spring-boot-code: FIXME
     spring-boot-current-docs: FIXME
     spring-boot-devtools-module-code: FIXME
-    spring-boot-for-apache-geode-docs: FIXME
-    spring-boot-for-apache-geode: FIXME
     spring-boot-gradle-plugin-api: FIXME
     spring-boot-gradle-plugin-docs: FIXME
     spring-boot-gradle-plugin-pdfdocs: FIXME
@@ -92,9 +100,10 @@ asciidoc:
     spring-boot-test-module-api: FIXME
     spring-boot-version: FIXME
     spring-boot-xsd-version: 3.3.0-SNAPSHOT
-    spring-data-cassandra: FIXME
-    spring-data-commons-api: FIXME
-    spring-data-couchbase-docs: FIXME
+    # FIXME HERE DOWN
+    
+    
+    
     spring-data-couchbase: FIXME
     spring-data-elasticsearch-docs: FIXME
     spring-data-elasticsearch: FIXME
