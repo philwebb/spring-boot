@@ -31,7 +31,7 @@ The main differences are:
 On top of those differences, Spring uses a process called xref:native-image/introducing-graalvm-native-images.adoc#native-image.introducing-graalvm-native-images.understanding-aot-processing[Spring Ahead-of-Time processing], which imposes further limitations.
 Please make sure to read at least the beginning of the next section to learn about those.
 
-TIP: The {graal-native-image-docs}/metadata/Compatibility/[Native Image Compatibility Guide] section of the GraalVM reference documentation provides more details about GraalVM limitations.
+TIP: The {url-graal-docs-native-image}/metadata/Compatibility/[Native Image Compatibility Guide] section of the GraalVM reference documentation provides more details about GraalVM limitations.
 
 
 

@@ -75,13 +75,13 @@ You do not need to use the CLI to work with Spring Boot, but it is a quick way t
 [[getting-started.installing.cli.manual-installation]]
 === Manual Installation
 ifeval::["{artifact-release-type}" == "snapshot"]
-You can download one of the `spring-boot-cli-\*-bin.zip` or `spring-boot-cli-*-bin.tar.gz` files from the {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/[Spring software repository].
+You can download one of the `spring-boot-cli-\*-bin.zip` or `spring-boot-cli-*-bin.tar.gz` files from the {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/[Spring software repository].
 endif::[]
 ifeval::["{artifact-release-type}" != "snapshot"]
 You can download the Spring CLI distribution from one of the following locations:
 
-* {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 endif::[]
 
 

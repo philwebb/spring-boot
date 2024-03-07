@@ -9,44 +9,51 @@ ext:
       classifier: catalog-content
 asciidoc:
   attributes:
-    ant-docs: FIXME
+  	# FIXME these will be generated
+    url-dependency-management-plugin-docs: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html'
+    url-dependency-management-plugin-site: https://github.com/spring-gradle-plugins/dependency-management-plugin
+    url-artifact-repository: https://example.com/FIXME
+    version-dependency-management-plugin: FIXME
+    version-graal: 22.3
+  	# FIXME these are added manually
+    url-ant-docs: https://ant.apache.org/manual
+    url-buildpacks-docs: https://buildpacks.io/docs
+    url-dynatrace-docs: https://docs.dynatrace.com/docs
+    url-dynatrace-docs-shortlink: {url-dynatrace-docs}/shortlink
+    url-graal-docs: https://www.graalvm.org/{version-graal}/reference-manual
+    url-graal-docs-native-image: {url-graal-docs}/native-image
+    url-gradle-docs: https://docs.gradle.org/current/userguide
+    url-gradle-docs-application-plugin: '{url-gradle-docs}/application_plugin.html'
+    # FIXME TODO
     gradle-project-version: 3.3.0-SNAPSHOT
-    gradle-userguide: https://docs.gradle.org/current/userguide
     spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
     api-documentation: '{spring-boot-docs}/gradle-plugin/api'
-    application-plugin: '{gradle-userguide}/application_plugin.html'
-    artifact-download-repo: FIXME
     boot-build-image-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html'
     boot-jar-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html'
     boot-run-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html'
     boot-war-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html'
     build-info-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html'
-    buildpacks-reference: https://buildpacks.io/docs
-    dependency-management-plugin-documentation: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/'
-    dependency-management-plugin-version: FIXME
-    dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
-    dynatrace-docs: FIXME
     github-issues: FIXME
     github-raw: FIXME
     github-wiki: FIXME
-    graal-native-image-docs: FIXME
+    # FIXME HERE DOWN
     graal-version: FIXME
     gradle-api: https://docs.gradle.org/current/javadoc
     gradle-docs: FIXME
     gradle-dsl: https://docs.gradle.org/current/dsl
-    groovy-plugin: '{gradle-userguide}/groovy_plugin.html'
+    groovy-plugin: '{url-gradle-docs}/groovy_plugin.html'
     hibernate-docs: FIXME
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
     java-api: FIXME
-    java-plugin: '{gradle-userguide}/java_plugin.html'
+    java-plugin: '{url-gradle-docs}/java_plugin.html'
     jooq-docs: FIXME
     kotlin-docs: FIXME
     kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
     lettuce-docs: FIXME
     liberica-nik-download: FIXME
-    maven-plugin: '{gradle-userguide}/maven_plugin.html'
-    maven-publish-plugin: '{gradle-userguide}/maven_publish_plugin.html'
+    maven-plugin: '{url-gradle-docs}/maven_plugin.html'
+    maven-publish-plugin: '{url-gradle-docs}/maven_publish_plugin.html'
     micrometer-concepts-docs: FIXME
     micrometer-docs: FIXME
     micrometer-implementation-docs: FIXME
@@ -126,7 +133,7 @@ asciidoc:
     spring-webservices-docs: FIXME
     tomcat-docs: FIXME
     version-properties-appendix: '{spring-boot-reference}/#dependency-versions-properties'
-    war-plugin: '{gradle-userguide}/war_plugin.html'
+    war-plugin: '{url-gradle-docs}/war_plugin.html'
 nav:
 - modules/ROOT/nav.adoc 
     

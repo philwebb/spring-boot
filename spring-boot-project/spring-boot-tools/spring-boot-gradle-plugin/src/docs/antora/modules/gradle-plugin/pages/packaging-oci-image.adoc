@@ -5,7 +5,7 @@ The plugin can create an https://github.com/opencontainers/image-spec[OCI image]
 Images can be built using the `bootBuildImage` task.
 
 NOTE: For security reasons, images build and run as non-root users.
-See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specification] for more details.
+See the {url-buildpacks-docs}/reference/spec/platform-api/#users[CNB specification] for more details.
 
 The task is automatically created when the `java` or `war` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
 
@@ -102,8 +102,8 @@ For more details, see also xref:packaging-oci-image.adoc#build-image.examples.do
 
 [[build-image.customization]]
 == Image Customizations
-The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
-The builder includes multiple {buildpacks-reference}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
+The plugin invokes a {url-buildpacks-docs}/concepts/components/builder/[builder] to orchestrate the generation of an image.
+The builder includes multiple {url-buildpacks-docs}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
 The name of the generated image is deduced from project properties.
 

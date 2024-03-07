@@ -79,7 +79,7 @@ public class AntoraConventions {
 		ArtifactRelease artifacts = ArtifactRelease.forProject(project);
 		attributes.put("github-tag", determineGitHubTag(project));
 		attributes.put("artifact-release-type", artifacts.getType());
-		attributes.put("artifact-download-repo", artifacts.getDownloadRepo());
+		attributes.put("url-artifact-repository", artifacts.getDownloadRepo());
 		return attributes;
 	}
 

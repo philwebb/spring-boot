@@ -63,10 +63,10 @@ The following nested elements can be used with the task:
 | Element | Description
 
 | `resources`
-| One or more {ant-docs}/Types/resources.html#collection[Resource Collections] describing a set of {ant-docs}/Types/resources.html[Resources] that should be added to the content of the created +jar+ file.
+| One or more {url-ant-docs}/Types/resources.html#collection[Resource Collections] describing a set of {url-ant-docs}/Types/resources.html[Resources] that should be added to the content of the created +jar+ file.
 
 | `lib`
-| One or more {ant-docs}/Types/resources.html#collection[Resource Collections] that should be added to the set of jar libraries that make up the runtime dependency classpath of the application.
+| One or more {url-ant-docs}/Types/resources.html#collection[Resource Collections] that should be added to the set of jar libraries that make up the runtime dependency classpath of the application.
 |====
 
 

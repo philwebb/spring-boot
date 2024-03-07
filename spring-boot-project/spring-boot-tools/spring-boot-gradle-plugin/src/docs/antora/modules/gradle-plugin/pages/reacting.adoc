@@ -50,13 +50,13 @@ When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boo
 
 [[reacting-to-other-plugins.dependency-management]]
 == Reacting to the Dependency Management Plugin
-When the {dependency-management-plugin}[`io.spring.dependency-management` plugin] is applied to a project, the Spring Boot plugin will automatically import the `spring-boot-dependencies` bom.
+When the {url-dependency-management-plugin-site}[`io.spring.dependency-management` plugin] is applied to a project, the Spring Boot plugin will automatically import the `spring-boot-dependencies` bom.
 
 
 
 [[reacting-to-other-plugins.application]]
 == Reacting to the Application Plugin
-When Gradle's {application-plugin}[`application` plugin] is applied to a project, the Spring Boot plugin:
+When Gradle's {url-gradle-docs-application-plugin}[`application` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts that launch the artifact in the `bootArchives` configuration using `java -jar`.
    The task is configured to use the `applicationDefaultJvmArgs` property as a convention for its `defaultJvmOpts` property.

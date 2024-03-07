@@ -1,14 +1,14 @@
 [[managing-dependencies]]
 = Managing Dependencies
 
-To manage dependencies in your Spring Boot application, you can either apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin or use Gradle's native bom support.
+To manage dependencies in your Spring Boot application, you can either apply the {url-dependency-management-plugin-site}[`io.spring.dependency-management`] plugin or use Gradle's native bom support.
 The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds.
 
 
 
 [[managing-dependencies.dependency-management-plugin]]
 == Managing Dependencies with the Dependency Management Plugin
-When you apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically xref:reacting.adoc#reacting-to-other-plugins.dependency-management[import the `spring-boot-dependencies` bom] from the version of Spring Boot that you are using.
+When you apply the {url-dependency-management-plugin-site}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically xref:reacting.adoc#reacting-to-other-plugins.dependency-management[import the `spring-boot-dependencies` bom] from the version of Spring Boot that you are using.
 This provides a similar dependency management experience to the one that's enjoyed by Maven users.
 For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
 To make use of this functionality, declare dependencies in the usual way but omit the version number:
@@ -129,7 +129,7 @@ include::example$managing-dependencies/configure-bom-with-plugins.gradle.kts[tag
 
 [[managing-dependencies.dependency-management-plugin.learning-more]]
 === Learning More
-To learn more about the capabilities of the dependency management plugin, please refer to its {dependency-management-plugin-documentation}[documentation].
+To learn more about the capabilities of the dependency management plugin, please refer to its {url-dependency-management-plugin-docs}[documentation].
 
 
 

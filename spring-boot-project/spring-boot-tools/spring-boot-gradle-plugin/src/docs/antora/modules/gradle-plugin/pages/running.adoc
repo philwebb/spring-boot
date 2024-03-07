@@ -57,7 +57,7 @@ include::example$running/boot-run-disable-optimized-launch.gradle[tags=launch]
 include::example$running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
 ----
 
-If the {application-plugin}[`application` plugin] has been applied, its `mainClass` property must be configured and can be used for the same purpose:
+If the {url-gradle-docs-application-plugin}[`application` plugin] has been applied, its `mainClass` property must be configured and can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
