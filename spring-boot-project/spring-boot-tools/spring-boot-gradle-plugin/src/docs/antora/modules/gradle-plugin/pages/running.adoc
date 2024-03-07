@@ -9,7 +9,7 @@ To run your application without first building an archive use the `bootRun` task
 ----
 
 The `bootRun` task is an instance of {boot-run-javadoc}[`BootRun`] which is a `JavaExec` subclass.
-As such, all of the {gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing a Java process in Gradle are available to you.
+As such, all of the {url-gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing a Java process in Gradle are available to you.
 The task is automatically configured to use the runtime classpath of the main source set.
 
 By default, the main class will be configured automatically by looking for a class with a `public static void main(String[])` method in the main source set's output.
@@ -83,14 +83,14 @@ For example, to run your application with a profile named `dev` active the follo
 	$ ./gradlew bootRun --args='--spring.profiles.active=dev'
 ----
 
-See {gradle-api}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.
+See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.
 
 
 
 [[running-your-application.passing-system-properties]]
 == Passing System properties to your application
 Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
-To make that value of a system property to be configurable set its value using a {gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].
+To make that value of a system property to be configurable set its value using a {url-gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].
 To allow a project property to be optional, reference it using `findProperty`.
 Doing so also allows a default value to be provided using the `?:` Elvis operator, as shown in the following example:
 

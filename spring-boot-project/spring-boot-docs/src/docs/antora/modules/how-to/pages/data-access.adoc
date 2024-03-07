@@ -215,7 +215,7 @@ This takes precedence to anything that is applied by the auto-configuration.
 
 [[howto.data-access.configure-hibernate-naming-strategy]]
 == Configure Hibernate Naming Strategy
-Hibernate uses {hibernate-docs}#naming[two different naming strategies] to map names from the object model to the corresponding database names.
+Hibernate uses {url-hibernate-userguide}#naming[two different naming strategies] to map names from the object model to the corresponding database names.
 The fully qualified class name of the physical and the implicit strategy implementations can be configured by setting the `spring.jpa.hibernate.naming.physical-strategy` and `spring.jpa.hibernate.naming.implicit-strategy` properties, respectively.
 Alternatively, if `ImplicitNamingStrategy` or `PhysicalNamingStrategy` beans are available in the application context, Hibernate will be automatically configured to use them.
 
@@ -244,7 +244,7 @@ See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguratio
 
 [[howto.data-access.configure-hibernate-second-level-caching]]
 == Configure Hibernate Second-Level Caching
-Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
+Hibernate {url-hibernate-userguide}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
 To do this with JCache, first make sure that `org.hibernate.orm:hibernate-jcache` is available on the classpath.
@@ -254,7 +254,7 @@ include-code::MyHibernateSecondLevelCacheConfiguration[]
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
 It is also possible to use separate `CacheManager` instances.
-For details, see {hibernate-docs}#caching-provider-jcache[the Hibernate user guide].
+For details, see {url-hibernate-userguide}#caching-provider-jcache[the Hibernate user guide].
 
 
 

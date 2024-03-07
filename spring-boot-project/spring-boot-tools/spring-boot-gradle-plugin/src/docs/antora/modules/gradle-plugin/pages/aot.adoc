@@ -30,7 +30,7 @@ For instance, these are used to generate the necessary reflection configuration 
 As the `BeanFactory` is fully prepared at build-time, conditions are also evaluated.
 This has an important difference compared to what a regular Spring Boot application does at runtime.
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
-To this end, the `processAot` task is a {gradle-dsl}/org.gradle.api.tasks.JavaExec.html[`JavaExec`] task and can be configured with environment variables, system properties, and arguments as needed.
+To this end, the `processAot` task is a {url-gradle-dsl}/org.gradle.api.tasks.JavaExec.html[`JavaExec`] task and can be configured with environment variables, system properties, and arguments as needed.
 
 The `nativeCompile` task of the GraalVM Native Image plugin is automatically configured to use the output of the `processAot` task.
 

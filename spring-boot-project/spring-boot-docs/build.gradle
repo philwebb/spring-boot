@@ -350,7 +350,6 @@ def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencie
 	rename("spring-boot-gradle-plugin", "spring-boot-docs")
 }
 
-
 tasks.named("antora") {
 	dependsOn zipAntoraAggregateContent, zipApiAntoraCatalogContent, copyAntoraContentDependencies
 }

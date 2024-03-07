@@ -57,7 +57,7 @@ Spring Boot provides a useful xref:build-tool-plugins/gradle.adoc[Gradle plugin]
 ****
 The Gradle Wrapper provides a nice way of "`obtaining`" Gradle when you need to build a project.
 It is a small script and library that you commit alongside your code to bootstrap the build process.
-See {gradle-docs}/gradle_wrapper.html for details.
+See {url-gradle-docs}/gradle_wrapper.html for details.
 ****
 
 More details on getting started with Spring Boot and Gradle can be found in the {spring-boot-gradle-plugin-docs}#getting-started[Getting Started section] of the Gradle plugin's reference guide.

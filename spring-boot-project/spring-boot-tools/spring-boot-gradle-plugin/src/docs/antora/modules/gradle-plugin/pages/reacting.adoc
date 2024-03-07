@@ -8,7 +8,7 @@ This section describes those changes.
 
 [[reacting-to-other-plugins.java]]
 == Reacting to the Java Plugin
-When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
+When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {boot-jar-javadoc}[`BootJar`] task named `bootJar` that will create an executable, uber jar for the project.
    The jar will contain everything on the runtime classpath of the main source set; classes are packaged in `BOOT-INF/classes` and jars are packaged in `BOOT-INF/lib`
@@ -28,7 +28,7 @@ When Gradle's {java-plugin}[`java` plugin] is applied to a project, the Spring B
 
 [[reacting-to-other-plugins.kotlin]]
 == Reacting to the Kotlin Plugin
-When {kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot plugin:
+When {url-kotlin-docs-kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot plugin:
 
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version of the plugin.
    This is achieved by setting the `kotlin.version` property with a value that matches the version of the Kotlin plugin.

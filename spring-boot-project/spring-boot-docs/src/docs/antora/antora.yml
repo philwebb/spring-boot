@@ -9,21 +9,30 @@ ext:
       classifier: catalog-content
 asciidoc:
   attributes:
-  	# FIXME these will be generated
+    # FIXME these will be generated
     url-dependency-management-plugin-docs: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html'
     url-dependency-management-plugin-site: https://github.com/spring-gradle-plugins/dependency-management-plugin
     url-artifact-repository: https://example.com/FIXME
     version-dependency-management-plugin: FIXME
+    version-hibernate: FIXME
+    url-hibernate-userguide: https://docs.jboss.org/hibernate/orm/{version-hibernate}/userguide/html_single/Hibernate_User_Guide.html
+    url-jooq-docs: https://www.jooq.org/doc/3.19.4/manual-single-page
+    url-kotlin-docs: https://kotlinlang.org/docs/reference
+    # FIXME these are added manually
     version-graal: 22.3
-  	# FIXME these are added manually
     url-ant-docs: https://ant.apache.org/manual
     url-buildpacks-docs: https://buildpacks.io/docs
     url-dynatrace-docs: https://docs.dynatrace.com/docs
-    url-dynatrace-docs-shortlink: {url-dynatrace-docs}/shortlink
+    url-dynatrace-docs-shortlink: '{url-dynatrace-docs}/shortlink'
     url-graal-docs: https://www.graalvm.org/{version-graal}/reference-manual
-    url-graal-docs-native-image: {url-graal-docs}/native-image
+    url-graal-docs-native-image: '{url-graal-docs}/native-image'
     url-gradle-docs: https://docs.gradle.org/current/userguide
     url-gradle-docs-application-plugin: '{url-gradle-docs}/application_plugin.html'
+    url-gradle-docs-groovy-plugin: '{url-gradle-docs}/groovy_plugin.html'
+    url-gradle-docs-java-plugin: '{url-gradle-docs}/java_plugin.html'
+    url-gradle-dsl: https://docs.gradle.org/current/dsl
+    url-gradle-javadoc: https://docs.gradle.org/current/javadoc
+    url-kotlin-docs-kotlin-plugin: '{url-kotlin-docs}/using-gradle.html'
     # FIXME TODO
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
@@ -36,20 +45,10 @@ asciidoc:
     github-issues: FIXME
     github-raw: FIXME
     github-wiki: FIXME
-    # FIXME HERE DOWN
-    graal-version: FIXME
-    gradle-api: https://docs.gradle.org/current/javadoc
-    gradle-docs: FIXME
-    gradle-dsl: https://docs.gradle.org/current/dsl
-    groovy-plugin: '{url-gradle-docs}/groovy_plugin.html'
-    hibernate-docs: FIXME
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
     java-api: FIXME
-    java-plugin: '{url-gradle-docs}/java_plugin.html'
-    jooq-docs: FIXME
-    kotlin-docs: FIXME
-    kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
+    # FIXME HERE DOWN
     lettuce-docs: FIXME
     liberica-nik-download: FIXME
     maven-plugin: '{url-gradle-docs}/maven_plugin.html'

@@ -39,7 +39,7 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 	</dependency>
 ----
 
-The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
+The following Gradle example configures the necessary dependencies and a {url-gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
 [source,gradle,indent=0,subs="verbatim"]
 ----
