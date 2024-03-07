@@ -3,103 +3,130 @@ title: Spring Boot
 ext:
   zip_contents_collector:
     include:
-    - name: spring-boot-docs
-      classifier: antora-aggregate-content
-    - name: spring-boot-docs
-      classifier: api-antora-catalog-content
-      module: api
+    - name: root
+      classifier: aggregate-content
+    - name: api
+      classifier: catalog-content
 asciidoc:
   attributes:
+    ant-docs: FIXME
     gradle-project-version: 3.3.0-SNAPSHOT
-    include-java: ROOT:example$java/org/springframework/boot/docs
-    include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
-    spring-authorization-server-docs: FIXME
-    spring-boot-for-apache-geode-docs: FIXME
-    spring-boot-for-apache-geode: FIXME
-    spring-session: FIXME
-    spring-boot-module-api: FIXME
-    spring-security-docs: FIXME
-    spring-security: FIXME
-    spring-graphql-docs: FIXME
-    spring-framework-docs: FIXME
-    spring-graphql: FIXME
-    spring-boot-autoconfigure-module-code: FIXME
-    spring-framework-api: FIXME
-    gradle-docs: FIXME
-    spring-boot-devtools-module-code: FIXME
-    spring-boot-gradle-plugin-docs: FIXME
-    spring-boot-latest-code: FIXME
-    spring-boot-version: FIXME
-    spring-boot-gradle-plugin-api: FIXME
-    spring-boot-gradle-plugin-pdfdocs: FIXME
-    spring-boot-maven-plugin-api: FIXME
-    spring-boot-maven-plugin-pdfdocs: FIXME
-    spring-boot-maven-plugin-docs: FIXME
+    gradle-userguide: https://docs.gradle.org/current/userguide
+    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
+    api-documentation: '{spring-boot-docs}/gradle-plugin/api'
+    application-plugin: '{gradle-userguide}/application_plugin.html'
+    artifact-download-repo: FIXME
+    boot-build-image-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html'
+    boot-jar-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html'
+    boot-run-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html'
+    boot-war-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html'
+    build-info-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html'
+    buildpacks-reference: https://buildpacks.io/docs
+    dependency-management-plugin-documentation: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/'
+    dependency-management-plugin-version: FIXME
+    dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
+    dynatrace-docs: FIXME
+    github-issues: FIXME
+    github-raw: FIXME
     github-wiki: FIXME
     graal-native-image-docs: FIXME
     graal-version: FIXME
-    liberica-nik-download: FIXME
-    spring-pulsar-docs: FIXME
-    spring-kafka-docs: FIXME
-    spring-amqp-api: FIXME
-    spring-webservices-docs: FIXME
-    spring-integration: FIXME
-    spring-boot-module-code: FIXME
-    tomcat-docs: FIXME
-    spring-data-rest-api: FIXME
+    gradle-api: https://docs.gradle.org/current/javadoc
+    gradle-docs: FIXME
+    gradle-dsl: https://docs.gradle.org/current/dsl
+    groovy-plugin: '{gradle-userguide}/groovy_plugin.html'
     hibernate-docs: FIXME
+    include-java: ROOT:example$java/org/springframework/boot/docs
+    include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
+    java-api: FIXME
+    java-plugin: '{gradle-userguide}/java_plugin.html'
+    jooq-docs: FIXME
+    kotlin-docs: FIXME
+    kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
+    lettuce-docs: FIXME
+    liberica-nik-download: FIXME
+    maven-plugin: '{gradle-userguide}/maven_plugin.html'
+    maven-publish-plugin: '{gradle-userguide}/maven_publish_plugin.html'
+    micrometer-concepts-docs: FIXME
+    micrometer-docs: FIXME
+    micrometer-implementation-docs: FIXME
+    micrometer-tracing-docs: FIXME
+    native-build-tools-version: FIXME
+    nbt-gradle-plugin: https://graalvm.github.io/native-build-tools/{native-build-tools-version}/gradle-plugin.html
+    nbt-reference: 'https://graalvm.github.io/native-build-tools/latest/maven-plugin.html'
+    paketo-reference: https://paketo.io/docs
+    paketo-java-reference: '{paketo-reference}/buildpacks/language-family-buildpacks/java'
+    spring-amqp-api: FIXME
+    spring-authorization-server-docs: FIXME
+    spring-batch-api: FIXME
     spring-batch-docs: FIXME
     spring-batch: FIXME
-    spring-batch-api: FIXME
     spring-boot-actuator-autoconfigure-module-code: FIXME
-    native-build-tools-version: FIXME
-    spring-framework-version: FIXME
-    github-raw: FIXME
-    artifact-download-repo: FIXME
-    spring-data: FIXME
-    spring-boot-code: FIXME
+    spring-boot-actuator-module-code: FIXME
+    spring-boot-actuator-restapi-docs: FIXME
+    spring-boot-actuator-restapi-pdfdocs: FIXME
     spring-boot-api: FIXME
-    spring-restdocs: FIXME
+    spring-boot-autoconfigure-module-code: FIXME
+    spring-boot-code: FIXME
+    spring-boot-current-docs: FIXME
+    spring-boot-devtools-module-code: FIXME
+    spring-boot-for-apache-geode-docs: FIXME
+    spring-boot-for-apache-geode: FIXME
+    spring-boot-gradle-plugin-api: FIXME
+    spring-boot-gradle-plugin-docs: FIXME
+    spring-boot-gradle-plugin-pdfdocs: FIXME
+    spring-boot-latest-code: FIXME
+    spring-boot-maven-plugin-api: FIXME
+    spring-boot-maven-plugin-docs: FIXME
+    spring-boot-maven-plugin-pdfdocs: FIXME
+    spring-boot-module-api: FIXME
+    spring-boot-module-code: FIXME
+    spring-boot-reference: '{spring-boot-docs}/reference/htmlsingle'
     spring-boot-test-autoconfigure-module-code: FIXME
     spring-boot-test-module-api: FIXME
-    spring-boot-actuator-restapi-docs: FIXME
-    java-api: FIXME
-    kotlin-docs: FIXME
-    github-issues: FIXME
-    spring-data-r2dbc-docs: FIXME
+    spring-boot-version: FIXME
+    spring-boot-xsd-version: 3.3.0-SNAPSHOT
+    spring-data-cassandra: FIXME
     spring-data-commons-api: FIXME
-    spring-data-r2dbc-api: FIXME
-    jooq-docs: FIXME
-    spring-data-jdbc-docs: FIXME
-    spring-data-jpa-docs: FIXME
-    spring-data-envers: FIXME
-    spring-data-jpa-api: FIXME
-    spring-data-jpa: FIXME
-    spring-framework: FIXME
     spring-data-couchbase-docs: FIXME
+    spring-data-couchbase: FIXME
     spring-data-elasticsearch-docs: FIXME
     spring-data-elasticsearch: FIXME
-    spring-data-neo4j-docs: FIXME
-    spring-data-mongodb: FIXME
-    spring-data-mongodb-api: FIXME
-    spring-data-redis: FIXME
-    spring-data-neo4j: FIXME
-    spring-data-ldap: FIXME
-    spring-data-geode: FIXME
+    spring-data-envers: FIXME
     spring-data-gemfire: FIXME
-    spring-data-couchbase: FIXME
-    spring-data-cassandra: FIXME
-    ant-docs: FIXME
-    micrometer-tracing-docs: FIXME
-    micrometer-concepts-docs: FIXME
-    spring-boot-actuator-restapi-pdfdocs: FIXME
-    lettuce-docs: FIXME
+    spring-data-geode: FIXME
+    spring-data-jdbc-docs: FIXME
+    spring-data-jpa-api: FIXME
+    spring-data-jpa-docs: FIXME
+    spring-data-jpa: FIXME
+    spring-data-ldap: FIXME
+    spring-data-mongodb-api: FIXME
+    spring-data-mongodb: FIXME
+    spring-data-neo4j-docs: FIXME
+    spring-data-neo4j: FIXME
+    spring-data-r2dbc-api: FIXME
+    spring-data-r2dbc-docs: FIXME
+    spring-data-redis: FIXME
+    spring-data-rest-api: FIXME
+    spring-data: FIXME
+    spring-framework-api: FIXME
+    spring-framework-docs: FIXME
+    spring-framework-version: FIXME
+    spring-framework: FIXME
+    spring-graphql-docs: FIXME
+    spring-graphql: FIXME
     spring-integration-docs: FIXME
-    micrometer-implementation-docs: FIXME
-    dynatrace-docs: FIXME
-    micrometer-docs: FIXME
-    spring-boot-actuator-module-code: FIXME
-    spring-boot-current-docs: FIXME
+    spring-integration: FIXME
+    spring-kafka-docs: FIXME
+    spring-pulsar-docs: FIXME
+    spring-restdocs: FIXME
+    spring-security-docs: FIXME
+    spring-security: FIXME
+    spring-session: FIXME
+    spring-webservices-docs: FIXME
+    tomcat-docs: FIXME
+    version-properties-appendix: '{spring-boot-reference}/#dependency-versions-properties'
+    war-plugin: '{gradle-userguide}/war_plugin.html'
 nav:
 - modules/ROOT/nav.adoc 
     

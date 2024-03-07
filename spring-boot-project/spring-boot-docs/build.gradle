@@ -14,8 +14,8 @@ configurations {
 	remoteSpringApplicationExample
 	springApplicationExample
 	testSlices
-	documentationZips
-	documentationZips.transitive = false
+	antoraContent
+	antoraContent.transitive = false
 }
 
 jar {
@@ -172,7 +172,9 @@ dependencies {
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	documentationZips(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentationZips"));
+	antoraContent(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "antoraContent"))
+	antoraContent(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "antoraContent"))
+	antoraContent(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "antoraContent"))
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
@@ -287,14 +289,9 @@ def getRelativeExamplesPath(var outputs) {
 	'example$example-output/' + fileName
 }
 
-def copyDocumentationZips = tasks.register("copyDocumentationZips", Sync) {
-	into layout.buildDirectory.dir('generated/docs/antora-content')
-	from configurations.documentationZips
-}
-
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "antora-aggregate-content"
+	archiveClassifier = "root-aggregate-content"
 	from("src/main") {
 		into "modules/ROOT/examples"
 	}
@@ -339,14 +336,23 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 
 def zipApiAntoraCatalogContent = tasks.register("zipApiAntoraCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "api-antora-catalog-content"
+	archiveClassifier = "api-catalog-content"
 	from(aggregatedJavadoc) {
 		into "java"
 	}
 }
 
+def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencies", Sync) {
+	into layout.buildDirectory.dir('generated/docs/antora-content')
+	from(configurations.antoraContent)
+	rename("spring-boot-actuator-autoconfigure", "spring-boot-docs")
+	rename("spring-boot-maven-plugin", "spring-boot-docs")
+	rename("spring-boot-gradle-plugin", "spring-boot-docs")
+}
+
+
 tasks.named("antora") {
-	dependsOn copyDocumentationZips, zipAntoraAggregateContent, zipApiAntoraCatalogContent
+	dependsOn zipAntoraAggregateContent, zipApiAntoraCatalogContent, copyAntoraContentDependencies
 }
 
 publishing {

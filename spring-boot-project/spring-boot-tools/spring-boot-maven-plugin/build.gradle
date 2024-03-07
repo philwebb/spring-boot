@@ -153,7 +153,6 @@ tasks.named("antora") {
 artifacts {
 	antoraContent zipAntoraAggregateContent
 	antoraContent zipAntoraCatalogContent
-
 }
 
 // FIXME xsd version needs to be generated

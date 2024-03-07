@@ -8,7 +8,7 @@ antora:
   - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
     version_file: gradle.properties
     locations:
-    - url: spring-boot-project/spring-boot-docs/build/generated/docs/antora-content/${name}-${version}-${classifier}.zip
+    - url: spring-boot-project/spring-boot-docs/build/generated/docs/antora-content/spring-boot-docs-${version}-${name}-${classifier}.zip
 site:
   title: Spring Boot
 content:
@@ -16,6 +16,8 @@ content:
     - url: ./../..
       branches: HEAD
       start_paths: 
+      - spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin/src/docs/antora
+      - spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
       - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
       - spring-boot-project/spring-boot-docs/src/docs/antora
       version: 3.3.0-SNAPSHOT
@@ -30,7 +32,6 @@ asciidoc:
     - '@asciidoctor/tabs'
     - '@springio/asciidoctor-extensions'
     - '/Users/pwebb/projects/asciidoctor-extensions/lib/configuration-properties-extension.js'
-    
 urls:
   latest_version_segment: ''
 runtime:
@@ -40,4 +41,3 @@ ui:
   bundle:
     url: /Users/pwebb/projects/antora-ui-spring/build/ui-bundle.zip
     snapshot: true
-
