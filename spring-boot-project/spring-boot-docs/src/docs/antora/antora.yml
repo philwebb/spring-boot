@@ -13,6 +13,7 @@ asciidoc:
     version-dependency-management-plugin: FIXME
     version-hibernate: FIXME
     version-native-build-tools: 0.10.1
+    version-spring-framework: 6.1.1
     url-dependency-management-plugin-docs: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html'
     url-dependency-management-plugin-site: https://github.com/spring-gradle-plugins/dependency-management-plugin
     url-artifact-repository: https://example.com/FIXME
@@ -27,14 +28,38 @@ asciidoc:
     url-spring-batch-javadoc: https://example.com/FIXME
     url-spring-batch-docs: https://example.com/FIXME
     url-spring-batch-site: https://example.com/FIXME
-    
+    url-spring-framework-javadoc: https://docs.spring.io/spring-framework/docs/{version-spring-framework}/javadoc-api/org/springframework
+    url-spring-framework-docs: https://example.com/FIXME
+    url-spring-framework-site: https://example.com/FIXME
+    url-spring-graphql-docs: https://example.com/FIXME
+    url-spring-graphql-site: https://example.com/FIXME
+    url-spring-integration-docs: https://example.com/FIXME
+    url-spring-integration-site: https://example.com/FIXME
+    url-spring-kafka-docs: https://example.com/FIXME
+    url-spring-pulsar-docs: https://example.com/FIXME
+    url-spring-pulsar-site: https://example.com/FIXME
+    url-spring-security-docs: https://example.com/FIXME
+    url-spring-restdocs-site: https://example.com/FIXME
+    url-spring-security-site: https://example.com/FIXME
+    url-spring-session-site: https://example.com/FIXME
+    url-spring-webservices-docs: https://example.com/FIXME
+    url-tomcat-docs: https://example.com/FIXME
+
     # FIXME these are from version constraints
     version-spring-data-commons: FIXME
     version-spring-data-couchbase: FIXME
+    version-spring-data-elasticsearch: FIXME
+    version-spring-data-jdbc: FIXME
+    version-spring-data-jpa: FIXME
+    version-spring-data-mongodb: FIXME
+    version-spring-data-neo4j: FIXME
+    version-spring-data-r2dbc: FIXME
+    version-spring-data-rest: FIXME
+    url-spring-data-site: https://spring.io/projects/spring-data
     
     # FIXME these are added manually
     version-graal: 22.3
-	version-spring-boot-for-apache-geode=2.0.x
+    version-spring-boot-for-apache-geode: 2.0.x
     url-ant-docs: https://ant.apache.org/manual
     url-buildpacks-docs: https://buildpacks.io/docs
     url-dynatrace-docs: https://docs.dynatrace.com/docs
@@ -45,6 +70,7 @@ asciidoc:
     url-gradle-docs-application-plugin: '{url-gradle-docs}/application_plugin.html'
     url-gradle-docs-groovy-plugin: '{url-gradle-docs}/groovy_plugin.html'
     url-gradle-docs-java-plugin: '{url-gradle-docs}/java_plugin.html'
+    url-gradle-docs-war-plugin: '{url-gradle-docs}/war_plugin.html'
     url-gradle-dsl: https://docs.gradle.org/current/dsl
     url-gradle-javadoc: https://docs.gradle.org/current/javadoc
     url-kotlin-docs-kotlin-plugin: '{url-kotlin-docs}/using-gradle.html'
@@ -59,8 +85,28 @@ asciidoc:
     url-spring-boot-for-apache-geode-docs: 'https://docs.spring.io/spring-boot-data-geode-build/{version-spring-boot-for-apache-geode}/reference/html5/'
     url-spring-boot-for-apache-geode-site: 'https://github.com/spring-projects/spring-boot-data-geode'
     url-spring-data-cassandra-site: https://spring.io/projects/spring-data-cassandra
-    url-spring-data-commons-javadoc: 'https://docs.spring.io/spring-data/commons/docs/{version-spring-data-commons}/api/org/springframework/data'
-    url-spring-data-couchbase-docs: 'https://docs.spring.io/spring-data/couchbase/docs/{version-spring-data-couchbase}/reference/html/'
+    url-spring-data-commons-javadoc: 'https://docs.spring.io/spring-data/commons/docs/{version-spring-data-commons}/api'
+    url-spring-data-couchbase-docs: 'https://docs.spring.io/spring-data/couchbase/reference/{version-spring-data-couchbase}'
+    url-spring-data-couchbase-site: 'https://spring.io/projects/spring-data-couchbase'
+    url-spring-data-elasticsearch-docs: 'https://docs.spring.io/spring-data/elasticsearch/reference/{version-spring-data-elasticsearch}'
+    url-spring-data-elasticsearch-site: 'https://spring.io/projects/spring-data-elasticsearch'
+    url-spring-data-envers-site: https://spring.io/projects/spring-data-envers
+    url-spring-data-gemfire-site: https://spring.io/projects/spring-data-gemfire
+    url-spring-data-geode-site: https://spring.io/projects/spring-data-geode
+    url-spring-data-jdbc-docs: https://docs.spring.io/spring-data/relational/reference/{version-spring-data-jdbc}
+    url-spring-data-jpa-javadoc: https://docs.spring.io/spring-data/jpa/docs/{version-spring-data-jpa}/api
+    url-spring-data-jpa-site: https://spring.io/projects/spring-jpa
+    url-spring-data-jpa-docs: https://docs.spring.io/spring-data/jpa/reference/{version-spring-data-jpa}
+    url-spring-data-ldap-site: https://spring.io/projects/spring-data-ldap
+    url-spring-data-mongodb-javadoc: https://docs.spring.io/spring-data/mongodb/docs/{version-spring-data-mongodb}/api
+    url-spring-data-mongodb-site: https://spring.io/projects/spring-data-mongodb
+    url-spring-data-mongodb-docs: https://docs.spring.io/spring-data/mongodb/reference/{version-spring-data-mongodb}
+    url-spring-data-neo4j-docs: https://docs.spring.io/spring-data/neo4j/reference/{version-spring-data-neo4j}
+    url-spring-data-neo4j-site: https://spring.io/projects/spring-data-neo4j
+    url-spring-data-r2dbc-javadoc: https://docs.spring.io/spring-data/r2dbc/docs/{version-spring-data-r2dbc}/api
+    url-spring-data-r2dbc-docs: https://docs.spring.io/spring-data/relational/reference/{version-spring-data-r2dbc}
+    url-spring-data-redis-site: https://spring.io/projects/spring-data-redis
+    url-spring-data-rest-javadoc: https://docs.spring.io/spring-data/rest/docs/{version-spring-data-rest}/api
     
     # FIXME TODO
     gradle-project-version: 3.3.0-SNAPSHOT
@@ -100,48 +146,7 @@ asciidoc:
     spring-boot-test-module-api: FIXME
     spring-boot-version: FIXME
     spring-boot-xsd-version: 3.3.0-SNAPSHOT
-    # FIXME HERE DOWN
-    
-    
-    
-    spring-data-couchbase: FIXME
-    spring-data-elasticsearch-docs: FIXME
-    spring-data-elasticsearch: FIXME
-    spring-data-envers: FIXME
-    spring-data-gemfire: FIXME
-    spring-data-geode: FIXME
-    spring-data-jdbc-docs: FIXME
-    spring-data-jpa-api: FIXME
-    spring-data-jpa-docs: FIXME
-    spring-data-jpa: FIXME
-    spring-data-ldap: FIXME
-    spring-data-mongodb-api: FIXME
-    spring-data-mongodb: FIXME
-    spring-data-neo4j-docs: FIXME
-    spring-data-neo4j: FIXME
-    spring-data-r2dbc-api: FIXME
-    spring-data-r2dbc-docs: FIXME
-    spring-data-redis: FIXME
-    spring-data-rest-api: FIXME
-    spring-data: FIXME
-    spring-framework-api: FIXME
-    spring-framework-docs: FIXME
-    spring-framework-version: FIXME
-    spring-framework: FIXME
-    spring-graphql-docs: FIXME
-    spring-graphql: FIXME
-    spring-integration-docs: FIXME
-    spring-integration: FIXME
-    spring-kafka-docs: FIXME
-    spring-pulsar-docs: FIXME
-    spring-restdocs: FIXME
-    spring-security-docs: FIXME
-    spring-security: FIXME
-    spring-session: FIXME
-    spring-webservices-docs: FIXME
-    tomcat-docs: FIXME
     version-properties-appendix: '{spring-boot-reference}/#dependency-versions-properties'
-    war-plugin: '{url-gradle-docs}/war_plugin.html'
 nav:
 - modules/ROOT/nav.adoc 
     

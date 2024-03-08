@@ -3,7 +3,7 @@
 
 This section addresses questions about security when working with Spring Boot, including questions that arise from using Spring Security with Spring Boot.
 
-For more about Spring Security, see the {spring-security}[Spring Security project page].
+For more about Spring Security, see the {url-spring-security-site}[Spring Security project page].
 
 
 
@@ -16,7 +16,7 @@ If you define a `@Configuration` with a `SecurityFilterChain` bean in your appli
 [[howto.security.change-user-details-service-and-add-user-accounts]]
 == Change the UserDetailsService and Add User Accounts
 If you provide a `@Bean` of type `AuthenticationManager`, `AuthenticationProvider`, or `UserDetailsService`, the default `@Bean` for `InMemoryUserDetailsManager` is not created.
-This means you have the full feature set of Spring Security available (such as {spring-security-docs}/servlet/authentication/index.html[various authentication options]).
+This means you have the full feature set of Spring Security available (such as {url-spring-security-docs}/servlet/authentication/index.html[various authentication options]).
 
 The easiest way to add user accounts is by providing your own `UserDetailsService` bean.
 

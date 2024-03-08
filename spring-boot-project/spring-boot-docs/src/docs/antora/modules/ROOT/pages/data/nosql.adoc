@@ -4,18 +4,18 @@
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
 
 * {url-spring-data-cassandra-site}[Cassandra]
-* {spring-data-couchbase}[Couchbase]
-* {spring-data-elasticsearch}[Elasticsearch]
-* {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
-* {spring-data-ldap}[LDAP]
-* {spring-data-mongodb}[MongoDB]
-* {spring-data-neo4j}[Neo4J]
-* {spring-data-redis}[Redis]
+* {url-spring-data-couchbase-site}[Couchbase]
+* {url-spring-data-elasticsearch-site}[Elasticsearch]
+* {url-spring-data-gemfire-site}[GemFire] or {url-spring-data-geode-site}[Geode]
+* {url-spring-data-ldap-site}[LDAP]
+* {url-spring-data-mongodb-site}[MongoDB]
+* {url-spring-data-neo4j-site}[Neo4J]
+* {url-spring-data-redis-site}[Redis]
 
 Of these, Spring Boot provides auto-configuration for Cassandra, Couchbase, Elasticsearch, LDAP, MongoDB, Neo4J and Redis.
 Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
 You can make use of the other projects, but you must configure them yourself.
-See the appropriate reference documentation at {spring-data}.
+See the appropriate reference documentation at {url-spring-data-site}.
 
 Spring Boot also provides auto-configuration for the InfluxDB client but it is deprecated in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
 
@@ -182,12 +182,12 @@ The auto-configuration configures this factory automatically if Netty is availab
 
 [[data.nosql.mongodb.template]]
 === MongoTemplate
-{spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
+{url-spring-data-mongodb-site}[Spring Data MongoDB] provides a {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
 include-code::MyBean[]
 
-See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
+See the {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
 
 
 
@@ -205,7 +205,7 @@ Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableMongoRepositories` and `@EntityScan` respectively.
 
-TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {spring-data-mongodb}[reference documentation].
+TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {url-spring-data-mongodb-docs}[reference documentation].
 
 
 
@@ -246,7 +246,7 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 [[data.nosql.neo4j.repositories]]
 === Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
-For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}[reference documentation].
+For complete details of Spring Data Neo4j, see the {url-spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
@@ -337,7 +337,7 @@ Furthermore, you can define a `RestClientOptions` bean to take further control o
 
 [[data.nosql.elasticsearch.connecting-using-rest.reactiveclient]]
 ==== Connecting to Elasticsearch using ReactiveElasticsearchClient
-{spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
+{url-spring-data-elasticsearch-site}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
 If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`.
 
 The `ReactiveElasticsearchclient` uses a transport that depends upon the previously described `RestClient`.
@@ -373,7 +373,7 @@ Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableElasticsearchRepositories` and `@EntityScan` respectively.
 
-TIP: For complete details of Spring Data Elasticsearch, see the {spring-data-elasticsearch-docs}[reference documentation].
+TIP: For complete details of Spring Data Elasticsearch, see the {url-spring-data-elasticsearch-docs}[reference documentation].
 
 Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
 Most likely those beans are auto-configured by Spring Boot given the required dependencies are present.

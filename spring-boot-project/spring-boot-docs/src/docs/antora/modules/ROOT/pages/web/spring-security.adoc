@@ -1,10 +1,10 @@
 [[web.security]]
 = Spring Security
 
-If {spring-security}[Spring Security] is on the classpath, then web applications are secured by default.
+If {url-spring-security-site}[Spring Security] is on the classpath, then web applications are secured by default.
 Spring Boot relies on Spring Security’s content-negotiation strategy to determine whether to use `httpBasic` or `formLogin`.
 To add method-level security to a web application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
-Additional information can be found in the {spring-security-docs}/servlet/authorization/method-security.html[Spring Security Reference Guide].
+Additional information can be found in the {url-spring-security-docs}/servlet/authorization/method-security.html[Spring Security Reference Guide].
 
 The default `UserDetailsService` has a single user.
 The user name is `user`, and the password is random and is printed at WARN level when the application starts, as shown in the following example:
@@ -328,7 +328,7 @@ TIP: Spring Boot auto-configures an `InMemoryRegisteredClientRepository` which i
 The `InMemoryRegisteredClientRepository` has limited capabilities and we recommend using it only for development environments.
 For production environments, consider using a `JdbcRegisteredClientRepository` or creating your own implementation of `RegisteredClientRepository`.
 
-Additional information can be found in the {url-spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {spring-authorization-server-docs}/index.html[Spring Authorization Server Reference Guide].
+Additional information can be found in the {url-spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {url-spring-authorization-server-docs}[Spring Authorization Server Reference Guide].
 
 
 

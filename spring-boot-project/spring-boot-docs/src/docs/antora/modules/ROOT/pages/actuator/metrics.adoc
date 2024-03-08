@@ -748,7 +748,7 @@ Metrics are tagged by the name of the executor, which is derived from the bean n
 === JMS Metrics
 Auto-configuration enables the instrumentation of all available `JmsTemplate` beans and `@JmsListener` annotated methods.
 This will produce `"jms.message.publish"` and `"jms.message.process"` metrics respectively.
-See the {spring-framework-docs}/integration/observability.html#observability.jms[Spring Framework reference documentation for more information on produced observations].
+See the {url-spring-framework-docs}/integration/observability.html#observability.jms[Spring Framework reference documentation for more information on produced observations].
 
 
 [[actuator.metrics.supported.spring-mvc]]
@@ -758,7 +758,7 @@ Auto-configuration enables the instrumentation of all requests handled by Spring
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
-See the {spring-framework-docs}/integration/observability.html#observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
+See the {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
 
 To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.observation` package.
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
@@ -778,7 +778,7 @@ Auto-configuration enables the instrumentation of all requests handled by Spring
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
-See the {spring-framework-docs}/integration/observability.html#observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
+See the {url-spring-framework-docs}/integration/observability.html#observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
 
 To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.reactive.observation` package.
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
@@ -834,7 +834,7 @@ You can also manually apply the customizers responsible for this instrumentation
 By default, metrics are generated with the name, `http.client.requests`.
 You can customize the name by setting the configprop:management.observations.http.client.requests.name[] property.
 
-See the {spring-framework-docs}/integration/observability.html#observability.http-client[Spring Framework reference documentation for more information on produced observations].
+See the {url-spring-framework-docs}/integration/observability.html#observability.http-client[Spring Framework reference documentation for more information on produced observations].
 
 To customize the tags when using `RestTemplate` or `RestClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
 To customize the tags when using `WebClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.web.reactive.function.client` package.
@@ -880,7 +880,7 @@ See the {url-spring-batch-docs}/monitoring-and-metrics.html[Spring Batch referen
 
 [[actuator.metrics.supported.spring-graphql]]
 === Spring GraphQL Metrics
-See the {spring-graphql-docs}/observability.html[Spring GraphQL reference documentation].
+See the {url-spring-graphql-docs}/observability.html[Spring GraphQL reference documentation].
 
 
 
@@ -961,7 +961,7 @@ Auto-configuration enables the instrumentation of all available RabbitMQ connect
 
 [[actuator.metrics.supported.spring-integration]]
 === Spring Integration Metrics
-Spring Integration automatically provides {spring-integration-docs}/metrics.html#micrometer-integration[Micrometer support] whenever a `MeterRegistry` bean is available.
+Spring Integration automatically provides {url-spring-integration-docs}/metrics.html#micrometer-integration[Micrometer support] whenever a `MeterRegistry` bean is available.
 Metrics are published under the `spring.integration.` meter name.
 
 
@@ -970,7 +970,7 @@ Metrics are published under the `spring.integration.` meter name.
 === Kafka Metrics
 Auto-configuration registers a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory, respectively.
 It also registers a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
-For more detail, see the {spring-kafka-docs}kafka/micrometer.html#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
+For more detail, see the {url-spring-kafka-docs}/kafka/micrometer.html#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
 
 

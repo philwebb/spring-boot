@@ -36,7 +36,7 @@ To use the vintage engine, add a dependency on `junit-vintage-engine`, as shown 
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 
 * https://junit.org/junit5/[JUnit 5]: The de-facto standard for unit testing Java applications.
-* {spring-framework-docs}/testing/integration.html[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
+* {url-spring-framework-docs}/testing/integration.html[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.
 * https://assertj.github.io/doc/[AssertJ]: A fluent assertion library.
 * https://github.com/hamcrest/JavaHamcrest[Hamcrest]: A library of matcher objects (also known as constraints or predicates).
 * https://site.mockito.org/[Mockito]: A Java mocking framework.
@@ -61,7 +61,7 @@ It is useful to be able to perform integration testing without requiring deploym
 The Spring Framework includes a dedicated test module for such integration testing.
 You can declare a dependency directly to `org.springframework:spring-test` or use the `spring-boot-starter-test` "`Starter`" to pull it in transitively.
 
-If you have not used the `spring-test` module before, you should start by reading the {spring-framework-docs}/testing.html[relevant section] of the Spring Framework reference documentation.
+If you have not used the `spring-test` module before, you should start by reading the {url-spring-framework-docs}/testing.html[relevant section] of the Spring Framework reference documentation.
 
 
 
@@ -200,13 +200,13 @@ include-code::MyApplicationArgumentTests[]
 === Testing With a Mock Environment
 By default, `@SpringBootTest` does not start the server but instead sets up a mock environment for testing web endpoints.
 
-With Spring MVC, we can query our web endpoints using {spring-framework-docs}/testing/spring-mvc-test-framework.html[`MockMvc`] or `WebTestClient`, as shown in the following example:
+With Spring MVC, we can query our web endpoints using {url-spring-framework-docs}/testing/spring-mvc-test-framework.html[`MockMvc`] or `WebTestClient`, as shown in the following example:
 
 include-code::MyMockMvcTests[]
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider xref:features/testing.adoc#features.testing.spring-boot-applications.spring-mvc-tests[using `@WebMvcTest` instead].
 
-With Spring WebFlux endpoints, you can use {spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] as shown in the following example:
+With Spring WebFlux endpoints, you can use {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] as shown in the following example:
 
 include-code::MyMockWebTestClientTests[]
 
@@ -228,7 +228,7 @@ If you need to start a full running server, we recommend that you use random por
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
 The `@LocalServerPort` annotation can be used to xref:how-to:webserver.adoc#howto.webserver.discover-port[inject the actual port used] into your test.
-For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
 
 include-code::MyRandomPortWebTestClientTests[]
 
@@ -423,7 +423,7 @@ TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you 
 
 [[features.testing.spring-boot-applications.spring-webflux-tests]]
 === Auto-configured Spring WebFlux Tests
-To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.
+To test that {url-spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.
 `@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `WebFilter`, and `WebFluxConfigurer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
@@ -434,7 +434,7 @@ TIP: If you need to register extra components, such as Jackson `Module`, you can
 
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
 
-`@WebFluxTest` also auto-configures {spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
+`@WebFluxTest` also auto-configures {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
 The following example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
@@ -485,14 +485,14 @@ Spring GraphQL offers a dedicated testing support module; you'll need to add it 
   }
 ----
 
-This testing module ships the {spring-graphql-docs}/#testing-graphqltester[GraphQlTester].
+This testing module ships the {url-spring-graphql-docs}/#testing-graphqltester[GraphQlTester].
 The tester is heavily used in test, so be sure to become familiar with using it.
 There are `GraphQlTester` variants and Spring Boot will auto-configure them depending on the type of tests:
 
 * the `ExecutionGraphQlServiceTester` performs tests on the server side, without a client nor a transport
 * the `HttpGraphQlTester` performs tests with a client that connects to a server, with or without a live server
 
-Spring Boot helps you to test your {spring-graphql-docs}/#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
+Spring Boot helps you to test your {url-spring-graphql-docs}/#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
 `@GraphQlTest` auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
 This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `Converter`, `GenericConverter`, `DataFetcherExceptionResolver`, `Instrumentation` and `GraphQlSourceBuilderCustomizer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
@@ -574,7 +574,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 By default, data JPA tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
 
 include-code::MyNonTransactionalTests[]
@@ -606,7 +606,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 By default, JDBC tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
 include-code::MyTransactionalTests[]
@@ -626,7 +626,7 @@ Only `AbstractJdbcConfiguration` subclasses are scanned when the `@DataJdbcTest`
 TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 By default, Data JDBC tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole test class as xref:features/testing.adoc#features.testing.spring-boot-applications.autoconfigured-jdbc[shown in the JDBC example].
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
@@ -702,7 +702,7 @@ The following example shows a typical setup for using Neo4J tests in Spring Boot
 include-code::propagation/MyDataNeo4jTests[]
 
 By default, Data Neo4j tests are transactional and roll back at the end of each test.
-See the {spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
 include-code::nopropagation/MyDataNeo4jTests[]
@@ -772,7 +772,7 @@ include-code::MyRestClientServiceTests[]
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 === Auto-configured Spring REST Docs Tests
-You can use the `@AutoConfigureRestDocs` annotation to use {spring-restdocs}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
+You can use the `@AutoConfigureRestDocs` annotation to use {url-spring-restdocs-site}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
 It removes the need for the JUnit extension in Spring REST Docs.
 
 `@AutoConfigureRestDocs` can be used to override the default output directory (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you are using Gradle).

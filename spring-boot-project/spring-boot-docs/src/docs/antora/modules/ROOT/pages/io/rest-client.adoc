@@ -11,7 +11,7 @@ If you prefer blocking APIs then you can use `RestClient` or `RestTemplate`.
 == WebClient
 If you have Spring WebFlux on your classpath we recommend that you use `WebClient` to call remote REST services.
 The `WebClient` interface provides a functional style API and is fully reactive.
-You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
+You can learn more about the `WebClient` in the dedicated {url-spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
 
 TIP: If you are not writing a reactive Spring WebFlux application you can use the xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient`] instead of a `WebClient`.
 This provides a similar functional API, but is blocking rather than reactive.
@@ -46,7 +46,7 @@ Developers can override the resource configuration for Jetty and Reactor Netty b
 
 If you wish to override that choice for the client, you can define your own `ClientHttpConnector` bean and have full control over the client configuration.
 
-You can learn more about the {spring-framework-docs}/web/webflux-webclient/client-builder.html[`WebClient` configuration options in the Spring Framework reference documentation].
+You can learn more about the {url-spring-framework-docs}/web/webflux-webclient/client-builder.html[`WebClient` configuration options in the Spring Framework reference documentation].
 
 
 
@@ -126,7 +126,7 @@ include-code::settings/MyService[]
 
 [[io.rest-client.resttemplate]]
 == RestTemplate
-Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
+Spring Framework's {url-spring-framework-javadoc}/org/springframework/web/client/RestTemplate.html[`RestTemplate`] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
 You might choose to use `RestTemplate` when you have existing code that you don't want to migrate to `RestClient`, or because you're already familiar with the `RestTemplate` API.
 
 Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.

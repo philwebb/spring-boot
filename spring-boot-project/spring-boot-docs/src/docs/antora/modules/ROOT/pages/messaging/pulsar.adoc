@@ -1,7 +1,7 @@
 [[messaging.pulsar]]
 = Apache Pulsar Support
 
-https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configuration of the {spring-pulsar-docs}[Spring for Apache Pulsar] project.
+https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configuration of the {url-spring-pulsar-site}[Spring for Apache Pulsar] project.
 
 Spring Boot will auto-configure and register the classic (imperative) Spring for Apache Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
 It will do the same for the reactive components when `org.springframework.pulsar:spring-pulsar-reactive` is on the classpath.
@@ -53,7 +53,7 @@ For example, if you want to configure the issuer url for the `AuthenticationOAut
 If you use other forms, such as `issuerurl` or `issuer-url`, the setting will not be applied to the plugin.
 
 This lack of relaxed binding also makes using environment variables for authentication parameters problematic because the case sensitivity is lost during translation.
-If you use environment variables for the parameters then you will need to follow {spring-pulsar-docs}reference/pulsar.html#client-authentication-env-vars[these steps] in the Spring for Apache Pulsar reference documentation for it to work properly.
+If you use environment variables for the parameters then you will need to follow {url-spring-pulsar-docs}/reference/pulsar.html#client-authentication-env-vars[these steps] in the Spring for Apache Pulsar reference documentation for it to work properly.
 ====
 
 
@@ -61,9 +61,9 @@ If you use environment variables for the parameters then you will need to follow
 [[messaging.pulsar.connecting.ssl]]
 === SSL
 By default, Pulsar clients communicate with Pulsar services in plain text.
-You can follow {spring-pulsar-docs}reference/pulsar.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
+You can follow {url-spring-pulsar-docs}reference/pulsar.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
 
-For complete details on the client and authentication see the Spring for Apache Pulsar {spring-pulsar-docs}reference/pulsar.html#pulsar-client[reference documentation].
+For complete details on the client and authentication see the Spring for Apache Pulsar {url-spring-pulsar-docs}reference/pulsar.html#pulsar-client[reference documentation].
 
 
 
@@ -198,7 +198,7 @@ If you need more control over the reader factory configuration, consider registe
 These customizers are applied to all created readers.
 You can also pass one or more `ReactiveMessageReaderBuilderCustomizer` when creating a reader to only apply the customizations to the created reader.
 
-TIP: For more details on any of the above components and to discover other available features, see the Spring for Apache Pulsar {spring-pulsar-docs}[reference documentation].
+TIP: For more details on any of the above components and to discover other available features, see the Spring for Apache Pulsar {url-spring-pulsar-docs}[reference documentation].
 
 
 

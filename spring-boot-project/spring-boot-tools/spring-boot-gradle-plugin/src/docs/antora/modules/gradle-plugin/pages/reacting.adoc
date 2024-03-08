@@ -38,7 +38,7 @@ When {url-kotlin-docs-kotlin-plugin}[Kotlin's Gradle plugin] is applied to a pro
 
 [[reacting-to-other-plugins.war]]
 == Reacting to the War Plugin
-When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
+When Gradle's {url-gradle-docs-war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {boot-war-javadoc}[`BootWar`] task named `bootWar` that will create an executable, fat war for the project.
    In addition to the standard packaging, everything in the `providedRuntime` configuration will be packaged in `WEB-INF/lib-provided`.

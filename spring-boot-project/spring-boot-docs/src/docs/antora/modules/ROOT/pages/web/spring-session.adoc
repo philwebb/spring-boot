@@ -1,7 +1,7 @@
 [[web.spring-session]]
 = Spring Session
 
-Spring Boot provides {spring-session}[Spring Session] auto-configuration for a wide range of data stores.
+Spring Boot provides {url-spring-session-site}[Spring Session] auto-configuration for a wide range of data stores.
 When building a servlet web application, the following stores can be auto-configured:
 
 * Redis
