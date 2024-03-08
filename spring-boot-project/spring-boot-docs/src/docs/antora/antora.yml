@@ -137,7 +137,6 @@ asciidoc:
     spring-boot-docs: https://example.com/FIXME
     api-documentation: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/gradle-plugin/api'
 
-    spring-boot-api: FIXME
     spring-boot-current-docs: FIXME
     spring-boot-devtools-module-code: FIXME
     spring-boot-gradle-plugin-api: FIXME

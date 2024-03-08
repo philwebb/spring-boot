@@ -91,7 +91,7 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 				writer.println();
 				writer.printf("| {code-spring-boot}/spring-boot-project/%s/src/main/java/%s.java[`%s`]%n",
 						autoConfigurationClasses.module, autoConfigurationClass.path, autoConfigurationClass.name);
-				writer.printf("| {spring-boot-api}/%s.html[javadoc]%n", autoConfigurationClass.path);
+				writer.printf("| xref:api:java/%s.html[javadoc]%n", autoConfigurationClass.path);
 			}
 
 			writer.println("|===");
