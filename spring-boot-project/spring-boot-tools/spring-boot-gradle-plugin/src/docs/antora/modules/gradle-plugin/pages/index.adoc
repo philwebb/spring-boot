@@ -1,0 +1,4 @@
+[[gradle-plugin]]
+= Gradle Plugin
+
+FIXME

@@ -60,7 +60,7 @@ It is a small script and library that you commit alongside your code to bootstra
 See {url-gradle-docs}/gradle_wrapper.html for details.
 ****
 
-More details on getting started with Spring Boot and Gradle can be found in the xref:gradle-plugin/getting-started.adoc[Getting Started section] of the Gradle plugin's reference guide.
+More details on getting started with Spring Boot and Gradle can be found in the xref:gradle-plugin:getting-started.adoc[Getting Started section] of the Gradle plugin's reference guide.
 
 
 

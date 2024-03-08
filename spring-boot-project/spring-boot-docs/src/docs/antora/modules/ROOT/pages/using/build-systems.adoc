@@ -36,8 +36,8 @@ To learn about using Spring Boot with Maven, see the documentation for Spring Bo
 == Gradle
 To learn about using Spring Boot with Gradle, see the documentation for Spring Boot's Gradle plugin:
 
-* xref:gradle-plugin[Reference]
-* xref:gradle-plugin:api/java[API]
+* xref:gradle-plugin:index.adoc[Reference]
+* xref:gradle-plugin:api/java/index.html[API]
 
 
 

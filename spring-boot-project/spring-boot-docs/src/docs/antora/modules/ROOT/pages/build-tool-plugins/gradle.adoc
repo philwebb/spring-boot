@@ -5,5 +5,5 @@ The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting yo
 It requires Gradle 7.x (7.5 or later) or 8.x.
 See the plugin's documentation to learn more:
 
-* xref:gradle-plugin[Reference]
-* xref:gradle-plugin:api/java[API]
+* xref:gradle-plugin:index.adoc[Reference]
+* xref:gradle-plugin:api/java/index.html[API]

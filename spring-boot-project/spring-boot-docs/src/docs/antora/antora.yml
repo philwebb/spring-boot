@@ -7,6 +7,8 @@ ext:
       classifier: aggregate-content
     - name: api
       classifier: catalog-content
+      module: api
+      destination: content-catalog
 asciidoc:
   attributes:
     # FIXME these will be generated
@@ -121,12 +123,12 @@ asciidoc:
     github-issues: https://github.com/{github-repo}/issues
     github-wiki: https://github.com/{github-repo}/wiki
 
-    code-spring-boot: https://github.com/{github-repo}/tree/{github-tag}
-    code-spring-boot-src: {code-spring-boot}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
-    code-spring-boot-actuator-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
-    code-spring-boot-actuator-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
-    code-spring-boot-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
-    code-spring-boot-devtools-src: {code-spring-boot}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
+    code-spring-boot: 'https://github.com/{github-repo}/tree/{github-tag}'
+    code-spring-boot-src: '{code-spring-boot}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot'
+    code-spring-boot-actuator-autoconfigure-src: '{code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure'
+    code-spring-boot-actuator-src: '{code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate'
+    code-spring-boot-autoconfigure-src: '{code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure'
+    code-spring-boot-devtools-src: '{code-spring-boot}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools'
 
     # FIXME move to a code module and also fix other builds
     include-java: ROOT:example$java/org/springframework/boot/docs
