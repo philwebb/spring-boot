@@ -126,6 +126,7 @@ asciidoc:
     code-spring-boot-actuator-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
     code-spring-boot-actuator-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
     code-spring-boot-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+    code-spring-boot-devtools-src: {code-spring-boot}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
 
     # FIXME move to a code module and also fix other builds
     include-java: ROOT:example$java/org/springframework/boot/docs
@@ -135,13 +136,7 @@ asciidoc:
 
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-boot-docs: https://example.com/FIXME
-    api-documentation: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/gradle-plugin/api'
 
-    spring-boot-current-docs: FIXME
-    spring-boot-devtools-module-code: FIXME
-    spring-boot-gradle-plugin-api: FIXME
-    spring-boot-gradle-plugin-docs: FIXME
-    spring-boot-gradle-plugin-pdfdocs: FIXME
     spring-boot-latest-code: FIXME
     spring-boot-maven-plugin-api: FIXME
     spring-boot-maven-plugin-docs: FIXME

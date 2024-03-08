@@ -3,5 +3,3 @@
 
 This section provides a brief overview of Spring Boot reference documentation.
 It serves as a map for the rest of the document.
-
-The latest copy of this document is available at {spring-boot-current-docs}.

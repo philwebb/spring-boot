@@ -40,7 +40,7 @@ TIP: Flagging the dependency as optional in Maven or using the `developmentOnly`
 TIP: Repackaged archives do not contain devtools by default.
 If you want to use a xref:using/devtools.adoc#using.devtools.remote-applications[certain remote devtools feature], you need to include it.
 When using the Maven plugin, set the `excludeDevtools` property to `false`.
-When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
+When using the Gradle plugin, xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
 
 
@@ -320,7 +320,7 @@ Profile specific filenames (of the form `spring-boot-devtools-<profile>.properti
 
 [[using.devtools.globalsettings.configuring-file-system-watcher]]
 === Configuring File System Watcher
-{spring-boot-devtools-module-code}/filewatch/FileSystemWatcher.java[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
+{code-spring-boot-devtools-src}/filewatch/FileSystemWatcher.java[FileSystemWatcher] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
 

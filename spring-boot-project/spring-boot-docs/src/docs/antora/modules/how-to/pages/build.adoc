@@ -45,7 +45,7 @@ The following example does the same with Gradle:
 	}
 ----
 
-TIP: See the {spring-boot-gradle-plugin-docs}#integrating-with-actuator-build-info[Spring Boot Gradle Plugin documentation] for more details.
+TIP: See the xref:gradle-plugin:integrating-with-actuator[Spring Boot Gradle Plugin documentation] for more details.
 
 
 
@@ -95,7 +95,7 @@ Overriding versions may cause compatibility issues.
 
 To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}#using[this section] of the Maven plugin's documentation.
 
-To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}#managing-dependencies-dependency-management-plugin-customizing[this section] of the Gradle plugin's documentation.
+To override dependency versions in Gradle, see xref:gradle-plugin:managing-dependencies.dependency-management-plugin.customizing[this section] of the Gradle plugin's documentation.
 
 
 
