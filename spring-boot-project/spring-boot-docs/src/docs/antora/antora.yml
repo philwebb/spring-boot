@@ -138,9 +138,8 @@ asciidoc:
 
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-boot-docs: https://example.com/FIXME
-
     spring-boot-latest-code: FIXME
-    spring-boot-maven-plugin-api: FIXME
+    
     spring-boot-maven-plugin-docs: FIXME
     spring-boot-maven-plugin-pdfdocs: FIXME
     spring-boot-module-api: FIXME

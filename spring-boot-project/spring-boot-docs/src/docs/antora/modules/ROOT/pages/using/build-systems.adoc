@@ -28,7 +28,7 @@ We **highly** recommend that you do not specify its version.
 To learn about using Spring Boot with Maven, see the documentation for Spring Boot's Maven plugin:
 
 * Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
-* {spring-boot-maven-plugin-api}[API]
+* xref:maven-plugin:api/java/index.html[API]
 
 
 
