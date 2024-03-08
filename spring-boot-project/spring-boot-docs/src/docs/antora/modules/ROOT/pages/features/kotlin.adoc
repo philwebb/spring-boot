@@ -45,7 +45,7 @@ The `strict` value is required to have null-safety taken in account in Kotlin ty
 
 WARNING: Generic type arguments, varargs and array elements nullability are not yet supported.
 See https://jira.spring.io/browse/SPR-15942[SPR-15942] for up-to-date information.
-Also be aware that Spring Boot's own API is {github-issues}10712[not yet annotated].
+Also be aware that Spring Boot's own API is {github-issues}/10712[not yet annotated].
 
 
 

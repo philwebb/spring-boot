@@ -20,4 +20,4 @@ The basename of the resource bundle as well as several other attributes can be c
 
 TIP: `spring.messages.basename` supports comma-separated list of locations, either a package qualifier or a resource resolved from the classpath root.
 
-See {spring-boot-autoconfigure-module-code}/context/MessageSourceProperties.java[`MessageSourceProperties`] for more supported options.
+See {code-spring-boot-autoconfigure}/context/MessageSourceProperties.java[`MessageSourceProperties`] for more supported options.

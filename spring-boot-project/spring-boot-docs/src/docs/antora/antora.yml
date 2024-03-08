@@ -108,28 +108,44 @@ asciidoc:
     url-spring-data-redis-site: https://spring.io/projects/spring-data-redis
     url-spring-data-rest-javadoc: https://docs.spring.io/spring-data/rest/docs/{version-spring-data-rest}/api
     
-    # FIXME TODO
-    gradle-project-version: 3.3.0-SNAPSHOT
-    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
-    api-documentation: '{spring-boot-docs}/gradle-plugin/api'
-    boot-build-image-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html'
-    boot-jar-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html'
-    boot-run-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html'
-    boot-war-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html'
-    build-info-javadoc: '{api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html'
-    github-issues: FIXME
-    github-raw: FIXME
-    github-wiki: FIXME
+    apiref-gradle-plugin-boot-build-image: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html'
+    apiref-gradle-plugin-boot-jar: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html'
+    apiref-gradle-plugin-boot-run: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/run/BootRun.html'
+    apiref-gradle-plugin-boot-war: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/bundling/BootWar.html'
+    apiref-gradle-plugin-boot-build-info: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html'
+    apiref-openjdk: https://docs.oracle.com/en/java/javase/17/docs/api
+    
+    github-tag: main # FIXME calcualte this?
+    github-repo: spring-projects/spring-boot
+    github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
+    github-issues: https://github.com/{github-repo}/issues
+    github-wiki: https://github.com/{github-repo}/wiki
+
+    code-spring-boot: https://github.com/{github-repo}/tree/{github-tag}
+    code-spring-boot-actuator-autoconfigure: {code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
+    code-spring-boot-actuator: {code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+    code-spring-boot-autoconfigure: {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+
+    # FIXME move to a code module and also fix other builds
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
+
+    # FIXME TODO
+
+    gradle-project-version: 3.3.0-SNAPSHOT
+    spring-boot-docs: https://example.com/FIXME
+    api-documentation: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/gradle-plugin/api'
     java-api: FIXME
-    spring-boot-actuator-autoconfigure-module-code: FIXME
-    spring-boot-actuator-module-code: FIXME
+    
+    
+
+    
+    spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
+    spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
+
     spring-boot-actuator-restapi-docs: FIXME
     spring-boot-actuator-restapi-pdfdocs: FIXME
     spring-boot-api: FIXME
-    spring-boot-autoconfigure-module-code: FIXME
-    spring-boot-code: FIXME
     spring-boot-current-docs: FIXME
     spring-boot-devtools-module-code: FIXME
     spring-boot-gradle-plugin-api: FIXME
@@ -140,8 +156,7 @@ asciidoc:
     spring-boot-maven-plugin-docs: FIXME
     spring-boot-maven-plugin-pdfdocs: FIXME
     spring-boot-module-api: FIXME
-    spring-boot-module-code: FIXME
-    spring-boot-reference: '{spring-boot-docs}/reference/htmlsingle'
+    spring-boot-reference: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/reference/htmlsingle'
     spring-boot-test-autoconfigure-module-code: FIXME
     spring-boot-test-module-api: FIXME
     spring-boot-version: FIXME

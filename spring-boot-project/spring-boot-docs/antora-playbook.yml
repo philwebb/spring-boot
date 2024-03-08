@@ -1,14 +1,14 @@
 antora:
   extensions:
   - require: '/Users/pwebb/projects/antora-xref-fragments-extension/packages/xref-fragments-extension'
-  - require: '@springio/antora-extensions/root-component-extension'
-    root_component_name: spring-boot
   - require: '@springio/antora-extensions/tabs-migration-extension'
     unwrap_example_block: always
   - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
     version_file: gradle.properties
     locations:
     - url: spring-boot-project/spring-boot-docs/build/generated/docs/antora-content/spring-boot-docs-${version}-${name}-${classifier}.zip
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: spring-boot
 site:
   title: Spring Boot
 content:

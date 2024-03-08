@@ -122,7 +122,7 @@ If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter`, they 
 Also, a convenience bean of type `HttpMessageConverters` is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
-See the "`xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[Customize the @ResponseBody Rendering]`" section and the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the "`xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[Customize the @ResponseBody Rendering]`" section and the {code-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
@@ -138,7 +138,7 @@ As in normal MVC usage, any `WebMvcConfigurer` beans that you provide can also c
 However, unlike with normal MVC, you can supply only additional converters that you need (because Spring Boot uses the same mechanism to contribute its defaults).
 Finally, if you opt out of the Spring Boot default MVC configuration by providing your own `@EnableWebMvc` configuration, you can take control completely and do everything manually by using `getMessageConverters` from `WebMvcConfigurationSupport`.
 
-See the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the {code-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
@@ -151,7 +151,7 @@ For example, if you want to specify that files be unlimited, set the configprop:
 
 The multipart support is helpful when you want to receive multipart encoded file data as a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller handler method.
 
-See the {spring-boot-autoconfigure-module-code}/web/servlet/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
+See the {code-spring-boot-autoconfigure}/web/servlet/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
 
 NOTE: It is recommended to use the container's built-in support for multipart uploads rather than introducing an additional dependency such as Apache Commons File Upload.
 
@@ -228,7 +228,7 @@ If you add your own, you have to be aware of the order and in which position you
 
 For more detail, see the following sections:
 
-* {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
-* {spring-boot-autoconfigure-module-code}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
-* {spring-boot-autoconfigure-module-code}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
-* {spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]
+* {code-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
+* {code-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
+* {code-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
+* {code-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]

@@ -6,7 +6,7 @@
 [[integrating-with-actuator.build-info]]
 == Generating Build Information
 Spring Boot Actuator's `info` endpoint automatically publishes information about your build in the presence of a `META-INF/build-info.properties` file.
-A {build-info-javadoc}[`BuildInfo`] task is provided to generate this file.
+A {apiref-gradle-plugin-boot-build-info}[`BuildInfo`] task is provided to generate this file.
 The easiest way to use the task is through the plugin's DSL:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -21,7 +21,7 @@ include::example$integrating-with-actuator/build-info-basic.gradle[tags=build-in
 include::example$integrating-with-actuator/build-info-basic.gradle.kts[tags=build-info]
 ----
 
-This will configure a {build-info-javadoc}[`BuildInfo`] task named `bootBuildInfo` and, if it exists, make the Java plugin's `classes` task depend upon it.
+This will configure a {apiref-gradle-plugin-boot-build-info}[`BuildInfo`] task named `bootBuildInfo` and, if it exists, make the Java plugin's `classes` task depend upon it.
 The task's destination directory will be `META-INF` in the output directory of the main source set's resources (typically `build/resources/main`).
 
 By default, the generated build information is derived from the project:

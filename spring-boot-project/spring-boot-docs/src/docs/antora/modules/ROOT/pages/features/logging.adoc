@@ -397,9 +397,9 @@ If you use Logback, the following properties are also transferred:
 All the supported logging systems can consult System properties when parsing their configuration files.
 See the default configurations in `spring-boot.jar` for examples:
 
-* {spring-boot-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml[Logback]
-* {spring-boot-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
-* {spring-boot-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/java/logging-file.properties[Java Util logging]
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml[Logback]
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
+* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/java/logging-file.properties[Java Util logging]
 
 [TIP]
 ====

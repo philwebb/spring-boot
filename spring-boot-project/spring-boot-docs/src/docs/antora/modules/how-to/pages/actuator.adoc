@@ -12,7 +12,7 @@ In a standalone application, the Actuator HTTP port defaults to the same as the 
 To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
-For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`xref:ROOT:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port]`" in the "`Production-ready features`" section.
+For more detail, see the {code-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`xref:ROOT:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port]`" in the "`Production-ready features`" section.
 
 
 
@@ -29,7 +29,7 @@ For example, if you use Thymeleaf, you can add an `error.html` template.
 If you use FreeMarker, you can add an `error.ftlh` template.
 In general, you need a `View` that resolves with a name of `error` or a `@Controller` that handles the `/error` path.
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
-See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
+See {code-spring-boot-autoconfigure}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on "`xref:ROOT:web/servlet.adoc#web.servlet.spring-mvc.error-handling[Error Handling]`" for details of how to register handlers in the servlet container.
 

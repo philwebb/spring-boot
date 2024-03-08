@@ -280,7 +280,7 @@ Common server settings include:
 Spring Boot tries as much as possible to expose common settings, but this is not always possible.
 For those cases, dedicated namespaces such as `server.netty.*` offer server-specific customizations.
 
-TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] class for a complete list.
+TIP: See the {code-spring-boot-autoconfigure}/web/ServerProperties.java[`ServerProperties`] class for a complete list.
 
 
 
