@@ -125,7 +125,7 @@ Assume the following:
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the directory to use according to the type of the database (such as `db/migration/mysql` for MySQL).
-The list of supported databases is available in {spring-boot-module-code}/jdbc/DatabaseDriver.java[`DatabaseDriver`].
+The list of supported databases is available in {code-spring-boot-src}/jdbc/DatabaseDriver.java[`DatabaseDriver`].
 
 Migrations can also be written in Java.
 Flyway will be auto-configured with any beans that implement `JavaMigration`.

@@ -122,6 +122,7 @@ asciidoc:
     github-wiki: https://github.com/{github-repo}/wiki
 
     code-spring-boot: https://github.com/{github-repo}/tree/{github-tag}
+    code-spring-boot-src: {code-spring-boot}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
     code-spring-boot-actuator-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
     code-spring-boot-actuator-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
     code-spring-boot-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
@@ -135,13 +136,6 @@ asciidoc:
     gradle-project-version: 3.3.0-SNAPSHOT
     spring-boot-docs: https://example.com/FIXME
     api-documentation: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/gradle-plugin/api'
-    java-api: FIXME
-    
-    
-
-    
-    spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
-    spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
 
     spring-boot-actuator-restapi-docs: FIXME
     spring-boot-actuator-restapi-pdfdocs: FIXME
