@@ -11,7 +11,7 @@ The built-in endpoints are auto-configured only when they are available.
 Most applications choose exposure over HTTP, where the ID of the endpoint and a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
 
-TIP: To learn more about the Actuator's endpoints and their request and response formats, see the separate API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
+TIP: To learn more about the Actuator's endpoints and their request and response formats, see the xref:api:rest/actuator[API documentation].
 
 The following technology-agnostic endpoints are available:
 
@@ -228,7 +228,7 @@ include-code::typical/MySecurityConfiguration[]
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
 Several other matcher methods are also available on `EndpointRequest`.
-See the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]) for details.
+See the xref:api:rest/actuator[API documentation] for details.
 
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:

@@ -137,8 +137,6 @@ asciidoc:
     spring-boot-docs: https://example.com/FIXME
     api-documentation: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/gradle-plugin/api'
 
-    spring-boot-actuator-restapi-docs: FIXME
-    spring-boot-actuator-restapi-pdfdocs: FIXME
     spring-boot-api: FIXME
     spring-boot-current-docs: FIXME
     spring-boot-devtools-module-code: FIXME
