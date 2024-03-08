@@ -42,7 +42,7 @@ When used to secure a client-side connection, a `truststore` is typically config
                 password: "secret"
 ----
 
-See {code-spring-boot-autoconfigure}/ssl/JksSslBundleProperties.java[JksSslBundleProperties] for the full set of supported properties.
+See {code-spring-boot-autoconfigure-src}/ssl/JksSslBundleProperties.java[JksSslBundleProperties] for the full set of supported properties.
 
 
 
@@ -105,7 +105,7 @@ The following example shows how a truststore certificate can be defined:
 ----
 ====
 
-See {code-spring-boot-autoconfigure}/ssl/PemSslBundleProperties.java[PemSslBundleProperties] for the full set of supported properties.
+See {code-spring-boot-autoconfigure-src}/ssl/PemSslBundleProperties.java[PemSslBundleProperties] for the full set of supported properties.
 
 
 

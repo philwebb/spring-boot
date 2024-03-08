@@ -102,7 +102,7 @@ This example uses a more generic `configuration` sub namespace as the example do
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type` has no effect.
 In practice, the builder is initialized with whatever value you might set there and then overridden by the call to `.type()`.
 
-See "`xref:ROOT:data/sql.adoc#data.sql.datasource[Configure a DataSource]`" in the "`Spring Boot features`" section and the {code-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
+See "`xref:ROOT:data/sql.adoc#data.sql.datasource[Configure a DataSource]`" in the "`Spring Boot features`" section and the {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
 
 
@@ -238,7 +238,7 @@ Alternatively, you can configure the following bean:
 
 include-code::standard/MyHibernateConfiguration[]
 
-See {code-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`] and {code-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for more details.
+See {code-spring-boot-autoconfigure-src}/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`] and {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for more details.
 
 
 
@@ -307,7 +307,7 @@ include-code::CustomerConfiguration[]
 Spring Boot will not search for or use a `META-INF/persistence.xml` by default.
 If you prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the persistence unit name there.
 
-See {code-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for the default settings.
+See {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for the default settings.
 
 
 
@@ -362,6 +362,6 @@ include-code::ElasticsearchEntityManagerFactoryDependsOnPostProcessor[]
 [[howto.data-access.configure-jooq-with-multiple-datasources]]
 == Configure jOOQ with Two DataSources
 If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
-See {code-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
+See {code-spring-boot-autoconfigure-src}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
 
 TIP: In particular, `JooqExceptionTranslator` and `SpringTransactionProvider` can be reused to provide similar features to what the auto-configuration does with a single `DataSource`.

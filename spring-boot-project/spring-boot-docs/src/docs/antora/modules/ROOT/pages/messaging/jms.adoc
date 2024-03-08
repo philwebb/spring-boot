@@ -47,7 +47,7 @@ If you'd rather use native pooling, you can do so by adding a dependency to `org
 	      max-connections: 50
 ----
 
-TIP: See {code-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.java[`ActiveMQProperties`] for more of the supported options.
+TIP: See {code-spring-boot-autoconfigure-src}/jms/activemq/ActiveMQProperties.java[`ActiveMQProperties`] for more of the supported options.
 You can also register an arbitrary number of beans that implement `ActiveMQConnectionFactoryCustomizer` for more advanced customizations.
 
 By default, ActiveMQ "Classic" creates a destination if it does not yet exist so that destinations are resolved against their provided names.
@@ -101,7 +101,7 @@ If you'd rather use native pooling, you can do so by adding a dependency on `org
 	      max-connections: 50
 ----
 
-See {code-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
+See {code-spring-boot-autoconfigure-src}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
 
 No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the ActiveMQ Artemis configuration or the names provided through configuration.
 

@@ -10,7 +10,7 @@ Any of your beans that are annotated with Spring JMX annotations (`@ManagedResou
 If your platform provides a standard `MBeanServer`, Spring Boot uses that and defaults to the VM `MBeanServer`, if necessary.
 If all that fails, a new `MBeanServer` is created.
 
-See the {code-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.java[`JmxAutoConfiguration`] class for more details.
+See the {code-spring-boot-autoconfigure-src}/jmx/JmxAutoConfiguration.java[`JmxAutoConfiguration`] class for more details.
 
 By default, Spring Boot also exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain.
 To take full control over endpoint registration in the JMX domain, consider registering your own `EndpointObjectNameFactory` implementation.

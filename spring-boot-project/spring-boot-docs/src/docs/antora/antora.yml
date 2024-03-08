@@ -122,9 +122,9 @@ asciidoc:
     github-wiki: https://github.com/{github-repo}/wiki
 
     code-spring-boot: https://github.com/{github-repo}/tree/{github-tag}
-    code-spring-boot-actuator-autoconfigure: {code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
-    code-spring-boot-actuator: {code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
-    code-spring-boot-autoconfigure: {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+    code-spring-boot-actuator-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure
+    code-spring-boot-actuator-src: {code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+    code-spring-boot-autoconfigure-src: {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
 
     # FIXME move to a code module and also fix other builds
     include-java: ROOT:example$java/org/springframework/boot/docs
