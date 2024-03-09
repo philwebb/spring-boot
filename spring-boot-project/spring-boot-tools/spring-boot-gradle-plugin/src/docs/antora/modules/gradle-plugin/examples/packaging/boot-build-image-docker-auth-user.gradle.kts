@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
 	java
-	id("org.springframework.boot") version "{gradle-project-version}"
+	id("org.springframework.boot") version "{version-spring-boot}"
 }
 
 tasks.named<BootJar>("bootJar") {

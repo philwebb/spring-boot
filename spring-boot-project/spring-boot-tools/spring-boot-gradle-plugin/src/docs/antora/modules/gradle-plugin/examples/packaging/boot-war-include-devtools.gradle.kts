@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootWar
 
 plugins {
 	war
-	id("org.springframework.boot") version "{gradle-project-version}"
+	id("org.springframework.boot") version "{version-spring-boot}"
 }
 
 tasks.named<BootWar>("bootWar") {

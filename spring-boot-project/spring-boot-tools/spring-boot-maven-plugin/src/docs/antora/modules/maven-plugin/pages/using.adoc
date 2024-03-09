@@ -47,7 +47,7 @@ To configure your project to inherit from the `spring-boot-starter-parent`, set 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>{gradle-project-version}</version>
+		<version>{version-spring-boot}</version>
 	</parent>
 ----
 

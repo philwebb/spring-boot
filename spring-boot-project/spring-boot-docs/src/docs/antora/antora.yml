@@ -31,6 +31,7 @@ asciidoc:
     url-spring-batch-javadoc: https://example.com/FIXME
     url-spring-batch-docs: https://example.com/FIXME
     url-spring-batch-site: https://example.com/FIXME
+    url-spring-boot-layers-xsd: https://www.springframework.org/schema/boot/layers/layers-3.3.xsd
     url-spring-framework-javadoc: https://docs.spring.io/spring-framework/docs/{version-spring-framework}/javadoc-api/org/springframework
     url-spring-framework-docs: https://example.com/FIXME
     url-spring-framework-site: https://example.com/FIXME
@@ -58,7 +59,6 @@ asciidoc:
     version-spring-data-neo4j: FIXME
     version-spring-data-r2dbc: FIXME
     version-spring-data-rest: FIXME
-    
     
     # FIXME these are added manually
     version-graal: 22.3
@@ -139,8 +139,6 @@ asciidoc:
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
 
     # FIXME TODO
-    gradle-project-version: 3.3.0-SNAPSHOT
-    spring-boot-xsd-version: 3.3.0-SNAPSHOT
 nav:
 - modules/ROOT/nav.adoc 
     

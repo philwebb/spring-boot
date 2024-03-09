@@ -13,7 +13,7 @@ asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT
     nbt-reference: 'https://graalvm.github.io/native-build-tools/latest/maven-plugin.html'
-    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
+    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{version-spring-boot}'
     spring-boot-api: '{spring-boot-docs}/api/org/springframework/boot'
     spring-boot-reference: '{spring-boot-docs}/reference/htmlsingle'
     version-properties-appendix: '{spring-boot-reference}/#dependency-versions-properties'

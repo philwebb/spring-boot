@@ -2,7 +2,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 
 plugins {
 	java
-	id("org.springframework.boot") version "{gradle-project-version}"
+	id("org.springframework.boot") version "{version-spring-boot}"
 }
 
 // tag::configure-bom[]

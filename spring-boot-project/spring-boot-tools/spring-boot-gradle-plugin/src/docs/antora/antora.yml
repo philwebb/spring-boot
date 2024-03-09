@@ -10,7 +10,7 @@ ext:
 asciidoc:
   attributes:
     gradle-project-version: 3.3.0-SNAPSHOT
-    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}'
+    spring-boot-docs: 'https://docs.spring.io/spring-boot/docs/{version-spring-boot}'
     spring-boot-reference: '{spring-boot-docs}/reference/htmlsingle'
     api-documentation: '{spring-boot-docs}/gradle-plugin/api'
     native-build-tools-version: FIXME
