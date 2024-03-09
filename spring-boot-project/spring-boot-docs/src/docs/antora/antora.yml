@@ -137,5 +137,5 @@ asciidoc:
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
 nav:
-- modules/ROOT/nav.adoc 
+# - modules/ROOT/nav.adoc 
     

@@ -14,7 +14,7 @@ It minimizes divergence between development and production environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs to run packaged within it.
 
-In this section, we look at what it takes to get the xref:getting-started/first-application.adoc[application that we developed] in the "`Getting Started`" section up and running in the Cloud.
+In this section, we look at what it takes to get the xref:ROOT:getting-started/first-application.adoc[application that we developed] in the "`Getting Started`" section up and running in the Cloud.
 
 
 
