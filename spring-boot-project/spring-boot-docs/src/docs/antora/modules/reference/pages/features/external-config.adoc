@@ -806,7 +806,7 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 include-code::MyService[]
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
-See the xref:ROOT:configuration-metadata.adoc[appendix] for details.
+See the xref:specification:configuration-metadata/index.adoc[appendix] for details.
 
 
 
@@ -1184,7 +1184,7 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 | Limited (see xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.vs-value-annotation.note[note below])
 
-| xref:ROOT:configuration-metadata.adoc[Meta-data support]
+| xref:specification:configuration-metadata/index.adoc[Meta-data support]
 | Yes
 | No
 

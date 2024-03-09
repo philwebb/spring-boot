@@ -394,7 +394,7 @@ An uber jar packages all the classes from all the application's dependencies int
 The problem with this approach is that it becomes hard to see which libraries are in your application.
 It can also be problematic if the same filename is used (but with different content) in multiple jars.
 
-Spring Boot takes a xref:executable-jar.adoc[different approach] and lets you actually nest jars directly.
+Spring Boot takes a xref:specification:executable-jar/index.adoc[different approach] and lets you actually nest jars directly.
 ****
 
 

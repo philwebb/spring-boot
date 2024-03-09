@@ -35,7 +35,7 @@ NOTE: Please use public getters and setters in all cases, otherwise the properti
 [[native-image.advanced.converting-executable-jars]]
 == Converting a Spring Boot Executable Jar
 
-It is possible to convert a Spring Boot xref:ROOT:executable-jar.adoc[executable jar] into a native image as long as the jar contains the AOT generated assets.
+It is possible to convert a Spring Boot xref:specification:executable-jar/index.adoc[executable jar] into a native image as long as the jar contains the AOT generated assets.
 This can be useful for a number of reasons, including:
 
 * You can keep your regular JVM pipeline and turn the JVM application into a native image on your CI/CD platform.
