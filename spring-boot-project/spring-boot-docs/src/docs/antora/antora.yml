@@ -140,8 +140,6 @@ asciidoc:
     spring-boot-docs: https://example.com/FIXME
     spring-boot-latest-code: FIXME
     
-    spring-boot-maven-plugin-docs: FIXME
-    spring-boot-maven-plugin-pdfdocs: FIXME
     spring-boot-module-api: FIXME
     spring-boot-reference: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/reference/htmlsingle'
     spring-boot-test-autoconfigure-module-code: FIXME

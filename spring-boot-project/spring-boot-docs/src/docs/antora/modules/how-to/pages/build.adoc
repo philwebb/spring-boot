@@ -34,7 +34,7 @@ To generate build information with Maven, add an execution for the `build-info` 
 	</build>
 ----
 
-TIP: See the {spring-boot-maven-plugin-docs}#goals-build-info[Spring Boot Maven Plugin documentation] for more details.
+TIP: See the xref:maven-plugin:build-info.adoc[Spring Boot Maven Plugin documentation] for more details.
 
 The following example does the same with Gradle:
 
@@ -93,7 +93,7 @@ The Spring Boot plugins for Maven and Gradle allow these managed dependency vers
 WARNING: Each Spring Boot release is designed and tested against this specific set of third-party dependencies.
 Overriding versions may cause compatibility issues.
 
-To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}#using[this section] of the Maven plugin's documentation.
+To override dependency versions with Maven, see xref:maven-plugin:using.adoc[this section] of the Maven plugin's documentation.
 
 To override dependency versions in Gradle, see xref:gradle-plugin:managing-dependencies.adoc#managing-dependencies.dependency-management-plugin.customizing[this section] of the Gradle plugin's documentation.
 
@@ -139,7 +139,7 @@ However, you must additionally add an `<executions>` section, as follows:
 	</build>
 ----
 
-See the {spring-boot-maven-plugin-docs}#repackage[plugin documentation] for full usage details.
+See the xref:maven-plugin:packaging.adoc#packaging.repackage-goal[plugin documentation] for full usage details.
 
 
 
@@ -251,9 +251,9 @@ In Maven, the executable jar must be the main artifact and you can add a classif
 
 [[howto.build.remote-debug-maven]]
 == Remote Debug a Spring Boot Application Started with Maven
-To attach a remote debugger to a Spring Boot application that was started with Maven, you can use the `jvmArguments` property of the {spring-boot-maven-plugin-docs}[maven plugin].
+To attach a remote debugger to a Spring Boot application that was started with Maven, you can use the `jvmArguments` property of the xref:maven-plugin:index.adoc[maven plugin].
 
-See {spring-boot-maven-plugin-docs}#run-example-debug[this example] for more details.
+See xref:maven-plugin:run.adoc#run.examples.debug[this example] for more details.
 
 
 

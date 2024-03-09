@@ -30,7 +30,7 @@ NOTE: Only production configuration is filtered that way (in other words, no fil
 TIP: If you enable the `addResources` flag, the `spring-boot:run` goal can add `src/main/resources` directly to the classpath (for hot reloading purposes).
 Doing so circumvents the resource filtering and this feature.
 Instead, you can use the `exec:java` goal or customize the plugin's configuration.
-See the {spring-boot-maven-plugin-docs}#getting-started[plugin usage page] for more details.
+See the xref:maven-plugin:using.adoc[plugin usage page] for more details.
 
 If you do not use the starter parent, you need to include the following  element inside the `<build/>` element of your `pom.xml`:
 

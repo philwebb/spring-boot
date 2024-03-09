@@ -6,5 +6,5 @@ To use it, you must use Maven 3.6.3 or later.
 
 See the plugin's documentation to learn more:
 
-* Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
+* xref:maven-plugin:index.adoc[Reference]
 * xref:maven-plugin:api/java/index.html[API]
