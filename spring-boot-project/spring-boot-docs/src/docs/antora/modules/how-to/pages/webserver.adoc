@@ -79,7 +79,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see "`xref:ROOT:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the {code-spring-boot-autoconfigure-src}/web/ServerProperties.java[`ServerProperties`] source code.
+For more details, see "`xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the {code-spring-boot-autoconfigure-src}/web/ServerProperties.java[`ServerProperties`] source code.
 
 
 
@@ -185,7 +185,7 @@ The following example shows setting SSL properties using PEM-encoded certificate
 	    trust-certificate: "classpath:ca-cert.crt"
 ----
 
-Alternatively, the SSL trust material can be configured in an xref:ROOT:features/ssl.adoc[SSL bundle] and applied to the web server as shown in this example:
+Alternatively, the SSL trust material can be configured in an xref:reference:features/ssl.adoc[SSL bundle] and applied to the web server as shown in this example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -325,7 +325,7 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 This aligns with the servlet specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`xref:ROOT:web/servlet.adoc#web.servlet.embedded-container.servlets-filters-listeners.beans[Registering Servlets, Filters, and Listeners as Spring Beans]`" section.
+Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`xref:reference:web/servlet.adoc#web.servlet.embedded-container.servlets-filters-listeners.beans[Registering Servlets, Filters, and Listeners as Spring Beans]`" section.
 
 
 

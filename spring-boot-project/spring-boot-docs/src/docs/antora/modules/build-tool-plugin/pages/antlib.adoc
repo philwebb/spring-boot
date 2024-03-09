@@ -21,7 +21,7 @@ You need to remember to start Ant using the `-lib` option, as shown in the follo
 	$ ant -lib <directory containing spring-boot-antlib-{version-spring-boot}.jar>
 ----
 
-TIP: The "`Using Spring Boot`" section includes a more complete example of xref:using/build-systems.adoc#using.build-systems.ant[using Apache Ant with `spring-boot-antlib`].
+TIP: The "`Using Spring Boot`" section includes a more complete example of xref:reference:using/build-systems.adoc#using.build-systems.ant[using Apache Ant with `spring-boot-antlib`].
 
 
 
@@ -29,8 +29,8 @@ TIP: The "`Using Spring Boot`" section includes a more complete example of xref:
 == Spring Boot Ant Tasks
 Once the `spring-boot-antlib` namespace has been declared, the following additional tasks are available:
 
-* xref:build-tool-plugins/antlib.adoc#build-tool-plugins.antlib.tasks.exejar[Using the "`exejar`" Task]
-* xref:build-tool-plugins/antlib.adoc#build-tool-plugins.antlib.findmainclass[Using the "`findmainclass`" Task]
+* xref:antlib.adoc#build-tool-plugins.antlib.tasks.exejar[Using the "`exejar`" Task]
+* xref:antlib.adoc#build-tool-plugins.antlib.findmainclass[Using the "`findmainclass`" Task]
 
 
 

@@ -2,7 +2,7 @@
 = Learning About Spring Boot Features
 
 Need more details about Spring Boot's core features?
-xref:reference/features/index.adoc[The following content is for you]:
+xref:reference:features/index.adoc[The following content is for you]:
 
 * *Spring Application:* xref:reference:features/spring-application.adoc[SpringApplication]
 * *External Configuration:* xref:reference:features/external-config.adoc[External Configuration]

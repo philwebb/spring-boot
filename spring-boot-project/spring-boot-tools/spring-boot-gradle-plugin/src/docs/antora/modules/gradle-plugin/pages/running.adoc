@@ -125,7 +125,7 @@ The preceding example sets the value of the `example` project property to `custo
 == Reloading Resources
 If devtools has been added to your project it will automatically monitor your application's classpath for changes.
 Note that modified files need to be recompiled for the classpath to update in order to trigger reloading with devtools.
-For more details on using devtools, refer to xref:ROOT:using/devtools.adoc#using.devtools.restart[this section of the reference documentation].
+For more details on using devtools, refer to xref:reference:using/devtools.adoc#using.devtools.restart[this section of the reference documentation].
 
 Alternatively, you can configure `bootRun` such that your application's static resources are loaded from their source location:
 

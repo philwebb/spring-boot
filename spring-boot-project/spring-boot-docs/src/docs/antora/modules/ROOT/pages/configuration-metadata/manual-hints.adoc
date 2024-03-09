@@ -73,7 +73,7 @@ The following table summarizes the list of supported providers:
 | Handles the property as if it were defined by the type defined by the mandatory `target` parameter.
 
 | `logger-name`
-| Auto-completes valid logger names and xref:features/logging.adoc#features.logging.log-groups[logger groups].
+| Auto-completes valid logger names and xref:reference:features/logging.adoc#features.logging.log-groups[logger groups].
   Typically, package and class names available in the current project can be auto-completed as well as defined groups.
 
 | `spring-bean-reference`
@@ -221,7 +221,7 @@ It is actually used internally as a `org.springframework.core.io.Resource` but c
 
 [[appendix.configuration-metadata.manual-hints.value-providers.logger-name]]
 === Logger Name
-The **logger-name** provider auto-completes valid logger names and xref:features/logging.adoc#features.logging.log-groups[logger groups].
+The **logger-name** provider auto-completes valid logger names and xref:reference:features/logging.adoc#features.logging.log-groups[logger groups].
 Typically, package and class names available in the current project can be auto-completed.
 If groups are enabled (default) and if a custom logger group is identified in the configuration, auto-completion for it should be provided.
 Specific frameworks may have extra magic logger names that can be supported as well.

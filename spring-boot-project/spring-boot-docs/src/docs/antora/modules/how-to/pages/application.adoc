@@ -65,7 +65,7 @@ There is more than one way to register additional customizations:
 * Declaratively, for all applications, by adding a `META-INF/spring.factories` and packaging a jar file that the applications all use as a library.
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (some even before the context is created) and then registers the listeners for events published by the `ApplicationContext` as well.
-See "`xref:ROOT:features/spring-application.adoc#features.spring-application.application-events-and-listeners[Application Events and Listeners]`" in the '`Spring Boot features`' section for a complete list.
+See "`xref:reference:features/spring-application.adoc#features.spring-application.application-events-and-listeners[Application Events and Listeners]`" in the '`Spring Boot features`' section for a complete list.
 
 It is also possible to customize the `Environment` before the application context is refreshed by using `EnvironmentPostProcessor`.
 Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
@@ -94,7 +94,7 @@ This is too late to configure certain properties such as `+logging.*+` and `+spr
 [[howto.application.context-hierarchy]]
 == Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
-See "`xref:ROOT:features/spring-application.adoc#features.spring-application.fluent-builder-api[Fluent Builder API]`" in the '`Spring Boot features`' section for more information.
+See "`xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[Fluent Builder API]`" in the '`Spring Boot features`' section for more information.
 
 
 

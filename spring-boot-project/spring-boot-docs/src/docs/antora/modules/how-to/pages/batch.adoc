@@ -42,7 +42,7 @@ See {code-spring-boot-autoconfigure-src}/batch/BatchAutoConfiguration.java[Batch
 
 [[howto.batch.running-from-the-command-line]]
 == Running From the Command Line
-Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see xref:ROOT:features/external-config.adoc#features.external-config.command-line-args[accessing command line properties].
+Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see xref:reference:features/external-config.adoc#features.external-config.command-line-args[accessing command line properties].
 This should not be used to pass arguments to batch jobs.
 To specify batch arguments on the command line, use the regular format (that is without `--`), as shown in the following example:
 
