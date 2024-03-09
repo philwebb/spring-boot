@@ -1,7 +1,0 @@
-[[features.whats-next]]
-= What to Read Next
-
-If you want to learn more about any of the classes discussed in this section, see the xref:api:java/index.html[Spring Boot API documentation] or you can browse the {code-spring-boot}[source code directly].
-If you have specific questions, see the xref:how-to:index.adoc[how-to] section.
-
-If you are comfortable with Spring Boot's core features, you can continue on and read about xref:how-to:actuator.adoc[production-ready features].
