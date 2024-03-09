@@ -240,10 +240,10 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	private String typeNameToJavadocLink(String shortName, String name) {
 		if (name.startsWith("org.springframework.boot.maven")) {
-			return "{spring-boot-docs}/maven-plugin/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
+			return "xref:maven-plugin:api/java/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
 		}
 		if (name.startsWith("org.springframework.boot")) {
-			return "{spring-boot-docs}/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
+			return "xref:api:java/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
 		}
 		return shortName;
 	}

@@ -193,7 +193,9 @@ task aggregatedJavadoc(type: Javadoc) {
 	project.rootProject.gradle.projectsEvaluated {
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { !it.path.contains(":spring-boot-tools:") || it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") }
+			.findAll { !it.path.contains(":spring-boot-tools:") ||
+						it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
+						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") }
 			.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source

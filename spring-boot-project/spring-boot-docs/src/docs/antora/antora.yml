@@ -137,11 +137,10 @@ asciidoc:
 
     # FIXME TODO
 
-    gradle-project-version: 3.3.0-SNAPSHOT
-    spring-boot-docs: https://example.com/FIXME
     spring-boot-latest-code: FIXME
     
     
+    gradle-project-version: 3.3.0-SNAPSHOT
     spring-boot-version: FIXME
     spring-boot-xsd-version: 3.3.0-SNAPSHOT
 nav:
