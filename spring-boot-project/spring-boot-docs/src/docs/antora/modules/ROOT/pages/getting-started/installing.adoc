@@ -107,7 +107,7 @@ If you develop features for the CLI and want access to the version you built, us
 
 [source,shell,indent=0,subs="verbatim,attributes"]
 ----
-	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{version-spring-boot}-bin/spring-{spring-boot-version}/
+	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{version-spring-boot}-bin/spring-{version-spring-boot}/
 	$ sdk default springboot dev
 	$ spring --version
 	Spring CLI v{version-spring-boot}

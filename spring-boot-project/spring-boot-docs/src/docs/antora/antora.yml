@@ -16,6 +16,7 @@ asciidoc:
     version-hibernate: FIXME
     version-native-build-tools: 0.10.1
     version-spring-framework: 6.1.1
+    version-spring-boot: 3.3.0-SNAPSHOT
     url-dependency-management-plugin-docs: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html'
     url-dependency-management-plugin-site: https://github.com/spring-gradle-plugins/dependency-management-plugin
     url-artifact-repository: https://example.com/FIXME
@@ -57,7 +58,7 @@ asciidoc:
     version-spring-data-neo4j: FIXME
     version-spring-data-r2dbc: FIXME
     version-spring-data-rest: FIXME
-    url-spring-data-site: https://spring.io/projects/spring-data
+    
     
     # FIXME these are added manually
     version-graal: 22.3
@@ -109,6 +110,7 @@ asciidoc:
     url-spring-data-r2dbc-docs: https://docs.spring.io/spring-data/relational/reference/{version-spring-data-r2dbc}
     url-spring-data-redis-site: https://spring.io/projects/spring-data-redis
     url-spring-data-rest-javadoc: https://docs.spring.io/spring-data/rest/docs/{version-spring-data-rest}/api
+    url-spring-data-site: https://spring.io/projects/spring-data
     
     apiref-gradle-plugin-boot-build-image: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html'
     apiref-gradle-plugin-boot-jar: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html'
