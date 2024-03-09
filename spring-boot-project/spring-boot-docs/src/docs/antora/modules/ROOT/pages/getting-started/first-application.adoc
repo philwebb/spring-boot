@@ -10,7 +10,7 @@ The https://spring.io[spring.io] website contains many "`Getting Started`" https
 If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
-Doing so generates a new project structure so that you can xref:getting-started/first-application.adoc#getting-started.first-application.code[start coding right away].
+Doing so generates a new project structure so that you can xref:ROOT:getting-started/first-application.adoc#getting-started.first-application.code[start coding right away].
 Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
@@ -181,7 +181,7 @@ Spring Boot provides a number of "`Starters`" that let you add jars to your clas
 === Maven
 Most Spring Boot applications use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
-It also provides a xref:using/build-systems.adoc#using.build-systems.dependency-management[`dependency-management`] section so that you can omit `version` tags for "`blessed`" dependencies.
+It also provides a xref:reference:using/build-systems.adoc#using.build-systems.dependency-management[`dependency-management`] section so that you can omit `version` tags for "`blessed`" dependencies.
 
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
 Before that, we can look at what we currently have by running the following command:
@@ -215,7 +215,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 === Gradle
 Most Spring Boot applications use the `org.springframework.boot` Gradle plugin.
 This plugin provides useful defaults and Gradle tasks.
-The `io.spring.dependency-management` Gradle plugin provides xref:using/build-systems.adoc#using.build-systems.dependency-management[dependency management] so that you can omit `version` tags for "`blessed`" dependencies.
+The `io.spring.dependency-management` Gradle plugin provides xref:reference:using/build-systems.adoc#using.build-systems.dependency-management[dependency management] so that you can omit `version` tags for "`blessed`" dependencies.
 
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
 Before that, we can look at what we currently have by running the following command:

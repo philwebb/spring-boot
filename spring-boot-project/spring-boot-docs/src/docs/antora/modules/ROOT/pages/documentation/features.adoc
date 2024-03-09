@@ -2,9 +2,9 @@
 = Learning About Spring Boot Features
 
 Need more details about Spring Boot's core features?
-xref:features.adoc[The following content is for you]:
+xref:reference/features/index.adoc[The following content is for you]:
 
-* *Spring Application:* xref:features/spring-application.adoc[SpringApplication]
-* *External Configuration:* xref:features/external-config.adoc[External Configuration]
-* *Profiles:* xref:features/profiles.adoc[Profiles]
-* *Logging:* xref:features/logging.adoc[Logging]
+* *Spring Application:* xref:reference:features/spring-application.adoc[SpringApplication]
+* *External Configuration:* xref:reference:features/external-config.adoc[External Configuration]
+* *Profiles:* xref:reference:features/profiles.adoc[Profiles]
+* *Logging:* xref:reference:features/logging.adoc[Logging]

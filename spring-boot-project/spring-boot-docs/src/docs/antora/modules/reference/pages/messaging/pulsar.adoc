@@ -204,7 +204,7 @@ TIP: For more details on any of the above components and to discover other avail
 
 [[messaging.pulsar.additional-properties]]
 == Additional Pulsar Properties
-The properties supported by auto-configuration are shown in the <<application-properties#appendix.application-properties.integration, "`Integration Properties`">> section of the Appendix.
+The properties supported by auto-configuration are shown in the xref:ROOT:application-properties#appendix.application-properties.integration["`Integration Properties`"] section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.
 

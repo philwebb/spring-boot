@@ -3,6 +3,6 @@
 
 When you are ready to push your Spring Boot application to production, we have xref:how-to:actuator.adoc[some tricks] that you might like:
 
-* *Management endpoints:* xref:actuator/endpoints.adoc[Overview]
-* *Connection options:* xref:actuator/monitoring.adoc[HTTP] | xref:actuator/jmx.adoc[JMX]
-* *Monitoring:* xref:actuator/metrics.adoc[Metrics] | xref:actuator/auditing.adoc[Auditing] | xref:actuator/http-exchanges.adoc[HTTP Exchanges] | xref:actuator/process-monitoring.adoc[Process]
+* *Management endpoints:* xref:reference:actuator/endpoints.adoc[Overview]
+* *Connection options:* xref:reference:actuator/monitoring.adoc[HTTP] | xref:reference:actuator/jmx.adoc[JMX]
+* *Monitoring:* xref:reference:actuator/metrics.adoc[Metrics] | xref:reference:actuator/auditing.adoc[Auditing] | xref:reference:actuator/http-exchanges.adoc[HTTP Exchanges] | xref:reference:actuator/process-monitoring.adoc[Process]

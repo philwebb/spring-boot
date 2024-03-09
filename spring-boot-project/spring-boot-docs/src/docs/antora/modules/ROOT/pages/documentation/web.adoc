@@ -3,9 +3,9 @@
 
 If you develop Spring Boot web applications, take a look at the following content:
 
-* *Servlet Web Applications:* xref:web/servlet.adoc[Spring MVC, Jersey, Embedded Servlet Containers]
-* *Reactive Web Applications:* xref:web/reactive.adoc[Spring Webflux, Embedded Servlet Containers]
-* *Graceful Shutdown:* xref:web/graceful-shutdown.adoc[Graceful Shutdown]
-* *Spring Security:* xref:web/spring-security.adoc[Default Security Configuration, Auto-configuration for OAuth2, SAML]
-* *Spring Session:* xref:web/spring-session.adoc[Auto-configuration for Spring Session]
-* *Spring HATEOAS:* xref:web/spring-hateoas.adoc[Auto-configuration for Spring HATEOAS]
+* *Servlet Web Applications:* xref:reference:web/servlet.adoc[Spring MVC, Jersey, Embedded Servlet Containers]
+* *Reactive Web Applications:* xref:reference:web/reactive.adoc[Spring Webflux, Embedded Servlet Containers]
+* *Graceful Shutdown:* xref:reference:web/graceful-shutdown.adoc[Graceful Shutdown]
+* *Spring Security:* xref:reference:web/spring-security.adoc[Default Security Configuration, Auto-configuration for OAuth2, SAML]
+* *Spring Session:* xref:reference:web/spring-session.adoc[Auto-configuration for Spring Session]
+* *Spring HATEOAS:* xref:reference:web/spring-hateoas.adoc[Auto-configuration for Spring HATEOAS]

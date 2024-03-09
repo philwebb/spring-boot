@@ -3,5 +3,5 @@
 
 This section dives into the details of Spring Boot.
 Here you can learn about the key features that you may want to use and customize.
-If you have not already done so, you might want to read the "xref:getting-started.adoc[Getting Started]" and "xref:using.adoc[Developing with Spring Boot]" sections, so that you have a good grounding of the basics.
+If you have not already done so, you might want to read the "xref:ROOT:getting-started.adoc[Getting Started]" and "xref:using/index.adoc[Developing with Spring Boot]" sections, so that you have a good grounding of the basics.
 

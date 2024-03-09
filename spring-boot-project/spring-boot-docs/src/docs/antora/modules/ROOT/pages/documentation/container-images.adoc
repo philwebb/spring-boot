@@ -3,6 +3,6 @@
 
 Spring Boot provides first-class support for building efficient container images. You can read more about it here:
 
-* *Efficient Container Images:* xref:container-images/efficient-images.adoc[Tips to optimize container images such as Docker images]
-* *Dockerfiles:* xref:container-images/dockerfiles.adoc[Building container images using dockerfiles]
-* *Cloud Native Buildpacks:* xref:container-images/cloud-native-buildpacks.adoc[Support for Cloud Native Buildpacks with Maven and Gradle]
+* *Efficient Container Images:* xref:reference:container-images/efficient-images.adoc[Tips to optimize container images such as Docker images]
+* *Dockerfiles:* xref:reference:container-images/dockerfiles.adoc[Building container images using dockerfiles]
+* *Cloud Native Buildpacks:* xref:reference:container-images/cloud-native-buildpacks.adoc[Support for Cloud Native Buildpacks with Maven and Gradle]
