@@ -1192,19 +1192,19 @@ See "xref:how-to:build.adoc#howto.build.generate-info[how to generate build info
 
 [[actuator.endpoints.info.java-information]]
 === Java Information
-The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
+The `info` endpoint publishes information about your Java runtime environment, see xref:api:java/org/springframework/boot/info/JavaInfo.html[`JavaInfo`] for more details.
 
 
 
 [[actuator.endpoints.info.os-information]]
 === OS Information
-The `info` endpoint publishes information about your Operating System, see {spring-boot-module-api}/info/OsInfo.html[`OsInfo`] for more details.
+The `info` endpoint publishes information about your Operating System, see xref:api:java/org/springframework/boot/info/OsInfo.html[`OsInfo`] for more details.
 
 
 
 [[actuator.endpoints.info.process-information]]
 === Process Information
-The `info` endpoint publishes information about your process, see {spring-boot-module-api}/info/ProcessInfo.html[`Process`] for more details.
+The `info` endpoint publishes information about your process, see xref:api:java/org/springframework/boot/info/ProcessInfo.html[`Process`] for more details.
 
 
 

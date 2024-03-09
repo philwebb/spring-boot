@@ -7,7 +7,7 @@ This section includes topics relating directly to Spring Boot applications.
 
 [[howto.application.failure-analyzer]]
 == Create Your Own FailureAnalyzer
-{spring-boot-module-api}/diagnostics/FailureAnalyzer.html[`FailureAnalyzer`] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a {spring-boot-module-api}/diagnostics/FailureAnalysis.html[`FailureAnalysis`].
+xref:api:java/org/springframework/boot/diagnostics/FailureAnalyzer.html[`FailureAnalyzer`] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a xref:api:java/org/springframework/boot/diagnostics/FailureAnalysis.html[`FailureAnalysis`].
 Spring Boot provides such an analyzer for application-context-related exceptions, JSR-303 validations, and more.
 You can also create your own.
 

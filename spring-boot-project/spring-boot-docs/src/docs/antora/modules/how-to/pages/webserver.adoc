@@ -259,7 +259,7 @@ The `server.{asterisk}` namespace is quite useful here, and it includes namespac
 See the list of xref:ROOT:application-properties.adoc[Common Application Properties].
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
-However, if a configuration key does not exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+However, if a configuration key does not exist for your use case, you should then look at xref:api:java/org/springframework/boot/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
 You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (servlet or reactive).
 
 The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):

@@ -153,7 +153,7 @@ In most cases, these are references to `@Configuration` classes, but they could 
 It is also possible to configure the `SpringApplication` by using an `application.properties` file.
 See _xref:features/external-config.adoc[Externalized Configuration]_ for details.
 
-For a complete list of the configuration options, see the {spring-boot-module-api}/SpringApplication.html[`SpringApplication` Javadoc].
+For a complete list of the configuration options, see the xref:api:java/org/springframework/boot/SpringApplication.html[`SpringApplication` Javadoc].
 
 
 
@@ -167,7 +167,7 @@ include-code::MyApplication[tag=*]
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
 For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
-See the {spring-boot-module-api}/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder` Javadoc] for full details.
+See the xref:api:java/org/springframework/boot/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder` Javadoc] for full details.
 
 
 

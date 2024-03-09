@@ -305,7 +305,7 @@ For more advanced use cases that require you to extend from `ReactiveWebServerFa
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the {spring-boot-module-api}/web/reactive/server/ConfigurableReactiveWebServerFactory.html[source code documentation] for details.
+See the xref:api:java/org/springframework/boot/web/reactive/server/ConfigurableReactiveWebServerFactory.html[source code documentation] for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 

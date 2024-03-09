@@ -180,7 +180,7 @@ You can then import the class explicitly where it is required, as shown in the f
 include-code::MyTests[]
 
 NOTE: If you directly use `@ComponentScan` (that is, not through `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it.
-See {spring-boot-module-api}/context/TypeExcludeFilter.html[the Javadoc] for details.
+See xref:api:java/org/springframework/boot/context/TypeExcludeFilter.html[the Javadoc] for details.
 
 NOTE: An imported `@TestConfiguration` is processed earlier than an inner-class `@TestConfiguration` and an imported `@TestConfiguration` will be processed before any configuration found through component scanning.
 Generally speaking, this difference in ordering has no noticeable effect but it is something to be aware of if you're relying on bean overriding.
