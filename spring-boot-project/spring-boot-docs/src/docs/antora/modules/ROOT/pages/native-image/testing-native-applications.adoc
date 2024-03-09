@@ -78,7 +78,7 @@ You should have a `<parent>` section that looks like this:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>{spring-boot-version}</version>
+		<version>{version-spring-boot}</version>
 	</parent>
 ----
 

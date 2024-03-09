@@ -106,11 +106,11 @@ Inside your `banner.txt` file, you can use any key available in the `Environment
 
 | `${spring-boot.version}`
 | The Spring Boot version that you are using.
-  For example `{spring-boot-version}`.
+  For example `{version-spring-boot}`.
 
 | `${spring-boot.formatted-version}`
 | The Spring Boot version that you are using, formatted for display (surrounded with brackets and prefixed with `v`).
-  For example `(v{spring-boot-version})`.
+  For example `(v{version-spring-boot})`.
 
 | `${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
 | Where `NAME` is the name of an ANSI escape code.

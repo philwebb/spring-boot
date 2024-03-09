@@ -91,7 +91,7 @@ Open your favorite text editor and add the following:
 		<parent>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-parent</artifactId>
-			<version>{spring-boot-version}</version>
+			<version>{version-spring-boot}</version>
 		</parent>
 
 		<!-- Additional lines to be added here... -->
@@ -141,7 +141,7 @@ Open your favorite text editor and add the following:
 ----
 	plugins {
 		id 'java'
-		id 'org.springframework.boot' version '{spring-boot-version}'
+		id 'org.springframework.boot' version '{version-spring-boot}'
 	}
 
 	apply plugin: 'io.spring.dependency-management'
@@ -326,7 +326,7 @@ You should see output similar to the following:
 	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
 	  '  |____| .__|_| |_|_| |_\__, | / / / /
 	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{spring-boot-version})
+	 :: Spring Boot ::  (v{version-spring-boot})
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
@@ -361,7 +361,7 @@ You should see output similar to the following:
 	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
 	  '  |____| .__|_| |_|_| |_\__, | / / / /
 	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{spring-boot-version})
+	 :: Spring Boot ::  (v{version-spring-boot})
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
@@ -435,7 +435,7 @@ Save your `pom.xml` and run `mvn package` from the command line, as follows:
 	[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
 	[INFO] Building jar: /Users/developer/example/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
 	[INFO]
-	[INFO] --- spring-boot-maven-plugin:{spring-boot-version}:repackage (default) @ myproject ---
+	[INFO] --- spring-boot-maven-plugin:{version-spring-boot}:repackage (default) @ myproject ---
 	[INFO] ------------------------------------------------------------------------
 	[INFO] BUILD SUCCESS
 	[INFO] ------------------------------------------------------------------------
@@ -465,7 +465,7 @@ To run that application, use the `java -jar` command, as follows:
 	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
 	  '  |____| .__|_| |_|_| |_\__, | / / / /
 	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{spring-boot-version})
+	 :: Spring Boot ::  (v{version-spring-boot})
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
@@ -509,7 +509,7 @@ To run that application, use the `java -jar` command, as follows:
 	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
 	  '  |____| .__|_| |_|_| |_\__, | / / / /
 	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{spring-boot-version})
+	 :: Spring Boot ::  (v{version-spring-boot})
 	....... . . .
 	....... . . . (log output here)
 	....... . . .

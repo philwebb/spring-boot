@@ -75,13 +75,13 @@ You do not need to use the CLI to work with Spring Boot, but it is a quick way t
 [[getting-started.installing.cli.manual-installation]]
 === Manual Installation
 ifeval::["{artifact-release-type}" == "snapshot"]
-You can download one of the `spring-boot-cli-\*-bin.zip` or `spring-boot-cli-*-bin.tar.gz` files from the {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/[Spring software repository].
+You can download one of the `spring-boot-cli-\*-bin.zip` or `spring-boot-cli-*-bin.tar.gz` files from the {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{version-spring-boot}/[Spring software repository].
 endif::[]
 ifeval::["{artifact-release-type}" != "snapshot"]
 You can download the Spring CLI distribution from one of the following locations:
 
-* {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{version-spring-boot}/spring-boot-cli-{version-spring-boot}-bin.zip[spring-boot-cli-{version-spring-boot}-bin.zip]
+* {url-artifact-repository}/org/springframework/boot/spring-boot-cli/{version-spring-boot}/spring-boot-cli-{version-spring-boot}-bin.tar.gz[spring-boot-cli-{version-spring-boot}-bin.tar.gz]
 endif::[]
 
 
@@ -100,17 +100,17 @@ Get SDKMAN! from https://sdkman.io and install Spring Boot by using the followin
 ----
 	$ sdk install springboot
 	$ spring --version
-	Spring CLI v{spring-boot-version}
+	Spring CLI v{version-spring-boot}
 ----
 
 If you develop features for the CLI and want access to the version you built, use the following commands:
 
 [source,shell,indent=0,subs="verbatim,attributes"]
 ----
-	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
+	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{version-spring-boot}-bin/spring-{spring-boot-version}/
 	$ sdk default springboot dev
 	$ spring --version
-	Spring CLI v{spring-boot-version}
+	Spring CLI v{version-spring-boot}
 ----
 
 The preceding instructions install a local instance of `spring` called the `dev` instance.
@@ -126,7 +126,7 @@ You can see it by running the following command:
 	Available Springboot Versions
 	================================================================================
 	> + dev
-	* {spring-boot-version}
+	* {version-spring-boot}
 
 	================================================================================
 	+ - local version

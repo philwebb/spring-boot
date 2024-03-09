@@ -72,7 +72,7 @@ A typical `build.xml` looks like the following example:
 		xmlns:spring-boot="antlib:org.springframework.boot.ant"
 		name="myapp" default="build">
 
-		<property name="spring-boot.version" value="{spring-boot-version}" />
+		<property name="spring-boot.version" value="{version-spring-boot}" />
 
 		<target name="resolve" description="--> retrieve dependencies with ivy">
 			<ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" />
@@ -143,4 +143,4 @@ include::partial$starters/technical-starters.adoc[]
 
 To learn how to swap technical facets, please see the how-to documentation for xref:how-to:webserver.adoc#howto.webserver.use-another[swapping web server] and xref:how-to:logging.adoc#howto.logging.log4j[logging system].
 
-TIP: For a list of additional community contributed starters, see the {spring-boot-latest-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
+TIP: For a list of additional community contributed starters, see the {code-spring-boot-latest}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
