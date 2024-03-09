@@ -129,6 +129,7 @@ asciidoc:
     code-spring-boot-actuator-src: '{code-spring-boot}/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate'
     code-spring-boot-autoconfigure-src: '{code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure'
     code-spring-boot-devtools-src: '{code-spring-boot}/spring-boot-project/spring-boot-devtools/src/main/java/org/springframework/boot/devtools'
+    code-spring-boot-test-autoconfigure-src: '{code-spring-boot}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure'
 
     # FIXME move to a code module and also fix other builds
     include-java: ROOT:example$java/org/springframework/boot/docs
@@ -140,9 +141,7 @@ asciidoc:
     spring-boot-docs: https://example.com/FIXME
     spring-boot-latest-code: FIXME
     
-    spring-boot-reference: 'https://docs.spring.io/spring-boot/docs/{gradle-project-version}/reference/htmlsingle'
-    spring-boot-test-autoconfigure-module-code: FIXME
-    spring-boot-test-module-api: FIXME
+    
     spring-boot-version: FIXME
     spring-boot-xsd-version: 3.3.0-SNAPSHOT
 nav:

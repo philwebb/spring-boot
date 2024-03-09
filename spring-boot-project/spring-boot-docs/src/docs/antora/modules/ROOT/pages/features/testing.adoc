@@ -315,7 +315,7 @@ By the time the test is executed, the application context refresh has completed 
 We recommend using a `@Bean` method to create and configure the mock in this situation.
 
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
-See the {spring-boot-test-module-api}/mock/mockito/SpyBean.html[Javadoc] for full details.
+See the xref:api:java/org/springframework/boot/test/mock/mockito/SpyBean.html[Javadoc] for full details.
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 
@@ -579,7 +579,7 @@ If that is not what you want, you can disable transaction management for a test 
 
 include-code::MyNonTransactionalTests[]
 
-Data JPA tests may also inject a {spring-boot-test-autoconfigure-module-code}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
+Data JPA tests may also inject a {code-spring-boot-test-autoconfigure-src}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
 
 TIP: `TestEntityManager` can also be auto-configured to any of your Spring-based test class by adding `@AutoConfigureTestEntityManager`.
 When doing so, make sure that your test is running in a transaction, for instance by adding  `@Transactional` on your test class or method.
