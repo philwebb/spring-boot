@@ -145,7 +145,6 @@ asciidoc:
     spring-boot-test-module-api: FIXME
     spring-boot-version: FIXME
     spring-boot-xsd-version: 3.3.0-SNAPSHOT
-    version-properties-appendix: '{spring-boot-reference}/#dependency-versions-properties'
 nav:
 - modules/ROOT/nav.adoc 
     
