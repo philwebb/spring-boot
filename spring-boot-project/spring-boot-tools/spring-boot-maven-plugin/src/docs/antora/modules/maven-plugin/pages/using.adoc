@@ -62,7 +62,7 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 include::example$using/different-versions-pom.xml[tags=different-versions]
 ----
 
-Browse the xref:ROOT:dependency-versions/properties.adoc[Dependency Versions Properties] section in the Spring Boot reference for a complete list of dependency version properties.
+Browse the xref:appendix:dependency-versions/properties.adoc[Dependency Versions Properties] section in the Spring Boot reference for a complete list of dependency version properties.
 
 
 

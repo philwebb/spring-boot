@@ -314,7 +314,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 		into "modules/ROOT/partials/starters"
 	}
 	from(documentTestSlices) {
-		into "modules/ROOT/partials/slices"
+		into "modules/appendix/partials/slices"
 	}
 	from(runSpringApplicationExample) {
 		into "modules/ROOT/partials/application"
@@ -323,16 +323,16 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 		into "modules/ROOT/partials/logging"
 	}
 	from(documentDependencyVersionCoordinates) {
-		into "modules/ROOT/partials/dependency-versions"
+		into "modules/appendix/partials/dependency-versions"
 	}
 	from(documentDependencyVersionProperties) {
-		into "modules/ROOT/partials/dependency-versions"
+		into "modules/appendix/partials/dependency-versions"
 	}
 	from(documentAutoConfigurationClasses) {
-		into "modules/ROOT/partials/auto-configuration-classes"
+		into "modules/appendix/partials/auto-configuration-classes"
 	}
 	from(documentConfigurationProperties) {
-		into "modules/ROOT/partials/configuration-properties"
+		into "modules/appendix/partials/configuration-properties"
 	}
 }
 
