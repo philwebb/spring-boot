@@ -1,2 +1,0 @@
-* xref:reference:index.adoc[]
-

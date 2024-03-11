@@ -11,6 +11,9 @@ ext:
       destination: content-catalog
 asciidoc:
   attributes:
+    github-tag: main # FIXME calcualte this?
+    github-repo: spring-projects/spring-boot
+    
     # FIXME these will be generated
     version-dependency-management-plugin: FIXME
     version-hibernate: FIXME
@@ -67,6 +70,10 @@ asciidoc:
     url-buildpacks-docs: https://buildpacks.io/docs
     url-dynatrace-docs: https://docs.dynatrace.com/docs
     url-dynatrace-docs-shortlink: '{url-dynatrace-docs}/shortlink'
+    url-github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
+    url-github-issues: https://github.com/{github-repo}/issues
+    url-github-wiki: https://github.com/{github-repo}/wiki
+    url-github: https://github.com/{github-repo}
     url-graal-docs: https://www.graalvm.org/{version-graal}/reference-manual
     url-graal-docs-native-image: '{url-graal-docs}/native-image'
     url-gradle-docs: https://docs.gradle.org/current/userguide
@@ -119,12 +126,6 @@ asciidoc:
     apiref-gradle-plugin-boot-build-info: 'xref:gradle-plugin:api/java/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html'
     apiref-openjdk: https://docs.oracle.com/en/java/javase/17/docs/api
     
-    github-tag: main # FIXME calcualte this?
-    github-repo: spring-projects/spring-boot
-    github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
-    github-issues: https://github.com/{github-repo}/issues
-    github-wiki: https://github.com/{github-repo}/wiki
-
     code-spring-boot: 'https://github.com/{github-repo}/tree/{github-tag}'
     code-spring-boot-src: '{code-spring-boot}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot'
     code-spring-boot-actuator-autoconfigure-src: '{code-spring-boot}/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure'
@@ -137,5 +138,5 @@ asciidoc:
     include-java: ROOT:example$java/org/springframework/boot/docs
     include-kotlin: ROOT:example$kotlin/org/springframework/boot/docs
 nav:
-# - modules/ROOT/nav.adoc 
+- nav.adoc 
     

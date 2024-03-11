@@ -1,0 +1,10 @@
+include::ROOT:partial$nav-root.adoc[]
+include::tutorial:partial$nav-tutorial.adoc[]
+include::reference:partial$nav-reference.adoc[]
+* How-to Guides
+* Build Tool Plugins
+* Spring Boot CLI
+* REST APIs
+* Java APIs
+* Specifications
+* Appendix
