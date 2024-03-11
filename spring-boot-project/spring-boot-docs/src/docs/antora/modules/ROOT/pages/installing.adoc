@@ -10,7 +10,7 @@ Before you begin, you should check your current Java installation by using the f
 	$ java -version
 ----
 
-If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the xref:getting-started/installing.adoc#getting-started.installing.cli[Spring Boot CLI] (Command Line Interface) first.
+If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the xref:installing.adoc#getting-started.installing.cli[Spring Boot CLI] (Command Line Interface) first.
 Otherwise, read on for "`classic`" installation instructions.
 
 

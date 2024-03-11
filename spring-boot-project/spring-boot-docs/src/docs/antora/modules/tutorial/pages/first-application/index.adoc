@@ -10,7 +10,7 @@ The https://spring.io[spring.io] website contains many "`Getting Started`" https
 If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
-Doing so generates a new project structure so that you can xref:ROOT:getting-started/first-application.adoc#getting-started.first-application.code[start coding right away].
+Doing so generates a new project structure so that you can xref:tutorial:first-application/index.adoc#getting-started.first-application.code[start coding right away].
 Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 

@@ -1,11 +1,11 @@
 == LAYOUT
 
-Home (home)
+Spring Boot (home)
 About The Documentation (book)
-Getting Help (question)
-Installing
+Community (question)
+System Requirements (server)
+Installing (gift)
 Upgrading (rocket)
-Legal (law) [do we need]
 
 Tutorials
 	Developing Your First Application
