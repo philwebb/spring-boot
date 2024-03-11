@@ -39,7 +39,7 @@ Windows users with https://chocolatey.org/[Chocolatey] can run `choco install ma
 
 Spring Boot dependencies use the `org.springframework.boot` group id.
 Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters["`Starters`"].
-Spring Boot also provides an optional xref:build-tool-plugin:maven.adoc[Maven plugin] to create executable jars.
+Spring Boot also provides an optional xref:maven-plugin:index.adoc[Maven plugin] to create executable jars.
 
 More details on getting started with Spring Boot and Maven can be found in the xref:maven-plugin:getting-started.adoc[Getting Started section] of the Maven plugin's reference guide.
 
@@ -52,7 +52,7 @@ If you do not already have Gradle installed, you can follow the instructions at 
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters["`Starters`"].
-Spring Boot provides a useful xref:build-tool-plugin:gradle.adoc[Gradle plugin] that can be used to simplify dependency declarations and to create executable jars.
+Spring Boot provides a useful xref:gradle-plugin:index.adoc[Gradle plugin] that can be used to simplify dependency declarations and to create executable jars.
 
 .Gradle Wrapper
 ****

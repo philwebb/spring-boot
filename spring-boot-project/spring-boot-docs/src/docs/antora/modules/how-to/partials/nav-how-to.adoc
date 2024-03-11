@@ -1,4 +1,5 @@
 * xref:how-to:index.adoc[]
+
 ** xref:how-to:application.adoc[]
 ** xref:how-to:properties-and-configuration.adoc[]
 ** xref:how-to:webserver.adoc[]

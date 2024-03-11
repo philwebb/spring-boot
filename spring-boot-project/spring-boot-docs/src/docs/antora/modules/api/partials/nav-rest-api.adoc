@@ -1,0 +1,5 @@
+* xref:api:rest/index.adoc[]
++
+--
+include::api:partial$nav-actuator-rest-api.adoc[]
+--
