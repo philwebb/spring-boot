@@ -1,5 +1,6 @@
 [[getting-started.system-requirements]]
 = System Requirements
+:navicon: server
 
 Spring Boot {version-spring-boot} requires https://www.java.com[Java 17] and is compatible up to and including Java 21.
 {url-spring-framework-docs}/[Spring Framework {version-spring-framework}] or above is also required.

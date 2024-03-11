@@ -1,5 +1,6 @@
 [[upgrading]]
 = Upgrading Spring Boot
+:navicon: rocket
 
 Instructions for how to upgrade from earlier versions of Spring Boot are provided on the project {github-wiki}[wiki].
 Follow the links in the {github-wiki}#release-notes[release notes] section to find the version that you want to upgrade to.
