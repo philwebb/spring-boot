@@ -1,8 +1,0 @@
-[[documentation.advanced]]
-= Advanced Topics
-
-Finally, we have a few topics for more advanced users:
-
-* *Spring Boot Applications Deployment:* xref:reference:deployment/cloud.adoc[Cloud Deployment] | xref:reference:deployment/installing.adoc[OS Service]
-* *Build tool plugins:* xref:build-tool-plugin:maven.adoc[Maven] | xref:build-tool-plugin:gradle.adoc[Gradle]
-* *Appendix:* xref:appendix:application-properties/index.adoc[Application Properties] | xref:specification:configuration-metadata/index.adoc[Configuration Metadata] | xref:appendix:auto-configuration-classes/index.adoc[Auto-configuration Classes] | xref:appendix:test-auto-configuration/index.adoc[Test Auto-configuration Annotations] | xref:specification:executable-jar/index.adoc[Executable Jars] | xref:appendix:dependency-versions/index.adoc[Dependency Versions]
