@@ -3,8 +3,9 @@
 Home (home)
 About The Documentation (book)
 Getting Help (question)
+Installing
 Upgrading (rocket)
-Legal (law)
+Legal (law) [do we need]
 
 Tutorials
 	Developing Your First Application
