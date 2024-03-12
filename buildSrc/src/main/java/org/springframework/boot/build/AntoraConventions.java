@@ -94,7 +94,7 @@ public class AntoraConventions {
 	private void configureAntoraExtension(AntoraExtension antoraExtension) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
-		antoraExtension.getOptions().addAll("--log-level", "all");
+		antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
 	}
 
 }
