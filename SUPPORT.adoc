@@ -1,5 +1,7 @@
 = Getting support for Spring Boot
 
+
+
 == GitHub issues
 
 We choose not to use GitHub issues for general usage questions and support, preferring to
@@ -11,6 +13,8 @@ If you are reporting a bug, please help to speed up problem diagnosis by providi
 much information as possible. Ideally, that would include a small sample project that
 reproduces the problem.
 
+
+
 == Stack Overflow
 
 The Spring Boot community monitors the
@@ -18,11 +22,15 @@ https://stackoverflow.com/tags/spring-boot[`spring-boot`] tag on Stack Overflow.
 asking a question, please familiarize yourself with Stack Overflow's
 https://stackoverflow.com/help/how-to-ask[advice on how to ask a good question].
 
+
+
 == Gitter
 
 If you want to discuss something or have a question that isn't suited to Stack Overflow,
 the Spring Boot community chat in the
 https://gitter.im/spring-projects/spring-boot[#spring-boot room on Gitter].
+
+
 
 == VMware Open Source Software Support
 
