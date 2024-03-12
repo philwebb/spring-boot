@@ -68,9 +68,9 @@ include::example$aot-native-profile-nbt/pom.xml[tags=profile]
 
 Once the above is in place, you can build your multi-modules project and generate a native image in the relevant sub-modules, as shown in the following example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn package -Pnative
+$ mvn package -Pnative
 ----
 
 NOTE: A "relevant" sub-module is a module that represents a Spring Boot application.

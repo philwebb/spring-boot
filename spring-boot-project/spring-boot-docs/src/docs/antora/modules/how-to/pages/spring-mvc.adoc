@@ -170,10 +170,10 @@ If you would rather map to a different path, you can configure one as follows:
 
 [configprops,yaml]
 ----
-	spring:
-	  mvc:
-	    servlet:
-	      path: "/mypath"
+spring:
+  mvc:
+    servlet:
+      path: "/mypath"
 ----
 
 If you have additional servlets you can declare a `@Bean` of type `Servlet` or `ServletRegistrationBean` for each and Spring Boot will register them transparently to the container.

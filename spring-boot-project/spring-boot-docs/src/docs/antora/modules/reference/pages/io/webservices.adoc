@@ -11,9 +11,9 @@ To do so, configure their location, as shown in the following example:
 
 [configprops,yaml]
 ----
-	spring:
-	  webservices:
-	    wsdl-locations: "classpath:/wsdl"
+spring:
+  webservices:
+    wsdl-locations: "classpath:/wsdl"
 ----
 
 

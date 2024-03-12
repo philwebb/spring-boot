@@ -71,9 +71,9 @@ For example, `server.port` and `server.address` might be specified in your `appl
 
 [configprops,yaml]
 ----
-	server:
-	  port: 9090
-	  address: 127.0.0.1
+server:
+  port: 9090
+  address: 127.0.0.1
 ----
 
 The "`groups`" are higher level items that do not themselves specify a value but instead provide a contextual grouping for properties.

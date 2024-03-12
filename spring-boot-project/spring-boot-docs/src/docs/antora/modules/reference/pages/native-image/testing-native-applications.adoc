@@ -76,13 +76,13 @@ Spring Framework's native testing support works in the following way:
 To run native tests using Maven, ensure that your `pom.xml` file uses the `spring-boot-starter-parent`.
 You should have a `<parent>` section that looks like this:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,subs="verbatim,attributes"]
 ----
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>{version-spring-boot}</version>
-	</parent>
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>{version-spring-boot}</version>
+</parent>
 ----
 
 The `spring-boot-starter-parent` declares a `nativeTest` profile that configures the executions that are needed to run the native tests.
@@ -92,9 +92,9 @@ TIP: If you don't want to use `spring-boot-starter-parent` you'll need to config
 
 To build the image and run the tests, use the `test` goal with the `nativeTest` profile active:
 
-[indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ mvn -PnativeTest test
+$ mvn -PnativeTest test
 ----
 
 
@@ -107,8 +107,8 @@ You should check that your Gradle build contains a `plugins` block that includes
 
 To run native tests using Gradle you can use the `nativeTest` task:
 
-[indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ gradle nativeTest
+$ gradle nativeTest
 ----
 

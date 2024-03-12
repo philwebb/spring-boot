@@ -21,10 +21,10 @@ You can use the configprop:management.endpoints.web.base-path[] property to chan
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      base-path: "/manage"
+management:
+  endpoints:
+    web:
+      base-path: "/manage"
 ----
 
 The preceding `application.properties` example changes the endpoint from `/actuator/\{id}` to `/manage/\{id}` (for example, `/manage/info`).
@@ -38,12 +38,12 @@ The following example remaps `/actuator/health` to `/healthcheck`:
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      base-path: "/"
-	      path-mapping:
-	        health: "healthcheck"
+management:
+  endpoints:
+    web:
+      base-path: "/"
+      path-mapping:
+        health: "healthcheck"
 ----
 
 
@@ -58,9 +58,9 @@ You can set the configprop:management.server.port[] property to change the HTTP 
 
 [configprops,yaml]
 ----
-	management:
-	  server:
-	    port: 8081
+management:
+  server:
+    port: 8081
 ----
 
 NOTE: On Cloud Foundry, by default, applications receive requests only on port 8080 for both HTTP and TCP routing.
@@ -76,36 +76,36 @@ For example, doing so lets a management server be available over HTTP while the 
 
 [configprops,yaml]
 ----
-	server:
-	  port: 8443
-	  ssl:
-	    enabled: true
-	    key-store: "classpath:store.jks"
-	    key-password: "secret"
-	management:
-	  server:
-	    port: 8080
-	    ssl:
-	      enabled: false
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: "classpath:store.jks"
+    key-password: "secret"
+management:
+  server:
+    port: 8080
+    ssl:
+      enabled: false
 ----
 
 Alternatively, both the main server and the management server can use SSL but with different key stores, as follows:
 
 [configprops,yaml]
 ----
-	server:
-	  port: 8443
-	  ssl:
-	    enabled: true
-	    key-store: "classpath:main.jks"
-	    key-password: "secret"
-	management:
-	  server:
-	    port: 8080
-	    ssl:
-	      enabled: true
-	      key-store: "classpath:management.jks"
-	      key-password: "secret"
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: "classpath:main.jks"
+    key-password: "secret"
+management:
+  server:
+    port: 8080
+    ssl:
+      enabled: true
+      key-store: "classpath:management.jks"
+      key-password: "secret"
 ----
 
 
@@ -122,10 +122,10 @@ The following example `application.properties` does not allow remote management 
 
 [configprops,yaml]
 ----
-	management:
-	  server:
-	    port: 8081
-	    address: "127.0.0.1"
+management:
+  server:
+    port: 8081
+    address: "127.0.0.1"
 ----
 
 
@@ -137,18 +137,18 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 
 [configprops,yaml]
 ----
-	management:
-	  server:
-	    port: -1
+management:
+  server:
+    port: -1
 ----
 
 You can also achieve this by using the configprop:management.endpoints.web.exposure.exclude[] property, as the following example shows:
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      exposure:
-	        exclude: "*"
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: "*"
 ----

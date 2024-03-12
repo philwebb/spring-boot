@@ -43,27 +43,27 @@ At this point, `cf` starts uploading your application, producing output similar 
 
 [indent=0,subs="verbatim,quotes"]
 ----
-	Uploading acloudyspringtime... *OK*
-	Preparing to start acloudyspringtime... *OK*
-	-----> Downloaded app package (*8.9M*)
-	-----> Java Buildpack Version: v3.12 (offline) | https://github.com/cloudfoundry/java-buildpack.git#6f25b7e
-	-----> Downloading Open Jdk JRE
-	       Expanding Open Jdk JRE to .java-buildpack/open_jdk_jre (1.6s)
-	-----> Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https://java-buildpack.cloudfoundry.org/memory-calculator/trusty/x86_64/memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)
-	       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize=104857K -Xms681574K -XX:MetaspaceSize=104857K
-	-----> Downloading Container Certificate Trust Store 1.0.0_RELEASE from https://java-buildpack.cloudfoundry.org/container-certificate-trust-store/container-certificate-trust-store-1.0.0_RELEASE.jar (found in cache)
-	       Adding certificates to .java-buildpack/container_certificate_trust_store/truststore.jks (0.6s)
-	-----> Downloading Spring Auto Reconfiguration 1.10.0_RELEASE from https://java-buildpack.cloudfoundry.org/auto-reconfiguration/auto-reconfiguration-1.10.0_RELEASE.jar (found in cache)
-	Checking status of app 'acloudyspringtime'...
-	  0 of 1 instances running (1 starting)
-	  ...
-	  0 of 1 instances running (1 starting)
-	  ...
-	  0 of 1 instances running (1 starting)
-	  ...
-	  1 of 1 instances running (1 running)
+Uploading acloudyspringtime... *OK*
+Preparing to start acloudyspringtime... *OK*
+-----> Downloaded app package (*8.9M*)
+-----> Java Buildpack Version: v3.12 (offline) | https://github.com/cloudfoundry/java-buildpack.git#6f25b7e
+-----> Downloading Open Jdk JRE
+       Expanding Open Jdk JRE to .java-buildpack/open_jdk_jre (1.6s)
+-----> Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https://java-buildpack.cloudfoundry.org/memory-calculator/trusty/x86_64/memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)
+       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize=104857K -Xms681574K -XX:MetaspaceSize=104857K
+-----> Downloading Container Certificate Trust Store 1.0.0_RELEASE from https://java-buildpack.cloudfoundry.org/container-certificate-trust-store/container-certificate-trust-store-1.0.0_RELEASE.jar (found in cache)
+       Adding certificates to .java-buildpack/container_certificate_trust_store/truststore.jks (0.6s)
+-----> Downloading Spring Auto Reconfiguration 1.10.0_RELEASE from https://java-buildpack.cloudfoundry.org/auto-reconfiguration/auto-reconfiguration-1.10.0_RELEASE.jar (found in cache)
+Checking status of app 'acloudyspringtime'...
+  0 of 1 instances running (1 starting)
+  ...
+  0 of 1 instances running (1 starting)
+  ...
+  0 of 1 instances running (1 starting)
+  ...
+  1 of 1 instances running (1 running)
 
-	App started
+App started
 ----
 
 Congratulations! The application is now live!
@@ -156,9 +156,9 @@ Heroku assigns a `port` for the Java application to use and then ensures that ro
 You must configure your application to listen on the correct port.
 The following example shows the `Procfile` for our starter REST application:
 
-[indent=0]
+[source]
 ----
-	web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
+web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
 ----
 
 Spring Boot makes `-D` arguments available as properties accessible from a Spring `Environment` instance.
@@ -175,45 +175,45 @@ $ git push heroku main
 
 Which will result in the following:
 
-[indent=0,subs="verbatim,quotes"]
+[source,subs="verbatim,quotes"]
 ----
-	Initializing repository, *done*.
-	Counting objects: 95, *done*.
-	Delta compression using up to 8 threads.
-	Compressing objects: 100% (78/78), *done*.
-	Writing objects: 100% (95/95), 8.66 MiB | 606.00 KiB/s, *done*.
-	Total 95 (delta 31), reused 0 (delta 0)
+Initializing repository, *done*.
+Counting objects: 95, *done*.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (78/78), *done*.
+Writing objects: 100% (95/95), 8.66 MiB | 606.00 KiB/s, *done*.
+Total 95 (delta 31), reused 0 (delta 0)
 
-	-----> Java app detected
-	-----> Installing OpenJDK... *done*
-	-----> Installing Maven... *done*
-	-----> Installing settings.xml... *done*
-	-----> Executing: mvn -B -DskipTests=true clean install
+-----> Java app detected
+-----> Installing OpenJDK... *done*
+-----> Installing Maven... *done*
+-----> Installing settings.xml... *done*
+-----> Executing: mvn -B -DskipTests=true clean install
 
-	       [INFO] Scanning for projects...
-	       Downloading: https://repo.spring.io/...
-	       Downloaded: https://repo.spring.io/... (818 B at 1.8 KB/sec)
-			....
-	       Downloaded: https://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
-	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
-	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
-	       [INFO] ------------------------------------------------------------------------
-	       [INFO] *BUILD SUCCESS*
-	       [INFO] ------------------------------------------------------------------------
-	       [INFO] Total time: 59.358s
-	       [INFO] Finished at: Fri Mar 07 07:28:25 UTC 2014
-	       [INFO] Final Memory: 20M/493M
-	       [INFO] ------------------------------------------------------------------------
+       [INFO] Scanning for projects...
+       Downloading: https://repo.spring.io/...
+       Downloaded: https://repo.spring.io/... (818 B at 1.8 KB/sec)
+		....
+       Downloaded: https://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
+       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
+       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
+       [INFO] ------------------------------------------------------------------------
+       [INFO] *BUILD SUCCESS*
+       [INFO] ------------------------------------------------------------------------
+       [INFO] Total time: 59.358s
+       [INFO] Finished at: Fri Mar 07 07:28:25 UTC 2014
+       [INFO] Final Memory: 20M/493M
+       [INFO] ------------------------------------------------------------------------
 
-	-----> Discovering process types
-	       Procfile declares types -> *web*
+-----> Discovering process types
+       Procfile declares types -> *web*
 
-	-----> Compressing... *done*, 70.4MB
-	-----> Launching... *done*, v6
-	       https://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
+-----> Compressing... *done*, 70.4MB
+-----> Launching... *done*, v6
+       https://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
 
-	To git@heroku.com:agile-sierra-1405.git
-	 * [new branch]      main -> main
+To git@heroku.com:agile-sierra-1405.git
+ * [new branch]      main -> main
 ----
 
 Your application should now be up and running on Heroku.
@@ -274,9 +274,10 @@ This option applies to Spring Boot projects that produce a jar file and run an e
 Elastic Beanstalk environments run an nginx instance on port 80 to proxy the actual application, running on port 5000.
 To configure it, add the following line to your `application.properties` file:
 
-[indent=0]
+[configprops,yaml]
 ----
-	server.port=5000
+server:
+  port: 5000
 ----
 
 
@@ -302,9 +303,9 @@ The load balancer has a significant cost.
 To avoid that cost, set the environment type to "`Single instance`", as described in https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the Amazon documentation].
 You can also create single instance environments by using the CLI and the following command:
 
-[indent=0]
+[source]
 ----
-	eb create -s
+eb create -s
 ----
 ====
 
@@ -340,25 +341,25 @@ If your executable jar or war contains an https://cloudcaptain.sh/docs/payloads/
 
 At this point, CloudCaptain creates an image for your application, uploads it, and configures and starts the necessary resources on AWS, resulting in output similar to the following example:
 
-[indent=0,subs="verbatim"]
+[source]
 ----
-	Fusing Image for myapp-1.0.jar ...
-	Image fused in 00:06.838s (53937 K) -> axelfontaine/myapp:1.0
-	Creating axelfontaine/myapp ...
-	Pushing axelfontaine/myapp:1.0 ...
-	Verifying axelfontaine/myapp:1.0 ...
-	Creating Elastic IP ...
-	Mapping myapp-axelfontaine.boxfuse.io to 52.28.233.167 ...
-	Waiting for AWS to create an AMI for axelfontaine/myapp:1.0 in eu-central-1 (this may take up to 50 seconds) ...
-	AMI created in 00:23.557s -> ami-d23f38cf
-	Creating security group boxfuse-sg_axelfontaine/myapp:1.0 ...
-	Launching t2.micro instance of axelfontaine/myapp:1.0 (ami-d23f38cf) in eu-central-1 ...
-	Instance launched in 00:30.306s -> i-92ef9f53
-	Waiting for AWS to boot Instance i-92ef9f53 and Payload to start at https://52.28.235.61/ ...
-	Payload started in 00:29.266s -> https://52.28.235.61/
-	Remapping Elastic IP 52.28.233.167 to i-92ef9f53 ...
-	Waiting 15s for AWS to complete Elastic IP Zero Downtime transition ...
-	Deployment completed successfully. axelfontaine/myapp:1.0 is up and running at https://myapp-axelfontaine.boxfuse.io/
+Fusing Image for myapp-1.0.jar ...
+Image fused in 00:06.838s (53937 K) -> axelfontaine/myapp:1.0
+Creating axelfontaine/myapp ...
+Pushing axelfontaine/myapp:1.0 ...
+Verifying axelfontaine/myapp:1.0 ...
+Creating Elastic IP ...
+Mapping myapp-axelfontaine.boxfuse.io to 52.28.233.167 ...
+Waiting for AWS to create an AMI for axelfontaine/myapp:1.0 in eu-central-1 (this may take up to 50 seconds) ...
+AMI created in 00:23.557s -> ami-d23f38cf
+Creating security group boxfuse-sg_axelfontaine/myapp:1.0 ...
+Launching t2.micro instance of axelfontaine/myapp:1.0 (ami-d23f38cf) in eu-central-1 ...
+Instance launched in 00:30.306s -> i-92ef9f53
+Waiting for AWS to boot Instance i-92ef9f53 and Payload to start at https://52.28.235.61/ ...
+Payload started in 00:29.266s -> https://52.28.235.61/
+Remapping Elastic IP 52.28.233.167 to i-92ef9f53 ...
+Waiting 15s for AWS to complete Elastic IP Zero Downtime transition ...
+Deployment completed successfully. axelfontaine/myapp:1.0 is up and running at https://myapp-axelfontaine.boxfuse.io/
 ----
 
 Your application should now be up and running on AWS.

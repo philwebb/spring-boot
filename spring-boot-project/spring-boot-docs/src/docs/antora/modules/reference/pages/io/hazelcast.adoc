@@ -19,9 +19,9 @@ You could also specify the Hazelcast configuration file to use through configura
 
 [configprops,yaml]
 ----
-	spring:
-	  hazelcast:
-	    config: "classpath:config/my-hazelcast.xml"
+spring:
+  hazelcast:
+    config: "classpath:config/my-hazelcast.xml"
 ----
 
 Otherwise, Spring Boot tries to find the Hazelcast configuration from the default locations: `hazelcast.xml` in the working directory or at the root of the classpath, or a YAML counterpart in the same locations.

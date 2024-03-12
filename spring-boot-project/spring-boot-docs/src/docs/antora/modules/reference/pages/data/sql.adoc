@@ -77,11 +77,11 @@ For example, you might declare the following section in `application.properties`
 
 [configprops,yaml]
 ----
-	spring:
-	  datasource:
-	    url: "jdbc:mysql://localhost/test"
-	    username: "dbuser"
-	    password: "dbpass"
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost/test"
+    username: "dbuser"
+    password: "dbpass"
 ----
 
 NOTE: You should at least specify the URL by setting the configprop:spring.datasource.url[] property.
@@ -102,12 +102,12 @@ For instance, if you use the {url-tomcat-docs}/jdbc-pool.html#Common_Attributes[
 
 [configprops,yaml]
 ----
-	spring:
-	  datasource:
-	    tomcat:
-	      max-wait: 10000
-	      max-active: 50
-	      test-on-borrow: true
+spring:
+  datasource:
+    tomcat:
+      max-wait: 10000
+      max-active: 50
+      test-on-borrow: true
 ----
 
 This will set the pool to wait 10000ms before throwing an exception if no connection is available, limit the maximum number of connections to 50 and validate the connection before borrowing it from the pool.
@@ -155,9 +155,9 @@ For example, the following section in `application.properties` shows how you can
 
 [configprops,yaml]
 ----
-	spring:
-	  datasource:
-	    jndi-name: "java:jboss/datasources/customers"
+spring:
+  datasource:
+    jndi-name: "java:jboss/datasources/customers"
 ----
 
 
@@ -173,10 +173,10 @@ You can customize some properties of the template by using the `spring.jdbc.temp
 
 [configprops,yaml]
 ----
-	spring:
-	  jdbc:
-	    template:
-	      max-rows: 500
+spring:
+  jdbc:
+    template:
+      max-rows: 500
 ----
 
 NOTE: The `NamedParameterJdbcTemplate` reuses the same `JdbcTemplate` instance behind the scenes.
@@ -286,9 +286,9 @@ For example, to create and drop tables you can add the following line to your `a
 
 [configprops,yaml]
 ----
-	spring:
-	  jpa:
-	    hibernate.ddl-auto: "create-drop"
+spring:
+  jpa:
+    hibernate.ddl-auto: "create-drop"
 ----
 
 NOTE: Hibernate's own internal property name for this (if you happen to remember it better) is `hibernate.hbm2ddl.auto`.
@@ -297,11 +297,11 @@ The following line shows an example of setting JPA properties for Hibernate:
 
 [configprops,yaml]
 ----
-	spring:
-	  jpa:
-	    properties:
-	      hibernate:
-	        "globally_quoted_identifiers": "true"
+spring:
+  jpa:
+    properties:
+      hibernate:
+        "globally_quoted_identifiers": "true"
 ----
 
 The line in the preceding example passes a value of `true` for the `hibernate.globally_quoted_identifiers` property to the Hibernate entity manager.
@@ -474,11 +474,11 @@ For example, you might declare the following section in `application.properties`
 
 [configprops,yaml]
 ----
-	spring:
-	  r2dbc:
-	    url: "r2dbc:postgresql://localhost/test"
-	    username: "dbuser"
-	    password: "dbpass"
+spring:
+  r2dbc:
+    url: "r2dbc:postgresql://localhost/test"
+    username: "dbuser"
+    password: "dbpass"
 ----
 
 TIP: You do not need to specify a driver class name, since Spring Boot obtains the driver from R2DBC's Connection Factory discovery.

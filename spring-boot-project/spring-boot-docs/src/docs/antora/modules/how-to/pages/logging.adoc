@@ -22,10 +22,10 @@ If the only change you need to make to logging is to set the levels of various l
 
 [configprops,yaml]
 ----
-	logging:
-	  level:
-	    org.springframework.web: "debug"
-	    org.hibernate: "error"
+logging:
+  level:
+    org.springframework.web: "debug"
+    org.hibernate: "error"
 ----
 
 You can also set the location of a file to which the log will be written (in addition to the console) by using `logging.file.name`.
@@ -111,9 +111,9 @@ You also need to add `logging.file.name` to your `application.properties` or `ap
 
 [configprops,yaml]
 ----
-	logging:
-	  file:
-	    name: "myapplication.log"
+logging:
+  file:
+    name: "myapplication.log"
 ----
 
 

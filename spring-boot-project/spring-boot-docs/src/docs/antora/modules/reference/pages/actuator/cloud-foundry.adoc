@@ -19,9 +19,9 @@ If you want to fully disable the `/cloudfoundryapplication` endpoints, you can a
 
 [configprops,yaml]
 ----
-	management:
-	  cloudfoundry:
-	    enabled: false
+management:
+  cloudfoundry:
+    enabled: false
 ----
 
 
@@ -34,9 +34,9 @@ If your Cloud Foundry UAA or Cloud Controller services use self-signed certifica
 
 [configprops,yaml]
 ----
-	management:
-	  cloudfoundry:
-	    skip-ssl-validation: true
+management:
+  cloudfoundry:
+    skip-ssl-validation: true
 ----
 
 

@@ -14,24 +14,24 @@ Spring Boot applications can be launched by using `systemd` '`service`' scripts.
 Assuming that you have a Spring Boot application packaged as an uber jar in `/var/myapp`, to install it as a `systemd` service, create a script named `myapp.service` and place it in `/etc/systemd/system` directory.
 The following script offers an example:
 
-[indent=0]
+[source]
 ----
-	[Unit]
-	Description=myapp
-	After=syslog.target network.target
+[Unit]
+Description=myapp
+After=syslog.target network.target
 
-	[Service]
-	User=myapp
-	Group=myapp
+[Service]
+User=myapp
+Group=myapp
 
-	Environment="JAVA_HOME=/path/to/java/home"
+Environment="JAVA_HOME=/path/to/java/home"
 
-	ExecStart=${JAVA_HOME}/bin/java -jar /var/myapp/myapp.jar
-	ExecStop=/bin/kill -15 $MAINPID
-	SuccessExitStatus=143
+ExecStart=${JAVA_HOME}/bin/java -jar /var/myapp/myapp.jar
+ExecStop=/bin/kill -15 $MAINPID
+SuccessExitStatus=143
 
-	[Install]
-	WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 ----
 
 IMPORTANT: Remember to change the `Description`, `User`, `Group`, `Environment` and `ExecStart` fields for your application.
@@ -369,10 +369,10 @@ The file is expected to be next to the jar file and have the same name but suffi
 For example, a jar named `/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`, as shown in the following example:
 
 .myapp.conf
-[indent=0,subs="verbatim"]
+[source,properties]
 ----
-	JAVA_OPTS=-Xmx1024M
-	LOG_FOLDER=/custom/log/folder
+JAVA_OPTS=-Xmx1024M
+LOG_FOLDER=/custom/log/folder
 ----
 
 TIP:  If you do not like having the config file next to the jar file, you can set a `CONF_FOLDER` environment variable to customize the location of the config file.

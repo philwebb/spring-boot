@@ -81,50 +81,50 @@ We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
 Open your favorite text editor and add the following:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,subs="verbatim,attributes"]
 ----
-	<?xml version="1.0" encoding="UTF-8"?>
-	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-		<modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-		<groupId>com.example</groupId>
-		<artifactId>myproject</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+	<groupId>com.example</groupId>
+	<artifactId>myproject</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
-		<parent>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-parent</artifactId>
-			<version>{version-spring-boot}</version>
-		</parent>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>{version-spring-boot}</version>
+	</parent>
 
-		<!-- Additional lines to be added here... -->
+	<!-- Additional lines to be added here... -->
 
 ifeval::["{artifact-release-type}" != "release"]
-		<!-- (you only need this if you are using a milestone or snapshot version) -->
-		<repositories>
-			<repository>
-				<id>spring-snapshots</id>
-				<url>https://repo.spring.io/snapshot</url>
-				<snapshots><enabled>true</enabled></snapshots>
-			</repository>
-			<repository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>spring-snapshots</id>
-				<url>https://repo.spring.io/snapshot</url>
-			</pluginRepository>
-			<pluginRepository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</pluginRepository>
-		</pluginRepositories>
+	<!-- (you only need this if you are using a milestone or snapshot version) -->
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<url>https://repo.spring.io/milestone</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<url>https://repo.spring.io/snapshot</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<url>https://repo.spring.io/milestone</url>
+		</pluginRepository>
+	</pluginRepositories>
 endif::[]
-	</project>
+</project>
 ----
 
 The preceding listing should give you a working build.
@@ -142,29 +142,29 @@ We need to start by creating a Gradle `build.gradle` file.
 The `build.gradle` is the build script that is used to build your project.
 Open your favorite text editor and add the following:
 
-[source,gradle,indent=0,subs="verbatim,attributes"]
+[source,gradle,subs="verbatim,attributes"]
 ----
-	plugins {
-		id 'java'
-		id 'org.springframework.boot' version '{version-spring-boot}'
-	}
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
 
-	apply plugin: 'io.spring.dependency-management'
+apply plugin: 'io.spring.dependency-management'
 
-	group = 'com.example'
-	version = '0.0.1-SNAPSHOT'
-	sourceCompatibility = '17'
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
 
-	repositories {
-		mavenCentral()
+repositories {
+	mavenCentral()
 ifeval::["{artifact-release-type}" != "release"]
-		maven { url 'https://repo.spring.io/milestone' }
-		maven { url 'https://repo.spring.io/snapshot' }
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
-	}
+}
 
-	dependencies {
-	}
+dependencies {
+}
 ----
 
 The preceding listing should give you a working build.
@@ -329,28 +329,28 @@ Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goa
 Type `mvn spring-boot:run` from the root project directory to start the application.
 You should see output similar to the following:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ mvn spring-boot:run
+$ mvn spring-boot:run
 
-	  .   ____          _            __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, | / / / /
-	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{version-spring-boot})
-	....... . . .
-	....... . . . (log output here)
-	....... . . .
-	........ Started MyApplication in 0.906 seconds (process running for 6.514)
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v{version-spring-boot})
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started MyApplication in 0.906 seconds (process running for 6.514)
 ----
 
 If you open a web browser to `http://localhost:8080`, you should see the following output:
 
-[indent=0]
+[source]
 ----
-	Hello World!
+Hello World!
 ----
 
 To gracefully exit the application, press `ctrl-c`.
@@ -365,28 +365,28 @@ Since you used the `org.springframework.boot` Gradle plugin, you have a useful `
 Type `gradle bootRun` from the root project directory to start the application.
 You should see output similar to the following:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ gradle bootRun
+$ gradle bootRun
 
-	  .   ____          _            __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, | / / / /
-	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{version-spring-boot})
-	....... . . .
-	....... . . . (log output here)
-	....... . . .
-	........ Started MyApplication in 0.906 seconds (process running for 6.514)
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v{version-spring-boot})
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started MyApplication in 0.906 seconds (process running for 6.514)
 ----
 
 If you open a web browser to `http://localhost:8080`, you should see the following output:
 
-[indent=0]
+[source]
 ----
-	Hello World!
+Hello World!
 ----
 
 To gracefully exit the application, press `ctrl-c`.
@@ -438,23 +438,23 @@ See the xref:maven-plugin:getting-started.adoc[plugin documentation] for details
 
 Save your `pom.xml` and run `mvn package` from the command line, as follows:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ mvn package
+$ mvn package
 
-	[INFO] Scanning for projects...
-	[INFO]
-	[INFO] ------------------------------------------------------------------------
-	[INFO] Building myproject 0.0.1-SNAPSHOT
-	[INFO] ------------------------------------------------------------------------
-	[INFO] .... ..
-	[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
-	[INFO] Building jar: /Users/developer/example/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
-	[INFO]
-	[INFO] --- spring-boot-maven-plugin:{version-spring-boot}:repackage (default) @ myproject ---
-	[INFO] ------------------------------------------------------------------------
-	[INFO] BUILD SUCCESS
-	[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building myproject 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] .... ..
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
+[INFO] Building jar: /Users/developer/example/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
+[INFO]
+[INFO] --- spring-boot-maven-plugin:{version-spring-boot}:repackage (default) @ myproject ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
 ----
 
 If you look in the `target` directory, you should see `myproject-0.0.1-SNAPSHOT.jar`.
@@ -471,21 +471,21 @@ This is the original jar file that Maven created before it was repackaged by Spr
 
 To run that application, use the `java -jar` command, as follows:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
 
-	  .   ____          _            __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, | / / / /
-	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{version-spring-boot})
-	....... . . .
-	....... . . . (log output here)
-	....... . . .
-	........ Started MyApplication in 0.999 seconds (process running for 1.253)
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v{version-spring-boot})
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started MyApplication in 0.999 seconds (process running for 1.253)
 ----
 
 As before, to exit the application, press `ctrl-c`.

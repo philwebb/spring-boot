@@ -8,11 +8,11 @@ For example, you might declare the following section in `application.properties`
 
 [configprops,yaml]
 ----
-	spring:
-	  kafka:
-	    bootstrap-servers: "localhost:9092"
-	    consumer:
-	      group-id: "myGroup"
+spring:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    consumer:
+      group-id: "myGroup"
 ----
 
 TIP: To create a topic on startup, add a bean of type `NewTopic`.
@@ -94,22 +94,22 @@ If you wish to configure the individual client types with additional properties 
 
 [configprops,yaml]
 ----
-	spring:
-	  kafka:
-	    properties:
-	      "[prop.one]": "first"
-	    admin:
-	      properties:
-	        "[prop.two]": "second"
-	    consumer:
-	      properties:
-	        "[prop.three]": "third"
-	    producer:
-	      properties:
-	        "[prop.four]": "fourth"
-	    streams:
-	      properties:
-	        "[prop.five]": "fifth"
+spring:
+  kafka:
+    properties:
+      "[prop.one]": "first"
+    admin:
+      properties:
+        "[prop.two]": "second"
+    consumer:
+      properties:
+        "[prop.three]": "third"
+    producer:
+      properties:
+        "[prop.four]": "fourth"
+    streams:
+      properties:
+        "[prop.five]": "fifth"
 ----
 
 This sets the common `prop.one` Kafka property to `first` (applies to producers, consumers, admins, and streams), the `prop.two` admin property to `second`, the `prop.three` consumer property to `third`, the `prop.four` producer property to `fourth` and the `prop.five` streams property to `fifth`.
@@ -118,25 +118,25 @@ You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
 [configprops,yaml]
 ----
-	spring:
-	  kafka:
-	    consumer:
-	      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
-	      properties:
-	        "[spring.json.value.default.type]": "com.example.Invoice"
-	        "[spring.json.trusted.packages]": "com.example.main,com.example.another"
+spring:
+  kafka:
+    consumer:
+      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
+      properties:
+        "[spring.json.value.default.type]": "com.example.Invoice"
+        "[spring.json.trusted.packages]": "com.example.main,com.example.another"
 ----
 
 Similarly, you can disable the `JsonSerializer` default behavior of sending type information in headers:
 
 [configprops,yaml]
 ----
-	spring:
-	  kafka:
-	    producer:
-	      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
-	      properties:
-	        "[spring.json.add.type.headers]": false
+spring:
+  kafka:
+    producer:
+      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+      properties:
+        "[spring.json.add.type.headers]": false
 ----
 
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot explicitly supports.
@@ -165,7 +165,7 @@ include-code::annotation/MyTest[]
 
 [configprops,yaml]
 ----
-	spring:
-	  kafka:
-	    bootstrap-servers: "${spring.embedded.kafka.brokers}"
+spring:
+  kafka:
+    bootstrap-servers: "${spring.embedded.kafka.brokers}"
 ----

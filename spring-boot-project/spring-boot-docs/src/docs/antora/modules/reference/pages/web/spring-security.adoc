@@ -9,11 +9,11 @@ Additional information can be found in the {url-spring-security-docs}/servlet/au
 The default `UserDetailsService` has a single user.
 The user name is `user`, and the password is random and is printed at WARN level when the application starts, as shown in the following example:
 
-[indent=0]
+[source]
 ----
-	Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
+Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
 
-	This generated password is for development use only. Your security configuration must be updated before running your application in production.
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
 ----
 
 NOTE: If you fine-tune your logging configuration, ensure that the `org.springframework.boot.autoconfigure.security` category is set to log `WARN`-level messages.
@@ -102,49 +102,49 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      client:
-	        registration:
-	          my-login-client:
-	            client-id: "abcd"
-	            client-secret: "password"
-	            client-name: "Client for OpenID Connect"
-	            provider: "my-oauth-provider"
-	            scope: "openid,profile,email,phone,address"
-	            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-	            client-authentication-method: "client_secret_basic"
-	            authorization-grant-type: "authorization_code"
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-login-client:
+            client-id: "abcd"
+            client-secret: "password"
+            client-name: "Client for OpenID Connect"
+            provider: "my-oauth-provider"
+            scope: "openid,profile,email,phone,address"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-authentication-method: "client_secret_basic"
+            authorization-grant-type: "authorization_code"
 
-	          my-client-1:
-	            client-id: "abcd"
-	            client-secret: "password"
-	            client-name: "Client for user scope"
-	            provider: "my-oauth-provider"
-	            scope: "user"
-	            redirect-uri: "{baseUrl}/authorized/user"
-	            client-authentication-method: "client_secret_basic"
-	            authorization-grant-type: "authorization_code"
+          my-client-1:
+            client-id: "abcd"
+            client-secret: "password"
+            client-name: "Client for user scope"
+            provider: "my-oauth-provider"
+            scope: "user"
+            redirect-uri: "{baseUrl}/authorized/user"
+            client-authentication-method: "client_secret_basic"
+            authorization-grant-type: "authorization_code"
 
-	          my-client-2:
-	            client-id: "abcd"
-	            client-secret: "password"
-	            client-name: "Client for email scope"
-	            provider: "my-oauth-provider"
-	            scope: "email"
-	            redirect-uri: "{baseUrl}/authorized/email"
-	            client-authentication-method: "client_secret_basic"
-	            authorization-grant-type: "authorization_code"
+          my-client-2:
+            client-id: "abcd"
+            client-secret: "password"
+            client-name: "Client for email scope"
+            provider: "my-oauth-provider"
+            scope: "email"
+            redirect-uri: "{baseUrl}/authorized/email"
+            client-authentication-method: "client_secret_basic"
+            authorization-grant-type: "authorization_code"
 
-	        provider:
-	          my-oauth-provider:
-	            authorization-uri: "https://my-auth-server.com/oauth2/authorize"
-	            token-uri: "https://my-auth-server.com/oauth2/token"
-	            user-info-uri: "https://my-auth-server.com/userinfo"
-	            user-info-authentication-method: "header"
-	            jwk-set-uri: "https://my-auth-server.com/oauth2/jwks"
-	            user-name-attribute: "name"
+        provider:
+          my-oauth-provider:
+            authorization-uri: "https://my-auth-server.com/oauth2/authorize"
+            token-uri: "https://my-auth-server.com/oauth2/token"
+            user-info-uri: "https://my-auth-server.com/userinfo"
+            user-info-authentication-method: "header"
+            jwk-set-uri: "https://my-auth-server.com/oauth2/jwks"
+            user-name-attribute: "name"
 ----
 
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.
@@ -155,13 +155,13 @@ The following example shows how an OpenID Connect Provider can be configured wit
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      client:
-	        provider:
-	          oidc-provider:
-	            issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc-provider:
+            issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
 ----
 
 By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs matching `/login/oauth2/code/*`.
@@ -188,18 +188,18 @@ In other words, the two configurations in the following example use the Google p
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      client:
-	        registration:
-	          my-client:
-	            client-id: "abcd"
-	            client-secret: "password"
-	            provider: "google"
-	          google:
-	            client-id: "abcd"
-	            client-secret: "password"
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client:
+            client-id: "abcd"
+            client-secret: "password"
+            provider: "google"
+          google:
+            client-id: "abcd"
+            client-secret: "password"
 ----
 
 
@@ -212,22 +212,22 @@ For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, a
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      resourceserver:
-	        jwt:
-	          jwk-set-uri: "https://example.com/oauth2/default/v1/keys"
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "https://example.com/oauth2/default/v1/keys"
 ----
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      resourceserver:
-	        jwt:
-	          issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
 ----
 
 NOTE: If the authorization server does not support a JWK Set URI, you can configure the resource server with the Public Key used for verifying the signature of the JWT.
@@ -238,13 +238,13 @@ For example, to require JWTs to contain an aud claim with the value `my-audience
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      resourceserver:
-	        jwt:
-	          audiences:
-	            - "my-audience"
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          audiences:
+            - "my-audience"
 ----
 
 The same properties are applicable for both servlet and reactive applications.
@@ -254,14 +254,14 @@ In cases where opaque tokens are used instead of JWTs, you can configure the fol
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      resourceserver:
-	        opaquetoken:
-	          introspection-uri: "https://example.com/check-token"
-	          client-id: "my-client-id"
-	          client-secret: "my-client-secret"
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        opaquetoken:
+          introspection-uri: "https://example.com/check-token"
+          client-id: "my-client-id"
+          client-secret: "my-client-secret"
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
@@ -278,43 +278,43 @@ You can register multiple OAuth2 clients under the `spring.security.oauth2.autho
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    oauth2:
-	      authorizationserver:
-	        client:
-	          my-client-1:
-	            registration:
-	              client-id: "abcd"
-	              client-secret: "{noop}secret1"
-	              client-authentication-methods:
-	                - "client_secret_basic"
-	              authorization-grant-types:
-	                - "authorization_code"
-	                - "refresh_token"
-	              redirect-uris:
-	                - "https://my-client-1.com/login/oauth2/code/abcd"
-	                - "https://my-client-1.com/authorized"
-	              scopes:
-	                - "openid"
-	                - "profile"
-	                - "email"
-	                - "phone"
-	                - "address"
-	            require-authorization-consent: true
-	          my-client-2:
-	            registration:
-	              client-id: "efgh"
-	              client-secret: "{noop}secret2"
-	              client-authentication-methods:
-	                - "client_secret_jwt"
-	              authorization-grant-types:
-	                - "client_credentials"
-	              scopes:
-	                - "user.read"
-	                - "user.write"
-	            jwk-set-uri: "https://my-client-2.com/jwks"
-		        token-endpoint-authentication-signing-algorithm: "RS256"
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          my-client-1:
+            registration:
+              client-id: "abcd"
+              client-secret: "{noop}secret1"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "authorization_code"
+                - "refresh_token"
+              redirect-uris:
+                - "https://my-client-1.com/login/oauth2/code/abcd"
+                - "https://my-client-1.com/authorized"
+              scopes:
+                - "openid"
+                - "profile"
+                - "email"
+                - "phone"
+                - "address"
+            require-authorization-consent: true
+          my-client-2:
+            registration:
+              client-id: "efgh"
+              client-secret: "{noop}secret2"
+              client-authentication-methods:
+                - "client_secret_jwt"
+              authorization-grant-types:
+                - "client_credentials"
+              scopes:
+                - "user.read"
+                - "user.write"
+            jwk-set-uri: "https://my-client-2.com/jwks"
+	        token-endpoint-authentication-signing-algorithm: "RS256"
 ----
 
 NOTE: The `client-secret` property must be in a format that can be matched by the configured `PasswordEncoder`.
@@ -355,50 +355,50 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 
 [configprops,yaml]
 ----
-	spring:
-	  security:
-	    saml2:
-	      relyingparty:
-	        registration:
-	          my-relying-party1:
-	            signing:
-                  credentials:
-                  - private-key-location: "path-to-private-key"
-                    certificate-location: "path-to-certificate"
-	            decryption:
-	              credentials:
-	              - private-key-location: "path-to-private-key"
-                    certificate-location: "path-to-certificate"
-                singlelogout:
-                   url: "https://myapp/logout/saml2/slo"
-                   response-url: "https://remoteidp2.slo.url"
-                   binding: "POST"
-	            assertingparty:
-	              verification:
-	                credentials:
-	                - certificate-location: "path-to-verification-cert"
-	              entity-id: "remote-idp-entity-id1"
-	              sso-url: "https://remoteidp1.sso.url"
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          my-relying-party1:
+            signing:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            decryption:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            singlelogout:
+               url: "https://myapp/logout/saml2/slo"
+               response-url: "https://remoteidp2.slo.url"
+               binding: "POST"
+            assertingparty:
+              verification:
+                credentials:
+                - certificate-location: "path-to-verification-cert"
+              entity-id: "remote-idp-entity-id1"
+              sso-url: "https://remoteidp1.sso.url"
 
-	          my-relying-party2:
-	            signing:
-	              credentials:
-	              - private-key-location: "path-to-private-key"
-                    certificate-location: "path-to-certificate"
-                decryption:
-	              credentials:
-	              - private-key-location: "path-to-private-key"
-                    certificate-location: "path-to-certificate"
-                assertingparty:
-                  verification:
-                    credentials:
-                    - certificate-location: "path-to-other-verification-cert"
-                  entity-id: "remote-idp-entity-id2"
-                  sso-url: "https://remoteidp2.sso.url"
-                  singlelogout:
-                    url: "https://remoteidp2.slo.url"
-                    response-url: "https://myapp/logout/saml2/slo"
-                    binding: "POST"
+          my-relying-party2:
+            signing:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            decryption:
+              credentials:
+              - private-key-location: "path-to-private-key"
+                certificate-location: "path-to-certificate"
+            assertingparty:
+              verification:
+                credentials:
+                - certificate-location: "path-to-other-verification-cert"
+              entity-id: "remote-idp-entity-id2"
+              sso-url: "https://remoteidp2.sso.url"
+              singlelogout:
+                url: "https://remoteidp2.slo.url"
+                response-url: "https://myapp/logout/saml2/slo"
+                binding: "POST"
 ----
 
 For SAML2 logout, by default, Spring Security's `Saml2LogoutRequestFilter` and `Saml2LogoutResponseFilter` only process URLs matching `/logout/saml2/slo`.

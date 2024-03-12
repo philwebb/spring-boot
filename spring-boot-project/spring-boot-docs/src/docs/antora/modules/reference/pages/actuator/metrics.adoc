@@ -39,31 +39,31 @@ The following example disables Datadog:
 
 [configprops,yaml]
 ----
-	management:
-      datadog:
-	    metrics:
-	      export:
-            enabled: false
+management:
+  datadog:
+    metrics:
+      export:
+        enabled: false
 ----
 
 You can also disable all registries unless stated otherwise by the registry-specific property, as the following example shows:
 
 [configprops,yaml]
 ----
-	management:
-      defaults:
-	    metrics:
-	      export:
-	        enabled: false
+management:
+  defaults:
+    metrics:
+      export:
+        enabled: false
 ----
 
 Spring Boot also adds any auto-configured registries to the global static composite registry on the `Metrics` class, unless you explicitly tell it not to:
 
 [configprops,yaml]
 ----
-	management:
-	  metrics:
-	    use-global-registry: false
+management:
+  metrics:
+    use-global-registry: false
 ----
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
@@ -93,11 +93,11 @@ To export metrics to SaaS {url-micrometer-docs-implementations}/appOptics[AppOpt
 
 [configprops,yaml]
 ----
-	management:
-	  appoptics:
-	    metrics:
-	      export:
-	        api-token: "YOUR_TOKEN"
+management:
+  appoptics:
+    metrics:
+      export:
+        api-token: "YOUR_TOKEN"
 ----
 
 
@@ -110,11 +110,11 @@ You can provide the location of the https://github.com/Netflix/atlas[Atlas serve
 
 [configprops,yaml]
 ----
-	management:
-      atlas:
-        metrics:
-  	      export:
-	        uri: "https://atlas.example.com:7101/api/v1/publish"
+management:
+  atlas:
+    metrics:
+      export:
+        uri: "https://atlas.example.com:7101/api/v1/publish"
 ----
 
 
@@ -127,23 +127,23 @@ To export metrics to {url-micrometer-docs-implementations}/datadog[Datadog], you
 
 [configprops,yaml]
 ----
-	management:
-      datadog:
-        metrics:
-	      export:
-	        api-key: "YOUR_KEY"
+management:
+  datadog:
+    metrics:
+      export:
+        api-key: "YOUR_KEY"
 ----
 
 If you additionally provide an application key (optional), then metadata such as meter descriptions, types, and base units will also be exported:
 
 [configprops,yaml]
 ----
-	management:
-	  datadog:
-	    metrics:
-	      export:
-	        api-key: "YOUR_API_KEY"
-	        application-key: "YOUR_APPLICATION_KEY"
+management:
+  datadog:
+    metrics:
+      export:
+        api-key: "YOUR_API_KEY"
+        application-key: "YOUR_APPLICATION_KEY"
 ----
 
 By default, metrics are sent to the Datadog US https://docs.datadoghq.com/getting_started/site[site] (`https://api.datadoghq.com`).
@@ -151,22 +151,22 @@ If your Datadog project is hosted on one of the other sites, or you need to send
 
 [configprops,yaml]
 ----
-	management:
-	  datadog:
-	    metrics:
-	      export:
-	        uri: "https://api.datadoghq.eu"
+management:
+  datadog:
+    metrics:
+      export:
+        uri: "https://api.datadoghq.eu"
 ----
 
 You can also change the interval at which metrics are sent to Datadog:
 
 [configprops,yaml]
 ----
-	management:
-	  datadog:
-	    metrics:
-	      export:
-	        step: "30s"
+management:
+  datadog:
+    metrics:
+      export:
+        step: "30s"
 ----
 
 
@@ -222,12 +222,12 @@ The example below configures metrics export using the `example` environment id:
 
 [configprops,yaml]
 ----
-	management:
-	  dynatrace:
-	    metrics:
-	      export:
-	        uri: "https://example.live.dynatrace.com/api/v2/metrics/ingest"
-	        api-token: "YOUR_TOKEN"
+management:
+  dynatrace:
+    metrics:
+      export:
+        uri: "https://example.live.dynatrace.com/api/v2/metrics/ingest"
+        api-token: "YOUR_TOKEN"
 ----
 
 When using the Dynatrace v2 API, the following optional features are available (more details can be found in the {url-dynatrace-docs-shortlink}/micrometer-metrics-ingest#dt-configuration-properties[Dynatrace documentation]):
@@ -248,19 +248,19 @@ In this scenario, the automatically configured endpoint is used:
 
 [configprops,yaml]
 ----
-	management:
-	  dynatrace:
-	    metrics:
-	      export:
-	        # Specify uri and api-token here if not using the local OneAgent endpoint.
-	        v2:
-	          metric-key-prefix: "your.key.prefix"
-	          enrich-with-dynatrace-metadata: true
-	          default-dimensions:
-	            key1: "value1"
-	            key2: "value2"
-	          use-dynatrace-summary-instruments: true # (default: true)
-	          export-meter-metadata: true             # (default: true)
+management:
+  dynatrace:
+    metrics:
+      export:
+        # Specify uri and api-token here if not using the local OneAgent endpoint.
+        v2:
+          metric-key-prefix: "your.key.prefix"
+          enrich-with-dynatrace-metadata: true
+          default-dimensions:
+            key1: "value1"
+            key2: "value2"
+          use-dynatrace-summary-instruments: true # (default: true)
+          export-meter-metadata: true             # (default: true)
 ----
 
 
@@ -274,14 +274,14 @@ To export metrics to {url-micrometer-docs-implementations}/dynatrace[Dynatrace],
 
 [configprops,yaml]
 ----
-	management:
-	  dynatrace:
-	    metrics:
-	      export:
-	        uri: "https://{your-environment-id}.live.dynatrace.com"
-	        api-token: "YOUR_TOKEN"
-	        v1:
-	          device-id: "YOUR_DEVICE_ID"
+management:
+  dynatrace:
+    metrics:
+      export:
+        uri: "https://{your-environment-id}.live.dynatrace.com"
+        api-token: "YOUR_TOKEN"
+        v1:
+          device-id: "YOUR_DEVICE_ID"
 ----
 
 For the v1 API, you must specify the base environment URI without a path, as the v1 endpoint path is added automatically.
@@ -297,11 +297,11 @@ The following example sets the export interval to 30 seconds:
 
 [configprops,yaml]
 ----
-	management:
-	  dynatrace:
-	    metrics:
-	      export:
-	        step: "30s"
+management:
+  dynatrace:
+    metrics:
+      export:
+        step: "30s"
 ----
 
 You can find more information on how to set up the Dynatrace exporter for Micrometer in the {url-micrometer-docs-implementations}/dynatrace[Micrometer documentation] and the {url-dynatrace-docs-shortlink}/micrometer-metrics-ingest[Dynatrace documentation].
@@ -316,11 +316,11 @@ You can provide the location of the Elastic server to use by using the following
 
 [configprops,yaml]
 ----
-	management:
-	  elastic:
-	    metrics:
-	      export:
-	        host: "https://elastic.example.com:8086"
+management:
+  elastic:
+    metrics:
+      export:
+        host: "https://elastic.example.com:8086"
 ----
 
 
@@ -333,12 +333,12 @@ You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port
 
 [configprops,yaml]
 ----
-	management:
-	  ganglia:
-	    metrics:
-	      export:
-	        host: "ganglia.example.com"
-	        port: 9649
+management:
+  ganglia:
+    metrics:
+      export:
+        host: "ganglia.example.com"
+        port: 9649
 ----
 
 
@@ -351,12 +351,12 @@ You can provide the https://graphiteapp.org[Graphite server] host and port, as t
 
 [configprops,yaml]
 ----
-	management:
-	  graphite:
-	    metrics:
-	      export:
-	         host: "graphite.example.com"
-	         port: 9004
+management:
+  graphite:
+    metrics:
+      export:
+         host: "graphite.example.com"
+         port: 9004
 ----
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {url-micrometer-docs-implementations}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
@@ -379,24 +379,24 @@ To export metrics to SaaS {url-micrometer-docs-implementations}/humio[Humio], yo
 
 [configprops,yaml]
 ----
-	management:
-	  humio:
-	    metrics:
-	      export:
-	        api-token: "YOUR_TOKEN"
+management:
+  humio:
+    metrics:
+      export:
+        api-token: "YOUR_TOKEN"
 ----
 
 You should also configure one or more tags to identify the data source to which metrics are pushed:
 
 [configprops,yaml]
 ----
-	management:
-	  humio:
-	    metrics:
-	      export:
-	        tags:
-	          alpha: "a"
-	          bravo: "b"
+management:
+  humio:
+    metrics:
+      export:
+        tags:
+          alpha: "a"
+          bravo: "b"
 ----
 
 
@@ -410,11 +410,11 @@ You can provide the location of the https://www.influxdata.com[Influx server] to
 
 [configprops,yaml]
 ----
-	management:
-	  influx:
-	    metrics:
-	      export:
-	        uri: "https://influx.example.com:8086"
+management:
+  influx:
+    metrics:
+      export:
+        uri: "https://influx.example.com:8086"
 ----
 
 
@@ -428,11 +428,11 @@ You can provide the domain to use by using:
 
 [configprops,yaml]
 ----
-	management:
-	  jmx:
-	    metrics:
-	      export:
-	        domain: "com.example.app.metrics"
+management:
+  jmx:
+    metrics:
+      export:
+        domain: "com.example.app.metrics"
 ----
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter ID is {url-micrometer-docs-implementations}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
@@ -455,11 +455,11 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 
 [configprops,yaml]
 ----
-	management:
-	  kairos:
-	    metrics:
-	      export:
-	        uri: "https://kairosdb.example.com:8080/api/v1/datapoints"
+management:
+  kairos:
+    metrics:
+      export:
+        uri: "https://kairosdb.example.com:8080/api/v1/datapoints"
 ----
 
 
@@ -472,34 +472,34 @@ To export metrics to https://newrelic.com[New Relic], you must provide your API 
 
 [configprops,yaml]
 ----
-	management:
-	  newrelic:
-	    metrics:
-	      export:
-	        api-key: "YOUR_KEY"
-	        account-id: "YOUR_ACCOUNT_ID"
+management:
+  newrelic:
+    metrics:
+      export:
+        api-key: "YOUR_KEY"
+        account-id: "YOUR_ACCOUNT_ID"
 ----
 
 You can also change the interval at which metrics are sent to New Relic:
 
 [configprops,yaml]
 ----
-	management:
-	  newrelic:
-	    metrics:
-	      export:
-	        step: "30s"
+management:
+  newrelic:
+    metrics:
+      export:
+        step: "30s"
 ----
 
 By default, metrics are published through REST calls, but you can also use the Java Agent API if you have it on the classpath:
 
 [configprops,yaml]
 ----
-	management:
-	  newrelic:
-	    metrics:
-	      export:
-	        client-provider-type: "insights-agent"
+management:
+  newrelic:
+    metrics:
+      export:
+        client-provider-type: "insights-agent"
 ----
 
 Finally, you can take full control by defining your own `NewRelicClientProvider` bean.
@@ -514,11 +514,11 @@ You can provide the location of the https://opentelemetry.io/[OpenTelemetry metr
 
 [configprops,yaml]
 ----
-	management:
-	  otlp:
-	    metrics:
-	      export:
-	        url: "https://otlp.example.com:4318/v1/metrics"
+management:
+  otlp:
+    metrics:
+      export:
+        url: "https://otlp.example.com:4318/v1/metrics"
 ----
 
 
@@ -574,22 +574,22 @@ To export metrics to https://www.signalfx.com[SignalFx], you must provide your a
 
 [configprops,yaml]
 ----
-	management:
-	  signalfx:
-	    metrics:
-	      export:
-	        access-token: "YOUR_ACCESS_TOKEN"
+management:
+  signalfx:
+    metrics:
+      export:
+        access-token: "YOUR_ACCESS_TOKEN"
 ----
 
 You can also change the interval at which metrics are sent to SignalFx:
 
 [configprops,yaml]
 ----
-	management:
-	  signalfx:
-	    metrics:
-	      export:
-	        step: "30s"
+management:
+  signalfx:
+    metrics:
+      export:
+        step: "30s"
 ----
 
 
@@ -605,11 +605,11 @@ You can also disable it explicitly:
 
 [configprops,yaml]
 ----
-	management:
-      simple:
-	    metrics:
-	      export:
-            enabled: false
+management:
+  simple:
+    metrics:
+      export:
+        enabled: false
 ----
 
 
@@ -622,22 +622,22 @@ To export metrics to SaaS {url-micrometer-docs-implementations}/stackdriver[Stac
 
 [configprops,yaml]
 ----
-	management:
-	  stackdriver:
-	    metrics:
-	      export:
-	        project-id: "my-project"
+management:
+  stackdriver:
+    metrics:
+      export:
+        project-id: "my-project"
 ----
 
 You can also change the interval at which metrics are sent to Stackdriver:
 
 [configprops,yaml]
 ----
-	management:
-	  stackdriver:
-	    metrics:
-	      export:
-	        step: "30s"
+management:
+  stackdriver:
+    metrics:
+      export:
+        step: "30s"
 ----
 
 
@@ -651,24 +651,24 @@ You can provide the StatsD agent host, port, and protocol to use by using:
 
 [configprops,yaml]
 ----
-	management:
-	  statsd:
-	    metrics:
-	      export:
-	        host: "statsd.example.com"
-	        port: 9125
-	        protocol: "udp"
+management:
+  statsd:
+    metrics:
+      export:
+        host: "statsd.example.com"
+        port: 9125
+        protocol: "udp"
 ----
 
 You can also change the StatsD line protocol to use (it defaults to Datadog):
 
 [configprops,yaml]
 ----
-	management:
-	  statsd:
-	    metrics:
-	      export:
-	        flavor: "etsy"
+management:
+  statsd:
+    metrics:
+      export:
+        flavor: "etsy"
 ----
 
 
@@ -681,18 +681,18 @@ If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, 
 
 [configprops,yaml]
 ----
-	management:
-	  wavefront:
-	    api-token: "YOUR_API_TOKEN"
+management:
+  wavefront:
+    api-token: "YOUR_API_TOKEN"
 ----
 
 Alternatively, you can use a Wavefront sidecar or an internal proxy in your environment to forward metrics data to the Wavefront API host:
 
 [configprops,yaml]
 ----
-	management:
-	  wavefront:
-	    uri: "proxy://localhost:2878"
+management:
+  wavefront:
+    uri: "proxy://localhost:2878"
 ----
 
 NOTE: If you publish metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the Wavefront documentation]), the host must be in the `proxy://HOST:PORT` format.
@@ -701,11 +701,11 @@ You can also change the interval at which metrics are sent to Wavefront:
 
 [configprops,yaml]
 ----
-	management:
-	  wavefront:
-	    metrics:
-	      export:
-	        step: "30s"
+management:
+  wavefront:
+    metrics:
+      export:
+        step: "30s"
 ----
 
 
@@ -956,10 +956,10 @@ You can enable that on the auto-configured `EntityManagerFactory`:
 
 [configprops,yaml]
 ----
-	spring:
-	  jpa:
-	    properties:
-	      "[hibernate.generate_statistics]": true
+spring:
+  jpa:
+    properties:
+      "[hibernate.generate_statistics]": true
 ----
 
 
@@ -1061,11 +1061,11 @@ To disable the auto-configured command metrics, set the following property:
 
 [configprops,yaml]
 ----
-	management:
-	  metrics:
-	    mongo:
-	      command:
-	        enabled: false
+management:
+  metrics:
+    mongo:
+      command:
+        enabled: false
 ----
 
 
@@ -1100,11 +1100,11 @@ To disable the auto-configured connection pool metrics, set the following proper
 
 [configprops,yaml]
 ----
-	management:
-	  metrics:
-	    mongo:
-	      connectionpool:
-	        enabled: false
+management:
+  metrics:
+    mongo:
+      connectionpool:
+        enabled: false
 ----
 
 
@@ -1174,11 +1174,11 @@ Commons tags are applied to all meters and can be configured, as the following e
 
 [configprops,yaml]
 ----
-	management:
-	  metrics:
-	    tags:
-	      region: "us-east-1"
-	      stack: "prod"
+management:
+  metrics:
+    tags:
+      region: "us-east-1"
+      stack: "prod"
 ----
 
 The preceding example adds `region` and `stack` tags to all meters with a value of `us-east-1` and `prod`, respectively.
@@ -1197,11 +1197,11 @@ The following example filters out any meters that have an ID starting with `exam
 
 [configprops,yaml]
 ----
-	management:
-	  metrics:
-	    enable:
-	      example:
-	        remote: false
+management:
+  metrics:
+    enable:
+      example:
+        remote: false
 ----
 
 The following properties allow per-meter customization:

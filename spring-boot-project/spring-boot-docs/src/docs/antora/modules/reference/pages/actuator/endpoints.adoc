@@ -126,10 +126,10 @@ The following example enables the `shutdown` endpoint:
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    shutdown:
-	      enabled: true
+management:
+  endpoint:
+    shutdown:
+      enabled: true
 ----
 
 If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
@@ -137,12 +137,12 @@ The following example enables the `info` endpoint and disables all other endpoin
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    enabled-by-default: false
-	  endpoint:
-	    info:
-	      enabled: true
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    info:
+      enabled: true
 ----
 
 NOTE: Disabled endpoints are removed entirely from the application context.
@@ -184,11 +184,11 @@ For example, to only expose the `health` and `info` endpoints over JMX, use the 
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    jmx:
-	      exposure:
-	        include: "health,info"
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: "health,info"
 ----
 
 `*` can be used to select all endpoints.
@@ -196,12 +196,12 @@ For example, to expose everything over HTTP except the `env` and `beans` endpoin
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      exposure:
-	        include: "*"
-	        exclude: "env,beans"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
 ----
 
 NOTE: `*` has a special meaning in YAML, so be sure to add quotation marks if you want to include (or exclude) all endpoints.
@@ -238,11 +238,11 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      exposure:
-	        include: "*"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 ----
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints, as the following example shows:
@@ -275,11 +275,11 @@ The following example sets the time-to-live of the `beans` endpoint's cache to 1
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    beans:
-	      cache:
-	        time-to-live: "10s"
+management:
+  endpoint:
+    beans:
+      cache:
+        time-to-live: "10s"
 ----
 
 NOTE: The `management.endpoint.<name>` prefix uniquely identifies the endpoint that is being configured.
@@ -312,11 +312,11 @@ Unauthorized users, or users without the `admin` role, will see only sanitized v
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    env:
-	      show-values: WHEN_AUTHORIZED
-	      roles: "admin"
+management:
+  endpoint:
+    env:
+      show-values: WHEN_AUTHORIZED
+      roles: "admin"
 ----
 
 NOTE: This example assumes that no `xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans have been defined.
@@ -333,11 +333,11 @@ To disable the "`discovery page`", add the following property to your applicatio
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      discovery:
-	        enabled: false
+management:
+  endpoints:
+    web:
+      discovery:
+        enabled: false
 ----
 
 When a custom management context path is configured, the "`discovery page`" automatically moves from `/actuator` to the root of the management context.
@@ -357,12 +357,12 @@ The following configuration permits `GET` and `POST` calls from the `example.com
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    web:
-	      cors:
-	        allowed-origins: "https://example.com"
-	        allowed-methods: "GET,POST"
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: "https://example.com"
+        allowed-methods: "GET,POST"
 ----
 
 TIP: See {code-spring-boot-actuator-autoconfigure-src}/endpoint/web/CorsEndpointProperties.java[`CorsEndpointProperties`] for a complete list of options.
@@ -717,11 +717,11 @@ To configure the severity order, add the following property to your application 
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    health:
-	      status:
-	        order: "fatal,down,out-of-service,unknown,up"
+management:
+  endpoint:
+    health:
+      status:
+        order: "fatal,down,out-of-service,unknown,up"
 ----
 
 The HTTP status code in the response reflects the overall health status.
@@ -734,14 +734,14 @@ For example, the following property maps `FATAL` to 503 (service unavailable) an
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    health:
-	      status:
-	        http-mapping:
-	          down: 503
-	          fatal: 503
-	          out-of-service: 503
+management:
+  endpoint:
+    health:
+      status:
+        http-mapping:
+          down: 503
+          fatal: 503
+          out-of-service: 503
 ----
 
 TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
@@ -835,12 +835,12 @@ For example, to create a group that includes only database indicators you can de
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    health:
-	      group:
-	        custom:
-	          include: "db"
+management:
+  endpoint:
+    health:
+      group:
+        custom:
+          include: "db"
 ----
 
 You can then check the result by hitting `http://localhost:8080/actuator/health/custom`.
@@ -849,12 +849,12 @@ Similarly, to create a group that excludes the database indicators from the grou
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    health:
-	      group:
-	        custom:
-	          exclude: "db"
+management:
+  endpoint:
+    health:
+      group:
+        custom:
+          exclude: "db"
 ----
 
 By default, startup will fail if a health group includes or excludes a health indicator that does not exist.
@@ -866,18 +866,18 @@ You can also override the `show-details` and `roles` properties if required:
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    health:
-	      group:
-	        custom:
-	          show-details: "when-authorized"
-	          roles: "admin"
-	          status:
-	            order: "fatal,up"
-	            http-mapping:
-	              fatal: 500
-	              out-of-service: 500
+management:
+  endpoint:
+    health:
+      group:
+        custom:
+          show-details: "when-authorized"
+          roles: "admin"
+          status:
+            order: "fatal,up"
+            http-mapping:
+              fatal: 500
+              out-of-service: 500
 ----
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
@@ -988,12 +988,12 @@ You can, for example, configure additional Health Indicators:
 
 [configprops,yaml]
 ----
-	management:
-	  endpoint:
-	    health:
-	      group:
-	        readiness:
-	          include: "readinessState,customCheck"
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: "readinessState,customCheck"
 ----
 
 By default, Spring Boot does not add other health indicators to these groups.
@@ -1156,12 +1156,12 @@ For example, you could add the following settings to your `application.propertie
 
 [configprops,yaml]
 ----
-	info:
-	  app:
-	    encoding: "UTF-8"
-	    java:
-	      source: "17"
-	      target: "17"
+info:
+  app:
+    encoding: "UTF-8"
+    java:
+      source: "17"
+      target: "17"
 ----
 
 [TIP]
@@ -1172,12 +1172,12 @@ Assuming you use Maven, you could rewrite the preceding example as follows:
 
 [configprops,yaml]
 ----
-	info:
-	  app:
-	    encoding: "@project.build.sourceEncoding@"
-	    java:
-	      source: "@java.version@"
-	      target: "@java.version@"
+info:
+  app:
+    encoding: "@project.build.sourceEncoding@"
+    java:
+      source: "@java.version@"
+      target: "@java.version@"
 ----
 ====
 
@@ -1198,20 +1198,20 @@ If you want to display the full git information (that is, the full content of `g
 
 [configprops,yaml]
 ----
-	management:
-	  info:
-	    git:
-	      mode: "full"
+management:
+  info:
+    git:
+      mode: "full"
 ----
 
 To disable the git commit information from the `info` endpoint completely, set the configprop:management.info.git.enabled[] property to `false`, as follows:
 
 [configprops,yaml]
 ----
-	management:
-	  info:
-	    git:
-	      enabled: false
+management:
+  info:
+    git:
+      enabled: false
 ----
 
 

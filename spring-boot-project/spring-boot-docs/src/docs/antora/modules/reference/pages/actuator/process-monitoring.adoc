@@ -20,9 +20,9 @@ In the `META-INF/spring.factories` file, you can activate the listener (or liste
 
 [indent=0]
 ----
-	org.springframework.context.ApplicationListener=\
-	org.springframework.boot.context.ApplicationPidFileWriter,\
-	org.springframework.boot.web.context.WebServerPortFileWriter
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.context.ApplicationPidFileWriter,\
+org.springframework.boot.web.context.WebServerPortFileWriter
 ----
 
 

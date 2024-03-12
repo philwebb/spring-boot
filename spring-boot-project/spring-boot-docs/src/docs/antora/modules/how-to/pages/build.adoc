@@ -15,24 +15,24 @@ When such a file is present, Spring Boot auto-configures a `BuildProperties` bea
 
 To generate build information with Maven, add an execution for the `build-info` goal, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,subs="verbatim,attributes"]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{version-spring-boot}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>{version-spring-boot}</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>build-info</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 TIP: See the xref:maven-plugin:build-info.adoc[Spring Boot Maven Plugin documentation] for more details.
@@ -123,24 +123,24 @@ If you use the `spring-boot-starter-parent` POM, you can declare the plugin and 
 If you do not use the parent POM, you can still use the plugin.
 However, you must additionally add an `<executions>` section, as follows:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,subs="verbatim,attributes"]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{version-spring-boot}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>{version-spring-boot}</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>repackage</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 See the xref:maven-plugin:packaging.adoc#packaging.repackage-goal[plugin documentation] for full usage details.

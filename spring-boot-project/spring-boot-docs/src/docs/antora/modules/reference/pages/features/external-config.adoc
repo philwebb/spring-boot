@@ -281,11 +281,11 @@ For example, you might have the following in your classpath `application.propert
 
 [configprops,yaml]
 ----
-	spring:
-	  application:
-	    name: "myapp"
-	  config:
-	    import: "optional:file:./dev.properties"
+spring:
+  application:
+    name: "myapp"
+  config:
+    import: "optional:file:./dev.properties"
 ----
 
 This will trigger the import of a `dev.properties` file in current directory (if such a file exists).
@@ -298,20 +298,20 @@ For instance, the two examples below produce the same result:
 
 [configprops%novalidate,yaml]
 ----
-	spring:
-	  config:
-	    import: "my.properties"
-	my:
-	  property: "value"
+spring:
+  config:
+    import: "my.properties"
+my:
+  property: "value"
 ----
 
 [configprops%novalidate,yaml]
 ----
-	my:
-	  property: "value"
-	spring:
-	  config:
-	    import: "my.properties"
+my:
+  property: "value"
+spring:
+  config:
+    import: "my.properties"
 ----
 
 In both of the above examples, the values from the `my.properties` file will take precedence over the file that triggered its import.
@@ -347,9 +347,9 @@ You can import it from your `application.properties` using the following:
 
 [configprops,yaml]
 ----
-	spring:
-	  config:
-	    import: "file:/etc/config/myconfig[.yaml]"
+spring:
+  config:
+    import: "file:/etc/config/myconfig[.yaml]"
 ----
 
 
@@ -373,13 +373,13 @@ For the second case, you need to use the `configtree:` prefix so that Spring Boo
 
 As an example, let's imagine that Kubernetes has mounted the following volume:
 
-[indent=0]
+[source]
 ----
-	etc/
-	  config/
-	    myapp/
-	      username
-	      password
+etc/
+  config/
+    myapp/
+      username
+      password
 ----
 
 The contents of the `username` file would be a config value, and the contents of `password` would be a secret.
@@ -388,9 +388,9 @@ To import these properties, you can add the following to your `application.prope
 
 [configprops,yaml]
 ----
-	spring:
-	  config:
-	    import: "optional:configtree:/etc/config/"
+spring:
+  config:
+    import: "optional:configtree:/etc/config/"
 ----
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
@@ -409,27 +409,27 @@ As with a non-wildcard import, the names of the folders and files under each con
 
 For example, given the following volume:
 
-[indent=0]
+[source]
 ----
-	etc/
-	  config/
-	    dbconfig/
-	      db/
-	        username
-	        password
-	    mqconfig/
-	      mq/
-	        username
-	        password
+etc/
+  config/
+    dbconfig/
+      db/
+        username
+        password
+    mqconfig/
+      mq/
+        username
+        password
 ----
 
 You can use `configtree:/etc/config/*/` as the import location:
 
 [configprops,yaml]
 ----
-	spring:
-	  config:
-	    import: "optional:configtree:/etc/config/*/"
+spring:
+  config:
+    import: "optional:configtree:/etc/config/*/"
 ----
 
 This will add `db.username`, `db.password`, `mq.username` and `mq.password` properties.
@@ -444,9 +444,9 @@ For example, if a secret named `db.password` is mounted at location `/run/secret
 
 [configprops,yaml]
 ----
-	spring:
-	  config:
-	    import: "optional:configtree:/run/secrets/"
+spring:
+  config:
+    import: "optional:configtree:/run/secrets/"
 ----
 
 
@@ -462,9 +462,9 @@ The use of placeholders with and without defaults is shown in the following exam
 
 [configprops%novalidate,yaml]
 ----
-	app:
-	  name: "MyApp"
-	  description: "${app.name} is a Spring Boot application written by ${username:Unknown}"
+app:
+  name: "MyApp"
+  description: "${app.name} is a Spring Boot application written by ${username:Unknown}"
 ----
 
 Assuming that the `username` property has not been set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
@@ -555,15 +555,15 @@ For example, the following specifies that the second document is only active whe
 
 [configprops%novalidate,yaml]
 ----
-	myprop:
-	  "always-set"
-	---
-	spring:
-	  config:
-	    activate:
-	      on-cloud-platform: "kubernetes"
-	      on-profile: "prod | staging"
-	myotherprop: "sometimes-set"
+myprop:
+  "always-set"
+---
+spring:
+  config:
+    activate:
+      on-cloud-platform: "kubernetes"
+      on-profile: "prod | staging"
+myotherprop: "sometimes-set"
 ----
 
 
@@ -662,13 +662,13 @@ It can produce integers, longs, uuids, or strings, as shown in the following exa
 
 [configprops%novalidate,yaml]
 ----
-	my:
-	  secret: "${random.value}"
-	  number: "${random.int}"
-	  bignumber: "${random.long}"
-	  uuid: "${random.uuid}"
-	  number-less-than-ten: "${random.int(10)}"
-	  number-in-range: "${random.int[1024,65536]}"
+my:
+  secret: "${random.value}"
+  number: "${random.int}"
+  bignumber: "${random.long}"
+  uuid: "${random.uuid}"
+  number-less-than-ten: "${random.int(10)}"
+  number-in-range: "${random.int[1024,65536]}"
 ----
 
 The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any character and `value,max` are integers.
@@ -913,22 +913,22 @@ If the key is not surrounded by `[]`, any characters that are not alpha-numeric,
 For example, consider binding the following properties to a `Map<String,String>`:
 
 
-[source,properties,indent=0,subs="verbatim",role="primary"]
+[source,properties,role="primary"]
 .Properties
 ----
-	my.map.[/key1]=value1
-	my.map.[/key2]=value2
-	my.map./key3=value3
+my.map.[/key1]=value1
+my.map.[/key2]=value2
+my.map./key3=value3
 ----
 
-[source,yaml,indent=0,subs="verbatim",role="secondary"]
+[source,yaml,role="secondary"]
 .Yaml
 ----
-	my:
-	  map:
-	    "[/key1]": "value1"
-	    "[/key2]": "value2"
-	    "/key3": "value3"
+my:
+  map:
+    "[/key1]": "value1"
+    "[/key2]": "value2"
+    "/key3": "value3"
 ----
 
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
@@ -990,18 +990,18 @@ Consider the following configuration:
 
 [configprops%novalidate,yaml]
 ----
-	my:
-	  list:
-	  - name: "my name"
-	    description: "my description"
-	---
-	spring:
-	  config:
-	    activate:
-	      on-profile: "dev"
-	my:
-	  list:
-	  - name: "my another name"
+my:
+  list:
+  - name: "my name"
+    description: "my description"
+---
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+my:
+  list:
+  - name: "my another name"
 ----
 
 If the `dev` profile is not active, `MyProperties.list` contains one `MyPojo` entry, as previously defined.
@@ -1013,20 +1013,20 @@ Consider the following example:
 
 [configprops%novalidate,yaml]
 ----
-	my:
-	  list:
-	  - name: "my name"
-	    description: "my description"
-	  - name: "another name"
-	    description: "another description"
-	---
-	spring:
-	  config:
-	    activate:
-	      on-profile: "dev"
-	my:
-	  list:
-	  - name: "my another name"
+my:
+  list:
+  - name: "my name"
+    description: "my description"
+  - name: "another name"
+    description: "another description"
+---
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+my:
+  list:
+  - name: "my another name"
 ----
 
 In the preceding example, if the `dev` profile is active, `MyProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
@@ -1042,23 +1042,23 @@ Consider the following configuration:
 
 [configprops%novalidate,yaml]
 ----
-	my:
-	  map:
-	    key1:
-	      name: "my name 1"
-	      description: "my description 1"
-	---
-	spring:
-	  config:
-	    activate:
-	      on-profile: "dev"
-	my:
-	  map:
-	    key1:
-	      name: "dev name 1"
-	    key2:
-	      name: "dev name 2"
-	      description: "dev description 2"
+my:
+  map:
+    key1:
+      name: "my name 1"
+      description: "my description 1"
+---
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+my:
+  map:
+    key1:
+      name: "dev name 1"
+    key2:
+      name: "dev name 2"
+      description: "dev description 2"
 ----
 
 If the `dev` profile is not active, `MyProperties.map` contains one entry with key `key1` (with a name of `my name 1` and a description of `my description 1`).

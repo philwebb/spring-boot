@@ -37,11 +37,11 @@ Common tags are applied to all observations as low cardinality tags and can be c
 
 [configprops,yaml]
 ----
-	management:
-	  observations:
-	    key-values:
-	      region: "us-east-1"
-	      stack: "prod"
+management:
+  observations:
+    key-values:
+      region: "us-east-1"
+      stack: "prod"
 ----
 
 The preceding example adds `region` and `stack` tags to all observations with a value of `us-east-1` and `prod`, respectively.
@@ -55,14 +55,14 @@ If you'd like to prevent some observations from being reported, you can use the 
 
 [configprops,yaml]
 ----
-	management:
-	  observations:
-	    enable:
-	      denied:
-	        prefix: false
-	      another:
-	        denied:
-	          prefix: false
+management:
+  observations:
+    enable:
+      denied:
+        prefix: false
+      another:
+        denied:
+          prefix: false
 ----
 
 The preceding example will prevent all observations with a name starting with `denied.prefix` or `another.denied.prefix`.

@@ -13,21 +13,21 @@ In particular, certain default timeout values are infinite, and you may want to 
 
 [configprops,yaml]
 ----
-	spring:
-	  mail:
-	    properties:
-	      "[mail.smtp.connectiontimeout]": 5000
-	      "[mail.smtp.timeout]": 3000
-	      "[mail.smtp.writetimeout]": 5000
+spring:
+  mail:
+    properties:
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 3000
+      "[mail.smtp.writetimeout]": 5000
 ----
 
 It is also possible to configure a `JavaMailSender` with an existing `Session` from JNDI:
 
 [configprops,yaml]
 ----
-	spring:
-	  mail:
-	    jndi-name: "mail/Session"
+spring:
+  mail:
+    jndi-name: "mail/Session"
 ----
 
 When a `jndi-name` is set, it takes precedence over all other Session-related settings.

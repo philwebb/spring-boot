@@ -89,7 +89,7 @@ include::example$integration-tests/skip-integration-tests-pom.xml[tags=skip-inte
 
 By default, the integration tests will run but this setup allows you to easily disable them on the command-line as follows:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn verify -Dskip.it=true
+$ mvn verify -Dskip.it=true
 ----

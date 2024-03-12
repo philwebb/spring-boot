@@ -48,14 +48,14 @@ You can specify custom connection details using `spring.data.redis.*` properties
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    redis:
-	      host: "localhost"
-	      port: 6379
-	      database: 0
-	      username: "user"
-	      password: "secret"
+spring:
+  data:
+    redis:
+      host: "localhost"
+      port: 6379
+      database: 0
+      username: "user"
+      password: "secret"
 ----
 
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
@@ -71,22 +71,22 @@ The auto-configured `RedisConnectionFactory` can be configured to use SSL for co
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    redis:
-	      ssl:
-	        enabled: true
+spring:
+  data:
+    redis:
+      ssl:
+        enabled: true
 ----
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `RedisConnectionFactory` as shown in this example:
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    redis:
-	      ssl:
-	        bundle: "example"
+spring:
+  data:
+    redis:
+      ssl:
+        bundle: "example"
 ----
 
 
@@ -120,10 +120,10 @@ You can set the configprop:spring.data.mongodb.uri[] property to change the URL 
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    mongodb:
-	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+spring:
+  data:
+    mongodb:
+      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
 ----
 
 Alternatively, you can specify connection details using discrete properties.
@@ -131,40 +131,40 @@ For example, you might declare the following settings in your `application.prope
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    mongodb:
-	      host: "mongoserver1.example.com"
-	      port: 27017
-	      additional-hosts:
-	      - "mongoserver2.example.com:23456"
-	      database: "test"
-	      username: "user"
-	      password: "secret"
+spring:
+  data:
+    mongodb:
+      host: "mongoserver1.example.com"
+      port: 27017
+      additional-hosts:
+      - "mongoserver2.example.com:23456"
+      database: "test"
+      username: "user"
+      password: "secret"
 ----
 
 The auto-configured `MongoClient` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    mongodb:
-	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
-	      ssl:
-	        enabled: true
+spring:
+  data:
+    mongodb:
+      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+      ssl:
+        enabled: true
 ----
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `MongoClient` as shown in this example:
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    mongodb:
-	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
-	      ssl:
-	        bundle: "example"
+spring:
+  data:
+    mongodb:
+      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+      ssl:
+        bundle: "example"
 ----
 
 
@@ -238,12 +238,12 @@ The following example shows how to configure the uri and credentials to use:
 
 [configprops,yaml]
 ----
-	spring:
-	  neo4j:
-	    uri: "bolt://my-server:7687"
-	    authentication:
-	      username: "neo4j"
-	      password: "secret"
+spring:
+  neo4j:
+    uri: "bolt://my-server:7687"
+    authentication:
+      username: "neo4j"
+      password: "secret"
 ----
 
 The auto-configured `Driver` is created using `ConfigBuilder`.
@@ -307,12 +307,12 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 
 [configprops,yaml]
 ----
-	spring:
-	  elasticsearch:
-	    uris: "https://search.example.com:9200"
-	    socket-timeout: "10s"
-	    username: "user"
-	    password: "secret"
+spring:
+  elasticsearch:
+    uris: "https://search.example.com:9200"
+    socket-timeout: "10s"
+    username: "user"
+    password: "secret"
 ----
 
 
@@ -331,12 +331,12 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 
 [configprops,yaml]
 ----
-	spring:
-	  elasticsearch:
-	    restclient:
-	      sniffer:
-	        interval: "10m"
-	        delay-after-failure: "30s"
+spring:
+  elasticsearch:
+    restclient:
+      sniffer:
+        interval: "10m"
+        delay-after-failure: "30s"
 ----
 
 
@@ -432,22 +432,22 @@ Generally, you provide `keyspace-name` and `contact-points` as well the local da
 
 [configprops,yaml]
 ----
-	spring:
-	  cassandra:
-	    keyspace-name: "mykeyspace"
-	    contact-points: "cassandrahost1:9042,cassandrahost2:9042"
-	    local-datacenter: "datacenter1"
+spring:
+  cassandra:
+    keyspace-name: "mykeyspace"
+    contact-points: "cassandrahost1:9042,cassandrahost2:9042"
+    local-datacenter: "datacenter1"
 ----
 
 If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
 
 [configprops,yaml]
 ----
-	spring:
-	  cassandra:
-	    keyspace-name: "mykeyspace"
-	    contact-points: "cassandrahost1,cassandrahost2"
-	    local-datacenter: "datacenter1"
+spring:
+  cassandra:
+    keyspace-name: "mykeyspace"
+    contact-points: "cassandrahost1,cassandrahost2"
+    local-datacenter: "datacenter1"
 ----
 
 TIP: Those two examples are identical as the port default to `9042`.
@@ -457,26 +457,26 @@ The auto-configured `CqlSession` can be configured to use SSL for communication 
 
 [configprops,yaml]
 ----
-	spring:
-	  cassandra:
-	    keyspace-name: "mykeyspace"
-	    contact-points: "cassandrahost1,cassandrahost2"
-	    local-datacenter: "datacenter1"
-	    ssl:
-	      enabled: true
+spring:
+  cassandra:
+    keyspace-name: "mykeyspace"
+    contact-points: "cassandrahost1,cassandrahost2"
+    local-datacenter: "datacenter1"
+    ssl:
+      enabled: true
 ----
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `CqlSession` as shown in this example:
 
 [configprops,yaml]
 ----
-	spring:
-	  cassandra:
-	    keyspace-name: "mykeyspace"
-	    contact-points: "cassandrahost1,cassandrahost2"
-	    local-datacenter: "datacenter1"
-	    ssl:
-	      bundle: "example"
+spring:
+  cassandra:
+    keyspace-name: "mykeyspace"
+    contact-points: "cassandrahost1,cassandrahost2"
+    local-datacenter: "datacenter1"
+    ssl:
+      bundle: "example"
 ----
 
 
@@ -533,11 +533,11 @@ Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master
 
 [configprops,yaml]
 ----
-	spring:
-	  couchbase:
-	    connection-string: "couchbase://192.168.1.123"
-	    username: "user"
-	    password: "secret"
+spring:
+  couchbase:
+    connection-string: "couchbase://192.168.1.123"
+    username: "user"
+    password: "secret"
 ----
 
 It is also possible to customize some of the `ClusterEnvironment` settings.
@@ -545,13 +545,13 @@ For instance, the following configuration changes the timeout to open a new `Buc
 
 [configprops,yaml]
 ----
-	spring:
-	  couchbase:
-	    env:
-	      timeouts:
-	        connect: "3s"
-	      ssl:
-	        bundle: "example"
+spring:
+  couchbase:
+    env:
+      timeouts:
+        connect: "3s"
+      ssl:
+        bundle: "example"
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
@@ -575,10 +575,10 @@ This happens when a `Cluster` is available, as described above, and a bucket nam
 
 [configprops,yaml]
 ----
-	spring:
-	  data:
-	    couchbase:
-	      bucket-name: "my-bucket"
+spring:
+  data:
+    couchbase:
+      bucket-name: "my-bucket"
 ----
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
@@ -616,11 +616,11 @@ To connect to an LDAP server, make sure you declare a dependency on the `spring-
 
 [configprops,yaml]
 ----
-	spring:
-	  ldap:
-	    urls: "ldap://myserver:1235"
-	    username: "admin"
-	    password: "secret"
+spring:
+  ldap:
+    urls: "ldap://myserver:1235"
+    username: "admin"
+    password: "secret"
 ----
 
 If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
@@ -658,10 +658,10 @@ To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` a
 
 [configprops,yaml]
 ----
-	spring:
-	  ldap:
-	    embedded:
-	      base-dn: "dc=spring,dc=io"
+spring:
+  ldap:
+    embedded:
+      base-dn: "dc=spring,dc=io"
 ----
 
 [NOTE]
@@ -672,9 +672,9 @@ In yaml files, you can use the yaml list notation. In properties files, you must
 
 [configprops,yaml]
 ----
-	spring.ldap.embedded.base-dn:
-	  - "dc=spring,dc=io"
-	  - "dc=vmware,dc=com"
+spring.ldap.embedded.base-dn:
+- "dc=spring,dc=io"
+- "dc=vmware,dc=com"
 ----
 ====
 

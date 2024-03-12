@@ -40,11 +40,11 @@ For WebFlux application (that is of type `WebApplicationType.REACTIVE`), the RSo
 
 [configprops,yaml]
 ----
-	spring:
-	  rsocket:
-	    server:
-	      mapping-path: "/rsocket"
-	      transport: "websocket"
+spring:
+  rsocket:
+    server:
+      mapping-path: "/rsocket"
+      transport: "websocket"
 ----
 
 WARNING: Plugging RSocket into a web server is only supported with Reactor Netty, as RSocket itself is built with that library.
@@ -54,10 +54,10 @@ Besides the dependency requirements, the only required configuration is to defin
 
 [configprops,yaml]
 ----
-	spring:
-	  rsocket:
-	    server:
-	      port: 9898
+spring:
+  rsocket:
+    server:
+      port: 9898
 ----
 
 

@@ -5,17 +5,17 @@ The core class used to support loading nested jars is `org.springframework.boot.
 It lets you load jar content from nested child jar data.
 When first loaded, the location of each `JarEntry` is mapped to a physical file offset of the outer jar, as shown in the following example:
 
-[indent=0]
+[source]
 ----
-	myapp.jar
-	+-------------------+-------------------------+
-	| /BOOT-INF/classes | /BOOT-INF/lib/mylib.jar |
-	|+-----------------+||+-----------+----------+|
-	||     A.class      |||  B.class  |  C.class ||
-	|+-----------------+||+-----------+----------+|
-	+-------------------+-------------------------+
-	 ^                    ^           ^
-	 0063                 3452        3980
+myapp.jar
++-------------------+-------------------------+
+| /BOOT-INF/classes | /BOOT-INF/lib/mylib.jar |
+|+-----------------+||+-----------+----------+|
+||     A.class      |||  B.class  |  C.class ||
+|+-----------------+||+-----------+----------+|
++-------------------+-------------------------+
+ ^                    ^           ^
+ 0063                 3452        3980
 ----
 
 The preceding example shows how `A.class` can be found in `/BOOT-INF/classes` in `myapp.jar` at position `0063`.

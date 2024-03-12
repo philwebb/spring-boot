@@ -117,12 +117,12 @@ Spring Boot supports many configuration properties under the `spring.graphql.cor
 
 [configprops,yaml]
 ----
-	spring:
-	  graphql:
-	    cors:
-	      allowed-origins: "https://example.org"
-	      allowed-methods: GET,POST
-	      max-age: 1800s
+spring:
+  graphql:
+    cors:
+      allowed-origins: "https://example.org"
+      allowed-methods: GET,POST
+      max-age: 1800s
 ----
 
 

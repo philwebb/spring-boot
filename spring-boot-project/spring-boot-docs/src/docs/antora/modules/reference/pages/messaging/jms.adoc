@@ -20,32 +20,32 @@ By default, ActiveMQ "Classic" is auto-configured to use the https://activemq.ap
 
 [configprops,yaml]
 ----
-	spring:
-	  activemq:
-	    broker-url: "tcp://192.168.1.210:9876"
-	    user: "admin"
-	    password: "secret"
+spring:
+  activemq:
+    broker-url: "tcp://192.168.1.210:9876"
+    user: "admin"
+    password: "secret"
 ----
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
 [configprops,yaml]
 ----
-	spring:
-	  jms:
-	    cache:
-	      session-cache-size: 5
+spring:
+  jms:
+    cache:
+      session-cache-size: 5
 ----
 
 If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
 [configprops,yaml]
 ----
-	spring:
-	  activemq:
-	    pool:
-	      enabled: true
-	      max-connections: 50
+spring:
+  activemq:
+    pool:
+      enabled: true
+      max-connections: 50
 ----
 
 TIP: See {code-spring-boot-autoconfigure-src}/jms/activemq/ActiveMQProperties.java[`ActiveMQProperties`] for more of the supported options.
@@ -71,12 +71,12 @@ For example, you might declare the following section in `application.properties`
 
 [configprops,yaml]
 ----
-	spring:
-	  artemis:
-	    mode: native
-	    broker-url: "tcp://192.168.1.210:9876"
-	    user: "admin"
-	    password: "secret"
+spring:
+  artemis:
+    mode: native
+    broker-url: "tcp://192.168.1.210:9876"
+    user: "admin"
+    password: "secret"
 ----
 
 When embedding the broker, you can choose if you want to enable persistence and list the destinations that should be made available.
@@ -86,21 +86,21 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 
 [configprops,yaml]
 ----
-	spring:
-	  jms:
-	    cache:
-	      session-cache-size: 5
+spring:
+  jms:
+    cache:
+      session-cache-size: 5
 ----
 
 If you'd rather use native pooling, you can do so by adding a dependency on `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
 [configprops,yaml]
 ----
-	spring:
-	  artemis:
-	    pool:
-	      enabled: true
-	      max-connections: 50
+spring:
+  artemis:
+    pool:
+      enabled: true
+      max-connections: 50
 ----
 
 See {code-spring-boot-autoconfigure-src}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
@@ -118,9 +118,9 @@ You can use the configprop:spring.jms.jndi-name[] property if you need to specif
 
 [configprops,yaml]
 ----
-	spring:
-	  jms:
-	    jndi-name: "java:/MyConnectionFactory"
+spring:
+  jms:
+    jndi-name: "java:/MyConnectionFactory"
 ----
 
 

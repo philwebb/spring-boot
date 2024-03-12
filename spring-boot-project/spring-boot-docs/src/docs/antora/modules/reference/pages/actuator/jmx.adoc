@@ -31,13 +31,13 @@ The following settings show an example of doing so in `application.properties`:
 
 [configprops,yaml]
 ----
-	spring:
-	  jmx:
-	    unique-names: true
-	management:
-	  endpoints:
-	    jmx:
-	      domain: "com.example.myapp"
+spring:
+  jmx:
+    unique-names: true
+management:
+  endpoints:
+    jmx:
+      domain: "com.example.myapp"
 ----
 
 
@@ -49,9 +49,9 @@ If you do not want to expose endpoints over JMX, you can set the configprop:mana
 
 [configprops,yaml]
 ----
-	management:
-	  endpoints:
-	    jmx:
-	      exposure:
-	        exclude: "*"
+management:
+  endpoints:
+    jmx:
+      exposure:
+        exclude: "*"
 ----

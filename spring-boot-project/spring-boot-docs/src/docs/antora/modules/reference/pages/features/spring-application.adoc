@@ -31,19 +31,19 @@ TIP: To add additional logging during startup, you can override `logStartupInfo(
 If your application fails to start, registered `FailureAnalyzers` get a chance to provide a dedicated error message and a concrete action to fix the problem.
 For instance, if you start a web application on port `8080` and that port is already in use, you should see something similar to the following message:
 
-[indent=0]
+[source]
 ----
-	***************************
-	APPLICATION FAILED TO START
-	***************************
+***************************
+APPLICATION FAILED TO START
+***************************
 
-	Description:
+Description:
 
-	Embedded servlet container failed to start. Port 8080 was already in use.
+Embedded servlet container failed to start. Port 8080 was already in use.
 
-	Action:
+Action:
 
-	Identify and stop the process that is listening on port 8080 or configure this application to listen on another port.
+Identify and stop the process that is listening on port 8080 or configure this application to listen on another port.
 ----
 
 NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations, and you can xref:how-to:application.adoc#howto.application.failure-analyzer[add your own].
@@ -78,9 +78,9 @@ Alternatively, it can be enabled using the configprop:spring.main.lazy-initializ
 
 [configprops,yaml]
 ----
-	spring:
-	  main:
-	    lazy-initialization: true
+spring:
+  main:
+    lazy-initialization: true
 ----
 
 TIP: If you want to disable lazy initialization for certain beans while using lazy initialization for the rest of the application, you can explicitly set their lazy attribute to false using the `@Lazy(false)` annotation.
@@ -246,9 +246,9 @@ You can register them with the `SpringApplication.addListeners(...)` method or t
 
 If you want those listeners to be registered automatically, regardless of the way the application is created, you can add a `META-INF/spring.factories` file to your project and reference your listener(s) by using the `org.springframework.context.ApplicationListener` key, as shown in the following example:
 
-[indent=0]
+[source]
 ----
-	org.springframework.context.ApplicationListener=com.example.project.MyListener
+org.springframework.context.ApplicationListener=com.example.project.MyListener
 ----
 
 ====

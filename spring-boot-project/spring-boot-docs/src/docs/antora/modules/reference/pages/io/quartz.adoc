@@ -16,19 +16,19 @@ However, it is possible to configure a JDBC-based store if a `DataSource` bean i
 
 [configprops,yaml]
 ----
-	spring:
-	  quartz:
-	    job-store-type: "jdbc"
+spring:
+  quartz:
+    job-store-type: "jdbc"
 ----
 
 When the JDBC store is used, the schema can be initialized on startup, as shown in the following example:
 
 [configprops,yaml]
 ----
-	spring:
-	  quartz:
-	    jdbc:
-	      initialize-schema: "always"
+spring:
+  quartz:
+    jdbc:
+      initialize-schema: "always"
 ----
 
 WARNING: By default, the database is detected and initialized by using the standard scripts provided with the Quartz library.

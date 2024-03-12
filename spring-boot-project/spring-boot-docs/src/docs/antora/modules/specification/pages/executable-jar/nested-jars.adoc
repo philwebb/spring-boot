@@ -17,25 +17,25 @@ Spring Boot takes a different approach and lets you actually nest jars directly.
 
 Spring Boot Loader-compatible jar files should be structured in the following way:
 
-[indent=0]
+[source]
 ----
-	example.jar
-	 |
-	 +-META-INF
-	 |  +-MANIFEST.MF
-	 +-org
-	 |  +-springframework
-	 |     +-boot
-	 |        +-loader
-	 |           +-<spring boot loader classes>
-	 +-BOOT-INF
-	    +-classes
-	    |  +-mycompany
-	    |     +-project
-	    |        +-YourClasses.class
-	    +-lib
-	       +-dependency1.jar
-	       +-dependency2.jar
+example.jar
+ |
+ +-META-INF
+ |  +-MANIFEST.MF
+ +-org
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-<spring boot loader classes>
+ +-BOOT-INF
+    +-classes
+    |  +-mycompany
+    |     +-project
+    |        +-YourClasses.class
+    +-lib
+       +-dependency1.jar
+       +-dependency2.jar
 ----
 
 Application classes should be placed in a nested `BOOT-INF/classes` directory.
@@ -48,29 +48,29 @@ Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 Spring Boot Loader-compatible war files should be structured in the following way:
 
-[indent=0]
+[source]
 ----
-	example.war
-	 |
-	 +-META-INF
-	 |  +-MANIFEST.MF
-	 +-org
-	 |  +-springframework
-	 |     +-boot
-	 |        +-loader
-	 |           +-<spring boot loader classes>
-	 +-WEB-INF
-	    +-classes
-	    |  +-com
-	    |     +-mycompany
-	    |        +-project
-	    |           +-YourClasses.class
-	    +-lib
-	    |  +-dependency1.jar
-	    |  +-dependency2.jar
-	    +-lib-provided
-	       +-servlet-api.jar
-	       +-dependency3.jar
+example.war
+ |
+ +-META-INF
+ |  +-MANIFEST.MF
+ +-org
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-<spring boot loader classes>
+ +-WEB-INF
+    +-classes
+    |  +-com
+    |     +-mycompany
+    |        +-project
+    |           +-YourClasses.class
+    +-lib
+    |  +-dependency1.jar
+    |  +-dependency2.jar
+    +-lib-provided
+       +-servlet-api.jar
+       +-dependency3.jar
 ----
 
 Dependencies should be placed in a nested `WEB-INF/lib` directory.
@@ -101,26 +101,26 @@ Each line must start with dash space (`"-&#183;"`) and names must be in double q
 
 For example, given the following jar:
 
-[indent=0]
+[source]
 ----
-	example.jar
-	 |
-	 +-META-INF
-	 |  +-...
-	 +-BOOT-INF
-	    +-classes
-	    |  +...
-	    +-lib
-	       +-dependency1.jar
-	       +-dependency2.jar
+example.jar
+ |
+ +-META-INF
+ |  +-...
+ +-BOOT-INF
+    +-classes
+    |  +...
+    +-lib
+       +-dependency1.jar
+       +-dependency2.jar
 ----
 
 The index file would look like this:
 
-[indent=0]
+[source]
 ----
-	- "BOOT-INF/lib/dependency2.jar"
-	- "BOOT-INF/lib/dependency1.jar"
+- "BOOT-INF/lib/dependency2.jar"
+- "BOOT-INF/lib/dependency1.jar"
 ----
 
 
@@ -138,12 +138,12 @@ When a directory name is used it means that all files inside that directory are 
 
 A typical example of a layers index would be:
 
-[indent=0]
+[source]
 ----
-	- "dependencies":
-	  - "BOOT-INF/lib/dependency1.jar"
-	  - "BOOT-INF/lib/dependency2.jar"
-	- "application":
-	  - "BOOT-INF/classes/"
-	  - "META-INF/"
+- "dependencies":
+  - "BOOT-INF/lib/dependency1.jar"
+  - "BOOT-INF/lib/dependency2.jar"
+- "application":
+  - "BOOT-INF/classes/"
+  - "META-INF/"
 ----

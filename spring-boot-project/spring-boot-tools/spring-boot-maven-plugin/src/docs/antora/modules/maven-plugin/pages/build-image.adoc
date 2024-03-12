@@ -289,9 +289,9 @@ This configuration will use a builder image with the name `mine/java-cnb-builder
 
 The builder and run image can be specified on the command line as well, as shown in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder -Dspring-boot.build-image.runImage=mine/java-cnb-run
+$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder -Dspring-boot.build-image.runImage=mine/java-cnb-run
 ----
 
 
@@ -349,9 +349,9 @@ It is possible to specify a tag as well, either using `${project.version}`, any 
 
 The image name can be specified on the command line as well, as shown in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/my-app:v1
+$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/my-app:v1
 ----
 
 
@@ -418,21 +418,21 @@ include::example$packaging-oci-image/docker-pom.xml[tags=docker]
 
 The `publish` option can be specified on the command line as well, as shown in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
+$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
 ----
 
 When using the `publish` option on the command line with authentication, you can provide credentials using properties as in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:build-image \
-          -Ddocker.publishRegistry.username=user \
-          -Ddocker.publishRegistry.password=secret \
-          -Ddocker.publishRegistry.url=docker.example.com \
-          -Dspring-boot.build-image.publish=true \
-          -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1
+$ mvn spring-boot:build-image \
+      -Ddocker.publishRegistry.username=user \
+      -Ddocker.publishRegistry.password=secret \
+      -Ddocker.publishRegistry.url=docker.example.com \
+      -Dspring-boot.build-image.publish=true \
+      -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1
 ----
 
 and reference the properties in the XML configuration:

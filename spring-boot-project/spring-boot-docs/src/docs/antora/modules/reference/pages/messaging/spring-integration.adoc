@@ -14,10 +14,10 @@ If `spring-integration-jdbc` is available, the default database schema can be cr
 
 [configprops,yaml]
 ----
-	spring:
-	  integration:
-	    jdbc:
-	      initialize-schema: "always"
+spring:
+  integration:
+    jdbc:
+      initialize-schema: "always"
 ----
 
 If `spring-integration-rsocket` is available, developers can configure an RSocket server using `"spring.rsocket.server.*"` properties and let it use `IntegrationRSocketEndpoint` or `RSocketOutboundGateway` components to handle incoming RSocket messages.
@@ -27,23 +27,23 @@ Spring Boot can also auto-configure an `ClientRSocketConnector` using configurat
 
 [configprops,yaml]
 ----
-	# Connecting to a RSocket server over TCP
-	spring:
-	  integration:
-	    rsocket:
-	      client:
-	        host: "example.org"
-	        port: 9898
+# Connecting to a RSocket server over TCP
+spring:
+  integration:
+    rsocket:
+      client:
+        host: "example.org"
+        port: 9898
 ----
 
 [configprops,yaml]
 ----
-	# Connecting to a RSocket Server over WebSocket
-	spring:
-	  integration:
-	    rsocket:
-	      client:
-	        uri: "ws://example.org"
+# Connecting to a RSocket Server over WebSocket
+spring:
+  integration:
+    rsocket:
+      client:
+        uri: "ws://example.org"
 ----
 
 See the {code-spring-boot-autoconfigure-src}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and {code-spring-boot-autoconfigure-src}/integration/IntegrationProperties.java[`IntegrationProperties`] classes for more details.

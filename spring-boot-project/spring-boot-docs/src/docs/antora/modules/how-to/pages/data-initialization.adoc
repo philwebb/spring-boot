@@ -86,10 +86,10 @@ You can also enable it for any database type, as shown in the following example:
 
 [configprops,yaml]
 ----
-	spring:
-	  batch:
-	    jdbc:
-	      initialize-schema: "always"
+spring:
+  batch:
+    jdbc:
+      initialize-schema: "always"
 ----
 
 You can also switch off the initialization explicitly by setting `spring.batch.jdbc.initialize-schema` to `never`.
@@ -115,9 +115,9 @@ For example, the following configuration would search for scripts in both the de
 
 [configprops,yaml]
 ----
-	spring:
-	  flyway:
-	    locations: "classpath:db/migration,filesystem:/opt/migration"
+spring:
+  flyway:
+    locations: "classpath:db/migration,filesystem:/opt/migration"
 ----
 
 You can also add a special `\{vendor}` placeholder to use vendor-specific scripts.
@@ -125,9 +125,9 @@ Assume the following:
 
 [configprops,yaml]
 ----
-	spring:
-	  flyway:
-	    locations: "classpath:db/migration/{vendor}"
+spring:
+  flyway:
+    locations: "classpath:db/migration/{vendor}"
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the directory to use according to the type of the database (such as `db/migration/mysql` for MySQL).
@@ -163,9 +163,9 @@ For example, in `application-dev.properties`, you might specify the following se
 
 [configprops,yaml]
 ----
-	spring:
-	  flyway:
-	    locations: "classpath:/db/migration,classpath:/dev/db/migration"
+spring:
+  flyway:
+    locations: "classpath:/db/migration,classpath:/dev/db/migration"
 ----
 
 With that setup, migrations in `dev/db/migration` run only when the `dev` profile is active.

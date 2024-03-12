@@ -44,14 +44,14 @@ and then configure the source and the target options instead:
 
 To configure your project to inherit from the `spring-boot-starter-parent`, set the `parent` as follows:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,subs="verbatim,quotes,attributes"]
 ----
-	<!-- Inherit defaults from Spring Boot -->
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>{version-spring-boot}</version>
-	</parent>
+<!-- Inherit defaults from Spring Boot -->
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>{version-spring-boot}</version>
+</parent>
 ----
 
 NOTE: You should need to specify only the Spring Boot version number on this dependency.
@@ -100,9 +100,9 @@ The plugin offers a number of user properties, starting with `spring-boot`, to l
 
 For instance, you could tune the profiles to enable when running the application as follows:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.profiles=dev,local
+$ mvn spring-boot:run -Dspring-boot.run.profiles=dev,local
 ----
 
 If you want to both have a default while allowing it to be overridden on the command-line, you should use a combination of a user-provided project property and MOJO configuration.
@@ -115,7 +115,7 @@ include::example$using/default-and-override-pom.xml[tags=default-and-override]
 The above makes sure that `local` and `dev` are enabled by default.
 Now a dedicated property has been exposed, this can be overridden on the command-line as well:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run -Dapp.profiles=test
+$ mvn spring-boot:run -Dapp.profiles=test
 ----

@@ -34,11 +34,11 @@ You can switch on the valve by adding some entries to `application.properties`, 
 
 [configprops,yaml]
 ----
-	server:
-	  tomcat:
-	    remoteip:
-	      remote-ip-header: "x-forwarded-for"
-	      protocol-header: "x-forwarded-proto"
+server:
+  tomcat:
+    remoteip:
+      remote-ip-header: "x-forwarded-for"
+      protocol-header: "x-forwarded-proto"
 ----
 
 (The presence of either of those properties switches on the valve.

@@ -12,10 +12,10 @@ The basename of the resource bundle as well as several other attributes can be c
 
 [configprops,yaml]
 ----
-	spring:
-	  messages:
-	    basename: "messages,config.i18n.messages"
-	    fallback-to-system-locale: false
+spring:
+  messages:
+    basename: "messages,config.i18n.messages"
+    fallback-to-system-locale: false
 ----
 
 TIP: `spring.messages.basename` supports comma-separated list of locations, either a package qualifier or a resource resolved from the classpath root.

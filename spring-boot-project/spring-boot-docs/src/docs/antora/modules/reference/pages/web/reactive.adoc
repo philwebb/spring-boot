@@ -107,9 +107,9 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 
 [configprops,yaml]
 ----
-	spring:
-	  webflux:
-	    static-path-pattern: "/resources/**"
+spring:
+  webflux:
+    static-path-pattern: "/resources/**"
 ----
 
 You can also customize the static resource locations by using `spring.web.resources.static-locations`.

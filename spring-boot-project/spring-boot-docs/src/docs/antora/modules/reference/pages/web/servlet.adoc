@@ -125,9 +125,9 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 
 [configprops,yaml]
 ----
-	spring:
-	  mvc:
-	    static-path-pattern: "/resources/**"
+spring:
+  mvc:
+    static-path-pattern: "/resources/**"
 ----
 
 You can also customize the static resource locations by using the configprop:spring.web.resources.static-locations[] property (replacing the default values with a list of directory locations).
@@ -153,14 +153,14 @@ To use cache busting, the following configuration configures a cache busting sol
 
 [configprops,yaml]
 ----
-	spring:
-	  web:
-	    resources:
-	      chain:
-	        strategy:
-	          content:
-	            enabled: true
-	            paths: "/**"
+spring:
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: "/**"
 ----
 
 NOTE: Links to resources are rewritten in templates at runtime, thanks to a `ResourceUrlEncodingFilter` that is auto-configured for Thymeleaf and FreeMarker.
@@ -173,18 +173,18 @@ A "fixed" strategy adds a static version string in the URL without changing the 
 
 [configprops,yaml]
 ----
-	spring:
-	  web:
-	    resources:
-	      chain:
-	        strategy:
-	          content:
-	            enabled: true
-	            paths: "/**"
-	          fixed:
-	            enabled: true
-	            paths: "/js/lib/"
-	            version: "v12"
+spring:
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: "/**"
+          fixed:
+            enabled: true
+            paths: "/js/lib/"
+            version: "v12"
 ----
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
@@ -246,32 +246,32 @@ Instead of using suffix matching, we can use a query parameter to ensure that re
 
 [configprops,yaml]
 ----
-	spring:
-	  mvc:
-	    contentnegotiation:
-	      favor-parameter: true
+spring:
+  mvc:
+    contentnegotiation:
+      favor-parameter: true
 ----
 
 Or if you prefer to use a different parameter name:
 
 [configprops,yaml]
 ----
-	spring:
-	  mvc:
-	    contentnegotiation:
-	      favor-parameter: true
-	      parameter-name: "myparam"
+spring:
+  mvc:
+    contentnegotiation:
+      favor-parameter: true
+      parameter-name: "myparam"
 ----
 
 Most standard media types are supported out-of-the-box, but you can also define new ones:
 
 [configprops,yaml]
 ----
-	spring:
-	  mvc:
-	    contentnegotiation:
-	      media-types:
-	        markdown: "text/markdown"
+spring:
+  mvc:
+    contentnegotiation:
+      media-types:
+        markdown: "text/markdown"
 ----
 
 As of Spring Framework 5.3, Spring MVC supports two strategies for matching request paths to controllers.
@@ -284,10 +284,10 @@ The strategy can be configured using the configprop:spring.mvc.pathmatch.matchin
 
 [configprops,yaml]
 ----
-	spring:
-	  mvc:
-	    pathmatch:
-	      matching-strategy: "ant-path-matcher"
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: "ant-path-matcher"
 ----
 
 By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
@@ -383,32 +383,32 @@ The name of the file should be the exact status code or a series mask.
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
-[indent=0,subs="verbatim"]
+[source]
 ----
-	src/
-	 +- main/
-	     +- java/
-	     |   + <source code>
-	     +- resources/
-	         +- public/
-	             +- error/
-	             |   +- 404.html
-	             +- <other public assets>
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- public/
+             +- error/
+             |   +- 404.html
+             +- <other public assets>
 ----
 
 To map all `5xx` errors by using a FreeMarker template, your directory structure would be as follows:
 
-[indent=0,subs="verbatim"]
+[source]
 ----
-	src/
-	 +- main/
-	     +- java/
-	     |   + <source code>
-	     +- resources/
-	         +- templates/
-	             +- error/
-	             |   +- 5xx.ftlh
-	             +- <other templates>
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- templates/
+             +- error/
+             |   +- 5xx.ftlh
+             +- <other templates>
 ----
 
 For more complex mappings, you can also add beans that implement the `ErrorViewResolver` interface, as shown in the following example:
@@ -618,11 +618,11 @@ For example, if you want your session cookie to have a `SameSite` attribute of `
 
 [configprops,yaml]
 ----
-	server:
-	  servlet:
-	    session:
-	      cookie:
-	        same-site: "none"
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: "none"
 ----
 
 If you want to change the `SameSite` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
@@ -646,11 +646,11 @@ When they do not, use the configprop:server.servlet.encoding.mapping[] configura
 
 [configprops,yaml]
 ----
-	server:
-	  servlet:
-	    encoding:
-	      mapping:
-	        ko: "UTF-8"
+server:
+  servlet:
+    encoding:
+      mapping:
+        ko: "UTF-8"
 ----
 
 In the preceding example, the `ko` (Korean) locale has been mapped to `UTF-8`.

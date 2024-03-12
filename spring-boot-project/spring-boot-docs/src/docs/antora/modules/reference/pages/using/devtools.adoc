@@ -143,10 +143,10 @@ To disable the logging of the report, set the following property:
 
 [configprops,yaml]
 ----
-	spring:
-	  devtools:
-	    restart:
-	      log-condition-evaluation-delta: false
+spring:
+  devtools:
+    restart:
+      log-condition-evaluation-delta: false
 ----
 
 
@@ -162,10 +162,10 @@ For example, to exclude only `/static` and `/public` you would set the following
 
 [configprops,yaml]
 ----
-	spring:
-	  devtools:
-	    restart:
-	      exclude: "static/**,public/**"
+spring:
+  devtools:
+    restart:
+      exclude: "static/**,public/**"
 ----
 
 TIP: If you want to keep those defaults and _add_ additional exclusions, use the configprop:spring.devtools.restart.additional-exclude[] property instead.
@@ -206,22 +206,22 @@ The trigger file must appear somewhere on your classpath.
 
 For example, if you have a project with the following structure:
 
-[indent=0]
+[source]
 ----
-	src
-	+- main
-	   +- resources
-	      +- .reloadtrigger
+src
++- main
+   +- resources
+      +- .reloadtrigger
 ----
 
 Then your `trigger-file` property would be:
 
 [configprops,yaml]
 ----
-	spring:
-	  devtools:
-	    restart:
-	      trigger-file: ".reloadtrigger"
+spring:
+  devtools:
+    restart:
+      trigger-file: ".reloadtrigger"
 ----
 
 Restarts will now only happen when the `src/main/resources/.reloadtrigger` is updated.
@@ -251,11 +251,11 @@ The value of the property is a regex pattern that is applied to the classpath, a
 
 [source,properties]
 ----
-	restart:
-	  exclude:
-	    companycommonlibs: "/mycorp-common-[\\w\\d-\\.]+\\.jar"
-	  include:
-	    projectcommon: "/mycorp-myproj-[\\w\\d-\\.]+\\.jar"
+restart:
+  exclude:
+    companycommonlibs: "/mycorp-common-[\\w\\d-\\.]+\\.jar"
+  include:
+    projectcommon: "/mycorp-myproj-[\\w\\d-\\.]+\\.jar"
 ----
 
 NOTE: All property keys must be unique.
@@ -308,10 +308,10 @@ For example, to configure restart to always use a xref:using/devtools.adoc#using
 
 [configprops,yaml]
 ----
-	spring:
-	  devtools:
-	    restart:
-	      trigger-file: ".reloadtrigger"
+spring:
+  devtools:
+    restart:
+      trigger-file: ".reloadtrigger"
 ----
 
 By default, `$HOME` is the user's home directory.
@@ -339,11 +339,11 @@ If you observe such problems constantly, try increasing the `spring.devtools.res
 
 [configprops,yaml]
 ----
-	spring:
-	  devtools:
-	    restart:
-	      poll-interval: "2s"
-	      quiet-period: "1s"
+spring:
+  devtools:
+    restart:
+      poll-interval: "2s"
+      quiet-period: "1s"
 ----
 
 The monitored classpath directories are now polled every 2 seconds for changes, and a 1 second quiet period is maintained to make sure there are no additional class changes.

@@ -24,26 +24,26 @@ The {docs}/html/[reference documentation] includes detailed {docs}/html/getting-
 
 Here is a quick teaser of a complete Spring Boot application in Java:
 
-[source,java,indent=0]
+[source,java]
 ----
-	import org.springframework.boot.*;
-	import org.springframework.boot.autoconfigure.*;
-	import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.web.bind.annotation.*;
 
-	@RestController
-	@SpringBootApplication
-	public class Example {
+@RestController
+@SpringBootApplication
+public class Example {
 
-		@RequestMapping("/")
-		String home() {
-			return "Hello World!";
-		}
-
-		public static void main(String[] args) {
-			SpringApplication.run(Example.class, args);
-		}
-
+	@RequestMapping("/")
+	String home() {
+		return "Hello World!";
 	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(Example.class, args);
+	}
+
+}
 ----
 
 
@@ -82,18 +82,18 @@ We like to know the Spring Boot version, operating system, and JVM version you'r
 You don't need to build from source to use Spring Boot (binaries in https://repo.spring.io[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle wrapper].
 You also need JDK 17.
 
-[indent=0]
+[source,shell]
 ----
-	$ ./gradlew publishToMavenLocal
+$ ./gradlew publishToMavenLocal
 ----
 
 This will build all of the jars and documentation and publish them to your local Maven cache.
 It won't run any of the tests.
 If you want to build everything, use the `build` task:
 
-[indent=0]
+[source,shell]
 ----
-	$ ./gradlew build
+$ ./gradlew build
 ----
 
 

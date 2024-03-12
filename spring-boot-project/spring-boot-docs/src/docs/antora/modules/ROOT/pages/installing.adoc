@@ -103,21 +103,21 @@ Alternatively, you can use `java -jar` with the `.jar` file (the script helps yo
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of various binary SDKs, including Groovy and the Spring Boot CLI.
 Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following commands:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ sdk install springboot
-	$ spring --version
-	Spring CLI v{version-spring-boot}
+$ sdk install springboot
+$ spring --version
+Spring CLI v{version-spring-boot}
 ----
 
 If you develop features for the CLI and want access to the version you built, use the following commands:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{version-spring-boot}-bin/spring-{version-spring-boot}/
-	$ sdk default springboot dev
-	$ spring --version
-	Spring CLI v{version-spring-boot}
+$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{version-spring-boot}-bin/spring-{version-spring-boot}/
+$ sdk default springboot dev
+$ spring --version
+Spring CLI v{version-spring-boot}
 ----
 
 The preceding instructions install a local instance of `spring` called the `dev` instance.
@@ -125,21 +125,21 @@ It points at your target build location, so every time you rebuild Spring Boot, 
 
 You can see it by running the following command:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ sdk ls springboot
+$ sdk ls springboot
 
-	================================================================================
-	Available Springboot Versions
-	================================================================================
-	> + dev
-	* {version-spring-boot}
+================================================================================
+Available Springboot Versions
+================================================================================
+> + dev
+* {version-spring-boot}
 
-	================================================================================
-	+ - local version
-	* - installed
-	> - currently in use
-	================================================================================
+================================================================================
++ - local version
+* - installed
+> - currently in use
+================================================================================
 ----
 
 
@@ -198,10 +198,10 @@ NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the comm
 
 If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot CLI by using the following commands:
 
-[indent=0]
+[source,shell]
 ----
-	> scoop bucket add extras
-	> scoop install springboot
+$ scoop bucket add extras
+$ scoop install springboot
 ----
 
 Scoop installs `spring` to `~/scoop/apps/springboot/current/bin`.

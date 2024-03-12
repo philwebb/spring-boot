@@ -18,21 +18,21 @@ For example, you might declare the following section in `application.properties`
 
 [configprops,yaml]
 ----
-	spring:
-	  rabbitmq:
-	    host: "localhost"
-	    port: 5672
-	    username: "admin"
-	    password: "secret"
+spring:
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "admin"
+    password: "secret"
 ----
 
 Alternatively, you could configure the same connection using the `addresses` attribute:
 
 [configprops,yaml]
 ----
-	spring:
-	  rabbitmq:
-	    addresses: "amqp://admin:secret@localhost"
+spring:
+  rabbitmq:
+    addresses: "amqp://admin:secret@localhost"
 ----
 
 NOTE: When specifying addresses that way, the `host` and `port` properties are ignored.
@@ -65,12 +65,12 @@ To retry operations, you can enable retries on the `AmqpTemplate` (for example, 
 
 [configprops,yaml]
 ----
-	spring:
-	  rabbitmq:
-	    template:
-	      retry:
-	        enabled: true
-	        initial-interval: "2s"
+spring:
+  rabbitmq:
+    template:
+      retry:
+        enabled: true
+        initial-interval: "2s"
 ----
 
 Retries are disabled by default.
@@ -87,10 +87,10 @@ To send a message to a particular stream, specify the name of the stream, as sho
 
 [configprops,yaml]
 ----
-	spring:
-	  rabbitmq:
-	    stream:
-	      name: "my-stream"
+spring:
+  rabbitmq:
+    stream:
+      name: "my-stream"
 ----
 
 If a `MessageConverter`, `StreamMessageConverter`, or `ProducerCustomizer` bean is defined, it is associated automatically to the auto-configured `RabbitStreamTemplate`.

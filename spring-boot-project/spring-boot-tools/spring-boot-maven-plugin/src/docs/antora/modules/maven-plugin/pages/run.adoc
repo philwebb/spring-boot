@@ -3,9 +3,9 @@
 
 The plugin includes a run goal which can be used to launch your application from the command line, as shown in the following example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run
+$ mvn spring-boot:run
 ----
 
 Application arguments can be specified using the `arguments` parameter, see xref:run#run.examples.using-application-arguments[using application arguments] for more details.
@@ -31,15 +31,15 @@ It also provides a LiveReload server so that it can automatically trigger a brow
 Devtools can also be configured to only refresh the browser whenever a static resource has changed (and ignore any change in the code).
 Just include the following property in your project:
 
-[source,properties,indent=0]
+[source,properties]
 ----
-	spring.devtools.remote.restart.enabled=false
+spring.devtools.remote.restart.enabled=false
 ----
 
 Prior to `devtools`, the plugin supported hot refreshing of resources by default which has now be disabled in favour of the solution described above.
 You can restore it at any time by configuring your project:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,subs="verbatim,attributes"]
 ----
 include::example$running/hot-refresh-pom.xml[tags=hot-refresh]
 ----
@@ -83,9 +83,9 @@ include::example$running/debug-pom.xml[tags=debug]
 
 These arguments can be specified on the command line as well:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005
+$ mvn spring-boot:run -Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005
 ----
 
 
@@ -110,9 +110,9 @@ Any attempt to pass any other Maven variable type (for example a `List` or a `UR
 The `jvmArguments` parameter takes precedence over system properties defined with the mechanism above.
 In the following example, the value for `property1` is `overridden`:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dproperty1=overridden"
+$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dproperty1=overridden"
 ----
 
 
@@ -153,9 +153,9 @@ On the command-line, arguments are separated by a space the same way `jvmArgumen
 If an argument contains a space, make sure to quote it.
 In the following example, two arguments are available: `property1` and `property2=Hello World`:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.arguments="property1 'property2=Hello World'"
+$ mvn spring-boot:run -Dspring-boot.run.arguments="property1 'property2=Hello World'"
 ----
 
 
@@ -174,7 +174,7 @@ include::example$running/active-profiles-pom.xml[tags=active-profiles]
 
 The profiles to enable can be specified on the command line as well, make sure to separate them with a comma, as shown in the following example:
 
-[indent=0]
+[source,shell]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.profiles=local,dev
+$ mvn spring-boot:run -Dspring-boot.run.profiles=local,dev
 ----

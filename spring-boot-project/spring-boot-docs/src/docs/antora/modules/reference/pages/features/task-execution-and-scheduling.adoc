@@ -25,13 +25,13 @@ Those default settings can be fine-tuned using the `spring.task.execution` names
 
 [configprops,yaml]
 ----
-	spring:
-	  task:
-	    execution:
-	      pool:
-	        max-size: 16
-	        queue-capacity: 100
-	        keep-alive: "10s"
+spring:
+  task:
+    execution:
+      pool:
+        max-size: 16
+        queue-capacity: 100
+        keep-alive: "10s"
 ----
 
 This changes the thread pool to use a bounded queue so that when the queue is full (100 tasks), the thread pool increases to maximum 16 threads.
@@ -47,12 +47,12 @@ The `ThreadPoolTaskScheduler` uses one thread by default and its settings can be
 
 [configprops,yaml]
 ----
-	spring:
-	  task:
-	    scheduling:
-	      thread-name-prefix: "scheduling-"
-	      pool:
-	        size: 2
+spring:
+  task:
+    scheduling:
+      thread-name-prefix: "scheduling-"
+      pool:
+        size: 2
 ----
 
 A `ThreadPoolTaskExecutorBuilder` bean, a `SimpleAsyncTaskExecutorBuilder` bean, a `ThreadPoolTaskSchedulerBuilder` bean and a `SimpleAsyncTaskSchedulerBuilder` are made available in the context if a custom executor or scheduler needs to be created.

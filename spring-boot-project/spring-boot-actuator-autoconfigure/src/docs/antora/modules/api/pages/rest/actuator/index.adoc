@@ -20,9 +20,9 @@ By default, all web endpoints are available beneath the path `/actuator` with UR
 the form `/actuator/\{id}`. The `/actuator` base path can be configured by using the
 `management.endpoints.web.base-path` property, as shown in the following example:
 
-[source,properties,indent=0]
+[source,properties]
 ----
-	management.endpoints.web.base-path=/manage
+management.endpoints.web.base-path=/manage
 ----
 
 The preceding `application.properties` example changes the form of the endpoint URLs from

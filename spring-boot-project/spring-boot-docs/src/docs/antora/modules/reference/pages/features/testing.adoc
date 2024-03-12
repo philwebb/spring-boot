@@ -921,7 +921,7 @@ Alternatively, additional auto-configurations can be added for any use of a slic
 .META-INF/spring/org.springframework.boot.test.autoconfigure.jdbc.JdbcTest.imports
 [indent=0]
 ----
-	com.example.IntegrationAutoConfiguration
+com.example.IntegrationAutoConfiguration
 ----
 
 In this example, the `com.example.IntegrationAutoConfiguration` is enabled on every test annotated with `@JdbcTest`.

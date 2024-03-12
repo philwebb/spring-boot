@@ -134,13 +134,13 @@ For example:
 
 [source,yaml,indent=0]
 ----
-	services:
-	  redis:
-	    image: 'mycompany/mycustomredis:7.0'
-	    ports:
-	      - '6379'
-	    labels:
-	      org.springframework.boot.service-connection: redis
+services:
+  redis:
+    image: 'mycompany/mycustomredis:7.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.service-connection: redis
 ----
 
 
@@ -153,15 +153,15 @@ Any container with labeled with `org.springframework.boot.ignore` will be ignore
 
 For example:
 
-[source,yaml,indent=0]
+[source,yaml]
 ----
-	services:
-	  redis:
-	    image: 'redis:7.0'
-	    ports:
-	      - '6379'
-	    labels:
-	      org.springframework.boot.ignore: true
+services:
+  redis:
+    image: 'redis:7.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.ignore: true
 ----
 
 
@@ -176,10 +176,10 @@ For example:
 
 [configprops,yaml]
 ----
-	spring:
-	  docker:
-	    compose:
-	      file: "../my-compose.yml"
+spring:
+  docker:
+    compose:
+      file: "../my-compose.yml"
 ----
 
 
@@ -197,28 +197,28 @@ You can disable this on a per-container basis by adding a `org.springframework.b
 
 For example:
 
-[source,yaml,indent=0]
+[source,yaml]
 ----
-	services:
-	  redis:
-	    image: 'redis:7.0'
-	    ports:
-	      - '6379'
-	    labels:
-	      org.springframework.boot.readiness-check.tcp.disable: true
+services:
+  redis:
+    image: 'redis:7.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
 ----
 
 You can also change timeout values in your `application.properties` or `application.yaml` file:
 
 [configprops,yaml]
 ----
-	spring:
-	  docker:
-	    compose:
-	      readiness:
-	        tcp:
-	          connect-timeout: 10s
-	          read-timeout: 5s
+spring:
+  docker:
+    compose:
+      readiness:
+        tcp:
+          connect-timeout: 10s
+          read-timeout: 5s
 ----
 
 The overall timeout can be configured using configprop:spring.docker.compose.readiness.timeout[].
@@ -244,15 +244,15 @@ The following example shows how lifecycle management can be configured:
 
 [configprops,yaml]
 ----
-	spring:
-	  docker:
-	    compose:
-	      lifecycle-management: start-and-stop
-	      start:
-	        command: start
-	      stop:
-	        command: down
-	        timeout: 1m
+spring:
+  docker:
+    compose:
+      lifecycle-management: start-and-stop
+      start:
+        command: start
+      stop:
+        command: down
+        timeout: 1m
 ----
 
 
@@ -265,9 +265,9 @@ If you want to activate a specific Docker Compose profile you can use the config
 
 [configprops,yaml]
 ----
-	spring:
-	  docker:
-	    compose:
-	      profiles:
-	        active: "myprofile"
+spring:
+  docker:
+    compose:
+      profiles:
+        active: "myprofile"
 ----

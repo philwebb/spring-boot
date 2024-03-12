@@ -42,10 +42,10 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 
 [configprops,yaml]
 ----
-	spring:
-	  session:
-	    jdbc:
-	      table-name: "SESSIONS"
+spring:
+  session:
+    jdbc:
+      table-name: "SESSIONS"
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.

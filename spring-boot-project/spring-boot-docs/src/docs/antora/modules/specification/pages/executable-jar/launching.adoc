@@ -23,18 +23,18 @@ The actual class that you want to launch (that is, the class that contains a `ma
 
 The following example shows a typical `MANIFEST.MF` for an executable jar file:
 
-[indent=0]
+[source,manifest]
 ----
-	Main-Class: org.springframework.boot.loader.launch.JarLauncher
-	Start-Class: com.mycompany.project.MyApplication
+Main-Class: org.springframework.boot.loader.launch.JarLauncher
+Start-Class: com.mycompany.project.MyApplication
 ----
 
 For a war file, it would be as follows:
 
-[indent=0]
+[source,manifest]
 ----
-	Main-Class: org.springframework.boot.loader.launch.WarLauncher
-	Start-Class: com.mycompany.project.MyApplication
+Main-Class: org.springframework.boot.loader.launch.WarLauncher
+Start-Class: com.mycompany.project.MyApplication
 ----
 
 NOTE: You need not specify `Class-Path` entries in your manifest file.

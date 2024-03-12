@@ -285,9 +285,9 @@ This configuration will use a builder image with the name `mine/java-cnb-builder
 
 The builder and run image can be specified on the command line as well, as shown in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ gradle bootBuildImage --builder=mine/java-cnb-builder --runImage=mine/java-cnb-run
+$ gradle bootBuildImage --builder=mine/java-cnb-builder --runImage=mine/java-cnb-run
 ----
 
 
@@ -373,9 +373,9 @@ It is possible to specify a tag as well, either using `${project.version}`, any 
 
 The image name can be specified on the command line as well, as shown in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
+$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
 ----
 
 
@@ -456,9 +456,9 @@ include::example$packaging/boot-build-image-publish.gradle.kts[tags=publish]
 
 The publish option can be specified on the command line as well, as shown in this example:
 
-[indent=0]
+[source,shell]
 ----
-	$ gradle bootBuildImage --imageName=docker.example.com/library/my-app:v1 --publishImage
+$ gradle bootBuildImage --imageName=docker.example.com/library/my-app:v1 --publishImage
 ----
 
 

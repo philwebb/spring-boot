@@ -88,10 +88,10 @@ examples:
 
 The `version` command provides a quick way to check which version of Spring Boot you are using, as follows:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ spring version
-	Spring CLI v{version-spring-boot}
+$ spring version
+Spring CLI v{version-spring-boot}
 ----
 
 
@@ -155,19 +155,19 @@ Content saved to 'sample-app.zip'
 Spring Boot includes command-line completion scripts for the BASH and zsh shells.
 If you do not use either of these shells (perhaps you are a Windows user), you can use the `shell` command to launch an integrated shell, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,subs="verbatim,quotes,attributes"]
 ----
-	$ spring shell
-	*Spring Boot* (v{version-spring-boot})
-	Hit TAB to complete. Type \'help' and hit RETURN for help, and \'exit' to quit.
+$ spring shell
+*Spring Boot* (v{version-spring-boot})
+Hit TAB to complete. Type \'help' and hit RETURN for help, and \'exit' to quit.
 ----
 
 From inside the embedded shell, you can run other commands directly:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ version
-	Spring CLI v{version-spring-boot}
+$ version
+Spring CLI v{version-spring-boot}
 ----
 
 The embedded shell supports ANSI color output as well as `tab` completion.

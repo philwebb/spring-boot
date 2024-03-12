@@ -135,11 +135,11 @@ To address this problem the agent supports an access-filter file that will cause
 
 Use the following command to launch the application with the native image tracing agent attached:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-	$ java -Dspring.aot.enabled=true \
-	    -agentlib:native-image-agent=config-output-dir=/path/to/config-dir/ \
-	    -jar target/myproject-0.0.1-SNAPSHOT.jar
+$ java -Dspring.aot.enabled=true \
+    -agentlib:native-image-agent=config-output-dir=/path/to/config-dir/ \
+    -jar target/myproject-0.0.1-SNAPSHOT.jar
 ----
 
 Now you can exercise the code paths you want to have hints for and then stop the application with `ctrl-c`.

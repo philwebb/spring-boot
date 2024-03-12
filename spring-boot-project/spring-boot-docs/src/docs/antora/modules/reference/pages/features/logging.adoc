@@ -201,22 +201,22 @@ The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
 
-[source,properties,indent=0,subs="verbatim",configprops,role="primary"]
+[source,properties,configprops,role="primary"]
 .Properties
 ----
-	logging.level.root=warn
-	logging.level.org.springframework.web=debug
-	logging.level.org.hibernate=error
+logging.level.root=warn
+logging.level.org.springframework.web=debug
+logging.level.org.hibernate=error
 ----
 
-[source,properties,indent=0,subs="verbatim",role="secondary"]
+[source,yaml,role="secondary"]
 .Yaml
 ----
-	logging:
-	  level:
-	    root: "warn"
-	    org.springframework.web: "debug"
-	    org.hibernate: "error"
+logging:
+  level:
+    root: "warn"
+    org.springframework.web: "debug"
+    org.hibernate: "error"
 ----
 
 It is also possible to set logging levels using environment variables.
@@ -239,18 +239,18 @@ For example, here is how you could define a "`tomcat`" group by adding it to you
 
 [configprops,yaml]
 ----
-	logging:
-	  group:
-	    tomcat: "org.apache.catalina,org.apache.coyote,org.apache.tomcat"
+logging:
+  group:
+    tomcat: "org.apache.catalina,org.apache.coyote,org.apache.tomcat"
 ----
 
 Once defined, you can change the level for all the loggers in the group with a single line:
 
 [configprops,yaml]
 ----
-	logging:
-	  level:
-	    tomcat: "trace"
+logging:
+  level:
+    tomcat: "trace"
 ----
 
 Spring Boot includes the following pre-defined logging groups that can be used out-of-the-box:
@@ -282,8 +282,8 @@ You can set the property in your `application.properties` or `application.yaml` 
 
 [configprops,yaml]
 ----
-	logging:
-	  register-shutdown-hook: false
+logging:
+  register-shutdown-hook: false
 ----
 
 
@@ -422,10 +422,10 @@ Notably, if you use Logback, you should use `:` as the delimiter between a prope
 You can add MDC and other ad-hoc content to log lines by overriding only the `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with Logback).
 For example, if you use `logging.pattern.level=user:%X\{user} %5p`, then the default log format contains an MDC entry for "user", if it exists, as shown in the following example.
 
-[indent=0]
+[source]
 ----
-	2019-08-30 12:30:04.031 user:someone INFO 22174 --- [  nio-8080-exec-0] demo.Controller
-	Handling authenticated request
+2019-08-30 12:30:04.031 user:someone INFO 22174 --- [  nio-8080-exec-0] demo.Controller
+Handling authenticated request
 ----
 ====
 
@@ -443,10 +443,10 @@ You need to either use `logback-spring.xml` or define a configprop:logging.confi
 WARNING: The extensions cannot be used with Logback's https://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning].
 If you attempt to do so, making changes to the configuration file results in an error similar to one of the following being logged:
 
-[indent=0]
+[source]
 ----
-	ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
-	ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
+ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
+ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
 ----
 
 
@@ -462,19 +462,19 @@ A profile expression allows for more complicated profile logic to be expressed, 
 Check the {url-spring-framework-docs}/core/beans/environment.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
 The following listing shows three sample profiles:
 
-[source,xml,subs="verbatim",indent=0]
+[source,xml]
 ----
-	<springProfile name="staging">
-		<!-- configuration to be enabled when the "staging" profile is active -->
-	</springProfile>
+<springProfile name="staging">
+	<!-- configuration to be enabled when the "staging" profile is active -->
+</springProfile>
 
-	<springProfile name="dev | staging">
-		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
-	</springProfile>
+<springProfile name="dev | staging">
+	<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+</springProfile>
 
-	<springProfile name="!production">
-		<!-- configuration to be enabled when the "production" profile is not active -->
-	</springProfile>
+<springProfile name="!production">
+	<!-- configuration to be enabled when the "production" profile is not active -->
+</springProfile>
 ----
 
 
@@ -490,14 +490,14 @@ If you need to store the property somewhere other than in `local` scope, you can
 If you need a fallback value (in case the property is not set in the `Environment`), you can use the `defaultValue` attribute.
 The following example shows how to expose properties for use within Logback:
 
-[source,xml,subs="verbatim",indent=0]
+[source,xml]
 ----
-	<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"
-			defaultValue="localhost"/>
-	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
-		<remoteHost>${fluentHost}</remoteHost>
-		...
-	</appender>
+<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"
+		defaultValue="localhost"/>
+<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+	<remoteHost>${fluentHost}</remoteHost>
+	...
+</appender>
 ----
 
 NOTE: The `source` must be specified in kebab case (such as `my.property-name`).
@@ -530,19 +530,19 @@ A profile expression allows for more complicated profile logic to be expressed, 
 Check the {url-spring-framework-docs}/core/beans/environment.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
 The following listing shows three sample profiles:
 
-[source,xml,subs="verbatim",indent=0]
+[source,xml]
 ----
-	<SpringProfile name="staging">
-		<!-- configuration to be enabled when the "staging" profile is active -->
-	</SpringProfile>
+<SpringProfile name="staging">
+	<!-- configuration to be enabled when the "staging" profile is active -->
+</SpringProfile>
 
-	<SpringProfile name="dev | staging">
-		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
-	</SpringProfile>
+<SpringProfile name="dev | staging">
+	<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+</SpringProfile>
 
-	<SpringProfile name="!production">
-		<!-- configuration to be enabled when the "production" profile is not active -->
-	</SpringProfile>
+<SpringProfile name="!production">
+	<!-- configuration to be enabled when the "production" profile is not active -->
+</SpringProfile>
 ----
 
 
@@ -555,11 +555,11 @@ Doing so can be useful if you want to access values from your `application.prope
 
 The following example shows how to set a Log4j2 property named `applicationName` that reads `spring.application.name` from the Spring `Environment`:
 
-[source,xml,subs="verbatim",indent=0]
+[source,xml]
 ----
-	<Properties>
-		<Property name="applicationName">${spring:spring.application.name}</Property>
-	</Properties>
+<Properties>
+	<Property name="applicationName">${spring:spring.application.name}</Property>
+</Properties>
 ----
 
 NOTE: The lookup key should be specified in kebab case (such as `my.property-name`).
