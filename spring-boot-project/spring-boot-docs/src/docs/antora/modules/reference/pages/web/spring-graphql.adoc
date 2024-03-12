@@ -83,6 +83,7 @@ Spring Data repositories annotated with `@GraphQlRepository` and extending one o
 are detected by Spring Boot and considered as candidates for `DataFetcher` for matching top-level queries.
 
 
+
 [[web.graphql.transports]]
 == Transports
 

@@ -9,6 +9,7 @@ Since you probably recompile your code more often than you upgrade the version o
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
 
+
 [[container-images.efficient-images.layering]]
 == Layering Docker Images
 

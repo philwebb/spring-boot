@@ -3,6 +3,8 @@
 
 This section includes topics relating to the Docker Compose support in Spring Boot.
 
+
+
 [[howto.docker-compose.jdbc-url]]
 == Customizing the JDBC URL
 

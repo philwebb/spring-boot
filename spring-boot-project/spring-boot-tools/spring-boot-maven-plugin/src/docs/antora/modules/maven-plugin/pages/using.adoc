@@ -37,6 +37,8 @@ and then configure the source and the target options instead:
 ----
 ====
 
+
+
 [[using.parent-pom]]
 == Inheriting the Starter Parent POM
 

@@ -90,6 +90,7 @@ Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bun
 ----
 
 
+
 [[data.nosql.mongodb]]
 == MongoDB
 
@@ -314,6 +315,8 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 	    password: "secret"
 ----
 
+
+
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
 ==== Connecting to Elasticsearch Using RestClient
 
@@ -335,6 +338,7 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 	        interval: "10m"
 	        delay-after-failure: "30s"
 ----
+
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]

@@ -222,6 +222,7 @@ The ordering is defined by the order of `HandlerMapping` beans which is by defau
 |===
 
 
+
 [[web.servlet.spring-mvc.favicon]]
 === Custom Favicon
 

@@ -32,6 +32,8 @@ include-code::MyPropertiesKotlin[]
 
 NOTE: Please use public getters and setters in all cases, otherwise the properties will not be bindable.
 
+
+
 [[native-image.advanced.converting-executable-jars]]
 == Converting a Spring Boot Executable Jar
 
@@ -165,6 +167,8 @@ You can then use `@ImportRuntimeHints` on any `@Configuration` class (for exampl
 If you have classes which need binding (mostly needed when serializing or deserializing JSON), you can use {url-spring-framework-docs}/core/aot.html#aot.hints.register-reflection-for-binding[`@RegisterReflectionForBinding`] on any bean.
 Most of the hints are automatically inferred, for example when accepting or returning data from a `@RestController` method.
 But when you work with `WebClient`, `RestClient` or `RestTemplate` directly, you might need to use `@RegisterReflectionForBinding`.
+
+
 
 [[native-image.advanced.custom-hints.testing]]
 === Testing custom hints

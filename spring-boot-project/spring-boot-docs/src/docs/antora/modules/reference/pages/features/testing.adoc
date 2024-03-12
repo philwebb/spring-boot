@@ -268,6 +268,7 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 include-code::MyJmxTests[]
 
 
+
 [[features.testing.spring-boot-applications.observations]]
 === Using Observations
 

@@ -166,6 +166,8 @@ You can use them to perform a variety of GraalVM tasks, including generating a n
 To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
 You can either download it manually on the {url-download-liberica-nik}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
 
+
+
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.linux-macos]]
 ==== Linux and macOS
 

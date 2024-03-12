@@ -180,6 +180,8 @@ Use the `management.wavefront.*` configuration properties to configure reporting
 
 A `TracingAwareMeterObservationHandler` is automatically registered on the `ObservationRegistry`, which creates spans for every completed observation.
 
+
+
 [[actuator.micrometer-tracing.creating-spans]]
 == Creating Custom Spans
 

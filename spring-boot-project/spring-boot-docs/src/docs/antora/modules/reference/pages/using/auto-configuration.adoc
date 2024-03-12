@@ -40,6 +40,7 @@ NOTE: Even though auto-configuration classes are `public`, the only aspect of th
 The actual contents of those classes, such as nested configuration classes or bean methods are for internal use only and we do not recommend using those directly.
 
 
+
 [[using.auto-configuration.packages]]
 == Auto-configuration Packages
 

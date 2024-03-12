@@ -283,7 +283,6 @@ Spring Boot auto-configuration switches off its entity manager in the presence o
 
 
 [[howto.data-access.use-multiple-entity-managers]]
-[[howto.data-access.use-multiple-entity-managers]]
 == Using Multiple EntityManagerFactories
 
 If you need to use JPA against multiple data sources, you likely need one `EntityManagerFactory` per data source.

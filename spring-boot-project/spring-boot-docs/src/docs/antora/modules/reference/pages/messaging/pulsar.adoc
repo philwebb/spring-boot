@@ -91,6 +91,7 @@ This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[]
 If you need more control over the configuration, consider registering one or more `PulsarAdminBuilderCustomizer` beans.
 
 
+
 [[messaging.pulsar.admin.auth]]
 === Authentication
 

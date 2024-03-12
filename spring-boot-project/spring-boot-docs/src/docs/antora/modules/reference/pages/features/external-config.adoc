@@ -645,7 +645,6 @@ So, in the case that you need to load values that way, you need to use a propert
 
 
 [[features.external-config.yaml.directly-loading]]
-[[features.external-config.yaml.directly-loading]]
 === Directly Loading YAML
 
 Spring Framework provides two convenient classes that can be used to load YAML documents.

@@ -45,6 +45,7 @@ It is mapped to `ERROR`.
 TIP: If you have a configprop:spring.application.name[] property but don't want it logged you can set configprop:logging.include-application-name[] to `false`.
 
 
+
 [[features.logging.console-output]]
 == Console Output
 

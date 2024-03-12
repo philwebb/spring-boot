@@ -323,6 +323,8 @@ You can provide the location of the Elastic server to use by using the following
 	        host: "https://elastic.example.com:8086"
 ----
 
+
+
 [[actuator.metrics.export.ganglia]]
 === Ganglia
 
@@ -782,6 +784,7 @@ Metrics are tagged by the name of the executor, which is derived from the bean n
 Auto-configuration enables the instrumentation of all available `JmsTemplate` beans and `@JmsListener` annotated methods.
 This will produce `"jms.message.publish"` and `"jms.message.process"` metrics respectively.
 See the {url-spring-framework-docs}/integration/observability.html#observability.jms[Spring Framework reference documentation for more information on produced observations].
+
 
 
 [[actuator.metrics.supported.spring-mvc]]
@@ -1256,6 +1259,8 @@ The reported measurements are the _sum_ of the statistics of all meters that mat
 In the preceding example, the returned `Value` statistic is the sum of the maximum memory footprints of the "`Code Cache`", "`Compressed Class Space`", and "`Metaspace`" areas of the heap.
 If you wanted to see only the maximum size for the "`Metaspace`", you could add an additional `tag=id:Metaspace` -- that is, `/actuator/metrics/jvm.memory.max?tag=area:nonheap&tag=id:Metaspace`.
 ====
+
+
 
 [[actuator.metrics.micrometer-observation]]
 == Integration with Micrometer Observation

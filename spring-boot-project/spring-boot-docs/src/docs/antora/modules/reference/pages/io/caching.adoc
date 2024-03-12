@@ -123,6 +123,8 @@ When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use
 If you want to use Hazelcast as a JCache compliant cache, set configprop:spring.cache.type[] to `jcache`.
 If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to xref:io/caching.adoc#io.caching.provider.jcache[explicitly set the JCache provider].
 
+
+
 [[io.caching.provider.infinispan]]
 === Infinispan
 

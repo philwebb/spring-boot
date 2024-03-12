@@ -46,6 +46,8 @@ Common tags are applied to all observations as low cardinality tags and can be c
 
 The preceding example adds `region` and `stack` tags to all observations with a value of `us-east-1` and `prod`, respectively.
 
+
+
 [[actuator.observability.preventing-observations]]
 == Preventing Observations
 
