@@ -14,7 +14,7 @@ Each bundle has a user-provided name that can be used to reference the bundle.
 
 When used to secure an embedded web server, a `keystore` is typically configured with a Java KeyStore containing a certificate and private key as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
     spring:
       ssl:
@@ -31,7 +31,7 @@ When used to secure an embedded web server, a `keystore` is typically configured
 
 When used to secure a client-side connection, a `truststore` is typically configured with a Java KeyStore containing the server certificate as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
     spring:
       ssl:
@@ -55,7 +55,7 @@ Each bundle has a user-provided name that can be used to reference the bundle.
 
 When used to secure an embedded web server, a `keystore` is typically configured with a certificate and private key as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
     spring:
       ssl:
@@ -69,7 +69,7 @@ When used to secure an embedded web server, a `keystore` is typically configured
 
 When used to secure a client-side connection, a `truststore` is typically configured with the server certificate as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
     spring:
       ssl:
@@ -87,7 +87,7 @@ If the property values contains `BEGIN` and `END` markers then they will be trea
 
 The following example shows how a truststore certificate can be defined:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
     spring:
       ssl:
@@ -151,7 +151,7 @@ Currently the following components are compatible:
 
 To enable reloading, you need to opt-in via a configuration property as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
     spring:
       ssl:

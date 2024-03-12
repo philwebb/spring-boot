@@ -16,7 +16,7 @@ Spring uses RabbitMQ to communicate through the AMQP protocol.
 RabbitMQ configuration is controlled by external configuration properties in `+spring.rabbitmq.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  rabbitmq:
@@ -28,7 +28,7 @@ For example, you might declare the following section in `application.properties`
 
 Alternatively, you could configure the same connection using the `addresses` attribute:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  rabbitmq:
@@ -63,7 +63,7 @@ If necessary, any `org.springframework.amqp.core.Queue` that is defined as a bea
 
 To retry operations, you can enable retries on the `AmqpTemplate` (for example, in the event that the broker connection is lost):
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  rabbitmq:
@@ -85,7 +85,7 @@ If you need to create more `RabbitTemplate` instances or if you want to override
 
 To send a message to a particular stream, specify the name of the stream, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  rabbitmq:

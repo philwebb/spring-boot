@@ -174,7 +174,7 @@ Properties can be defined as an exact path or a path that’s relative to your a
 
 For example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  docker:
@@ -210,7 +210,7 @@ For example:
 
 You can also change timeout values in your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  docker:
@@ -242,7 +242,7 @@ The configprop:spring.docker.compose.stop.command[] allows you to configure if `
 
 The following example shows how lifecycle management can be configured:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  docker:
@@ -263,7 +263,7 @@ The following example shows how lifecycle management can be configured:
 Docker Compose profiles are similar to Spring profiles in that they let you adjust your Docker Compose configuration for specific environments.
 If you want to activate a specific Docker Compose profile you can use the configprop:spring.docker.compose.profiles.active[] property in your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  docker:

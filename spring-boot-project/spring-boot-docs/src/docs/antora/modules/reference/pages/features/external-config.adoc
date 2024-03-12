@@ -279,7 +279,7 @@ Imports are processed as they are discovered, and are treated as additional docu
 
 For example, you might have the following in your classpath `application.properties` file:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  application:
@@ -296,7 +296,7 @@ An import will only be imported once no matter how many times it is declared.
 The order an import is defined inside a single document within the properties/yaml file does not matter.
 For instance, the two examples below produce the same result:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  config:
@@ -305,7 +305,7 @@ For instance, the two examples below produce the same result:
 	  property: "value"
 ----
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	my:
 	  property: "value"
@@ -345,7 +345,7 @@ You can do this by putting an extension hint in square brackets.
 For example, suppose you have a `/etc/config/myconfig` file that you wish to import as yaml.
 You can import it from your `application.properties` using the following:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  config:
@@ -386,7 +386,7 @@ The contents of the `username` file would be a config value, and the contents of
 
 To import these properties, you can add the following to your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  config:
@@ -425,7 +425,7 @@ For example, given the following volume:
 
 You can use `configtree:/etc/config/*/` as the import location:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  config:
@@ -442,7 +442,7 @@ Configuration trees can also be used for Docker secrets.
 When a Docker swarm service is granted access to a secret, the secret gets mounted into the container.
 For example, if a secret named `db.password` is mounted at location `/run/secrets/`, you can make `db.password` available to the Spring environment using the following:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  config:
@@ -460,7 +460,7 @@ Property placeholders can also specify a default value using a `:` to separate t
 
 The use of placeholders with and without defaults is shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	app:
 	  name: "MyApp"
@@ -553,7 +553,7 @@ The following activation properties are available:
 
 For example, the following specifies that the second document is only active when running on Kubernetes, and only when either the "`prod`" or "`staging`" profiles are active:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	myprop:
 	  "always-set"
@@ -660,7 +660,7 @@ You can also use the `YamlPropertySourceLoader` class if you want to load YAML a
 The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
 It can produce integers, longs, uuids, or strings, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	my:
 	  secret: "${random.value}"
@@ -988,7 +988,7 @@ include-code::list/MyProperties[]
 
 Consider the following configuration:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	my:
 	  list:
@@ -1011,7 +1011,7 @@ This configuration _does not_ add a second `MyPojo` instance to the list, and it
 When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
 Consider the following example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	my:
 	  list:
@@ -1040,7 +1040,7 @@ include-code::map/MyProperties[]
 
 Consider the following configuration:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	my:
 	  map:

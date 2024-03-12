@@ -1,7 +1,7 @@
 antora:
   extensions:
   - require: '/Users/pwebb/projects/antora-xref-extension/packages/antora-xref-extension'
-  - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
+  - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/antora-zip-contents-collector-extension'
     version_file: gradle.properties
     locations:
     - url: spring-boot-project/spring-boot-docs/build/generated/docs/antora-content/spring-boot-docs-${version}-${name}-${classifier}.zip
@@ -29,6 +29,7 @@ asciidoc:
   extensions:
     - '@asciidoctor/tabs'
     - '@springio/asciidoctor-extensions'
+    - '@springio/asciidoctor-extensions/configuration-properties-extension'
     - '/Users/pwebb/projects/asciidoctor-extensions/lib/configuration-properties-extension.js'
 urls:
   latest_version_segment: ''

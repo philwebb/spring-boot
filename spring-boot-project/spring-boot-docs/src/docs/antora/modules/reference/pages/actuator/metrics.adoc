@@ -37,7 +37,7 @@ Most registries share common features.
 For instance, you can disable a particular registry even if the Micrometer registry implementation is on the classpath.
 The following example disables Datadog:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
       datadog:
@@ -48,7 +48,7 @@ The following example disables Datadog:
 
 You can also disable all registries unless stated otherwise by the registry-specific property, as the following example shows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
       defaults:
@@ -59,7 +59,7 @@ You can also disable all registries unless stated otherwise by the registry-spec
 
 Spring Boot also adds any auto-configured registries to the global static composite registry on the `Metrics` class, unless you explicitly tell it not to:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  metrics:
@@ -91,7 +91,7 @@ This section briefly describes each of the supported monitoring systems.
 By default, the AppOptics registry periodically pushes metrics to `https://api.appoptics.com/v1/measurements`.
 To export metrics to SaaS {url-micrometer-docs-implementations}/appOptics[AppOptics], your API token must be provided:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  appoptics:
@@ -108,7 +108,7 @@ To export metrics to SaaS {url-micrometer-docs-implementations}/appOptics[AppOpt
 By default, metrics are exported to {url-micrometer-docs-implementations}/atlas[Atlas] running on your local machine.
 You can provide the location of the https://github.com/Netflix/atlas[Atlas server]:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
       atlas:
@@ -125,7 +125,7 @@ You can provide the location of the https://github.com/Netflix/atlas[Atlas serve
 A Datadog registry periodically pushes metrics to https://www.datadoghq.com[datadoghq].
 To export metrics to {url-micrometer-docs-implementations}/datadog[Datadog], you must provide your API key:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
       datadog:
@@ -136,7 +136,7 @@ To export metrics to {url-micrometer-docs-implementations}/datadog[Datadog], you
 
 If you additionally provide an application key (optional), then metadata such as meter descriptions, types, and base units will also be exported:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  datadog:
@@ -149,7 +149,7 @@ If you additionally provide an application key (optional), then metadata such as
 By default, metrics are sent to the Datadog US https://docs.datadoghq.com/getting_started/site[site] (`https://api.datadoghq.com`).
 If your Datadog project is hosted on one of the other sites, or you need to send metrics through a proxy, configure the URI accordingly:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  datadog:
@@ -160,7 +160,7 @@ If your Datadog project is hosted on one of the other sites, or you need to send
 
 You can also change the interval at which metrics are sent to Datadog:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  datadog:
@@ -220,7 +220,7 @@ The URL of the Metrics API v2 ingest endpoint is different according to your dep
 
 The example below configures metrics export using the `example` environment id:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  dynatrace:
@@ -246,7 +246,7 @@ Use the `export-meter-metadata` toggle to turn this feature off.
 It is possible to not specify a URI and API token, as shown in the following example.
 In this scenario, the automatically configured endpoint is used:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  dynatrace:
@@ -272,7 +272,7 @@ The Dynatrace v1 API metrics registry pushes metrics to the configured URI perio
 For backwards-compatibility with existing setups, when `device-id` is set (required for v1, but not used in v2), metrics are exported to the Timeseries v1 endpoint.
 To export metrics to {url-micrometer-docs-implementations}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  dynatrace:
@@ -295,7 +295,7 @@ In addition to the API endpoint and token, you can also change the interval at w
 The default export interval is `60s`.
 The following example sets the export interval to 30 seconds:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  dynatrace:
@@ -314,7 +314,7 @@ You can find more information on how to set up the Dynatrace exporter for Microm
 By default, metrics are exported to {url-micrometer-docs-implementations}/elastic[Elastic] running on your local machine.
 You can provide the location of the Elastic server to use by using the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  elastic:
@@ -331,7 +331,7 @@ You can provide the location of the Elastic server to use by using the following
 By default, metrics are exported to {url-micrometer-docs-implementations}/ganglia[Ganglia] running on your local machine.
 You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port, as the following example shows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  ganglia:
@@ -349,7 +349,7 @@ You can provide the http://ganglia.sourceforge.net[Ganglia server] host and port
 By default, metrics are exported to {url-micrometer-docs-implementations}/graphite[Graphite] running on your local machine.
 You can provide the https://graphiteapp.org[Graphite server] host and port, as the following example shows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  graphite:
@@ -377,7 +377,7 @@ include-code::MyGraphiteConfiguration[]
 By default, the Humio registry periodically pushes metrics to https://cloud.humio.com.
 To export metrics to SaaS {url-micrometer-docs-implementations}/humio[Humio], you must provide your API token:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  humio:
@@ -388,7 +388,7 @@ To export metrics to SaaS {url-micrometer-docs-implementations}/humio[Humio], yo
 
 You should also configure one or more tags to identify the data source to which metrics are pushed:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  humio:
@@ -408,7 +408,7 @@ By default, metrics are exported to an {url-micrometer-docs-implementations}/inf
 To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
 You can provide the location of the https://www.influxdata.com[Influx server] to use by using:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  influx:
@@ -426,7 +426,7 @@ Micrometer provides a hierarchical mapping to {url-micrometer-docs-implementatio
 By default, metrics are exported to the `metrics` JMX domain.
 You can provide the domain to use by using:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  jmx:
@@ -453,7 +453,7 @@ include-code::MyJmxConfiguration[]
 By default, metrics are exported to {url-micrometer-docs-implementations}/kairos[KairosDB] running on your local machine.
 You can provide the location of the https://kairosdb.github.io/[KairosDB server] to use by using:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  kairos:
@@ -470,7 +470,7 @@ You can provide the location of the https://kairosdb.github.io/[KairosDB server]
 A New Relic registry periodically pushes metrics to {url-micrometer-docs-implementations}/new-relic[New Relic].
 To export metrics to https://newrelic.com[New Relic], you must provide your API key and account ID:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  newrelic:
@@ -482,7 +482,7 @@ To export metrics to https://newrelic.com[New Relic], you must provide your API 
 
 You can also change the interval at which metrics are sent to New Relic:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  newrelic:
@@ -493,7 +493,7 @@ You can also change the interval at which metrics are sent to New Relic:
 
 By default, metrics are published through REST calls, but you can also use the Java Agent API if you have it on the classpath:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  newrelic:
@@ -512,7 +512,7 @@ Finally, you can take full control by defining your own `NewRelicClientProvider`
 By default, metrics are exported to {url-micrometer-docs-implementations}/otlp[OpenTelemetry] running on your local machine.
 You can provide the location of the https://opentelemetry.io/[OpenTelemetry metric endpoint] to use by using:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  otlp:
@@ -572,7 +572,7 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 SignalFx registry periodically pushes metrics to {url-micrometer-docs-implementations}/signalFx[SignalFx].
 To export metrics to https://www.signalfx.com[SignalFx], you must provide your access token:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  signalfx:
@@ -583,7 +583,7 @@ To export metrics to https://www.signalfx.com[SignalFx], you must provide your a
 
 You can also change the interval at which metrics are sent to SignalFx:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  signalfx:
@@ -603,7 +603,7 @@ This lets you see what metrics are collected in the xref:actuator/metrics.adoc#a
 The in-memory backend disables itself as soon as you use any other available backend.
 You can also disable it explicitly:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
       simple:
@@ -620,7 +620,7 @@ You can also disable it explicitly:
 The Stackdriver registry periodically pushes metrics to https://cloud.google.com/stackdriver/[Stackdriver].
 To export metrics to SaaS {url-micrometer-docs-implementations}/stackdriver[Stackdriver], you must provide your Google Cloud project ID:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  stackdriver:
@@ -631,7 +631,7 @@ To export metrics to SaaS {url-micrometer-docs-implementations}/stackdriver[Stac
 
 You can also change the interval at which metrics are sent to Stackdriver:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  stackdriver:
@@ -649,7 +649,7 @@ The StatsD registry eagerly pushes metrics over UDP to a StatsD agent.
 By default, metrics are exported to a {url-micrometer-docs-implementations}/statsD[StatsD] agent running on your local machine.
 You can provide the StatsD agent host, port, and protocol to use by using:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  statsd:
@@ -662,7 +662,7 @@ You can provide the StatsD agent host, port, and protocol to use by using:
 
 You can also change the StatsD line protocol to use (it defaults to Datadog):
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  statsd:
@@ -679,7 +679,7 @@ You can also change the StatsD line protocol to use (it defaults to Datadog):
 The Wavefront registry periodically pushes metrics to {url-micrometer-docs-implementations}/wavefront[Wavefront].
 If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, you must provide your API token:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  wavefront:
@@ -688,7 +688,7 @@ If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, 
 
 Alternatively, you can use a Wavefront sidecar or an internal proxy in your environment to forward metrics data to the Wavefront API host:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  wavefront:
@@ -699,7 +699,7 @@ NOTE: If you publish metrics to a Wavefront proxy (as described in https://docs.
 
 You can also change the interval at which metrics are sent to Wavefront:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  wavefront:
@@ -954,7 +954,7 @@ Metrics are also tagged by the name of the `EntityManagerFactory`, which is deri
 To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
 You can enable that on the auto-configured `EntityManagerFactory`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  jpa:
@@ -1059,7 +1059,7 @@ include-code::MyCommandTagsProviderConfiguration[]
 
 To disable the auto-configured command metrics, set the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  metrics:
@@ -1098,7 +1098,7 @@ include-code::MyConnectionPoolTagsProviderConfiguration[]
 
 To disable the auto-configured connection pool metrics, set the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  metrics:
@@ -1172,7 +1172,7 @@ These use the global registry that is not Spring-managed.
 Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
 Commons tags are applied to all meters and can be configured, as the following example shows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  metrics:
@@ -1195,7 +1195,7 @@ In addition to `MeterFilter` beans, you can apply a limited set of customization
 Per-meter customizations are applied, using Spring Boot's `PropertiesMeterFilter`, to any meter IDs that start with the given name.
 The following example filters out any meters that have an ID starting with `example.remote`.
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  metrics:

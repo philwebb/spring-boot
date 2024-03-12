@@ -46,7 +46,7 @@ include-code::MyBean[]
 By default, the instance tries to connect to a Redis server at `localhost:6379`.
 You can specify custom connection details using `spring.data.redis.*` properties, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -69,7 +69,7 @@ By default, a pooled connection factory is auto-configured if `commons-pool2` is
 
 The auto-configured `RedisConnectionFactory` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -80,7 +80,7 @@ The auto-configured `RedisConnectionFactory` can be configured to use SSL for co
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `RedisConnectionFactory` as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -118,7 +118,7 @@ Each will be called in order with the `MongoClientSettings.Builder` that is used
 
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -129,7 +129,7 @@ You can set the configprop:spring.data.mongodb.uri[] property to change the URL 
 Alternatively, you can specify connection details using discrete properties.
 For example, you might declare the following settings in your `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -145,7 +145,7 @@ For example, you might declare the following settings in your `application.prope
 
 The auto-configured `MongoClient` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -157,7 +157,7 @@ The auto-configured `MongoClient` can be configured to use SSL for communication
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `MongoClient` as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -236,7 +236,7 @@ include-code::MyBean[]
 You can configure various aspects of the driver using `spring.neo4j.*` properties.
 The following example shows how to configure the uri and credentials to use:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  neo4j:
@@ -305,7 +305,7 @@ Additionally, Spring Boot provides support for a reactive client from the `org.s
 By default, the clients will target `http://localhost:9200`.
 You can use `spring.elasticsearch.*` properties to further tune how the clients are configured, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  elasticsearch:
@@ -329,7 +329,7 @@ To take full control over the clients' configuration, define a `RestClientBuilde
 Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestClient` bean.
 You can further tune how `Sniffer` is configured, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  elasticsearch:
@@ -403,7 +403,7 @@ Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperat
 
 You can choose to disable the repositories support with the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
     spring:
       data:
@@ -430,7 +430,7 @@ You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession
 The `spring.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  cassandra:
@@ -441,7 +441,7 @@ Generally, you provide `keyspace-name` and `contact-points` as well the local da
 
 If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  cassandra:
@@ -455,7 +455,7 @@ If you need to configure the port, use `spring.cassandra.port`.
 
 The auto-configured `CqlSession` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  cassandra:
@@ -468,7 +468,7 @@ The auto-configured `CqlSession` can be configured to use SSL for communication 
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `CqlSession` as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  cassandra:
@@ -531,7 +531,7 @@ You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  couchbase:
@@ -543,7 +543,7 @@ Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master
 It is also possible to customize some of the `ClusterEnvironment` settings.
 For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support with a reference to a configured xref:features/ssl.adoc[SSL bundle]:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  couchbase:
@@ -573,7 +573,7 @@ For complete details of Spring Data Couchbase, see the {url-spring-data-couchbas
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
 This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  data:
@@ -614,7 +614,7 @@ There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the depend
 
 To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  ldap:
@@ -656,7 +656,7 @@ include-code::MyBean[]
 For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  ldap:
@@ -670,7 +670,7 @@ It is possible to define multiple base-dn values, however, since distinguished n
 
 In yaml files, you can use the yaml list notation. In properties files, you must include the index as part of the property name:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring.ldap.embedded.base-dn:
 	  - "dc=spring,dc=io"

@@ -33,7 +33,7 @@ To connect to a Pulsar cluster that requires authentication, you need to specify
 You can set the parameters as a map of parameter names to parameter values.
 The following example shows how to configure the `AuthenticationOAuth2` plugin.
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 spring:
   pulsar:

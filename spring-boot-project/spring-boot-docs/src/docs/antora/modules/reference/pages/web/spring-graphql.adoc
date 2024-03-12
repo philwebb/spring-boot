@@ -115,7 +115,7 @@ CORS is a critical part of the web config for GraphQL applications that are acce
 
 Spring Boot supports many configuration properties under the `spring.graphql.cors.*` namespace; here's a short configuration sample:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  graphql:

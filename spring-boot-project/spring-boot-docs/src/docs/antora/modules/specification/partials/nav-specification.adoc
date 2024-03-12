@@ -1,4 +1,4 @@
-* xref:specification:index.adoc[]
+* Specifications
 
 ** xref:specification:configuration-metadata/index.adoc[]
 *** xref:specification:configuration-metadata/format.adoc[]

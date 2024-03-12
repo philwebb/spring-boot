@@ -237,7 +237,7 @@ For example, you might commonly change the logging levels for _all_ Tomcat relat
 To help with this, Spring Boot allows you to define logging groups in your Spring `Environment`.
 For example, here is how you could define a "`tomcat`" group by adding it to your `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	logging:
 	  group:
@@ -246,7 +246,7 @@ For example, here is how you could define a "`tomcat`" group by adding it to you
 
 Once defined, you can change the level for all the loggers in the group with a single line:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	logging:
 	  level:
@@ -280,7 +280,7 @@ You can use the configprop:logging.register-shutdown-hook[] property to disable 
 Setting it to `false` will disable the registration.
 You can set the property in your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	logging:
 	  register-shutdown-hook: false

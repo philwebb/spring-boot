@@ -40,7 +40,7 @@ Similar to the servlet configuration, if you have more than one implementation, 
 Each store has specific additional settings.
 For instance, it is possible to customize the name of the table for the JDBC store, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  session:

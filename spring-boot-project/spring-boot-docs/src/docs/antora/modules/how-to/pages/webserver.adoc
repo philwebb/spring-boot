@@ -65,7 +65,7 @@ NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` cla
 If your classpath contains the necessary bits to start a web server, Spring Boot will automatically start it.
 To disable this behavior configure the `WebApplicationType` in your `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  main:
@@ -119,7 +119,7 @@ Contrary to a test, application code callbacks are processed early (before the v
 HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  compression:
@@ -150,7 +150,7 @@ You can configure this behavior by setting the configprop:server.compression.mim
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yaml`.
 The following example shows setting SSL properties using a Java KeyStore file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  port: 8443
@@ -183,7 +183,7 @@ openssl pkcs8 -topk8 -nocrypt -in <input file> -out <output file>
 
 The following example shows setting SSL properties using PEM-encoded certificate and private key files:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  port: 8443
@@ -195,7 +195,7 @@ The following example shows setting SSL properties using PEM-encoded certificate
 
 Alternatively, the SSL trust material can be configured in an xref:reference:features/ssl.adoc[SSL bundle] and applied to the web server as shown in this example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  port: 8443
@@ -370,7 +370,7 @@ Access logs can be configured for Tomcat, Undertow, and Jetty through their resp
 
 For instance, the following settings log access on Tomcat with a {url-tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  tomcat:
@@ -386,7 +386,7 @@ In the preceding example, the logs are available in `my-tomcat/logs` relative to
 
 Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  undertow:
@@ -405,7 +405,7 @@ You can customize this location by setting the configprop:server.undertow.access
 
 Finally, access logging for Jetty can also be configured as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  jetty:
@@ -448,7 +448,7 @@ In all other instances, it defaults to `NONE`.
 
 If you use Tomcat, you can additionally configure the names of the headers used to carry "`forwarded`" information, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  tomcat:
@@ -461,7 +461,7 @@ Tomcat is also configured with a regular expression that matches internal proxie
 See the xref:appendix:application-properties/index.adoc#application-properties.server.server.tomcat.remoteip.internal-proxies[configprop:server.tomcat.remoteip.internal-proxies[] entry in the appendix] for its default value.
 You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	server:
 	  tomcat:
@@ -491,7 +491,7 @@ Embedded Tomcat's MBean registry is disabled by default.
 This minimizes Tomcat's memory footprint.
 If you want to use Tomcat's MBeans, for example so that they can be used by Micrometer to expose metrics, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 server:
   tomcat:

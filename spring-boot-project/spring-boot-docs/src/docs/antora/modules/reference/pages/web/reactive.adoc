@@ -105,7 +105,7 @@ It uses the `ResourceWebHandler` from Spring WebFlux so that you can modify that
 By default, resources are mapped on `+/**+`, but you can tune that by setting the configprop:spring.webflux.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  webflux:

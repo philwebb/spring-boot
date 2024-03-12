@@ -76,7 +76,7 @@ For these reasons, lazy initialization is not enabled by default and it is recom
 Lazy initialization can be enabled programmatically using the `lazyInitialization` method on `SpringApplicationBuilder` or the `setLazyInitialization` method on `SpringApplication`.
 Alternatively, it can be enabled using the configprop:spring.main.lazy-initialization[] property as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  main:

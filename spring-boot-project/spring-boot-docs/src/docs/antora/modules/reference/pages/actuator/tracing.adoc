@@ -38,7 +38,7 @@ Now we have to add the following dependencies:
 
 Add the following application properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	management:
 	  tracing:
@@ -82,7 +82,7 @@ For example, if Micrometer Tracing has added an MDC `traceId` of `803B448A0489F8
 If you prefer to use a different format for your correlation ID, you can use the configprop:logging.pattern.correlation[] property to define one.
 For example, the following will provide a correlation ID for Logback in format previously used by Spring Cloud Sleuth:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	logging:
 	  pattern:

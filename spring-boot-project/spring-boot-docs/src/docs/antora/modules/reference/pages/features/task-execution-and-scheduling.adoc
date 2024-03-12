@@ -23,7 +23,7 @@ The auto-configured `ThreadPoolTaskExecutorBuilder` allows you to easily create 
 When a `ThreadPoolTaskExecutor` is auto-configured, the thread pool uses 8 core threads that can grow and shrink according to the load.
 Those default settings can be fine-tuned using the `spring.task.execution` namespace, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  task:
@@ -45,7 +45,7 @@ This `SimpleAsyncTaskScheduler` will ignore any pooling related properties.
 If virtual threads are not enabled, it will be a `ThreadPoolTaskScheduler` with sensible defaults.
 The `ThreadPoolTaskScheduler` uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configblocks,yaml]
 ----
 	spring:
 	  task:
