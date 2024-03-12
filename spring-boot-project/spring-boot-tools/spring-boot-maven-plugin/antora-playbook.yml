@@ -1,7 +1,7 @@
 antora:
   extensions:
-  - require: '@springio/antora-extensions/tabs-migration-extension'
-    unwrap_example_block: always
+  - require: '/Users/pwebb/projects/antora-xref-extension/packages/antora-xref-extension'
+    stub: ['appendix:.*', 'api:.*', 'reference:.*']
   - require: '/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension'
     version_file: gradle.properties
     locations:
