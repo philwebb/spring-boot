@@ -296,7 +296,7 @@ An import will only be imported once no matter how many times it is declared.
 The order an import is defined inside a single document within the properties/yaml file does not matter.
 For instance, the two examples below produce the same result:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	spring:
 	  config:
@@ -305,7 +305,7 @@ For instance, the two examples below produce the same result:
 	  property: "value"
 ----
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  property: "value"
@@ -460,7 +460,7 @@ Property placeholders can also specify a default value using a `:` to separate t
 
 The use of placeholders with and without defaults is shown in the following example:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  name: "MyApp"
@@ -553,7 +553,7 @@ The following activation properties are available:
 
 For example, the following specifies that the second document is only active when running on Kubernetes, and only when either the "`prod`" or "`staging`" profiles are active:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	myprop:
 	  "always-set"
@@ -660,7 +660,7 @@ You can also use the `YamlPropertySourceLoader` class if you want to load YAML a
 The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
 It can produce integers, longs, uuids, or strings, as shown in the following example:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  secret: "${random.value}"
@@ -988,7 +988,7 @@ include-code::list/MyProperties[]
 
 Consider the following configuration:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  list:
@@ -1011,7 +1011,7 @@ This configuration _does not_ add a second `MyPojo` instance to the list, and it
 When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
 Consider the following example:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  list:
@@ -1040,7 +1040,7 @@ include-code::map/MyProperties[]
 
 Consider the following configuration:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  map:

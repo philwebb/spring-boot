@@ -19,7 +19,7 @@ This is possible in both Maven and Gradle.
 You can automatically expand properties from the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  encoding: "@project.build.sourceEncoding@"
@@ -82,7 +82,7 @@ You can automatically expand properties from the Gradle project by configuring t
 
 You can then refer to your Gradle project's properties by using placeholders, as shown in the following example:
 
-[configprops,yaml]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  name: "${name}"

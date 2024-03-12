@@ -48,7 +48,7 @@ public class AntoraConventions {
 		Map<String, String> packages = new LinkedHashMap<>();
 		packages.put("@asciidoctor/tabs", "1.0.0-beta.6");
 		packages.put("@springio/antora-extensions", "1.8.2");
-		packages.put("@springio/asciidoctor-extensions", "1.0.0-alpha.9");
+		packages.put("@springio/asciidoctor-extensions", "1.0.0-alpha.10");
 		PACKAGES = Collections.unmodifiableMap(packages);
 	}
 

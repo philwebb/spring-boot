@@ -249,7 +249,7 @@ The `spring-devtools.properties` file can contain properties prefixed with `rest
 The `include` elements are items that should be pulled up into the "`restart`" classloader, and the `exclude` elements are items that should be pushed down into the "`base`" classloader.
 The value of the property is a regex pattern that is applied to the classpath, as shown in the following example:
 
-[configprops,yaml]
+[source,properties]
 ----
 	restart:
 	  exclude:
