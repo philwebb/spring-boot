@@ -7,6 +7,7 @@ The `httpexchanges` endpoint provides information about HTTP request-response ex
 
 [[httpexchanges.retrieving]]
 == Retrieving the HTTP Exchanges
+
 To retrieve the HTTP exchanges, make a `GET` request to `/actuator/httpexchanges`, as shown in the following curl-based example:
 
 include::partial$rest/actuator/httpexchanges/curl-request.adoc[]
@@ -19,6 +20,7 @@ include::partial$rest/actuator/httpexchanges/http-response.adoc[]
 
 [[httpexchanges.retrieving.response-structure]]
 === Response Structure
+
 The response contains details of the traced HTTP request-response exchanges.
 The following table describes the structure of the response:
 

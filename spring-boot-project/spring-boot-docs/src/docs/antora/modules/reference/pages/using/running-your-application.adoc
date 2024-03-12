@@ -12,6 +12,7 @@ If you choose to package your application as a war file, see your server and IDE
 
 [[using.running-your-application.from-an-ide]]
 == Running From an IDE
+
 You can run a Spring Boot application from your IDE as a Java application.
 However, you first need to import your project.
 Import steps vary depending on your IDE and build system.
@@ -29,6 +30,7 @@ Spring Tools users can use the `Relaunch` button rather than the `Run` button to
 
 [[using.running-your-application.as-a-packaged-application]]
 == Running as a Packaged Application
+
 If you use the Spring Boot Maven or Gradle plugins to create an executable jar, you can run your application using `java -jar`, as shown in the following example:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -49,6 +51,7 @@ Doing so lets you attach a debugger to your packaged application, as shown in th
 
 [[using.running-your-application.with-the-maven-plugin]]
 == Using the Maven Plugin
+
 The Spring Boot Maven plugin includes a `run` goal that can be used to quickly compile and run your application.
 Applications run in an exploded form, as they do in your IDE.
 The following example shows a typical Maven command to run a Spring Boot application:
@@ -69,6 +72,7 @@ You might also want to use the `MAVEN_OPTS` operating system environment variabl
 
 [[using.running-your-application.with-the-gradle-plugin]]
 == Using the Gradle Plugin
+
 The Spring Boot Gradle plugin also includes a `bootRun` task that can be used to run your application in an exploded form.
 The `bootRun` task is added whenever you apply the `org.springframework.boot` and `java` plugins and is shown in the following example:
 
@@ -88,6 +92,7 @@ You might also want to use the `JAVA_OPTS` operating system environment variable
 
 [[using.running-your-application.hot-swapping]]
 == Hot Swapping
+
 Since Spring Boot applications are plain Java applications, JVM hot-swapping should work out of the box.
 JVM hot swapping is somewhat limited with the bytecode that it can replace.
 For a more complete solution, https://www.jrebel.com/products/jrebel[JRebel] can be used.

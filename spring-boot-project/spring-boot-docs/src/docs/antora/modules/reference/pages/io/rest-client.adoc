@@ -9,6 +9,7 @@ If you prefer blocking APIs then you can use `RestClient` or `RestTemplate`.
 
 [[io.rest-client.webclient]]
 == WebClient
+
 If you have Spring WebFlux on your classpath we recommend that you use `WebClient` to call remote REST services.
 The `WebClient` interface provides a functional style API and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {url-spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
@@ -28,6 +29,7 @@ include-code::MyService[]
 
 [[io.rest-client.webclient.runtime]]
 === WebClient Runtime
+
 Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient` depending on the libraries available on the application classpath.
 In order of preference, the following clients are supported:
 
@@ -52,6 +54,7 @@ You can learn more about the {url-spring-framework-docs}/web/webflux-webclient/c
 
 [[io.rest-client.webclient.customization]]
 === WebClient Customization
+
 There are three main approaches to `WebClient` customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured `WebClient.Builder` and then call its methods as required.
@@ -67,6 +70,7 @@ In that case, no auto-configuration or `WebClientCustomizer` is applied.
 
 [[io.rest-client.webclient.ssl]]
 === WebClient SSL Support
+
 If you need custom SSL configuration on the `ClientHttpConnector` used by the `WebClient`, you can inject a `WebClientSsl` instance that can be used with the builder's `apply` method.
 
 The `WebClientSsl` interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
@@ -79,6 +83,7 @@ include-code::MyService[]
 
 [[io.rest-client.restclient]]
 == RestClient
+
 If you are not using Spring WebFlux or Project Reactor in your application we recommend that you use `RestClient` to call remote REST services.
 
 The `RestClient` interface provides a functional style blocking API.
@@ -95,6 +100,7 @@ include-code::MyService[]
 
 [[io.rest-client.restclient.customization]]
 === RestClient Customization
+
 There are three main approaches to `RestClient` customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured `RestClient.Builder` and then call its methods as required.
@@ -110,6 +116,7 @@ In that case, no auto-configuration or `RestClientCustomizer` is applied.
 
 [[io.rest-client.restclient.ssl]]
 === RestClient SSL Support
+
 If you need custom SSL configuration on the `ClientHttpRequestFactory` used by the `RestClient`, you can inject a `RestClientSsl` instance that can be used with the builder's `apply` method.
 
 The `RestClientSsl` interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
@@ -126,6 +133,7 @@ include-code::settings/MyService[]
 
 [[io.rest-client.resttemplate]]
 == RestTemplate
+
 Spring Framework's {url-spring-framework-javadoc}/org/springframework/web/client/RestTemplate.html[`RestTemplate`] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
 You might choose to use `RestTemplate` when you have existing code that you don't want to migrate to `RestClient`, or because you're already familiar with the `RestTemplate` API.
 
@@ -144,6 +152,7 @@ For example, to add BASIC authentication support, you can use `builder.basicAuth
 
 [[io.rest-client.resttemplate.customization]]
 === RestTemplate Customization
+
 There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured `RestTemplateBuilder` and then call its methods as required.
@@ -170,6 +179,7 @@ In addition to replacing the auto-configured builder, this also prevents any `Re
 
 [[io.rest-client.resttemplate.ssl]]
 === RestTemplate SSL Support
+
 If you need custom SSL configuration on the `RestTemplate`, you can apply an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to the `RestTemplateBuilder` as shown in this example:
 
 include-code::MyService[]
@@ -178,6 +188,7 @@ include-code::MyService[]
 
 [[io.rest-client.clienthttprequestfactory]]
 == HTTP Client Detection for RestClient and RestTemplate
+
 Spring Boot will auto-detect which HTTP client to use with `RestClient` and `RestTemplate` depending on the libraries available on the application classpath.
 In order of preference, the following clients are supported:
 

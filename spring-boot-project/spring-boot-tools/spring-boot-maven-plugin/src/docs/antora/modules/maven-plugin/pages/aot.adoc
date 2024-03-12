@@ -12,6 +12,7 @@ The Spring Boot Maven plugin offers goals that can be used to perform AOT proces
 
 [[aot.processing-applications]]
 == Processing Applications
+
 To configure your application to use this feature, add an execution for the `process-aot` goal, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -28,6 +29,7 @@ The `process-aot` goal shares a number of properties with the xref:run.adoc[run 
 
 [[aot.processing-applications.using-the-native-profile]]
 === Using the Native Profile
+
 If you use `spring-boot-starter-parent` as the `parent` of your project, a `native` profile can be used to streamline the steps required to build a native image.
 
 The `native` profile configures the following:
@@ -80,6 +82,7 @@ include::partial$goals/process-aot.adoc[leveloffset=+1]
 
 [[aot.processint-tests]]
 == Processing Tests
+
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
 Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitializer` code.
 

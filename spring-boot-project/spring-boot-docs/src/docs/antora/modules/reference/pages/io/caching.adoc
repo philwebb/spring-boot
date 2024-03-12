@@ -33,6 +33,7 @@ TIP: It is also possible to transparently {url-spring-framework-docs}/integratio
 
 [[io.caching.provider]]
 == Supported Cache Providers
+
 The cache abstraction does not provide an actual store and relies on abstraction materialized by the `org.springframework.cache.Cache` and `org.springframework.cache.CacheManager` interfaces.
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {url-spring-framework-javadoc}/org/springframework/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
@@ -69,6 +70,7 @@ You can have as many customizers as you want, and you can also order them by usi
 
 [[io.caching.provider.generic]]
 === Generic
+
 Generic caching is used if the context defines _at least_ one `org.springframework.cache.Cache` bean.
 A `CacheManager` wrapping all beans of that type is created.
 
@@ -76,6 +78,7 @@ A `CacheManager` wrapping all beans of that type is created.
 
 [[io.caching.provider.jcache]]
 === JCache (JSR-107)
+
 https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` "`Starter`".
 Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
 Any other compliant library can be added as well.
@@ -145,6 +148,7 @@ For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be 
 
 [[io.caching.provider.couchbase]]
 === Couchbase
+
 If Spring Data Couchbase is available and Couchbase is xref:data/nosql.adoc#data.nosql.couchbase[configured], a `CouchbaseCacheManager` is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
@@ -167,6 +171,7 @@ include-code::MyCouchbaseCacheManagerConfiguration[]
 
 [[io.caching.provider.redis]]
 === Redis
+
 If https://redis.io/[Redis] is available and configured, a `RedisCacheManager` is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.redis.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with a _time to live_ of 10 minutes:
@@ -195,6 +200,7 @@ include-code::MyRedisCacheManagerConfiguration[]
 
 [[io.caching.provider.caffeine]]
 === Caffeine
+
 https://github.com/ben-manes/caffeine[Caffeine] is a Java 8 rewrite of Guava's cache that supersedes support for Guava.
 If Caffeine is present, a `CaffeineCacheManager` (provided by the `spring-boot-starter-cache` "`Starter`") is auto-configured.
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property and can be customized by one of the following (in the indicated order):
@@ -222,6 +228,7 @@ The auto-configuration ignores any other generic type.
 
 [[io.caching.provider.cache2k]]
 === Cache2k
+
 https://cache2k.org/[Cache2k] is an in-memory cache.
 If the Cache2k spring integration is present, a `SpringCache2kCacheManager` is auto-configured.
 
@@ -235,6 +242,7 @@ include-code::MyCache2kDefaultsConfiguration[]
 
 [[io.caching.provider.simple]]
 === Simple
+
 If none of the other providers can be found, a simple implementation using a `ConcurrentHashMap` as the cache store is configured.
 This is the default if no caching library is present in your application.
 By default, caches are created as needed, but you can restrict the list of available caches by setting the `cache-names` property.
@@ -254,6 +262,7 @@ This is similar to the way the "real" cache providers behave if you use an undec
 
 [[io.caching.provider.none]]
 === None
+
 When `@EnableCaching` is present in your configuration, a suitable cache configuration is expected as well.
 If you have a custom `CacheManager`, consider defining it in a separate `@Configuration` class so that you can override it if necessary.
 None uses a no-op implementation that is useful in tests, and slice tests use that by default via `@AutoConfigureCache`.

@@ -71,6 +71,7 @@ include::partial$goals/test-run.adoc[leveloffset=+1]
 
 [[run.examples.debug]]
 === Debug the Application
+
 The `run` and `test-run` goals run your application in a forked process.
 If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
 The following configuration suspend the process until a debugger has joined on port 5005:
@@ -91,6 +92,7 @@ These arguments can be specified on the command line as well:
 
 [[run.examples.system-properties]]
 === Using System Properties
+
 System properties can be specified using the `systemPropertyVariables` attribute.
 The following example sets `property1` to `test` and `property2` to 42:
 
@@ -117,6 +119,7 @@ In the following example, the value for `property1` is `overridden`:
 
 [[run.examples.environment-variables]]
 === Using Environment Variables
+
 Environment variables can be specified using the `environmentVariables` attribute.
 The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 
@@ -137,6 +140,7 @@ Environment variables defined this way take precedence over existing values.
 
 [[run.examples.using-application-arguments]]
 === Using Application Arguments
+
 Application arguments can be specified using the `arguments` attribute.
 The following example sets two arguments: `property1` and `property2=42`:
 
@@ -158,6 +162,7 @@ In the following example, two arguments are available: `property1` and `property
 
 [[run.examples.specify-active-profiles]]
 === Specify Active Profiles
+
 The active profiles to use for a particular application can be specified using the `profiles` argument.
 
 The following configuration enables the `local` and `dev` profiles:

@@ -18,6 +18,7 @@ TIP: If you just want to get started and experiment with GraalVM you can skip ah
 
 [[native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments]]
 == Key Differences with JVM Deployments
+
 The fact that GraalVM Native Images are produced ahead-of-time means that there are some key differences between native and JVM based applications.
 The main differences are:
 
@@ -37,6 +38,7 @@ TIP: The {url-graal-docs-native-image}/metadata/Compatibility/[Native Image Comp
 
 [[native-image.introducing-graalvm-native-images.understanding-aot-processing]]
 == Understanding Spring Ahead-of-Time Processing
+
 Typical Spring Boot applications are quite dynamic and configuration is performed at runtime.
 In fact, the concept of Spring Boot auto-configuration depends heavily on reacting to the state of the runtime in order to configure things correctly.
 
@@ -65,6 +67,7 @@ A Spring AOT processed application will typically generate:
 
 [[native-image.introducing-graalvm-native-images.understanding-aot-processing.source-code-generation]]
 === Source Code Generation
+
 Spring applications are composed of Spring Beans.
 Internally, Spring Framework uses two distinct concepts to manage beans.
 There are bean instances, which are the actual instances that have been created and can be injected into other beans.
@@ -111,6 +114,7 @@ Generated source files can be found in `target/spring-aot/main/sources` when usi
 
 [[native-image.introducing-graalvm-native-images.understanding-aot-processing.hint-file-generation]]
 === Hint File Generation
+
 In addition to generating source files, the Spring AOT engine will also generate hint files that are used by GraalVM.
 Hint files contain JSON data that describes how GraalVM should deal with things that it can't understand by directly inspecting the code.
 
@@ -126,6 +130,7 @@ TIP: Generated hint files can be found in `target/spring-aot/main/resources` whe
 
 [[native-image.introducing-graalvm-native-images.understanding-aot-processing.proxy-class-generation]]
 === Proxy Class Generation
+
 Spring sometimes needs to generate proxy classes to enhance the code you've written with additional features.
 To do this, it uses the cglib library which directly generates bytecode.
 

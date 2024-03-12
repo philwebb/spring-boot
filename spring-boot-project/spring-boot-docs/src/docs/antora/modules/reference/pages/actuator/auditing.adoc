@@ -13,6 +13,7 @@ For production environments, consider creating your own alternative `AuditEventR
 
 [[actuator.auditing.custom]]
 == Custom Auditing
+
 To customize published security events, you can provide your own implementations of `AbstractAuthenticationAuditListener` and `AbstractAuthorizationAuditListener`.
 
 You can also use the audit services for your own business events.

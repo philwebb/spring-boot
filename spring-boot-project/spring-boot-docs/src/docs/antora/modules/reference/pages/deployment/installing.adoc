@@ -7,6 +7,7 @@ In addition to running Spring Boot applications by using `java -jar` directly, i
 
 [[deployment.installing.system-d]]
 == Installation as a systemd Service
+
 `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 Spring Boot applications can be launched by using `systemd` '`service`' scripts.
 
@@ -53,6 +54,7 @@ Run `man systemctl` for more details.
 
 [[deployment.installing.init-d]]
 == Installation as an init.d Service (System V)
+
 To use your application as `init.d` service, configure its build to produce a xref:deployment/installing.adoc[fully executable jar].
 
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
@@ -125,6 +127,7 @@ For example, on Debian, you could use the following command:
 
 [[deployment.installing.init-d.securing]]
 === Securing an init.d Service
+
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
@@ -176,6 +179,7 @@ Use `chmod` so that the file can only be read by the owner and use `chown` to ma
 
 [[deployment.installing.init-d.script-customization]]
 === Customizing the Startup Script
+
 The default embedded startup script written by the Maven or Gradle plugin can be customized in a number of ways.
 For most people, using the default script along with a few customizations is usually enough.
 If you find you cannot customize something that you need to, use the `embeddedLaunchScript` option to write your own file entirely.
@@ -184,6 +188,7 @@ If you find you cannot customize something that you need to, use the `embeddedLa
 
 [[deployment.installing.init-d.script-customization.when-written]]
 ==== Customizing the Start Script When It Is Written
+
 It often makes sense to customize elements of the start script as it is written into the jar file.
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.
@@ -292,6 +297,7 @@ The following property substitutions are supported with the default script:
 
 [[deployment.installing.init-d.script-customization.when-running]]
 ==== Customizing a Script When It Runs
+
 For items of the script that need to be customized _after_ the jar has been written, you can use environment variables or a xref:deployment/installing.adoc#deployment.installing.init-d.script-customization.when-running.conf-file[config file].
 
 The following environment properties are supported with the default script:
@@ -357,6 +363,7 @@ See the https://www.freedesktop.org/software/systemd/man/systemd.service.html[se
 
 [[deployment.installing.init-d.script-customization.when-running.conf-file]]
 ===== Using a Conf File
+
 With the exception of `JARFILE` and `APP_NAME`, the settings listed in the preceding section can be configured by using a `.conf` file.
 The file is expected to be next to the jar file and have the same name but suffixed with `.conf` rather than `.jar`.
 For example, a jar named `/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`, as shown in the following example:
@@ -376,6 +383,7 @@ To learn about securing this file appropriately, see xref:deployment/installing.
 
 [[deployment.installing.windows-services]]
 == Microsoft Windows Services
+
 A Spring Boot application can be started as a Windows service by using https://github.com/kohsuke/winsw[`winsw`].
 
 A (https://github.com/snicoll/spring-boot-daemon[separately maintained sample]) describes step-by-step how you can create a Windows service for your Spring Boot application.

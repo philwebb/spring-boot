@@ -5,6 +5,7 @@
 
 [[deployment.efficient.unpacking]]
 == Unpacking the Executable JAR
+
 If you are running your application from a container, you can use an executable jar, but it is also often an advantage to explode it and run it in a different way.
 Certain PaaS implementations may also choose to unpack archives before they run.
 For example, Cloud Foundry operates this way.
@@ -34,6 +35,7 @@ The jar contains a `classpath.idx` file which is used by the `JarLauncher` when 
 
 [[deployment.efficient.aot]]
 == Using Ahead-of-time Processing With the JVM
+
 It's beneficial for the startup time to run your application using the AOT generated initialization code.
 First, you need to ensure that the jar you are building includes AOT generated code.
 
@@ -69,6 +71,7 @@ To learn more about ahead-of-time processing, please see the xref:native-image/i
 
 [[deployment.efficient.checkpoint-restore]]
 == Checkpoint and Restore With the JVM
+
 https://wiki.openjdk.org/display/crac/Main[Coordinated Restore at Checkpoint] (CRaC) is an OpenJDK project that defines a new Java API to allow you to checkpoint and restore an application on the HotSpot JVM.
 It is based on https://github.com/checkpoint-restore/criu[CRIU], a project that implements checkpoint/restore functionality on Linux.
 

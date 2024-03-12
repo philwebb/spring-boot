@@ -19,6 +19,7 @@ To take full control over endpoint registration in the JMX domain, consider regi
 
 [[actuator.jmx.custom-mbean-names]]
 == Customizing MBean Names
+
 The name of the MBean is usually generated from the `id` of the endpoint.
 For example, the `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
@@ -43,6 +44,7 @@ The following settings show an example of doing so in `application.properties`:
 
 [[actuator.jmx.disable-jmx-endpoints]]
 == Disabling JMX Endpoints
+
 If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as the following example shows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]

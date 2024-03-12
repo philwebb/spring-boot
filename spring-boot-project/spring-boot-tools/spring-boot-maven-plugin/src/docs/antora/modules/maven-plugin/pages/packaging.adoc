@@ -42,6 +42,7 @@ The `layout` property defaults to a value determined by the archive type (`jar` 
 
 [[packaging.layers]]
 == Layered Jar or War
+
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
 Similarly, an executable war contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
 For cases where a docker image needs to be built from the contents of a jar or war, it's useful to be able to separate these directories further so that they can be written into distinct layers.
@@ -74,6 +75,7 @@ include::example$packaging/disable-layers-pom.xml[tags=disable-layers]
 
 [[packaging.layers.configuration]]
 === Custom Layers Configuration
+
 Depending on your application, you may want to tune how layers are created and add new ones.
 This can be done using a separate configuration file that should be registered as shown below:
 
@@ -131,6 +133,7 @@ include::partial$goals/repackage.adoc[leveloffset=+1]
 
 [[packaging.examples.custom-classifier]]
 === Custom Classifier
+
 By default, the `repackage` goal replaces the original artifact with the repackaged one.
 That is a sane behavior for modules that represent an application but if your module is used as a dependency of another module, you need to provide a classifier for the repackaged one.
 The reason for that is that application classes are packaged in `BOOT-INF/classes` so that the dependent module cannot load a repackaged jar's classes.
@@ -173,6 +176,7 @@ include::example$packaging/jar-plugin-first-pom.xml[tags=jar-plugin-first]
 
 [[packaging.examples.custom-name]]
 === Custom Name
+
 If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, use the standard `finalName`, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -186,6 +190,7 @@ This configuration will generate the repackaged artifact in `target/my-app.jar`.
 
 [[packaging.examples.local-artifact]]
 === Local Repackaged Artifact
+
 By default, the `repackage` goal replaces the original artifact with the executable one.
 If you need to only deploy the original jar and yet be able to run your app with the regular file name, configure the plugin as follows:
 
@@ -201,6 +206,7 @@ Only the original one will be installed/deployed.
 
 [[packaging.examples.custom-layout]]
 === Custom Layout
+
 Spring Boot repackages the jar file for this project using a custom layout factory defined in the additional jar file, provided as a dependency to the build plugin:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -217,6 +223,7 @@ Layout factories are always ignored if an explicit <<packaging.repackage-goal.pa
 
 [[packaging.examples.exclude-dependency]]
 === Dependency Exclusion
+
 By default, both the `repackage` and the `run` goals will include any `provided` dependencies that are defined in the project.
 A Spring Boot project should consider `provided` dependencies as "container" dependencies that are required to run the application.
 Generally speaking, Spring Boot projects are not used as dependencies and are therefore unlikely to have any `optional` dependencies.
@@ -248,6 +255,7 @@ include::example$packaging/exclude-artifact-group-pom.xml[tags=exclude-artifact-
 
 [[packaging.examples.layered-archive-tools]]
 === Layered Archive Tools
+
 When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
@@ -261,6 +269,7 @@ include::example$packaging/exclude-dependency-pom.xml[tags=exclude-dependency]
 
 [[packaging.examples.custom-layers-configuration]]
 === Custom Layers Configuration
+
 The default setup splits dependencies into snapshot and non-snapshot, however, you may have more complex rules.
 For example, you may want to isolate company-specific dependencies of your project in a dedicated layer.
 The following `layers.xml` configuration shown one such setup:

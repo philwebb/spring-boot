@@ -13,6 +13,7 @@ The task is automatically created when the `java` or `war` plugin is applied and
 
 [[build-image.docker-daemon]]
 == Docker Daemon
+
 The `bootBuildImage` task requires access to a Docker daemon.
 The task will inspect local Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[configuration files] to determine the current https://docs.docker.com/engine/context/working-with-contexts/[context] and use the context connection information to communicate with a Docker daemon.
 If the current context can not be determined or the context does not have connection information, then the task will use a default local connection.
@@ -68,6 +69,7 @@ For more details, see also xref:packaging-oci-image.adoc#build-image.examples.do
 
 [[build-image.docker-registry]]
 == Docker Registry
+
 If the Docker images specified by the `builder` or `runImage` properties are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.builderRegistry` properties.
 
 If the generated Docker image is to be published to a Docker image registry, the authentication credentials can be provided using `docker.publishRegistry` properties.
@@ -102,6 +104,7 @@ For more details, see also xref:packaging-oci-image.adoc#build-image.examples.do
 
 [[build-image.customization]]
 == Image Customizations
+
 The plugin invokes a {url-buildpacks-docs}/concepts/components/builder/[builder] to orchestrate the generation of an image.
 The builder includes multiple {url-buildpacks-docs}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
@@ -240,6 +243,7 @@ You can override this behaviour as shown in the xref:packaging-oci-image.adoc#bu
 
 [[build-image.customization.tags]]
 === Tags format
+
 The values provided to the `tags` option should be *full* image references.
 The accepted format is `[domainHost:port/][path/]name[:tag][@digest]`.
 
@@ -262,6 +266,7 @@ Some examples:
 
 [[build-image.examples.custom-image-builder]]
 === Custom Image Builder and Run Image
+
 If you need to customize the builder used to create the image or the run image used to launch the built image, configure the task as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -289,6 +294,7 @@ The builder and run image can be specified on the command line as well, as shown
 
 [[build-image.examples.builder-configuration]]
 === Builder Configuration
+
 If the builder exposes configuration options, those can be set using the `environment` property.
 
 The following is an example of {url-paketo-docs-java-buildpack}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
@@ -324,6 +330,7 @@ include::example$packaging/boot-build-image-env-proxy.gradle.kts[tags=env]
 
 [[build-image.examples.runtime-jvm-configuration]]
 === Runtime JVM Configuration
+
 Paketo Java buildpacks {url-paketo-docs-java-buildpack}/#runtime-jvm-configuration[configure the JVM runtime environment] by setting the `JAVA_TOOL_OPTIONS` environment variable.
 The buildpack-provided `JAVA_TOOL_OPTIONS` value can be modified to customize JVM runtime behavior when the application image is launched in a container.
 
@@ -345,6 +352,7 @@ include::example$packaging/boot-build-image-env-runtime.gradle.kts[tags=env-runt
 
 [[build-image.examples.custom-image-name]]
 === Custom Image Name
+
 By default, the image name is inferred from the `name` and the `version` of the project, something like `docker.io/library/${project.name}:${project.version}`.
 You can take control over the name by setting task properties, as shown in the following example:
 
@@ -374,6 +382,7 @@ The image name can be specified on the command line as well, as shown in this ex
 
 [[build-image.examples.buildpacks]]
 === Buildpacks
+
 By default, the builder will use buildpacks included in the builder image and apply them in a pre-defined order.
 An alternative set of buildpacks can be provided to apply buildpacks that are not included in the builder, or to change the order of included buildpacks.
 When one or more buildpacks are provided, only the specified buildpacks will be applied.
@@ -424,6 +433,7 @@ An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/pack
 
 [[build-image.examples.publish]]
 === Image Publishing
+
 The generated image can be published to a Docker registry by enabling a `publish` option.
 
 If the Docker registry requires authentication, the credentials can be configured using `docker.publishRegistry` properties.
@@ -455,6 +465,7 @@ The publish option can be specified on the command line as well, as shown in thi
 
 [[build-image.examples.caches]]
 === Builder Cache and Workspace Configuration
+
 The CNB builder caches layers that are used when building and launching an image.
 By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
 If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
@@ -499,6 +510,7 @@ include::example$packaging/boot-build-image-bind-caches.gradle.kts[tags=caches]
 
 [[build-image.examples.docker.minikube]]
 ==== Docker Configuration for minikube
+
 The plugin can communicate with the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube] instead of the default local connection.
 
 On Linux and macOS, environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
@@ -521,6 +533,7 @@ include::example$packaging/boot-build-image-docker-host.gradle.kts[tags=docker-h
 
 [[build-image.examples.docker.podman]]
 ==== Docker Configuration for podman
+
 The plugin can communicate with a https://podman.io/[podman container engine].
 
 The plugin can be configured to use podman local connection by providing connection details similar to those shown in the following example:
@@ -543,6 +556,7 @@ TIP: With the `podman` CLI installed, the command `podman info --format='{{.Host
 
 [[build-image.examples.docker.colima]]
 ==== Docker Configuration for Colima
+
 The plugin can communicate with the Docker daemon provided by https://github.com/abiosoft/colima[Colima].
 The `DOCKER_HOST` environment variable can be set by using the command `export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}').`
 
@@ -564,6 +578,7 @@ include::example$packaging/boot-build-image-docker-host-colima.gradle.kts[tags=d
 
 [[build-image.examples.docker.auth]]
 ==== Docker Configuration for Authentication
+
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` properties as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]

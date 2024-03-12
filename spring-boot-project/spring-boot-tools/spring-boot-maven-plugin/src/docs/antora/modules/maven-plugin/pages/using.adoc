@@ -39,6 +39,7 @@ and then configure the source and the target options instead:
 
 [[using.parent-pom]]
 == Inheriting the Starter Parent POM
+
 To configure your project to inherit from the `spring-boot-starter-parent`, set the `parent` as follows:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -68,6 +69,7 @@ Browse the xref:appendix:dependency-versions/properties.adoc[Dependency Versions
 
 [[using.import]]
 == Using Spring Boot without the Parent POM
+
 There may be reasons for you not to inherit from the `spring-boot-starter-parent` POM.
 You may have your own corporate standard parent that you need to use or you may prefer to explicitly declare all your Maven configuration.
 
@@ -91,6 +93,7 @@ include::example$using/no-starter-parent-override-dependencies-pom.xml[tags=no-s
 
 [[using.overriding-command-line]]
 == Overriding settings on the command-line
+
 The plugin offers a number of user properties, starting with `spring-boot`, to let you customize the configuration from the command-line.
 
 For instance, you could tune the profiles to enable when running the application as follows:

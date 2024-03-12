@@ -7,6 +7,7 @@ The plugin can create executable archives (jar files and war files) that contain
 
 [[packaging-executable.jars]]
 == Packaging Executable Jars
+
 Executable jars can be built using the `bootJar` task.
 The task is automatically created when the `java` plugin is applied and is an instance of xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`].
 The `assemble` task is automatically configured to depend upon the `bootJar` task so running `assemble` (or `build`) will also run the `bootJar` task.
@@ -15,6 +16,7 @@ The `assemble` task is automatically configured to depend upon the `bootJar` tas
 
 [[packaging-executable.wars]]
 == Packaging Executable Wars
+
 Executable wars can be built using the `bootWar` task.
 The task is automatically created when the `war` plugin is applied and is an instance of {apiref-gradle-plugin-boot-war}[`BootWar`].
 The `assemble` task is automatically configured to depend upon the `bootWar` task so running `assemble` (or `build`) will also run the `bootWar` task.
@@ -23,6 +25,7 @@ The `assemble` task is automatically configured to depend upon the `bootWar` tas
 
 [[packaging-executable.wars.deployable]]
 === Packaging Executable and Deployable Wars
+
 A war file can be packaged such that it can be executed using `java -jar` and deployed to an external container.
 To do so, the embedded servlet container dependencies should be added to the `providedRuntime` configuration, for example:
 
@@ -46,6 +49,7 @@ NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as,
 
 [[packaging-executable.and-plain-archives]]
 == Packaging Executable and Plain Archives
+
 By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are configured to use `plain` as the convention for their archive classifier.
 This ensures that `bootJar` and `jar` or `bootWar` and `war` have different output locations, allowing both the executable archive and the plain archive to be built at the same time.
 
@@ -84,6 +88,7 @@ See https://github.com/spring-projects/spring-boot/issues/33238[#33238] for deta
 
 [[packaging-executable.configuring]]
 == Configuring Executable Archive Packaging
+
 The xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`] and {apiref-gradle-plugin-boot-war}[`BootWar`] tasks are subclasses of Gradle's `Jar` and `War` tasks respectively.
 As a result, all of the standard configuration options that are available when packaging a jar or war are also available when packaging an executable jar or war.
 A number of configuration options that are specific to executable jars and wars are also provided.
@@ -92,6 +97,7 @@ A number of configuration options that are specific to executable jars and wars 
 
 [[packaging-executable.configuring.main-class]]
 === Configuring the Main Class
+
 By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in the main source set's output.
 
 The main class can also be configured explicitly using the task's `mainClass` property:
@@ -159,6 +165,7 @@ If another name is defined using `@JvmName` then that name should be used.
 
 [[packaging-executable.configuring.including-development-only-dependencies]]
 === Including Development-only Dependencies
+
 By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
 
 If you want to include dependencies declared in the `developmentOnly` configuration in your archive, configure the classpath of its task to include the configuration, as shown in the following example for the `bootWar` task:
@@ -179,6 +186,7 @@ include::example$packaging/boot-war-include-devtools.gradle.kts[tags=include-dev
 
 [[packaging-executable.configuring.unpacking]]
 === Configuring Libraries that Require Unpacking
+
 Most libraries can be used directly when nested in an executable archive, however certain libraries can have problems.
 For example, JRuby includes its own nested jar support which assumes that `jruby-complete.jar` is always directly available on the file system.
 
@@ -204,6 +212,7 @@ The closure is passed a `FileTreeElement` and should return a `boolean` indicati
 
 [[packaging-executable.configuring.launch-script]]
 === Making an Archive Fully Executable
+
 Spring Boot provides support for fully executable archives.
 An archive is made fully executable by prepending a shell script that knows how to launch the application.
 On Unix-like platforms, this launch script allows the archive to be run directly like any other executable or to be installed as a service.
@@ -260,6 +269,7 @@ include::example$packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-
 
 [[packaging-executable.configuring.properties-launcher]]
 === Using the PropertiesLauncher
+
 To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's manifest to set the `Main-Class` attribute:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -278,6 +288,7 @@ include::example$packaging/boot-war-properties-launcher.gradle.kts[tags=properti
 
 [[packaging-executable.configuring.layered-archives]]
 === Packaging Layered Jar or War
+
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
 Similarly, `bootWar` builds an archive that contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
@@ -329,6 +340,7 @@ include::example$packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layere
 
 [[packaging-executable.configuring.layered-archives.configuration]]
 ==== Custom Layers Configuration
+
 Depending on your application, you may want to tune how layers are created and add new ones.
 
 This can be done using configuration that describes how the jar or war can be separated into layers, and the order of those layers.

@@ -12,6 +12,7 @@ See the {url-spring-framework-docs}/rsocket.html#rsocket-spring[RSocket section]
 
 [[messaging.rsocket.strategies-auto-configuration]]
 == RSocket Strategies Auto-configuration
+
 Spring Boot auto-configures an `RSocketStrategies` bean that provides all the required infrastructure for encoding and decoding RSocket payloads.
 By default, the auto-configuration will try to configure the following (in order):
 
@@ -28,6 +29,7 @@ Note that their `@Order` is important, as it determines the order of codecs.
 
 [[messaging.rsocket.server-auto-configuration]]
 == RSocket server Auto-configuration
+
 Spring Boot provides RSocket server auto-configuration.
 The required dependencies are provided by the `spring-boot-starter-rsocket`.
 
@@ -62,6 +64,7 @@ Besides the dependency requirements, the only required configuration is to defin
 
 [[messaging.rsocket.messaging]]
 == Spring Messaging RSocket support
+
 Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 
 This means that Spring Boot will create a `RSocketMessageHandler` bean that will handle RSocket requests to your application.
@@ -70,6 +73,7 @@ This means that Spring Boot will create a `RSocketMessageHandler` bean that will
 
 [[messaging.rsocket.requester]]
 == Calling RSocket Services with RSocketRequester
+
 Once the `RSocket` channel is established between server and client, any party can send or receive requests to the other.
 
 As a server, you can get injected with an `RSocketRequester` instance on any handler method of an RSocket `@Controller`.

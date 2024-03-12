@@ -8,6 +8,7 @@ This section addresses those questions.
 
 [[howto.batch.specifying-a-data-source]]
 == Specifying a Batch Data Source
+
 By default, batch applications require a `DataSource` to store job details.
 Spring Batch expects a single `DataSource` by default.
 To have it use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
@@ -22,6 +23,7 @@ For more info about Spring Batch, see the {url-spring-batch-site}[Spring Batch p
 
 [[howto.batch.specifying-a-transaction-manager]]
 == Specifying a Batch Transaction Manager
+
 Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[Specifying a Batch Data Source], you can define a `PlatformTransactionManager` for use in the batch processing by marking it as `@BatchTransactionManager`.
 If you do so and want two transaction managers, remember to mark the other one as `@Primary`.
 
@@ -29,6 +31,7 @@ If you do so and want two transaction managers, remember to mark the other one a
 
 [[howto.batch.running-jobs-on-startup]]
 == Running Spring Batch Jobs on Startup
+
 Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch` to your application's classpath.
 
 If a single `Job` bean is found in the application context, it is executed on startup (see {code-spring-boot-autoconfigure-src}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
@@ -42,6 +45,7 @@ See {code-spring-boot-autoconfigure-src}/batch/BatchAutoConfiguration.java[Batch
 
 [[howto.batch.running-from-the-command-line]]
 == Running From the Command Line
+
 Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see xref:reference:features/external-config.adoc#features.external-config.command-line-args[accessing command line properties].
 This should not be used to pass arguments to batch jobs.
 To specify batch arguments on the command line, use the regular format (that is without `--`), as shown in the following example:
@@ -65,6 +69,7 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 
 [[howto.batch.restarting-a-failed-job]]
 == Restarting a stopped or failed Job
+
 To restart a failed `Job`, all parameters (identifying and non-identifying) must be re-specified on the command line.
 Non-identifying parameters are *not* copied from the previous execution.
 This allows them to be modified or removed.
@@ -75,6 +80,7 @@ NOTE: When you're using a custom `JobParametersIncrementer`, you have to gather 
 
 [[howto.batch.storing-job-repository]]
 == Storing the Job Repository
+
 Spring Batch requires a data store for the `Job` repository.
 If you use Spring Boot, you must use an actual database.
 Note that it can be an in-memory database, see {url-spring-batch-docs}/job.html#configuringJobRepository[Configuring a Job Repository].

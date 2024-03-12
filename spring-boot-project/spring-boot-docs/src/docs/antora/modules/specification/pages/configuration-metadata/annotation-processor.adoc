@@ -8,6 +8,7 @@ The jar includes a Java annotation processor which is invoked as your project is
 
 [[appendix.configuration-metadata.annotation-processor.configuring]]
 == Configuring the Annotation Processor
+
 To use the processor, include a dependency on `spring-boot-configuration-processor`.
 
 With Maven the dependency should be declared as optional, as shown in the following example:
@@ -71,6 +72,7 @@ If you are not using this attribute, and annotation processors are picked up by 
 
 [[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation]]
 == Automatic Metadata Generation
+
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
 
 If the class has a single parameterized constructor, one property is created per constructor parameter, unless the constructor is annotated with `@Autowired`.
@@ -118,6 +120,7 @@ NOTE: Only the `name` of the property is required to document additional metadat
 
 [[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.nested-properties]]
 === Nested Properties
+
 The annotation processor automatically considers inner classes as nested properties.
 Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
 Consider the updated example:
@@ -133,6 +136,7 @@ TIP: This has no effect on collections and maps, as those types are automaticall
 
 [[appendix.configuration-metadata.annotation-processor.adding-additional-metadata]]
 == Adding Additional Metadata
+
 Spring Boot's configuration file handling is quite flexible, and it is often the case that properties may exist that are not bound to a `@ConfigurationProperties` bean.
 You may also need to tune some attributes of an existing key.
 To support such cases and let you provide custom "hints", the annotation processor automatically merges items from `META-INF/additional-spring-configuration-metadata.json` into the main metadata file.

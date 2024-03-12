@@ -5,6 +5,7 @@
 
 [[integrating-with-actuator.build-info]]
 == Generating Build Information
+
 Spring Boot Actuator's `info` endpoint automatically publishes information about your build in the presence of a `META-INF/build-info.properties` file.
 A {apiref-gradle-plugin-boot-build-info}[`BuildInfo`] task is provided to generate this file.
 The easiest way to use the task is through the plugin's DSL:

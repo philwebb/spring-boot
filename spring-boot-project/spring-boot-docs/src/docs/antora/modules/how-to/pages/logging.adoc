@@ -37,6 +37,7 @@ By default, Spring Boot picks up the native configuration from its default locat
 
 [[howto.logging.logback]]
 == Configure Logback for Logging
+
 If you need to apply customizations to logback beyond those that can be achieved with `application.properties`, you will need to add a standard logback configuration file.
 You can add a `logback.xml` file to the root of your classpath for logback to find.
 You can also use `logback-spring.xml` if you want to use the xref:reference:features/logging.adoc#features.logging.logback-extensions[Spring Boot Logback extensions].
@@ -90,6 +91,7 @@ Any `logback-spring.groovy` files will not be detected.
 
 [[howto.logging.logback.file-only-output]]
 === Configure Logback for File-only Output
+
 If you want to disable console logging and write output only to a file, you need a custom `logback-spring.xml` that imports `file-appender.xml` but not `console-appender.xml`, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim"]
@@ -118,6 +120,7 @@ You also need to add `logging.file.name` to your `application.properties` or `ap
 
 [[howto.logging.log4j]]
 == Configure Log4j for Logging
+
 Spring Boot supports https://logging.apache.org/log4j/2.x/[Log4j 2] for logging configuration if it is on the classpath.
 If you use the starters for assembling dependencies, you have to exclude Logback and then include Log4j 2 instead.
 If you do not use the starters, you need to provide (at least) `spring-jcl` in addition to Log4j 2.
@@ -171,6 +174,7 @@ NOTE: To ensure that debug logging performed using `java.util.logging` is routed
 
 [[howto.logging.log4j.yaml-or-json-config]]
 === Use YAML or JSON to Configure Log4j 2
+
 In addition to its default XML configuration format, Log4j 2 also supports YAML and JSON configuration files.
 To configure Log4j 2 to use an alternative configuration file format, add the appropriate dependencies to the classpath and name your configuration files to match your chosen file format, as shown in the following example:
 
@@ -191,6 +195,7 @@ To configure Log4j 2 to use an alternative configuration file format, add the ap
 
 [[howto.logging.log4j.composite-configuration]]
 === Use Composite Configuration to Configure Log4j 2
+
 Log4j 2 has support for combining multiple configuration files into a single composite configuration.
 To use this support in Spring Boot, configure configprop:logging.log4j2.config.override[] with the locations of one or more secondary configuration files.
 The secondary configuration files will be merged with the primary configuration, whether the primary's source is Spring Boot's defaults, a standard location such as `log4j.xml`, or the location configured by the configprop:logging.config[] property.

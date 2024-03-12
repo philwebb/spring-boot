@@ -8,6 +8,7 @@ This section answers common questions about these plugins.
 
 [[howto.build.generate-info]]
 == Generate Build Information
+
 Both the Maven plugin and the Gradle plugin allow generating build information containing the coordinates, name, and version of the project.
 The plugins can also be configured to add additional properties through configuration.
 When such a file is present, Spring Boot auto-configures a `BuildProperties` bean.
@@ -51,6 +52,7 @@ TIP: See the xref:gradle-plugin:integrating-with-actuator.adoc[Spring Boot Gradl
 
 [[howto.build.generate-git-info]]
 == Generate Git Information
+
 Both Maven and Gradle allow generating a `git.properties` file containing information about the state of your `git` source code repository when the project was built.
 
 For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate a `git.properties` file.
@@ -87,6 +89,7 @@ Using this format lets the time be parsed into a `Date` and its format, when ser
 
 [[howto.build.customize-dependency-versions]]
 == Customize Dependency Versions
+
 The `spring-boot-dependencies` POM manages the versions of common dependencies.
 The Spring Boot plugins for Maven and Gradle allow these managed dependency versions to be customized using build properties.
 
@@ -101,6 +104,7 @@ To override dependency versions in Gradle, see xref:gradle-plugin:managing-depen
 
 [[howto.build.create-an-executable-jar-with-maven]]
 == Create an Executable JAR with Maven
+
 The `spring-boot-maven-plugin` can be used to create an executable "`fat`" JAR.
 If you use the `spring-boot-starter-parent` POM, you can declare the plugin and your jars are repackaged as follows:
 
@@ -145,6 +149,7 @@ See the xref:maven-plugin:packaging.adoc#packaging.repackage-goal[plugin documen
 
 [[howto.build.use-a-spring-boot-application-as-dependency]]
 == Use a Spring Boot Application as a Dependency
+
 Like a war file, a Spring Boot application is not intended to be used as a dependency.
 If your application contains classes that you want to share with other projects, the recommended approach is to move that code into a separate module.
 The separate module can then be depended upon by your application and other projects.
@@ -177,6 +182,7 @@ To configure a classifier of `exec` in Maven, you can use the following configur
 
 [[howto.build.extract-specific-libraries-when-an-executable-jar-runs]]
 == Extract Specific Libraries When an Executable Jar Runs
+
 Most nested libraries in an executable jar do not need to be unpacked in order to run.
 However, certain libraries can have problems.
 For example, JRuby includes its own nested jar support, which assumes that the `jruby-complete.jar` is always directly available as a file in its own right.
@@ -212,6 +218,7 @@ For example, to indicate that JRuby should be flagged for unpacking by using the
 
 [[howto.build.create-a-nonexecutable-jar]]
 == Create a Non-executable JAR with Exclusions
+
 Often, if you have an executable and a non-executable jar as two separate build products, the executable version has additional configuration files that are not needed in a library jar.
 For example, the `application.yaml` configuration file might be excluded from the non-executable JAR.
 
@@ -251,6 +258,7 @@ In Maven, the executable jar must be the main artifact and you can add a classif
 
 [[howto.build.remote-debug-maven]]
 == Remote Debug a Spring Boot Application Started with Maven
+
 To attach a remote debugger to a Spring Boot application that was started with Maven, you can use the `jvmArguments` property of the xref:maven-plugin:index.adoc[maven plugin].
 
 See xref:maven-plugin:run.adoc#run.examples.debug[this example] for more details.
@@ -259,6 +267,7 @@ See xref:maven-plugin:run.adoc#run.examples.debug[this example] for more details
 
 [[howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib]]
 == Build an Executable Archive From Ant without Using spring-boot-antlib
+
 To build with Ant, you need to grab dependencies, compile, and then create a jar or war archive.
 To make it executable, you can either use the `spring-boot-antlib` module or you can follow these instructions:
 

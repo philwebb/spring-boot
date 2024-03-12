@@ -15,6 +15,7 @@ The included `HELP.md` file will provide getting started hints.
 
 [[native-image.developing-your-first-application.sample-application]]
 == Sample Application
+
 We need an example application that we can use to create our native image.
 For our purposes, the simple "`Hello World!`" web application that's covered in the "`xref:tutorial:first-application/index.adoc[Developing Your First Spring Boot Application]`" section will suffice.
 
@@ -28,6 +29,7 @@ This application uses Spring MVC and embedded Tomcat, both of which have been te
 
 [[native-image.developing-your-first-application.buildpacks]]
 == Building a Native Image Using Buildpacks
+
 Spring Boot includes buildpack support for native images directly for both Maven and Gradle.
 This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon.
 The resulting image doesn't contain a JVM, instead the native image is compiled statically.
@@ -40,6 +42,7 @@ It has small footprint and reduced attack surface, but you can also use `paketob
 
 [[native-image.developing-your-first-application.buildpacks.system-requirements]]
 === System Requirements
+
 Docker should be installed. See https://docs.docker.com/installation/#installation[Get Docker] for more details.
 https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
 
@@ -54,6 +57,7 @@ On Microsoft Windows, make sure to enable the https://docs.docker.com/docker-for
 
 [[native-image.developing-your-first-application.buildpacks.maven]]
 === Using Maven
+
 To build a native image container using Maven you should ensure that your `pom.xml` file uses the `spring-boot-starter-parent` and the `org.graalvm.buildtools:native-maven-plugin`.
 You should have a `<parent>` section that looks like this:
 
@@ -92,6 +96,7 @@ To build the image, you can run the `spring-boot:build-image` goal with the `nat
 
 [[native-image.developing-your-first-application.buildpacks.gradle]]
 === Using Gradle
+
 The Spring Boot Gradle plugin automatically configures AOT tasks when the GraalVM Native Image plugin is applied.
 You should check that your Gradle build contains a `plugins` block that includes `org.graalvm.buildtools.native`.
 
@@ -107,6 +112,7 @@ You can run the task using:
 
 [[native-image.developing-your-first-application.buildpacks.running]]
 === Running the example
+
 Once you have run the appropriate build command, a Docker image should be available.
 You can start your application using `docker run`:
 
@@ -147,6 +153,7 @@ To gracefully exit the application, press `ctrl-c`.
 
 [[native-image.developing-your-first-application.native-build-tools]]
 == Building a Native Image using Native Build Tools
+
 If you want to generate a native executable directly without using Docker, you can use GraalVM Native Build Tools.
 Native Build Tools are plugins shipped by GraalVM for both Maven and Gradle.
 You can use them to perform a variety of GraalVM tasks, including generating a native image.
@@ -155,6 +162,7 @@ You can use them to perform a variety of GraalVM tasks, including generating a n
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites]]
 === Prerequisites
+
 To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
 You can either download it manually on the {url-download-liberica-nik}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
 
@@ -208,6 +216,7 @@ The native image executable can be found in the `target` directory.
 
 [[native-image.developing-your-first-application.native-build-tools.gradle]]
 === Using Gradle
+
 When the Native Build Tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger the Spring AOT engine.
 Task dependencies are automatically configured, so you can just run the standard `nativeCompile` task to generate a native image:
 
@@ -222,6 +231,7 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 
 [[native-image.developing-your-first-application.native-build-tools.running]]
 === Running the Example
+
 At this point, your application should work. You can now start the application by running it directly:
 
 [source,shell,indent=0,subs="verbatim",role="primary"]

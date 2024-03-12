@@ -8,6 +8,7 @@ The {url-spring-framework-site}[Spring Framework] provides extensive support for
 
 [[data.sql.datasource]]
 == Configure a DataSource
+
 Java's `javax.sql.DataSource` interface provides a standard method of working with database connections.
 Traditionally, a `DataSource` uses a `URL` along with some credentials to establish a database connection.
 
@@ -17,6 +18,7 @@ TIP: See xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasou
 
 [[data.sql.datasource.embedded]]
 === Embedded Database Support
+
 It is often convenient to develop applications by using an in-memory embedded database.
 Obviously, in-memory databases do not provide persistent storage.
 You need to populate your database when your application starts and be prepared to throw away data when your application ends.
@@ -62,12 +64,14 @@ Disabling the database's automatic shutdown lets Spring Boot control when the da
 
 [[data.sql.datasource.production]]
 === Connection to a Production Database
+
 Production database connections can also be auto-configured by using a pooling `DataSource`.
 
 
 
 [[data.sql.datasource.configuration]]
 === DataSource Configuration
+
 DataSource configuration is controlled by external configuration properties in `+spring.datasource.*+`.
 For example, you might declare the following section in `application.properties`:
 
@@ -112,6 +116,7 @@ This will set the pool to wait 10000ms before throwing an exception if no connec
 
 [[data.sql.datasource.connection-pool]]
 === Supported Connection Pools
+
 Spring Boot uses the following algorithm for choosing a specific implementation:
 
 . We prefer https://github.com/brettwooldridge/HikariCP[HikariCP] for its performance and concurrency.
@@ -142,6 +147,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 
 [[data.sql.datasource.jndi]]
 === Connection to a JNDI DataSource
+
 If you deploy your Spring Boot application to an Application Server, you might want to configure and manage your DataSource by using your Application Server's built-in features and access it by using JNDI.
 
 The configprop:spring.datasource.jndi-name[] property can be used as an alternative to the configprop:spring.datasource.url[], configprop:spring.datasource.username[], and configprop:spring.datasource.password[] properties to access the `DataSource` from a specific JNDI location.
@@ -158,6 +164,7 @@ For example, the following section in `application.properties` shows how you can
 
 [[data.sql.jdbc-template]]
 == Using JdbcTemplate
+
 Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can `@Autowire` them directly into your own beans, as shown in the following example:
 
 include-code::MyBean[]
@@ -179,6 +186,7 @@ If more than one `JdbcTemplate` is defined and no primary candidate exists, the 
 
 [[data.sql.jdbc-client]]
 == Using JdbcClient
+
 Spring's `JdbcClient` is auto-configured based on the presence of a `NamedParameterJdbcTemplate`.
 You can inject it directly in your own beans as well, as shown in the following example:
 
@@ -190,6 +198,7 @@ If you rely on auto-configuration to create the underlying `JdbcTemplate`, any c
 
 [[data.sql.jpa-and-spring-data]]
 == JPA and Spring Data JPA
+
 The Java Persistence API is a standard technology that lets you "`map`" objects to relational databases.
 The `spring-boot-starter-data-jpa` POM provides a quick way to get started.
 It provides the following key dependencies:
@@ -205,6 +214,7 @@ You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing D
 
 [[data.sql.jpa-and-spring-data.entity-classes]]
 === Entity Classes
+
 Traditionally, JPA "`Entity`" classes are specified in a `persistence.xml` file.
 With Spring Boot, this file is not necessary and "`Entity Scanning`" is used instead.
 By default the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
@@ -221,6 +231,7 @@ See the "`xref:how-to:data-access.adoc#howto.data-access.separate-entity-definit
 
 [[data.sql.jpa-and-spring-data.repositories]]
 === Spring Data JPA Repositories
+
 {url-spring-data-jpa-site}[Spring Data JPA] repositories are interfaces that you can define to access data.
 JPA queries are created automatically from your method names.
 For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
@@ -255,6 +266,7 @@ For complete details, see the {url-spring-data-jpa-docs}[Spring Data JPA referen
 
 [[data.sql.jpa-and-spring-data.envers-repositories]]
 === Spring Data Envers Repositories
+
 If {url-spring-data-envers-site}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
 
 To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as shown in the following example:
@@ -267,6 +279,7 @@ NOTE: For more details, check the {url-spring-data-jpa-docs}/envers.html[Spring 
 
 [[data.sql.jpa-and-spring-data.creating-and-dropping]]
 === Creating and Dropping JPA Databases
+
 By default, JPA databases are automatically created *only* if you use an embedded database (H2, HSQL, or Derby).
 You can explicitly configure JPA settings by using `+spring.jpa.*+` properties.
 For example, to create and drop tables you can add the following line to your `application.properties`:
@@ -300,6 +313,7 @@ There is also a `spring.jpa.generate-ddl` flag, but it is not used if Hibernate 
 
 [[data.sql.jpa-and-spring-data.open-entity-manager-in-view]]
 === Open EntityManager in View
+
 If you are running a web application, Spring Boot by default registers {url-spring-framework-javadoc}/org/springframework/orm/jpa/support/OpenEntityManagerInViewInterceptor.html[`OpenEntityManagerInViewInterceptor`] to apply the "`Open EntityManager in View`" pattern, to allow for lazy loading in web views.
 If you do not want this behavior, you should set `spring.jpa.open-in-view` to `false` in your `application.properties`.
 
@@ -307,6 +321,7 @@ If you do not want this behavior, you should set `spring.jpa.open-in-view` to `f
 
 [[data.sql.jdbc]]
 == Spring Data JDBC
+
 Spring Data includes repository support for JDBC and will automatically generate SQL for the methods on `CrudRepository`.
 For more advanced queries, a `@Query` annotation is provided.
 
@@ -320,6 +335,7 @@ TIP: For complete details of Spring Data JDBC, see the {url-spring-data-jdbc-doc
 
 [[data.sql.h2-web-console]]
 == Using H2's Web Console
+
 The https://www.h2database.com[H2 database] provides a https://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that Spring Boot can auto-configure for you.
 The console is auto-configured when the following conditions are met:
 
@@ -335,6 +351,7 @@ NOTE: The H2 console is only intended for use during development, so you should 
 
 [[data.sql.h2-web-console.custom-path]]
 === Changing the H2 Console's Path
+
 By default, the console is available at `/h2-console`.
 You can customize the console's path by using the configprop:spring.h2.console.path[] property.
 
@@ -342,6 +359,7 @@ You can customize the console's path by using the configprop:spring.h2.console.p
 
 [[data.sql.h2-web-console.spring-security]]
 === Accessing the H2 Console in a Secured Application
+
 H2 Console uses frames and, as it is intended for development only, does not implement CSRF protection measures.
 If your application uses Spring Security, you need to configure it to
 
@@ -363,6 +381,7 @@ TIP: `PathRequest.toH2Console()` returns the correct request matcher also when t
 
 [[data.sql.jooq]]
 == Using jOOQ
+
 jOOQ Object Oriented Querying (https://www.jooq.org/[jOOQ]) is a popular product from https://www.datageekery.com/[Data Geekery] which generates Java code from your database and lets you build type-safe SQL queries through its fluent API.
 Both the commercial and open source editions can be used with Spring Boot.
 
@@ -370,6 +389,7 @@ Both the commercial and open source editions can be used with Spring Boot.
 
 [[data.sql.jooq.codegen]]
 === Code Generation
+
 In order to use jOOQ type-safe queries, you need to generate Java classes from your database schema.
 You can follow the instructions in the {url-jooq-docs}/#jooq-in-7-steps-step3[jOOQ user manual].
 If you use the `jooq-codegen-maven` plugin and you also use the `spring-boot-starter-parent` "`parent POM`", you can safely omit the plugin's `<version>` tag.
@@ -407,6 +427,7 @@ The following listing shows an example:
 
 [[data.sql.jooq.dslcontext]]
 === Using DSLContext
+
 The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` interface.
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
 To use the `DSLContext`, you can inject it, as shown in the following example:
@@ -423,6 +444,7 @@ include-code::MyBean[tag=method]
 
 [[data.sql.jooq.sqldialect]]
 === jOOQ SQL Dialect
+
 Unless the configprop:spring.jooq.sql-dialect[] property has been configured, Spring Boot determines the SQL dialect to use for your datasource.
 If Spring Boot could not detect the dialect, it uses `DEFAULT`.
 
@@ -432,6 +454,7 @@ NOTE: Spring Boot can only auto-configure dialects supported by the open source 
 
 [[data.sql.jooq.customizing]]
 === Customizing jOOQ
+
 More advanced customizations can be achieved by defining your own `DefaultConfigurationCustomizer` bean that will be invoked prior to creating the `org.jooq.Configuration` `@Bean`.
 This takes precedence to anything that is applied by the auto-configuration.
 
@@ -441,6 +464,7 @@ You can also create your own `org.jooq.Configuration` `@Bean` if you want to tak
 
 [[data.sql.r2dbc]]
 == Using R2DBC
+
 The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.
 R2DBC's `io.r2dbc.spi.Connection` provides a standard method of working with non-blocking database connections.
 Connections are provided by using a `ConnectionFactory`, similar to a `DataSource` with jdbc.
@@ -480,6 +504,7 @@ If you want to retain the JDBC `DataSource` auto-configuration, and are comforta
 
 [[data.sql.r2dbc.embedded]]
 === Embedded Database Support
+
 Similarly to xref:data/sql.adoc#data.sql.datasource.embedded[the JDBC support], Spring Boot can automatically configure an embedded database for reactive usage.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use, as shown in the following example:
@@ -503,6 +528,7 @@ If you want to make sure that each context has a separate embedded database, you
 
 [[data.sql.r2dbc.using-database-client]]
 === Using DatabaseClient
+
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
 include-code::MyBean[]
@@ -511,6 +537,7 @@ include-code::MyBean[]
 
 [[data.sql.r2dbc.repositories]]
 === Spring Data R2DBC Repositories
+
 https://spring.io/projects/spring-data-r2dbc[Spring Data R2DBC] repositories are interfaces that you can define to access data.
 Queries are created automatically from your method names.
 For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.

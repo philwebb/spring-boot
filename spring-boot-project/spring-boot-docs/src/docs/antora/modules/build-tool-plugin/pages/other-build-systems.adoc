@@ -11,6 +11,7 @@ If you need to, you may use this library directly.
 
 [[build-tool-plugins.other-build-systems.repackaging-archives]]
 == Repackaging Archives
+
 To repackage an existing archive so that it becomes a self-contained executable archive, use `org.springframework.boot.loader.tools.Repackager`.
 The `Repackager` class takes a single constructor argument that refers to an existing jar or war archive.
 Use one of the two available `repackage()` methods to either replace the original file or write to a new destination.
@@ -20,6 +21,7 @@ Various settings can also be configured on the repackager before it is run.
 
 [[build-tool-plugins.other-build-systems.nested-libraries]]
 == Nested Libraries
+
 When repackaging an archive, you can include references to dependency files by using the `org.springframework.boot.loader.tools.Libraries` interface.
 We do not provide any concrete implementations of `Libraries` here as they are usually build-system-specific.
 
@@ -29,6 +31,7 @@ If your archive already includes libraries, you can use `Libraries.NONE`.
 
 [[build-tool-plugins.other-build-systems.finding-main-class]]
 == Finding a Main Class
+
 If you do not use `Repackager.setMainClass()` to specify a main class, the repackager uses https://asm.ow2.io/[ASM] to read class files and tries to find a suitable class with a `public static void main(String[] args)` method.
 An exception is thrown if more than one candidate is found.
 
@@ -36,6 +39,7 @@ An exception is thrown if more than one candidate is found.
 
 [[build-tool-plugins.other-build-systems.example-repackage-implementation]]
 == Example Repackage Implementation
+
 The following example shows a typical repackage implementation:
 
 include-code::MyBuildTool[]

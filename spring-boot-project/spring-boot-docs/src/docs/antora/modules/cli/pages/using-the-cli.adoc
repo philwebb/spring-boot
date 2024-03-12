@@ -98,6 +98,7 @@ The `version` command provides a quick way to check which version of Spring Boot
 
 [[cli.using-the-cli.initialize-new-project]]
 == Initialize a New Project
+
 The `init` command lets you create a new project by using https://start.spring.io without leaving the shell, as shown in the following example:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -150,6 +151,7 @@ For instance, the following command creates a Gradle project that uses Java 17 a
 
 [[cli.using-the-cli.embedded-shell]]
 == Using the Embedded Shell
+
 Spring Boot includes command-line completion scripts for the BASH and zsh shells.
 If you do not use either of these shells (perhaps you are a Windows user), you can use the `shell` command to launch an integrated shell, as shown in the following example:
 

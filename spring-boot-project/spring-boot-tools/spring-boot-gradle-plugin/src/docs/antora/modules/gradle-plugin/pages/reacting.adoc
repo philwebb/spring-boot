@@ -8,6 +8,7 @@ This section describes those changes.
 
 [[reacting-to-other-plugins.java]]
 == Reacting to the Java Plugin
+
 When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {apiref-gradle-plugin-boot-jar}[`BootJar`] task named `bootJar` that will create an executable, uber jar for the project.
@@ -28,6 +29,7 @@ When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a proje
 
 [[reacting-to-other-plugins.kotlin]]
 == Reacting to the Kotlin Plugin
+
 When {url-kotlin-docs-kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot plugin:
 
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version of the plugin.
@@ -38,6 +40,7 @@ When {url-kotlin-docs-kotlin-plugin}[Kotlin's Gradle plugin] is applied to a pro
 
 [[reacting-to-other-plugins.war]]
 == Reacting to the War Plugin
+
 When Gradle's {url-gradle-docs-war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {apiref-gradle-plugin-boot-war}[`BootWar`] task named `bootWar` that will create an executable, fat war for the project.
@@ -50,12 +53,14 @@ When Gradle's {url-gradle-docs-war-plugin}[`war` plugin] is applied to a project
 
 [[reacting-to-other-plugins.dependency-management]]
 == Reacting to the Dependency Management Plugin
+
 When the {url-dependency-management-plugin-site}[`io.spring.dependency-management` plugin] is applied to a project, the Spring Boot plugin will automatically import the `spring-boot-dependencies` bom.
 
 
 
 [[reacting-to-other-plugins.application]]
 == Reacting to the Application Plugin
+
 When Gradle's {url-gradle-docs-application-plugin}[`application` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts that launch the artifact in the `bootArchives` configuration using `java -jar`.
@@ -70,6 +75,7 @@ When Gradle's {url-gradle-docs-application-plugin}[`application` plugin] is appl
 
 [[reacting-to-other-plugins.nbt]]
 == Reacting to the GraalVM Native Image Plugin
+
 When the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
 
 . Applies the `org.springframework.boot.aot` plugin that:

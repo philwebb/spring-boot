@@ -10,6 +10,7 @@ To improve the user experience and further assist the user in configuring a give
 
 [[appendix.configuration-metadata.manual-hints.value-hint]]
 == Value Hint
+
 The `name` attribute of each hint refers to the `name` of a property.
 In the xref:configuration-metadata/format.adoc[initial example shown earlier], we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
 Each value may have a description as well.
@@ -48,6 +49,7 @@ If your IDE supports it, this is by far the most effective approach to auto-comp
 
 [[appendix.configuration-metadata.manual-hints.value-providers]]
 == Value Providers
+
 Providers are a powerful way to attach semantics to a property.
 In this section, we define the official providers that you can use for your own hints.
 However, your favorite IDE may implement some of these or none of them.
@@ -92,6 +94,7 @@ If no provider for a given property is supported, no special content assistance 
 
 [[appendix.configuration-metadata.manual-hints.value-providers.any]]
 === Any
+
 The special **any** provider value permits any additional values to be provided.
 Regular value validation based on the property type should be applied if this is supported.
 
@@ -127,6 +130,7 @@ Note that, in the preceding example, any other value is also allowed.
 
 [[appendix.configuration-metadata.manual-hints.value-providers.class-reference]]
 === Class Reference
+
 The **class-reference** provider auto-completes classes available in the project.
 This provider supports the following parameters:
 
@@ -171,6 +175,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 
 [[appendix.configuration-metadata.manual-hints.value-providers.handle-as]]
 === Handle As
+
 The **handle-as** provider lets you substitute the type of the property to a more high-level type.
 This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
 This provider supports the following parameters:
@@ -221,6 +226,7 @@ It is actually used internally as a `org.springframework.core.io.Resource` but c
 
 [[appendix.configuration-metadata.manual-hints.value-providers.logger-name]]
 === Logger Name
+
 The **logger-name** provider auto-completes valid logger names and xref:reference:features/logging.adoc#features.logging.log-groups[logger groups].
 Typically, package and class names available in the current project can be auto-completed.
 If groups are enabled (default) and if a custom logger group is identified in the configuration, auto-completion for it should be provided.
@@ -308,6 +314,7 @@ As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints
 
 [[appendix.configuration-metadata.manual-hints.value-providers.spring-bean-reference]]
 === Spring Bean Reference
+
 The **spring-bean-reference** provider auto-completes the beans that are defined in the configuration of the current project.
 This provider supports the following parameters:
 
@@ -348,6 +355,7 @@ If you provide that hint, you still need to transform the bean name into an actu
 
 [[appendix.configuration-metadata.manual-hints.value-providers.spring-profile-name]]
 === Spring Profile Name
+
 The **spring-profile-name** provider auto-completes the Spring profiles that are defined in the configuration of the current project.
 
 The following metadata snippet corresponds to the standard `spring.profiles.active` property that defines the name of the Spring profile(s) to enable:

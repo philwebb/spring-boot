@@ -11,6 +11,7 @@ We first cover what you need to know to build your own auto-configuration and th
 
 [[features.developing-auto-configuration.understanding-auto-configured-beans]]
 == Understanding Auto-configured Beans
+
 Classes that implement auto-configuration are annotated with `@AutoConfiguration`.
 This annotation itself is meta-annotated with `@Configuration`, making auto-configurations standard `@Configuration` classes.
 Additional `@Conditional` annotations are used to constrain when the auto-configuration should apply.
@@ -53,6 +54,7 @@ The order in which those beans are subsequently created is unaffected and is det
 
 [[features.developing-auto-configuration.condition-annotations]]
 == Condition Annotations
+
 You almost always want to include one or more `@Conditional` annotations on your auto-configuration class.
 The `@ConditionalOnMissingBean` annotation is one common example that is used to allow developers to override auto-configuration if they are not happy with your defaults.
 
@@ -70,6 +72,7 @@ These annotations include:
 
 [[features.developing-auto-configuration.condition-annotations.class-conditions]]
 === Class Conditions
+
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let `@Configuration` classes be included based on the presence or absence of specific classes.
 Due to the fact that annotation metadata is parsed by using https://asm.ow2.io/[ASM], you can use the `value` attribute to refer to the real class, even though that class might not actually appear on the running application classpath.
 You can also use the `name` attribute if you prefer to specify the class name by using a `String` value.
@@ -86,6 +89,7 @@ TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part 
 
 [[features.developing-auto-configuration.condition-annotations.bean-conditions]]
 === Bean Conditions
+
 The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations let a bean be included based on the presence or absence of specific beans.
 You can use the `value` attribute to specify beans by type or `name` to specify beans by name.
 The `search` attribute lets you limit the `ApplicationContext` hierarchy that should be considered when searching for beans.
@@ -110,6 +114,7 @@ Providing as much type information as possible in `@Bean` methods is particularl
 
 [[features.developing-auto-configuration.condition-annotations.property-conditions]]
 === Property Conditions
+
 The `@ConditionalOnProperty` annotation lets configuration be included based on a Spring Environment property.
 Use the `prefix` and `name` attributes to specify the property that should be checked.
 By default, any property that exists and is not equal to `false` is matched.
@@ -119,6 +124,7 @@ You can also create more advanced checks by using the `havingValue` and `matchIf
 
 [[features.developing-auto-configuration.condition-annotations.resource-conditions]]
 === Resource Conditions
+
 The `@ConditionalOnResource` annotation lets configuration be included only when a specific resource is present.
 Resources can be specified by using the usual Spring conventions, as shown in the following example: `file:/home/user/test.dat`.
 
@@ -126,6 +132,7 @@ Resources can be specified by using the usual Spring conventions, as shown in th
 
 [[features.developing-auto-configuration.condition-annotations.web-application-conditions]]
 === Web Application Conditions
+
 The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a web application.
 A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
 A reactive web application is any application that uses a `ReactiveWebApplicationContext`, or has a `ConfigurableReactiveWebEnvironment`.
@@ -137,6 +144,7 @@ This condition will not match for applications that are run with an embedded web
 
 [[features.developing-auto-configuration.condition-annotations.spel-conditions]]
 === SpEL Expression Conditions
+
 The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {url-spring-framework-docs}/core/expressions.html[SpEL expression].
 
 NOTE: Referencing a bean in the expression will cause that bean to be initialized very early in context refresh processing.
@@ -146,6 +154,7 @@ As a result, the bean won't be eligible for post-processing (such as configurati
 
 [[features.developing-auto-configuration.testing]]
 == Testing your Auto-configuration
+
 An auto-configuration can be affected by many factors: user configuration (`@Bean` definition and `Environment` customization), condition evaluation (presence of a particular library), and others.
 Concretely, each test should create a well defined `ApplicationContext` that represents a combination of those customizations.
 `ApplicationContextRunner` provides a great way to achieve that.
@@ -179,12 +188,14 @@ include-code::MyConditionEvaluationReportingTests[]
 
 [[features.developing-auto-configuration.testing.simulating-a-web-context]]
 === Simulating a Web Context
+
 If you need to test an auto-configuration that only operates in a servlet or reactive web application context, use the `WebApplicationContextRunner` or `ReactiveWebApplicationContextRunner` respectively.
 
 
 
 [[features.developing-auto-configuration.testing.overriding-classpath]]
 === Overriding the Classpath
+
 It is also possible to test what happens when a particular class and/or package is not present at runtime.
 Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
 In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
@@ -195,6 +206,7 @@ include-code::../MyServiceAutoConfigurationTests[tag=test-classloader]
 
 [[features.developing-auto-configuration.custom-starter]]
 == Creating Your Own Starter
+
 A typical Spring Boot starter contains code to auto-configure and customize the infrastructure of a given technology, let's call that "acme".
 To make it easily extensible, a number of configuration keys in a dedicated namespace can be exposed to the environment.
 Finally, a single "starter" dependency is provided to help users get started as easily as possible.
@@ -216,6 +228,7 @@ If the auto-configuration is relatively straightforward and does not have option
 
 [[features.developing-auto-configuration.custom-starter.naming]]
 === Naming
+
 You should make sure to provide a proper namespace for your starter.
 Do not start your module names with `spring-boot`, even if you use a different Maven `groupId`.
 We may offer official support for the thing you auto-configure in the future.
@@ -228,6 +241,7 @@ If you only have one module that combines the two, name it `acme-spring-boot-sta
 
 [[features.developing-auto-configuration.custom-starter.configuration-keys]]
 === Configuration keys
+
 If your starter provides configuration keys, use a unique namespace for them.
 In particular, do not include your keys in the namespaces that Spring Boot uses (such as `server`, `management`, `spring`, and so on).
 If you use the same namespace, we may modify these namespaces in the future in ways that break your modules.
@@ -255,6 +269,7 @@ Using your own starter in a compatible IDE is also a good idea to validate that 
 
 [[features.developing-auto-configuration.custom-starter.autoconfigure-module]]
 === The "`autoconfigure`" Module
+
 The `autoconfigure` module contains everything that is necessary to get started with the library.
 It may also contain configuration key definitions (such as `@ConfigurationProperties`) and any callback interface that can be used to further customize how the components are initialized.
 
@@ -312,6 +327,7 @@ With Gradle, the dependency should be declared in the `annotationProcessor` conf
 
 [[features.developing-auto-configuration.custom-starter.starter-module]]
 === Starter Module
+
 The starter is really an empty jar.
 Its only purpose is to provide the necessary dependencies to work with the library.
 You can think of it as an opinionated view of what is required to get started.

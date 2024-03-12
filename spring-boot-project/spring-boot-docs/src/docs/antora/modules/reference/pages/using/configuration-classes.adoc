@@ -13,6 +13,7 @@ Searching for `+Enable*+` annotations can be a good starting point.
 
 [[using.configuration-classes.importing-additional-configuration]]
 == Importing Additional Configuration Classes
+
 You need not put all your `@Configuration` into a single class.
 The `@Import` annotation can be used to import additional configuration classes.
 Alternatively, you can use `@ComponentScan` to automatically pick up all Spring components, including `@Configuration` classes.
@@ -21,5 +22,6 @@ Alternatively, you can use `@ComponentScan` to automatically pick up all Spring 
 
 [[using.configuration-classes.importing-xml-configuration]]
 == Importing XML Configuration
+
 If you absolutely must use XML based configuration, we recommend that you still start with a `@Configuration` class.
 You can then use an `@ImportResource` annotation to load XML configuration files.

@@ -20,6 +20,7 @@ These levels can be one of:
 
 [[actuator.loggers.configure]]
 == Configure a Logger
+
 To configure a given logger, `POST` a partial entity to the resource's URI, as the following example shows:
 
 [source,json,indent=0,subs="verbatim"]

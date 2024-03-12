@@ -7,6 +7,7 @@ The `heapdump` endpoint provides a heap dump from the application's JVM.
 
 [[heapdump.retrieving]]
 == Retrieving the Heap Dump
+
 To retrieve the heap dump, make a `GET` request to `/actuator/heapdump`.
 The response is binary data and can be large.
 Its format depends upon the JVM on which the application is running.

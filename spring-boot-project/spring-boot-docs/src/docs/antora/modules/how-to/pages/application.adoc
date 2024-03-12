@@ -7,6 +7,7 @@ This section includes topics relating directly to Spring Boot applications.
 
 [[howto.application.failure-analyzer]]
 == Create Your Own FailureAnalyzer
+
 xref:api:java/org/springframework/boot/diagnostics/FailureAnalyzer.html[`FailureAnalyzer`] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a xref:api:java/org/springframework/boot/diagnostics/FailureAnalysis.html[`FailureAnalysis`].
 Spring Boot provides such an analyzer for application-context-related exceptions, JSR-303 validations, and more.
 You can also create your own.
@@ -30,6 +31,7 @@ NOTE: If you need access to the `BeanFactory` or the `Environment`, declare them
 
 [[howto.application.troubleshoot-auto-configuration]]
 == Troubleshoot Auto-configuration
+
 The Spring Boot auto-configuration tries its best to "`do the right thing`", but sometimes things fail, and it can be hard to tell why.
 
 There is a really useful `ConditionEvaluationReport` available in any Spring Boot `ApplicationContext`.
@@ -57,6 +59,7 @@ When reading the code, remember the following rules of thumb:
 
 [[howto.application.customize-the-environment-or-application-context]]
 == Customize the Environment or ApplicationContext Before It Starts
+
 A `SpringApplication` has `ApplicationListeners` and `ApplicationContextInitializers` that are used to apply customizations to the context or environment.
 Spring Boot loads a number of such customizations for use internally from `META-INF/spring.factories`.
 There is more than one way to register additional customizations:
@@ -93,6 +96,7 @@ This is too late to configure certain properties such as `+logging.*+` and `+spr
 
 [[howto.application.context-hierarchy]]
 == Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
+
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
 See "`xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[Fluent Builder API]`" in the '`Spring Boot features`' section for more information.
 
@@ -100,6 +104,7 @@ See "`xref:reference:features/spring-application.adoc#features.spring-applicatio
 
 [[howto.application.non-web-application]]
 == Create a Non-web Application
+
 Not all Spring applications have to be web applications (or web services).
 If you want to execute some code in a `main` method but also bootstrap a Spring application to set up the infrastructure to use, you can use the `SpringApplication` features of Spring Boot.
 A `SpringApplication` changes its `ApplicationContext` class, depending on whether it thinks it needs a web application or not.

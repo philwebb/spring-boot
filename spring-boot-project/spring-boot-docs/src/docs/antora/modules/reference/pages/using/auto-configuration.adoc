@@ -13,6 +13,7 @@ We generally recommend that you add one or the other to your primary `@Configura
 
 [[using.auto-configuration.replacing]]
 == Gradually Replacing Auto-configuration
+
 Auto-configuration is non-invasive.
 At any point, you can start to define your own configuration to replace specific parts of the auto-configuration.
 For example, if you add your own `DataSource` bean, the default embedded database support backs away.
@@ -24,6 +25,7 @@ Doing so enables debug logs for a selection of core loggers and logs a condition
 
 [[using.auto-configuration.disabling-specific]]
 == Disabling Specific Auto-configuration Classes
+
 If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of `@SpringBootApplication` to disable them, as shown in the following example:
 
 include-code::MyApplication[]
@@ -40,6 +42,7 @@ The actual contents of those classes, such as nested configuration classes or be
 
 [[using.auto-configuration.packages]]
 == Auto-configuration Packages
+
 Auto-configuration packages are the packages that various auto-configured features look in by default when scanning for things such as entities and Spring Data repositories.
 The `@EnableAutoConfiguration` annotation (either directly or through its presence on `@SpringBootApplication`) determines the default auto-configuration package.
 Additional packages can be configured using the `@AutoConfigurationPackage` annotation.

@@ -7,6 +7,7 @@ The `conditions` endpoint provides information about the evaluation of condition
 
 [[conditions.retrieving]]
 == Retrieving the Report
+
 To retrieve the report, make a `GET` request to `/actuator/conditions`, as shown in the following curl-based example:
 
 include::partial$rest/actuator/conditions/curl-request.adoc[]
@@ -19,6 +20,7 @@ include::partial$rest/actuator/conditions/http-response.adoc[]
 
 [[conditions.retrieving.response-structure]]
 === Response Structure
+
 The response contains details of the application's condition evaluation.
 The following table describes the structure of the response:
 

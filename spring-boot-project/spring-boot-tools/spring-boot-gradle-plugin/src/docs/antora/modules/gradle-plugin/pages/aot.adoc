@@ -23,6 +23,7 @@ include::example$aot/apply-native-image-plugin.gradle.kts[]
 
 [[aot.processing-applications]]
 == Processing Applications
+
 Based on your `@SpringBootApplication`-annotated main class, the `processAot` task generates a persistent view of the beans that are going to be contributed at runtime in a way that bean instantiation is as straightforward as possible.
 Additional post-processing of the factory is possible using callbacks.
 For instance, these are used to generate the necessary reflection configuration that GraalVM needs to initialize the context in a native image.
@@ -38,6 +39,7 @@ The `nativeCompile` task of the GraalVM Native Image plugin is automatically con
 
 [[aot.processing-tests]]
 == Processing Tests
+
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
 Suitable tests are processed by the `processTestAot` task to generate `ApplicationContextInitializer` code.
 As with application AOT processing, the `BeanFactory` is fully prepared at build-time.

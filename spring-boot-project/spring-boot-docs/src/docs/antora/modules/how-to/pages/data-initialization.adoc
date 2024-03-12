@@ -9,6 +9,7 @@ It is recommended to use a single mechanism for schema generation.
 
 [[howto.data-initialization.using-jpa]]
 == Initialize a Database Using JPA
+
 JPA has features for DDL generation, and these can be set up to run on startup against the database.
 This is controlled through two external properties:
 
@@ -20,6 +21,7 @@ This is controlled through two external properties:
 
 [[howto.data-initialization.using-hibernate]]
 == Initialize a Database Using Hibernate
+
 You can set `spring.jpa.hibernate.ddl-auto` explicitly to one of the standard Hibernate property values which are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether it thinks your database is embedded.
 It defaults to `create-drop` if no schema manager has been detected or `none` in all other cases.
@@ -39,6 +41,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 [[howto.data-initialization.using-basic-sql-scripts]]
 == Initialize a Database Using Basic SQL Scripts
+
 Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize its data (DML scripts).
 
 By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
@@ -75,6 +78,7 @@ If you need to initialize test data using a higher-level database migration tool
 
 [[howto.data-initialization.batch]]
 == Initialize a Spring Batch Database
+
 If you use Spring Batch, it comes pre-packaged with SQL initialization scripts for most popular database platforms.
 Spring Boot can detect your database type and execute those scripts on startup.
 If you use an embedded database, this happens by default.
@@ -94,12 +98,14 @@ You can also switch off the initialization explicitly by setting `spring.batch.j
 
 [[howto.data-initialization.migration-tool]]
 == Use a Higher-level Database Migration Tool
+
 Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Flyway] and https://www.liquibase.org/[Liquibase].
 
 
 
 [[howto.data-initialization.migration-tool.flyway]]
 === Execute Flyway Database Migrations on Startup
+
 To automatically run Flyway database migrations on startup, add the `org.flywaydb:flyway-core` to your classpath.
 
 Typically, migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an underscore-separated version, such as '`1`' or '`2_1`').
@@ -168,6 +174,7 @@ With that setup, migrations in `dev/db/migration` run only when the `dev` profil
 
 [[howto.data-initialization.migration-tool.liquibase]]
 === Execute Liquibase Database Migrations on Startup
+
 To automatically run Liquibase database migrations on startup, add the `org.liquibase:liquibase-core` to your classpath.
 
 [NOTE]
@@ -193,6 +200,7 @@ See {code-spring-boot-autoconfigure-src}/liquibase/LiquibaseProperties.java[`Liq
 
 [[howto.data-initialization.migration-tool.flyway-tests]]
 === Use Flyway for test-only migrations
+
 If you want to create Flyway migrations which populate your test database, place them in `src/test/resources/db/migration`.
 A file named, for example, `src/test/resources/db/migration/V9999__test-data.sql` will be executed after your production migrations and only if you're running the tests.
 You can use this file to create the needed test data.
@@ -202,6 +210,7 @@ This file will not be packaged in your uber jar or your container.
 
 [[howto.data-initialization.migration-tool.liquibase-tests]]
 === Use Liquibase for test-only migrations
+
 If you want to create Liquibase migrations which populate your test database, you have to create a test changelog which also includes the production changelog.
 
 First, you need to configure Liquibase to use a different changelog when running the tests.
@@ -242,6 +251,7 @@ To do this, you can add the `@ActiveProfiles("test")` annotation to your `@Sprin
 
 [[howto.data-initialization.dependencies]]
 == Depend Upon an Initialized Database
+
 Database initialization is performed while the application is starting up as part of application context refresh.
 To allow an initialized database to be accessed during startup, beans that act as database initializers and beans that require that database to have been initialized are detected automatically.
 Beans whose initialization depends upon the database having been initialized are configured to depend upon those that initialize it.
@@ -251,6 +261,7 @@ If, during startup, your application tries to access the database and it has not
 
 [[howto.data-initialization.dependencies.initializer-detection]]
 === Detect a Database Initializer
+
 Spring Boot will automatically detect beans of the following types that initialize an SQL database:
 
 - `DataSourceScriptDatabaseInitializer`
@@ -267,6 +278,7 @@ To have other beans be detected, register an implementation of `DatabaseInitiali
 
 [[howto.data-initialization.dependencies.depends-on-initialization-detection]]
 === Detect a Bean That Depends On Database Initialization
+
 Spring Boot will automatically detect beans of the following types that depends upon database initialization:
 
 - `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)

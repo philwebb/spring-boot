@@ -75,6 +75,7 @@ include::example$running/application-plugin-main-class-name.gradle.kts[tags=main
 
 [[running-your-application.passing-arguments]]
 == Passing Arguments to your Application
+
 Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
 For example, to run your application with a profile named `dev` active the following command can be used:
 
@@ -89,6 +90,7 @@ See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.l
 
 [[running-your-application.passing-system-properties]]
 == Passing System properties to your application
+
 Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
 To make that value of a system property to be configurable set its value using a {url-gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].
 To allow a project property to be optional, reference it using `findProperty`.
@@ -123,6 +125,7 @@ The preceding example sets the value of the `example` project property to `custo
 
 [[running-your-application.reloading-resources]]
 == Reloading Resources
+
 If devtools has been added to your project it will automatically monitor your application's classpath for changes.
 Note that modified files need to be recompiled for the classpath to update in order to trigger reloading with devtools.
 For more details on using devtools, refer to xref:reference:using/devtools.adoc#using.devtools.restart[this section of the reference documentation].
@@ -147,6 +150,7 @@ This makes them reloadable in the live application which can be helpful at devel
 
 [[running-your-application.using-a-test-main-class]]
 == Using a Test Main Class
+
 In addition to `bootRun` a `bootTestRun` task is also registered.
 Like `bootRun`, `bootTestRun` is an instance of `BootRun` but it's configured to use a main class found in the output of the test source set rather than the main source set.
 It also uses the test source set's runtime classpath rather than the main source set's runtime classpath.
