@@ -168,7 +168,7 @@ NOTE: It is recommended to use the container's built-in support for multipart up
 By default, all content is served from the root of your application (`/`).
 If you would rather map to a different path, you can configure one as follows:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:

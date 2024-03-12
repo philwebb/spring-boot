@@ -20,7 +20,7 @@ If Logback is available, it is the first choice.
 
 If the only change you need to make to logging is to set the levels of various loggers, you can do so in `application.properties` by using the "logging.level" prefix, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	logging:
 	  level:
@@ -109,7 +109,7 @@ If you want to disable console logging and write output only to a file, you need
 
 You also need to add `logging.file.name` to your `application.properties` or `application.yaml`, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	logging:
 	  file:

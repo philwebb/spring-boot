@@ -13,7 +13,7 @@ You can use a configprop:spring.profiles.active[] `Environment` property to spec
 You can specify the property in any of the ways described earlier in this chapter.
 For example, you could include it in your `application.properties`, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  profiles:
@@ -25,7 +25,7 @@ You could also specify it on the command line by using the following switch: `--
 If no profile is active, a default profile is enabled.
 The name of the default profile is `default` and it can be tuned using the configprop:spring.profiles.default[] `Environment` property, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  profiles:
@@ -37,7 +37,7 @@ This means they cannot be included in xref:features/external-config.adoc#feature
 
 For example, the second document configuration is invalid:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	# this document is valid
 	spring:
@@ -68,7 +68,7 @@ See the `setAdditionalProfiles()` method in xref:api:java/org/springframework/bo
 
 For example, when an application with the following properties is run, the common and local profiles will be activated even when it runs using the `--spring.profiles.active` switch:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  profiles:
@@ -95,7 +95,7 @@ A profile group allows you to define a logical name for a related group of profi
 
 For example, we can create a `production` group that consists of our `proddb` and `prodmq` profiles.
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  profiles:

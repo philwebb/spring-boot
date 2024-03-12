@@ -123,7 +123,7 @@ Most of the time, this does not happen (unless you modify the default MVC config
 By default, resources are mapped on `+/**+`, but you can tune that with the configprop:spring.mvc.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -151,7 +151,7 @@ Otherwise, all Webjars resolve as a `404`.
 
 To use cache busting, the following configuration configures a cache busting solution for all static resources, effectively adding a content hash, such as `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`, in URLs:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  web:
@@ -171,7 +171,7 @@ When loading resources dynamically with, for example, a JavaScript module loader
 That is why other strategies are also supported and can be combined.
 A "fixed" strategy adds a static version string in the URL without changing the file name, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  web:
@@ -244,7 +244,7 @@ Nowadays, Content Negotiation is much more reliable.
 There are other ways to deal with HTTP clients that do not consistently send proper "Accept" request headers.
 Instead of using suffix matching, we can use a query parameter to ensure that requests like `"GET /projects/spring-boot?format=json"` will be mapped to `@GetMapping("/projects/spring-boot")`:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -254,7 +254,7 @@ Instead of using suffix matching, we can use a query parameter to ensure that re
 
 Or if you prefer to use a different parameter name:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -265,7 +265,7 @@ Or if you prefer to use a different parameter name:
 
 Most standard media types are supported out-of-the-box, but you can also define new ones:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -282,7 +282,7 @@ It is also incompatible with configuring the `DispatcherServlet` with a path pre
 
 The strategy can be configured using the configprop:spring.mvc.pathmatch.matching-strategy[] configuration property, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -616,7 +616,7 @@ It is also used to configure Spring Session servlet based `SessionRepository` be
 
 For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	server:
 	  servlet:
@@ -644,7 +644,7 @@ When a request's `Accept-Language` header indicates a locale for the request it 
 Each container provides default locale to charset mappings and you should verify that they meet your application's needs.
 When they do not, use the configprop:server.servlet.encoding.mapping[] configuration property to customize the mappings, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	server:
 	  servlet:

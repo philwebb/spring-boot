@@ -18,7 +18,7 @@ NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to c
 ActiveMQ "Classic" configuration is controlled by external configuration properties in `+spring.activemq.*+`.
 By default, ActiveMQ "Classic" is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport], connecting by default to `tcp://localhost:61616`. The following example shows how to change the default broker URL:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  activemq:
@@ -29,7 +29,7 @@ By default, ActiveMQ "Classic" is auto-configured to use the https://activemq.ap
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  jms:
@@ -39,7 +39,7 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 
 If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  activemq:
@@ -69,7 +69,7 @@ Adding `org.apache.activemq:artemis-jakarta-server` to your application lets you
 ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  artemis:
@@ -84,7 +84,7 @@ These can be specified as a comma-separated list to create them with the default
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  jms:
@@ -94,7 +94,7 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 
 If you'd rather use native pooling, you can do so by adding a dependency on `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  artemis:
@@ -116,7 +116,7 @@ If you are running your application in an application server, Spring Boot tries 
 By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
 You can use the configprop:spring.jms.jndi-name[] property if you need to specify an alternative location, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  jms:

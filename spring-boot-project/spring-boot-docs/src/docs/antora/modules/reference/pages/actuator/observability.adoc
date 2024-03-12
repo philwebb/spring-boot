@@ -35,7 +35,7 @@ To enable it, add the `io.r2dbc:r2dbc-proxy` dependency to your project.
 Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
 Common tags are applied to all observations as low cardinality tags and can be configured, as the following example shows:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	management:
 	  observations:
@@ -53,7 +53,7 @@ The preceding example adds `region` and `stack` tags to all observations with a 
 
 If you'd like to prevent some observations from being reported, you can use the configprop:management.observations.enable[] properties:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	management:
 	  observations:

@@ -32,7 +32,7 @@ If you use Tomcat as a servlet container, then Spring Boot adds Tomcat's own `Re
 The standard behavior is determined by the presence or absence of certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should work with most front-end proxies.
 You can switch on the valve by adding some entries to `application.properties`, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	server:
 	  tomcat:

@@ -38,7 +38,7 @@ This depends on the type of application and its configuration.
 
 For WebFlux application (that is of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  rsocket:
@@ -52,7 +52,7 @@ WARNING: Plugging RSocket into a web server is only supported with Reactor Netty
 Alternatively, an RSocket TCP or websocket server is started as an independent, embedded server.
 Besides the dependency requirements, the only required configuration is to define a port for that server:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  rsocket:

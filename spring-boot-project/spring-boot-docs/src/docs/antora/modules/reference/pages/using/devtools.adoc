@@ -141,7 +141,7 @@ The report shows the changes to your application's auto-configuration as you mak
 
 To disable the logging of the report, set the following property:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  devtools:
@@ -160,7 +160,7 @@ By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/re
 If you want to customize these exclusions, you can use the configprop:spring.devtools.restart.exclude[] property.
 For example, to exclude only `/static` and `/public` you would set the following property:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  devtools:
@@ -216,7 +216,7 @@ For example, if you have a project with the following structure:
 
 Then your `trigger-file` property would be:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  devtools:
@@ -249,7 +249,7 @@ The `spring-devtools.properties` file can contain properties prefixed with `rest
 The `include` elements are items that should be pulled up into the "`restart`" classloader, and the `exclude` elements are items that should be pushed down into the "`base`" classloader.
 The value of the property is a regex pattern that is applied to the classpath, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	restart:
 	  exclude:
@@ -306,7 +306,7 @@ You can configure global devtools settings by adding any of the following files 
 Any properties added to these files apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a xref:using/devtools.adoc#using.devtools.restart.triggerfile[trigger file], you would add the following property to your `spring-boot-devtools` file:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  devtools:
@@ -337,7 +337,7 @@ Profile specific filenames (of the form `spring-boot-devtools-<profile>.properti
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  devtools:

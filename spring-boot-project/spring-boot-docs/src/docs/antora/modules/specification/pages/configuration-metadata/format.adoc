@@ -69,7 +69,7 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 Each "`property`" is a configuration item that the user specifies with a given value.
 For example, `server.port` and `server.address` might be specified in your `application.properties`/`application.yaml`, as follows:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	server:
 	  port: 9090

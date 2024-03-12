@@ -11,7 +11,7 @@ See {code-spring-boot-autoconfigure-src}/mail/MailProperties.java[`MailPropertie
 
 In particular, certain default timeout values are infinite, and you may want to change that to avoid having a thread blocked by an unresponsive mail server, as shown in the following example:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mail:
@@ -23,7 +23,7 @@ In particular, certain default timeout values are infinite, and you may want to 
 
 It is also possible to configure a `JavaMailSender` with an existing `Session` from JNDI:
 
-[configblocks,yaml]
+[configprops,yaml]
 ----
 	spring:
 	  mail:
