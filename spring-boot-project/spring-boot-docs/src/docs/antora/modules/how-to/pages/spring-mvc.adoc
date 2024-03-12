@@ -26,12 +26,12 @@ If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpat
 The previous example that we used for JSON would work.
 To use the Jackson XML renderer, add the following dependency to your project:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>com.fasterxml.jackson.dataformat</groupId>
-		<artifactId>jackson-dataformat-xml</artifactId>
-	</dependency>
+<dependency>
+	<groupId>com.fasterxml.jackson.dataformat</groupId>
+	<artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
 ----
 
 If Jackson's XML extension is not available and JAXB is available, XML can be rendered with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as shown in the following example:
@@ -40,12 +40,12 @@ include-code::MyThing[]
 
 You will need to ensure that the JAXB library is part of your project, for example by adding:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>org.glassfish.jaxb</groupId>
-		<artifactId>jaxb-runtime</artifactId>
-	</dependency>
+<dependency>
+	<groupId>org.glassfish.jaxb</groupId>
+	<artifactId>jaxb-runtime</artifactId>
+</dependency>
 ----
 
 NOTE: To get the server to render XML instead of JSON, you might have to send an `Accept: text/xml` header (or use a browser).

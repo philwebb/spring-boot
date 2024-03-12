@@ -403,12 +403,12 @@ They can be made optional by annotating them with either `@javax.annotation.Null
 You can map each root property in the JSON request body to a parameter of the endpoint.
 Consider the following JSON request body:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{
-		"name": "test",
-		"counter": 42
-	}
+{
+	"name": "test",
+	"counter": 42
+}
 ----
 
 You can use this to invoke a write operation that takes `String name` and `int counter` parameters, as the following example shows:
@@ -886,10 +886,10 @@ A health group can also include/exclude a `CompositeHealthContributor`.
 You can also include/exclude only a certain component of a `CompositeHealthContributor`.
 This can be done using the fully qualified name of the component as follows:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	management.endpoint.health.group.custom.include="test/primary"
-	management.endpoint.health.group.custom.exclude="test/primary/b"
+management.endpoint.health.group.custom.include="test/primary"
+management.endpoint.health.group.custom.exclude="test/primary/b"
 ----
 
 In the example above, the `custom` group will include the `HealthContributor` with the name `primary` which is a component of the composite `test`.
@@ -901,9 +901,9 @@ This is useful in cloud environments such as Kubernetes, where it is quite commo
 Having a separate port could lead to unreliable health checks because the main application might not work properly even if the health check is successful.
 The health group can be configured with an additional path as follows:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	management.endpoint.health.group.live.additional-path="server:/healthz"
+management.endpoint.health.group.live.additional-path="server:/healthz"
 ----
 
 This would make the `live` health group available on the main server port at `/healthz`.
@@ -935,21 +935,21 @@ They are also exposed as separate HTTP Probes by using xref:actuator/endpoints.a
 
 You can then configure your Kubernetes infrastructure with the following endpoint information:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-    livenessProbe:
-      httpGet:
-        path: "/actuator/health/liveness"
-        port: <actuator-port>
-      failureThreshold: ...
-      periodSeconds: ...
+livenessProbe:
+  httpGet:
+    path: "/actuator/health/liveness"
+    port: <actuator-port>
+  failureThreshold: ...
+  periodSeconds: ...
 
-    readinessProbe:
-      httpGet:
-        path: "/actuator/health/readiness"
-        port: <actuator-port>
-      failureThreshold: ...
-      periodSeconds: ...
+readinessProbe:
+  httpGet:
+    path: "/actuator/health/readiness"
+    port: <actuator-port>
+  failureThreshold: ...
+  periodSeconds: ...
 ----
 
 NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
@@ -969,9 +969,9 @@ In this case, a probe check could be successful even if the main application doe
 For this reason, it is a good idea to make the `liveness` and `readiness` health groups available on the main server port.
 This can be done by setting the following property:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	management.endpoint.health.probes.add-additional-paths=true
+management.endpoint.health.probes.add-additional-paths=true
 ----
 
 This would make the `liveness` group available at `/livez` and the `readiness` group available at `/readyz` on the main server port.
@@ -1259,11 +1259,11 @@ include-code::MyInfoContributor[]
 
 If you reach the `info` endpoint, you should see a response that contains the following additional entry:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{
-		"example": {
-			"key" : "value"
-		}
+{
+	"example": {
+		"key" : "value"
 	}
+}
 ----

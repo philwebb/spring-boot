@@ -281,46 +281,46 @@ If that file is present, it is used to eagerly filter auto-configurations that d
 
 When building with Maven, it is recommended to add the following dependency in a module that contains auto-configurations:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-autoconfigure-processor</artifactId>
-		<optional>true</optional>
-	</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-autoconfigure-processor</artifactId>
+	<optional>true</optional>
+</dependency>
 ----
 
 If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the uber jar:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<excludes>
-							<exclude>
-								<groupId>org.springframework.boot</groupId>
-								<artifactId>spring-boot-autoconfigure-processor</artifactId>
-							</exclude>
-						</excludes>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-autoconfigure-processor</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
 ----
 
 With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
-	}
+dependencies {
+	annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+}
 ----
 
 

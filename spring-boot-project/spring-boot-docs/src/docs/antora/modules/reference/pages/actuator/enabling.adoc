@@ -12,21 +12,21 @@ Actuators can generate a large amount of motion from a small change.
 
 To add the actuator to a Maven-based project, add the following "`Starter`" dependency:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-	</dependencies>
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+</dependencies>
 ----
 
 For Gradle, use the following declaration:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	}
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+}
 ----

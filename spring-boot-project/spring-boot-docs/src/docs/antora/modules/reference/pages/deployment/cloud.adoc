@@ -29,9 +29,9 @@ Once you have built your application (by using, for example, `mvn clean package`
 Be sure to have https://docs.cloudfoundry.org/cf-cli/getting-started.html#login[logged in with your `cf` command line client] before pushing an application.
 The following line shows using the `cf push` command to deploy an application:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ cf push acloudyspringtime -p target/demo-0.0.1-SNAPSHOT.jar
+$ cf push acloudyspringtime -p target/demo-0.0.1-SNAPSHOT.jar
 ----
 
 NOTE: In the preceding example, we substitute `acloudyspringtime` for whatever value you give `cf` as the name of your application.
@@ -70,16 +70,16 @@ Congratulations! The application is now live!
 
 Once your application is live, you can verify the status of the deployed application by using the `cf apps` command, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ cf apps
-	Getting applications in ...
-	OK
+$ cf apps
+Getting applications in ...
+OK
 
-	name                 requested state   instances   memory   disk   urls
-	...
-	acloudyspringtime    started           1/1         512M     1G     acloudyspringtime.cfapps.io
-	...
+name                 requested state   instances   memory   disk   urls
+...
+acloudyspringtime    started           1/1         512M     1G     acloudyspringtime.cfapps.io
+...
 ----
 
 Once Cloud Foundry acknowledges that your application has been deployed, you should be able to find the application at the URI given.
@@ -126,16 +126,16 @@ You can configure a sleep execution in a preStop handler to avoid requests being
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
 The preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	spec:
-	  containers:
-	  - name: "example-container"
-	    image: "example-image"
-	    lifecycle:
-	      preStop:
-	        exec:
-	          command: ["sh", "-c", "sleep 10"]
+spec:
+  containers:
+  - name: "example-container"
+    image: "example-image"
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sh", "-c", "sleep 10"]
 ----
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and xref:web/graceful-shutdown.adoc[graceful shutdown] will begin, allowing any remaining in-flight requests to complete.
@@ -168,9 +168,9 @@ The `$PORT` environment variable is assigned to us by the Heroku PaaS.
 This should be everything you need.
 The most common deployment workflow for Heroku deployments is to `git push` the code to production, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ git push heroku main
+$ git push heroku main
 ----
 
 Which will result in the following:
@@ -287,10 +287,10 @@ By default, Elastic Beanstalk uploads sources and compiles them in AWS.
 However, it is best to upload the binaries instead.
 To do so, add lines similar to the following to your `.elasticbeanstalk/config.yml` file:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	deploy:
-		artifact: target/demo-0.0.1-SNAPSHOT.jar
+deploy:
+	artifact: target/demo-0.0.1-SNAPSHOT.jar
 ----
 ====
 
@@ -327,9 +327,9 @@ CloudCaptain leverages this information both for the images it produces as well 
 
 Once you have created a https://console.cloudcaptain.sh[CloudCaptain account], connected it to your AWS account, installed the latest version of the CloudCaptain Client, and ensured that the application has been built by Maven or Gradle (by using, for example, `mvn clean package`), you can deploy your Spring Boot application to AWS with a command similar to the following:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ boxfuse run myapp-1.0.jar -env=prod
+$ boxfuse run myapp-1.0.jar -env=prod
 ----
 
 See the https://cloudcaptain.sh/docs/commandline/run.html[`boxfuse run` documentation] for more options.
@@ -385,39 +385,39 @@ To deploy your first app to App Engine standard environment, follow https://code
 Alternatively, App Engine Flex requires you to create an `app.yaml` file to describe the resources your app requires.
 Normally, you put this file in `src/main/appengine`, and it should resemble the following file:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	service: "default"
+service: "default"
 
-	runtime: "java17"
-	env: "flex"
+runtime: "java17"
+env: "flex"
 
-	handlers:
-	- url: "/.*"
-	  script: "this field is required, but ignored"
+handlers:
+- url: "/.*"
+  script: "this field is required, but ignored"
 
-	manual_scaling:
-	  instances: 1
+manual_scaling:
+  instances: 1
 
-	health_check:
-	  enable_health_check: false
+health_check:
+  enable_health_check: false
 
-	env_variables:
-	  ENCRYPT_KEY: "your_encryption_key_here"
+env_variables:
+  ENCRYPT_KEY: "your_encryption_key_here"
 ----
 
 You can deploy the app (for example, with a Maven plugin) by adding the project ID to the build configuration, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<plugin>
-		<groupId>com.google.cloud.tools</groupId>
-		<artifactId>appengine-maven-plugin</artifactId>
-		<version>2.4.4</version>
-		<configuration>
-			<project>myproject</project>
-		</configuration>
-	</plugin>
+<plugin>
+	<groupId>com.google.cloud.tools</groupId>
+	<artifactId>appengine-maven-plugin</artifactId>
+	<version>2.4.4</version>
+	<configuration>
+		<project>myproject</project>
+	</configuration>
+</plugin>
 ----
 
 Then deploy with `mvn appengine:deploy` (you need to authenticate first, otherwise the build fails).

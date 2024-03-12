@@ -20,39 +20,39 @@ To help with this process, Spring Boot provides a separate starter for each of t
 
 The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-		<exclusions>
-			<!-- Exclude the Tomcat dependency -->
-			<exclusion>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-tomcat</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
-	<!-- Use Jetty instead -->
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-jetty</artifactId>
-	</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+	<exclusions>
+		<!-- Exclude the Tomcat dependency -->
+		<exclusion>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use Jetty instead -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-jetty</artifactId>
+</dependency>
 ----
 
 The following Gradle example configures the necessary dependencies and a {url-gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		implementation "org.springframework.boot:spring-boot-starter-undertow"
-		implementation "org.springframework.boot:spring-boot-starter-webflux"
-		modules {
-			module("org.springframework.boot:spring-boot-starter-reactor-netty") {
-				replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Reactor Netty")
-			}
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-undertow"
+	implementation "org.springframework.boot:spring-boot-starter-webflux"
+	modules {
+		module("org.springframework.boot:spring-boot-starter-reactor-netty") {
+			replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Reactor Netty")
 		}
 	}
+}
 ----
 
 NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.

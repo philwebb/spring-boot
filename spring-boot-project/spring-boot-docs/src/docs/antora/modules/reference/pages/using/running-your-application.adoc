@@ -33,18 +33,18 @@ Spring Tools users can use the `Relaunch` button rather than the `Run` button to
 
 If you use the Spring Boot Maven or Gradle plugins to create an executable jar, you can run your application using `java -jar`, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
+$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
 It is also possible to run a packaged application with remote debugging support enabled.
 Doing so lets you attach a debugger to your packaged application, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -agentlib:jdwp=server=y,transport=dt_socket,address=8000,suspend=n \
-	       -jar target/myapplication-0.0.1-SNAPSHOT.jar
+$ java -agentlib:jdwp=server=y,transport=dt_socket,address=8000,suspend=n \
+       -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
 
@@ -56,16 +56,16 @@ The Spring Boot Maven plugin includes a `run` goal that can be used to quickly c
 Applications run in an exploded form, as they do in your IDE.
 The following example shows a typical Maven command to run a Spring Boot application:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ mvn spring-boot:run
+$ mvn spring-boot:run
 ----
 
 You might also want to use the `MAVEN_OPTS` operating system environment variable, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ export MAVEN_OPTS=-Xmx1024m
+$ export MAVEN_OPTS=-Xmx1024m
 ----
 
 

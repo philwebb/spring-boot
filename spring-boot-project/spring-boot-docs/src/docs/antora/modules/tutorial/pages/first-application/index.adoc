@@ -21,12 +21,12 @@ Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[star
 
 Before we begin, open a terminal and run the following commands to ensure that you have a valid version of Java installed:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -version
-	openjdk version "17.0.4.1" 2022-08-12 LTS
-	OpenJDK Runtime Environment (build 17.0.4.1+1-LTS)
-	OpenJDK 64-Bit Server VM (build 17.0.4.1+1-LTS, mixed mode, sharing)
+$ java -version
+openjdk version "17.0.4.1" 2022-08-12 LTS
+OpenJDK Runtime Environment (build 17.0.4.1+1-LTS)
+OpenJDK 64-Bit Server VM (build 17.0.4.1+1-LTS, mixed mode, sharing)
 ----
 
 NOTE: This sample needs to be created in its own directory.
@@ -39,12 +39,12 @@ Subsequent instructions assume that you have created a suitable directory and th
 
 If you want to use Maven, ensure that you have Maven installed:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ mvn -v
-	Apache Maven 3.8.5 (3599d3414f046de2324203b78ddcf9b5e4388aa0)
-	Maven home: usr/Users/developer/tools/maven/3.8.5
-	Java version: 17.0.4.1, vendor: BellSoft, runtime: /Users/developer/sdkman/candidates/java/17.0.4.1-librca
+$ mvn -v
+Apache Maven 3.8.5 (3599d3414f046de2324203b78ddcf9b5e4388aa0)
+Maven home: usr/Users/developer/tools/maven/3.8.5
+Java version: 17.0.4.1, vendor: BellSoft, runtime: /Users/developer/sdkman/candidates/java/17.0.4.1-librca
 ----
 
 
@@ -54,22 +54,22 @@ If you want to use Maven, ensure that you have Maven installed:
 
 If you want to use Gradle, ensure that you have Gradle installed:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ gradle --version
+$ gradle --version
 
-	------------------------------------------------------------
-	Gradle 8.1.1
-	------------------------------------------------------------
+------------------------------------------------------------
+Gradle 8.1.1
+------------------------------------------------------------
 
-	Build time:   2023-04-21 12:31:26 UTC
-	Revision:     1cf537a851c635c364a4214885f8b9798051175b
+Build time:   2023-04-21 12:31:26 UTC
+Revision:     1cf537a851c635c364a4214885f8b9798051175b
 
-	Kotlin:       1.8.10
-	Groovy:       3.0.15
-	Ant:          Apache Ant(TM) version 1.10.11 compiled on July 10 2021
-	JVM:          17.0.7 (BellSoft 17.0.7+7-LTS)
-	OS:           Linux 6.2.12-200.fc37.aarch64 aarch64
+Kotlin:       1.8.10
+Groovy:       3.0.15
+Ant:          Apache Ant(TM) version 1.10.11 compiled on July 10 2021
+JVM:          17.0.7 (BellSoft 17.0.7+7-LTS)
+OS:           Linux 6.2.12-200.fc37.aarch64 aarch64
 ----
 
 
@@ -193,25 +193,25 @@ It also provides a xref:reference:using/build-systems.adoc#using.build-systems.d
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
 Before that, we can look at what we currently have by running the following command:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ mvn dependency:tree
+$ mvn dependency:tree
 
-	[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
+[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
 ----
 
 The `mvn dependency:tree` command prints a tree representation of your project dependencies.
 You can see that `spring-boot-starter-parent` provides no dependencies by itself.
 To add the necessary dependencies, edit your `pom.xml` and add the `spring-boot-starter-web` dependency immediately below the `parent` section:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-	</dependencies>
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+</dependencies>
 ----
 
 If you run `mvn dependency:tree` again, you see that there are now a number of additional dependencies, including the Tomcat web server and Spring Boot itself.
@@ -228,26 +228,26 @@ The `io.spring.dependency-management` Gradle plugin provides xref:reference:usin
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
 Before that, we can look at what we currently have by running the following command:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ gradle dependencies
+$ gradle dependencies
 
-	> Task :dependencies
+> Task :dependencies
 
-	------------------------------------------------------------
-	Root project 'myproject'
-	------------------------------------------------------------
+------------------------------------------------------------
+Root project 'myproject'
+------------------------------------------------------------
 ----
 
 The `gradle dependencies` command prints a tree representation of your project dependencies.
 Right now, the project has no dependencies.
 To add the necessary dependencies, edit your `build.gradle` and add the `spring-boot-starter-web` dependency in the `dependencies` section:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		implementation 'org.springframework.boot:spring-boot-starter-web'
-	}
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+}
 ----
 
 If you run `gradle dependencies` again, you see that there are now a number of additional dependencies, including the Tomcat web server and Spring Boot itself.
@@ -420,16 +420,16 @@ Spring Boot takes a xref:specification:executable-jar/index.adoc[different appro
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.
 To do so, insert the following lines just below the `dependencies` section:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 NOTE: The `spring-boot-starter-parent` POM includes `<executions>` configuration to bind the `repackage` goal.
@@ -461,9 +461,9 @@ If you look in the `target` directory, you should see `myproject-0.0.1-SNAPSHOT.
 The file should be around 18 MB in size.
 If you want to peek inside, you can use `jar tvf`, as follows:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ jar tvf target/myproject-0.0.1-SNAPSHOT.jar
+$ jar tvf target/myproject-0.0.1-SNAPSHOT.jar
 ----
 
 You should also see a much smaller file named `myproject-0.0.1-SNAPSHOT.jar.original` in the `target` directory.
@@ -509,28 +509,28 @@ If you look in the `build/libs` directory, you should see `myproject-0.0.1-SNAPS
 The file should be around 18 MB in size.
 If you want to peek inside, you can use `jar tvf`, as follows:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ jar tvf build/libs/myproject-0.0.1-SNAPSHOT.jar
+$ jar tvf build/libs/myproject-0.0.1-SNAPSHOT.jar
 ----
 
 To run that application, use the `java -jar` command, as follows:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell]
 ----
-	$ java -jar build/libs/myproject-0.0.1-SNAPSHOT.jar
+$ java -jar build/libs/myproject-0.0.1-SNAPSHOT.jar
 
-	  .   ____          _            __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, | / / / /
-	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{version-spring-boot})
-	....... . . .
-	....... . . . (log output here)
-	....... . . .
-	........ Started MyApplication in 0.999 seconds (process running for 1.253)
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v{version-spring-boot})
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started MyApplication in 0.999 seconds (process running for 1.253)
 ----
 
 As before, to exit the application, press `ctrl-c`.

@@ -11,10 +11,10 @@ Certain PaaS implementations may also choose to unpack archives before they run.
 For example, Cloud Foundry operates this way.
 One way to run an unpacked archive is by starting the appropriate launcher, as follows:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ jar -xf myapp.jar
-	$ java org.springframework.boot.loader.launch.JarLauncher
+$ jar -xf myapp.jar
+$ java org.springframework.boot.loader.launch.JarLauncher
 ----
 
 This is actually slightly faster on startup (depending on the size of the jar) than running from an unexploded archive.
@@ -22,10 +22,10 @@ After startup, you should not expect any differences.
 
 Once you have unpacked the jar file, you can also get an extra boost to startup time by running the app with its "natural" main method instead of the `JarLauncher`. For example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ jar -xf myapp.jar
-	$ java -cp "BOOT-INF/classes:BOOT-INF/lib/*" com.example.MyApplication
+$ jar -xf myapp.jar
+$ java -cp "BOOT-INF/classes:BOOT-INF/lib/*" com.example.MyApplication
 ----
 
 NOTE: Using the `JarLauncher` over the application's main method has the added benefit of a predictable classpath order.
@@ -41,20 +41,20 @@ First, you need to ensure that the jar you are building includes AOT generated c
 
 For Maven, this means that you should build with `-Pnative` to activate the `native` profile:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-    $ mvn -Pnative package
+$ mvn -Pnative package
 ----
 
 For Gradle, you need to ensure that your build includes the `org.springframework.boot.aot` plugin.
 
 When the JAR has been built, run it with `spring.aot.enabled` system property set to `true`. For example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -Dspring.aot.enabled=true -jar myapplication.jar
+$ java -Dspring.aot.enabled=true -jar myapplication.jar
 
-	........ Starting AOT-processed MyApplication ...
+........ Starting AOT-processed MyApplication ...
 ----
 
 Beware that using the ahead-of-time processing has drawbacks.

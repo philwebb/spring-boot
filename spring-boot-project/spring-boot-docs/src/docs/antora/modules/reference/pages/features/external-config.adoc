@@ -78,25 +78,25 @@ When your application starts, any `spring.application.json` or `SPRING_APPLICATI
 
 For example, the `SPRING_APPLICATION_JSON` property can be supplied on the command line in a UN{asterisk}X shell as an environment variable:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ SPRING_APPLICATION_JSON='{"my":{"name":"test"}}' java -jar myapp.jar
+$ SPRING_APPLICATION_JSON='{"my":{"name":"test"}}' java -jar myapp.jar
 ----
 
 In the preceding example, you end up with `my.name=test` in the Spring `Environment`.
 
 The same JSON can also be provided as a system property:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -Dspring.application.json='{"my":{"name":"test"}}' -jar myapp.jar
+$ java -Dspring.application.json='{"my":{"name":"test"}}' -jar myapp.jar
 ----
 
 Or you could supply the JSON by using a command line argument:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar myapp.jar --spring.application.json='{"my":{"name":"test"}}'
+$ java -jar myapp.jar --spring.application.json='{"my":{"name":"test"}}'
 ----
 
 If you are deploying to a classic Application Server, you could also use a JNDI variable named `java:comp/env/spring.application.json`.
@@ -125,9 +125,9 @@ Documents from the loaded files are added as `PropertySources` to the Spring `En
 If you do not like `application` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
 For example, to look for `myproject.properties` and `myproject.yaml` files you can run your application as follows:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar myproject.jar --spring.config.name=myproject
+$ java -jar myproject.jar --spring.config.name=myproject
 ----
 
 You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
@@ -135,11 +135,11 @@ This property accepts a comma-separated list of one or more locations to check.
 
 The following example shows how to specify two distinct files:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar myproject.jar --spring.config.location=\
-		optional:classpath:/default.properties,\
-		optional:classpath:/override.properties
+$ java -jar myproject.jar --spring.config.location=\
+	optional:classpath:/default.properties,\
+	optional:classpath:/override.properties
 ----
 
 TIP: Use the prefix `optional:` if the xref:features/external-config.adoc#features.external-config.files.optional-prefix[locations are optional] and you do not mind if they do not exist.
@@ -495,28 +495,28 @@ Three consecutive hyphens represent the end of one document, and the start of th
 
 For example, the following file has two logical documents:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	spring:
-	  application:
-	    name: "MyApp"
-	---
-	spring:
-	  application:
-	    name: "MyCloudApp"
-	  config:
-	    activate:
-	      on-cloud-platform: "kubernetes"
+spring:
+  application:
+    name: "MyApp"
+---
+spring:
+  application:
+    name: "MyCloudApp"
+  config:
+    activate:
+      on-cloud-platform: "kubernetes"
 ----
 
 For `application.properties` files a special `#---` or `!---` comment is used to mark the document splits:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	spring.application.name=MyApp
-	#---
-	spring.application.name=MyCloudApp
-	spring.config.activate.on-cloud-platform=kubernetes
+spring.application.name=MyApp
+#---
+spring.application.name=MyCloudApp
+spring.config.activate.on-cloud-platform=kubernetes
 ----
 
 NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
@@ -595,45 +595,45 @@ NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-bo
 YAML documents need to be converted from their hierarchical format to a flat structure that can be used with the Spring `Environment`.
 For example, consider the following YAML document:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	environments:
-	  dev:
-	    url: "https://dev.example.com"
-	    name: "Developer Setup"
-	  prod:
-	    url: "https://another.example.com"
-	    name: "My Cool App"
+environments:
+  dev:
+    url: "https://dev.example.com"
+    name: "Developer Setup"
+  prod:
+    url: "https://another.example.com"
+    name: "My Cool App"
 ----
 
 In order to access these properties from the `Environment`, they would be flattened as follows:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	environments.dev.url=https://dev.example.com
-	environments.dev.name=Developer Setup
-	environments.prod.url=https://another.example.com
-	environments.prod.name=My Cool App
+environments.dev.url=https://dev.example.com
+environments.dev.name=Developer Setup
+environments.prod.url=https://another.example.com
+environments.prod.name=My Cool App
 ----
 
 Likewise, YAML lists also need to be flattened.
 They are represented as property keys with `[index]` dereferencers.
 For example, consider the following YAML:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	 my:
-	  servers:
-	  - "dev.example.com"
-	  - "another.example.com"
+ my:
+  servers:
+  - "dev.example.com"
+  - "another.example.com"
 ----
 
 The preceding example would be transformed into these properties:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	my.servers[0]=dev.example.com
-	my.servers[1]=another.example.com
+my.servers[0]=dev.example.com
+my.servers[1]=another.example.com
 ----
 
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
@@ -811,16 +811,16 @@ If you still want to inject other beans using the constructor, the configuration
 
 This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	my:
-	  service:
-	    remote-address: 192.168.1.1
-	    security:
-	      username: "admin"
-	      roles:
-	      - "USER"
-	      - "ADMIN"
+my:
+  service:
+    remote-address: 192.168.1.1
+    security:
+      username: "admin"
+      roles:
+      - "USER"
+      - "ADMIN"
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:

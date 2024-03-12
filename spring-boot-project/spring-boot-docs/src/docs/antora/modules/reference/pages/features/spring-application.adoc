@@ -53,9 +53,9 @@ To do so, you need to xref:features/external-config.adoc[enable the `debug` prop
 
 For instance, if you are running your application by using `java -jar`, you can enable the `debug` property as follows:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
+$ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
 ----
 
 
@@ -385,9 +385,9 @@ The first available implementation, `FlightRecorderApplicationStartup` is provid
 It adds Spring-specific startup events to a Java Flight Recorder session and is meant for profiling applications and correlating their Spring context lifecycle with JVM events (such as allocations, GCs, class loading...).
 Once configured, you can record data by running the application with the Flight Recorder enabled:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -XX:StartFlightRecording:filename=recording.jfr,duration=10s -jar demo.jar
+$ java -XX:StartFlightRecording:filename=recording.jfr,duration=10s -jar demo.jar
 ----
 
 Spring Boot ships with the `BufferingApplicationStartup` variant; this implementation is meant for buffering the startup steps and draining them into an external metrics system.

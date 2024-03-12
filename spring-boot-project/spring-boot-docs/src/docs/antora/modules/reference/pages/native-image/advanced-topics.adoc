@@ -63,21 +63,21 @@ You also need to install `pack` by following https://buildpacks.io//docs/tools/p
 
 Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ pack build --builder paketobuildpacks/builder-jammy-tiny \
-	    --path target/myproject-0.0.1-SNAPSHOT.jar \
-	    --env 'BP_NATIVE_IMAGE=true' \
-	    my-application:0.0.1-SNAPSHOT
+$ pack build --builder paketobuildpacks/builder-jammy-tiny \
+    --path target/myproject-0.0.1-SNAPSHOT.jar \
+    --env 'BP_NATIVE_IMAGE=true' \
+    my-application:0.0.1-SNAPSHOT
 ----
 
 NOTE: You do not need to have a local GraalVM installation to generate an image in this way.
 
 Once `pack` has finished, you can launch the application using `docker run`:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
+$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
 ----
 
 
@@ -91,14 +91,14 @@ You can either download it manually on the {url-download-liberica-nik}[Liberica 
 
 Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ rm -rf target/native
-	$ mkdir -p target/native
-	$ cd target/native
-	$ jar -xvf ../myproject-0.0.1-SNAPSHOT.jar
-	$ native-image -H:Name=myproject @META-INF/native-image/argfile -cp .:BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`
-	$ mv myproject ../
+$ rm -rf target/native
+$ mkdir -p target/native
+$ cd target/native
+$ jar -xvf ../myproject-0.0.1-SNAPSHOT.jar
+$ native-image -H:Name=myproject @META-INF/native-image/argfile -cp .:BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`
+$ mv myproject ../
 ----
 
 NOTE: These commands work on Linux or macOS machines, but you will need to adapt them for Windows.

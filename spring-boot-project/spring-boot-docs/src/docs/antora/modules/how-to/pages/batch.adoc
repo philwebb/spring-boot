@@ -50,17 +50,17 @@ Spring Boot converts any command line argument starting with `--` to a property 
 This should not be used to pass arguments to batch jobs.
 To specify batch arguments on the command line, use the regular format (that is without `--`), as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
+$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
 ----
 
 If you specify a property of the `Environment` on the command line, it is ignored by the job.
 Consider the following command:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ java -jar myapp.jar --server.port=7070 someParameter=someValue
+$ java -jar myapp.jar --server.port=7070 someParameter=someValue
 ----
 
 This provides only one argument to the batch job: `someParameter=someValue`.

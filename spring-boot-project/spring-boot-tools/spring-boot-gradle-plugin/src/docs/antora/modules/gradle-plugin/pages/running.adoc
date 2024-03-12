@@ -3,9 +3,9 @@
 
 To run your application without first building an archive use the `bootRun` task:
 
-[source,bash,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ ./gradlew bootRun
+$ ./gradlew bootRun
 ----
 
 The `bootRun` task is an instance of xref:api/java/org/springframework/boot/gradle/tasks/run/BootRun.html[`BootRun`] which is a `JavaExec` subclass.
@@ -79,9 +79,9 @@ include::example$running/application-plugin-main-class-name.gradle.kts[tags=main
 Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
 For example, to run your application with a profile named `dev` active the following command can be used:
 
-[source,bash,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ ./gradlew bootRun --args='--spring.profiles.active=dev'
+$ ./gradlew bootRun --args='--spring.profiles.active=dev'
 ----
 
 See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.

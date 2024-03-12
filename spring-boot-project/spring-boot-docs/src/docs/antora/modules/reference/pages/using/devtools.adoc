@@ -6,23 +6,23 @@ The `spring-boot-devtools` module can be included in any project to provide addi
 To include devtools support, add the module dependency to your build, as shown in the following listings for Maven and Gradle:
 
 .Maven
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-devtools</artifactId>
+		<optional>true</optional>
+	</dependency>
+</dependencies>
 ----
 
 .Gradle
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		developmentOnly("org.springframework.boot:spring-boot-devtools")
-	}
+dependencies {
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+}
 ----
 
 CAUTION: Devtools might cause classloading issues, in particular in multi-module projects.
@@ -362,19 +362,19 @@ You should never enable support on a production deployment.
 
 To enable it, you need to make sure that `devtools` is included in the repackaged archive, as shown in the following listing:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludeDevtools>false</excludeDevtools>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<excludeDevtools>false</excludeDevtools>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 Then you need to set the configprop:spring.devtools.remote.secret[] property.

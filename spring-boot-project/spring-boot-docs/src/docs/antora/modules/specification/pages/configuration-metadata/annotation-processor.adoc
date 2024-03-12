@@ -13,31 +13,31 @@ To use the processor, include a dependency on `spring-boot-configuration-process
 
 With Maven the dependency should be declared as optional, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-configuration-processor</artifactId>
-		<optional>true</optional>
-	</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-configuration-processor</artifactId>
+	<optional>true</optional>
+</dependency>
 ----
 
 With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-	}
+dependencies {
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+}
 ----
 
 If you are using an `additional-spring-configuration-metadata.json` file, the `compileJava` task should be configured to depend on the `processResources` task, as shown in the following example:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	tasks.named('compileJava') {
-	    inputs.files(tasks.named('processResources'))
-	}
+tasks.named('compileJava') {
+	inputs.files(tasks.named('processResources'))
+}
 ----
 
 This dependency ensures that the additional metadata is available when the annotation processor runs during compilation.
@@ -49,15 +49,15 @@ There are several ways to do this.
 With Maven, you can configure the `maven-apt-plugin` explicitly and add the dependency to the annotation processor only there.
 You could also let the AspectJ plugin run all the processing and disable annotation processing in the `maven-compiler-plugin` configuration, as follows:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<configuration>
-			<proc>none</proc>
-		</configuration>
-	</plugin>
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<configuration>
+		<proc>none</proc>
+	</configuration>
+</plugin>
 ----
 ====
 
@@ -100,18 +100,18 @@ include-code::MyMessagingProperties[]
 
 In order to document default values for properties in the class above, you could add the following content to xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[the manual metadata of the module]:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"properties": [
-		{
-			"name": "my.messaging.addresses",
-			"defaultValue": ["a", "b"]
-		},
-		{
-			"name": "my.messaging.container-type",
-			"defaultValue": "simple"
-		}
-	]}
+{"properties": [
+	{
+		"name": "my.messaging.addresses",
+		"defaultValue": ["a", "b"]
+	},
+	{
+		"name": "my.messaging.container-type",
+		"defaultValue": "simple"
+	}
+]}
 ----
 
 NOTE: Only the `name` of the property is required to document additional metadata for existing properties.

@@ -10,7 +10,7 @@ Disable launch script configuration when building a jar file that is intended to
 
 Here’s how you can launch your jar with a `layertools` jar mode:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
 $ java -Djarmode=layertools -jar my-app.jar
 ----
@@ -31,7 +31,7 @@ Available commands:
 The `extract` command can be used to easily split the application into layers to be added to the dockerfile.
 Here is an example of a Dockerfile using `jarmode`.
 
-[source,dockerfile,indent=0,subs="verbatim"]
+[source,dockerfile]
 ----
 FROM eclipse-temurin:17-jre as builder
 WORKDIR application
@@ -50,9 +50,9 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 
 Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ docker build --build-arg JAR_FILE=path/to/myapp.jar .
+$ docker build --build-arg JAR_FILE=path/to/myapp.jar .
 ----
 
 This is a multi-stage dockerfile.

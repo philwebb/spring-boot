@@ -178,14 +178,14 @@ You can also provide your own HTML templates to display errors (see the xref:web
 Before customizing error handling in Spring Boot directly, you can leverage the {url-spring-framework-docs}/web/webflux/ann-rest-exceptions.html[RFC 7807 Problem Details] support in Spring WebFlux.
 Spring WebFlux can produce custom error messages with the `application/problem+json` media type, like:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
 {
-  "type": "https://example.org/problems/unknown-project",
-  "title": "Unknown project",
-  "status": 404,
-  "detail": "No project found for id 'spring-unknown'",
-  "instance": "/projects/spring-unknown"
+	"type": "https://example.org/problems/unknown-project",
+	"title": "Unknown project",
+	"status": 404,
+	"detail": "No project found for id 'spring-unknown'",
+	"instance": "/projects/spring-unknown"
 }
 ----
 
@@ -217,32 +217,32 @@ Note that the path to the default error view is `error/error`, whereas with Spri
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim"]
+[source]
 ----
-	src/
-	 +- main/
-	     +- java/
-	     |   + <source code>
-	     +- resources/
-	         +- public/
-	             +- error/
-	             |   +- 404.html
-	             +- <other public assets>
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- public/
+             +- error/
+             |   +- 404.html
+             +- <other public assets>
 ----
 
 To map all `5xx` errors by using a Mustache template, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim"]
+[source]
 ----
-	src/
-	 +- main/
-	     +- java/
-	     |   + <source code>
-	     +- resources/
-	         +- templates/
-	             +- error/
-	             |   +- 5xx.mustache
-	             +- <other templates>
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- templates/
+             +- error/
+             |   +- 5xx.mustache
+             +- <other templates>
 ----
 
 

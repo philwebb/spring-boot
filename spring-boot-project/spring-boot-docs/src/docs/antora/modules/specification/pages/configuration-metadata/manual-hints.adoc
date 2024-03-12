@@ -25,21 +25,21 @@ include-code::MyProperties[]
 The magic values are (in this example) are `sample1` and `sample2`.
 In order to offer additional content assistance for the keys, you could add the following JSON to xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[the manual metadata of the module]:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "my.contexts.keys",
-			"values": [
-				{
-					"value": "sample1"
-				},
-				{
-					"value": "sample2"
-				}
-			]
-		}
-	]}
+{"hints": [
+	{
+		"name": "my.contexts.keys",
+		"values": [
+			{
+				"value": "sample1"
+			},
+			{
+				"value": "sample2"
+			}
+		]
+	}
+]}
 ----
 
 TIP: We recommend that you use an `Enum` for those two values instead.
@@ -102,26 +102,26 @@ This provider is typically used if you have a list of values and any extra value
 
 The following example offers `on` and `off` as auto-completion values for `system.state`:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "system.state",
-			"values": [
-				{
-					"value": "on"
-				},
-				{
-					"value": "off"
-				}
-			],
-			"providers": [
-				{
-					"name": "any"
-				}
-			]
-		}
-	]}
+{"hints": [
+	{
+		"name": "system.state",
+		"values": [
+			{
+				"value": "on"
+			},
+			{
+				"value": "off"
+			}
+		],
+		"providers": [
+			{
+				"name": "any"
+			}
+		]
+	}
+]}
 ----
 
 Note that, in the preceding example, any other value is also allowed.
@@ -154,21 +154,21 @@ This provider supports the following parameters:
 
 The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the `JspServlet` class name to use:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "server.servlet.jsp.class-name",
-			"providers": [
-				{
-					"name": "class-reference",
-					"parameters": {
-						"target": "jakarta.servlet.http.HttpServlet"
-					}
+{"hints": [
+	{
+		"name": "server.servlet.jsp.class-name",
+		"providers": [
+			{
+				"name": "class-reference",
+				"parameters": {
+					"target": "jakarta.servlet.http.HttpServlet"
 				}
-			]
-		}
-	]}
+			}
+		]
+	}
+]}
 ----
 
 
@@ -205,21 +205,21 @@ TIP: If multiple values can be provided, use a `Collection` or _Array_ type to t
 The following metadata snippet corresponds to the standard `spring.liquibase.change-log` property that defines the path to the changelog to use.
 It is actually used internally as a `org.springframework.core.io.Resource` but cannot be exposed as such, because we need to keep the original String value to pass it to the Liquibase API.
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "spring.liquibase.change-log",
-			"providers": [
-				{
-					"name": "handle-as",
-					"parameters": {
-						"target": "org.springframework.core.io.Resource"
-					}
+{"hints": [
+	{
+		"name": "spring.liquibase.change-log",
+		"providers": [
+			{
+				"name": "handle-as",
+				"parameters": {
+					"target": "org.springframework.core.io.Resource"
 				}
-			]
-		}
-	]}
+			}
+		]
+	}
+]}
 ----
 
 
@@ -250,64 +250,64 @@ The following metadata snippet corresponds to the standard `logging.level` prope
 Keys are _logger names_, and values correspond to the standard log levels or any custom level.
 As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints have been added for those.
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "logging.level.keys",
-			"values": [
-				{
-					"value": "root",
-					"description": "Root logger used to assign the default logging level."
-				},
-				{
-					"value": "sql",
-					"description": "SQL logging group including Hibernate SQL logger."
-				},
-				{
-					"value": "web",
-					"description": "Web logging group including codecs."
-				}
-			],
-			"providers": [
-				{
-					"name": "logger-name"
-				}
-			]
-		},
-		{
-			"name": "logging.level.values",
-			"values": [
-				{
-					"value": "trace"
-				},
-				{
-					"value": "debug"
-				},
-				{
-					"value": "info"
-				},
-				{
-					"value": "warn"
-				},
-				{
-					"value": "error"
-				},
-				{
-					"value": "fatal"
-				},
-				{
-					"value": "off"
-				}
+{"hints": [
+	{
+		"name": "logging.level.keys",
+		"values": [
+			{
+				"value": "root",
+				"description": "Root logger used to assign the default logging level."
+			},
+			{
+				"value": "sql",
+				"description": "SQL logging group including Hibernate SQL logger."
+			},
+			{
+				"value": "web",
+				"description": "Web logging group including codecs."
+			}
+		],
+		"providers": [
+			{
+				"name": "logger-name"
+			}
+		]
+	},
+	{
+		"name": "logging.level.values",
+		"values": [
+			{
+				"value": "trace"
+			},
+			{
+				"value": "debug"
+			},
+			{
+				"value": "info"
+			},
+			{
+				"value": "warn"
+			},
+			{
+				"value": "error"
+			},
+			{
+				"value": "fatal"
+			},
+			{
+				"value": "off"
+			}
 
-			],
-			"providers": [
-				{
-					"name": "any"
-				}
-			]
-		}
-	]}
+		],
+		"providers": [
+			{
+				"name": "any"
+			}
+		]
+	}
+]}
 ----
 
 
@@ -331,21 +331,21 @@ This provider supports the following parameters:
 
 The following metadata snippet corresponds to the standard `spring.jmx.server` property that defines the name of the `MBeanServer` bean to use:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "spring.jmx.server",
-			"providers": [
-				{
-					"name": "spring-bean-reference",
-					"parameters": {
-						"target": "javax.management.MBeanServer"
-					}
+{"hints": [
+	{
+		"name": "spring.jmx.server",
+		"providers": [
+			{
+				"name": "spring-bean-reference",
+				"parameters": {
+					"target": "javax.management.MBeanServer"
 				}
-			]
-		}
-	]}
+			}
+		]
+	}
+]}
 ----
 
 NOTE: The binder is not aware of the metadata.
@@ -360,16 +360,16 @@ The **spring-profile-name** provider auto-completes the Spring profiles that are
 
 The following metadata snippet corresponds to the standard `spring.profiles.active` property that defines the name of the Spring profile(s) to enable:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
-	{"hints": [
-		{
-			"name": "spring.profiles.active",
-			"providers": [
-				{
-					"name": "spring-profile-name"
-				}
-			]
-		}
-	]}
+{"hints": [
+	{
+		"name": "spring.profiles.active",
+		"providers": [
+			{
+				"name": "spring-profile-name"
+			}
+		]
+	}
+]}
 ----

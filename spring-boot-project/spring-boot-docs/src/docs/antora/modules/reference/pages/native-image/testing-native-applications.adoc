@@ -28,7 +28,7 @@ To run a Spring Boot application on the JVM and have it use AOT generated code y
 
 For example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
 $ java -Dspring.aot.enabled=true -jar myapplication.jar
 ----

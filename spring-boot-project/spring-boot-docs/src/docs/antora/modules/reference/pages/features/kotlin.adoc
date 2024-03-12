@@ -61,27 +61,27 @@ Also be aware that Spring Boot's own API is {url-github-issues}/10712[not yet an
 
 Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
 
-[source,kotlin,indent=0,subs="verbatim"]
+[source,kotlin]
 ----
-	import org.springframework.boot.autoconfigure.SpringBootApplication
-	import org.springframework.boot.runApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-	@SpringBootApplication
-	class MyApplication
+@SpringBootApplication
+class MyApplication
 
-	fun main(args: Array<String>) {
-		runApplication<MyApplication>(*args)
-	}
+fun main(args: Array<String>) {
+	runApplication<MyApplication>(*args)
+}
 ----
 
 This is a drop-in replacement for `SpringApplication.run(MyApplication::class.java, *args)`.
 It also allows customization of the application as shown in the following example:
 
-[source,kotlin,indent=0,subs="verbatim"]
+[source,kotlin]
 ----
-	runApplication<MyApplication>(*args) {
-		setBannerMode(OFF)
-	}
+runApplication<MyApplication>(*args) {
+	setBannerMode(OFF)
+}
 ----
 
 
@@ -117,7 +117,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 `@ConfigurationProperties` when used in combination with xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[constructor binding] supports classes with immutable `val` properties as shown in the following example:
 
-[source,kotlin,indent=0,subs="verbatim"]
+[source,kotlin]
 ----
 @ConfigurationProperties("example.kotlin")
 data class KotlinExampleProperties(

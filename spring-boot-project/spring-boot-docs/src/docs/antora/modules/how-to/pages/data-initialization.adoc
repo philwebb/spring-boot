@@ -228,7 +228,7 @@ This configures Liquibase to use a different changelog when running in the `test
 
 Now create the changelog file at `src/test/resources/db/changelog/db.changelog-test.yaml`:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
 databaseChangeLog:
   - include:

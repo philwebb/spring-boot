@@ -20,16 +20,16 @@ include-code::MyApplication[]
 The next step is to update your build configuration such that your project produces a war file rather than a jar file.
 If you use Maven and `spring-boot-starter-parent` (which configures Maven's war plugin for you), all you need to do is to modify `pom.xml` to change the packaging to war, as follows:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<packaging>war</packaging>
+<packaging>war</packaging>
 ----
 
 If you use Gradle, you need to modify `build.gradle` to apply the war plugin to the project, as follows:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	apply plugin: 'war'
+apply plugin: 'war'
 ----
 
 The final step in the process is to ensure that the embedded servlet container does not interfere with the servlet container to which the war file is deployed.
@@ -37,28 +37,28 @@ To do so, you need to mark the embedded servlet container dependency as being pr
 
 If you use Maven, the following example marks the servlet container (Tomcat, in this case) as being provided:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependencies>
-		<!-- ... -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- ... -->
-	</dependencies>
+<dependencies>
+	<!-- ... -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-tomcat</artifactId>
+		<scope>provided</scope>
+	</dependency>
+	<!-- ... -->
+</dependencies>
 ----
 
 If you use Gradle, the following example marks the servlet container (Tomcat, in this case) as being provided:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		// ...
-		providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-		// ...
-	}
+dependencies {
+	// ...
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	// ...
+}
 ----
 
 TIP: `providedRuntime` is preferred to Gradle's `compileOnly` configuration.
@@ -140,20 +140,20 @@ include-code::MyApplication[]
 If you use Logback, you also need to tell WebLogic to prefer the packaged version rather than the version that was pre-installed with the server.
 You can do so by adding a `WEB-INF/weblogic.xml` file with the following contents:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<?xml version="1.0" encoding="UTF-8"?>
-	<wls:weblogic-web-app
-		xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-			https://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
-			http://xmlns.oracle.com/weblogic/weblogic-web-app
-			https://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
-		<wls:container-descriptor>
-			<wls:prefer-application-packages>
-				<wls:package-name>org.slf4j</wls:package-name>
-			</wls:prefer-application-packages>
-		</wls:container-descriptor>
-	</wls:weblogic-web-app>
+<?xml version="1.0" encoding="UTF-8"?>
+<wls:weblogic-web-app
+	xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		https://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+		http://xmlns.oracle.com/weblogic/weblogic-web-app
+		https://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+	<wls:container-descriptor>
+		<wls:prefer-application-packages>
+			<wls:package-name>org.slf4j</wls:package-name>
+		</wls:prefer-application-packages>
+	</wls:container-descriptor>
+</wls:weblogic-web-app>
 ----

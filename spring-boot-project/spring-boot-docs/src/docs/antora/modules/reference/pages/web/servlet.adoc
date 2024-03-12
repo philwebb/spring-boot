@@ -350,14 +350,14 @@ To do so, extend `BasicErrorController`, add a public method with a `@RequestMap
 As of Spring Framework 6.0, {url-spring-framework-docs}/web/webmvc/mvc-ann-rest-exceptions.html[RFC 7807 Problem Details] is supported.
 Spring MVC can produce custom error messages with the `application/problem+json` media type, like:
 
-[source,json,indent=0,subs="verbatim"]
+[source,json]
 ----
 {
-  "type": "https://example.org/problems/unknown-project",
-  "title": "Unknown project",
-  "status": 404,
-  "detail": "No project found for id 'spring-unknown'",
-  "instance": "/projects/spring-unknown"
+	"type": "https://example.org/problems/unknown-project",
+	"title": "Unknown project",
+	"status": 404,
+	"detail": "No project found for id 'spring-unknown'",
+	"instance": "/projects/spring-unknown"
 }
 ----
 

@@ -11,19 +11,19 @@ Most developers use the `spring-boot-starter-test` "`Starter`", which imports bo
 If you have tests that use JUnit 4, JUnit 5's vintage engine can be used to run them.
 To use the vintage engine, add a dependency on `junit-vintage-engine`, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>org.junit.vintage</groupId>
-		<artifactId>junit-vintage-engine</artifactId>
-		<scope>test</scope>
-		<exclusions>
-			<exclusion>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
+<dependency>
+	<groupId>org.junit.vintage</groupId>
+	<artifactId>junit-vintage-engine</artifactId>
+	<scope>test</scope>
+	<exclusions>
+		<exclusion>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
 ----
 ====
 
@@ -480,31 +480,31 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 Spring GraphQL offers a dedicated testing support module; you'll need to add it to your project:
 
 .Maven
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.graphql</groupId>
-      <artifactId>spring-graphql-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- Unless already present in the compile scope -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webflux</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.graphql</groupId>
+		<artifactId>spring-graphql-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<!-- Unless already present in the compile scope -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-webflux</artifactId>
+		<scope>test</scope>
+	</dependency>
+</dependencies>
 ----
 
 .Gradle
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-  dependencies {
-    testImplementation("org.springframework.graphql:spring-graphql-test")
-    // Unless already present in the implementation configuration
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
-  }
+dependencies {
+	testImplementation("org.springframework.graphql:spring-graphql-test")
+	// Unless already present in the implementation configuration
+	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+}
 ----
 
 This testing module ships the {url-spring-graphql-docs}/#testing-graphqltester[GraphQlTester].

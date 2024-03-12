@@ -533,13 +533,13 @@ TIP: By default, the endpoint is not available and must be exposed. See xref:act
 
 The following example `scrape_config` adds to `prometheus.yml`:
 
-[source,yaml,indent=0,subs="verbatim"]
+[source,yaml]
 ----
-	scrape_configs:
-	  - job_name: "spring"
-		metrics_path: "/actuator/prometheus"
-		static_configs:
-		  - targets: ["HOST:PORT"]
+scrape_configs:
+- job_name: "spring"
+  metrics_path: "/actuator/prometheus"
+  static_configs:
+  - targets: ["HOST:PORT"]
 ----
 
 https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
@@ -550,7 +550,7 @@ Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exe
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
 To enable Prometheus Pushgateway support, add the following dependency to your project:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
 <dependency>
 	<groupId>io.prometheus</groupId>

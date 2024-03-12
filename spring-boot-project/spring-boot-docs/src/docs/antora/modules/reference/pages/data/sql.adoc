@@ -39,17 +39,17 @@ If you want to make sure that each context has a separate embedded database, you
 
 For example, the typical POM dependencies would be as follows:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-data-jpa</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.hsqldb</groupId>
-		<artifactId>hsqldb</artifactId>
-		<scope>runtime</scope>
-	</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.hsqldb</groupId>
+	<artifactId>hsqldb</artifactId>
+	<scope>runtime</scope>
+</dependency>
 ----
 
 NOTE: You need a dependency on `spring-jdbc` for an embedded database to be auto-configured.
@@ -396,31 +396,31 @@ If you use the `jooq-codegen-maven` plugin and you also use the `spring-boot-sta
 You can also use Spring Boot-defined version variables (such as `h2.version`) to declare the plugin's database dependency.
 The following listing shows an example:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<plugin>
-		<groupId>org.jooq</groupId>
-		<artifactId>jooq-codegen-maven</artifactId>
-		<executions>
+<plugin>
+	<groupId>org.jooq</groupId>
+	<artifactId>jooq-codegen-maven</artifactId>
+	<executions>
+		...
+	</executions>
+	<dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+		</dependency>
+	</dependencies>
+	<configuration>
+		<jdbc>
+			<driver>org.h2.Driver</driver>
+			<url>jdbc:h2:~/yourdatabase</url>
+		</jdbc>
+		<generator>
 			...
-		</executions>
-		<dependencies>
-			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<version>${h2.version}</version>
-			</dependency>
-		</dependencies>
-		<configuration>
-			<jdbc>
-				<driver>org.h2.Driver</driver>
-				<url>jdbc:h2:~/yourdatabase</url>
-			</jdbc>
-			<generator>
-				...
-			</generator>
-		</configuration>
-	</plugin>
+		</generator>
+	</configuration>
+</plugin>
 ----
 
 
@@ -509,13 +509,13 @@ Similarly to xref:data/sql.adoc#data.sql.datasource.embedded[the JDBC support], 
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>io.r2dbc</groupId>
-		<artifactId>r2dbc-h2</artifactId>
-		<scope>runtime</scope>
-	</dependency>
+<dependency>
+	<groupId>io.r2dbc</groupId>
+	<artifactId>r2dbc-h2</artifactId>
+	<scope>runtime</scope>
+</dependency>
 ----
 
 [NOTE]

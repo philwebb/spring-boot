@@ -19,10 +19,10 @@ If, for whatever reason, you cannot handle the exception, return `null` to give 
 `FailureAnalyzer` implementations must be registered in `META-INF/spring.factories`.
 The following example registers `ProjectConstraintViolationFailureAnalyzer`:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,properties]
 ----
-	org.springframework.boot.diagnostics.FailureAnalyzer=\
-	com.example.ProjectConstraintViolationFailureAnalyzer
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+com.example.ProjectConstraintViolationFailureAnalyzer
 ----
 
 NOTE: If you need access to the `BeanFactory` or the `Environment`, declare them as constructor arguments in your `FailureAnalyzer` implementation.

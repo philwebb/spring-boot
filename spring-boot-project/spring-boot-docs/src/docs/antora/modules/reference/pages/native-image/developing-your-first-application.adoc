@@ -87,9 +87,9 @@ TIP: If you don't want to use `spring-boot-starter-parent` you'll need to config
 
 To build the image, you can run the `spring-boot:build-image` goal with the `native` profile active:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ mvn -Pnative spring-boot:build-image
+$ mvn -Pnative spring-boot:build-image
 ----
 
 
@@ -103,9 +103,9 @@ You should check that your Gradle build contains a `plugins` block that includes
 As long as the `org.graalvm.buildtools.native` plugin is applied, the `bootBuildImage` task will generate a native image rather than a JVM one.
 You can run the task using:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ gradle bootBuildImage
+$ gradle bootBuildImage
 ----
 
 
@@ -116,26 +116,26 @@ You can run the task using:
 Once you have run the appropriate build command, a Docker image should be available.
 You can start your application using `docker run`:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
+$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
 ----
 
 You should see output similar to the following:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell]
 ----
-	  .   ____          _            __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, | / / / /
-	 =========|_|==============|___/=/_/_/_/
-	 :: Spring Boot ::  (v{version-spring-boot})
-	....... . . .
-	....... . . . (log output here)
-	....... . . .
-	........ Started MyApplication in 0.08 seconds (process running for 0.095)
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v{version-spring-boot})
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started MyApplication in 0.08 seconds (process running for 0.095)
 ----
 
 NOTE: The startup time differs from machine to machine, but it should be much faster than a Spring Boot application running on a JVM.
@@ -207,9 +207,9 @@ As with the xref:native-image/developing-your-first-application.adoc#native-imag
 
 With the `native` profile active, you can invoke the `native:compile` goal to trigger `native-image` compilation:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ mvn -Pnative native:compile
+$ mvn -Pnative native:compile
 ----
 
 The native image executable can be found in the `target` directory.
@@ -222,9 +222,9 @@ The native image executable can be found in the `target` directory.
 When the Native Build Tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger the Spring AOT engine.
 Task dependencies are automatically configured, so you can just run the standard `nativeCompile` task to generate a native image:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ gradle nativeCompile
+$ gradle nativeCompile
 ----
 
 The native image executable can be found in the `build/native/nativeCompile` directory.
@@ -236,16 +236,16 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 
 At this point, your application should work. You can now start the application by running it directly:
 
-[source,shell,indent=0,subs="verbatim",role="primary"]
+[source,shell,role="primary"]
 .Maven
 ----
-	$ target/myproject
+$ target/myproject
 ----
 
-[source,shell,indent=0,subs="verbatim",role="secondary"]
+[source,shell,role="secondary"]
 .Gradle
 ----
-	$ build/native/nativeCompile/myproject
+$ build/native/nativeCompile/myproject
 ----
 
 You should see output similar to the following:

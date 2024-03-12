@@ -10,23 +10,23 @@ The `spring-boot-docker-compose` module can be included in a project to provide 
 Add the module dependency to your build, as shown in the following listings for Maven and Gradle:
 
 .Maven
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-docker-compose</artifactId>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-docker-compose</artifactId>
+		<optional>true</optional>
+	</dependency>
+</dependencies>
 ----
 
 .Gradle
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	dependencies {
-		developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-	}
+dependencies {
+	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+}
 ----
 
 When this module is included as a dependency Spring Boot will do the following:

@@ -43,9 +43,9 @@ Consult the https://www.freedesktop.org/software/systemd/man/systemd.service.htm
 
 To flag the application to start automatically on system boot, use the following command:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ systemctl enable myapp.service
+$ systemctl enable myapp.service
 ----
 
 Run `man systemctl` for more details.
@@ -68,24 +68,24 @@ A standard-format jar file that contains one or more zip64-format nested jars ca
 
 To create a '`fully executable`' jar with Maven, use the following plugin configuration:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<plugin>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-maven-plugin</artifactId>
-		<configuration>
-			<executable>true</executable>
-		</configuration>
-	</plugin>
+<plugin>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-maven-plugin</artifactId>
+	<configuration>
+		<executable>true</executable>
+	</configuration>
+</plugin>
 ----
 
 The following example shows the equivalent Gradle configuration:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	tasks.named('bootJar') {
-		launchScript()
-	}
+tasks.named('bootJar') {
+	launchScript()
+}
 ----
 
 It can then be symlinked to `init.d` to support the standard `start`, `stop`, `restart`, and `status` commands.
@@ -100,17 +100,17 @@ The default scripts supports the following features:
 
 Assuming that you have a Spring Boot application installed in `/var/myapp`, to install a Spring Boot application as an `init.d` service, create a symlink, as follows:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
+$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
 ----
 
 Once installed, you can start and stop the service in the usual way.
 For example, on a Debian-based system, you could start it with the following command:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ service myapp start
+$ service myapp start
 ----
 
 TIP: If your application fails to start, check the log file written to `/var/log/<appname>.log` for errors.
@@ -118,9 +118,9 @@ TIP: If your application fails to start, check the log file written to `/var/log
 You can also flag the application to start automatically by using your standard operating system tools.
 For example, on Debian, you could use the following command:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ update-rc.d myapp defaults <priority>
+$ update-rc.d myapp defaults <priority>
 ----
 
 
@@ -136,9 +136,9 @@ When the environment variable is not set, the user who owns the jar file is used
 You should never run a Spring Boot application as `root`, so `RUN_AS_USER` should never be root and your application's jar file should never be owned by root.
 Instead, create a specific user to run your application and set the `RUN_AS_USER` environment variable or use `chown` to make it the owner of the jar file, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ chown bootapp:bootapp your-app.jar
+$ chown bootapp:bootapp your-app.jar
 ----
 
 In this case, the default executable script runs the application as the `bootapp` user.
@@ -149,18 +149,18 @@ For example, you can set the account's shell to `/usr/sbin/nologin`.
 You should also take steps to prevent the modification of your application's jar file.
 Firstly, configure its permissions so that it cannot be written and can only be read or executed by its owner, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ chmod 500 your-app.jar
+$ chmod 500 your-app.jar
 ----
 
 Second, you should also take steps to limit the damage if your application or the account that is running it is compromised.
 If an attacker does gain access, they could make the jar file writable and change its contents.
 One way to protect against this is to make it immutable by using `chattr`, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ sudo chattr +i your-app.jar
+$ sudo chattr +i your-app.jar
 ----
 
 This will prevent any user, including root, from modifying the jar.
@@ -169,10 +169,10 @@ If root is used to control the application's service and you xref:deployment/ins
 It should be secured accordingly.
 Use `chmod` so that the file can only be read by the owner and use `chown` to make root the owner, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim"]
+[source,shell]
 ----
-	$ chmod 400 your-app.conf
-	$ sudo chown root:root your-app.conf
+$ chmod 400 your-app.conf
+$ sudo chown root:root your-app.conf
 ----
 
 

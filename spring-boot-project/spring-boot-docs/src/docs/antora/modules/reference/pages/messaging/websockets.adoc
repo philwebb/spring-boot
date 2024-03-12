@@ -8,10 +8,10 @@ Spring Framework provides {url-spring-framework-docs}/web/websocket.html[rich We
 
 WebSocket support is also available for {url-spring-framework-docs}/web/webflux-websocket.html[reactive web applications] and requires to include the WebSocket API alongside `spring-boot-starter-webflux`:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<dependency>
-		<groupId>jakarta.websocket</groupId>
-		<artifactId>jakarta.websocket-api</artifactId>
-	</dependency>
+<dependency>
+	<groupId>jakarta.websocket</groupId>
+	<artifactId>jakarta.websocket-api</artifactId>
+</dependency>
 ----

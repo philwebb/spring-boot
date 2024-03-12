@@ -39,11 +39,11 @@ TIP: See the xref:maven-plugin:build-info.adoc[Spring Boot Maven Plugin document
 
 The following example does the same with Gradle:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	springBoot {
-		buildInfo()
-	}
+springBoot {
+	buildInfo()
+}
 ----
 
 TIP: See the xref:gradle-plugin:integrating-with-actuator.adoc[Spring Boot Gradle Plugin documentation] for more details.
@@ -58,25 +58,25 @@ Both Maven and Gradle allow generating a `git.properties` file containing inform
 For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate a `git.properties` file.
 To use it, add the following declaration for the https://github.com/git-commit-id/git-commit-id-maven-plugin[`Git Commit Id Plugin`] to your POM:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>io.github.git-commit-id</groupId>
-				<artifactId>git-commit-id-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>io.github.git-commit-id</groupId>
+			<artifactId>git-commit-id-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 Gradle users can achieve the same result by using the https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin, as shown in the following example:
 
-[source,gradle,indent=0,subs="verbatim"]
+[source,gradle]
 ----
-	plugins {
-		id "com.gorylenko.gradle-git-properties" version "2.4.1"
-	}
+plugins {
+	id "com.gorylenko.gradle-git-properties" version "2.4.1"
+}
 ----
 
 Both the Maven and Gradle plugins allow the properties that are included in `git.properties` to be configured.
@@ -108,16 +108,16 @@ To override dependency versions in Gradle, see xref:gradle-plugin:managing-depen
 The `spring-boot-maven-plugin` can be used to create an executable "`fat`" JAR.
 If you use the `spring-boot-starter-parent` POM, you can declare the plugin and your jars are repackaged as follows:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 If you do not use the parent POM, you can still use the plugin.
@@ -163,19 +163,19 @@ This classifier is applied to the name of the executable archive, leaving the de
 
 To configure a classifier of `exec` in Maven, you can use the following configuration:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<classifier>exec</classifier>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<classifier>exec</classifier>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 
@@ -194,24 +194,24 @@ WARNING: Care should be taken to ensure that your operating system is configured
 
 For example, to indicate that JRuby should be flagged for unpacking by using the Maven Plugin, you would add the following configuration:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<requiresUnpack>
-						<dependency>
-							<groupId>org.jruby</groupId>
-							<artifactId>jruby-complete</artifactId>
-						</dependency>
-					</requiresUnpack>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<requiresUnpack>
+					<dependency>
+						<groupId>org.jruby</groupId>
+						<artifactId>jruby-complete</artifactId>
+					</dependency>
+				</requiresUnpack>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 
@@ -224,34 +224,34 @@ For example, the `application.yaml` configuration file might be excluded from th
 
 In Maven, the executable jar must be the main artifact and you can add a classified jar for the library, as follows:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>lib</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<classifier>lib</classifier>
-							<excludes>
-								<exclude>application.yaml</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+		<plugin>
+			<artifactId>maven-jar-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>lib</id>
+					<phase>package</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>lib</classifier>
+						<excludes>
+							<exclude>application.yaml</exclude>
+						</excludes>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
 ----
 
 
@@ -282,27 +282,27 @@ To make it executable, you can either use the `spring-boot-antlib` module or you
 
 The following example shows how to build an executable archive with Ant:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml]
 ----
-	<target name="build" depends="compile">
-		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
-			<mappedresources>
-				<fileset dir="target/classes" />
-				<globmapper from="*" to="BOOT-INF/classes/*"/>
-			</mappedresources>
-			<mappedresources>
-				<fileset dir="src/main/resources" erroronmissingdir="false"/>
-				<globmapper from="*" to="BOOT-INF/classes/*"/>
-			</mappedresources>
-			<mappedresources>
-				<fileset dir="${lib.dir}/runtime" />
-				<globmapper from="*" to="BOOT-INF/lib/*"/>
-			</mappedresources>
-			<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
-			<manifest>
-				<attribute name="Main-Class" value="org.springframework.boot.loader.launch.JarLauncher" />
-				<attribute name="Start-Class" value="${start-class}" />
-			</manifest>
-		</jar>
-	</target>
+<target name="build" depends="compile">
+	<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+		<mappedresources>
+			<fileset dir="target/classes" />
+			<globmapper from="*" to="BOOT-INF/classes/*"/>
+		</mappedresources>
+		<mappedresources>
+			<fileset dir="src/main/resources" erroronmissingdir="false"/>
+			<globmapper from="*" to="BOOT-INF/classes/*"/>
+		</mappedresources>
+		<mappedresources>
+			<fileset dir="${lib.dir}/runtime" />
+			<globmapper from="*" to="BOOT-INF/lib/*"/>
+		</mappedresources>
+		<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+		<manifest>
+			<attribute name="Main-Class" value="org.springframework.boot.loader.launch.JarLauncher" />
+			<attribute name="Start-Class" value="${start-class}" />
+		</manifest>
+	</jar>
+</target>
 ----
