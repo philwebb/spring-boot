@@ -919,7 +919,7 @@ NOTE: Make sure to not use the regular `@Import` annotation to import auto-confi
 Alternatively, additional auto-configurations can be added for any use of a slice annotation by registering them in a file stored in `META-INF/spring` as shown in the following example:
 
 .META-INF/spring/org.springframework.boot.test.autoconfigure.jdbc.JdbcTest.imports
-[indent=0]
+[source]
 ----
 com.example.IntegrationAutoConfiguration
 ----

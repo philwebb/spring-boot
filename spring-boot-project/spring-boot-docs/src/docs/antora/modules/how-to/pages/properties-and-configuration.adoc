@@ -201,7 +201,7 @@ A YAML file is parsed to a Java `Map<String,Object>` (like a JSON object), and S
 
 The preceding example YAML corresponds to the following `application.properties` file:
 
-[source,properties,indent=0,subs="verbatim",configprops]
+[source,properties,subs="verbatim",configprops]
 ----
 spring.application.name=cruncher
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver

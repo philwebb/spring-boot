@@ -28,10 +28,10 @@ You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-b
 Spring Boot checks for the presence of a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` file within your published jar.
 The file should list your configuration classes, with one class name per line, as shown in the following example:
 
-[indent=0]
+[source]
 ----
-    com.mycorp.libx.autoconfigure.LibXAutoConfiguration
-    com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration
+com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 ----
 
 TIP: You can add comments to the imports file using the `#` character.

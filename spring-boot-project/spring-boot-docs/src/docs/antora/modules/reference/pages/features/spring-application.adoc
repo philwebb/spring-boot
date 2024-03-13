@@ -8,7 +8,7 @@ include-code::MyApplication[]
 
 When your application starts, you should see something similar to the following output:
 
-[indent=0,subs="verbatim,attributes"]
+[source,subs="verbatim,attributes"]
 ----
 include::ROOT:partial$application/spring-application.txt[]
 ----

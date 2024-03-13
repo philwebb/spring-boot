@@ -497,12 +497,12 @@ As before, to exit the application, press `ctrl-c`.
 
 To create an executable jar, we need to run `gradle bootJar` from the command line, as follows:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
-    $ gradle bootJar
+$ gradle bootJar
 
-    BUILD SUCCESSFUL in 639ms
-    3 actionable tasks: 3 executed
+BUILD SUCCESSFUL in 639ms
+3 actionable tasks: 3 executed
 ----
 
 If you look in the `build/libs` directory, you should see `myproject-0.0.1-SNAPSHOT.jar`.

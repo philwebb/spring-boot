@@ -42,7 +42,7 @@ you can set configprop:spring.graphql.schema.locations[] to `+"classpath*:graphq
 
 In the following sections, we'll consider this sample GraphQL schema, defining two types and two queries:
 
-[source,json,indent=0,subs="verbatim,quotes"]
+[source,json,subs="verbatim,quotes"]
 ----
 include::ROOT:example$resources/graphql/schema.graphqls[]
 ----

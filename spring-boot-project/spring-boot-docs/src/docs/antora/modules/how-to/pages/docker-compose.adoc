@@ -12,7 +12,7 @@ When using `JdbcConnectionDetails` with Docker Compose, the parameters of the JD
 can be customized by applying the `org.springframework.boot.jdbc.parameters` label to the
 service. For example:
 
-[source,yaml,indent=0]
+[source,yaml]
 ----
 services:
   postgres:

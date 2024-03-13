@@ -132,7 +132,7 @@ Use a label named `org.springframework.boot.service-connection` to provide the s
 
 For example:
 
-[source,yaml,indent=0]
+[source,yaml,]
 ----
 services:
   redis:

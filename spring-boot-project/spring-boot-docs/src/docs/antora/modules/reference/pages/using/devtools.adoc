@@ -405,7 +405,7 @@ For example, if you are using Eclipse or Spring Tools and you have a project nam
 
 A running remote client might resemble the following listing:
 
-[indent=0,subs="verbatim,attributes"]
+[source,subs="verbatim,attributes"]
 ----
 include::ROOT:example$remote-spring-application.txt[]
 ----

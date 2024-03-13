@@ -22,7 +22,7 @@ This prevents logging performed by the container or other applications that have
 
 The default log output from Spring Boot resembles the following example:
 
-[indent=0]
+[source]
 ----
 include::ROOT:partial$logging/logging-format.txt[]
 ----

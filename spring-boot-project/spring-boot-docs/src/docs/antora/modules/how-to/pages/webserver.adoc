@@ -176,7 +176,7 @@ PEM-encoded PKCS#8 key files start with a `-----BEGIN PRIVATE KEY-----` or `----
 
 If you have files in other formats, e.g., PKCS#1 (`-----BEGIN RSA PRIVATE KEY-----`) or SEC 1 (`-----BEGIN EC PRIVATE KEY-----`), you can convert them to PKCS#8 using OpenSSL:
 
-[source,shell,indent=0,subs="verbatim,attributes"]
+[source,shell,subs="verbatim,attributes"]
 ----
 openssl pkcs8 -topk8 -nocrypt -in <input file> -out <output file>
 ----
