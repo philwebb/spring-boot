@@ -201,16 +201,7 @@ The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
 
-[source,properties,configprops,role="primary"]
-.Properties
-----
-logging.level.root=warn
-logging.level.org.springframework.web=debug
-logging.level.org.hibernate=error
-----
-
-[source,yaml,role="secondary"]
-.Yaml
+[configprops,yaml]
 ----
 logging:
   level:

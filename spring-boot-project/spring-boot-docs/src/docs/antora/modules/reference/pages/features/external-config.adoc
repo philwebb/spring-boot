@@ -912,17 +912,7 @@ If the key is not surrounded by `[]`, any characters that are not alpha-numeric,
 
 For example, consider binding the following properties to a `Map<String,String>`:
 
-
-[source,properties,role="primary"]
-.Properties
-----
-my.map.[/key1]=value1
-my.map.[/key2]=value2
-my.map./key3=value3
-----
-
-[source,yaml,role="secondary"]
-.Yaml
+[configprops%novalidate,yaml]
 ----
 my:
   map:
