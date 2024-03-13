@@ -10,17 +10,21 @@ To publish your Spring Boot jar or war, add it to the publication using the `art
 Pass the task that produces that artifact that you wish to publish to the `artifact` method.
 For example, to publish the artifact produced by the default `bootJar` task:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$publishing/maven-publish.gradle[tags=publishing]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$publishing/maven-publish.gradle.kts[tags=publishing]
 ----
+======
 
 
 

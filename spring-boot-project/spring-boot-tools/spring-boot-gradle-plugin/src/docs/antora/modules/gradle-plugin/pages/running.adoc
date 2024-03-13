@@ -16,60 +16,76 @@ By default, the main class will be configured automatically by looking for a cla
 
 The main class can also be configured explicitly using the task's `main` property:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-main.gradle[tags=main]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-main.gradle.kts[tags=main]
 ----
+======
 
 Alternatively, the main class name can be configured project-wide using the `mainClass` property of the Spring Boot DSL:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/spring-boot-dsl-main-class-name.gradle[tags=main-class]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/spring-boot-dsl-main-class-name.gradle.kts[tags=main-class]
 ----
+======
 
 By default, `bootRun` will configure the JVM to optimize its launch for faster startup during development.
 This behavior can be disabled by using the `optimizedLaunch` property, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-disable-optimized-launch.gradle[tags=launch]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
 ----
+======
 
 If the {url-gradle-docs-application-plugin}[`application` plugin] has been applied, its `mainClass` property must be configured and can be used for the same purpose:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/application-plugin-main-class-name.gradle[tags=main-class]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/application-plugin-main-class-name.gradle.kts[tags=main-class]
 ----
+======
 
 
 
@@ -96,17 +112,21 @@ To make that value of a system property to be configurable set its value using a
 To allow a project property to be optional, reference it using `findProperty`.
 Doing so also allows a default value to be provided using the `?:` Elvis operator, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-system-property.gradle[tags=system-property]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-system-property.gradle.kts[tags=system-property]
 ----
+======
 
 The preceding example sets that `com.example.property` system property to the value of the `example` project property.
 If the `example` project property has not been set, the value of the system property will be `default`.
@@ -132,17 +152,21 @@ For more details on using devtools, refer to xref:reference:using/devtools.adoc#
 
 Alternatively, you can configure `bootRun` such that your application's static resources are loaded from their source location:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-source-resources.gradle[tags=source-resources]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/boot-run-source-resources.gradle.kts[tags=source-resources]
 ----
+======
 
 This makes them reloadable in the live application which can be helpful at development time.
 

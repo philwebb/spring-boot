@@ -14,17 +14,21 @@ This provides a similar dependency management experience to the one that's enjoy
 For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
 To make use of this functionality, declare dependencies in the usual way but omit the version number:
 
-[source,groovy,indent=0,subs="verbatim",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/dependencies.gradle[tags=dependencies]
 ----
-
-[source,kotlin,indent=0,subs="verbatim",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/dependencies.gradle.kts[tags=dependencies]
 ----
+======
 
 
 
@@ -37,17 +41,21 @@ Browse the xref:appendix:dependency-versions/properties.adoc[Dependency Versions
 To customize a managed version you set its corresponding property.
 For example, to customize the version of SLF4J which is controlled by the `slf4j.version` property:
 
-[source,groovy,indent=0,subs="verbatim",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/custom-version.gradle[tags=custom-version]
 ----
-
-[source,kotlin,indent=0,subs="verbatim",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/custom-version.gradle.kts[tags=custom-version]
 ----
+======
 
 WARNING: Each Spring Boot release is designed and tested against a specific set of third-party dependencies.
 Overriding versions may cause compatibility issues and should be done with care.
@@ -63,41 +71,57 @@ The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be u
 First, configure the project to depend on the Spring Boot plugin but do not apply it:
 
 ifeval::["{artifact-release-type}" == "release"]
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/depend-on-plugin-release.gradle[]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ----
+======
 endif::[]
+
 ifeval::["{artifact-release-type}" == "milestone"]
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/depend-on-plugin-milestone.gradle[]
 ----
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ----
+======
 endif::[]
+
 ifeval::["{artifact-release-type}" == "snapshot"]
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/depend-on-plugin-snapshot.gradle[]
 ----
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ----
+======
 endif::[]
 
 The Spring Boot plugin's dependency on the dependency management plugin means that you can use the dependency management plugin without having to declare a dependency on it.
@@ -105,17 +129,21 @@ This also means that you will automatically use the same version of the dependen
 
 Apply the dependency management plugin and then configure it to import Spring Boot's bom:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/configure-bom.gradle[tags=configure-bom]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/configure-bom.gradle.kts[tags=configure-bom]
 ----
+======
 
 The Kotlin code above is a bit awkward.
 That's because we're using the imperative way of applying the dependency management plugin.
@@ -146,17 +174,21 @@ An `enforcedPlatform` dependency treats the versions in the bom as requirements 
 
 The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be used to declare a dependency upon Spring Boot's bom without having to know its group ID, artifact ID, or version, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/configure-platform.gradle[tags=configure-platform]
 ----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/configure-platform.gradle.kts[tags=configure-platform]
 ----
+======
 
 A platform or enforced platform will only constrain the versions of the configuration in which it has been declared or that extend from the configuration in which it has been declared.
 As a result, in may be necessary to declare the same dependency in more than one configuration.
@@ -171,17 +203,21 @@ Instead, you must use one of the mechanisms that Gradle provides.
 One such mechanism is a resolution strategy.
 SLF4J's modules are all in the `org.slf4j` group so their version can be controlled by configuring every dependency in that group to use a particular version, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim",role="primary"]
-.Groovy
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/custom-version-with-platform.gradle[tags=custom-version]
 ----
-
-[source,kotlin,indent=0,subs="verbatim",role="secondary"]
-.Kotlin
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
 ----
 include::example$managing-dependencies/custom-version-with-platform.gradle.kts[tags=custom-version]
 ----
+======
 
 WARNING: Each Spring Boot release is designed and tested against a specific set of third-party dependencies.
 Overriding versions may cause compatibility issues and should be done with care.
