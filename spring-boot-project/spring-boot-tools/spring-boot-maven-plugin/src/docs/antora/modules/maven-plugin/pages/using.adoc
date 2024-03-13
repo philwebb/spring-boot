@@ -60,7 +60,7 @@ If you import additional starters, you can safely omit the version number.
 With that setup, you can also override individual dependencies by overriding a property in your own project.
 For instance, to use a different version of the SLF4J library and the Spring Data release train, you would add the following to your `pom.xml`:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$using/different-versions-pom.xml[tags=different-versions]
 ----
@@ -77,7 +77,7 @@ You may have your own corporate standard parent that you need to use or you may 
 
 If you do not want to use the `spring-boot-starter-parent`, you can still keep the benefit of the dependency management (but not the plugin management) by using an `import` scoped dependency, as follows:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$using/no-starter-parent-pom.xml[tags=no-starter-parent]
 ----
@@ -86,7 +86,7 @@ The preceding sample setup does not let you override individual dependencies by 
 To achieve the same result, you need to add entries in the `dependencyManagement` section of your project **before** the `spring-boot-dependencies` entry.
 For instance, to use a different version of the SLF4J library and the Spring Data release train, you could add the following elements to your `pom.xml`:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$using/no-starter-parent-override-dependencies-pom.xml[tags=no-starter-parent-override-dependencies]
 ----
@@ -107,7 +107,7 @@ $ mvn spring-boot:run -Dspring-boot.run.profiles=dev,local
 
 If you want to both have a default while allowing it to be overridden on the command-line, you should use a combination of a user-provided project property and MOJO configuration.
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$using/default-and-override-pom.xml[tags=default-and-override]
 ----

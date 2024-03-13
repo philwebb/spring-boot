@@ -15,7 +15,7 @@ The Spring Boot Maven plugin offers goals that can be used to perform AOT proces
 
 To configure your application to use this feature, add an execution for the `process-aot` goal, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$aot/pom.xml[tags=aot]
 ----
@@ -43,7 +43,7 @@ The `native` profile configures the following:
 
 To benefit from the `native` profile, a module that represents an application should define two plugins, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$aot-native/pom.xml[tags=aot-native]
 ----
@@ -54,14 +54,14 @@ To use the `native` profile with a multi-modules project, you can create a custo
 
 To bind Cloud Native Buildpacks during the `package` phase, add the following to the root POM of your multi-modules project:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$aot-native-profile-buildpacks/pom.xml[tags=profile]
 ----
 
 The example below does the same for Native Build Tools:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$aot-native-profile-nbt/pom.xml[tags=profile]
 ----
@@ -88,7 +88,7 @@ Suitable tests are processed by the AOT engine in order to generate `Application
 
 To configure your application to use this feature, add an execution for the `process-test-aot` goal, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$aot-test/pom.xml[tags=aot]
 ----

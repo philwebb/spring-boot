@@ -5,7 +5,7 @@ The plugin can create executable archives (jar files and war files) that contain
 
 Packaging an executable archive is performed by the `repackage` goal, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/repackage-pom.xml[tags=repackage]
 ----
@@ -26,7 +26,7 @@ The plugin rewrites your manifest, and in particular it manages the `Main-Class`
 If the defaults don't work you have to configure the values in the Spring Boot plugin, not in the jar plugin.
 The `Main-Class` in the manifest is controlled by the `layout` property of the Spring Boot plugin, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/non-default-pom.xml[tags=non-default]
 ----
@@ -66,7 +66,7 @@ Content that is least likely to change should be added first, followed by layers
 The repackaged archive includes the `layers.idx` file by default.
 To disable this feature, you can do so in the following manner:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/disable-layers-pom.xml[tags=disable-layers]
 ----
@@ -79,7 +79,7 @@ include::example$packaging/disable-layers-pom.xml[tags=disable-layers]
 Depending on your application, you may want to tune how layers are created and add new ones.
 This can be done using a separate configuration file that should be registered as shown below:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/custom-layers-pom.xml[tags=custom-layers]
 ----
@@ -87,7 +87,7 @@ include::example$packaging/custom-layers-pom.xml[tags=custom-layers]
 The configuration file describes how an archive can be separated into layers, and the order of those layers.
 The following example shows how the default ordering described above can be defined explicitly:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/layers.xml[tags=layers]
 ----
@@ -140,7 +140,7 @@ The reason for that is that application classes are packaged in `BOOT-INF/classe
 
 If that is the case or if you prefer to keep the original artifact and attach the repackaged one with a different classifier, configure the plugin as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/different-classifier-pom.xml[tags=different-classifier]
 ----
@@ -148,7 +148,7 @@ include::example$packaging/different-classifier-pom.xml[tags=different-classifie
 If you are using `spring-boot-starter-parent`, the `repackage` goal is executed automatically in an execution with id `repackage`.
 In that setup, only the configuration should be specified, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/repackage-configuration-pom.xml[tags=repackage-configuration]
 ----
@@ -159,7 +159,7 @@ Both will be installed/deployed transparently.
 You can also use the same configuration if you want to repackage a secondary artifact the same way the main artifact is replaced.
 The following configuration installs/deploys a single `task` classified artifact with the repackaged application:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/classified-artifact-pom.xml[tags=classified-artifact]
 ----
@@ -167,7 +167,7 @@ include::example$packaging/classified-artifact-pom.xml[tags=classified-artifact]
 As both the `maven-jar-plugin` and the `spring-boot-maven-plugin` runs at the same phase, it is important that the jar plugin is defined first (so that it runs before the repackage goal).
 Again, if you are using `spring-boot-starter-parent`, this can be simplified as follows:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/jar-plugin-first-pom.xml[tags=jar-plugin-first]
 ----
@@ -179,7 +179,7 @@ include::example$packaging/jar-plugin-first-pom.xml[tags=jar-plugin-first]
 
 If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, use the standard `finalName`, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/custom-name-pom.xml[tags=custom-name]
 ----
@@ -194,7 +194,7 @@ This configuration will generate the repackaged artifact in `target/my-app.jar`.
 By default, the `repackage` goal replaces the original artifact with the executable one.
 If you need to only deploy the original jar and yet be able to run your app with the regular file name, configure the plugin as follows:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/local-repackaged-artifact-pom.xml[tags=local-repackaged-artifact]
 ----
@@ -209,7 +209,7 @@ Only the original one will be installed/deployed.
 
 Spring Boot repackages the jar file for this project using a custom layout factory defined in the additional jar file, provided as a dependency to the build plugin:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/custom-layout-pom.xml[tags=custom-layout]
 ----
@@ -239,14 +239,14 @@ There are two ways one can exclude a dependency from being packaged/used at runt
 
 The following example excludes `com.example:module1`, and only that artifact:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/exclude-artifact-pom.xml[tags=exclude-artifact]
 ----
 
 This example excludes any artifact belonging to the `com.example` group:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/exclude-artifact-group-pom.xml[tags=exclude-artifact-group]
 ----
@@ -260,7 +260,7 @@ When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar w
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/exclude-dependency-pom.xml[tags=exclude-dependency]
 ----
@@ -274,7 +274,7 @@ The default setup splits dependencies into snapshot and non-snapshot, however, y
 For example, you may want to isolate company-specific dependencies of your project in a dedicated layer.
 The following `layers.xml` configuration shown one such setup:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging/layers-configuration.xml[tags=layers-configuration]
 ----

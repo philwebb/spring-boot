@@ -4,7 +4,7 @@
 While you may start your Spring Boot application very easily from your test (or test suite) itself, it may be desirable to handle that in the build itself.
 To make sure that the lifecycle of your Spring Boot application is properly managed around your integration tests, you can use the `start` and `stop` goals, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$integration-tests/pom.xml[tags=integration-tests]
 ----
@@ -26,7 +26,7 @@ Spring Boot's Parent POM, `spring-boot-starter-parent`, configures Failsafe's `<
 Without this configuration, which causes Failsafe to use the compiled classes rather than the repackaged jar, Failsafe cannot load your application's classes.
 If you are not using the parent POM, you should configure Failsafe in the same way, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$integration-tests/failsafe-pom.xml[tags=failsafe]
 ----
@@ -50,7 +50,7 @@ When the `start` goal of the plugin is used, the Spring Boot application is star
 
 The example below showcases how you could achieve the same feature using the https://www.mojohaus.org/build-helper-maven-plugin[Build Helper Maven Plugin]:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$integration-tests/random-port-pom.xml[tags=random-port]
 ----
@@ -66,7 +66,7 @@ The `jmxPort` property allows to customize the port the plugin uses to communica
 
 This example shows how you can customize the port in case `9001` is already used:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$integration-tests/customize-jmx-port-pom.xml[tags=customize-jmx-port]
 ----
@@ -82,7 +82,7 @@ The `skip` property allows to skip the execution of the Spring Boot maven plugin
 
 This example shows how you can skip integration tests with a command-line property and still make sure that the `repackage` goal runs:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$integration-tests/skip-integration-tests-pom.xml[tags=skip-integration-tests]
 ----

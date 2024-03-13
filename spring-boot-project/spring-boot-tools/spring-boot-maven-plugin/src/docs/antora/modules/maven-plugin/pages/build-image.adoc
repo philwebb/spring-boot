@@ -11,7 +11,7 @@ See the {url-buildpacks-docs}/reference/spec/platform-api/#users[CNB specificati
 The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
@@ -280,7 +280,7 @@ include::partial$goals/build-image-no-fork.adoc[leveloffset=+1]
 
 If you need to customize the builder used to create the image or the run image used to launch the built image, configure the plugin as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/custom-image-builder-pom.xml[tags=custom-image-builder]
 ----
@@ -303,7 +303,7 @@ If the builder exposes configuration options using environment variables, those 
 
 The following is an example of {url-paketo-docs-java-buildpack}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/build-image-example-builder-configuration-pom.xml[tags=build-image-example-builder-configuration]
 ----
@@ -311,7 +311,7 @@ include::example$packaging-oci-image/build-image-example-builder-configuration-p
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
 When using the Paketo builder, this can be accomplished by setting the `HTTPS_PROXY` and/or `HTTP_PROXY` environment variables as show in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/paketo-pom.xml[tags=paketo]
 ----
@@ -326,7 +326,7 @@ The buildpack-provided `JAVA_TOOL_OPTIONS` value can be modified to customize JV
 
 Environment variable modifications that should be stored in the image and applied to every deployment can be set as described in the {url-paketo-docs}/buildpacks/configuration/#environment-variables[Paketo documentation] and shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runtime-jvm-configuration]
 ----
@@ -339,7 +339,7 @@ include::example$packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runt
 By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
 You can take control over the name, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/custom-image-name-pom.xml[tags=custom-image-name]
 ----
@@ -365,7 +365,7 @@ When one or more buildpacks are provided, only the specified buildpacks will be 
 
 The following example instructs the builder to use a custom buildpack packaged in a `.tgz` file, followed by a buildpack included in the builder.
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/buildpacks-pom.xml[tags=buildpacks]
 ----
@@ -411,7 +411,7 @@ If the Docker registry does not require authentication, the `docker.publishRegis
 NOTE: The registry that the image will be published to is determined by the registry part of the image name (`docker.example.com` in these examples).
 If `docker.publishRegistry` credentials are configured and include a `url` parameter, this value is passed to the registry but is not used to determine the publishing registry location.
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-pom.xml[tags=docker]
 ----
@@ -437,7 +437,7 @@ $ mvn spring-boot:build-image \
 
 and reference the properties in the XML configuration:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
 ----
@@ -453,7 +453,7 @@ If the image name changes frequently, for example when the project version is us
 
 The cache volumes can be configured to use alternative names to give more control over cache lifecycle as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/caches-pom.xml[tags=caches]
 ----
@@ -463,7 +463,7 @@ By default, this temporary build workspace is stored in a named volume.
 
 The caches and the build workspace can be configured to use bind mounts instead of named volumes, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/bind-caches-pom.xml[tags=caches]
 ----
@@ -484,7 +484,7 @@ On Linux and macOS, environment variables can be set using the command `eval $(m
 
 The plugin can also be configured to use the minikube daemon by providing connection details similar to those shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-minikube-pom.xml[tags=docker-minikube]
 ----
@@ -498,7 +498,7 @@ The plugin can communicate with a https://podman.io/[podman container engine].
 
 The plugin can be configured to use podman local connection by providing connection details similar to those shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-podman-pom.xml[tags=docker-podman]
 ----
@@ -515,7 +515,7 @@ The `DOCKER_HOST` environment variable can be set by using the command `export D
 
 The plugin can also be configured to use Colima daemon by providing connection details similar to those shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
 ----
@@ -527,14 +527,14 @@ include::example$packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
 
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-registry-authentication-pom.xml[tags=docker-registry-authentication]
 ----
 
 If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$packaging-oci-image/docker-token-authentication-pom.xml[tags=docker-token-authentication]
 ----

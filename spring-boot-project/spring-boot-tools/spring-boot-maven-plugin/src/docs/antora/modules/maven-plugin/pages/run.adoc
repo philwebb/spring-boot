@@ -19,7 +19,7 @@ As enabling a profile is quite common, there is dedicated `profiles` property th
 Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
 To enable it, just add the following dependency to your project:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/devtools-pom.xml[tags=devtools]
 ----
@@ -76,7 +76,7 @@ The `run` and `test-run` goals run your application in a forked process.
 If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
 The following configuration suspend the process until a debugger has joined on port 5005:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/debug-pom.xml[tags=debug]
 ----
@@ -96,7 +96,7 @@ $ mvn spring-boot:run -Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt
 System properties can be specified using the `systemPropertyVariables` attribute.
 The following example sets `property1` to `test` and `property2` to 42:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/system-properties-pom.xml[tags=system-properties]
 ----
@@ -123,7 +123,7 @@ $ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dproperty1=overridden"
 Environment variables can be specified using the `environmentVariables` attribute.
 The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/environment-variables-pom.xml[tags=environment-variables]
 ----
@@ -144,7 +144,7 @@ Environment variables defined this way take precedence over existing values.
 Application arguments can be specified using the `arguments` attribute.
 The following example sets two arguments: `property1` and `property2=42`:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/application-arguments-pom.xml[tags=application-arguments]
 ----
@@ -167,7 +167,7 @@ The active profiles to use for a particular application can be specified using t
 
 The following configuration enables the `local` and `dev` profiles:
 
-[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 include::example$running/active-profiles-pom.xml[tags=active-profiles]
 ----
