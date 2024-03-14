@@ -29,7 +29,7 @@ import org.antora.gradle.AntoraTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskContainer;
 
-import org.springframework.boot.build.artifacts.ArtifactRelease;
+import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
 
 /**
  * Conventions that are applied in the presence of the {@link AntoraPlugin} and
@@ -71,29 +71,17 @@ public class AntoraConventions {
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
-			.putAll(project.provider(() -> provideAsciidocAttributes(project))));
-	}
-
-	private Map<String, Object> provideAsciidocAttributes(Project project) {
-		Map<String, Object> attributes = new LinkedHashMap<>();
-		ArtifactRelease artifacts = ArtifactRelease.forProject(project);
-		attributes.put("github-tag", determineGitHubTag(project));
-		attributes.put("artifact-release-type", artifacts.getType());
-		attributes.put("url-artifact-repository", artifacts.getDownloadRepo());
-		return attributes;
-	}
-
-	private String determineGitHubTag(Project project) {
-		String version = "v" + project.getVersion();
-		return (version.endsWith("-SNAPSHOT")) ? "main" : version;
+			.putAll(project.provider(() -> new AntoraAsciidocAttributes(project).getAttributes())));
 	}
 
 	private void configureAntoraTask(Project project, AntoraTask antoraTask) {
+		// FIXME change the working directory?
 	}
 
 	private void configureAntoraExtension(AntoraExtension antoraExtension) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
+		// FIXME only if gradle is in debug?
 		antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
 	}
 

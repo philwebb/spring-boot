@@ -20,6 +20,18 @@ asciidoc:
     version-native-build-tools: 0.10.1
     version-spring-framework: 6.1.1
     version-spring-boot: 3.3.0-SNAPSHOT
+    
+    # FIXME these are from version constraints
+    version-spring-data-commons: FIXME
+    version-spring-data-couchbase: FIXME
+    version-spring-data-elasticsearch: FIXME
+    version-spring-data-jdbc: FIXME
+    version-spring-data-jpa: FIXME
+    version-spring-data-mongodb: FIXME
+    version-spring-data-neo4j: FIXME
+    version-spring-data-r2dbc: FIXME
+    version-spring-data-rest: FIXME    
+    
     url-dependency-management-plugin-docs: 'https://docs.spring.io/dependency-management-plugin/docs/current/reference/html'
     url-dependency-management-plugin-site: https://github.com/spring-gradle-plugins/dependency-management-plugin
     url-artifact-repository: https://example.com/FIXME
@@ -52,20 +64,11 @@ asciidoc:
     url-spring-webservices-docs: https://example.com/FIXME
     url-tomcat-docs: https://example.com/FIXME
 
-    # FIXME these are from version constraints
-    version-spring-data-commons: FIXME
-    version-spring-data-couchbase: FIXME
-    version-spring-data-elasticsearch: FIXME
-    version-spring-data-jdbc: FIXME
-    version-spring-data-jpa: FIXME
-    version-spring-data-mongodb: FIXME
-    version-spring-data-neo4j: FIXME
-    version-spring-data-r2dbc: FIXME
-    version-spring-data-rest: FIXME
-    
-    # FIXME these are added manually
+    # FIXME unsure
     version-graal: 22.3
     version-spring-boot-for-apache-geode: 2.0.x
+    
+    # FIXME these are added manually
     url-ant-docs: https://ant.apache.org/manual
     url-buildpacks-docs: https://buildpacks.io/docs
     url-dynatrace-docs: https://docs.dynatrace.com/docs
