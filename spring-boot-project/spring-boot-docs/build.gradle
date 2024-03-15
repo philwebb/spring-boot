@@ -34,10 +34,6 @@ sourcesJar {
 	enabled = false
 }
 
-task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
-	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
 plugins.withType(EclipsePlugin) {
 	extensions.getByType(org.gradle.plugins.ide.eclipse.model.EclipseModel).classpath { classpath ->
 		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))
@@ -333,6 +329,9 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 	from(documentConfigurationProperties) {
 		into "modules/appendix/partials/configuration-properties"
+	}
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
 	}
 }
 

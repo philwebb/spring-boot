@@ -88,10 +88,6 @@ validatePlugins {
 	enableStricterValidation = true
 }
 
-task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
-	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
 tasks.named('test') {
 	inputs.dir('src/docs/antora/modules/gradle-plugin/examples').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
 }

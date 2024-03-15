@@ -16,15 +16,21 @@
 
 package org.springframework.boot.build.antora;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.gradle.api.Project;
 
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.util.Assert;
 
 /**
  * Generates Asciidoctor attributes for use with Antora.
@@ -43,28 +49,33 @@ public class AntoraAsciidocAttributes {
 
 	private final List<Library> libraries;
 
-	public AntoraAsciidocAttributes(Project project) {
+	private final Map<String, String> dependencyVersions;
+
+	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom,
+			Map<String, String> dependencyVersions) {
 		this.version = String.valueOf(project.getVersion());
 		this.latestVersion = Boolean.valueOf(String.valueOf(project.findProperty("latestVersion")));
 		this.artifactRelease = ArtifactRelease.forProject(project);
-		this.libraries = project.getExtensions().getByType(BomExtension.class).getLibraries();
+		this.libraries = dependencyBom.getLibraries();
+		this.dependencyVersions = dependencyVersions;
 	}
 
-	AntoraAsciidocAttributes(String version, boolean latestVersion, ArtifactRelease artifactRelease,
-			List<Library> libraries) {
+	AntoraAsciidocAttributes(String version, boolean latestVersion, List<Library> libraries,
+			Map<String, String> dependencyVersions) {
 		this.version = version;
 		this.latestVersion = latestVersion;
-		this.artifactRelease = artifactRelease;
-		this.libraries = libraries;
+		this.artifactRelease = ArtifactRelease.forVersion(version);
+		this.libraries = (libraries != null) ? libraries : Collections.emptyList();
+		this.dependencyVersions = (dependencyVersions != null) ? dependencyVersions : Collections.emptyMap();
 	}
 
 	public Map<String, String> get() {
 		Map<String, String> attributes = new LinkedHashMap<>();
 		addGitHubAttributes(attributes);
 		addVersionAttributes(attributes);
-		// attributes.put("artifact-release-type", this.artifactRelease.getType());
-		// attributes.put("url-artifact-repository",
-		// this.artifactRelease.getDownloadRepo());
+		addUrlArtifactRepository(attributes);
+		addUrlLibraryLinkAttributes(attributes);
+		addPropertyAttributes(attributes);
 		return attributes;
 	}
 
@@ -92,6 +103,54 @@ public class AntoraAsciidocAttributes {
 			String value = library.getVersion().toString();
 			attributes.put(name, value);
 		});
+		addSpringDataDependencyVersion(attributes, "spring-data-commons");
+		addSpringDataDependencyVersion(attributes, "spring-data-couchbase");
+		addSpringDataDependencyVersion(attributes, "spring-data-elasticsearch");
+		addSpringDataDependencyVersion(attributes, "spring-data-jdbc");
+		addSpringDataDependencyVersion(attributes, "spring-data-jpa");
+		addSpringDataDependencyVersion(attributes, "spring-data-mongodb");
+		addSpringDataDependencyVersion(attributes, "spring-data-neo4j");
+		addSpringDataDependencyVersion(attributes, "spring-data-r2dbc");
+		addSpringDataDependencyVersion(attributes, "spring-data-rest", "spring-data-rest-core");
+	}
+
+	private void addSpringDataDependencyVersion(Map<String, String> attributes, String artifactId) {
+		addSpringDataDependencyVersion(attributes, artifactId, artifactId);
+	}
+
+	private void addSpringDataDependencyVersion(Map<String, String> attributes, String name, String artifactId) {
+		String version = this.dependencyVersions.get("org.springframework.data:" + artifactId);
+		Assert.notNull(version, () -> "No version found for Spring Data artificat " + artifactId);
+		attributes.put("version-" + name, version);
+	}
+
+	private void addUrlArtifactRepository(Map<String, String> attributes) {
+		attributes.put("url-artifact-repository", this.artifactRelease.getDownloadRepo());
+	}
+
+	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
+		this.libraries.forEach((library) -> {
+			String prefix = "url-" + library.getLinkRootName() + "-";
+			library.getLinks().forEach((name, link) -> attributes.put(prefix + name, link));
+		});
+	}
+
+	private void addPropertyAttributes(Map<String, String> attributes) {
+		Properties properties = new Properties() {
+
+			@Override
+			public synchronized Object put(Object key, Object value) {
+				// Put directly because order is important for us
+				return attributes.put(key.toString(), value.toString());
+			}
+
+		};
+		try (InputStream in = getClass().getResourceAsStream("antora-asciidoc-attributes.properties")) {
+			properties.load(in);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 }

@@ -30,6 +30,8 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskContainer;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
+import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.constraints.ExtractVersionConstraints;
 
 /**
  * Conventions that are applied in the presence of the {@link AntoraPlugin} and
@@ -38,6 +40,8 @@ import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
  * @author Phillip Webb
  */
 public class AntoraConventions {
+
+	private static final String DEPENDENCIES_PATH = ":spring-boot-project:spring-boot-dependencies";
 
 	private static final String ANTORA_VERSION = "3.2.0-alpha.4";
 
@@ -57,21 +61,37 @@ public class AntoraConventions {
 	}
 
 	private void apply(Project project, AntoraPlugin antoraPlugin) {
+		ExtractVersionConstraints dependencyVersionsTask = addDependencyVersionsTask(project);
 		project.getPlugins().apply(GenerateAntoraYmlPlugin.class);
 		TaskContainer tasks = project.getTasks();
-		tasks.withType(GenerateAntoraYmlTask.class,
-				(generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project, generateAntoraYmlTask));
+		tasks.withType(GenerateAntoraYmlTask.class, (generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project,
+				generateAntoraYmlTask, dependencyVersionsTask));
 		tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
 		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class));
 	}
 
-	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask) {
+	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
+		return project.getTasks()
+			.create("dependencyVersions", ExtractVersionConstraints.class,
+					(task) -> task.enforcedPlatform(DEPENDENCIES_PATH));
+	}
+
+	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
+			ExtractVersionConstraints dependencyVersionsTask) {
 		generateAntoraYmlTask.setProperty("baseAntoraYmlFile", project.file(ANTORA_SOURCE + "/antora.yml"));
 		generateAntoraYmlTask.setProperty("componentName", "spring-boot");
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
-			.putAll(project.provider(() -> new AntoraAsciidocAttributes(project).get())));
+			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
+	}
+
+	private Map<String, String> getAsciidocAttributes(Project project,
+			ExtractVersionConstraints dependencyVersionsTask) {
+		BomExtension bom = (BomExtension) project.project(DEPENDENCIES_PATH).getExtensions().getByName("bom");
+		Map<String, String> dependencyVersions = dependencyVersionsTask.getVersionConstraints();
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes(project, bom, dependencyVersions);
+		return attributes.get();
 	}
 
 	private void configureAntoraTask(Project project, AntoraTask antoraTask) {
