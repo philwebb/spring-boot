@@ -1,5 +1,4 @@
 name: spring-boot
-title: Spring Boot
 ext:
   zip_contents_collector:
     include:
@@ -11,4 +10,3 @@ ext:
       destination: content-catalog
 nav:
 - nav.adoc 
-    

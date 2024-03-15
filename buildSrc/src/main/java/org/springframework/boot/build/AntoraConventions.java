@@ -78,12 +78,16 @@ public class AntoraConventions {
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
 			ExtractVersionConstraints dependencyVersionsTask) {
-		generateAntoraYmlTask.setProperty("baseAntoraYmlFile", project.file(ANTORA_SOURCE + "/antora.yml"));
 		generateAntoraYmlTask.setProperty("componentName", "spring-boot");
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
+		generateAntoraYmlTask.setProperty("yml", getDefaultYml());
 		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
 			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
+	}
+
+	private Map<String, ?> getDefaultYml() {
+		return Map.of("title", "Spring Boot");
 	}
 
 	private Map<String, String> getAsciidocAttributes(Project project,
