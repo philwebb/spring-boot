@@ -17,14 +17,19 @@
 package org.springframework.boot.build.antora;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.Project;
 
 import org.springframework.boot.build.artifacts.ArtifactRelease;
+import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.bom.Library;
 
 /**
- * @author pwebb
+ * Generates Asciidoctor attributes for use with Antora.
+ *
+ * @author Phillip Webb
  */
 public class AntoraAsciidocAttributes {
 
@@ -36,29 +41,35 @@ public class AntoraAsciidocAttributes {
 
 	private final ArtifactRelease artifactRelease;
 
+	private final List<Library> libraries;
+
 	public AntoraAsciidocAttributes(Project project) {
 		this.version = String.valueOf(project.getVersion());
 		this.latestVersion = Boolean.valueOf(String.valueOf(project.findProperty("latestVersion")));
 		this.artifactRelease = ArtifactRelease.forProject(project);
+		this.libraries = project.getExtensions().getByType(BomExtension.class).getLibraries();
 	}
 
-	AntoraAsciidocAttributes(String version, boolean latestVersion, ArtifactRelease artifactRelease) {
+	AntoraAsciidocAttributes(String version, boolean latestVersion, ArtifactRelease artifactRelease,
+			List<Library> libraries) {
 		this.version = version;
 		this.latestVersion = latestVersion;
 		this.artifactRelease = artifactRelease;
+		this.libraries = libraries;
 	}
 
-	public Map<String, String> getAttributes() {
+	public Map<String, String> get() {
 		Map<String, String> attributes = new LinkedHashMap<>();
-		// attributes.put("github-tag", determineGitHubTag(project));
+		addGitHubAttributes(attributes);
+		addVersionAttributes(attributes);
 		// attributes.put("artifact-release-type", this.artifactRelease.getType());
 		// attributes.put("url-artifact-repository",
 		// this.artifactRelease.getDownloadRepo());
-		addGitHubAttributes(attributes);
 		return attributes;
 	}
 
 	private void addGitHubAttributes(Map<String, String> attributes) {
+		attributes.put("github-repo", "spring-projects/spring-boot");
 		attributes.put("github-ref", determineGitHubRef());
 	}
 
@@ -72,13 +83,15 @@ public class AntoraAsciidocAttributes {
 		}
 		String versionRoot = this.version.substring(0, snapshotIndex);
 		int lastDot = versionRoot.lastIndexOf('.');
-		return versionRoot.substring(0, lastDot) + "x";
+		return versionRoot.substring(0, lastDot) + ".x";
 	}
 
 	private void addVersionAttributes(Map<String, String> attributes) {
-	}
-
-	private void addLinkAttributes(Map<String, String> attributes) {
+		this.libraries.forEach((library) -> {
+			String name = "version-" + library.getLinkRootName();
+			String value = library.getVersion().toString();
+			attributes.put(name, value);
+		});
 	}
 
 }

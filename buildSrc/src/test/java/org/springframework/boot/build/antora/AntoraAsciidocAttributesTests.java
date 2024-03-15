@@ -29,26 +29,26 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void githubRefWhenReleasedVersionIsTag() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null);
-		assertThat(attributes.getAttributes()).containsEntry("github-ref", "v1.2.3");
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null, null);
+		assertThat(attributes.get()).containsEntry("github-ref", "v1.2.3");
 	}
 
 	@Test
 	void githubRefWhenLatestSnapshotVersionIsMainBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null);
-		assertThat(attributes.getAttributes()).containsEntry("github-ref", "main");
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null, null);
+		assertThat(attributes.get()).containsEntry("github-ref", "main");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotVersionIsBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", false, null);
-		assertThat(attributes.getAttributes()).containsEntry("github-ref", "1.2.x");
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", false, null, null);
+		assertThat(attributes.get()).containsEntry("github-ref", "1.2.x");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotHotFixVersionIsBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, null);
-		assertThat(attributes.getAttributes()).containsEntry("github-ref", "1.2.1.x");
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, null, null);
+		assertThat(attributes.get()).containsEntry("github-ref", "1.2.3.x");
 	}
 
 }
