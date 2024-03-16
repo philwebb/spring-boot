@@ -44,28 +44,28 @@ class AntoraAsciidocAttributesTests {
 	@Test
 	void githubRefWhenReleasedVersionIsTag() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "v1.2.3");
 	}
 
 	@Test
 	void githubRefWhenLatestSnapshotVersionIsMainBranch() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "main");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotVersionIsBranch() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", false, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "1.2.x");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotHotFixVersionIsBranch() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "1.2.3.x");
 	}
 
@@ -73,35 +73,42 @@ class AntoraAsciidocAttributesTests {
 	void versionReferenceFromLibrary() {
 		Library library = mockLibrary(Collections.emptyMap());
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, List.of(library),
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("version-spring-framework", "1.2.3");
 	}
 
 	@Test
 	void versionReferenceFromSpringDataDependencyVersion() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "1.2.3");
+	}
+
+	@Test
+	void versionNativeBuildTools() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+				mockDependencyVersions(), Map.of("nativeBuildToolsVersion", "3.4.5"));
+		assertThat(attributes.get()).containsEntry("version-native-build-tools", "3.4.5");
 	}
 
 	@Test
 	void urlArtifactReposiroryWhenRelease() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
 	void urlArtifactReposiroryWhenMilestone() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/milestone");
 	}
 
 	@Test
 	void urlArtifactReposiroryWhenSnapshot() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/snapshot");
 	}
 
@@ -112,7 +119,7 @@ class AntoraAsciidocAttributesTests {
 		links.put("docs", (version) -> "https://example.com/docs/" + version);
 		Library library = mockLibrary(links);
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, List.of(library),
-				mockDependencyVersions());
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-spring-framework-site", "https://example.com/site/1.2.3")
 			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3");
 	}
@@ -120,7 +127,7 @@ class AntoraAsciidocAttributesTests {
 	@Test
 	void linksFromProperties() {
 		Map<String, String> attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions())
+				mockDependencyVersions(), null)
 			.get();
 		assertThat(attributes).containsEntry("include-java", "ROOT:example$java/org/springframework/boot/docs");
 		assertThat(attributes).containsEntry("url-spring-data-cassandra-site",

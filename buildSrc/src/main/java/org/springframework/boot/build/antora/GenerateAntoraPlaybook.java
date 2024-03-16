@@ -37,7 +37,6 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.yaml.snakeyaml.DumperOptions;
@@ -54,17 +53,19 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	// FIXME publish extensions and get an update on asciidoctor extension
 
+	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
+
 	private static final String XREF_EXTENSION = "/Users/pwebb/projects/antora-xref-extension/packages/antora-xref-extension";
 
-	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension";
+	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/antora-zip-contents-collector-extension";
 
 	@OutputFile
 	public abstract RegularFileProperty getOutputFile();
 
-	@Internal
+	@Input
 	public abstract Property<String> getContentSourceConfiguration();
 
-	@Internal
+	@Input
 	public abstract ListProperty<String> getXrefStubs();
 
 	public GenerateAntoraPlaybook() {
@@ -130,11 +131,12 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private Map<String, Object> createContentSource() throws IOException {
 		Map<String, Object> source = new LinkedHashMap<>();
 		Path playbookPath = getOutputFile().get().getAsFile().toPath().getParent();
-		Path antoraSrc = getProjectPath(getProject()).resolve("src/docs/antora");
+		Path antoraSrc = getProjectPath(getProject()).resolve(ANTORA_SOURCE_DIR);
 		StringBuilder url = new StringBuilder(".");
 		relativizeFromRootProject(playbookPath).normalize().forEach((path) -> url.append("/.."));
 		source.put("url", url.toString());
 		source.put("branches", "HEAD");
+		source.put("version", getProject().getVersion().toString());
 		Set<String> startPaths = new LinkedHashSet<>();
 		addAntoraContentStartPaths(startPaths);
 		startPaths.add(relativizeFromRootProject(antoraSrc).toString());
@@ -147,7 +149,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		if (configuration != null) {
 			for (ProjectDependency dependency : configuration.getDependencies().withType(ProjectDependency.class)) {
 				Path path = dependency.getDependencyProject().getProjectDir().toPath();
-				startPaths.add(relativizeFromRootProject(path).toString());
+				startPaths.add(relativizeFromRootProject(path).resolve(ANTORA_SOURCE_DIR).toString());
 			}
 		}
 	}

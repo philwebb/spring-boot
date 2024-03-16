@@ -51,6 +51,8 @@ public class AntoraAsciidocAttributes {
 
 	private final Map<String, String> dependencyVersions;
 
+	private final Map<String, ?> projectProperties;
+
 	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom,
 			Map<String, String> dependencyVersions) {
 		this.version = String.valueOf(project.getVersion());
@@ -58,15 +60,17 @@ public class AntoraAsciidocAttributes {
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
 		this.dependencyVersions = dependencyVersions;
+		this.projectProperties = project.getProperties();
 	}
 
 	AntoraAsciidocAttributes(String version, boolean latestVersion, List<Library> libraries,
-			Map<String, String> dependencyVersions) {
+			Map<String, String> dependencyVersions, Map<String, ?> projectProperties) {
 		this.version = version;
 		this.latestVersion = latestVersion;
 		this.artifactRelease = ArtifactRelease.forVersion(version);
 		this.libraries = (libraries != null) ? libraries : Collections.emptyList();
 		this.dependencyVersions = (dependencyVersions != null) ? dependencyVersions : Collections.emptyMap();
+		this.projectProperties = (projectProperties != null) ? projectProperties : Collections.emptyMap();
 	}
 
 	public Map<String, String> get() {
@@ -103,6 +107,8 @@ public class AntoraAsciidocAttributes {
 			String value = library.getVersion().toString();
 			attributes.put(name, value);
 		});
+		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
+		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		addSpringDataDependencyVersion(attributes, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, "spring-data-couchbase");
 		addSpringDataDependencyVersion(attributes, "spring-data-elasticsearch");

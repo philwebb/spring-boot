@@ -82,12 +82,14 @@ public class AntoraConventions {
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
 			ExtractVersionConstraints dependencyVersionsTask) {
+		generateAntoraYmlTask.getOutputs().doNotCacheIf("getAsciidocAttributes() changes output", (task) -> true);
 		generateAntoraYmlTask.setProperty("componentName", "spring-boot");
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.setProperty("yml", getDefaultYml());
 		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
 			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
+
 	}
 
 	private Map<String, ?> getDefaultYml() {
@@ -111,7 +113,7 @@ public class AntoraConventions {
 		antoraExtension.getPackages().convention(PACKAGES);
 		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
 		// FIXME only if gradle is in debug?
-		antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
+		// antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
 	}
 
 }
