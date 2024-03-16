@@ -30,6 +30,7 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskContainer;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
+import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.constraints.ExtractVersionConstraints;
 
@@ -44,8 +45,6 @@ public class AntoraConventions {
 	private static final String DEPENDENCIES_PATH = ":spring-boot-project:spring-boot-dependencies";
 
 	private static final String ANTORA_VERSION = "3.2.0-alpha.4";
-
-	private static final String ANTORA_SOURCE = "src/docs/antora";
 
 	private static final Map<String, String> PACKAGES;
 	static {
@@ -68,6 +67,7 @@ public class AntoraConventions {
 				generateAntoraYmlTask, dependencyVersionsTask));
 		tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
 		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class));
+		tasks.register("generateAntoraPlaybook", GenerateAntoraPlaybook.class);
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {

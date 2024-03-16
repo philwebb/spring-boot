@@ -12,8 +12,8 @@ content:
   sources:
     - url: ./../../..
       branches: HEAD
-      start_path: spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
       version: 3.3.0-SNAPSHOT
+      start_path: spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
 asciidoc:
   sourcemap: true
   attributes:

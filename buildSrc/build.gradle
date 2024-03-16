@@ -17,7 +17,7 @@ def versions = [:]
 new File(projectDir.parentFile, "gradle.properties").withInputStream {
 	def properties = new Properties()
 	properties.load(it)
-	["assertj", "commonsCodec", "hamcrest", "junitJupiter", "kotlin", "maven"].each {
+	["assertj", "commonsCodec", "hamcrest", "junitJupiter", "kotlin", "maven", "snakeYaml"].each {
 		versions[it] = properties[it + "Version"]
 	}
 }
@@ -58,6 +58,7 @@ dependencies {
 	implementation("org.springframework:spring-context")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
+	implementation("org.yaml:snakeyaml:${versions.snakeYaml}")
 
 	testImplementation("org.assertj:assertj-core:${versions.assertj}")
 	testImplementation("org.hamcrest:hamcrest:${versions.hamcrest}")
@@ -65,6 +66,10 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+configurations.all {
+	exclude group:"org.slf4j", module:"slf4j-api"
 }
 
 gradlePlugin {
