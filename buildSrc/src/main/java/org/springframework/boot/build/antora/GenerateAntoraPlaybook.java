@@ -68,6 +68,9 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	@Input
 	public abstract ListProperty<String> getXrefStubs();
 
+	@Input
+	public abstract Property<String> getAlwaysInclude();
+
 	public GenerateAntoraPlaybook() {
 		setGroup("Documentation");
 		setDescription("Generates an Antora playbook.yml file for local use");
@@ -113,10 +116,14 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private Map<String, Object> createZipContentsCollectorExtensionConfig() {
 		return createExtensionConfig(ZIP_CONTENTS_COLLECTOR_EXTENSION, (config) -> {
+			String alwaysInclude = getAlwaysInclude().getOrNull();
 			config.put("version_file", "gradle.properties");
 			Path location = getRelativeProjectPath().resolve("build/generated/docs/antora-content/"
 					+ getProject().getName() + "-${version}-${name}-${classifier}.zip");
 			config.put("locations", List.of(location.toString()));
+			if (alwaysInclude != null) {
+				config.put("always_include", List.of(alwaysInclude));
+			}
 		});
 	}
 

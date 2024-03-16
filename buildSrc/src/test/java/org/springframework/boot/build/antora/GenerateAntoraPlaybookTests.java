@@ -39,7 +39,11 @@ class GenerateAntoraPlaybookTests {
 
 	@Test
 	void test() throws Exception {
-		writePlaybookYml((task) -> task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*"));
+		// FIXME
+		writePlaybookYml((task) -> {
+			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
+			task.getAlwaysInclude().set("local-aggregate-content");
+		});
 		List<String> lines = Files.readAllLines(this.temp.toPath()
 			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));
 		lines.forEach(System.out::println);

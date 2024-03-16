@@ -89,7 +89,6 @@ public class AntoraConventions {
 		generateAntoraYmlTask.setProperty("yml", getDefaultYml());
 		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
 			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
-
 	}
 
 	private Map<String, ?> getDefaultYml() {

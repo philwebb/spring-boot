@@ -8,5 +8,3 @@ ext:
       classifier: catalog-content
       module: api
       destination: content-catalog
-nav:
-- nav.adoc 

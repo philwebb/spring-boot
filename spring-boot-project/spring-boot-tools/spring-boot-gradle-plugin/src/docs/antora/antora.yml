@@ -6,5 +6,3 @@ ext:
       classifier: catalog-content
       module: gradle-plugin
       destination: content-catalog
-nav:
-- modules/gradle-plugin/partials/nav-gradle-plugin.adoc

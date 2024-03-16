@@ -210,6 +210,14 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 }
 
+def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "actuator-rest-api-local-aggregate-content"
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
+	}
+}
+
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
 	dependsOn documentationTest
 	inputs.dir("${buildDir}/generated-snippets")
@@ -220,6 +228,11 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	from("${buildDir}/generated-snippets") {
 		into "modules/api/partials/rest/actuator"
 	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	alwaysInclude = "local-aggregate-content"
+	dependsOn zipAntoraLocalAggregateContent
 }
 
 tasks.named("antora") {

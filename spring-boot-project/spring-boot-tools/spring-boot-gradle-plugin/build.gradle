@@ -107,8 +107,12 @@ javadoc {
 	}
 }
 
-tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "gradle-plugin-local-aggregate-content"
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
+	}
 }
 
 def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
@@ -117,6 +121,12 @@ def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 	from(javadoc) {
 		into "api/java"
 	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	alwaysInclude = "local-aggregate-content"
+	dependsOn zipAntoraLocalAggregateContent
 }
 
 tasks.named("antora") {

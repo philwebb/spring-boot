@@ -130,8 +130,12 @@ tasks.named("documentPluginGoals") {
 	]
 }
 
-tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "maven-plugin-local-aggregate-content"
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
+	}
 }
 
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
@@ -149,6 +153,13 @@ def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 		into "api/java"
 	}
 }
+
+tasks.named("generateAntoraPlaybook") {
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	alwaysInclude = "local-aggregate-content"
+	dependsOn zipAntoraLocalAggregateContent
+}
+
 
 tasks.named("antora") {
 	dependsOn zipAntoraAggregateContent, zipAntoraCatalogContent

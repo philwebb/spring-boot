@@ -4,5 +4,3 @@ ext:
     include:
     - name: actuator-rest-api
       classifier: aggregate-content
-nav:
-- modules/rest-api/actuator-nav.adoc 
