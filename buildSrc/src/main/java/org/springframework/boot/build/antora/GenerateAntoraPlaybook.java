@@ -20,14 +20,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
@@ -47,12 +52,14 @@ import org.springframework.util.function.ThrowingConsumer;
  */
 public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
+	// FIXME publish extensions and get an update on asciidoctor extension
+
 	private static final String XREF_EXTENSION = "/Users/pwebb/projects/antora-xref-extension/packages/antora-xref-extension";
 
 	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/zip-contents-collector-extension";
 
 	@OutputFile
-	abstract RegularFileProperty getOutputFile();
+	public abstract RegularFileProperty getOutputFile();
 
 	@Internal
 	public abstract Property<String> getContentSourceConfiguration();
@@ -122,22 +129,27 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private Map<String, Object> createContentSource() throws IOException {
 		Map<String, Object> source = new LinkedHashMap<>();
-		Path rootProjectPath = getProject().getRootProject().getProjectDir().toPath().toRealPath();
 		Path playbookPath = getOutputFile().get().getAsFile().toPath().getParent();
-		Path antoraSrc = getProject().getLayout()
-			.getProjectDirectory()
-			.getAsFile()
-			.toPath()
-			.toRealPath()
-			.resolve("src/docs/antora");
+		Path antoraSrc = getProjectPath(getProject()).resolve("src/docs/antora");
 		StringBuilder url = new StringBuilder(".");
-		rootProjectPath.relativize(playbookPath).normalize().forEach((path) -> url.append("/.."));
+		relativizeFromRootProject(playbookPath).normalize().forEach((path) -> url.append("/.."));
 		source.put("url", url.toString());
 		source.put("branches", "HEAD");
-		List<String> startPaths = new ArrayList<>();
-		startPaths.add(rootProjectPath.relativize(antoraSrc).toString());
-		source.put("start_paths", startPaths);
+		Set<String> startPaths = new LinkedHashSet<>();
+		addAntoraContentStartPaths(startPaths);
+		startPaths.add(relativizeFromRootProject(antoraSrc).toString());
+		source.put("start_paths", startPaths.stream().toList());
 		return source;
+	}
+
+	private void addAntoraContentStartPaths(Set<String> startPaths) throws IOException {
+		Configuration configuration = getProject().getConfigurations().findByName("antoraContent");
+		if (configuration != null) {
+			for (ProjectDependency dependency : configuration.getDependencies().withType(ProjectDependency.class)) {
+				Path path = dependency.getDependencyProject().getProjectDir().toPath();
+				startPaths.add(relativizeFromRootProject(path).toString());
+			}
+		}
 	}
 
 	private void addSources(Map<String, Object> data) {
@@ -176,9 +188,17 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	}
 
 	private Path getRelativeProjectPath() throws IOException {
-		Path rootProjectPath = getProject().getRootProject().getProjectDir().toPath().toRealPath();
-		Path projectPath = getProject().getProjectDir().toPath().toRealPath();
-		return rootProjectPath.relativize(projectPath).normalize();
+		return relativizeFromRootProject(getProjectPath(getProject()));
+	}
+
+	private Path relativizeFromRootProject(Path subPath) throws IOException {
+		Path rootProjectPath = getProjectPath(getProject().getRootProject());
+		return rootProjectPath.relativize(subPath).normalize();
+	}
+
+	private Path getProjectPath(Project project) throws IOException {
+		Path path = project.getProjectDir().toPath();
+		return Files.exists(path) ? path.toRealPath() : path;
 	}
 
 }

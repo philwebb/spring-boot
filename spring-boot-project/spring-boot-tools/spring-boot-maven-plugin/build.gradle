@@ -130,6 +130,10 @@ tasks.named("documentPluginGoals") {
 	]
 }
 
+tasks.named("generateAntoraPlaybook") {
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+}
+
 def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "maven-plugin-aggregate-content"

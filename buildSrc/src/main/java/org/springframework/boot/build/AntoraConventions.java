@@ -27,6 +27,8 @@ import org.antora.gradle.AntoraExtension;
 import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.api.Project;
+import org.gradle.api.file.RegularFile;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
@@ -63,11 +65,13 @@ public class AntoraConventions {
 		ExtractVersionConstraints dependencyVersionsTask = addDependencyVersionsTask(project);
 		project.getPlugins().apply(GenerateAntoraYmlPlugin.class);
 		TaskContainer tasks = project.getTasks();
+		GenerateAntoraPlaybook generateAntoraPlaybookTask = tasks.create("generateAntoraPlaybook",
+				GenerateAntoraPlaybook.class);
 		tasks.withType(GenerateAntoraYmlTask.class, (generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project,
 				generateAntoraYmlTask, dependencyVersionsTask));
 		tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
-		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class));
-		tasks.register("generateAntoraPlaybook", GenerateAntoraPlaybook.class);
+		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class),
+				generateAntoraPlaybookTask.getOutputFile());
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
@@ -102,9 +106,10 @@ public class AntoraConventions {
 		// FIXME change the working directory?
 	}
 
-	private void configureAntoraExtension(AntoraExtension antoraExtension) {
+	private void configureAntoraExtension(AntoraExtension antoraExtension, Provider<RegularFile> playbook) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
+		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
 		// FIXME only if gradle is in debug?
 		antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
 	}

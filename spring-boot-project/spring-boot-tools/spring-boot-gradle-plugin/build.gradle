@@ -107,6 +107,10 @@ javadoc {
 	}
 }
 
+tasks.named("generateAntoraPlaybook") {
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+}
+
 def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "gradle-plugin-catalog-content"
