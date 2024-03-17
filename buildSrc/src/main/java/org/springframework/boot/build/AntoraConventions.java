@@ -143,6 +143,7 @@ public class AntoraConventions {
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
 		File rootBuildDir = project.getRootProject().getBuildDir();
 		nodeExtension.getWorkDir().set(rootBuildDir.toPath().resolve(".gradle/nodejs").toFile());
+		nodeExtension.getNpmWorkDir().set(rootBuildDir.toPath().resolve(".gradle/npm").toFile());
 	}
 
 }
