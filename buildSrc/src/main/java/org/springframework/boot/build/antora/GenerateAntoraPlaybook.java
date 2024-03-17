@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,6 +62,8 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private static final String XREF_EXTENSION = "/Users/pwebb/projects/antora-xref-extension/packages/antora-xref-extension";
 
 	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/antora-zip-contents-collector-extension";
+
+	private static final String ROOT_COMPONENT_EXTENSION = "@springio/antora-extensions/root-component-extension";
 
 	@OutputFile
 	public abstract RegularFileProperty getOutputFile();
@@ -110,10 +113,14 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addExtensions(Map<String, Object> data) {
-		List<Map<String, Object>> extensionsConfig = getList(data, "antora.extensions");
+		List<Map<String, Object>> extensionsConfig = new ArrayList<>();
 		extensionsConfig.add(createXrefExtensionConfig());
 		extensionsConfig.add(createZipContentsCollectorExtensionConfig());
+		extensionsConfig.add(createRootComponentExtensionConfig()); // Must be last
+		Map<String, Object> antora = (Map<String, Object>) data.get("antora");
+		antora.put("extensions", extensionsConfig);
 	}
 
 	private Map<String, Object> createXrefExtensionConfig() {
@@ -136,6 +143,11 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 				config.put("always_include", List.of(alwaysInclude));
 			}
 		});
+	}
+
+	private Map<String, Object> createRootComponentExtensionConfig() {
+		return createExtensionConfig(ROOT_COMPONENT_EXTENSION,
+				(config) -> config.put("root_component_name", "spring-boot"));
 	}
 
 	private Map<String, Object> createExtensionConfig(String require,

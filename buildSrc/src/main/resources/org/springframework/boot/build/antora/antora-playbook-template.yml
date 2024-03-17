@@ -1,7 +1,5 @@
 antora:
   extensions:
-  - require: '@springio/antora-extensions/root-component-extension'
-    root_component_name: spring-boot
 site:
   title: Spring Boot
 content:
