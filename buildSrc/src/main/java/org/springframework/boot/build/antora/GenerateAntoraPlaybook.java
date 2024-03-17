@@ -132,7 +132,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 			Path location = getRelativeProjectPath().resolve("build/generated/docs/antora-content/"
 					+ getProject().getName() + "-${version}-${name}-${classifier}.zip");
 			config.put("locations", List.of(location.toString()));
-			if (alwaysInclude != null) {
+			if (alwaysInclude != null && !alwaysInclude.isEmpty()) {
 				config.put("always_include", List.of(alwaysInclude));
 			}
 		});
