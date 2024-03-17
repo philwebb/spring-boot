@@ -19,6 +19,7 @@ package org.springframework.boot.build.antora;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -42,7 +43,7 @@ class GenerateAntoraPlaybookTests {
 		// FIXME
 		writePlaybookYml((task) -> {
 			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
-			task.getAlwaysInclude().set("local-aggregate-content");
+			task.getAlwaysInclude().set(Map.of("name", "test", "classifier", "local-aggregate-content"));
 		});
 		List<String> lines = Files.readAllLines(this.temp.toPath()
 			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));

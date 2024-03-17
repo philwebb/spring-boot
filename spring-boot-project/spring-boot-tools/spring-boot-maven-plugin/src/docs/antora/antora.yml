@@ -8,5 +8,3 @@ ext:
       classifier: catalog-content
       module: maven-plugin
       destination: content-catalog
-nav:
-- modules/maven-plugin/nav.adoc 

@@ -156,7 +156,7 @@ def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 
 tasks.named("generateAntoraPlaybook") {
 	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
-	alwaysInclude = "local-aggregate-content"
+	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
 	dependsOn zipAntoraLocalAggregateContent
 }
 

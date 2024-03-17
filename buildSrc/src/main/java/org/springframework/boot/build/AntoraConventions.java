@@ -90,6 +90,7 @@ public class AntoraConventions {
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
 			ExtractVersionConstraints dependencyVersionsTask) {
 		generateAntoraYmlTask.getOutputs().doNotCacheIf("getAsciidocAttributes() changes output", (task) -> true);
+		generateAntoraYmlTask.dependsOn(dependencyVersionsTask);
 		generateAntoraYmlTask.setProperty("componentName", "spring-boot");
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));

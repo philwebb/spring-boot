@@ -36,6 +36,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -73,7 +74,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	@Input
 	@Optional
-	public abstract Property<String> getAlwaysInclude();
+	public abstract MapProperty<String, String> getAlwaysInclude();
 
 	public GenerateAntoraPlaybook() {
 		setGroup("Documentation");
@@ -126,7 +127,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private Map<String, Object> createZipContentsCollectorExtensionConfig() {
 		return createExtensionConfig(ZIP_CONTENTS_COLLECTOR_EXTENSION, (config) -> {
-			String alwaysInclude = getAlwaysInclude().getOrNull();
+			Map<String, String> alwaysInclude = getAlwaysInclude().getOrNull();
 			config.put("version_file", "gradle.properties");
 			Path location = getRelativeProjectPath().resolve("build/generated/docs/antora-content/"
 					+ getProject().getName() + "-${version}-${name}-${classifier}.zip");
@@ -178,8 +179,8 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private void addDir(Map<String, Object> data) {
 		Path playbookDir = toRealPath(getOutputFile().get().getAsFile().toPath()).getParent();
-		Path outputDir = getProject().getBuildDir().toPath().resolve("site");
-		data.put("output", Map.of("dir", playbookDir.relativize(outputDir).toString()));
+		Path outputDir = toRealPath(getProject().getBuildDir().toPath().resolve("site"));
+		data.put("output", Map.of("dir", "./" + playbookDir.relativize(outputDir).toString()));
 	}
 
 	@SuppressWarnings("unchecked")

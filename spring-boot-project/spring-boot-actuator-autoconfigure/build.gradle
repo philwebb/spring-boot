@@ -231,7 +231,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 }
 
 tasks.named("generateAntoraPlaybook") {
-	alwaysInclude = "local-aggregate-content"
+	alwaysInclude = [name: "actuator-rest-api", classifier: "local-aggregate-content"]
 	dependsOn zipAntoraLocalAggregateContent
 }
 
