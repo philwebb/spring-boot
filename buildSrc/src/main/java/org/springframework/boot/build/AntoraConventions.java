@@ -19,6 +19,7 @@ package org.springframework.boot.build;
 import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
@@ -35,6 +36,7 @@ import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.constraints.ExtractVersionConstraints;
+import org.springframework.util.Assert;
 
 /**
  * Conventions that are applied in the presence of the {@link AntoraPlugin} and
@@ -47,6 +49,10 @@ public class AntoraConventions {
 	private static final String DEPENDENCIES_PATH = ":spring-boot-project:spring-boot-dependencies";
 
 	private static final String ANTORA_VERSION = "3.2.0-alpha.4";
+
+	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
+
+	private static final List<String> NAV_FILES = List.of("nav.adoc", "local-nav.adoc");
 
 	private static final Map<String, String> PACKAGES;
 	static {
@@ -69,7 +75,8 @@ public class AntoraConventions {
 				GenerateAntoraPlaybook.class);
 		tasks.withType(GenerateAntoraYmlTask.class, (generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project,
 				generateAntoraYmlTask, dependencyVersionsTask));
-		tasks.withType(AntoraTask.class, (antoraTask) -> configureAntoraTask(project, antoraTask));
+		tasks.withType(AntoraTask.class,
+				(antoraTask) -> configureAntoraTask(project, antoraTask, generateAntoraPlaybookTask));
 		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class),
 				generateAntoraPlaybookTask.getOutputFile());
 	}
@@ -86,13 +93,25 @@ public class AntoraConventions {
 		generateAntoraYmlTask.setProperty("componentName", "spring-boot");
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
-		generateAntoraYmlTask.setProperty("yml", getDefaultYml());
+		generateAntoraYmlTask.setProperty("yml", getDefaultYml(project));
 		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
 			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
 	}
 
-	private Map<String, ?> getDefaultYml() {
-		return Map.of("title", "Spring Boot");
+	private Map<String, ?> getDefaultYml(Project project) {
+		String navFile = null;
+		for (String candidate : NAV_FILES) {
+			if (project.file(ANTORA_SOURCE_DIR + "/" + candidate).exists()) {
+				Assert.state(navFile == null, "Multiple nav files found");
+				navFile = candidate;
+			}
+		}
+		Map<String, Object> defaultYml = new LinkedHashMap<>();
+		defaultYml.put("title", "Spring Boot");
+		if (navFile != null) {
+			defaultYml.put("nav", List.of(navFile));
+		}
+		return defaultYml;
 	}
 
 	private Map<String, String> getAsciidocAttributes(Project project,
@@ -103,8 +122,10 @@ public class AntoraConventions {
 		return attributes.get();
 	}
 
-	private void configureAntoraTask(Project project, AntoraTask antoraTask) {
+	private void configureAntoraTask(Project project, AntoraTask antoraTask,
+			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
 		// FIXME change the working directory?
+		antoraTask.getDependsOn().add(generateAntoraPlaybookTask);
 	}
 
 	private void configureAntoraExtension(AntoraExtension antoraExtension, Provider<RegularFile> playbook) {

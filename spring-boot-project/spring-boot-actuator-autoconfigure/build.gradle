@@ -210,7 +210,7 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 }
 
-def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraAggregateContent", Zip) {
+def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "actuator-rest-api-local-aggregate-content"
 	from(tasks.getByName("generateAntoraYml")) {

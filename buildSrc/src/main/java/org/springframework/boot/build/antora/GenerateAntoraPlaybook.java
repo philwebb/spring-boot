@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.yaml.snakeyaml.DumperOptions;
@@ -66,9 +68,11 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	public abstract Property<String> getContentSourceConfiguration();
 
 	@Input
+	@Optional
 	public abstract ListProperty<String> getXrefStubs();
 
 	@Input
+	@Optional
 	public abstract Property<String> getAlwaysInclude();
 
 	public GenerateAntoraPlaybook() {
@@ -94,15 +98,21 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		Map<String, Object> data = loadPlaybookTemplate();
 		addExtensions(data);
 		addSources(data);
+		addDir(data);
 		return data;
 	}
 
-	private void addExtensions(Map<String, Object> data) throws IOException {
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> loadPlaybookTemplate() throws IOException {
+		try (InputStream resource = getClass().getResourceAsStream("antora-playbook-template.yml")) {
+			return createYaml().loadAs(resource, LinkedHashMap.class);
+		}
+	}
+
+	private void addExtensions(Map<String, Object> data) {
 		List<Map<String, Object>> extensionsConfig = getList(data, "antora.extensions");
 		extensionsConfig.add(createXrefExtensionConfig());
 		extensionsConfig.add(createZipContentsCollectorExtensionConfig());
-		List<Map<String, Object>> contentSources = getList(data, "content.sources");
-		contentSources.add(createContentSource());
 	}
 
 	private Map<String, Object> createXrefExtensionConfig() {
@@ -135,7 +145,12 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		return config;
 	}
 
-	private Map<String, Object> createContentSource() throws IOException {
+	private void addSources(Map<String, Object> data) {
+		List<Map<String, Object>> contentSources = getList(data, "content.sources");
+		contentSources.add(createContentSource());
+	}
+
+	private Map<String, Object> createContentSource() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		Path playbookPath = getOutputFile().get().getAsFile().toPath().getParent();
 		Path antoraSrc = getProjectPath(getProject()).resolve(ANTORA_SOURCE_DIR);
@@ -151,7 +166,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		return source;
 	}
 
-	private void addAntoraContentStartPaths(Set<String> startPaths) throws IOException {
+	private void addAntoraContentStartPaths(Set<String> startPaths) {
 		Configuration configuration = getProject().getConfigurations().findByName("antoraContent");
 		if (configuration != null) {
 			for (ProjectDependency dependency : configuration.getDependencies().withType(ProjectDependency.class)) {
@@ -161,17 +176,10 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		}
 	}
 
-	private void addSources(Map<String, Object> data) {
-		getProject().getRootProject().getProjectDir();
-		getProject().getProjectDir();
-
-	}
-
-	@SuppressWarnings("unchecked")
-	private Map<String, Object> loadPlaybookTemplate() throws IOException {
-		try (InputStream resource = getClass().getResourceAsStream("antora-playbook-template.yml")) {
-			return createYaml().loadAs(resource, LinkedHashMap.class);
-		}
+	private void addDir(Map<String, Object> data) {
+		Path playbookDir = toRealPath(getOutputFile().get().getAsFile().toPath()).getParent();
+		Path outputDir = getProject().getBuildDir().toPath().resolve("site");
+		data.put("output", Map.of("dir", playbookDir.relativize(outputDir).toString()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -196,18 +204,26 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		return new Yaml(options);
 	}
 
-	private Path getRelativeProjectPath() throws IOException {
+	private Path getRelativeProjectPath() {
 		return relativizeFromRootProject(getProjectPath(getProject()));
 	}
 
-	private Path relativizeFromRootProject(Path subPath) throws IOException {
+	private Path relativizeFromRootProject(Path subPath) {
 		Path rootProjectPath = getProjectPath(getProject().getRootProject());
 		return rootProjectPath.relativize(subPath).normalize();
 	}
 
-	private Path getProjectPath(Project project) throws IOException {
-		Path path = project.getProjectDir().toPath();
-		return Files.exists(path) ? path.toRealPath() : path;
+	private Path getProjectPath(Project project) {
+		return toRealPath(project.getProjectDir().toPath());
+	}
+
+	private Path toRealPath(Path path) {
+		try {
+			return Files.exists(path) ? path.toRealPath() : path;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 }

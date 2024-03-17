@@ -130,7 +130,7 @@ tasks.named("documentPluginGoals") {
 	]
 }
 
-def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraAggregateContent", Zip) {
+def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "maven-plugin-local-aggregate-content"
 	from(tasks.getByName("generateAntoraYml")) {
