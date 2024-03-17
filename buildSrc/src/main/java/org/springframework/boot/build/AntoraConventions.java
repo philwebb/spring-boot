@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.gradle.node.NodeExtension;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
 import io.spring.gradle.antora.GenerateAntoraYmlTask;
 import org.antora.gradle.AntoraExtension;
@@ -77,8 +78,11 @@ public class AntoraConventions {
 				generateAntoraYmlTask, dependencyVersionsTask));
 		tasks.withType(AntoraTask.class,
 				(antoraTask) -> configureAntoraTask(project, antoraTask, generateAntoraPlaybookTask));
-		configureAntoraExtension(project.getExtensions().getByType(AntoraExtension.class),
-				generateAntoraPlaybookTask.getOutputFile());
+		project.getExtensions()
+			.configure(AntoraExtension.class, (antoraExtension) -> configureAntoraExtension(antoraExtension,
+					generateAntoraPlaybookTask.getOutputFile()));
+		project.getExtensions()
+			.configure(NodeExtension.class, (nodeExtension) -> configureNodeExtension(project, nodeExtension));
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
@@ -125,7 +129,6 @@ public class AntoraConventions {
 
 	private void configureAntoraTask(Project project, AntoraTask antoraTask,
 			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
-		// FIXME change the working directory?
 		antoraTask.getDependsOn().add(generateAntoraPlaybookTask);
 	}
 
@@ -135,6 +138,11 @@ public class AntoraConventions {
 		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
 		// FIXME only if gradle is in debug?
 		// antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
+	}
+
+	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
+		File rootBuildDir = project.getRootProject().getBuildDir();
+		nodeExtension.getWorkDir().set(rootBuildDir.toPath().resolve(".gradle/nodejs").toFile());
 	}
 
 }
