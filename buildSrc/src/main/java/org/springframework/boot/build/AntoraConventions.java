@@ -143,6 +143,7 @@ public class AntoraConventions {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
 		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
+		antoraExtension.getOptions().addAll("--log-level", "warn");
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
