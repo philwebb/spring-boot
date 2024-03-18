@@ -30,6 +30,7 @@ import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.api.Project;
 import org.gradle.api.file.RegularFile;
+import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 
@@ -129,15 +130,19 @@ public class AntoraConventions {
 
 	private void configureAntoraTask(Project project, AntoraTask antoraTask,
 			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
+		antoraTask.setGroup("Documentation");
 		antoraTask.getDependsOn().add(generateAntoraPlaybookTask);
+		project.getPlugins()
+			.withType(JavaBasePlugin.class,
+					(javaBasePlugin) -> project.getTasks()
+						.getByName(JavaBasePlugin.CHECK_TASK_NAME)
+						.dependsOn(antoraTask));
 	}
 
 	private void configureAntoraExtension(AntoraExtension antoraExtension, Provider<RegularFile> playbook) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
 		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
-		// FIXME only if gradle is in debug?
-		// antoraExtension.getOptions().addAll("--log-level", "all", "--stacktrace");
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
