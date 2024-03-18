@@ -343,7 +343,7 @@ def zipApiAntoraCatalogContent = tasks.register("zipApiAntoraCatalogContent", Zi
 	}
 }
 
-def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencies", Sync) {
+def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencies", Copy) {
 	into layout.buildDirectory.dir('generated/docs/antora-content')
 	from(configurations.antoraContent)
 	rename("spring-boot-actuator-autoconfigure", "spring-boot-docs")
@@ -352,7 +352,7 @@ def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencie
 }
 
 tasks.named("antora") {
-	dependsOn zipAntoraAggregateContent, zipApiAntoraCatalogContent, copyAntoraContentDependencies
+	inputs.files(zipAntoraAggregateContent, zipApiAntoraCatalogContent, copyAntoraContentDependencies)
 }
 
 publishing {

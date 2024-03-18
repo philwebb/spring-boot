@@ -162,7 +162,7 @@ tasks.named("generateAntoraPlaybook") {
 
 
 tasks.named("antora") {
-	dependsOn zipAntoraAggregateContent, zipAntoraCatalogContent
+	inputs.files(zipAntoraAggregateContent, zipAntoraCatalogContent)
 }
 
 artifacts {
