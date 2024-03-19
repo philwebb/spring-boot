@@ -29,6 +29,8 @@ import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.api.Project;
 import org.gradle.api.file.RegularFile;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
@@ -78,9 +80,10 @@ public class AntoraConventions {
 				generateAntoraYmlTask, dependencyVersionsTask));
 		tasks.withType(AntoraTask.class,
 				(antoraTask) -> configureAntoraTask(project, antoraTask, generateAntoraPlaybookTask));
-		project.getExtensions()
-			.configure(AntoraExtension.class, (antoraExtension) -> configureAntoraExtension(antoraExtension,
-					generateAntoraPlaybookTask.getOutputFile()));
+		project.getExtensions().configure(AntoraExtension.class, (antoraExtension) -> {
+			RegularFileProperty outputFile = generateAntoraPlaybookTask.getOutputFile();
+			configureAntoraExtension(project, antoraExtension, outputFile);
+		});
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
@@ -136,10 +139,14 @@ public class AntoraConventions {
 						.dependsOn(antoraTask));
 	}
 
-	private void configureAntoraExtension(AntoraExtension antoraExtension, Provider<RegularFile> playbook) {
+	private void configureAntoraExtension(Project project, AntoraExtension antoraExtension,
+			Provider<RegularFile> playbook) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
 		antoraExtension.getPackages().convention(PACKAGES);
 		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
+		if (project.getGradle().getStartParameter().getLogLevel() != LogLevel.DEBUG) {
+			antoraExtension.getOptions().add("--quiet");
+		}
 	}
 
 }
