@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.gradle.node.NodeExtension;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
 import io.spring.gradle.antora.GenerateAntoraYmlTask;
 import org.antora.gradle.AntoraExtension;
@@ -85,6 +86,8 @@ public class AntoraConventions {
 			RegularFileProperty outputFile = generateAntoraPlaybookTask.getOutputFile();
 			configureAntoraExtension(project, antoraExtension, outputFile);
 		});
+		project.getExtensions()
+			.configure(NodeExtension.class, (nodeExtension) -> configureNodeExtension(project, nodeExtension));
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
@@ -148,6 +151,12 @@ public class AntoraConventions {
 		if (project.getGradle().getStartParameter().getLogLevel() != LogLevel.DEBUG) {
 			antoraExtension.getOptions().add("--quiet");
 		}
+	}
+
+	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
+		File buildDir = project.getBuildDir();
+		nodeExtension.getWorkDir().set(buildDir.toPath().resolve(".gradle/nodejs").toFile());
+		nodeExtension.getNpmWorkDir().set(buildDir.toPath().resolve(".gradle/npm").toFile());
 	}
 
 }
