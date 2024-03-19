@@ -182,7 +182,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private void addAntoraContentStartPaths(Set<String> startPaths) {
 		Configuration configuration = getProject().getConfigurations().findByName("antoraContent");
 		if (configuration != null) {
-			for (ProjectDependency dependency : configuration.getDependencies().withType(ProjectDependency.class)) {
+			for (ProjectDependency dependency : configuration.getAllDependencies().withType(ProjectDependency.class)) {
 				Path path = dependency.getDependencyProject().getProjectDir().toPath();
 				startPaths.add(relativizeFromRootProject(path).resolve(ANTORA_SOURCE_DIR).toString());
 			}
