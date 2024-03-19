@@ -351,9 +351,6 @@ def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencie
 	rename("spring-boot-gradle-plugin", "spring-boot-docs")
 }
 
-task dunno(type: org.springframework.boot.build.antora.Dunno) {
-}
-
 tasks.named("antora") {
 	inputs.files(zipAntoraAggregateContent, zipApiAntoraCatalogContent, copyAntoraContentDependencies)
 }
@@ -361,15 +358,8 @@ tasks.named("antora") {
 gradle.projectsEvaluated {
 	def mavenPublication = publishing.publications.getByName("maven");
 	configurations.antoraContent.dependencies.forEach { dependency ->
-		def x = dependency.dependencyProject.configurations;
-		def y = dependency.targetConfiguration
-		x.forEach { println(it) }
-		x.forEach { println(it.name) }
-		println y
-		def targetConfiguration = x.getByName(y)
-		println "Found "
-		println targetConfiguration
-		targetConfiguration.artifacts.forEach(mavenPublication::artifact)
+		dependency.dependencyProject.configurations.getByName(dependency.targetConfiguration)
+			.artifacts.forEach(mavenPublication::artifact)
 	}
 }
 
