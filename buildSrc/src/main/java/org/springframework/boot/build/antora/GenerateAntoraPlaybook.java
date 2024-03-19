@@ -59,7 +59,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
 
-	private static final String XREF_EXTENSION = "/Users/pwebb/projects/antora-xref-extension/packages/antora-xref-extension";
+	private static final String XREF_EXTENSION = "@springio/antora-xref-extension";
 
 	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/antora-zip-contents-collector-extension";
 

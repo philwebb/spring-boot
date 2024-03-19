@@ -63,6 +63,7 @@ public class AntoraConventions {
 		packages.put("@asciidoctor/tabs", "1.0.0-beta.6");
 		packages.put("@springio/antora-extensions", "1.8.2");
 		packages.put("@springio/asciidoctor-extensions", "1.0.0-alpha.10");
+		packages.put("@springio/antora-xref-extension", "1.0.0-alpha.1");
 		PACKAGES = Collections.unmodifiableMap(packages);
 	}
 
