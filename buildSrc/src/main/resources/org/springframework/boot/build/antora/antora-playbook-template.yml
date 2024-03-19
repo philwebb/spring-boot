@@ -14,8 +14,7 @@ asciidoc:
   extensions:
     - '@asciidoctor/tabs'
     - '@springio/asciidoctor-extensions'
-#   - '@springio/asciidoctor-extensions/configuration-properties-extension'
-    - '/Users/pwebb/projects/asciidoctor-extensions/lib/configuration-properties-extension.js'
+    - '@springio/asciidoctor-extensions/configuration-properties-extension'
     - '@springio/asciidoctor-extensions/section-ids-extension'
 urls:
   latest_version_segment: ''
@@ -24,4 +23,4 @@ runtime:
     failure_level: warn
 ui:
   bundle:
-    url: /Users/pwebb/projects/antora-ui-spring/build/ui-bundle.zip
+    url: https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip

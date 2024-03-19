@@ -55,13 +55,11 @@ import org.springframework.util.function.ThrowingConsumer;
  */
 public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
-	// FIXME publish extensions and get an update on asciidoctor extension
-
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
 
 	private static final String XREF_EXTENSION = "@springio/antora-xref-extension";
 
-	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "/Users/pwebb/projects/antora-zip-contents-collector-extension/packages/antora-zip-contents-collector-extension";
+	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "@springio/antora-zip-contents-collector-extension";
 
 	private static final String ROOT_COMPONENT_EXTENSION = "@springio/antora-extensions/root-component-extension";
 
