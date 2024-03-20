@@ -1,19 +1,19 @@
 antora:
   extensions:
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: spring-boot
   - require: '@springio/antora-xref-extension'
     stub:
     - appendix:.*
     - api:.*
     - reference:.*
   - require: '@springio/antora-zip-contents-collector-extension'
-    version_file: gradle.properties
-    locations:
-    - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
     always_include:
     - classifier: local-aggregate-content
       name: test
-  - require: '@springio/antora-extensions/root-component-extension'
-    root_component_name: spring-boot
+    locations:
+    - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
+    version_file: gradle.properties
 site:
   title: Spring Boot
 content:

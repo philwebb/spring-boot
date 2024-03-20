@@ -17,7 +17,6 @@
 package org.springframework.boot.build;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
+import org.springframework.boot.build.antora.Extensions;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.constraints.ExtractVersionConstraints;
@@ -57,16 +57,6 @@ public class AntoraConventions {
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
 
 	private static final List<String> NAV_FILES = List.of("nav.adoc", "local-nav.adoc");
-
-	private static final Map<String, String> PACKAGES;
-	static {
-		Map<String, String> packages = new LinkedHashMap<>();
-		packages.put("@asciidoctor/tabs", "1.0.0-beta.6");
-		packages.put("@springio/antora-extensions", "1.8.2");
-		packages.put("@springio/asciidoctor-extensions", "1.0.0-alpha.10");
-		packages.put("@springio/antora-xref-extension", "1.0.0-alpha.1");
-		PACKAGES = Collections.unmodifiableMap(packages);
-	}
 
 	void apply(Project project) {
 		project.getPlugins().withType(AntoraPlugin.class, (antoraPlugin) -> apply(project, antoraPlugin));
@@ -146,7 +136,7 @@ public class AntoraConventions {
 	private void configureAntoraExtension(Project project, AntoraExtension antoraExtension,
 			Provider<RegularFile> playbook) {
 		antoraExtension.getVersion().convention(ANTORA_VERSION);
-		antoraExtension.getPackages().convention(PACKAGES);
+		antoraExtension.getPackages().convention(Extensions.packages());
 		antoraExtension.getPlaybook().convention(playbook.map(RegularFile::getAsFile));
 		if (project.getGradle().getStartParameter().getLogLevel() != LogLevel.DEBUG) {
 			antoraExtension.getOptions().add("--quiet");

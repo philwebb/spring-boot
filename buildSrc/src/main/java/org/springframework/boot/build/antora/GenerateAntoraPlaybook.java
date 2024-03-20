@@ -23,14 +23,12 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
@@ -47,8 +45,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import org.springframework.util.function.ThrowingConsumer;
-
 /**
  * Task to generate a local Antora playbook.
  *
@@ -57,12 +53,6 @@ import org.springframework.util.function.ThrowingConsumer;
 public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
-
-	private static final String XREF_EXTENSION = "@springio/antora-xref-extension";
-
-	private static final String ZIP_CONTENTS_COLLECTOR_EXTENSION = "@springio/antora-zip-contents-collector-extension";
-
-	private static final String ROOT_COMPONENT_EXTENSION = "@springio/antora-extensions/root-component-extension";
 
 	@OutputFile
 	public abstract RegularFileProperty getOutputFile();
@@ -114,47 +104,19 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	@SuppressWarnings("unchecked")
 	private void addExtensions(Map<String, Object> data) {
-		List<Map<String, Object>> extensionsConfig = new ArrayList<>();
-		extensionsConfig.add(createXrefExtensionConfig());
-		extensionsConfig.add(createZipContentsCollectorExtensionConfig());
-		extensionsConfig.add(createRootComponentExtensionConfig()); // Must be last
 		Map<String, Object> antora = (Map<String, Object>) data.get("antora");
-		antora.put("extensions", extensionsConfig);
-	}
-
-	private Map<String, Object> createXrefExtensionConfig() {
-		return createExtensionConfig(XREF_EXTENSION, (config) -> {
-			List<String> xrefStubs = getXrefStubs().getOrElse(Collections.emptyList());
-			if (!xrefStubs.isEmpty()) {
-				config.put("stub", xrefStubs);
-			}
-		});
-	}
-
-	private Map<String, Object> createZipContentsCollectorExtensionConfig() {
-		return createExtensionConfig(ZIP_CONTENTS_COLLECTOR_EXTENSION, (config) -> {
-			Map<String, String> alwaysInclude = getAlwaysInclude().getOrNull();
-			config.put("version_file", "gradle.properties");
-			Path location = getRelativeProjectPath().resolve("build/generated/docs/antora-content/"
-					+ getProject().getName() + "-${version}-${name}-${classifier}.zip");
-			config.put("locations", List.of(location.toString()));
-			if (alwaysInclude != null && !alwaysInclude.isEmpty()) {
-				config.put("always_include", List.of(new TreeMap<>(alwaysInclude)));
-			}
-		});
-	}
-
-	private Map<String, Object> createRootComponentExtensionConfig() {
-		return createExtensionConfig(ROOT_COMPONENT_EXTENSION,
-				(config) -> config.put("root_component_name", "spring-boot"));
-	}
-
-	private Map<String, Object> createExtensionConfig(String require,
-			ThrowingConsumer<Map<String, Object>> customizer) {
-		Map<String, Object> config = new LinkedHashMap<>();
-		config.put("require", require);
-		customizer.accept(config);
-		return config;
+		antora.put("extensions", Extensions.antora((extensions) -> {
+			extensions.xref((xref) -> xref.stub(getXrefStubs().getOrElse(Collections.emptyList())));
+			extensions.zipContentsCollector((zipContentsCollector) -> {
+				zipContentsCollector.versionFile("gradle.properties");
+				zipContentsCollector.locations(getRelativeProjectPath().resolve("build/generated/docs/antora-content/"
+						+ getProject().getName() + "-${version}-${name}-${classifier}.zip"));
+				zipContentsCollector.alwaysInclude(getAlwaysInclude().getOrNull());
+			});
+			extensions.rootComponent((rootComponent) -> rootComponent.name("spring-boot"));
+		}));
+		Map<String, Object> asciidoc = (Map<String, Object>) data.get("asciidoc");
+		asciidoc.put("extensions", Extensions.asciidoc());
 	}
 
 	private void addSources(Map<String, Object> data) {
