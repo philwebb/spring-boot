@@ -70,6 +70,8 @@ dependencies {
 
 configurations.all {
 	exclude group:"org.slf4j", module:"slf4j-api"
+	exclude group:"ch.qos.logback", module:"logback-classic"
+	exclude group:"ch.qos.logback", module:"logback-core"
 }
 
 gradlePlugin {
