@@ -42,14 +42,14 @@ class IntegratingWithActuatorDocumentationTests {
 
 	@TestTemplate
 	void basicBuildInfo() {
-		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-basic").build("bootBuildInfo");
+		this.gradleBuild.script(Examples.DIR + "integrating-with-actuator/build-info-basic").build("bootBuildInfo");
 		assertThat(new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties"))
 			.isFile();
 	}
 
 	@TestTemplate
 	void buildInfoCustomValues() {
-		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-custom-values")
+		this.gradleBuild.script(Examples.DIR + "integrating-with-actuator/build-info-custom-values")
 			.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
@@ -63,7 +63,7 @@ class IntegratingWithActuatorDocumentationTests {
 
 	@TestTemplate
 	void buildInfoAdditional() {
-		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-additional")
+		this.gradleBuild.script(Examples.DIR + "integrating-with-actuator/build-info-additional")
 			.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
@@ -74,7 +74,7 @@ class IntegratingWithActuatorDocumentationTests {
 
 	@TestTemplate
 	void buildInfoExcludeTime() {
-		this.gradleBuild.script("src/docs/gradle/integrating-with-actuator/build-info-exclude-time")
+		this.gradleBuild.script(Examples.DIR + "integrating-with-actuator/build-info-exclude-time")
 			.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(), "build/resources/main/META-INF/build-info.properties");
 		assertThat(file).isFile();
