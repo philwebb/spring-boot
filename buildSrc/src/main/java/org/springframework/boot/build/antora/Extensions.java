@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  *
  * @author Phillip Webb
  */
-public class Extensions {
+public final class Extensions {
 
 	private static final List<Extension> antora;
 	static {
@@ -53,6 +53,9 @@ public class Extensions {
 					"@springio/asciidoctor-extensions/configuration-properties-extension",
 					"@springio/asciidoctor-extensions/section-ids-extension"));
 		asciidoc = List.copyOf(extensions);
+	}
+
+	private Extensions() {
 	}
 
 	public static Map<String, String> packages() {
@@ -81,7 +84,7 @@ public class Extensions {
 
 	}
 
-	static class AntoraExtensionsConfiguration {
+	static final class AntoraExtensionsConfiguration {
 
 		private Map<String, Map<String, Object>> extensions = new TreeMap<>();
 
@@ -175,7 +178,7 @@ public class Extensions {
 				super("@springio/antora-extensions/root-component-extension");
 			}
 
-			public void name(String name) {
+			void name(String name) {
 				customize("root_component_name", name);
 			}
 
