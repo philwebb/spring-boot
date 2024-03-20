@@ -68,11 +68,11 @@ class ChangelogWriter implements AutoCloseable {
 		String newVersionNumber = changelog.newVersionNumber();
 		Map<DifferenceType, List<Difference>> differencesByType = collateByType(changelog);
 		write("Configuration property changes between `%s` and `%s`%n", oldVersionNumber, newVersionNumber);
-		write("%n%n%n== Deprecated in %s%n", newVersionNumber);
+		write("%n%n%n== Deprecated in %s%n%n", newVersionNumber);
 		writeDeprecated(differencesByType.get(DifferenceType.DEPRECATED));
-		write("%n%n%n== Added in %s%n", newVersionNumber);
+		write("%n%n%n== Added in %s%n%n", newVersionNumber);
 		writeAdded(differencesByType.get(DifferenceType.ADDED));
-		write("%n%n%n== Removed in %s%n", newVersionNumber);
+		write("%n%n%n== Removed in %s%n%n", newVersionNumber);
 		writeRemoved(differencesByType.get(DifferenceType.DELETED), differencesByType.get(DifferenceType.DEPRECATED));
 	}
 
