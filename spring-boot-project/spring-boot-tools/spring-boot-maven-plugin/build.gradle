@@ -130,7 +130,7 @@ tasks.named("documentPluginGoals") {
 	]
 }
 
-def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateContent", Zip) {
+def antoraMavenPluginLocalAggregateContent  = tasks.register("antoraMavenPluginLocalAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "maven-plugin-local-aggregate-content"
 	from(tasks.getByName("generateAntoraYml")) {
@@ -138,7 +138,7 @@ def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateCon
 	}
 }
 
-def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
+def antoraMavenPluginAggregateContent = tasks.register("antoraMavenPluginAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "maven-plugin-aggregate-content"
 	from(documentPluginGoals) {
@@ -146,7 +146,7 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 	}
 }
 
-def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
+def antoraMavenPluginCatalogContent = tasks.register("antoraMavenPluginCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "maven-plugin-catalog-content"
 	from(javadoc) {
@@ -157,15 +157,15 @@ def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
 tasks.named("generateAntoraPlaybook") {
 	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
 	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
-	dependsOn zipAntoraLocalAggregateContent
+	dependsOn antoraMavenPluginLocalAggregateContent
 }
 
 
 tasks.named("antora") {
-	inputs.files(zipAntoraAggregateContent, zipAntoraCatalogContent)
+	inputs.files(antoraMavenPluginLocalAggregateContent, antoraMavenPluginAggregateContent, antoraMavenPluginCatalogContent)
 }
 
 artifacts {
-	antoraContent zipAntoraAggregateContent
-	antoraContent zipAntoraCatalogContent
+	antoraContent antoraMavenPluginAggregateContent
+	antoraContent antoraMavenPluginCatalogContent
 }

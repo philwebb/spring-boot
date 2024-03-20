@@ -52,6 +52,11 @@ import org.yaml.snakeyaml.Yaml;
  */
 public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
+	/**
+	 *
+	 */
+	private static final String GENERATED_DOCS = "build/generated/docs/";
+
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
 
 	@OutputFile
@@ -109,8 +114,12 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 			extensions.xref((xref) -> xref.stub(getXrefStubs().getOrElse(Collections.emptyList())));
 			extensions.zipContentsCollector((zipContentsCollector) -> {
 				zipContentsCollector.versionFile("gradle.properties");
-				zipContentsCollector.locations(getRelativeProjectPath().resolve("build/generated/docs/antora-content/"
-						+ getProject().getName() + "-${version}-${name}-${classifier}.zip"));
+				String locationName = getProject().getName() + "-${version}-${name}-${classifier}.zip";
+				Path antoraContent = getRelativeProjectPath()
+					.resolve(GENERATED_DOCS + "antora-content/" + locationName);
+				Path antoraDepenencies = getRelativeProjectPath()
+					.resolve(GENERATED_DOCS + "antora-depenencies/" + locationName);
+				zipContentsCollector.locations(antoraContent, antoraDepenencies);
 				zipContentsCollector.alwaysInclude(getAlwaysInclude().getOrNull());
 			});
 			extensions.rootComponent((rootComponent) -> rootComponent.name("spring-boot"));

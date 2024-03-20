@@ -107,7 +107,7 @@ javadoc {
 	}
 }
 
-def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateContent", Zip) {
+def antoraGradlePluginLocalAggregateContent  = tasks.register("antoraGradlePluginLocalAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "gradle-plugin-local-aggregate-content"
 	from(tasks.getByName("generateAntoraYml")) {
@@ -115,7 +115,7 @@ def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateCon
 	}
 }
 
-def zipAntoraCatalogContent = tasks.register("zipAntoraCatalogContent", Zip) {
+def antoraGradlePluginCatalogContent = tasks.register("antoraGradlePluginCatalogContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "gradle-plugin-catalog-content"
 	from(javadoc) {
@@ -130,10 +130,10 @@ tasks.named("generateAntoraPlaybook") {
 }
 
 tasks.named("antora") {
-	inputs.files(zipAntoraCatalogContent)
+	inputs.files(antoraGradlePluginLocalAggregateContent, antoraGradlePluginCatalogContent)
 }
 
 artifacts {
-	antoraContent zipAntoraCatalogContent
+	antoraContent antoraGradlePluginCatalogContent
 }
 
