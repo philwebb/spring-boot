@@ -34,11 +34,13 @@ import java.util.stream.Stream;
  */
 public final class Extensions {
 
+	private static final String ROOT_COMPONENT_EXTENSION = "@springio/antora-extensions/root-component-extension";
+
 	private static final List<Extension> antora;
 	static {
 		List<Extension> extensions = new ArrayList<>();
-		extensions.add(new Extension("@springio/antora-extensions", "1.8.2",
-				"@springio/antora-extensions/root-component-extension"));
+		extensions.add(new Extension("@springio/antora-extensions", "1.8.2", ROOT_COMPONENT_EXTENSION,
+				"@springio/antora-extensions/static-page-extension"));
 		extensions.add(new Extension("@springio/antora-xref-extension", "1.0.0-alpha.3"));
 		extensions.add(new Extension("@springio/antora-zip-contents-collector-extension", "1.0.0-alpha.1"));
 		antora = List.copyOf(extensions);
@@ -106,7 +108,11 @@ public final class Extensions {
 
 		List<Map<String, Object>> config() {
 			List<Map<String, Object>> config = new ArrayList<>();
-			this.extensions.forEach((name, customizations) -> {
+			Map<String, Map<String, Object>> orderedExtensions = new LinkedHashMap<>(this.extensions);
+			// The root component extension must be last
+			Map<String, Object> rootComponentConfig = orderedExtensions.remove(ROOT_COMPONENT_EXTENSION);
+			orderedExtensions.put(ROOT_COMPONENT_EXTENSION, rootComponentConfig);
+			orderedExtensions.forEach((name, customizations) -> {
 				Map<String, Object> extensionConfig = new LinkedHashMap<>();
 				extensionConfig.put("require", name);
 				if (customizations != null) {
@@ -175,7 +181,7 @@ public final class Extensions {
 		class RootComponent extends Customizer {
 
 			RootComponent() {
-				super("@springio/antora-extensions/root-component-extension");
+				super(ROOT_COMPONENT_EXTENSION);
 			}
 
 			void name(String name) {

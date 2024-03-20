@@ -1,7 +1,6 @@
 antora:
   extensions:
-  - require: '@springio/antora-extensions/root-component-extension'
-    root_component_name: spring-boot
+  - require: '@springio/antora-extensions/static-page-extension'
   - require: '@springio/antora-xref-extension'
     stub:
     - appendix:.*
@@ -15,6 +14,8 @@ antora:
     - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
     - project/build/generated/docs/antora-dependencies/test-${version}-${name}-${classifier}.zip
     version_file: gradle.properties
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: spring-boot
 site:
   title: Spring Boot
 content:
