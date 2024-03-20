@@ -17,8 +17,7 @@
 package org.springframework.boot.build.antora;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.util.List;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.gradle.api.Project;
@@ -27,6 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.function.ThrowingConsumer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GenerateAntoraPlaybook}.
@@ -39,15 +40,15 @@ class GenerateAntoraPlaybookTests {
 	File temp;
 
 	@Test
-	void test() throws Exception {
-		// FIXME
+	void writePlaybookGeneratesExpectedContent() throws Exception {
 		writePlaybookYml((task) -> {
 			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
 			task.getAlwaysInclude().set(Map.of("name", "test", "classifier", "local-aggregate-content"));
 		});
-		List<String> lines = Files.readAllLines(this.temp.toPath()
-			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));
-		lines.forEach(System.out::println);
+		assertThat(this.temp.toPath()
+			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"))
+			.hasSameTextualContentAs(
+					Path.of("src/test/resources/org/springframework/boot/build/antora/expected-playbook.yml"));
 	}
 
 	private void writePlaybookYml(ThrowingConsumer<GenerateAntoraPlaybook> customizer) throws Exception {

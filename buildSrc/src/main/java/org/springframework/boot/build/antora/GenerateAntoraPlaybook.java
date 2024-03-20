@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
@@ -138,7 +139,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 					+ getProject().getName() + "-${version}-${name}-${classifier}.zip");
 			config.put("locations", List.of(location.toString()));
 			if (alwaysInclude != null && !alwaysInclude.isEmpty()) {
-				config.put("always_include", List.of(alwaysInclude));
+				config.put("always_include", List.of(new TreeMap<>(alwaysInclude)));
 			}
 		});
 	}

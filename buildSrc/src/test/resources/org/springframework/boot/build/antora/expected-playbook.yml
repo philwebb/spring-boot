@@ -1,0 +1,47 @@
+antora:
+  extensions:
+  - require: '@springio/antora-xref-extension'
+    stub:
+    - appendix:.*
+    - api:.*
+    - reference:.*
+  - require: '@springio/antora-zip-contents-collector-extension'
+    version_file: gradle.properties
+    locations:
+    - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
+    always_include:
+    - classifier: local-aggregate-content
+      name: test
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: spring-boot
+site:
+  title: Spring Boot
+content:
+  sources:
+  - url: ./../../../../..
+    branches: HEAD
+    version: unspecified
+    start_paths:
+    - project/src/docs/antora
+asciidoc:
+  sourcemap: true
+  attributes:
+    page-pagination: ''
+    hide-uri-scheme: '@'
+    tabs-sync-option: '@'
+    chomp: all
+  extensions:
+  - '@asciidoctor/tabs'
+  - '@springio/asciidoctor-extensions'
+  - '@springio/asciidoctor-extensions/configuration-properties-extension'
+  - '@springio/asciidoctor-extensions/section-ids-extension'
+urls:
+  latest_version_segment: ''
+runtime:
+  log:
+    failure_level: warn
+ui:
+  bundle:
+    url: https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip
+output:
+  dir: ./../../../site
