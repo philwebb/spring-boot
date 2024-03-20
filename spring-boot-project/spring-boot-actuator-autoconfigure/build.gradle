@@ -210,7 +210,7 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 }
 
-def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateContent", Zip) {
+def antoraActuatorRestApiLocalAggregateContent  = tasks.register("antoraActuatorRestApiLocalAggregateContent", Zip) {
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "actuator-rest-api-local-aggregate-content"
 	from(tasks.getByName("generateAntoraYml")) {
@@ -218,7 +218,7 @@ def zipAntoraLocalAggregateContent  = tasks.register("zipAntoraLocalAggregateCon
 	}
 }
 
-def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip) {
+def antoraActuatorRestApiAggregateContent = tasks.register("antoraActuatorRestApiAggregateContent", Zip) {
 	dependsOn documentationTest
 	inputs.dir("${buildDir}/generated-snippets")
 		.withPathSensitivity(PathSensitivity.RELATIVE)
@@ -232,14 +232,14 @@ def zipAntoraAggregateContent = tasks.register("zipAntoraAggregateContent", Zip)
 
 tasks.named("generateAntoraPlaybook") {
 	alwaysInclude = [name: "actuator-rest-api", classifier: "local-aggregate-content"]
-	dependsOn zipAntoraLocalAggregateContent
+	dependsOn antoraActuatorRestApiLocalAggregateContent
 }
 
 tasks.named("antora") {
-	inputs.files(zipAntoraAggregateContent)
+	inputs.files(antoraActuatorRestApiAggregateContent)
 }
 
 artifacts {
-	antoraContent zipAntoraAggregateContent
+	antoraContent antoraActuatorRestApiAggregateContent
 }
 

@@ -52,12 +52,9 @@ import org.yaml.snakeyaml.Yaml;
  */
 public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
-	/**
-	 *
-	 */
-	private static final String GENERATED_DOCS = "build/generated/docs/";
-
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
+
+	private static final String GENERATED_DOCS = "build/generated/docs/";
 
 	@OutputFile
 	public abstract RegularFileProperty getOutputFile();
@@ -118,7 +115,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 				Path antoraContent = getRelativeProjectPath()
 					.resolve(GENERATED_DOCS + "antora-content/" + locationName);
 				Path antoraDepenencies = getRelativeProjectPath()
-					.resolve(GENERATED_DOCS + "antora-depenencies/" + locationName);
+					.resolve(GENERATED_DOCS + "antora-dependencies/" + locationName);
 				zipContentsCollector.locations(antoraContent, antoraDepenencies);
 				zipContentsCollector.alwaysInclude(getAlwaysInclude().getOrNull());
 			});

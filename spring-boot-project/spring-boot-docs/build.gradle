@@ -352,7 +352,7 @@ def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencie
 }
 
 tasks.named("antora") {
-	inputs.files(zipAntoraAggregateContent, antoraApiCatalogContent, copyAntoraContentDependencies)
+	inputs.files(antoraRootAggregateContent, antoraApiCatalogContent, copyAntoraContentDependencies)
 }
 
 gradle.projectsEvaluated {

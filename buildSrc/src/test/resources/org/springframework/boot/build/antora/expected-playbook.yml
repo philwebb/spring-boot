@@ -13,6 +13,7 @@ antora:
       name: test
     locations:
     - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
+    - project/build/generated/docs/antora-dependencies/test-${version}-${name}-${classifier}.zip
     version_file: gradle.properties
 site:
   title: Spring Boot
