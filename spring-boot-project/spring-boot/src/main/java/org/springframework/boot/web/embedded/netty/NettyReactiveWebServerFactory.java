@@ -177,8 +177,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 				getServerNameSslBundles());
 		addBundleUpdateHandler(null, getSsl().getBundle(), customizer);
 		getSsl().getServerNameBundles()
-			.forEach((serverNameSslBundle) -> addBundleUpdateHandler(serverNameSslBundle.serverName(),
-					serverNameSslBundle.bundle(), customizer));
+			.forEach((serverName, bundleName) -> addBundleUpdateHandler(serverName, bundleName, customizer));
 		return customizer.apply(httpServer);
 	}
 

@@ -22,9 +22,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
@@ -46,7 +47,6 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
-import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerSslBundle;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
@@ -205,14 +205,11 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return WebServerSslBundle.get(this.ssl, this.sslBundles);
 	}
 
-	protected final Map<String, SslBundle> getServerNameSslBundles() {
-		return this.ssl.getServerNameBundles()
-			.stream()
-			.collect(Collectors.toMap(Ssl.ServerNameSslBundle::serverName, this::getBundle));
-	}
-
-	private SslBundle getBundle(ServerNameSslBundle serverNameSslBundle) {
-		return this.sslBundles.getBundle(serverNameSslBundle.bundle());
+	private Map<String, SslBundle> getServerNameSslBundles() {
+		Map<String, SslBundle> result = new LinkedHashMap<>();
+		this.ssl.getServerNameBundles()
+			.forEach((serverName, bundleName) -> result.put(bundleName, this.sslBundles.getBundle(bundleName)));
+		return Collections.unmodifiableMap(result);
 	}
 
 	private InetSocketAddress getListenAddress() {

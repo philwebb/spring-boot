@@ -225,10 +225,8 @@ server:
   ssl:
     bundle: "web"
     server-name-bundles:
-      - server-name: "alt1.example.com"
-        bundle: "web-alt1"
-      - server-name: "alt2.example.com"
-        bundle: "web-alt2"
+      "alt1.example.com": "web-alt1"
+      "alt2.example.com": "web-alt2"
 ----
 
 The bundle specified with `server.ssl.bundle` will be used for the default host, and for any client that does support SNI.

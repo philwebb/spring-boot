@@ -2175,7 +2175,8 @@
     },
     {
       "name": "management.server.ssl.server-name-bundles",
-      "description": "Mapping of host names to SSL bundles for SNI configuration."
+      "description": "Mapping of host names to SSL bundles for SNI configuration.",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
     },
     {
       "name": "management.server.ssl.trust-certificate",

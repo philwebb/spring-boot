@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.server;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Simple server-independent abstraction for SSL configuration.
@@ -33,6 +33,8 @@ public class Ssl {
 	private boolean enabled = true;
 
 	private String bundle;
+
+	private Map<String, String> serverNameBundles = new LinkedHashMap<>();
 
 	private ClientAuth clientAuth;
 
@@ -70,8 +72,6 @@ public class Ssl {
 
 	private String protocol = "TLS";
 
-	private List<ServerNameSslBundle> serverNameBundles = new ArrayList<>();
-
 	/**
 	 * Return whether to enable SSL support.
 	 * @return whether to enable SSL support
@@ -100,6 +100,24 @@ public class Ssl {
 	 */
 	public void setBundle(String bundle) {
 		this.bundle = bundle;
+	}
+
+	/**
+	 * Return the mapping of host names to SSL bundles for SNI configuration.
+	 * @return the host name to SSL bundle mappings
+	 * @since 3.3.0
+	 */
+	public Map<String, String> getServerNameBundles() {
+		return this.serverNameBundles;
+	}
+
+	/**
+	 * Set the mapping of host names to SSL bundles for SNI configuration.
+	 * @param serverNameBundles the host name to SSL bundle mappings
+	 * @since 3.3.0
+	 */
+	public void setServerNameBundles(Map<String, String> serverNameBundles) {
+		this.serverNameBundles = serverNameBundles;
 	}
 
 	/**
@@ -331,18 +349,6 @@ public class Ssl {
 	}
 
 	/**
-	 * Return the mapping of host names to SSL bundles for SNI configuration.
-	 * @return the host name to SSL bundle mapping
-	 */
-	public List<ServerNameSslBundle> getServerNameBundles() {
-		return this.serverNameBundles;
-	}
-
-	public void setServerNameBundles(List<ServerNameSslBundle> serverNameBundles) {
-		this.serverNameBundles = serverNameBundles;
-	}
-
-	/**
 	 * Factory method to create an {@link Ssl} instance for a specific bundle name.
 	 * @param bundle the name of the bundle
 	 * @return a new {@link Ssl} instance with the bundle set
@@ -352,9 +358,6 @@ public class Ssl {
 		Ssl ssl = new Ssl();
 		ssl.setBundle(bundle);
 		return ssl;
-	}
-
-	public record ServerNameSslBundle(String serverName, String bundle) {
 	}
 
 	/**

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -68,7 +67,6 @@ import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -290,8 +288,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	void sslServerNameBundlesConfigurationThrowsException() {
 		Ssl ssl = new Ssl();
 		ssl.setBundle("test");
-		List<ServerNameSslBundle> bundles = List.of(new ServerNameSslBundle("first", "test1"),
-				new ServerNameSslBundle("second", "test2"));
+		Map<String, String> bundles = Map.of("first", "test1", "second", "test2");
 		ssl.setServerNameBundles(bundles);
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setSsl(ssl);

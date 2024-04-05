@@ -2682,7 +2682,8 @@
     },
     {
       "name": "spring.rsocket.server.ssl.server-name-bundles",
-      "description": "Mapping of host names to SSL bundles for SNI configuration."
+      "description": "Mapping of host names to SSL bundles for SNI configuration.",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
     },
     {
       "name": "spring.rsocket.server.ssl.trust-certificate",

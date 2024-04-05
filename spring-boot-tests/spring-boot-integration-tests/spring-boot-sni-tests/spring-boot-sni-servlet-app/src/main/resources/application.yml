@@ -20,10 +20,8 @@ server:
   ssl:
     bundle: "default"
     server-name-bundles:
-      - server-name: "hello.example.com"
-        bundle: "default"
-      - server-name: "hello-alt.example.com"
-        bundle: "alt"
+      "hello.example.com": "default"
+      "hello-alt.example.com": "alt"
 
 management:
   server:
@@ -31,10 +29,8 @@ management:
     ssl:
       bundle: "default"
       server-name-bundles:
-        - server-name: "hello.example.com"
-          bundle: "default"
-        - server-name: "hello-alt.example.com"
-          bundle: "alt"
+        "hello.example.com": "default"
+        "hello-alt.example.com": "alt"
   endpoints:
     web:
       exposure:

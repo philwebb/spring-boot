@@ -383,14 +383,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		customizer.customize(getSslBundle(), getServerNameSslBundles());
 		addBundleUpdateHandler(null, getSsl().getBundle(), customizer);
 		getSsl().getServerNameBundles()
-			.forEach((serverNameSslBundle) -> addBundleUpdateHandler(serverNameSslBundle.serverName(),
-					serverNameSslBundle.bundle(), customizer));
+			.forEach((serverName, bundleName) -> addBundleUpdateHandler(serverName, bundleName, customizer));
 	}
 
-	private void addBundleUpdateHandler(String serverName, String sslBundleName, SslConnectorCustomizer customizer) {
-		if (StringUtils.hasText(sslBundleName)) {
-			getSslBundles().addBundleUpdateHandler(sslBundleName,
-					(sslBundle) -> customizer.update(serverName, sslBundle));
+	private void addBundleUpdateHandler(String serverName, String bundleName, SslConnectorCustomizer customizer) {
+		if (StringUtils.hasText(bundleName)) {
+			getSslBundles().addBundleUpdateHandler(bundleName, (sslBundle) -> customizer.update(serverName, sslBundle));
 		}
 	}
 
