@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.core.test.tools.SourceFile;
 import org.springframework.core.test.tools.TestCompiler;
 
 /**
- * Base test infrastructure to test {@link PropertyDescriptor} implementations.
+ * Base test infrastructure to test {@link RecordBasePropertyDescriptor} implementations.
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
@@ -61,7 +61,7 @@ public abstract class PropertyDescriptorTests {
 	}
 
 	protected ItemMetadataAssert assertItemMetadata(MetadataGenerationEnvironment metadataEnv,
-			PropertyDescriptor<?> property) {
+			PropertyDescriptor property) {
 		return new ItemMetadataAssert(property.resolveItemMetadata("test", metadataEnv));
 	}
 
