@@ -1,0 +1,2 @@
+org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposerFactory=\
+smoketest.actuator.TanzuEndpointExposerFactory

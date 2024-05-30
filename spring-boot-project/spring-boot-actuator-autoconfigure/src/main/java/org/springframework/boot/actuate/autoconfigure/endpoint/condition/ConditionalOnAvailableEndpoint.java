@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposer;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
@@ -31,15 +32,21 @@ import org.springframework.core.env.Environment;
 /**
  * {@link Conditional @Conditional} that checks whether an endpoint is available. An
  * endpoint is considered available if it is both enabled and exposed on the specified
- * technologies. Matches enablement according to the endpoints specific
- * {@link Environment} property, falling back to
- * {@code management.endpoints.enabled-by-default} or failing that
- * {@link Endpoint#enableByDefault()}. Matches exposure according to any of the
- * {@code management.endpoints.web.exposure.<id>} or
- * {@code management.endpoints.jmx.exposure.<id>} specific properties or failing that to
- * whether the application runs on
- * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}. Both those
- * conditions should match for the endpoint to be considered available.
+ * technologies.
+ * <p>
+ * Matches enablement according to the endpoints specific {@link Environment} property,
+ * falling back to {@code management.endpoints.enabled-by-default} or failing that
+ * {@link Endpoint#enableByDefault()}.
+ * <p>
+ * Matches exposure according to any of the {@code management.endpoints.web.exposure.<id>}
+ * or {@code management.endpoints.jmx.exposure.<id>} specific properties or failing that
+ * to whether the application runs on
+ * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}. Endpoints can also
+ * be exposed by an {@link EndpointExposer} when {@link #considerEndpointExposers()} is
+ * {@code true}
+ * <p>
+ * Both enablement and exposure conditions should match for the endpoint to be considered
+ * available.
  * <p>
  * When placed on a {@code @Bean} method, the endpoint defaults to the return type of the
  * factory method:
@@ -121,5 +128,13 @@ public @interface ConditionalOnAvailableEndpoint {
 	 * @since 2.6.0
 	 */
 	EndpointExposure[] exposure() default {};
+
+	/**
+	 * If {@link EndpointExposer} implementations registered in {@code spring.factories}
+	 * should also be considered.
+	 * @return if additional exposers are to be considered
+	 * @since 2.7.22
+	 */
+	boolean considerEndpointExposers() default true;
 
 }

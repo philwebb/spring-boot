@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,17 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposer;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposerFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -40,6 +44,7 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -52,6 +57,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see ConditionalOnAvailableEndpoint
  */
 class OnAvailableEndpointCondition extends SpringBootCondition {
@@ -113,15 +119,20 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		if (!enablementOutcome.isMatch()) {
 			return enablementOutcome;
 		}
-		Set<EndpointExposure> exposuresToCheck = getExposuresToCheck(conditionAnnotation);
+		Set<EndpointExposure> exposures = getExposures(conditionAnnotation);
+		boolean considerEndpointExposers = conditionAnnotation.getBoolean("considerEndpointExposers");
 		Set<ExposureFilter> exposureFilters = getExposureFilters(environment);
 		for (ExposureFilter exposureFilter : exposureFilters) {
-			if (exposuresToCheck.contains(exposureFilter.getExposure()) && exposureFilter.isExposed(endpointId)) {
-				return ConditionOutcome.match(message.because("marked as exposed by a 'management.endpoints."
-						+ exposureFilter.getExposure().name().toLowerCase() + ".exposure' property"));
+			if (isConsidered(exposureFilter, considerEndpointExposers)
+					&& exposureFilter.isExposed(endpointId, exposures)) {
+				return ConditionOutcome.match(message.because(exposureFilter.getExposedReason()));
 			}
 		}
 		return ConditionOutcome.noMatch(message.because("no 'management.endpoints' property marked it as exposed"));
+	}
+
+	private boolean isConsidered(ExposureFilter exposureFilter, boolean considerEndpointExposers) {
+		return considerEndpointExposers || !(exposureFilter instanceof EndpointExposerExposureFilter);
 	}
 
 	private ConditionOutcome getEnablementOutcome(Environment environment,
@@ -148,8 +159,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		return enabledByDefault.orElse(null);
 	}
 
-	private Set<EndpointExposure> getExposuresToCheck(
-			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
+	private Set<EndpointExposure> getExposures(MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
 		EndpointExposure[] exposure = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
 		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class)
 				: new LinkedHashSet<>(Arrays.asList(exposure));
@@ -159,43 +169,91 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		Set<ExposureFilter> exposureFilters = exposureFiltersCache.get(environment);
 		if (exposureFilters == null) {
 			exposureFilters = new HashSet<>(2);
+			exposureFilters.addAll(loadAdditionalEndpointExposerExposureFilters(environment));
 			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
-				exposureFilters.add(new ExposureFilter(environment, EndpointExposure.JMX));
+				exposureFilters.add(new EndpointExposureExposureFilter(environment, EndpointExposure.JMX));
 			}
 			if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
-				exposureFilters.add(new ExposureFilter(environment, EndpointExposure.CLOUD_FOUNDRY));
+				exposureFilters.add(new EndpointExposureExposureFilter(environment, EndpointExposure.CLOUD_FOUNDRY));
 			}
-			exposureFilters.add(new ExposureFilter(environment, EndpointExposure.WEB));
+			exposureFilters.add(new EndpointExposureExposureFilter(environment, EndpointExposure.WEB));
 			exposureFiltersCache.put(environment, exposureFilters);
 		}
 		return exposureFilters;
 	}
 
-	static final class ExposureFilter extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
+	private Collection<EndpointExposerExposureFilter> loadAdditionalEndpointExposerExposureFilters(
+			Environment environment) {
+		return SpringFactoriesLoader.loadFactories(EndpointExposerFactory.class, null)
+			.stream()
+			.map((factory) -> factory.getEndpointExposer(environment))
+			.filter(Objects::nonNull)
+			.map(EndpointExposerExposureFilter::new)
+			.toList();
+	}
+
+	/**
+	 * Filter used to determine if an endpoint is exposed.
+	 */
+	interface ExposureFilter {
+
+		boolean isExposed(EndpointId endpointId, Set<EndpointExposure> exposures);
+
+		String getExposedReason();
+
+	}
+
+	/**
+	 * {@link ExposureFilter} backed by a {@link EndpointExposure}.
+	 */
+	static class EndpointExposureExposureFilter implements ExposureFilter {
 
 		private final EndpointExposure exposure;
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		private ExposureFilter(Environment environment, EndpointExposure exposure) {
-			super((Class) ExposableEndpoint.class, environment,
-					"management.endpoints." + getCanonicalName(exposure) + ".exposure", exposure.getDefaultIncludes());
+		private final String property;
+
+		private final IncludeExcludeEndpointFilter<?> filter;
+
+		EndpointExposureExposureFilter(Environment environment, EndpointExposure exposure) {
 			this.exposure = exposure;
+			String name = exposure.name().toLowerCase().replace('_', '-');
+			this.property = "management.endpoints." + name + ".exposure";
+			this.filter = new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, environment, this.property,
+					exposure.getDefaultIncludes());
 
 		}
 
-		private static String getCanonicalName(EndpointExposure exposure) {
-			if (EndpointExposure.CLOUD_FOUNDRY.equals(exposure)) {
-				return "cloud-foundry";
-			}
-			return exposure.name().toLowerCase();
+		@Override
+		public boolean isExposed(EndpointId endpointId, Set<EndpointExposure> exposures) {
+			return exposures.contains(this.exposure) && this.filter.match(endpointId);
 		}
 
-		EndpointExposure getExposure() {
-			return this.exposure;
+		@Override
+		public String getExposedReason() {
+			return "marked as exposed by a '" + this.property + "' property";
 		}
 
-		boolean isExposed(EndpointId id) {
-			return super.match(id);
+	}
+
+	/**
+	 * {@link ExposureFilter} backed by a {@link EndpointExposer}.
+	 */
+	static class EndpointExposerExposureFilter implements ExposureFilter {
+
+		private final EndpointExposer exposer;
+
+		EndpointExposerExposureFilter(EndpointExposer exposer) {
+			this.exposer = exposer;
+		}
+
+		@Override
+		public boolean isExposed(EndpointId endpointId, Set<EndpointExposure> exposures) {
+			return this.exposer.isExposed(endpointId, exposures);
+		}
+
+		@Override
+		public String getExposedReason() {
+			return this.exposer.getExposedReason();
 		}
 
 	}

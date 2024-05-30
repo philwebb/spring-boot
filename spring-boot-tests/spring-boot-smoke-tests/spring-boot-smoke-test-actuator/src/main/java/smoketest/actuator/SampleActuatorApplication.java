@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,25 @@
 
 package smoketest.actuator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -27,11 +42,33 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
-@SpringBootApplication
+@SpringBootApplication(proxyBeanMethods = false)
 @ConfigurationPropertiesScan
 public class SampleActuatorApplication {
+
+	@Bean
+	@SuppressWarnings("removal")
+	public TanzuWebMvcEndpointHandlerMapping tanzuEndpointHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
+			org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
+			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties, Environment environment,
+			ApplicationContext applicationContext, ParameterValueMapper parameterMapper) {
+		WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(applicationContext, parameterMapper,
+				endpointMediaTypes, null, Collections.emptyList(),
+				Collections.singletonList(new IncludeExcludeEndpointFilter<>(ExposableWebEndpoint.class, environment,
+						"management.endpoints.tanzu.exposure", TanzuEndpointExposerFactory.DEFAULT_INCLUDES)));
+		Collection<ExposableWebEndpoint> webEndpoints = discoverer.getEndpoints();
+		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
+		allEndpoints.addAll(webEndpoints);
+		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
+		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
+		return new TanzuWebMvcEndpointHandlerMapping(webEndpoints, endpointMediaTypes,
+				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, "/tanzu"));
+	}
 
 	@Bean
 	public HealthIndicator helloHealthIndicator() {
