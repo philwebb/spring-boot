@@ -23,7 +23,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.springframework.boot.logging.json.Field;
 import org.springframework.boot.logging.json.Key;
 import org.springframework.boot.logging.json.Value;
-import org.springframework.boot.logging.logback.JsonEncoder.LogbackJsonFormat;
+import org.springframework.boot.logging.logback.LogbackJsonFormat;
 
 /**
  * A custom implementation of a JSON format.

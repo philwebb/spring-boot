@@ -17,29 +17,16 @@
 package org.springframework.boot.logging.logback;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Supplier;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
-import org.slf4j.event.KeyValuePair;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.json.Field;
-import org.springframework.boot.logging.json.JsonFormat;
-import org.springframework.boot.logging.json.Key;
-import org.springframework.boot.logging.json.Value;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * {@link Encoder Logback encoder} which encodes to JSON-based formats.
@@ -127,9 +114,7 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 		Assert.state(this.format != null, "Format has not been set");
 		super.start();
 		this.throwableProxyConverter.start();
-		if (this.pid != null) {
-			this.format.setPid(this.pid);
-		}
+		this.format.setPid(this.pid);
 		this.format.setServiceName(this.serviceName);
 		this.format.setServiceVersion(this.serviceVersion);
 		this.format.setServiceEnvironment(this.serviceEnvironment);
@@ -173,176 +158,6 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 	@Override
 	public byte[] footerBytes() {
 		return null;
-	}
-
-	public interface LogbackJsonFormat extends JsonFormat<ILoggingEvent> {
-
-		default void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter) {
-		}
-
-	}
-
-	abstract static class BaseLogbackJsonFormat implements LogbackJsonFormat {
-
-		private Long pid = null;
-
-		private String serviceName;
-
-		private String serviceVersion;
-
-		private String serviceNodeName;
-
-		private String serviceEnvironment;
-
-		private ThrowableProxyConverter throwableProxyConverter;
-
-		@Override
-		public void setPid(long pid) {
-			this.pid = pid;
-		}
-
-		@Override
-		public void setServiceName(String serviceName) {
-			this.serviceName = serviceName;
-		}
-
-		@Override
-		public void setServiceVersion(String serviceVersion) {
-			this.serviceVersion = serviceVersion;
-		}
-
-		@Override
-		public void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter) {
-			this.throwableProxyConverter = throwableProxyConverter;
-		}
-
-		@Override
-		public void setServiceNodeName(String serviceNodeName) {
-			this.serviceNodeName = serviceNodeName;
-		}
-
-		@Override
-		public void setServiceEnvironment(String serviceEnvironment) {
-			this.serviceEnvironment = serviceEnvironment;
-		}
-
-		Long getPid() {
-			return this.pid;
-		}
-
-		String getServiceName() {
-			return this.serviceName;
-		}
-
-		String getServiceVersion() {
-			return this.serviceVersion;
-		}
-
-		ThrowableProxyConverter getThrowableProxyConverter() {
-			return this.throwableProxyConverter;
-		}
-
-		String getServiceNodeName() {
-			return this.serviceNodeName;
-		}
-
-		String getServiceEnvironment() {
-			return this.serviceEnvironment;
-		}
-
-	}
-
-	static final class CommonJsonFormats {
-
-		private static final Map<String, Supplier<LogbackJsonFormat>> FORMATS = Map.of("ecs", CommonJsonFormats::ecs);
-
-		static EcsJsonFormat ecs() {
-			return new EcsJsonFormat();
-		}
-
-		static Set<String> names() {
-			return FORMATS.keySet();
-		}
-
-		/**
-		 * Returns a new instance of the requested {@link LogbackJsonFormat}. Returns
-		 * {@code null} if the format isn't known.
-		 * @param format the requested format
-		 * @return a new instance of the request format or{@code null} if the format isn't
-		 * known.
-		 */
-		static LogbackJsonFormat create(String format) {
-			Assert.notNull(format, "Format must not be null");
-			Supplier<LogbackJsonFormat> factory = FORMATS.get(format.toLowerCase());
-			if (factory == null) {
-				return null;
-			}
-			return factory.get();
-		}
-
-		private static final class EcsJsonFormat extends BaseLogbackJsonFormat {
-
-			@Override
-			public Iterable<Field> getFields(ILoggingEvent event) {
-				List<Field> fields = new ArrayList<>();
-				fields.add(Field.of(Key.verbatim("@timestamp"), Value.verbatim(event.getInstant().toString())));
-				fields.add(Field.of(Key.verbatim("log.level"), Value.verbatim(event.getLevel().toString())));
-				if (getPid() != null) {
-					fields.add(Field.of(Key.verbatim("process.pid"), Value.of(getPid())));
-				}
-				fields.add(Field.of(Key.verbatim("process.thread.name"), Value.escaped(event.getThreadName())));
-				if (getServiceName() != null) {
-					fields.add(Field.of(Key.verbatim("service.name"), Value.escaped(getServiceName())));
-				}
-				if (getServiceVersion() != null) {
-					fields.add(Field.of(Key.verbatim("service.version"), Value.escaped(getServiceVersion())));
-				}
-				if (getServiceEnvironment() != null) {
-					fields.add(Field.of(Key.verbatim("service.environment"), Value.escaped(getServiceEnvironment())));
-				}
-				if (getServiceNodeName() != null) {
-					fields.add(Field.of(Key.verbatim("service.node.name"), Value.escaped(getServiceNodeName())));
-				}
-				fields.add(Field.of(Key.verbatim("log.logger"), Value.escaped(event.getLoggerName())));
-				fields.add(Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
-				addMdc(event, fields);
-				addKeyValuePairs(event, fields);
-				IThrowableProxy throwable = event.getThrowableProxy();
-				if (throwable != null) {
-					fields.add(Field.of(Key.verbatim("error.type"), Value.verbatim(throwable.getClassName())));
-					fields.add(Field.of(Key.verbatim("error.message"), Value.escaped(throwable.getMessage())));
-					fields.add(Field.of(Key.verbatim("error.stack_trace"),
-							Value.escaped(getThrowableProxyConverter().convert(event))));
-				}
-				fields.add(Field.of(Key.verbatim("ecs.version"), Value.verbatim("8.11")));
-				return fields;
-				// TODO: service env, service node name,
-				// event dataset
-			}
-
-			private void addKeyValuePairs(ILoggingEvent event, List<Field> fields) {
-				List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
-				if (CollectionUtils.isEmpty(keyValuePairs)) {
-					return;
-				}
-				for (KeyValuePair keyValuePair : keyValuePairs) {
-					fields.add(Field.of(Key.escaped(keyValuePair.key),
-							Value.escaped(ObjectUtils.nullSafeToString(keyValuePair.value))));
-				}
-			}
-
-			private static void addMdc(ILoggingEvent event, List<Field> fields) {
-				Map<String, String> mdc = event.getMDCPropertyMap();
-				if (CollectionUtils.isEmpty(mdc)) {
-					return;
-				}
-				for (Entry<String, String> entry : mdc.entrySet()) {
-					fields.add(Field.of(Key.escaped(entry.getKey()), Value.escaped(entry.getValue())));
-				}
-			}
-
-		}
-
 	}
 
 }

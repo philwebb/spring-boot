@@ -14,37 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.json;
+package org.springframework.boot.logging.logback;
+
+import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+
+import org.springframework.boot.logging.json.JsonFormat;
 
 /**
- * JSON format.
+ * Specialization of {@link JsonFormat} for Logback.
  *
- * @param <E> the event type, dependent on the logging system
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public interface JsonFormat<E> {
+public interface LogbackJsonFormat extends JsonFormat<ILoggingEvent> {
 
-	default void setPid(Long pid) {
+	default void setThrowableProxyConverter(ThrowableProxyConverter throwableProxyConverter) {
 	}
-
-	default void setServiceName(String serviceName) {
-	}
-
-	default void setServiceVersion(String serviceVersion) {
-	}
-
-	default void setServiceNodeName(String serviceNodeName) {
-	}
-
-	default void setServiceEnvironment(String serviceEnvironment) {
-	}
-
-	/**
-	 * Returns the fields to write.
-	 * @param event the event to log
-	 * @return the fields to write
-	 */
-	Iterable<Field> getFields(E event);
 
 }
