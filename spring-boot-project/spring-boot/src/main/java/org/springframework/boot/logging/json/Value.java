@@ -20,7 +20,7 @@ package org.springframework.boot.logging.json;
  * A JSON value.
  *
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 3.4.0
  */
 public interface Value {
 

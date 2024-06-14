@@ -20,7 +20,7 @@ package org.springframework.boot.logging.json;
  * A JSON key.
  *
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 3.4.0
  */
 public interface Key {
 
