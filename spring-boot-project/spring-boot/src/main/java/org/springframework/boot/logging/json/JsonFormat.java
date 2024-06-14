@@ -21,7 +21,7 @@ package org.springframework.boot.logging.json;
  *
  * @param <E> the event type, dependent on the logging system
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 3.4.0
  */
 public interface JsonFormat<E> {
 

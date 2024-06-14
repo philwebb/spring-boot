@@ -45,7 +45,7 @@ import org.springframework.util.ObjectUtils;
  * {@link Encoder Logback encoder} which encodes to JSON-based formats.
  *
  * @author Moritz Halbritter
- * @since 3.3.0
+ * @since 3.4.0
  */
 public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
