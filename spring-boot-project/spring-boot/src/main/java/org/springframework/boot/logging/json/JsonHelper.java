@@ -34,13 +34,14 @@ final class JsonHelper {
 		// int,
 		// java.lang.StringBuilder)
 		switch (c) {
+			case '"' -> output.append("\\\"");
+			case '\\' -> output.append("\\\\");
+			case '/' -> output.append("\\/");
 			case '\b' -> output.append("\\b");
-			case '\t' -> output.append("\\t");
 			case '\f' -> output.append("\\f");
 			case '\n' -> output.append("\\n");
 			case '\r' -> output.append("\\r");
-			case '"' -> output.append("\\\"");
-			case '\\' -> output.append("\\\\");
+			case '\t' -> output.append("\\t");
 			default -> output.append(c);
 		}
 	}

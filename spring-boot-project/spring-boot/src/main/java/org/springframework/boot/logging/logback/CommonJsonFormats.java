@@ -19,7 +19,6 @@ package org.springframework.boot.logging.logback;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +36,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.logging.json.Field;
+import org.springframework.boot.logging.json.Fields;
 import org.springframework.boot.logging.json.Key;
 import org.springframework.boot.logging.json.Value;
 import org.springframework.util.Assert;
@@ -161,42 +161,42 @@ final class CommonJsonFormats {
 	private static final class EcsJsonFormat extends BaseLogbackJsonFormat {
 
 		@Override
-		public Iterable<Field> getFields(ILoggingEvent event) {
-			List<Field> fields = new ArrayList<>();
-			fields.add(Field.of(Key.verbatim("@timestamp"), Value.verbatim(event.getInstant().toString())));
-			fields.add(Field.of(Key.verbatim("log.level"), Value.verbatim(event.getLevel().toString())));
+		public Fields getFields(ILoggingEvent event) {
+			Fields fields = new Fields();
+			fields.add(Key.verbatim("@timestamp"), Value.verbatim(event.getInstant().toString()));
+			fields.add(Key.verbatim("log.level"), Value.verbatim(event.getLevel().toString()));
 			if (getPid() != null) {
-				fields.add(Field.of(Key.verbatim("process.pid"), Value.of(getPid())));
+				fields.add(Key.verbatim("process.pid"), Value.of(getPid()));
 			}
-			fields.add(Field.of(Key.verbatim("process.thread.name"), Value.escaped(event.getThreadName())));
+			fields.add(Key.verbatim("process.thread.name"), Value.escaped(event.getThreadName()));
 			if (getServiceName() != null) {
-				fields.add(Field.of(Key.verbatim("service.name"), Value.escaped(getServiceName())));
+				fields.add(Key.verbatim("service.name"), Value.escaped(getServiceName()));
 			}
 			if (getServiceVersion() != null) {
-				fields.add(Field.of(Key.verbatim("service.version"), Value.escaped(getServiceVersion())));
+				fields.add(Key.verbatim("service.version"), Value.escaped(getServiceVersion()));
 			}
 			if (getServiceEnvironment() != null) {
-				fields.add(Field.of(Key.verbatim("service.environment"), Value.escaped(getServiceEnvironment())));
+				fields.add(Key.verbatim("service.environment"), Value.escaped(getServiceEnvironment()));
 			}
 			if (getServiceNodeName() != null) {
-				fields.add(Field.of(Key.verbatim("service.node.name"), Value.escaped(getServiceNodeName())));
+				fields.add(Key.verbatim("service.node.name"), Value.escaped(getServiceNodeName()));
 			}
-			fields.add(Field.of(Key.verbatim("log.logger"), Value.escaped(event.getLoggerName())));
-			fields.add(Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
+			fields.add(Key.verbatim("log.logger"), Value.escaped(event.getLoggerName()));
+			fields.add(Key.verbatim("message"), Value.escaped(event.getFormattedMessage()));
 			addMdc(event, fields);
 			addKeyValuePairs(event, fields);
 			IThrowableProxy throwable = event.getThrowableProxy();
 			if (throwable != null) {
-				fields.add(Field.of(Key.verbatim("error.type"), Value.verbatim(throwable.getClassName())));
-				fields.add(Field.of(Key.verbatim("error.message"), Value.escaped(throwable.getMessage())));
-				fields.add(Field.of(Key.verbatim("error.stack_trace"),
-						Value.escaped(getThrowableProxyConverter().convert(event))));
+				fields.add(Key.verbatim("error.type"), Value.verbatim(throwable.getClassName()));
+				fields.add(Key.verbatim("error.message"), Value.escaped(throwable.getMessage()));
+				fields.add(Key.verbatim("error.stack_trace"),
+						Value.escaped(getThrowableProxyConverter().convert(event)));
 			}
-			fields.add(Field.of(Key.verbatim("ecs.version"), Value.verbatim("8.11")));
+			fields.add(Key.verbatim("ecs.version"), Value.verbatim("8.11"));
 			return fields;
 		}
 
-		private void addKeyValuePairs(ILoggingEvent event, List<Field> fields) {
+		private void addKeyValuePairs(ILoggingEvent event, Fields fields) {
 			List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
 			if (CollectionUtils.isEmpty(keyValuePairs)) {
 				return;
@@ -207,7 +207,7 @@ final class CommonJsonFormats {
 			}
 		}
 
-		private static void addMdc(ILoggingEvent event, List<Field> fields) {
+		private static void addMdc(ILoggingEvent event, Fields fields) {
 			Map<String, String> mdc = event.getMDCPropertyMap();
 			if (CollectionUtils.isEmpty(mdc)) {
 				return;
@@ -222,29 +222,27 @@ final class CommonJsonFormats {
 	private static final class LogstashJsonFormat extends BaseLogbackJsonFormat {
 
 		@Override
-		public Iterable<Field> getFields(ILoggingEvent event) {
-			List<Field> fields = new ArrayList<>();
+		public Fields getFields(ILoggingEvent event) {
+			Fields fields = new Fields();
 			OffsetDateTime time = OffsetDateTime.ofInstant(event.getInstant(), ZoneId.systemDefault());
-			fields.add(Field.of(Key.verbatim("@timestamp"),
-					Value.verbatim(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time))));
-			fields.add(Field.of(Key.verbatim("@version"), Value.verbatim("1")));
-			fields.add(Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
-			fields.add(Field.of(Key.verbatim("logger_name"), Value.escaped(event.getLoggerName())));
-			fields.add(Field.of(Key.verbatim("thread_name"), Value.escaped(event.getThreadName())));
-			fields.add(Field.of(Key.verbatim("level"), Value.escaped(event.getLevel().toString())));
-			fields.add(Field.of(Key.verbatim("level_value"), Value.of(event.getLevel().toInt())));
+			fields.add(Key.verbatim("@timestamp"), Value.verbatim(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time)));
+			fields.add(Key.verbatim("@version"), Value.verbatim("1"));
+			fields.add(Key.verbatim("message"), Value.escaped(event.getFormattedMessage()));
+			fields.add(Key.verbatim("logger_name"), Value.escaped(event.getLoggerName()));
+			fields.add(Key.verbatim("thread_name"), Value.escaped(event.getThreadName()));
+			fields.add(Key.verbatim("level"), Value.escaped(event.getLevel().toString()));
+			fields.add(Key.verbatim("level_value"), Value.of(event.getLevel().toInt()));
 			addMdc(event, fields);
 			addKeyValuePairs(event, fields);
 			addMarkers(event, fields);
 			IThrowableProxy throwable = event.getThrowableProxy();
 			if (throwable != null) {
-				fields.add(Field.of(Key.verbatim("stack_trace"),
-						Value.escaped(getThrowableProxyConverter().convert(event))));
+				fields.add(Key.verbatim("stack_trace"), Value.escaped(getThrowableProxyConverter().convert(event)));
 			}
 			return fields;
 		}
 
-		private void addMarkers(ILoggingEvent event, List<Field> fields) {
+		private void addMarkers(ILoggingEvent event, Fields fields) {
 			List<Marker> markers = event.getMarkerList();
 			if (CollectionUtils.isEmpty(markers)) {
 				return;
@@ -266,7 +264,7 @@ final class CommonJsonFormats {
 			}
 		}
 
-		private void addKeyValuePairs(ILoggingEvent event, List<Field> fields) {
+		private void addKeyValuePairs(ILoggingEvent event, Fields fields) {
 			List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
 			if (CollectionUtils.isEmpty(keyValuePairs)) {
 				return;
@@ -277,7 +275,7 @@ final class CommonJsonFormats {
 			}
 		}
 
-		private static void addMdc(ILoggingEvent event, List<Field> fields) {
+		private static void addMdc(ILoggingEvent event, Fields fields) {
 			Map<String, String> mdc = event.getMDCPropertyMap();
 			if (CollectionUtils.isEmpty(mdc)) {
 				return;

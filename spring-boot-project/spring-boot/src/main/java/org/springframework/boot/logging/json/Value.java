@@ -78,4 +78,22 @@ public interface Value {
 		return (output) -> output.append(value);
 	}
 
+	/**
+	 * Creates a value of the given {@code boolean}.
+	 * @param value the boolean value
+	 * @return the created value
+	 */
+	static Value of(boolean value) {
+		return (output) -> output.append(value);
+	}
+
+	/**
+	 * Creates a value of the given {@code double}.
+	 * @param value the double value
+	 * @return the created value
+	 */
+	static Value of(double value) {
+		return (output) -> output.append(value);
+	}
+
 }
