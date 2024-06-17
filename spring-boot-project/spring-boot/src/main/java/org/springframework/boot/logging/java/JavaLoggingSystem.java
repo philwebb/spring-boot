@@ -104,7 +104,10 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		Assert.notNull(location, "Location must not be null");
 		try {
 			Resource resource = new ApplicationResourceLoader().getResource(location);
-			String configuration = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));
+			String configuration;
+			try (InputStreamReader streamReader = new InputStreamReader(resource.getInputStream())) {
+				configuration = FileCopyUtils.copyToString(streamReader);
+			}
 			if (logFile != null) {
 				configuration = configuration.replace("${LOG_FILE}", StringUtils.cleanPath(logFile.toString()));
 			}
