@@ -52,6 +52,23 @@ public interface Value {
 		};
 	}
 
+	static Value escaped(Iterable<String> strings) {
+		return (output) -> {
+			output.append('[');
+			boolean appendedComma = false;
+			for (String string : strings) {
+				output.append('\"');
+				JsonHelper.escape(string, output);
+				output.append("\",");
+				appendedComma = true;
+			}
+			if (appendedComma) {
+				output.setLength(output.length() - 1);
+			}
+			output.append(']');
+		};
+	}
+
 	/**
 	 * Creates a value of the given {@code long}.
 	 * @param value the long value

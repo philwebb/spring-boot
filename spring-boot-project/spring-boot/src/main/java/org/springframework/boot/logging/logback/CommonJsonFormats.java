@@ -16,17 +16,24 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
+import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.logging.json.Field;
@@ -43,13 +50,18 @@ import org.springframework.util.ObjectUtils;
  */
 final class CommonJsonFormats {
 
-	private static final Map<String, Supplier<LogbackJsonFormat>> FORMATS = Map.of("ecs", CommonJsonFormats::ecs);
+	private static final Map<String, Supplier<LogbackJsonFormat>> FORMATS = Map.of("ecs", CommonJsonFormats::ecs,
+			"logstash", CommonJsonFormats::logstash);
 
 	private CommonJsonFormats() {
 	}
 
 	static LogbackJsonFormat ecs() {
 		return new EcsJsonFormat();
+	}
+
+	static LogbackJsonFormat logstash() {
+		return new LogstashJsonFormat();
 	}
 
 	static Set<String> names() {
@@ -182,6 +194,76 @@ final class CommonJsonFormats {
 			}
 			fields.add(Field.of(Key.verbatim("ecs.version"), Value.verbatim("8.11")));
 			return fields;
+		}
+
+		private void addKeyValuePairs(ILoggingEvent event, List<Field> fields) {
+			List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
+			if (CollectionUtils.isEmpty(keyValuePairs)) {
+				return;
+			}
+			for (KeyValuePair keyValuePair : keyValuePairs) {
+				fields.add(Field.of(Key.escaped(keyValuePair.key),
+						Value.escaped(ObjectUtils.nullSafeToString(keyValuePair.value))));
+			}
+		}
+
+		private static void addMdc(ILoggingEvent event, List<Field> fields) {
+			Map<String, String> mdc = event.getMDCPropertyMap();
+			if (CollectionUtils.isEmpty(mdc)) {
+				return;
+			}
+			for (Entry<String, String> entry : mdc.entrySet()) {
+				fields.add(Field.of(Key.escaped(entry.getKey()), Value.escaped(entry.getValue())));
+			}
+		}
+
+	}
+
+	private static final class LogstashJsonFormat extends BaseLogbackJsonFormat {
+
+		@Override
+		public Iterable<Field> getFields(ILoggingEvent event) {
+			List<Field> fields = new ArrayList<>();
+			OffsetDateTime time = OffsetDateTime.ofInstant(event.getInstant(), ZoneId.systemDefault());
+			fields.add(Field.of(Key.verbatim("@timestamp"),
+					Value.verbatim(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time))));
+			fields.add(Field.of(Key.verbatim("@version"), Value.verbatim("1")));
+			fields.add(Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
+			fields.add(Field.of(Key.verbatim("logger_name"), Value.escaped(event.getLoggerName())));
+			fields.add(Field.of(Key.verbatim("thread_name"), Value.escaped(event.getThreadName())));
+			fields.add(Field.of(Key.verbatim("level"), Value.escaped(event.getLevel().toString())));
+			fields.add(Field.of(Key.verbatim("level_value"), Value.of(event.getLevel().toInt())));
+			addMdc(event, fields);
+			addKeyValuePairs(event, fields);
+			addMarkers(event, fields);
+			IThrowableProxy throwable = event.getThrowableProxy();
+			if (throwable != null) {
+				fields.add(Field.of(Key.verbatim("stack_trace"),
+						Value.escaped(getThrowableProxyConverter().convert(event))));
+			}
+			return fields;
+		}
+
+		private void addMarkers(ILoggingEvent event, List<Field> fields) {
+			List<Marker> markers = event.getMarkerList();
+			if (CollectionUtils.isEmpty(markers)) {
+				return;
+			}
+			Set<String> tags = new TreeSet<>();
+			for (Marker marker : markers) {
+				addTag(marker, tags);
+			}
+			fields.add(Field.of(Key.verbatim("tags"), Value.escaped(tags)));
+		}
+
+		private void addTag(Marker marker, Collection<String> tags) {
+			tags.add(marker.getName());
+			if (marker.hasReferences()) {
+				Iterator<Marker> iterator = marker.iterator();
+				while (iterator.hasNext()) {
+					addTag(iterator.next(), tags);
+				}
+			}
 		}
 
 		private void addKeyValuePairs(ILoggingEvent event, List<Field> fields) {
