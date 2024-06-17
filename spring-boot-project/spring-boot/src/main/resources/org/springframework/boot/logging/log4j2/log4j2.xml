@@ -9,7 +9,12 @@
 	</Properties>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
-			<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+			<SystemPropertyArbiter propertyName="JSON_ENABLED" propertyValue="false">
+				<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+			</SystemPropertyArbiter>
+			<SystemPropertyArbiter propertyName="JSON_ENABLED" propertyValue="true">
+				<SpringJsonLayout format="${sys:CONSOLE_LOG_JSON}"/>
+			</SystemPropertyArbiter>
 			<filters>
 				<ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
 			</filters>

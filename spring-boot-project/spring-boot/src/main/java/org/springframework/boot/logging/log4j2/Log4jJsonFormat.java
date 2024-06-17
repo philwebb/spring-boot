@@ -14,38 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.json;
+package org.springframework.boot.logging.log4j2;
+
+import org.apache.logging.log4j.core.LogEvent;
+
+import org.springframework.boot.logging.json.JsonFormat;
 
 /**
- * JSON format.
+ * Specialization of {@link JsonFormat} for Log4j.
  *
- * @param <E> the event type, dependent on the logging system
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-// TODO MH: Make this a class, move the fields in here, add toJson() method
-public interface JsonFormat<E> {
-
-	default void setPid(Long pid) {
-	}
-
-	default void setServiceName(String serviceName) {
-	}
-
-	default void setServiceVersion(String serviceVersion) {
-	}
-
-	default void setServiceNodeName(String serviceNodeName) {
-	}
-
-	default void setServiceEnvironment(String serviceEnvironment) {
-	}
-
-	/**
-	 * Returns the fields to write.
-	 * @param event the event to log
-	 * @return the fields to write
-	 */
-	Fields getFields(E event);
+public interface Log4jJsonFormat extends JsonFormat<LogEvent> {
 
 }
