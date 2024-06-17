@@ -16,11 +16,9 @@
 
 package smoketest.simple;
 
-import java.util.List;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
-import org.springframework.boot.logging.json.Field;
+import org.springframework.boot.logging.json.Fields;
 import org.springframework.boot.logging.json.Key;
 import org.springframework.boot.logging.json.Value;
 import org.springframework.boot.logging.logback.LogbackJsonFormat;
@@ -33,9 +31,11 @@ import org.springframework.boot.logging.logback.LogbackJsonFormat;
 class CustomJsonFormat implements LogbackJsonFormat {
 
 	@Override
-	public Iterable<Field> getFields(ILoggingEvent event) {
-		return List.of(Field.of(Key.verbatim("epoch"), Value.of(event.getInstant().toEpochMilli())),
-				Field.of(Key.verbatim("message"), Value.escaped(event.getFormattedMessage())));
+	public Fields getFields(ILoggingEvent event) {
+		Fields fields = new Fields();
+		fields.add(Key.verbatim("epoch"), Value.of(event.getInstant().toEpochMilli()));
+		fields.add(Key.verbatim("message"), Value.escaped(event.getFormattedMessage()));
+		return fields;
 	}
 
 }

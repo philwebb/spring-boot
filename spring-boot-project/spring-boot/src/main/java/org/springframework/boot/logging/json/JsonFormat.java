@@ -45,6 +45,6 @@ public interface JsonFormat<E> {
 	 * @param event the event to log
 	 * @return the fields to write
 	 */
-	Iterable<Field> getFields(E event);
+	Fields getFields(E event);
 
 }

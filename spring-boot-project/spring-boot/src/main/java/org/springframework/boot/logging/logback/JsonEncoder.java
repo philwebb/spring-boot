@@ -137,22 +137,22 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 	public byte[] encode(ILoggingEvent event) {
 		StringBuilder output = new StringBuilder();
 		output.append('{');
+		boolean appendedComma = false;
 		for (Field field : this.format.getFields(event)) {
 			field.write(output);
 			output.append(',');
+			appendedComma = true;
 		}
-		removeTrailingComma(output);
+		if (appendedComma) {
+			removeTrailingComma(output);
+		}
 		output.append('}');
 		output.append('\n');
 		return output.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
 	private void removeTrailingComma(StringBuilder output) {
-		int length = output.length();
-		char end = output.charAt(length - 1);
-		if (end == ',') {
-			output.setLength(length - 1);
-		}
+		output.setLength(output.length() - 1);
 	}
 
 	@Override
