@@ -19,33 +19,16 @@ package org.springframework.boot.logging.json;
 /**
  * JSON format.
  *
- * @param <E> the event type, dependent on the logging system
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-// TODO MH: Make this a class, move the fields in here, add toJson() method
-public interface JsonFormat<E> {
-
-	default void setPid(Long pid) {
-	}
-
-	default void setServiceName(String serviceName) {
-	}
-
-	default void setServiceVersion(String serviceVersion) {
-	}
-
-	default void setServiceNodeName(String serviceNodeName) {
-	}
-
-	default void setServiceEnvironment(String serviceEnvironment) {
-	}
+public interface JsonFormat {
 
 	/**
-	 * Returns the fields to write.
-	 * @param event the event to log
-	 * @return the fields to write
+	 * Writes the given event to the given builder.
+	 * @param event the event to write
+	 * @param builder the builder to write to
 	 */
-	Fields getFields(E event);
+	void write(LogEvent event, JsonBuilder builder);
 
 }
