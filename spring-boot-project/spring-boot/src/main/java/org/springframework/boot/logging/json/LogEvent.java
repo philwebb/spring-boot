@@ -16,33 +16,52 @@
 
 package org.springframework.boot.logging.json;
 
+import java.time.Instant;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * A JSON field.
+ * A log event.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public interface Field {
+public interface LogEvent {
 
-	/**
-	 * Writes the field to the given {@link StringBuilder}.
-	 * @param output the string builder to write to
-	 */
-	void write(StringBuilder output);
+	Instant getTimestamp();
 
-	/**
-	 * Creates a new field, consisting of a {@link Key key} and a {@link Value value}.
-	 * @param key the key
-	 * @param value the value
-	 * @return the field
-	 */
-	static Field of(Key key, Value value) {
-		return (output) -> {
-			output.append('\"');
-			key.write(output);
-			output.append("\":");
-			value.write(output);
-		};
-	}
+	String getLevel();
+
+	int getLevelValue();
+
+	String getThreadName();
+
+	String getLoggerName();
+
+	String getFormattedMessage();
+
+	boolean hasThrowable();
+
+	String getThrowableClassName();
+
+	String getThrowableMessage();
+
+	String getThrowableStackTraceAsString();
+
+	Map<String, Object> getKeyValuePairs();
+
+	Map<String, String> getMdc();
+
+	Set<String> getMarkers();
+
+	Long getPid();
+
+	String getServiceName();
+
+	String getServiceVersion();
+
+	String getServiceEnvironment();
+
+	String getServiceNodeName();
 
 }
