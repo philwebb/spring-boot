@@ -81,7 +81,7 @@ class DefaultLogbackConfiguration {
 					+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr(%applicationName[%15.15t]){faint} "
 					+ "%clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} "
 					+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
-		config.getContext().putProperty("CONSOLE_LOG_JSON", resolve(config, "${CONSOLE_LOG_JSON:-}"));
+		config.getContext().putProperty("CONSOLE_LOG_STRUCTURED", resolve(config, "${CONSOLE_LOG_STRUCTURED:-}"));
 		String defaultCharset = Charset.defaultCharset().name();
 		config.getContext()
 			.putProperty("CONSOLE_LOG_CHARSET", resolve(config, "${CONSOLE_LOG_CHARSET:-" + defaultCharset + "}"));
@@ -94,7 +94,7 @@ class DefaultLogbackConfiguration {
 		config.getContext()
 			.putProperty("FILE_LOG_CHARSET", resolve(config, "${FILE_LOG_CHARSET:-" + defaultCharset + "}"));
 		config.getContext().putProperty("FILE_LOG_THRESHOLD", resolve(config, "${FILE_LOG_THRESHOLD:-TRACE}"));
-		config.getContext().putProperty("FILE_LOG_JSON", resolve(config, "${FILE_LOG_JSON:-}"));
+		config.getContext().putProperty("FILE_LOG_STRUCTURED", resolve(config, "${FILE_LOG_STRUCTURED:-}"));
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -111,9 +111,9 @@ class DefaultLogbackConfiguration {
 		filter.setLevel(resolve(config, "${CONSOLE_LOG_THRESHOLD}"));
 		filter.start();
 		appender.addFilter(filter);
-		String jsonFormat = resolve(config, "${CONSOLE_LOG_JSON}");
-		if (StringUtils.hasLength(jsonFormat)) {
-			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, jsonFormat);
+		String structuredLoggingFormat = resolve(config, "${CONSOLE_LOG_STRUCTURED}");
+		if (StringUtils.hasLength(structuredLoggingFormat)) {
+			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -134,9 +134,9 @@ class DefaultLogbackConfiguration {
 		filter.setLevel(resolve(config, "${FILE_LOG_THRESHOLD}"));
 		filter.start();
 		appender.addFilter(filter);
-		String jsonFormat = resolve(config, "${FILE_LOG_JSON}");
-		if (StringUtils.hasLength(jsonFormat)) {
-			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, jsonFormat);
+		String structuredLoggingFormat = resolve(config, "${FILE_LOG_STRUCTURED}");
+		if (StringUtils.hasLength(structuredLoggingFormat)) {
+			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}

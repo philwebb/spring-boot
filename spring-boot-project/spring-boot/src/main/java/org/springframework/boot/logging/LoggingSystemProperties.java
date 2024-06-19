@@ -237,8 +237,8 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
 		setSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.FILE_PATTERN, resolver);
-		setSystemProperty(LoggingSystemProperty.CONSOLE_JSON_FORMAT, resolver);
-		setSystemProperty(LoggingSystemProperty.FILE_JSON_FORMAT, resolver);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_LOGGING_FORMAT, resolver);
+		setSystemProperty(LoggingSystemProperty.FILE_STRUCTURED_LOGGING_FORMAT, resolver);
 		setSystemProperty(LoggingSystemProperty.LEVEL_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
