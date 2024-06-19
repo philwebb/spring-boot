@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for the JSON logging.
+ * Support for structured logging.
  */
-package org.springframework.boot.logging.json;
+package org.springframework.boot.logging.structured;

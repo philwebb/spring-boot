@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.KeyValuePair;
 
-import org.springframework.boot.logging.json.CommonStructuredLoggingFormats;
+import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
