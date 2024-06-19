@@ -22,7 +22,7 @@ package org.springframework.boot.logging.structured;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public class KeyValueWriter implements StructuredLoggingWriter {
+public class KeyValueWriter {
 
 	private final StringBuilder stringBuilder;
 
@@ -70,12 +70,12 @@ public class KeyValueWriter implements StructuredLoggingWriter {
 		}
 	}
 
-	@Override
-	public void newLine() {
+	public KeyValueWriter newLine() {
+		removeTrailingSpace();
 		this.stringBuilder.append('\n');
+		return this;
 	}
 
-	@Override
 	public String finish() {
 		removeTrailingSpace();
 		return this.stringBuilder.toString();

@@ -67,61 +67,56 @@ public final class CommonStructuredLoggingFormats {
 	private static final class EcsJsonFormat implements StructuredLoggingFormat {
 
 		@Override
-		public JsonWriter createWriter(StringBuilder stringBuilder) {
-			return new JsonWriter(stringBuilder);
-		}
-
-		@Override
-		public void write(LogEvent event, StructuredLoggingWriter builder) {
-			if (!(builder instanceof JsonWriter jsonBuilder)) {
-				throw new IllegalArgumentException("Builder is not a JsonBuilder");
-			}
-			jsonBuilder.objectStart();
-			jsonBuilder.attribute("@timestamp", event.getTimestamp().toString());
-			jsonBuilder.attribute("log.level", event.getLevel());
+		public String format(LogEvent event) {
+			JsonWriter writer = new JsonWriter();
+			writer.objectStart();
+			writer.attribute("@timestamp", event.getTimestamp().toString());
+			writer.attribute("log.level", event.getLevel());
 			if (event.getPid() != null) {
-				jsonBuilder.attribute("process.pid", event.getPid());
+				writer.attribute("process.pid", event.getPid());
 			}
-			jsonBuilder.attribute("process.thread.name", event.getThreadName());
+			writer.attribute("process.thread.name", event.getThreadName());
 			if (event.getServiceName() != null) {
-				jsonBuilder.attribute("service.name", event.getServiceName());
+				writer.attribute("service.name", event.getServiceName());
 			}
 			if (event.getServiceVersion() != null) {
-				jsonBuilder.attribute("service.version", event.getServiceVersion());
+				writer.attribute("service.version", event.getServiceVersion());
 			}
 			if (event.getServiceEnvironment() != null) {
-				jsonBuilder.attribute("service.environment", event.getServiceEnvironment());
+				writer.attribute("service.environment", event.getServiceEnvironment());
 			}
 			if (event.getServiceNodeName() != null) {
-				jsonBuilder.attribute("service.node.name", event.getServiceNodeName());
+				writer.attribute("service.node.name", event.getServiceNodeName());
 			}
-			jsonBuilder.attribute("log.logger", event.getLoggerName());
-			jsonBuilder.attribute("message", event.getFormattedMessage());
-			addMdc(event, jsonBuilder);
-			addKeyValuePairs(event, jsonBuilder);
+			writer.attribute("log.logger", event.getLoggerName());
+			writer.attribute("message", event.getFormattedMessage());
+			addMdc(event, writer);
+			addKeyValuePairs(event, writer);
 			if (event.hasThrowable()) {
-				jsonBuilder.attribute("error.type", event.getThrowableClassName());
-				jsonBuilder.attribute("error.message", event.getThrowableMessage());
-				jsonBuilder.attribute("error.stack_trace", event.getThrowableStackTraceAsString());
+				writer.attribute("error.type", event.getThrowableClassName());
+				writer.attribute("error.message", event.getThrowableMessage());
+				writer.attribute("error.stack_trace", event.getThrowableStackTraceAsString());
 			}
-			jsonBuilder.attribute("ecs.version", "8.11");
-			jsonBuilder.objectEnd();
+			writer.attribute("ecs.version", "8.11");
+			writer.objectEnd();
+			writer.newLine();
+			return writer.finish();
 		}
 
-		private void addKeyValuePairs(LogEvent event, JsonWriter jsonBuilder) {
+		private void addKeyValuePairs(LogEvent event, JsonWriter writer) {
 			Map<String, Object> keyValuePairs = event.getKeyValuePairs();
 			if (CollectionUtils.isEmpty(keyValuePairs)) {
 				return;
 			}
-			keyValuePairs.forEach((key, value) -> jsonBuilder.attribute(key, ObjectUtils.nullSafeToString(value)));
+			keyValuePairs.forEach((key, value) -> writer.attribute(key, ObjectUtils.nullSafeToString(value)));
 		}
 
-		private static void addMdc(LogEvent event, JsonWriter jsonBuilder) {
+		private static void addMdc(LogEvent event, JsonWriter writer) {
 			Map<String, String> mdc = event.getMdc();
 			if (CollectionUtils.isEmpty(mdc)) {
 				return;
 			}
-			mdc.forEach(jsonBuilder::attribute);
+			mdc.forEach(writer::attribute);
 		}
 
 	}
@@ -129,55 +124,50 @@ public final class CommonStructuredLoggingFormats {
 	private static final class LogstashJsonFormat implements StructuredLoggingFormat {
 
 		@Override
-		public JsonWriter createWriter(StringBuilder stringBuilder) {
-			return new JsonWriter(stringBuilder);
-		}
-
-		@Override
-		public void write(LogEvent event, StructuredLoggingWriter builder) {
-			if (!(builder instanceof JsonWriter jsonBuilder)) {
-				throw new IllegalArgumentException("Builder is not a JsonBuilder");
-			}
-			jsonBuilder.objectStart();
+		public String format(LogEvent event) {
+			JsonWriter writer = new JsonWriter();
+			writer.objectStart();
 			OffsetDateTime time = OffsetDateTime.ofInstant(event.getTimestamp(), ZoneId.systemDefault());
-			jsonBuilder.attribute("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-			jsonBuilder.attribute("@version", "1");
-			jsonBuilder.attribute("message", event.getFormattedMessage());
-			jsonBuilder.attribute("logger_name", event.getLoggerName());
-			jsonBuilder.attribute("thread_name", event.getThreadName());
-			jsonBuilder.attribute("level", event.getLevel());
-			jsonBuilder.attribute("level_value", event.getLevelValue());
-			addMdc(event, jsonBuilder);
-			addKeyValuePairs(event, jsonBuilder);
-			addMarkers(event, jsonBuilder);
+			writer.attribute("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
+			writer.attribute("@version", "1");
+			writer.attribute("message", event.getFormattedMessage());
+			writer.attribute("logger_name", event.getLoggerName());
+			writer.attribute("thread_name", event.getThreadName());
+			writer.attribute("level", event.getLevel());
+			writer.attribute("level_value", event.getLevelValue());
+			addMdc(event, writer);
+			addKeyValuePairs(event, writer);
+			addMarkers(event, writer);
 			if (event.hasThrowable()) {
-				jsonBuilder.attribute("stack_trace", event.getThrowableStackTraceAsString());
+				writer.attribute("stack_trace", event.getThrowableStackTraceAsString());
 			}
-			jsonBuilder.objectEnd();
+			writer.objectEnd();
+			writer.newLine();
+			return writer.finish();
 		}
 
-		private void addMarkers(LogEvent event, JsonWriter jsonBuilder) {
+		private void addMarkers(LogEvent event, JsonWriter writer) {
 			Set<String> markers = event.getMarkers();
 			if (CollectionUtils.isEmpty(markers)) {
 				return;
 			}
-			jsonBuilder.attribute("tags", markers);
+			writer.attribute("tags", markers);
 		}
 
-		private void addKeyValuePairs(LogEvent event, JsonWriter jsonBuilder) {
+		private void addKeyValuePairs(LogEvent event, JsonWriter writer) {
 			Map<String, Object> keyValuePairs = event.getKeyValuePairs();
 			if (CollectionUtils.isEmpty(keyValuePairs)) {
 				return;
 			}
-			keyValuePairs.forEach((key, value) -> jsonBuilder.attribute(key, ObjectUtils.nullSafeToString(value)));
+			keyValuePairs.forEach((key, value) -> writer.attribute(key, ObjectUtils.nullSafeToString(value)));
 		}
 
-		private static void addMdc(LogEvent event, JsonWriter jsonBuilder) {
+		private static void addMdc(LogEvent event, JsonWriter writer) {
 			Map<String, String> mdc = event.getMdc();
 			if (CollectionUtils.isEmpty(mdc)) {
 				return;
 			}
-			mdc.forEach(jsonBuilder::attribute);
+			mdc.forEach(writer::attribute);
 		}
 
 	}
@@ -185,43 +175,38 @@ public final class CommonStructuredLoggingFormats {
 	private static final class LogfmtStructuredLoggingFormat implements StructuredLoggingFormat {
 
 		@Override
-		public KeyValueWriter createWriter(StringBuilder stringBuilder) {
-			return new KeyValueWriter(stringBuilder);
-		}
-
-		@Override
-		public void write(LogEvent event, StructuredLoggingWriter builder) {
-			if (!(builder instanceof KeyValueWriter keyValueBuilder)) {
-				throw new IllegalArgumentException("Builder is not a KeyValueBuilder");
-			}
+		public String format(LogEvent event) {
+			KeyValueWriter writer = new KeyValueWriter();
 			OffsetDateTime time = OffsetDateTime.ofInstant(event.getTimestamp(), ZoneId.systemDefault());
-			keyValueBuilder.attribute("time", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-			keyValueBuilder.attribute("level", event.getLevel());
-			keyValueBuilder.attribute("msg", event.getFormattedMessage());
-			keyValueBuilder.attribute("logger", event.getLoggerName());
-			addMdc(event, keyValueBuilder);
-			addKeyValuePairs(event, keyValueBuilder);
+			writer.attribute("time", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
+			writer.attribute("level", event.getLevel());
+			writer.attribute("msg", event.getFormattedMessage());
+			writer.attribute("logger", event.getLoggerName());
+			addMdc(event, writer);
+			addKeyValuePairs(event, writer);
 			if (event.hasThrowable()) {
-				keyValueBuilder.attribute("exception_class", event.getThrowableClassName());
-				keyValueBuilder.attribute("exception_msg", event.getThrowableMessage());
-				keyValueBuilder.attribute("error", event.getThrowableStackTraceAsString());
+				writer.attribute("exception_class", event.getThrowableClassName());
+				writer.attribute("exception_msg", event.getThrowableMessage());
+				writer.attribute("error", event.getThrowableStackTraceAsString());
 			}
+			writer.newLine();
+			return writer.finish();
 		}
 
-		private void addKeyValuePairs(LogEvent event, KeyValueWriter keyValueBuilder) {
+		private void addKeyValuePairs(LogEvent event, KeyValueWriter writer) {
 			Map<String, Object> keyValuePairs = event.getKeyValuePairs();
 			if (CollectionUtils.isEmpty(keyValuePairs)) {
 				return;
 			}
-			keyValuePairs.forEach((key, value) -> keyValueBuilder.attribute(key, ObjectUtils.nullSafeToString(value)));
+			keyValuePairs.forEach((key, value) -> writer.attribute(key, ObjectUtils.nullSafeToString(value)));
 		}
 
-		private static void addMdc(LogEvent event, KeyValueWriter keyValueBuilder) {
+		private static void addMdc(LogEvent event, KeyValueWriter writer) {
 			Map<String, String> mdc = event.getMdc();
 			if (CollectionUtils.isEmpty(mdc)) {
 				return;
 			}
-			mdc.forEach(keyValueBuilder::attribute);
+			mdc.forEach(writer::attribute);
 		}
 
 	}
