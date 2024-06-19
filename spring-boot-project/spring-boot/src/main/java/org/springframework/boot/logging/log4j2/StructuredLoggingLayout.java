@@ -16,7 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
@@ -64,9 +64,9 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 
 	private final boolean logMdc;
 
-	public StructuredLoggingLayout(StructuredLoggingFormat format, Long pid, String serviceName, String serviceVersion,
-			String serviceNodeName, String serviceEnvironment, boolean logMdc) {
-		super(StandardCharsets.UTF_8);
+	public StructuredLoggingLayout(StructuredLoggingFormat format, Charset charset, Long pid, String serviceName,
+			String serviceVersion, String serviceNodeName, String serviceEnvironment, boolean logMdc) {
+		super(charset);
 		Assert.notNull(format, "Format must not be null");
 		this.format = format;
 		this.pid = pid;
@@ -222,6 +222,9 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		private String format;
 
 		@PluginBuilderAttribute
+		private String charset;
+
+		@PluginBuilderAttribute
 		private Long pid;
 
 		@PluginBuilderAttribute
@@ -242,8 +245,8 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		@Override
 		public StructuredLoggingLayout build() {
 			StructuredLoggingFormat format = createFormat();
-			return new StructuredLoggingLayout(format, this.pid, this.serviceName, this.serviceVersion,
-					this.serviceNodeName, this.serviceEnvironment, this.logMdc);
+			return new StructuredLoggingLayout(format, Charset.forName(this.charset), this.pid, this.serviceName,
+					this.serviceVersion, this.serviceNodeName, this.serviceEnvironment, this.logMdc);
 		}
 
 		private StructuredLoggingFormat createFormat() {

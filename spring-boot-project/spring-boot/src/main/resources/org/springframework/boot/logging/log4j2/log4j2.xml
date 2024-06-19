@@ -9,12 +9,14 @@
 	</Properties>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
-			<SystemPropertyArbiter propertyName="JSON_ENABLED" propertyValue="false">
-				<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
-			</SystemPropertyArbiter>
-			<SystemPropertyArbiter propertyName="JSON_ENABLED" propertyValue="true">
-				<StructuredLoggingLayout format="${sys:CONSOLE_LOG_JSON}"/>
-			</SystemPropertyArbiter>
+			<Select>
+				<StructuredLoggingEnabledArbiter appender="console">
+					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+				</StructuredLoggingEnabledArbiter>
+				<DefaultArbiter>
+					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+				</DefaultArbiter>
+			</Select>
 			<filters>
 				<ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
 			</filters>
