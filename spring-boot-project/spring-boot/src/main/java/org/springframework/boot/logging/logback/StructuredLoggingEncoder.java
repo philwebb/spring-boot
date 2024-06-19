@@ -67,26 +67,6 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private Charset charset = StandardCharsets.UTF_8;
 
-	public StructuredLoggingEncoder() {
-		// Constructor needed for Logback XML configuration
-		this(null);
-	}
-
-	public StructuredLoggingEncoder(StructuredLoggingFormat format) {
-		this(format, null, null, null, null, null, true);
-	}
-
-	public StructuredLoggingEncoder(StructuredLoggingFormat format, Long pid, String serviceName, String serviceVersion,
-			String serviceNodeName, String serviceEnvironment, boolean logMdc) {
-		this.format = format;
-		this.pid = pid;
-		this.serviceName = serviceName;
-		this.serviceVersion = serviceVersion;
-		this.serviceNodeName = serviceNodeName;
-		this.serviceEnvironment = serviceEnvironment;
-		this.logMdc = logMdc;
-	}
-
 	/**
 	 * Sets the format. Accepts either a common format ID, or a fully qualified class
 	 * name.

@@ -113,8 +113,8 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String structuredLoggingFormat = resolve(config, "${CONSOLE_LOG_STRUCTURED}");
 		if (StringUtils.hasLength(structuredLoggingFormat)) {
-			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat);
-			encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
+			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat,
+					resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -137,8 +137,8 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String structuredLoggingFormat = resolve(config, "${FILE_LOG_STRUCTURED}");
 		if (StringUtils.hasLength(structuredLoggingFormat)) {
-			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat);
-			encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
+			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat,
+					resolveCharset(config, "${FILE_LOG_CHARSET}"));
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -155,12 +155,16 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
-	private StructuredLoggingEncoder createStructuredLoggingEncoder(LogbackConfigurator config, String format) {
-		long pid = resolveLong(config, "${PID:--1}");
-		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
-		StructuredLoggingEncoder encoder = new StructuredLoggingEncoder(null, pid,
-				StringUtils.hasLength(applicationName) ? applicationName : null, null, null, null, true);
+	private StructuredLoggingEncoder createStructuredLoggingEncoder(LogbackConfigurator config, String format,
+			Charset charset) {
+		StructuredLoggingEncoder encoder = new StructuredLoggingEncoder();
 		encoder.setFormat(format);
+		encoder.setCharset(charset);
+		encoder.setPid(resolveLong(config, "${PID:--1}"));
+		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
+		if (StringUtils.hasLength(applicationName)) {
+			encoder.setServiceName(applicationName);
+		}
 		return encoder;
 	}
 
