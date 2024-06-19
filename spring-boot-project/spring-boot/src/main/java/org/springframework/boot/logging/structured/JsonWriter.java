@@ -20,17 +20,16 @@ package org.springframework.boot.logging.structured;
  * Writer for JSON formats.
  *
  * @author Moritz Halbritter
- * @since 3.4.0
  */
-public class JsonWriter {
+class JsonWriter {
 
 	private final StringBuilder stringBuilder;
 
-	public JsonWriter() {
+	JsonWriter() {
 		this(new StringBuilder());
 	}
 
-	public JsonWriter(StringBuilder stringBuilder) {
+	JsonWriter(StringBuilder stringBuilder) {
 		this.stringBuilder = stringBuilder;
 	}
 
@@ -38,7 +37,7 @@ public class JsonWriter {
 	 * Writes object start.
 	 * @return self for method chaining
 	 */
-	public JsonWriter objectStart() {
+	JsonWriter objectStart() {
 		this.stringBuilder.append("{");
 		return this;
 	}
@@ -47,7 +46,7 @@ public class JsonWriter {
 	 * Writes object end.
 	 * @return self for method chaining
 	 */
-	public JsonWriter objectEnd() {
+	JsonWriter objectEnd() {
 		removeTrailingComma();
 		this.stringBuilder.append("}");
 		return this;
@@ -59,7 +58,7 @@ public class JsonWriter {
 	 * @param value the value of the attribute
 	 * @return self for method chaining
 	 */
-	public JsonWriter attribute(String key, String value) {
+	JsonWriter attribute(String key, String value) {
 		writeKey(key);
 		writeString(value);
 		this.stringBuilder.append(',');
@@ -72,7 +71,7 @@ public class JsonWriter {
 	 * @param value the value of the attribute
 	 * @return self for method chaining
 	 */
-	public JsonWriter attribute(String key, long value) {
+	JsonWriter attribute(String key, long value) {
 		writeKey(key);
 		writeLong(value);
 		this.stringBuilder.append(',');
@@ -85,7 +84,7 @@ public class JsonWriter {
 	 * @param values the values of the attribute
 	 * @return self for method chaining
 	 */
-	public JsonWriter attribute(String key, Iterable<String> values) {
+	JsonWriter attribute(String key, Iterable<String> values) {
 		writeKey(key);
 		this.stringBuilder.append('[');
 		for (String value : values) {
@@ -97,7 +96,7 @@ public class JsonWriter {
 		return this;
 	}
 
-	public JsonWriter newLine() {
+	JsonWriter newLine() {
 		removeTrailingComma();
 		this.stringBuilder.append('\n');
 		return this;
@@ -133,7 +132,7 @@ public class JsonWriter {
 		this.stringBuilder.append("\":");
 	}
 
-	public String finish() {
+	String finish() {
 		removeTrailingComma();
 		return this.stringBuilder.toString();
 	}
