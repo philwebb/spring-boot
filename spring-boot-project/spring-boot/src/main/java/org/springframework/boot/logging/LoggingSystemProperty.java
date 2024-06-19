@@ -57,9 +57,9 @@ public enum LoggingSystemProperty {
 	CONSOLE_CHARSET("CONSOLE_LOG_CHARSET", "logging.charset.console"),
 
 	/**
-	 * Logging system property for the console JSON format.
+	 * Logging system property for the console structured logging format.
 	 */
-	CONSOLE_JSON_FORMAT("CONSOLE_LOG_JSON", "logging.json.console"),
+	CONSOLE_STRUCTURED_LOGGING_FORMAT("CONSOLE_LOG_STRUCTURED", "logging.structured.console"),
 
 	/**
 	 * Logging system property for the file log charset.
@@ -92,9 +92,9 @@ public enum LoggingSystemProperty {
 	FILE_PATTERN("FILE_LOG_PATTERN", "logging.pattern.file"),
 
 	/**
-	 * Logging system property for the file JSON format.
+	 * Logging system property for the file structured logging format.
 	 */
-	FILE_JSON_FORMAT("FILE_LOG_JSON", "logging.json.file"),
+	FILE_STRUCTURED_LOGGING_FORMAT("FILE_LOG_STRUCTURED", "logging.structured.file"),
 
 	/**
 	 * Logging system property for the log level pattern.
