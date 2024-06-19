@@ -63,23 +63,26 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private String serviceEnvironment;
 
+	private boolean logMdc;
+
 	public StructuredLoggingEncoder() {
 		// Constructor needed for Logback XML configuration
 		this(null);
 	}
 
 	public StructuredLoggingEncoder(StructuredLoggingFormat format) {
-		this(format, null, null, null, null, null);
+		this(format, null, null, null, null, null, true);
 	}
 
 	public StructuredLoggingEncoder(StructuredLoggingFormat format, Long pid, String serviceName, String serviceVersion,
-			String serviceNodeName, String serviceEnvironment) {
+			String serviceNodeName, String serviceEnvironment, boolean logMdc) {
 		this.format = format;
 		this.pid = pid;
 		this.serviceName = serviceName;
 		this.serviceVersion = serviceVersion;
 		this.serviceNodeName = serviceNodeName;
 		this.serviceEnvironment = serviceEnvironment;
+		this.logMdc = logMdc;
 	}
 
 	/**
@@ -120,6 +123,10 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	public void setServiceEnvironment(String serviceEnvironment) {
 		this.serviceEnvironment = serviceEnvironment;
+	}
+
+	public void setLogMdc(boolean logMdc) {
+		this.logMdc = logMdc;
 	}
 
 	@Override
@@ -249,6 +256,9 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 		@Override
 		public Map<String, String> getMdc() {
+			if (!StructuredLoggingEncoder.this.logMdc) {
+				return Collections.emptyMap();
+			}
 			Map<String, String> mdc = this.event.getMDCPropertyMap();
 			if (CollectionUtils.isEmpty(mdc)) {
 				return Collections.emptyMap();
