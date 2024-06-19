@@ -36,7 +36,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
 import org.springframework.boot.logging.structured.LogEvent;
 import org.springframework.boot.logging.structured.StructuredLoggingFormat;
-import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -149,10 +148,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
-		StructuredLoggingWriter builder = this.format.createWriter(new StringBuilder());
-		this.format.write(new LogbackLogEventAdapter(event), builder);
-		builder.newLine();
-		String line = builder.finish();
+		String line = this.format.format(new LogbackLogEventAdapter(event));
 		return line.getBytes(StandardCharsets.UTF_8);
 	}
 

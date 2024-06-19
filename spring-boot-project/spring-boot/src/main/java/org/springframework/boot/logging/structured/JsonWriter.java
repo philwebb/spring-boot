@@ -22,7 +22,7 @@ package org.springframework.boot.logging.structured;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public class JsonWriter implements StructuredLoggingWriter {
+public class JsonWriter {
 
 	private final StringBuilder stringBuilder;
 
@@ -97,9 +97,10 @@ public class JsonWriter implements StructuredLoggingWriter {
 		return this;
 	}
 
-	@Override
-	public void newLine() {
+	public JsonWriter newLine() {
+		removeTrailingComma();
 		this.stringBuilder.append('\n');
+		return this;
 	}
 
 	private void removeTrailingComma() {
@@ -132,7 +133,6 @@ public class JsonWriter implements StructuredLoggingWriter {
 		this.stringBuilder.append("\":");
 	}
 
-	@Override
 	public String finish() {
 		removeTrailingComma();
 		return this.stringBuilder.toString();

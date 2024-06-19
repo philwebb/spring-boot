@@ -25,18 +25,10 @@ package org.springframework.boot.logging.structured;
 public interface StructuredLoggingFormat {
 
 	/**
-	 * Creates the writer needed for the {@link #write(LogEvent, StructuredLoggingWriter)}
-	 * method.
-	 * @param stringBuilder the underlying {@code StringBuilder} to write to
-	 * @return the writer
-	 */
-	StructuredLoggingWriter createWriter(StringBuilder stringBuilder);
-
-	/**
-	 * Writes the given log event to the writer.
+	 * Formats the given log event.
 	 * @param event the log event to write
-	 * @param builder the writer to write to
+	 * @return the formatted log event
 	 */
-	void write(LogEvent event, StructuredLoggingWriter builder);
+	String format(LogEvent event);
 
 }

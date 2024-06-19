@@ -19,7 +19,6 @@ package smoketest.simple;
 import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.LogEvent;
 import org.springframework.boot.logging.structured.StructuredLoggingFormat;
-import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 
 /**
  * Custom {@link StructuredLoggingFormat}.
@@ -29,22 +28,17 @@ import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 public class CustomFormat implements StructuredLoggingFormat {
 
 	@Override
-	public StructuredLoggingWriter createWriter(StringBuilder stringBuilder) {
-		return new JsonWriter(stringBuilder);
-	}
-
-	@Override
-	public void write(LogEvent event, StructuredLoggingWriter builder) {
-		if (!(builder instanceof JsonWriter jsonBuilder)) {
-			throw new IllegalArgumentException("Builder is not a JsonBuilder");
-		}
-		jsonBuilder.objectStart();
-		jsonBuilder.attribute("epoch", event.getTimestamp().toEpochMilli());
-		jsonBuilder.attribute("msg", event.getFormattedMessage());
+	public String format(LogEvent event) {
+		JsonWriter writer = new JsonWriter();
+		writer.objectStart();
+		writer.attribute("epoch", event.getTimestamp().toEpochMilli());
+		writer.attribute("msg", event.getFormattedMessage());
 		if (event.hasThrowable()) {
-			jsonBuilder.attribute("error", event.getThrowableStackTraceAsString());
+			writer.attribute("error", event.getThrowableStackTraceAsString());
 		}
-		jsonBuilder.objectEnd();
+		writer.objectEnd();
+		writer.newLine();
+		return writer.finish();
 	}
 
 }

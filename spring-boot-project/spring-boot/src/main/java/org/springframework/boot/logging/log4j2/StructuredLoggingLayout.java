@@ -36,7 +36,6 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
 import org.springframework.boot.logging.structured.StructuredLoggingFormat;
-import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -80,10 +79,7 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 
 	@Override
 	public String toSerializable(LogEvent event) {
-		StructuredLoggingWriter builder = this.format.createWriter(getStringBuilder());
-		this.format.write(new Log4jLogEventAdapter(event), builder);
-		builder.newLine();
-		return builder.finish();
+		return this.format.format(new Log4jLogEventAdapter(event));
 	}
 
 	@PluginBuilderFactory
