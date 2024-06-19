@@ -33,10 +33,10 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.json.CommonStructuredLoggingFormats;
-import org.springframework.boot.logging.json.LogEvent;
-import org.springframework.boot.logging.json.StructuredLoggingFormat;
-import org.springframework.boot.logging.json.StructuredLoggingWriter;
+import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
+import org.springframework.boot.logging.structured.LogEvent;
+import org.springframework.boot.logging.structured.StructuredLoggingFormat;
+import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;

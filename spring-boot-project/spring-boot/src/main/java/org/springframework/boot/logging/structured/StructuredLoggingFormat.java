@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.json;
+package org.springframework.boot.logging.structured;
 
 /**
  * Structured logging format.

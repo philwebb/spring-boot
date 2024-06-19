@@ -34,9 +34,9 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.json.CommonStructuredLoggingFormats;
-import org.springframework.boot.logging.json.StructuredLoggingFormat;
-import org.springframework.boot.logging.json.StructuredLoggingWriter;
+import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
+import org.springframework.boot.logging.structured.StructuredLoggingFormat;
+import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -88,7 +88,7 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		return new StructuredLoggingLayout.Builder();
 	}
 
-	private final class Log4jLogEventAdapter implements org.springframework.boot.logging.json.LogEvent {
+	private final class Log4jLogEventAdapter implements org.springframework.boot.logging.structured.LogEvent {
 
 		private final LogEvent event;
 

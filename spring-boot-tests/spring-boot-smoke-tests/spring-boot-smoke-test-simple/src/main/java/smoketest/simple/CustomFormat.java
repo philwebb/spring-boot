@@ -16,10 +16,10 @@
 
 package smoketest.simple;
 
-import org.springframework.boot.logging.json.JsonWriter;
-import org.springframework.boot.logging.json.LogEvent;
-import org.springframework.boot.logging.json.StructuredLoggingFormat;
-import org.springframework.boot.logging.json.StructuredLoggingWriter;
+import org.springframework.boot.logging.structured.JsonWriter;
+import org.springframework.boot.logging.structured.LogEvent;
+import org.springframework.boot.logging.structured.StructuredLoggingFormat;
+import org.springframework.boot.logging.structured.StructuredLoggingWriter;
 
 /**
  * Custom {@link StructuredLoggingFormat}.
