@@ -20,17 +20,16 @@ package org.springframework.boot.logging.structured;
  * Writer for key-value formats.
  *
  * @author Moritz Halbritter
- * @since 3.4.0
  */
-public class KeyValueWriter {
+class KeyValueWriter {
 
 	private final StringBuilder stringBuilder;
 
-	public KeyValueWriter() {
+	KeyValueWriter() {
 		this(new StringBuilder());
 	}
 
-	public KeyValueWriter(StringBuilder stringBuilder) {
+	KeyValueWriter(StringBuilder stringBuilder) {
 		this.stringBuilder = stringBuilder;
 	}
 
@@ -40,7 +39,7 @@ public class KeyValueWriter {
 	 * @param value the value of the attribute
 	 * @return self for method chaining
 	 */
-	public KeyValueWriter attribute(String key, String value) {
+	KeyValueWriter attribute(String key, String value) {
 		boolean needQuotes = value.contains(" ");
 		this.stringBuilder.append(key).append('=');
 		if (needQuotes) {
@@ -70,13 +69,13 @@ public class KeyValueWriter {
 		}
 	}
 
-	public KeyValueWriter newLine() {
+	KeyValueWriter newLine() {
 		removeTrailingSpace();
 		this.stringBuilder.append('\n');
 		return this;
 	}
 
-	public String finish() {
+	String finish() {
 		removeTrailingSpace();
 		return this.stringBuilder.toString();
 	}

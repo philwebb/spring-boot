@@ -16,7 +16,6 @@
 
 package smoketest.simple;
 
-import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.LogEvent;
 import org.springframework.boot.logging.structured.StructuredLoggingFormat;
 
@@ -29,16 +28,14 @@ public class CustomFormat implements StructuredLoggingFormat {
 
 	@Override
 	public String format(LogEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.objectStart();
-		writer.attribute("epoch", event.getTimestamp().toEpochMilli());
-		writer.attribute("msg", event.getFormattedMessage());
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("epoch=").append(event.getTimestamp().toEpochMilli());
+		stringBuilder.append(" msg=\"").append(event.getFormattedMessage()).append('"');
 		if (event.hasThrowable()) {
-			writer.attribute("error", event.getThrowableStackTraceAsString());
+			stringBuilder.append(" error=\"").append(event.getThrowableStackTraceAsString()).append('"');
 		}
-		writer.objectEnd();
-		writer.newLine();
-		return writer.finish();
+		stringBuilder.append('\n');
+		return stringBuilder.toString();
 	}
 
 }
