@@ -34,8 +34,8 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
 import org.springframework.boot.logging.structured.StructuredLoggingFormat;
+import org.springframework.boot.logging.structured.StructuredLoggingFormats;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -250,7 +250,8 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		}
 
 		private StructuredLoggingFormat createFormat() {
-			StructuredLoggingFormat commonFormat = CommonStructuredLoggingFormats.get(this.format);
+			StructuredLoggingFormats formats = StructuredLoggingFormats.loadFromSpringFactories();
+			StructuredLoggingFormat commonFormat = formats.get(this.format);
 			if (commonFormat != null) {
 				return commonFormat;
 			}
@@ -259,8 +260,8 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 						StructuredLoggingFormat.class);
 			}
 			else {
-				throw new IllegalArgumentException("Unknown format '%s'. Common formats are: %s".formatted(this.format,
-						CommonStructuredLoggingFormats.getSupportedFormats()));
+				throw new IllegalArgumentException(
+						"Unknown format '%s'. Common formats are: %s".formatted(this.format, formats.getFormats()));
 			}
 		}
 

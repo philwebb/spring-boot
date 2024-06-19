@@ -31,4 +31,10 @@ public interface StructuredLoggingFormat {
 	 */
 	String format(LogEvent event);
 
+	/**
+	 * Returns the ID of the format.
+	 * @return the ID of the format
+	 */
+	String getId();
+
 }
