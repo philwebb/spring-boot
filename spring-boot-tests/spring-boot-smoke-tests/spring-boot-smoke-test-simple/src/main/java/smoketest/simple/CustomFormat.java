@@ -38,4 +38,9 @@ public class CustomFormat implements StructuredLoggingFormat {
 		return stringBuilder.toString();
 	}
 
+	@Override
+	public String getId() {
+		return "custom";
+	}
+
 }

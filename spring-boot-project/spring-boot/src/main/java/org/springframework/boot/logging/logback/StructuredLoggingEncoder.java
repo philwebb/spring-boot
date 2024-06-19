@@ -34,9 +34,9 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.structured.CommonStructuredLoggingFormats;
 import org.springframework.boot.logging.structured.LogEvent;
 import org.springframework.boot.logging.structured.StructuredLoggingFormat;
+import org.springframework.boot.logging.structured.StructuredLoggingFormats;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -73,7 +73,8 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	 * @param format the format
 	 */
 	public void setFormat(String format) {
-		StructuredLoggingFormat commonFormat = CommonStructuredLoggingFormats.get(format);
+		StructuredLoggingFormats formats = StructuredLoggingFormats.loadFromSpringFactories();
+		StructuredLoggingFormat commonFormat = formats.get(format);
 		if (commonFormat != null) {
 			this.format = commonFormat;
 		}
@@ -82,8 +83,8 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 					StructuredLoggingFormat.class);
 		}
 		else {
-			throw new IllegalArgumentException("Unknown format '%s'. Supported common formats are: %s".formatted(format,
-					CommonStructuredLoggingFormats.getSupportedFormats()));
+			throw new IllegalArgumentException(
+					"Unknown format '%s'. Supported common formats are: %s".formatted(format, formats.getFormats()));
 		}
 	}
 
