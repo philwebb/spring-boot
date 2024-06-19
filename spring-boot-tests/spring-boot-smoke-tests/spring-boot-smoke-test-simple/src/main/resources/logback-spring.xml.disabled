@@ -5,7 +5,7 @@
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>${CONSOLE_LOG_THRESHOLD}</level>
 		</filter>
-		<encoder class="org.springframework.boot.logging.logback.JsonEncoder">
+		<encoder class="org.springframework.boot.logging.logback.StructuredLoggingEncoder">
 			<format>ECS</format>
 			<pid>${PID}</pid>
 			<serviceName>${APPLICATION_NAME}</serviceName>

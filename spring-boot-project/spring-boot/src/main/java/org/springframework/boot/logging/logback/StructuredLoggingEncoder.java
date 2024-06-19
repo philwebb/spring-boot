@@ -33,25 +33,25 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.json.CommonJsonFormats;
-import org.springframework.boot.logging.json.JsonBuilder;
-import org.springframework.boot.logging.json.JsonFormat;
+import org.springframework.boot.logging.json.CommonStructuredLoggingFormats;
 import org.springframework.boot.logging.json.LogEvent;
+import org.springframework.boot.logging.json.StructuredLoggingFormat;
+import org.springframework.boot.logging.json.StructuredLoggingWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
- * {@link Encoder Logback encoder} which encodes to JSON-based formats.
+ * {@link Encoder Logback encoder} which encodes to structured logging based formats.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public class JsonEncoder extends EncoderBase<ILoggingEvent> {
+public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
 
-	private JsonFormat format;
+	private StructuredLoggingFormat format;
 
 	private Long pid;
 
@@ -63,17 +63,17 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 	private String serviceEnvironment;
 
-	public JsonEncoder() {
+	public StructuredLoggingEncoder() {
 		// Constructor needed for Logback XML configuration
 		this(null);
 	}
 
-	public JsonEncoder(JsonFormat format) {
+	public StructuredLoggingEncoder(StructuredLoggingFormat format) {
 		this(format, null, null, null, null, null);
 	}
 
-	public JsonEncoder(JsonFormat format, Long pid, String serviceName, String serviceVersion, String serviceNodeName,
-			String serviceEnvironment) {
+	public StructuredLoggingEncoder(StructuredLoggingFormat format, Long pid, String serviceName, String serviceVersion,
+			String serviceNodeName, String serviceEnvironment) {
 		this.format = format;
 		this.pid = pid;
 		this.serviceName = serviceName;
@@ -88,16 +88,17 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 	 * @param format the format
 	 */
 	public void setFormat(String format) {
-		JsonFormat commonFormat = CommonJsonFormats.get(format);
+		StructuredLoggingFormat commonFormat = CommonStructuredLoggingFormats.get(format);
 		if (commonFormat != null) {
 			this.format = commonFormat;
 		}
 		else if (ClassUtils.isPresent(format, null)) {
-			this.format = BeanUtils.instantiateClass(ClassUtils.resolveClassName(format, null), JsonFormat.class);
+			this.format = BeanUtils.instantiateClass(ClassUtils.resolveClassName(format, null),
+					StructuredLoggingFormat.class);
 		}
 		else {
 			throw new IllegalArgumentException("Unknown format '%s'. Supported common formats are: %s".formatted(format,
-					CommonJsonFormats.getSupportedFormats()));
+					CommonStructuredLoggingFormats.getSupportedFormats()));
 		}
 	}
 
@@ -141,12 +142,11 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
-		JsonBuilder jsonBuilder = new JsonBuilder();
-		jsonBuilder.objectStart();
-		this.format.write(new LogbackLogEventAdapter(event), jsonBuilder);
-		jsonBuilder.objectEnd();
-		jsonBuilder.newLine();
-		return jsonBuilder.toString().getBytes(StandardCharsets.UTF_8);
+		StructuredLoggingWriter builder = this.format.createWriter(new StringBuilder());
+		this.format.write(new LogbackLogEventAdapter(event), builder);
+		builder.newLine();
+		String line = builder.finish();
+		return line.getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 		@Override
 		public Long getPid() {
-			return JsonEncoder.this.pid;
+			return StructuredLoggingEncoder.this.pid;
 		}
 
 		@Override
@@ -187,22 +187,22 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 		@Override
 		public String getServiceName() {
-			return JsonEncoder.this.serviceName;
+			return StructuredLoggingEncoder.this.serviceName;
 		}
 
 		@Override
 		public String getServiceVersion() {
-			return JsonEncoder.this.serviceVersion;
+			return StructuredLoggingEncoder.this.serviceVersion;
 		}
 
 		@Override
 		public String getServiceEnvironment() {
-			return JsonEncoder.this.serviceEnvironment;
+			return StructuredLoggingEncoder.this.serviceEnvironment;
 		}
 
 		@Override
 		public String getServiceNodeName() {
-			return JsonEncoder.this.serviceNodeName;
+			return StructuredLoggingEncoder.this.serviceNodeName;
 		}
 
 		@Override
@@ -232,7 +232,7 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 		@Override
 		public String getThrowableStackTraceAsString() {
-			return JsonEncoder.this.throwableProxyConverter.convert(this.event);
+			return StructuredLoggingEncoder.this.throwableProxyConverter.convert(this.event);
 		}
 
 		@Override
@@ -249,7 +249,11 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 		@Override
 		public Map<String, String> getMdc() {
-			return this.event.getMDCPropertyMap();
+			Map<String, String> mdc = this.event.getMDCPropertyMap();
+			if (CollectionUtils.isEmpty(mdc)) {
+				return Collections.emptyMap();
+			}
+			return mdc;
 		}
 
 		@Override
@@ -259,6 +263,9 @@ public class JsonEncoder extends EncoderBase<ILoggingEvent> {
 
 		@Override
 		public Set<String> getMarkers() {
+			if (CollectionUtils.isEmpty(this.event.getMarkerList())) {
+				return Collections.emptySet();
+			}
 			Set<String> result = new HashSet<>();
 			for (Marker marker : this.event.getMarkerList()) {
 				addMarker(result, marker);

@@ -17,18 +17,26 @@
 package org.springframework.boot.logging.json;
 
 /**
- * JSON format.
+ * Structured logging format.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public interface JsonFormat {
+public interface StructuredLoggingFormat {
 
 	/**
-	 * Writes the given event to the given builder.
-	 * @param event the event to write
-	 * @param builder the builder to write to
+	 * Creates the writer needed for the {@link #write(LogEvent, StructuredLoggingWriter)}
+	 * method.
+	 * @param stringBuilder the underlying {@code StringBuilder} to write to
+	 * @return the writer
 	 */
-	void write(LogEvent event, JsonBuilder builder);
+	StructuredLoggingWriter createWriter(StringBuilder stringBuilder);
+
+	/**
+	 * Writes the given log event to the writer.
+	 * @param event the log event to write
+	 * @param builder the writer to write to
+	 */
+	void write(LogEvent event, StructuredLoggingWriter builder);
 
 }

@@ -32,20 +32,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.KeyValuePair;
 
-import org.springframework.boot.logging.json.CommonJsonFormats;
+import org.springframework.boot.logging.json.CommonStructuredLoggingFormats;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JsonEncoder}.
+ * Tests for {@link StructuredLoggingEncoder}.
  *
  * @author Moritz Halbritter
  */
-class JsonEncoderTests {
+class StructuredLoggingEncoderTests {
 
 	private static final Instant NOW = Instant.parse("2020-02-02T01:01:01Z");
 
-	private JsonEncoder jsonEncoder;
+	private StructuredLoggingEncoder structuredLoggingEncoder;
 
 	private LoggerContext loggerContext;
 
@@ -53,18 +53,18 @@ class JsonEncoderTests {
 	void setUp() {
 		this.loggerContext = new LoggerContext();
 		this.loggerContext.setMDCAdapter(new LogbackMDCAdapter());
-		this.jsonEncoder = new JsonEncoder(CommonJsonFormats.get("ecs"));
+		this.structuredLoggingEncoder = new StructuredLoggingEncoder(CommonStructuredLoggingFormats.get("ecs"));
 		initializeJsonEncoder();
 	}
 
 	private void initializeJsonEncoder() {
-		this.jsonEncoder.setContext(this.loggerContext);
-		this.jsonEncoder.start();
+		this.structuredLoggingEncoder.setContext(this.loggerContext);
+		this.structuredLoggingEncoder.start();
 	}
 
 	@AfterEach
 	void tearDown() {
-		this.jsonEncoder.stop();
+		this.structuredLoggingEncoder.stop();
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class JsonEncoderTests {
 	}
 
 	private String encode(ILoggingEvent event) {
-		return new String(this.jsonEncoder.encode(event), StandardCharsets.UTF_8).trim();
+		return new String(this.structuredLoggingEncoder.encode(event), StandardCharsets.UTF_8).trim();
 	}
 
 	private ILoggingEvent event(Level level, String message) {
@@ -144,7 +144,7 @@ class JsonEncoderTests {
 		event.setMDCPropertyMap(mdc);
 		event.setLoggerContext(this.loggerContext);
 		event.setInstant(NOW);
-		event.setLoggerName(JsonEncoderTests.class.getName());
+		event.setLoggerName(StructuredLoggingEncoderTests.class.getName());
 		event.setThreadName("main");
 		event.setMessage(message);
 		event.setLevel(level);

@@ -34,23 +34,24 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.json.CommonJsonFormats;
-import org.springframework.boot.logging.json.JsonBuilder;
-import org.springframework.boot.logging.json.JsonFormat;
+import org.springframework.boot.logging.json.CommonStructuredLoggingFormats;
+import org.springframework.boot.logging.json.StructuredLoggingFormat;
+import org.springframework.boot.logging.json.StructuredLoggingWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
- * {@link Layout} which writes log events as JSON.
+ * {@link Layout} which writes log events in structured format.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
- * @see JsonFormat
+ * @see StructuredLoggingFormat
  */
-@Plugin(name = "SpringJsonLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE)
-public class JsonLayout extends AbstractStringLayout {
+@Plugin(name = "StructuredLoggingLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE)
+public class StructuredLoggingLayout extends AbstractStringLayout {
 
-	private final JsonFormat format;
+	private final StructuredLoggingFormat format;
 
 	private final Long pid;
 
@@ -62,8 +63,8 @@ public class JsonLayout extends AbstractStringLayout {
 
 	private final String serviceEnvironment;
 
-	public JsonLayout(JsonFormat format, Long pid, String serviceName, String serviceVersion, String serviceNodeName,
-			String serviceEnvironment) {
+	public StructuredLoggingLayout(StructuredLoggingFormat format, Long pid, String serviceName, String serviceVersion,
+			String serviceNodeName, String serviceEnvironment) {
 		super(StandardCharsets.UTF_8);
 		Assert.notNull(format, "Format must not be null");
 		this.format = format;
@@ -76,16 +77,15 @@ public class JsonLayout extends AbstractStringLayout {
 
 	@Override
 	public String toSerializable(LogEvent event) {
-		JsonBuilder jsonBuilder = new JsonBuilder(getStringBuilder());
-		jsonBuilder.objectStart();
-		this.format.write(new Log4jLogEventAdapter(event), jsonBuilder);
-		jsonBuilder.objectEnd();
-		return jsonBuilder.toString();
+		StructuredLoggingWriter builder = this.format.createWriter(getStringBuilder());
+		this.format.write(new Log4jLogEventAdapter(event), builder);
+		builder.newLine();
+		return builder.finish();
 	}
 
 	@PluginBuilderFactory
-	static JsonLayout.Builder newBuilder() {
-		return new JsonLayout.Builder();
+	static StructuredLoggingLayout.Builder newBuilder() {
+		return new StructuredLoggingLayout.Builder();
 	}
 
 	private final class Log4jLogEventAdapter implements org.springframework.boot.logging.json.LogEvent {
@@ -158,53 +158,63 @@ public class JsonLayout extends AbstractStringLayout {
 			if (mdc == null || mdc.isEmpty()) {
 				return Collections.emptyMap();
 			}
-			return mdc.toMap();
+			Map<String, String> map = mdc.toMap();
+			if (CollectionUtils.isEmpty(map)) {
+				return Collections.emptyMap();
+			}
+			return map;
 		}
 
 		@Override
 		public Set<String> getMarkers() {
+			if (this.event.getMarker() == null) {
+				return Collections.emptySet();
+			}
 			Set<String> result = new HashSet<>();
 			addMarker(result, this.event.getMarker());
 			return result;
 		}
 
 		private void addMarker(Set<String> result, Marker marker) {
+			if (marker == null) {
+				return;
+			}
 			result.add(marker.getName());
 			if (marker.hasParents()) {
 				for (Marker parent : marker.getParents()) {
-					addMarker(getMarkers(), parent);
+					addMarker(result, parent);
 				}
 			}
 		}
 
 		@Override
 		public Long getPid() {
-			return JsonLayout.this.pid;
+			return StructuredLoggingLayout.this.pid;
 		}
 
 		@Override
 		public String getServiceName() {
-			return JsonLayout.this.serviceName;
+			return StructuredLoggingLayout.this.serviceName;
 		}
 
 		@Override
 		public String getServiceVersion() {
-			return JsonLayout.this.serviceVersion;
+			return StructuredLoggingLayout.this.serviceVersion;
 		}
 
 		@Override
 		public String getServiceEnvironment() {
-			return JsonLayout.this.serviceEnvironment;
+			return StructuredLoggingLayout.this.serviceEnvironment;
 		}
 
 		@Override
 		public String getServiceNodeName() {
-			return JsonLayout.this.serviceNodeName;
+			return StructuredLoggingLayout.this.serviceNodeName;
 		}
 
 	}
 
-	static final class Builder implements org.apache.logging.log4j.core.util.Builder<JsonLayout> {
+	static final class Builder implements org.apache.logging.log4j.core.util.Builder<StructuredLoggingLayout> {
 
 		@PluginBuilderAttribute
 		private String format;
@@ -225,23 +235,24 @@ public class JsonLayout extends AbstractStringLayout {
 		private String serviceEnvironment;
 
 		@Override
-		public JsonLayout build() {
-			JsonFormat format = createFormat();
-			return new JsonLayout(format, this.pid, this.serviceName, this.serviceVersion, this.serviceNodeName,
-					this.serviceEnvironment);
+		public StructuredLoggingLayout build() {
+			StructuredLoggingFormat format = createFormat();
+			return new StructuredLoggingLayout(format, this.pid, this.serviceName, this.serviceVersion,
+					this.serviceNodeName, this.serviceEnvironment);
 		}
 
-		private JsonFormat createFormat() {
-			JsonFormat commonFormat = CommonJsonFormats.get(this.format);
+		private StructuredLoggingFormat createFormat() {
+			StructuredLoggingFormat commonFormat = CommonStructuredLoggingFormats.get(this.format);
 			if (commonFormat != null) {
 				return commonFormat;
 			}
 			else if (ClassUtils.isPresent(this.format, null)) {
-				return BeanUtils.instantiateClass(ClassUtils.resolveClassName(this.format, null), JsonFormat.class);
+				return BeanUtils.instantiateClass(ClassUtils.resolveClassName(this.format, null),
+						StructuredLoggingFormat.class);
 			}
 			else {
 				throw new IllegalArgumentException("Unknown format '%s'. Common formats are: %s".formatted(this.format,
-						CommonJsonFormats.getSupportedFormats()));
+						CommonStructuredLoggingFormats.getSupportedFormats()));
 			}
 		}
 

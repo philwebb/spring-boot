@@ -113,7 +113,7 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String jsonFormat = resolve(config, "${CONSOLE_LOG_JSON}");
 		if (StringUtils.hasLength(jsonFormat)) {
-			JsonEncoder encoder = createJsonEncoder(config, jsonFormat);
+			StructuredLoggingEncoder encoder = createJsonEncoder(config, jsonFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -136,7 +136,7 @@ class DefaultLogbackConfiguration {
 		appender.addFilter(filter);
 		String jsonFormat = resolve(config, "${FILE_LOG_JSON}");
 		if (StringUtils.hasLength(jsonFormat)) {
-			JsonEncoder encoder = createJsonEncoder(config, jsonFormat);
+			StructuredLoggingEncoder encoder = createJsonEncoder(config, jsonFormat);
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -153,10 +153,10 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
-	private JsonEncoder createJsonEncoder(LogbackConfigurator config, String format) {
+	private StructuredLoggingEncoder createJsonEncoder(LogbackConfigurator config, String format) {
 		long pid = resolveLong(config, "${PID:--1}");
 		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
-		JsonEncoder encoder = new JsonEncoder(null, pid,
+		StructuredLoggingEncoder encoder = new StructuredLoggingEncoder(null, pid,
 				StringUtils.hasLength(applicationName) ? applicationName : null, null, null, null);
 		encoder.setFormat(format);
 		return encoder;
