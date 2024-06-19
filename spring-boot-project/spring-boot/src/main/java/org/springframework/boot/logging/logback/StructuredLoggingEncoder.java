@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collections;
@@ -63,6 +64,8 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	private String serviceEnvironment;
 
 	private boolean logMdc;
+
+	private Charset charset = StandardCharsets.UTF_8;
 
 	public StructuredLoggingEncoder() {
 		// Constructor needed for Logback XML configuration
@@ -128,6 +131,10 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 		this.logMdc = logMdc;
 	}
 
+	public void setCharset(Charset charset) {
+		this.charset = charset;
+	}
+
 	@Override
 	public void start() {
 		Assert.state(this.format != null, "Format has not been set");
@@ -149,7 +156,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	@Override
 	public byte[] encode(ILoggingEvent event) {
 		String line = this.format.format(new LogbackLogEventAdapter(event));
-		return line.getBytes(StandardCharsets.UTF_8);
+		return line.getBytes(this.charset);
 	}
 
 	@Override

@@ -114,6 +114,7 @@ class DefaultLogbackConfiguration {
 		String structuredLoggingFormat = resolve(config, "${CONSOLE_LOG_STRUCTURED}");
 		if (StringUtils.hasLength(structuredLoggingFormat)) {
 			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat);
+			encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
@@ -137,6 +138,7 @@ class DefaultLogbackConfiguration {
 		String structuredLoggingFormat = resolve(config, "${FILE_LOG_STRUCTURED}");
 		if (StringUtils.hasLength(structuredLoggingFormat)) {
 			StructuredLoggingEncoder encoder = createStructuredLoggingEncoder(config, structuredLoggingFormat);
+			encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
 			config.start(encoder);
 			appender.setEncoder(encoder);
 		}
