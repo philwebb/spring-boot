@@ -63,8 +63,10 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 
 	private final String serviceEnvironment;
 
+	private final boolean logMdc;
+
 	public StructuredLoggingLayout(StructuredLoggingFormat format, Long pid, String serviceName, String serviceVersion,
-			String serviceNodeName, String serviceEnvironment) {
+			String serviceNodeName, String serviceEnvironment, boolean logMdc) {
 		super(StandardCharsets.UTF_8);
 		Assert.notNull(format, "Format must not be null");
 		this.format = format;
@@ -73,6 +75,7 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		this.serviceVersion = serviceVersion;
 		this.serviceNodeName = serviceNodeName;
 		this.serviceEnvironment = serviceEnvironment;
+		this.logMdc = logMdc;
 	}
 
 	@Override
@@ -154,6 +157,9 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 
 		@Override
 		public Map<String, String> getMdc() {
+			if (!StructuredLoggingLayout.this.logMdc) {
+				return Collections.emptyMap();
+			}
 			ReadOnlyStringMap mdc = this.event.getContextData();
 			if (mdc == null || mdc.isEmpty()) {
 				return Collections.emptyMap();
@@ -234,11 +240,14 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		@PluginBuilderAttribute
 		private String serviceEnvironment;
 
+		@PluginBuilderAttribute
+		private boolean logMdc = true;
+
 		@Override
 		public StructuredLoggingLayout build() {
 			StructuredLoggingFormat format = createFormat();
 			return new StructuredLoggingLayout(format, this.pid, this.serviceName, this.serviceVersion,
-					this.serviceNodeName, this.serviceEnvironment);
+					this.serviceNodeName, this.serviceEnvironment, this.logMdc);
 		}
 
 		private StructuredLoggingFormat createFormat() {
