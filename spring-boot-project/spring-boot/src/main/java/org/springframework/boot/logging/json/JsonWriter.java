@@ -17,49 +17,75 @@
 package org.springframework.boot.logging.json;
 
 /**
- * Builder for JSON documents.
+ * Writer for JSON formats.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public class JsonBuilder {
+public class JsonWriter implements StructuredLoggingWriter {
 
 	private final StringBuilder stringBuilder;
 
-	public JsonBuilder() {
+	public JsonWriter() {
 		this(new StringBuilder());
 	}
 
-	public JsonBuilder(StringBuilder stringBuilder) {
+	public JsonWriter(StringBuilder stringBuilder) {
 		this.stringBuilder = stringBuilder;
 	}
 
-	public JsonBuilder objectStart() {
+	/**
+	 * Writes object start.
+	 * @return self for method chaining
+	 */
+	public JsonWriter objectStart() {
 		this.stringBuilder.append("{");
 		return this;
 	}
 
-	public JsonBuilder objectEnd() {
+	/**
+	 * Writes object end.
+	 * @return self for method chaining
+	 */
+	public JsonWriter objectEnd() {
 		removeTrailingComma();
 		this.stringBuilder.append("}");
 		return this;
 	}
 
-	public JsonBuilder attribute(String key, String value) {
+	/**
+	 * Writes an attribute.
+	 * @param key the key of the attribute
+	 * @param value the value of the attribute
+	 * @return self for method chaining
+	 */
+	public JsonWriter attribute(String key, String value) {
 		writeKey(key);
 		writeString(value);
 		this.stringBuilder.append(',');
 		return this;
 	}
 
-	public JsonBuilder attribute(String key, long value) {
+	/**
+	 * Writes an attribute.
+	 * @param key the key of the attribute
+	 * @param value the value of the attribute
+	 * @return self for method chaining
+	 */
+	public JsonWriter attribute(String key, long value) {
 		writeKey(key);
 		writeLong(value);
 		this.stringBuilder.append(',');
 		return this;
 	}
 
-	public JsonBuilder attribute(String key, Iterable<String> values) {
+	/**
+	 * Writes an attribute with multiple string values.
+	 * @param key the key of the attribute
+	 * @param values the values of the attribute
+	 * @return self for method chaining
+	 */
+	public JsonWriter attribute(String key, Iterable<String> values) {
 		writeKey(key);
 		this.stringBuilder.append('[');
 		for (String value : values) {
@@ -71,12 +97,15 @@ public class JsonBuilder {
 		return this;
 	}
 
-	public JsonBuilder newLine() {
+	@Override
+	public void newLine() {
 		this.stringBuilder.append('\n');
-		return this;
 	}
 
 	private void removeTrailingComma() {
+		if (this.stringBuilder.isEmpty()) {
+			return;
+		}
 		if (this.stringBuilder.charAt(this.stringBuilder.length() - 1) == ',') {
 			this.stringBuilder.setLength(this.stringBuilder.length() - 1);
 		}
@@ -103,7 +132,8 @@ public class JsonBuilder {
 		this.stringBuilder.append("\":");
 	}
 
-	public String toString() {
+	@Override
+	public String finish() {
 		removeTrailingComma();
 		return this.stringBuilder.toString();
 	}
