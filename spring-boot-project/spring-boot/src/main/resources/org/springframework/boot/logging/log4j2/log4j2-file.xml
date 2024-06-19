@@ -9,13 +9,27 @@
 	</Properties>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
-			<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}" />
+			<Select>
+				<StructuredLoggingEnabledArbiter appender="console">
+					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+				</StructuredLoggingEnabledArbiter>
+				<DefaultArbiter>
+					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}" />
+				</DefaultArbiter>
+			</Select>
 			<Filters>
 				<ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
 			</Filters>
 		</Console>
 		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
-			<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" charset="${sys:FILE_LOG_CHARSET}"/>
+			<Select>
+				<StructuredLoggingEnabledArbiter appender="file">
+					<StructuredLoggingLayout format="${sys:FILE_LOG_STRUCTURED}" charset="${sys:FILE_LOG_CHARSET}"/>
+				</StructuredLoggingEnabledArbiter>
+				<DefaultArbiter>
+					<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" charset="${sys:FILE_LOG_CHARSET}"/>
+				</DefaultArbiter>
+			</Select>
 			<Filters>
 				<ThresholdFilter level="${sys:FILE_LOG_THRESHOLD:-TRACE}"/>
 			</Filters>

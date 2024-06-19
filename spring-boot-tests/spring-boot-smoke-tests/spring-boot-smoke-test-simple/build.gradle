@@ -5,13 +5,13 @@ plugins {
 
 description = "Spring Boot Simple smoke test"
 
-//configurations.all {
-//	exclude module: "spring-boot-starter-logging"
-//}
+configurations.all {
+	exclude module: "spring-boot-starter-logging"
+}
 
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-//	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-log4j2"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-log4j2"))
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("org.hibernate.validator:hibernate-validator") {
 		exclude group: "javax.validation"

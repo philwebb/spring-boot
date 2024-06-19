@@ -271,8 +271,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			}
 			Configuration configuration = (configurations.size() > 1) ? createComposite(configurations)
 					: configurations.iterator().next();
-			// TODO MH: Move this to somewhere else!
-			System.setProperty("JSON_ENABLED", "true");
 			context.start(configuration);
 		}
 		catch (Exception ex) {
