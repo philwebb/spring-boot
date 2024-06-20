@@ -161,6 +161,7 @@ class DefaultLogbackConfiguration {
 		encoder.setFormat(format);
 		encoder.setCharset(charset);
 		encoder.setPid(resolveLong(config, "${PID:--1}"));
+		encoder.setLogMdc(true);
 		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
 		if (StringUtils.hasLength(applicationName)) {
 			encoder.setServiceName(applicationName);

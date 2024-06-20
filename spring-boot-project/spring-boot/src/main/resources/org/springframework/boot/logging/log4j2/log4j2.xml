@@ -11,7 +11,7 @@
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
 			<Select>
 				<StructuredLoggingEnabledArbiter appender="console">
-					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}" logMdc="true"/>
 				</StructuredLoggingEnabledArbiter>
 				<DefaultArbiter>
 					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
