@@ -79,6 +79,7 @@ public final class StructuredLoggingFormats {
 	 * @return the loaded structured logging formats
 	 */
 	public static StructuredLoggingFormats loadFromSpringFactories(SpringFactoriesLoader loader) {
+		Assert.notNull(loader, "Loader must not be null");
 		return new StructuredLoggingFormats(loader.load(StructuredLoggingFormat.class));
 	}
 
