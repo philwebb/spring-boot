@@ -240,7 +240,7 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		private String serviceEnvironment;
 
 		@PluginBuilderAttribute
-		private boolean logMdc = true;
+		private boolean logMdc;
 
 		@Override
 		public StructuredLoggingLayout build() {
