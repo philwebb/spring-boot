@@ -51,6 +51,8 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
 
+	private String formatAsString;
+
 	private StructuredLoggingFormat format;
 
 	private Long pid;
@@ -73,19 +75,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	 * @param format the format
 	 */
 	public void setFormat(String format) {
-		StructuredLoggingFormats formats = StructuredLoggingFormats.loadFromSpringFactories();
-		StructuredLoggingFormat commonFormat = formats.get(format);
-		if (commonFormat != null) {
-			this.format = commonFormat;
-		}
-		else if (ClassUtils.isPresent(format, null)) {
-			this.format = BeanUtils.instantiateClass(ClassUtils.resolveClassName(format, null),
-					StructuredLoggingFormat.class);
-		}
-		else {
-			throw new IllegalArgumentException(
-					"Unknown format '%s'. Supported common formats are: %s".formatted(format, formats.getFormats()));
-		}
+		this.formatAsString = format;
 	}
 
 	public void setPid(Long pid) {
@@ -118,9 +108,24 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public void start() {
-		Assert.state(this.format != null, "Format has not been set");
+		Assert.state(this.formatAsString != null, "Format has not been set");
+		this.format = createFormat();
 		super.start();
 		this.throwableProxyConverter.start();
+	}
+
+	private StructuredLoggingFormat createFormat() {
+		StructuredLoggingFormats formats = StructuredLoggingFormats.loadFromSpringFactories();
+		StructuredLoggingFormat commonFormat = formats.get(this.formatAsString);
+		if (commonFormat != null) {
+			return commonFormat;
+		}
+		if (ClassUtils.isPresent(this.formatAsString, null)) {
+			return BeanUtils.instantiateClass(ClassUtils.resolveClassName(this.formatAsString, null),
+					StructuredLoggingFormat.class);
+		}
+		throw new IllegalArgumentException("Unknown format '%s'. Supported common formats are: %s"
+			.formatted(this.formatAsString, formats.getFormats()));
 	}
 
 	@Override
