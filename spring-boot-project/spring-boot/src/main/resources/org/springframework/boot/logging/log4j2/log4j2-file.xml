@@ -24,7 +24,7 @@
 		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<Select>
 				<StructuredLoggingEnabledArbiter appender="file">
-					<StructuredLoggingLayout format="${sys:FILE_LOG_STRUCTURED}" charset="${sys:FILE_LOG_CHARSET}"/>
+					<StructuredLoggingLayout format="${sys:FILE_LOG_STRUCTURED}" charset="${sys:FILE_LOG_CHARSET}" logMdc="true"/>
 				</StructuredLoggingEnabledArbiter>
 				<DefaultArbiter>
 					<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" charset="${sys:FILE_LOG_CHARSET}"/>
