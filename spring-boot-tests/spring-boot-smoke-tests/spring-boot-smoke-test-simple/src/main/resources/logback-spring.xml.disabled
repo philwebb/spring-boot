@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-	<appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>${CONSOLE_LOG_THRESHOLD}</level>
-		</filter>
-		<encoder class="org.springframework.boot.logging.logback.StructuredLoggingEncoder">
-			<format>ECS</format>
-			<pid>${PID}</pid>
-			<serviceName>${APPLICATION_NAME}</serviceName>
-			<serviceNodeName>node-1</serviceNodeName>
-			<serviceEnvironment>production</serviceEnvironment>
-		</encoder>
-	</appender>
-
+<!--	<include resource="org/springframework/boot/logging/logback/console-appender.xml" />-->
+<!--	<include resource="org/springframework/boot/logging/logback/file-appender.xml" />-->
+<!--	<include resource="org/springframework/boot/logging/logback/console-structured-logging-appender.xml" />-->
+	<include resource="org/springframework/boot/logging/logback/file-structured-logging-appender.xml" />
+	<include resource="custom-structured-logging-console-appender.xml" />
 	<root level="INFO">
-		<appender-ref ref="JSON_CONSOLE" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
 	</root>
 </configuration>
