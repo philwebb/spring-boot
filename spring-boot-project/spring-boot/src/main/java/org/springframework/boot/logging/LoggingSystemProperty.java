@@ -34,6 +34,7 @@ public enum LoggingSystemProperty {
 	 * Logging system property for the verbatim application name (without spaces and
 	 * brackets).
 	 */
+	// TODO: Rename to VERBATIM_APPLICATION_NAME ?
 	VERBATIM_APPLICATION_NAME("APPLICATION_NAME"),
 
 	/**
