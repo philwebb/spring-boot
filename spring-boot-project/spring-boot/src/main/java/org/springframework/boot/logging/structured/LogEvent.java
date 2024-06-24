@@ -56,8 +56,10 @@ public interface LogEvent {
 
 	Long getPid();
 
+	// TODO: Rename to application name
 	String getServiceName();
 
+	// TODO: Rename to application version
 	String getServiceVersion();
 
 	String getServiceEnvironment();
