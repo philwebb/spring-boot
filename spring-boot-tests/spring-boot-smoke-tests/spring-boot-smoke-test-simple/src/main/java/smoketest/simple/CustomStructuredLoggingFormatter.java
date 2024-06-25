@@ -16,31 +16,36 @@
 
 package smoketest.simple;
 
-import org.springframework.boot.logging.structured.LogEvent;
-import org.springframework.boot.logging.structured.StructuredLoggingFormat;
+import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+
+import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 
 /**
- * Custom {@link StructuredLoggingFormat}.
+ * Custom {@link StructuredLoggingFormatter}.
  *
  * @author Moritz Halbritter
  */
-public class CustomFormat implements StructuredLoggingFormat {
+public class CustomStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
 
-	@Override
-	public String format(LogEvent event) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("epoch=").append(event.getTimestamp().toEpochMilli());
-		stringBuilder.append(" msg=\"").append(event.getFormattedMessage()).append('"');
-		if (event.hasThrowable()) {
-			stringBuilder.append(" error=\"").append(event.getThrowableStackTraceAsString()).append('"');
-		}
-		stringBuilder.append('\n');
-		return stringBuilder.toString();
+	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
+
+	public CustomStructuredLoggingFormatter() {
+		this.throwableProxyConverter.start();
 	}
 
 	@Override
-	public String getId() {
-		return "custom";
+	public String format(ILoggingEvent event) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("epoch=").append(event.getInstant().toEpochMilli());
+		stringBuilder.append(" msg=\"").append(event.getFormattedMessage()).append('"');
+		IThrowableProxy throwable = event.getThrowableProxy();
+		if (throwable != null) {
+			stringBuilder.append(" error=\"").append(this.throwableProxyConverter.convert(event)).append('"');
+		}
+		stringBuilder.append('\n');
+		return stringBuilder.toString();
 	}
 
 }

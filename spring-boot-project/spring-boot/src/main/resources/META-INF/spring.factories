@@ -106,9 +106,3 @@ org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector
 # Resource Locator Protocol Resolvers
 org.springframework.core.io.ProtocolResolver=\
 org.springframework.boot.io.Base64ProtocolResolver
-
-# Structured Logging Formats
-org.springframework.boot.logging.structured.StructuredLoggingFormat=\
-org.springframework.boot.logging.structured.EcsStructuredLoggingFormat,\
-org.springframework.boot.logging.structured.LogfmtStructuredLoggingFormat,\
-org.springframework.boot.logging.structured.LogstashStructuredLoggingFormat

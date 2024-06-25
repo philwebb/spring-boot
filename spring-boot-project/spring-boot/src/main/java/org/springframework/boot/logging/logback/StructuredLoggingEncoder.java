@@ -18,34 +18,27 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
-import org.slf4j.Marker;
-import org.slf4j.event.KeyValuePair;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.structured.LogEvent;
-import org.springframework.boot.logging.structured.StructuredLoggingFormat;
-import org.springframework.boot.logging.structured.StructuredLoggingFormats;
+import org.springframework.boot.logging.structured.ApplicationMetadata;
+import org.springframework.boot.logging.structured.LogbackEcsStructuredLoggingFormatter;
+import org.springframework.boot.logging.structured.LogbackLogfmtStructuredLoggingFormatter;
+import org.springframework.boot.logging.structured.LogbackLogstashStructuredLoggingFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link Encoder Logback encoder} which encodes to structured logging based formats.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
+ * @see StructuredLoggingFormatter
  */
 public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
@@ -53,7 +46,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private String formatAsString;
 
-	private StructuredLoggingFormat format;
+	private StructuredLoggingFormatter<ILoggingEvent> format;
 
 	private Long pid;
 
@@ -64,8 +57,6 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	private String serviceNodeName;
 
 	private String serviceEnvironment;
-
-	private boolean logMdc;
 
 	private Charset charset = StandardCharsets.UTF_8;
 
@@ -98,10 +89,6 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 		this.serviceEnvironment = serviceEnvironment;
 	}
 
-	public void setLogMdc(boolean logMdc) {
-		this.logMdc = logMdc;
-	}
-
 	public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
@@ -109,23 +96,37 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	@Override
 	public void start() {
 		Assert.state(this.formatAsString != null, "Format has not been set");
-		this.format = createFormat();
+		this.format = createFormat(this.formatAsString);
 		super.start();
 		this.throwableProxyConverter.start();
 	}
 
-	private StructuredLoggingFormat createFormat() {
-		StructuredLoggingFormats formats = StructuredLoggingFormats.loadFromSpringFactories();
-		StructuredLoggingFormat commonFormat = formats.get(this.formatAsString);
+	@SuppressWarnings("unchecked")
+	private StructuredLoggingFormatter<ILoggingEvent> createFormat(String format) {
+		ApplicationMetadata metadata = new ApplicationMetadata(this.pid, this.serviceName, this.serviceVersion,
+				this.serviceEnvironment, this.serviceNodeName);
+		StructuredLoggingFormatter<ILoggingEvent> commonFormat = getCommonFormat(format, metadata);
 		if (commonFormat != null) {
 			return commonFormat;
 		}
-		if (ClassUtils.isPresent(this.formatAsString, null)) {
-			return BeanUtils.instantiateClass(ClassUtils.resolveClassName(this.formatAsString, null),
-					StructuredLoggingFormat.class);
+		if (ClassUtils.isPresent(format, null)) {
+			StructuredLoggingFormatter<ILoggingEvent> structuredLoggingFormatter = BeanUtils
+				.instantiateClass(ClassUtils.resolveClassName(format, null), StructuredLoggingFormatter.class);
+			// TODO MH: Check if generic is ILoggingEvent
+			// TODO MH: Inject ApplicationMetadata?
+			return structuredLoggingFormatter;
 		}
-		throw new IllegalArgumentException("Unknown format '%s'. Supported common formats are: %s"
-			.formatted(this.formatAsString, formats.getFormats()));
+		throw new IllegalArgumentException(
+				"Unknown format '%s'. Supported common formats are: ecs, logfmt, logstash".formatted(format));
+	}
+
+	private StructuredLoggingFormatter<ILoggingEvent> getCommonFormat(String format, ApplicationMetadata metadata) {
+		return switch (format) {
+			case "ecs" -> new LogbackEcsStructuredLoggingFormatter(this.throwableProxyConverter, metadata);
+			case "logstash" -> new LogbackLogstashStructuredLoggingFormatter(this.throwableProxyConverter);
+			case "logfmt" -> new LogbackLogfmtStructuredLoggingFormatter(this.throwableProxyConverter);
+			default -> null;
+		};
 	}
 
 	@Override
@@ -141,148 +142,13 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
-		String line = this.format.format(new LogbackLogEventAdapter(event));
+		String line = this.format.format(event);
 		return line.getBytes(this.charset);
 	}
 
 	@Override
 	public byte[] footerBytes() {
 		return null;
-	}
-
-	/**
-	 * Adapts an {@link ILoggingEvent} to an {@link LogEvent}.
-	 */
-	private final class LogbackLogEventAdapter implements LogEvent {
-
-		private final ILoggingEvent event;
-
-		LogbackLogEventAdapter(ILoggingEvent event) {
-			this.event = event;
-		}
-
-		@Override
-		public Instant getTimestamp() {
-			return this.event.getInstant();
-		}
-
-		@Override
-		public String getLevel() {
-			return this.event.getLevel().toString();
-		}
-
-		@Override
-		public Long getPid() {
-			return StructuredLoggingEncoder.this.pid;
-		}
-
-		@Override
-		public String getThreadName() {
-			return this.event.getThreadName();
-		}
-
-		@Override
-		public String getServiceName() {
-			return StructuredLoggingEncoder.this.serviceName;
-		}
-
-		@Override
-		public String getServiceVersion() {
-			return StructuredLoggingEncoder.this.serviceVersion;
-		}
-
-		@Override
-		public String getServiceEnvironment() {
-			return StructuredLoggingEncoder.this.serviceEnvironment;
-		}
-
-		@Override
-		public String getServiceNodeName() {
-			return StructuredLoggingEncoder.this.serviceNodeName;
-		}
-
-		@Override
-		public String getLoggerName() {
-			return this.event.getLoggerName();
-		}
-
-		@Override
-		public String getFormattedMessage() {
-			return this.event.getFormattedMessage();
-		}
-
-		@Override
-		public boolean hasThrowable() {
-			return this.event.getThrowableProxy() != null;
-		}
-
-		@Override
-		public String getThrowableClassName() {
-			return this.event.getThrowableProxy().getClassName();
-		}
-
-		@Override
-		public String getThrowableMessage() {
-			return this.event.getThrowableProxy().getMessage();
-		}
-
-		@Override
-		public String getThrowableStackTraceAsString() {
-			return StructuredLoggingEncoder.this.throwableProxyConverter.convert(this.event);
-		}
-
-		@Override
-		public Map<String, Object> getKeyValuePairs() {
-			if (CollectionUtils.isEmpty(this.event.getKeyValuePairs())) {
-				return Collections.emptyMap();
-			}
-			Map<String, Object> result = new HashMap<>();
-			for (KeyValuePair keyValuePair : this.event.getKeyValuePairs()) {
-				result.put(keyValuePair.key, keyValuePair.value);
-			}
-			return result;
-		}
-
-		@Override
-		public Map<String, String> getMdc() {
-			if (!StructuredLoggingEncoder.this.logMdc) {
-				return Collections.emptyMap();
-			}
-			Map<String, String> mdc = this.event.getMDCPropertyMap();
-			if (CollectionUtils.isEmpty(mdc)) {
-				return Collections.emptyMap();
-			}
-			return mdc;
-		}
-
-		@Override
-		public int getLevelValue() {
-			return this.event.getLevel().toInt();
-		}
-
-		@Override
-		public Set<String> getMarkers() {
-			if (CollectionUtils.isEmpty(this.event.getMarkerList())) {
-				return Collections.emptySet();
-			}
-			Set<String> result = new HashSet<>();
-			for (Marker marker : this.event.getMarkerList()) {
-				addMarker(result, marker);
-			}
-			return result;
-		}
-
-		private void addMarker(Set<String> result, Marker marker) {
-			result.add(marker.getName());
-			if (marker.hasReferences()) {
-				Iterator<Marker> iterator = marker.iterator();
-				while (iterator.hasNext()) {
-					Marker reference = iterator.next();
-					addMarker(result, reference);
-				}
-			}
-		}
-
 	}
 
 }
