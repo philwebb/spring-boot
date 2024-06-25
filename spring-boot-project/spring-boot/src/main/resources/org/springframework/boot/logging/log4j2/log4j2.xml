@@ -10,9 +10,9 @@
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
 			<Select>
-				<StructuredLoggingEnabledArbiter appender="console">
-					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}" logMdc="true"/>
-				</StructuredLoggingEnabledArbiter>
+				<SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED">
+					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}" pid="${sys:PID:--1}" serviceName="${sys:APPLICATION_NAME:-}"/>
+				</SystemPropertyArbiter>
 				<DefaultArbiter>
 					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
 				</DefaultArbiter>

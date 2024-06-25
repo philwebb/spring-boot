@@ -19,22 +19,17 @@ package org.springframework.boot.logging.structured;
 /**
  * Structured logging format.
  *
+ * @param <E> the log event type
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public interface StructuredLoggingFormat {
+public interface StructuredLoggingFormatter<E> {
 
 	/**
 	 * Formats the given log event.
 	 * @param event the log event to write
 	 * @return the formatted log event
 	 */
-	String format(LogEvent event);
-
-	/**
-	 * Returns the ID of the format.
-	 * @return the ID of the format
-	 */
-	String getId();
+	String format(E event);
 
 }

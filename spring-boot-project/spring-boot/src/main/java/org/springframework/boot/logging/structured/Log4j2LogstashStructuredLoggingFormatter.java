@@ -1,0 +1,108 @@
+/*
+ * Copyright 2012-2024 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.logging.structured;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.apache.logging.log4j.util.ReadOnlyStringMap;
+
+import org.springframework.util.CollectionUtils;
+
+/**
+ * Logstash logging format.
+ *
+ * @author Moritz Halbritter
+ * @since 3.4.0
+ */
+public class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
+
+	@Override
+	public String format(LogEvent event) {
+		JsonWriter writer = new JsonWriter();
+		writer.objectStart();
+		Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
+			.plusNanos(event.getInstant().getNanoOfMillisecond());
+		OffsetDateTime time = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
+		writer.attribute("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
+		writer.attribute("@version", "1");
+		writer.attribute("message", event.getMessage().getFormattedMessage());
+		writer.attribute("logger_name", event.getLoggerName());
+		writer.attribute("thread_name", event.getThreadName());
+		writer.attribute("level", event.getLevel().name());
+		writer.attribute("level_value", event.getLevel().intLevel());
+		addMdc(event, writer);
+		addMarkers(event, writer);
+		ThrowableProxy throwable = event.getThrownProxy();
+		if (throwable != null) {
+			writer.attribute("stack_trace", throwable.getExtendedStackTraceAsString());
+		}
+		writer.objectEnd();
+		writer.newLine();
+		return writer.finish();
+	}
+
+	private static void addMdc(LogEvent event, JsonWriter writer) {
+		ReadOnlyStringMap contextData = event.getContextData();
+		if (contextData == null) {
+			return;
+		}
+		Map<String, String> mdc = contextData.toMap();
+		if (CollectionUtils.isEmpty(mdc)) {
+			return;
+		}
+		mdc.forEach(writer::attribute);
+	}
+
+	private void addMarkers(LogEvent event, JsonWriter writer) {
+		Set<String> markers = getMarkers(event);
+		if (CollectionUtils.isEmpty(markers)) {
+			return;
+		}
+		writer.attribute("tags", markers);
+	}
+
+	private Set<String> getMarkers(LogEvent event) {
+		if (event.getMarker() == null) {
+			return Collections.emptySet();
+		}
+		Set<String> result = new HashSet<>();
+		addMarker(result, event.getMarker());
+		return result;
+	}
+
+	private void addMarker(Set<String> result, org.apache.logging.log4j.Marker marker) {
+		if (marker == null) {
+			return;
+		}
+		result.add(marker.getName());
+		if (marker.hasParents()) {
+			for (org.apache.logging.log4j.Marker parent : marker.getParents()) {
+				addMarker(result, parent);
+			}
+		}
+	}
+
+}

@@ -16,54 +16,50 @@
 
 package org.springframework.boot.logging.structured;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.Set;
-
 /**
- * A log event.
+ * Metadata about the application.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public interface LogEvent {
+public class ApplicationMetadata {
 
-	Instant getTimestamp();
+	private final Long pid;
 
-	String getLevel();
+	private final String name;
 
-	int getLevelValue();
+	private final String version;
 
-	String getThreadName();
+	private final String environment;
 
-	String getLoggerName();
+	private final String nodeName;
 
-	String getFormattedMessage();
+	public ApplicationMetadata(Long pid, String name, String version, String environment, String nodeName) {
+		this.pid = pid;
+		this.name = name;
+		this.version = version;
+		this.environment = environment;
+		this.nodeName = nodeName;
+	}
 
-	boolean hasThrowable();
+	public Long getPid() {
+		return this.pid;
+	}
 
-	String getThrowableClassName();
+	public String getName() {
+		return this.name;
+	}
 
-	String getThrowableMessage();
+	public String getVersion() {
+		return this.version;
+	}
 
-	String getThrowableStackTraceAsString();
+	public String getEnvironment() {
+		return this.environment;
+	}
 
-	Map<String, Object> getKeyValuePairs();
-
-	Map<String, String> getMdc();
-
-	Set<String> getMarkers();
-
-	Long getPid();
-
-	// TODO: Rename to application name
-	String getServiceName();
-
-	// TODO: Rename to application version
-	String getServiceVersion();
-
-	String getServiceEnvironment();
-
-	String getServiceNodeName();
+	public String getNodeName() {
+		return this.nodeName;
+	}
 
 }

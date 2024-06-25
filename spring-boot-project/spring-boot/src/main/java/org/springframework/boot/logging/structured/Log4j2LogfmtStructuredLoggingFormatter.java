@@ -16,55 +16,53 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.apache.logging.log4j.util.ReadOnlyStringMap;
+
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * <a href="https://brandur.org/logfmt">Logfmt logging format</a>.
  *
  * @author Moritz Halbritter
+ * @since 3.4.0
  */
-class LogfmtStructuredLoggingFormat implements StructuredLoggingFormat {
-
-	@Override
-	public String getId() {
-		return "logfmt";
-	}
+public class Log4j2LogfmtStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
 
 	@Override
 	public String format(LogEvent event) {
 		KeyValueWriter writer = new KeyValueWriter();
-		OffsetDateTime time = OffsetDateTime.ofInstant(event.getTimestamp(), ZoneId.systemDefault());
+		Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
+			.plusNanos(event.getInstant().getNanoOfMillisecond());
+		OffsetDateTime time = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
 		writer.attribute("time", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-		writer.attribute("level", event.getLevel());
-		writer.attribute("msg", event.getFormattedMessage());
+		writer.attribute("level", event.getLevel().name());
+		writer.attribute("msg", event.getMessage().getFormattedMessage());
 		writer.attribute("logger", event.getLoggerName());
 		addMdc(event, writer);
-		addKeyValuePairs(event, writer);
-		if (event.hasThrowable()) {
-			writer.attribute("exception_class", event.getThrowableClassName());
-			writer.attribute("exception_msg", event.getThrowableMessage());
-			writer.attribute("error", event.getThrowableStackTraceAsString());
+		ThrowableProxy throwable = event.getThrownProxy();
+		if (throwable != null) {
+			writer.attribute("exception_class", throwable.getThrowable().getClass().getName());
+			writer.attribute("exception_msg", throwable.getMessage());
+			writer.attribute("error", throwable.getExtendedStackTraceAsString());
 		}
 		writer.newLine();
 		return writer.finish();
 	}
 
-	private void addKeyValuePairs(LogEvent event, KeyValueWriter writer) {
-		Map<String, Object> keyValuePairs = event.getKeyValuePairs();
-		if (CollectionUtils.isEmpty(keyValuePairs)) {
+	private static void addMdc(LogEvent event, KeyValueWriter writer) {
+		ReadOnlyStringMap contextData = event.getContextData();
+		if (contextData == null) {
 			return;
 		}
-		keyValuePairs.forEach((key, value) -> writer.attribute(key, ObjectUtils.nullSafeToString(value)));
-	}
-
-	private static void addMdc(LogEvent event, KeyValueWriter writer) {
-		Map<String, String> mdc = event.getMdc();
+		Map<String, String> mdc = contextData.toMap();
 		if (CollectionUtils.isEmpty(mdc)) {
 			return;
 		}

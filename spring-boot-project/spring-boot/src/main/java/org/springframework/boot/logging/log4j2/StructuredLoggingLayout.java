@@ -17,13 +17,7 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.nio.charset.Charset;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.Node;
@@ -31,189 +25,41 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
-import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.logging.structured.StructuredLoggingFormat;
-import org.springframework.boot.logging.structured.StructuredLoggingFormats;
+import org.springframework.boot.logging.structured.ApplicationMetadata;
+import org.springframework.boot.logging.structured.Log4j2EcsStructuredLoggingFormatter;
+import org.springframework.boot.logging.structured.Log4j2LogfmtStructuredLoggingFormatter;
+import org.springframework.boot.logging.structured.Log4j2LogstashStructuredLoggingFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link Layout} which writes log events in structured format.
  *
  * @author Moritz Halbritter
- * @since 3.4.0
- * @see StructuredLoggingFormat
+ * @see StructuredLoggingFormatter
  */
 @Plugin(name = "StructuredLoggingLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE)
-public class StructuredLoggingLayout extends AbstractStringLayout {
+final class StructuredLoggingLayout extends AbstractStringLayout {
 
-	private final StructuredLoggingFormat format;
+	private final StructuredLoggingFormatter<LogEvent> format;
 
-	private final Long pid;
-
-	private final String serviceName;
-
-	private final String serviceVersion;
-
-	private final String serviceNodeName;
-
-	private final String serviceEnvironment;
-
-	private final boolean logMdc;
-
-	public StructuredLoggingLayout(StructuredLoggingFormat format, Charset charset, Long pid, String serviceName,
-			String serviceVersion, String serviceNodeName, String serviceEnvironment, boolean logMdc) {
+	private StructuredLoggingLayout(StructuredLoggingFormatter<LogEvent> format, Charset charset) {
 		super(charset);
 		Assert.notNull(format, "Format must not be null");
 		this.format = format;
-		this.pid = pid;
-		this.serviceName = serviceName;
-		this.serviceVersion = serviceVersion;
-		this.serviceNodeName = serviceNodeName;
-		this.serviceEnvironment = serviceEnvironment;
-		this.logMdc = logMdc;
 	}
 
 	@Override
 	public String toSerializable(LogEvent event) {
-		return this.format.format(new Log4jLogEventAdapter(event));
+		return this.format.format(event);
 	}
 
 	@PluginBuilderFactory
 	static StructuredLoggingLayout.Builder newBuilder() {
 		return new StructuredLoggingLayout.Builder();
-	}
-
-	private final class Log4jLogEventAdapter implements org.springframework.boot.logging.structured.LogEvent {
-
-		private final LogEvent event;
-
-		Log4jLogEventAdapter(LogEvent event) {
-			this.event = event;
-		}
-
-		@Override
-		public Instant getTimestamp() {
-			org.apache.logging.log4j.core.time.Instant instant = this.event.getInstant();
-			return Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
-		}
-
-		@Override
-		public String getLevel() {
-			return this.event.getLevel().name();
-		}
-
-		@Override
-		public int getLevelValue() {
-			return this.event.getLevel().intLevel();
-		}
-
-		@Override
-		public String getThreadName() {
-			return this.event.getThreadName();
-		}
-
-		@Override
-		public String getLoggerName() {
-			return this.event.getLoggerName();
-		}
-
-		@Override
-		public String getFormattedMessage() {
-			return this.event.getMessage().getFormattedMessage();
-		}
-
-		@Override
-		public boolean hasThrowable() {
-			return this.event.getThrown() != null;
-		}
-
-		@Override
-		public String getThrowableClassName() {
-			return this.event.getThrown().getClass().getName();
-		}
-
-		@Override
-		public String getThrowableMessage() {
-			return this.event.getThrown().getMessage();
-		}
-
-		@Override
-		public String getThrowableStackTraceAsString() {
-			return this.event.getThrownProxy().getExtendedStackTraceAsString();
-		}
-
-		@Override
-		public Map<String, Object> getKeyValuePairs() {
-			return Collections.emptyMap();
-		}
-
-		@Override
-		public Map<String, String> getMdc() {
-			if (!StructuredLoggingLayout.this.logMdc) {
-				return Collections.emptyMap();
-			}
-			ReadOnlyStringMap mdc = this.event.getContextData();
-			if (mdc == null || mdc.isEmpty()) {
-				return Collections.emptyMap();
-			}
-			Map<String, String> map = mdc.toMap();
-			if (CollectionUtils.isEmpty(map)) {
-				return Collections.emptyMap();
-			}
-			return map;
-		}
-
-		@Override
-		public Set<String> getMarkers() {
-			if (this.event.getMarker() == null) {
-				return Collections.emptySet();
-			}
-			Set<String> result = new HashSet<>();
-			addMarker(result, this.event.getMarker());
-			return result;
-		}
-
-		private void addMarker(Set<String> result, Marker marker) {
-			if (marker == null) {
-				return;
-			}
-			result.add(marker.getName());
-			if (marker.hasParents()) {
-				for (Marker parent : marker.getParents()) {
-					addMarker(result, parent);
-				}
-			}
-		}
-
-		@Override
-		public Long getPid() {
-			return StructuredLoggingLayout.this.pid;
-		}
-
-		@Override
-		public String getServiceName() {
-			return StructuredLoggingLayout.this.serviceName;
-		}
-
-		@Override
-		public String getServiceVersion() {
-			return StructuredLoggingLayout.this.serviceVersion;
-		}
-
-		@Override
-		public String getServiceEnvironment() {
-			return StructuredLoggingLayout.this.serviceEnvironment;
-		}
-
-		@Override
-		public String getServiceNodeName() {
-			return StructuredLoggingLayout.this.serviceNodeName;
-		}
-
 	}
 
 	static final class Builder implements org.apache.logging.log4j.core.util.Builder<StructuredLoggingLayout> {
@@ -239,30 +85,40 @@ public class StructuredLoggingLayout extends AbstractStringLayout {
 		@PluginBuilderAttribute
 		private String serviceEnvironment;
 
-		@PluginBuilderAttribute
-		private boolean logMdc;
-
 		@Override
 		public StructuredLoggingLayout build() {
-			StructuredLoggingFormat format = createFormat();
-			return new StructuredLoggingLayout(format, Charset.forName(this.charset), this.pid, this.serviceName,
-					this.serviceVersion, this.serviceNodeName, this.serviceEnvironment, this.logMdc);
+			ApplicationMetadata metadata = new ApplicationMetadata(this.pid, this.serviceName, this.serviceVersion,
+					this.serviceEnvironment, this.serviceNodeName);
+			StructuredLoggingFormatter<LogEvent> format = createFormat(this.format, metadata);
+			return new StructuredLoggingLayout(format, Charset.forName(this.charset));
 		}
 
-		private StructuredLoggingFormat createFormat() {
-			StructuredLoggingFormats formats = StructuredLoggingFormats.loadFromSpringFactories();
-			StructuredLoggingFormat commonFormat = formats.get(this.format);
+		@SuppressWarnings("unchecked")
+		private StructuredLoggingFormatter<LogEvent> createFormat(String format, ApplicationMetadata metadata) {
+			StructuredLoggingFormatter<LogEvent> commonFormat = getCommonFormat(format, metadata);
 			if (commonFormat != null) {
 				return commonFormat;
 			}
-			else if (ClassUtils.isPresent(this.format, null)) {
-				return BeanUtils.instantiateClass(ClassUtils.resolveClassName(this.format, null),
-						StructuredLoggingFormat.class);
+			else if (ClassUtils.isPresent(format, null)) {
+				StructuredLoggingFormatter<LogEvent> structuredLoggingFormatter = BeanUtils
+					.instantiateClass(ClassUtils.resolveClassName(format, null), StructuredLoggingFormatter.class);
+				// TODO MH: Check if generic is LogEvent
+				// TODO MH: Inject ApplicationMetadata?
+				return structuredLoggingFormatter;
 			}
 			else {
 				throw new IllegalArgumentException(
-						"Unknown format '%s'. Common formats are: %s".formatted(this.format, formats.getFormats()));
+						"Unknown format '%s'. Common formats are: ecs, logfmt, logstash".formatted(format));
 			}
+		}
+
+		private StructuredLoggingFormatter<LogEvent> getCommonFormat(String format, ApplicationMetadata metadata) {
+			return switch (format) {
+				case "ecs" -> new Log4j2EcsStructuredLoggingFormatter(metadata);
+				case "logstash" -> new Log4j2LogstashStructuredLoggingFormatter();
+				case "logfmt" -> new Log4j2LogfmtStructuredLoggingFormatter();
+				default -> null;
+			};
 		}
 
 	}
