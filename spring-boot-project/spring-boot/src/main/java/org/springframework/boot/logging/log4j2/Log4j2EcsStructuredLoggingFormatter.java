@@ -23,8 +23,8 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
+import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;

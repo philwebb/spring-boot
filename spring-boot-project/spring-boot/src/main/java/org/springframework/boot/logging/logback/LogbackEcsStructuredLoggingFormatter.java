@@ -24,8 +24,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.event.KeyValuePair;
 
+import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.structured;
+package org.springframework.boot.json;
 
 /**
  * Writes JSON.
@@ -22,7 +22,6 @@ package org.springframework.boot.logging.structured;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-// TODO MH: Move to JSON package
 public class JsonWriter {
 
 	private final StringBuilder stringBuilder;
