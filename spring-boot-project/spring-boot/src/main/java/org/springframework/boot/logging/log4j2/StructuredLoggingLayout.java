@@ -30,9 +30,7 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.Log4j2EcsStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.Log4j2LogfmtStructuredLoggingFormatter;
-import org.springframework.boot.logging.structured.Log4j2LogstashStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
