@@ -28,9 +28,7 @@ import ch.qos.logback.core.encoder.EncoderBase;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.LogbackEcsStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.LogbackLogfmtStructuredLoggingFormatter;
-import org.springframework.boot.logging.structured.LogbackLogstashStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;

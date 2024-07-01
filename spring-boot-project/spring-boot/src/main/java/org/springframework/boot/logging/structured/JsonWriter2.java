@@ -197,6 +197,16 @@ public class JsonWriter2 {
 	}
 
 	/**
+	 * Writes a new line.
+	 * @return this for method chaining
+	 */
+	public JsonWriter2 newLine() {
+		removeTrailingComma();
+		this.stringBuilder.append('\n');
+		return this;
+	}
+
+	/**
 	 * Generates a JSON string.
 	 * @return the JSON string
 	 */
