@@ -30,7 +30,6 @@ import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.Log4j2LogfmtStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
@@ -105,7 +104,7 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 			}
 			else {
 				throw new IllegalArgumentException(
-						"Unknown format '%s'. Common formats are: ecs, logfmt, logstash".formatted(format));
+						"Unknown format '%s'. Common formats are: ecs, logstash".formatted(format));
 			}
 		}
 
@@ -113,7 +112,6 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 			return switch (format) {
 				case "ecs" -> new Log4j2EcsStructuredLoggingFormatter(metadata);
 				case "logstash" -> new Log4j2LogstashStructuredLoggingFormatter();
-				case "logfmt" -> new Log4j2LogfmtStructuredLoggingFormatter();
 				default -> null;
 			};
 		}
@@ -130,6 +128,7 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 
 		@SuppressWarnings("unchecked")
 		StructuredLoggingFormatter<LogEvent> create(Class<?> clazz) {
+			// TODO MH: Use Instantiator class
 			Constructor<?> constructor = BeanUtils.getResolvableConstructor(clazz);
 			Object[] arguments = new Object[constructor.getParameterCount()];
 			int index = 0;

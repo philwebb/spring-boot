@@ -44,8 +44,8 @@ public class CustomStructuredLoggingFormatter implements StructuredLoggingFormat
 	public String format(ILoggingEvent event) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("epoch=").append(event.getInstant().toEpochMilli());
-		if (this.metadata.getPid() != null) {
-			stringBuilder.append(" pid=").append(this.metadata.getPid());
+		if (this.metadata.pid() != null) {
+			stringBuilder.append(" pid=").append(this.metadata.pid());
 		}
 		stringBuilder.append(" msg=\"").append(event.getFormattedMessage()).append('"');
 		IThrowableProxy throwable = event.getThrowableProxy();
