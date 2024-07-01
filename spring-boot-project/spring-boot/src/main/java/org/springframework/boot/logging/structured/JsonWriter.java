@@ -55,6 +55,24 @@ public class JsonWriter {
 	}
 
 	/**
+	 * Writes an empty object.
+	 * @return this for method chaining
+	 */
+	public JsonWriter object() {
+		return object(() -> {
+		});
+	}
+
+	/**
+	 * Writes an empty array.
+	 * @return this for method chaining
+	 */
+	public JsonWriter array() {
+		return array(() -> {
+		});
+	}
+
+	/**
 	 * Writes a new array.
 	 * @param nested the {@link Runnable} to populate the array
 	 * @return this for method chaining
@@ -64,6 +82,76 @@ public class JsonWriter {
 		nested.run();
 		removeTrailingComma();
 		this.stringBuilder.append("],");
+		return this;
+	}
+
+	/**
+	 * Writes a new string array.
+	 * @param values the strings to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter stringArray(String... values) {
+		array(() -> {
+			for (String value : values) {
+				string(value);
+			}
+		});
+		return this;
+	}
+
+	/**
+	 * Writes a new string array.
+	 * @param values the strings to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter stringArray(Iterable<String> values) {
+		array(() -> {
+			for (String value : values) {
+				string(value);
+			}
+		});
+		return this;
+	}
+
+	/**
+	 * Writes a new number array.
+	 * @param values the numbers to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter numberArray(double... values) {
+		array(() -> {
+			for (double value : values) {
+				number(value);
+			}
+		});
+		return this;
+	}
+
+	/**
+	 * Writes a new number array.
+	 * @param values the numbers to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter numberArray(long... values) {
+		array(() -> {
+			for (long value : values) {
+				number(value);
+			}
+		});
+		return this;
+	}
+
+	/**
+	 * Writes a new boolean array.
+	 * @param values the booleans to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter boolArray(boolean... values) {
+		array(() -> {
+			for (boolean value : values) {
+				bool(value);
+			}
+		});
 		return this;
 	}
 
