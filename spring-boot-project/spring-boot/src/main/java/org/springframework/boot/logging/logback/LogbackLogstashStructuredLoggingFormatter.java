@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.structured;
+package org.springframework.boot.logging.logback;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -32,6 +32,8 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
+import org.springframework.boot.logging.structured.JsonWriter2;
+import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -39,64 +41,67 @@ import org.springframework.util.ObjectUtils;
  * Logstash logging format.
  *
  * @author Moritz Halbritter
- * @since 3.4.0
  */
-public class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
+class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
 
 	private final ThrowableProxyConverter throwableProxyConverter;
 
-	public LogbackLogstashStructuredLoggingFormatter(ThrowableProxyConverter throwableProxyConverter) {
+	LogbackLogstashStructuredLoggingFormatter(ThrowableProxyConverter throwableProxyConverter) {
 		this.throwableProxyConverter = throwableProxyConverter;
 	}
 
 	@Override
 	public String format(ILoggingEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.objectStart();
-		OffsetDateTime time = OffsetDateTime.ofInstant(event.getInstant(), ZoneId.systemDefault());
-		writer.attribute("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-		writer.attribute("@version", "1");
-		writer.attribute("message", event.getFormattedMessage());
-		writer.attribute("logger_name", event.getLoggerName());
-		writer.attribute("thread_name", event.getThreadName());
-		writer.attribute("level", event.getLevel().toString());
-		writer.attribute("level_value", event.getLevel().toInt());
-		addMdc(event, writer);
-		addKeyValuePairs(event, writer);
-		addMarkers(event, writer);
-		IThrowableProxy throwable = event.getThrowableProxy();
-		if (throwable != null) {
-			writer.attribute("stack_trace", this.throwableProxyConverter.convert(event));
-		}
-		writer.objectEnd();
+		JsonWriter2 writer = new JsonWriter2();
+		writer.object(() -> {
+			OffsetDateTime time = OffsetDateTime.ofInstant(event.getInstant(), ZoneId.systemDefault());
+			writer.stringMember("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
+			writer.stringMember("@version", "1");
+			writer.stringMember("message", event.getFormattedMessage());
+			writer.stringMember("logger_name", event.getLoggerName());
+			writer.stringMember("thread_name", event.getThreadName());
+			writer.stringMember("level", event.getLevel().toString());
+			writer.numberMember("level_value", event.getLevel().toInt());
+			addMdc(event, writer);
+			addKeyValuePairs(event, writer);
+			addMarkers(event, writer);
+			IThrowableProxy throwable = event.getThrowableProxy();
+			if (throwable != null) {
+				writer.stringMember("stack_trace", this.throwableProxyConverter.convert(event));
+			}
+		});
 		writer.newLine();
-		return writer.finish();
+		return writer.toJson();
 	}
 
-	private void addKeyValuePairs(ILoggingEvent event, JsonWriter writer) {
+	private void addKeyValuePairs(ILoggingEvent event, JsonWriter2 writer) {
 		List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
 		if (CollectionUtils.isEmpty(keyValuePairs)) {
 			return;
 		}
 		for (KeyValuePair pair : keyValuePairs) {
-			writer.attribute(pair.key, ObjectUtils.nullSafeToString(pair.value));
+			writer.stringMember(pair.key, ObjectUtils.nullSafeToString(pair.value));
 		}
 	}
 
-	private static void addMdc(ILoggingEvent event, JsonWriter writer) {
+	private static void addMdc(ILoggingEvent event, JsonWriter2 writer) {
 		Map<String, String> mdc = event.getMDCPropertyMap();
 		if (CollectionUtils.isEmpty(mdc)) {
 			return;
 		}
-		mdc.forEach(writer::attribute);
+		mdc.forEach(writer::stringMember);
 	}
 
-	private void addMarkers(ILoggingEvent event, JsonWriter writer) {
+	private void addMarkers(ILoggingEvent event, JsonWriter2 writer) {
 		Set<String> markers = getMarkers(event);
 		if (CollectionUtils.isEmpty(markers)) {
 			return;
 		}
-		writer.attribute("tags", markers);
+		writer.member("tags", () -> writer.array(() -> {
+			for (String marker : markers) {
+				writer.string(marker);
+			}
+		}));
 	}
 
 	private Set<String> getMarkers(ILoggingEvent event) {
