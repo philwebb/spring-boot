@@ -82,11 +82,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		if (CollectionUtils.isEmpty(markers)) {
 			return;
 		}
-		writer.member("tags", () -> writer.array(() -> {
-			for (String marker : markers) {
-				writer.string(marker);
-			}
-		}));
+		writer.member("tags", () -> writer.stringArray(markers));
 	}
 
 	private Set<String> getMarkers(LogEvent event) {

@@ -16,6 +16,12 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JsonWriterTests {
 
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
 	@Test
 	void object() {
 		JsonWriter writer = new JsonWriter();
@@ -35,8 +43,7 @@ class JsonWriterTests {
 			.boolMember("c", true)
 			.stringMember("d", "d")
 			.member("e", null));
-		String json = writer.toJson();
-		assertThat(json).isEqualTo("""
+		assertThatJson(writer).isEqualTo("""
 				{"a":1,"b":2.0,"c":true,"d":"d","e":null}
 				""".trim());
 	}
@@ -44,10 +51,10 @@ class JsonWriterTests {
 	@Test
 	void nestedObject() {
 		JsonWriter writer = new JsonWriter();
-		writer.object(() -> writer.numberMember("a", 1).object(() -> writer.numberMember("b", 2)));
-		String json = writer.toJson();
-		assertThat(json).isEqualTo("""
-				{"a":1,{"b":2}}
+		writer.object(
+				() -> writer.numberMember("a", 1).member("b", () -> writer.object(() -> writer.numberMember("c", 2))));
+		assertThatJson(writer).isEqualTo("""
+				{"a":1,"b":{"c":2}}
 				""".trim());
 	}
 
@@ -55,9 +62,53 @@ class JsonWriterTests {
 	void array() {
 		JsonWriter writer = new JsonWriter();
 		writer.array(() -> writer.string("a").string("b").string("c"));
-		String json = writer.toJson();
-		assertThat(json).isEqualTo("""
+		assertThatJson(writer).isEqualTo("""
 				["a","b","c"]
+				""".trim());
+	}
+
+	@Test
+	void stringArray() {
+		JsonWriter writer = new JsonWriter();
+		writer.stringArray("a", "b", "c");
+		assertThatJson(writer).isEqualTo("""
+				["a","b","c"]
+				""".trim());
+	}
+
+	@Test
+	void stringArrayFromIterable() {
+		JsonWriter writer = new JsonWriter();
+		writer.stringArray(List.of("a", "b", "c"));
+		assertThatJson(writer).isEqualTo("""
+				["a","b","c"]
+				""".trim());
+	}
+
+	@Test
+	void doubleArray() {
+		JsonWriter writer = new JsonWriter();
+		writer.numberArray(1.0, 2.0, 3.0);
+		assertThatJson(writer).isEqualTo("""
+				[1.0,2.0,3.0]
+				""".trim());
+	}
+
+	@Test
+	void longArray() {
+		JsonWriter writer = new JsonWriter();
+		writer.numberArray(1, 2, 3);
+		assertThatJson(writer).isEqualTo("""
+				[1,2,3]
+				""".trim());
+	}
+
+	@Test
+	void booleanArray() {
+		JsonWriter writer = new JsonWriter();
+		writer.boolArray(true, false, true);
+		assertThatJson(writer).isEqualTo("""
+				[true,false,true]
 				""".trim());
 	}
 
@@ -66,8 +117,7 @@ class JsonWriterTests {
 		JsonWriter writer = new JsonWriter();
 		writer.array(
 				() -> writer.object(() -> writer.stringMember("a", "1")).object(() -> writer.stringMember("b", "2")));
-		String json = writer.toJson();
-		assertThat(json).isEqualTo("""
+		assertThatJson(writer).isEqualTo("""
 				[{"a":"1"},{"b":"2"}]
 				""".trim());
 	}
@@ -76,8 +126,7 @@ class JsonWriterTests {
 	void nullArray() {
 		JsonWriter writer = new JsonWriter();
 		writer.array(() -> writer.string(null).string(null));
-		String json = writer.toJson();
-		assertThat(json).isEqualTo("""
+		assertThatJson(writer).isEqualTo("""
 				[null,null]
 				""".trim());
 	}
@@ -86,10 +135,35 @@ class JsonWriterTests {
 	void escapeString() {
 		JsonWriter writer = new JsonWriter();
 		writer.string("\"\\/\b\f\n\r\t\u0000\u001F");
-		String json = writer.toJson();
-		assertThat(json).isEqualTo("""
+		assertThatJson(writer).isEqualTo("""
 				"\\"\\\\\\/\\b\\f\\n\\r\\t\\u0000\\u001F"
 				""".trim());
+	}
+
+	@Test
+	void newLine() {
+		JsonWriter writer = new JsonWriter();
+		writer.newLine();
+		assertThatJson(writer).isEqualTo("\n");
+	}
+
+	@Test
+	void newLineWithContent() {
+		JsonWriter writer = new JsonWriter();
+		writer.object();
+		writer.newLine();
+		assertThatJson(writer).isEqualTo("{}\n");
+	}
+
+	private static AbstractStringAssert<?> assertThatJson(JsonWriter writer) {
+		String json = writer.toJson();
+		try {
+			OBJECT_MAPPER.readTree(json);
+		}
+		catch (JsonProcessingException ex) {
+			Assertions.fail("Invalid JSON produced: '%s'".formatted(json), ex);
+		}
+		return assertThat(json);
 	}
 
 }
