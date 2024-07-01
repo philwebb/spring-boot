@@ -14,7 +14,7 @@ equivalent to the programmatic initialization performed by Boot
 			<format>${CONSOLE_LOG_STRUCTURED}</format>
 			<charset>${CONSOLE_LOG_CHARSET}</charset>
 			<pid>${PID:--1}</pid>
-			<serviceName>${APPLICATION_NAME:-}</serviceName>
+			<serviceName>${VERBATIM_APPLICATION_NAME:-}</serviceName>
 		</encoder>
 	</appender>
 </included>

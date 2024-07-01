@@ -11,7 +11,7 @@
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
 			<Select>
 				<SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED">
-					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}" pid="${sys:PID:--1}" serviceName="${sys:APPLICATION_NAME:-}"/>
+					<StructuredLoggingLayout format="${sys:CONSOLE_LOG_STRUCTURED}" charset="${sys:CONSOLE_LOG_CHARSET}" pid="${sys:PID:--1}" serviceName="${sys:VERBATIM_APPLICATION_NAME:-}"/>
 				</SystemPropertyArbiter>
 				<DefaultArbiter>
 					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>

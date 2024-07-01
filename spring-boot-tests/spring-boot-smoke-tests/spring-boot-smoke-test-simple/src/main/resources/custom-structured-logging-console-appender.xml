@@ -7,7 +7,7 @@
 			<format>${CONSOLE_LOG_STRUCTURED}</format>
 			<charset>${CONSOLE_LOG_CHARSET}</charset>
 			<pid>${PID:--1}</pid>
-			<serviceName>${APPLICATION_NAME:-}</serviceName>
+			<serviceName>${VERBATIM_APPLICATION_NAME:-}</serviceName>
 			<serviceVersion>1.0.0-SNAPSHOT</serviceVersion>
 			<serviceNodeName>node-1</serviceNodeName>
 			<serviceEnvironment>production</serviceEnvironment>
