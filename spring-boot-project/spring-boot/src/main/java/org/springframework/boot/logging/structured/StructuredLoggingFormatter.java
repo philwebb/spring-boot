@@ -17,12 +17,18 @@
 package org.springframework.boot.logging.structured;
 
 /**
- * Structured logging format.
+ * Formats a log event to a structured log message.
+ * <p>
+ * Implementing classes can declare the following parameter types in the constructor:
+ * <p>
+ * - {@link ApplicationMetadata}
  *
  * @param <E> the log event type
  * @author Moritz Halbritter
  * @since 3.4.0
  */
+// TODO MH: Specialize for Logback and Log4j2? That would give us a place to document
+// supported constructor parameters which are not common to all formats.
 public interface StructuredLoggingFormatter<E> {
 
 	/**
