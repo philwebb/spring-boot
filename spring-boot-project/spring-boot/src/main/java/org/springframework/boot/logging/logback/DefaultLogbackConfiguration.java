@@ -161,7 +161,7 @@ class DefaultLogbackConfiguration {
 		encoder.setFormat(format);
 		encoder.setCharset(charset);
 		encoder.setPid(resolveLong(config, "${PID:--1}"));
-		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
+		String applicationName = resolve(config, "${VERBATIM_APPLICATION_NAME:-}");
 		if (StringUtils.hasLength(applicationName)) {
 			encoder.setServiceName(applicationName);
 		}

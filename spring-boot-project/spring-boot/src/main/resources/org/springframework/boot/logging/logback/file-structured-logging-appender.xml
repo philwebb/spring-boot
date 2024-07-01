@@ -14,7 +14,7 @@ equivalent to the programmatic initialization performed by Boot
 			<format>${FILE_LOG_STRUCTURED}</format>
 			<charset>${FILE_LOG_CHARSET}</charset>
 			<pid>${PID:--1}</pid>
-			<serviceName>${APPLICATION_NAME:-}</serviceName>
+			<serviceName>${VERBATIM_APPLICATION_NAME:-}</serviceName>
 		</encoder>
 		<file>${LOG_FILE}</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
