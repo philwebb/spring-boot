@@ -22,6 +22,7 @@ package org.springframework.boot.json;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
+// TODO MH: Make the DSL so that you can't create invalid JSON
 public class JsonWriter {
 
 	private final StringBuilder stringBuilder;

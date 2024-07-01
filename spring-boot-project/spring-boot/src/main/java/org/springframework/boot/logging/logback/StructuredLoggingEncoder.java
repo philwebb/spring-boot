@@ -28,7 +28,6 @@ import ch.qos.logback.core.encoder.EncoderBase;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.LogbackLogfmtStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
@@ -114,14 +113,13 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 				.create(ClassUtils.resolveClassName(format, null));
 		}
 		throw new IllegalArgumentException(
-				"Unknown format '%s'. Supported common formats are: ecs, logfmt, logstash".formatted(format));
+				"Unknown format '%s'. Supported common formats are: ecs, logstash".formatted(format));
 	}
 
 	private StructuredLoggingFormatter<ILoggingEvent> getCommonFormatter(String format, ApplicationMetadata metadata) {
 		return switch (format) {
 			case "ecs" -> new LogbackEcsStructuredLoggingFormatter(this.throwableProxyConverter, metadata);
 			case "logstash" -> new LogbackLogstashStructuredLoggingFormatter(this.throwableProxyConverter);
-			case "logfmt" -> new LogbackLogfmtStructuredLoggingFormatter(this.throwableProxyConverter);
 			default -> null;
 		};
 	}
@@ -160,6 +158,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 		@SuppressWarnings("unchecked")
 		StructuredLoggingFormatter<ILoggingEvent> create(Class<?> clazz) {
+			// TODO MH: Use Instantiator class
 			Constructor<?> constructor = BeanUtils.getResolvableConstructor(clazz);
 			Object[] arguments = new Object[constructor.getParameterCount()];
 			int index = 0;

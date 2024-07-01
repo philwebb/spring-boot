@@ -26,8 +26,11 @@ package org.springframework.boot.logging;
 public enum LoggingSystemProperty {
 
 	/**
-	 * Logging system property for the application name that should be logged.
+	 * Logging system property for the application name that should be logged. It contains
+	 * spaces and brackets for ...
 	 */
+	// TODO MH: Can we get rid of this? Do the formatting with spaces and braces in a
+	// converter?
 	APPLICATION_NAME("LOGGED_APPLICATION_NAME"),
 
 	/**

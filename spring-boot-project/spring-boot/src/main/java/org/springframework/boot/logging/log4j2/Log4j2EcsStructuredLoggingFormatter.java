@@ -51,21 +51,21 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 				.plusNanos(event.getInstant().getNanoOfMillisecond());
 			writer.stringMember("@timestamp", instant.toString());
 			writer.stringMember("log.level", event.getLevel().name());
-			if (this.metadata.getPid() != null) {
-				writer.numberMember("process.pid", this.metadata.getPid());
+			if (this.metadata.pid() != null) {
+				writer.numberMember("process.pid", this.metadata.pid());
 			}
 			writer.stringMember("process.thread.name", event.getThreadName());
-			if (StringUtils.hasLength(this.metadata.getName())) {
-				writer.stringMember("service.name", this.metadata.getName());
+			if (StringUtils.hasLength(this.metadata.name())) {
+				writer.stringMember("service.name", this.metadata.name());
 			}
-			if (StringUtils.hasLength(this.metadata.getVersion())) {
-				writer.stringMember("service.version", this.metadata.getVersion());
+			if (StringUtils.hasLength(this.metadata.version())) {
+				writer.stringMember("service.version", this.metadata.version());
 			}
-			if (StringUtils.hasLength(this.metadata.getEnvironment())) {
-				writer.stringMember("service.environment", this.metadata.getEnvironment());
+			if (StringUtils.hasLength(this.metadata.environment())) {
+				writer.stringMember("service.environment", this.metadata.environment());
 			}
-			if (StringUtils.hasLength(this.metadata.getNodeName())) {
-				writer.stringMember("service.node.name", this.metadata.getNodeName());
+			if (StringUtils.hasLength(this.metadata.nodeName())) {
+				writer.stringMember("service.node.name", this.metadata.nodeName());
 			}
 			writer.stringMember("log.logger", event.getLoggerName());
 			writer.stringMember("message", event.getMessage().getFormattedMessage());

@@ -19,47 +19,13 @@ package org.springframework.boot.logging.structured;
 /**
  * Metadata about the application.
  *
+ * @param pid the process ID of the application
+ * @param name the application name
+ * @param version the version of the application
+ * @param environment the name of the environment the application is running in
+ * @param nodeName the name of the node the application is running on
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public class ApplicationMetadata {
-
-	private final Long pid;
-
-	private final String name;
-
-	private final String version;
-
-	private final String environment;
-
-	private final String nodeName;
-
-	public ApplicationMetadata(Long pid, String name, String version, String environment, String nodeName) {
-		this.pid = pid;
-		this.name = name;
-		this.version = version;
-		this.environment = environment;
-		this.nodeName = nodeName;
-	}
-
-	public Long getPid() {
-		return this.pid;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public String getVersion() {
-		return this.version;
-	}
-
-	public String getEnvironment() {
-		return this.environment;
-	}
-
-	public String getNodeName() {
-		return this.nodeName;
-	}
-
+public record ApplicationMetadata(Long pid, String name, String version, String environment, String nodeName) {
 }
