@@ -20,6 +20,7 @@ import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 
+import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 
 /**
@@ -29,16 +30,23 @@ import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
  */
 public class CustomStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
 
-	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
+	private final ThrowableProxyConverter throwableProxyConverter;
 
-	public CustomStructuredLoggingFormatter() {
-		this.throwableProxyConverter.start();
+	private final ApplicationMetadata metadata;
+
+	public CustomStructuredLoggingFormatter(ApplicationMetadata metadata,
+			ThrowableProxyConverter throwableProxyConverter) {
+		this.metadata = metadata;
+		this.throwableProxyConverter = throwableProxyConverter;
 	}
 
 	@Override
 	public String format(ILoggingEvent event) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("epoch=").append(event.getInstant().toEpochMilli());
+		if (this.metadata.getPid() != null) {
+			stringBuilder.append(" pid=").append(this.metadata.getPid());
+		}
 		stringBuilder.append(" msg=\"").append(event.getFormattedMessage()).append('"');
 		IThrowableProxy throwable = event.getThrowableProxy();
 		if (throwable != null) {

@@ -16,8 +16,10 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -30,6 +32,7 @@ import org.springframework.boot.logging.structured.LogbackEcsStructuredLoggingFo
 import org.springframework.boot.logging.structured.LogbackLogfmtStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.LogbackLogstashStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -44,9 +47,9 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private final ThrowableProxyConverter throwableProxyConverter = new ThrowableProxyConverter();
 
-	private String formatAsString;
+	private String format;
 
-	private StructuredLoggingFormatter<ILoggingEvent> format;
+	private StructuredLoggingFormatter<ILoggingEvent> formatter;
 
 	private Long pid;
 
@@ -66,7 +69,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 	 * @param format the format
 	 */
 	public void setFormat(String format) {
-		this.formatAsString = format;
+		this.format = format;
 	}
 
 	public void setPid(Long pid) {
@@ -95,32 +98,28 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public void start() {
-		Assert.state(this.formatAsString != null, "Format has not been set");
-		this.format = createFormat(this.formatAsString);
+		Assert.state(this.format != null, "Format has not been set");
+		this.formatter = createFormatter(this.format);
 		super.start();
 		this.throwableProxyConverter.start();
 	}
 
-	@SuppressWarnings("unchecked")
-	private StructuredLoggingFormatter<ILoggingEvent> createFormat(String format) {
+	private StructuredLoggingFormatter<ILoggingEvent> createFormatter(String format) {
 		ApplicationMetadata metadata = new ApplicationMetadata(this.pid, this.serviceName, this.serviceVersion,
 				this.serviceEnvironment, this.serviceNodeName);
-		StructuredLoggingFormatter<ILoggingEvent> commonFormat = getCommonFormat(format, metadata);
-		if (commonFormat != null) {
-			return commonFormat;
+		StructuredLoggingFormatter<ILoggingEvent> commonFormatter = getCommonFormatter(format, metadata);
+		if (commonFormatter != null) {
+			return commonFormatter;
 		}
 		if (ClassUtils.isPresent(format, null)) {
-			StructuredLoggingFormatter<ILoggingEvent> structuredLoggingFormatter = BeanUtils
-				.instantiateClass(ClassUtils.resolveClassName(format, null), StructuredLoggingFormatter.class);
-			// TODO MH: Check if generic is ILoggingEvent
-			// TODO MH: Inject ApplicationMetadata?
-			return structuredLoggingFormatter;
+			return new CustomStructuredLoggingFormatterFactory(metadata, this.throwableProxyConverter)
+				.create(ClassUtils.resolveClassName(format, null));
 		}
 		throw new IllegalArgumentException(
 				"Unknown format '%s'. Supported common formats are: ecs, logfmt, logstash".formatted(format));
 	}
 
-	private StructuredLoggingFormatter<ILoggingEvent> getCommonFormat(String format, ApplicationMetadata metadata) {
+	private StructuredLoggingFormatter<ILoggingEvent> getCommonFormatter(String format, ApplicationMetadata metadata) {
 		return switch (format) {
 			case "ecs" -> new LogbackEcsStructuredLoggingFormatter(this.throwableProxyConverter, metadata);
 			case "logstash" -> new LogbackLogstashStructuredLoggingFormatter(this.throwableProxyConverter);
@@ -142,13 +141,57 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
-		String line = this.format.format(event);
+		String line = this.formatter.format(event);
 		return line.getBytes(this.charset);
 	}
 
 	@Override
 	public byte[] footerBytes() {
 		return null;
+	}
+
+	private static class CustomStructuredLoggingFormatterFactory {
+
+		private final Map<Class<?>, Object> supportedConstructorParameters;
+
+		CustomStructuredLoggingFormatterFactory(ApplicationMetadata metadata,
+				ThrowableProxyConverter throwableProxyConverter) {
+			this.supportedConstructorParameters = Map.of(ApplicationMetadata.class, metadata,
+					ThrowableProxyConverter.class, throwableProxyConverter);
+		}
+
+		@SuppressWarnings("unchecked")
+		StructuredLoggingFormatter<ILoggingEvent> create(Class<?> clazz) {
+			Constructor<?> constructor = BeanUtils.getResolvableConstructor(clazz);
+			Object[] arguments = new Object[constructor.getParameterCount()];
+			int index = 0;
+			for (Class<?> parameterType : constructor.getParameterTypes()) {
+				Object argument = this.supportedConstructorParameters.get(parameterType);
+				Assert.notNull(argument, () -> "Unable to supply value to %s constructor argument of type %s"
+					.formatted(clazz.getName(), parameterType.getName()));
+				arguments[index] = argument;
+				index++;
+			}
+			Object formatter = BeanUtils.instantiateClass(constructor, arguments);
+			checkType(formatter);
+			checkTypeArgument(formatter);
+			return (StructuredLoggingFormatter<ILoggingEvent>) formatter;
+		}
+
+		private static void checkType(Object formatter) {
+			Assert.isInstanceOf(StructuredLoggingFormatter.class, formatter,
+					() -> "Formatter must be of type %s, but was %s"
+						.formatted(StructuredLoggingFormatter.class.getName(), formatter.getClass().getName()));
+		}
+
+		private static void checkTypeArgument(Object formatter) {
+			Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(formatter.getClass(),
+					StructuredLoggingFormatter.class);
+			Assert.isTrue(typeArgument == ILoggingEvent.class,
+					() -> "Type argument of %s must be %s, but was %s".formatted(formatter.getClass().getName(),
+							ILoggingEvent.class.getName(), (typeArgument != null) ? typeArgument.getName() : "null"));
+		}
+
 	}
 
 }
