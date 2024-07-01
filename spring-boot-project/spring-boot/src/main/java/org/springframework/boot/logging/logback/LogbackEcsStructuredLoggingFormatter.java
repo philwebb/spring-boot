@@ -25,7 +25,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.JsonWriter2;
+import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -51,7 +51,7 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 
 	@Override
 	public String format(ILoggingEvent event) {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.object(() -> {
 			writer.stringMember("@timestamp", event.getInstant().toString());
 			writer.stringMember("log.level", event.getLevel().toString());
@@ -87,7 +87,7 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		return writer.toJson();
 	}
 
-	private void addKeyValuePairs(ILoggingEvent event, JsonWriter2 writer) {
+	private void addKeyValuePairs(ILoggingEvent event, JsonWriter writer) {
 		List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
 		if (CollectionUtils.isEmpty(keyValuePairs)) {
 			return;
@@ -97,7 +97,7 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		}
 	}
 
-	private static void addMdc(ILoggingEvent event, JsonWriter2 writer) {
+	private static void addMdc(ILoggingEvent event, JsonWriter writer) {
 		Map<String, String> mdc = event.getMDCPropertyMap();
 		if (CollectionUtils.isEmpty(mdc)) {
 			return;
