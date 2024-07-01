@@ -16,7 +16,9 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -32,6 +34,7 @@ import org.springframework.boot.logging.structured.Log4j2EcsStructuredLoggingFor
 import org.springframework.boot.logging.structured.Log4j2LogfmtStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.Log4j2LogstashStructuredLoggingFormatter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -44,17 +47,17 @@ import org.springframework.util.ClassUtils;
 @Plugin(name = "StructuredLoggingLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE)
 final class StructuredLoggingLayout extends AbstractStringLayout {
 
-	private final StructuredLoggingFormatter<LogEvent> format;
+	private final StructuredLoggingFormatter<LogEvent> formatter;
 
-	private StructuredLoggingLayout(StructuredLoggingFormatter<LogEvent> format, Charset charset) {
+	private StructuredLoggingLayout(StructuredLoggingFormatter<LogEvent> formatter, Charset charset) {
 		super(charset);
-		Assert.notNull(format, "Format must not be null");
-		this.format = format;
+		Assert.notNull(formatter, "Formatter must not be null");
+		this.formatter = formatter;
 	}
 
 	@Override
 	public String toSerializable(LogEvent event) {
-		return this.format.format(event);
+		return this.formatter.format(event);
 	}
 
 	@PluginBuilderFactory
@@ -89,22 +92,18 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 		public StructuredLoggingLayout build() {
 			ApplicationMetadata metadata = new ApplicationMetadata(this.pid, this.serviceName, this.serviceVersion,
 					this.serviceEnvironment, this.serviceNodeName);
-			StructuredLoggingFormatter<LogEvent> format = createFormat(this.format, metadata);
+			StructuredLoggingFormatter<LogEvent> format = createFormatter(this.format, metadata);
 			return new StructuredLoggingLayout(format, Charset.forName(this.charset));
 		}
 
-		@SuppressWarnings("unchecked")
-		private StructuredLoggingFormatter<LogEvent> createFormat(String format, ApplicationMetadata metadata) {
-			StructuredLoggingFormatter<LogEvent> commonFormat = getCommonFormat(format, metadata);
-			if (commonFormat != null) {
-				return commonFormat;
+		private StructuredLoggingFormatter<LogEvent> createFormatter(String format, ApplicationMetadata metadata) {
+			StructuredLoggingFormatter<LogEvent> commonFormatter = getCommonFormatter(format, metadata);
+			if (commonFormatter != null) {
+				return commonFormatter;
 			}
 			else if (ClassUtils.isPresent(format, null)) {
-				StructuredLoggingFormatter<LogEvent> structuredLoggingFormatter = BeanUtils
-					.instantiateClass(ClassUtils.resolveClassName(format, null), StructuredLoggingFormatter.class);
-				// TODO MH: Check if generic is LogEvent
-				// TODO MH: Inject ApplicationMetadata?
-				return structuredLoggingFormatter;
+				return new CustomStructuredLoggingFormatterFactory(metadata)
+					.create(ClassUtils.resolveClassName(format, null));
 			}
 			else {
 				throw new IllegalArgumentException(
@@ -112,13 +111,55 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 			}
 		}
 
-		private StructuredLoggingFormatter<LogEvent> getCommonFormat(String format, ApplicationMetadata metadata) {
+		private StructuredLoggingFormatter<LogEvent> getCommonFormatter(String format, ApplicationMetadata metadata) {
 			return switch (format) {
 				case "ecs" -> new Log4j2EcsStructuredLoggingFormatter(metadata);
 				case "logstash" -> new Log4j2LogstashStructuredLoggingFormatter();
 				case "logfmt" -> new Log4j2LogfmtStructuredLoggingFormatter();
 				default -> null;
 			};
+		}
+
+	}
+
+	private static class CustomStructuredLoggingFormatterFactory {
+
+		private final Map<Class<?>, Object> supportedConstructorParameters;
+
+		CustomStructuredLoggingFormatterFactory(ApplicationMetadata metadata) {
+			this.supportedConstructorParameters = Map.of(ApplicationMetadata.class, metadata);
+		}
+
+		@SuppressWarnings("unchecked")
+		StructuredLoggingFormatter<LogEvent> create(Class<?> clazz) {
+			Constructor<?> constructor = BeanUtils.getResolvableConstructor(clazz);
+			Object[] arguments = new Object[constructor.getParameterCount()];
+			int index = 0;
+			for (Class<?> parameterType : constructor.getParameterTypes()) {
+				Object argument = this.supportedConstructorParameters.get(parameterType);
+				Assert.notNull(argument, () -> "Unable to supply value to %s constructor argument of type %s"
+					.formatted(clazz.getName(), parameterType.getName()));
+				arguments[index] = argument;
+				index++;
+			}
+			Object formatter = BeanUtils.instantiateClass(constructor, arguments);
+			checkType(formatter);
+			checkTypeArgument(formatter);
+			return (StructuredLoggingFormatter<LogEvent>) formatter;
+		}
+
+		private static void checkType(Object formatter) {
+			Assert.isInstanceOf(StructuredLoggingFormatter.class, formatter,
+					() -> "Formatter must be of type %s, but was %s"
+						.formatted(StructuredLoggingFormatter.class.getName(), formatter.getClass().getName()));
+		}
+
+		private static void checkTypeArgument(Object formatter) {
+			Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(formatter.getClass(),
+					StructuredLoggingFormatter.class);
+			Assert.isTrue(typeArgument == LogEvent.class,
+					() -> "Type argument of %s must be %s, but was %s".formatted(formatter.getClass().getName(),
+							LogEvent.class.getName(), (typeArgument != null) ? typeArgument.getName() : "null"));
 		}
 
 	}
