@@ -24,7 +24,7 @@ import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.logging.structured.ApplicationMetadata;
-import org.springframework.boot.logging.structured.JsonWriter2;
+import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -45,7 +45,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 
 	@Override
 	public String format(LogEvent event) {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.object(() -> {
 			Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
 				.plusNanos(event.getInstant().getNanoOfMillisecond());
@@ -82,7 +82,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 		return writer.toJson();
 	}
 
-	private static void addMdc(LogEvent event, JsonWriter2 writer) {
+	private static void addMdc(LogEvent event, JsonWriter writer) {
 		ReadOnlyStringMap contextData = event.getContextData();
 		if (contextData == null) {
 			return;

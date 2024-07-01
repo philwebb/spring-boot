@@ -32,7 +32,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
-import org.springframework.boot.logging.structured.JsonWriter2;
+import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -52,7 +52,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 
 	@Override
 	public String format(ILoggingEvent event) {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.object(() -> {
 			OffsetDateTime time = OffsetDateTime.ofInstant(event.getInstant(), ZoneId.systemDefault());
 			writer.stringMember("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
@@ -74,7 +74,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		return writer.toJson();
 	}
 
-	private void addKeyValuePairs(ILoggingEvent event, JsonWriter2 writer) {
+	private void addKeyValuePairs(ILoggingEvent event, JsonWriter writer) {
 		List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
 		if (CollectionUtils.isEmpty(keyValuePairs)) {
 			return;
@@ -84,7 +84,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		}
 	}
 
-	private static void addMdc(ILoggingEvent event, JsonWriter2 writer) {
+	private static void addMdc(ILoggingEvent event, JsonWriter writer) {
 		Map<String, String> mdc = event.getMDCPropertyMap();
 		if (CollectionUtils.isEmpty(mdc)) {
 			return;
@@ -92,7 +92,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		mdc.forEach(writer::stringMember);
 	}
 
-	private void addMarkers(ILoggingEvent event, JsonWriter2 writer) {
+	private void addMarkers(ILoggingEvent event, JsonWriter writer) {
 		Set<String> markers = getMarkers(event);
 		if (CollectionUtils.isEmpty(markers)) {
 			return;

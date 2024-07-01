@@ -29,7 +29,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
-import org.springframework.boot.logging.structured.JsonWriter2;
+import org.springframework.boot.logging.structured.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 
@@ -42,7 +42,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 
 	@Override
 	public String format(LogEvent event) {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.object(() -> {
 			Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
 				.plusNanos(event.getInstant().getNanoOfMillisecond());
@@ -65,7 +65,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		return writer.toJson();
 	}
 
-	private static void addMdc(LogEvent event, JsonWriter2 writer) {
+	private static void addMdc(LogEvent event, JsonWriter writer) {
 		ReadOnlyStringMap contextData = event.getContextData();
 		if (contextData == null) {
 			return;
@@ -77,7 +77,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		mdc.forEach(writer::stringMember);
 	}
 
-	private void addMarkers(LogEvent event, JsonWriter2 writer) {
+	private void addMarkers(LogEvent event, JsonWriter writer) {
 		Set<String> markers = getMarkers(event);
 		if (CollectionUtils.isEmpty(markers)) {
 			return;

@@ -17,145 +17,211 @@
 package org.springframework.boot.logging.structured;
 
 /**
- * Writer for JSON formats.
+ * Writes JSON.
  *
  * @author Moritz Halbritter
+ * @since 3.4.0
  */
-class JsonWriter {
+public class JsonWriter {
 
 	private final StringBuilder stringBuilder;
 
-	JsonWriter() {
+	/**
+	 * Creates a new instance.
+	 */
+	public JsonWriter() {
 		this(new StringBuilder());
 	}
 
-	JsonWriter(StringBuilder stringBuilder) {
+	/**
+	 * Creates a new instance, using the given {@link StringBuilder}.
+	 * @param stringBuilder the string builder to use
+	 */
+	public JsonWriter(StringBuilder stringBuilder) {
 		this.stringBuilder = stringBuilder;
 	}
 
 	/**
-	 * Writes object start.
-	 * @return self for method chaining
+	 * Writes a new object.
+	 * @param nested the {@link Runnable} to populate the object
+	 * @return this for method chaining
 	 */
-	JsonWriter objectStart() {
-		this.stringBuilder.append("{");
-		return this;
-	}
-
-	/**
-	 * Writes object end.
-	 * @return self for method chaining
-	 */
-	JsonWriter objectEnd() {
+	public JsonWriter object(Runnable nested) {
+		this.stringBuilder.append('{');
+		nested.run();
 		removeTrailingComma();
-		this.stringBuilder.append("}");
+		this.stringBuilder.append("},");
 		return this;
 	}
 
 	/**
-	 * Writes an attribute.
-	 * @param key the key of the attribute
-	 * @param value the value of the attribute
-	 * @return self for method chaining
+	 * Writes a new array.
+	 * @param nested the {@link Runnable} to populate the array
+	 * @return this for method chaining
 	 */
-	JsonWriter attribute(String key, String value) {
-		writeKey(key);
-		writeString(value);
-		this.stringBuilder.append(',');
-		return this;
-	}
-
-	/**
-	 * Writes an attribute.
-	 * @param key the key of the attribute
-	 * @param value the value of the attribute
-	 * @return self for method chaining
-	 */
-	JsonWriter attribute(String key, long value) {
-		writeKey(key);
-		writeLong(value);
-		this.stringBuilder.append(',');
-		return this;
-	}
-
-	/**
-	 * Writes an attribute with multiple string values.
-	 * @param key the key of the attribute
-	 * @param values the values of the attribute
-	 * @return self for method chaining
-	 */
-	JsonWriter attribute(String key, Iterable<String> values) {
-		writeKey(key);
+	public JsonWriter array(Runnable nested) {
 		this.stringBuilder.append('[');
-		for (String value : values) {
-			writeString(value);
-			this.stringBuilder.append(',');
-		}
+		nested.run();
 		removeTrailingComma();
 		this.stringBuilder.append("],");
 		return this;
 	}
 
-	JsonWriter newLine() {
+	/**
+	 * Writes a string.
+	 * @param value the string to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter string(String value) {
+		if (value == null) {
+			this.stringBuilder.append("null,");
+		}
+		else {
+			this.stringBuilder.append('"');
+			appendWithEscaping(value);
+			this.stringBuilder.append('"').append(',');
+		}
+		return this;
+	}
+
+	private void appendWithEscaping(String value) {
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			switch (c) {
+				case '"' -> this.stringBuilder.append("\\\"");
+				case '\\' -> this.stringBuilder.append("\\\\");
+				case '/' -> this.stringBuilder.append("\\/");
+				case '\b' -> this.stringBuilder.append("\\b");
+				case '\f' -> this.stringBuilder.append("\\f");
+				case '\n' -> this.stringBuilder.append("\\n");
+				case '\r' -> this.stringBuilder.append("\\r");
+				case '\t' -> this.stringBuilder.append("\\t");
+				default -> {
+					if (Character.isISOControl(c)) {
+						this.stringBuilder.append("\\u");
+						this.stringBuilder.append(String.format("%04X", (int) c));
+					}
+					else {
+						this.stringBuilder.append(c);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Writes a number.
+	 * @param value the number to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter number(double value) {
+		this.stringBuilder.append(value).append(',');
+		return this;
+	}
+
+	/**
+	 * Writes a number.
+	 * @param value the number to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter number(long value) {
+		this.stringBuilder.append(value).append(',');
+		return this;
+	}
+
+	/**
+	 * Writes a boolean.
+	 * @param value the boolean to write
+	 * @return this for method chaining
+	 */
+	public JsonWriter bool(boolean value) {
+		this.stringBuilder.append(value).append(',');
+		return this;
+	}
+
+	/**
+	 * Writes a string object member.
+	 * @param key the name of the key
+	 * @param value the string value
+	 * @return this for method chaining
+	 */
+	public JsonWriter stringMember(String key, String value) {
+		return member(key, () -> string(value));
+	}
+
+	/**
+	 * Writes a number object member.
+	 * @param key the name of the key
+	 * @param value the number value
+	 * @return this for method chaining
+	 */
+	public JsonWriter numberMember(String key, double value) {
+		return member(key, () -> number(value));
+	}
+
+	/**
+	 * Writes a number object member.
+	 * @param key the name of the key
+	 * @param value the number value
+	 * @return this for method chaining
+	 */
+	public JsonWriter numberMember(String key, long value) {
+		return member(key, () -> number(value));
+	}
+
+	/**
+	 * Writes a boolean object member.
+	 * @param key the name of the key
+	 * @param value the boolean value
+	 * @return this for method chaining
+	 */
+	public JsonWriter boolMember(String key, boolean value) {
+		return member(key, () -> bool(value));
+	}
+
+	/**
+	 * Writes an object member.
+	 * @param key the name of the key
+	 * @param nested the {@link Runnable} to populate the object
+	 * @return this for method chaining
+	 */
+	public JsonWriter member(String key, Runnable nested) {
+		this.stringBuilder.append('"').append(key).append('"').append(':');
+		if (nested == null) {
+			this.stringBuilder.append("null,");
+		}
+		else {
+			nested.run();
+		}
+		return this;
+	}
+
+	/**
+	 * Writes a new line.
+	 * @return this for method chaining
+	 */
+	public JsonWriter newLine() {
 		removeTrailingComma();
 		this.stringBuilder.append('\n');
 		return this;
+	}
+
+	/**
+	 * Generates a JSON string.
+	 * @return the JSON string
+	 */
+	public String toJson() {
+		removeTrailingComma();
+		return this.stringBuilder.toString();
 	}
 
 	private void removeTrailingComma() {
 		if (this.stringBuilder.isEmpty()) {
 			return;
 		}
-		if (this.stringBuilder.charAt(this.stringBuilder.length() - 1) == ',') {
+		char lastChar = this.stringBuilder.charAt(this.stringBuilder.length() - 1);
+		if (lastChar == ',') {
 			this.stringBuilder.setLength(this.stringBuilder.length() - 1);
-		}
-	}
-
-	private void writeLong(long value) {
-		this.stringBuilder.append(value);
-	}
-
-	private void writeString(String value) {
-		if (value == null) {
-			this.stringBuilder.append("null");
-		}
-		else {
-			this.stringBuilder.append('"');
-			escape(value, this.stringBuilder);
-			this.stringBuilder.append('"');
-		}
-	}
-
-	private void writeKey(String key) {
-		this.stringBuilder.append('"');
-		escape(key, this.stringBuilder);
-		this.stringBuilder.append("\":");
-	}
-
-	String finish() {
-		removeTrailingComma();
-		return this.stringBuilder.toString();
-	}
-
-	private static void escape(String text, StringBuilder output) {
-		for (int i = 0; i < text.length(); i++) {
-			char c = text.charAt(i);
-			escape(c, output);
-		}
-	}
-
-	private static void escape(char c, StringBuilder output) {
-		// TODO MH: More JSON \\u escaping, see co.elastic.logging.JsonUtils#quoteAsString
-		switch (c) {
-			case '"' -> output.append("\\\"");
-			case '\\' -> output.append("\\\\");
-			case '/' -> output.append("\\/");
-			case '\b' -> output.append("\\b");
-			case '\f' -> output.append("\\f");
-			case '\n' -> output.append("\\n");
-			case '\r' -> output.append("\\r");
-			case '\t' -> output.append("\\t");
-			default -> output.append(c);
 		}
 	}
 

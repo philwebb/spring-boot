@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JsonWriter2}.
+ * Tests for {@link JsonWriter}.
  *
  * @author Moritz Halbritter
  */
-class JsonWriter2Tests {
+class JsonWriterTests {
 
 	@Test
 	void object() {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.object(() -> writer.numberMember("a", 1)
 			.numberMember("b", 2.0)
 			.boolMember("c", true)
@@ -43,7 +43,7 @@ class JsonWriter2Tests {
 
 	@Test
 	void nestedObject() {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.object(() -> writer.numberMember("a", 1).object(() -> writer.numberMember("b", 2)));
 		String json = writer.toJson();
 		assertThat(json).isEqualTo("""
@@ -53,7 +53,7 @@ class JsonWriter2Tests {
 
 	@Test
 	void array() {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.array(() -> writer.string("a").string("b").string("c"));
 		String json = writer.toJson();
 		assertThat(json).isEqualTo("""
@@ -63,7 +63,7 @@ class JsonWriter2Tests {
 
 	@Test
 	void arrayWithObjects() {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.array(
 				() -> writer.object(() -> writer.stringMember("a", "1")).object(() -> writer.stringMember("b", "2")));
 		String json = writer.toJson();
@@ -74,7 +74,7 @@ class JsonWriter2Tests {
 
 	@Test
 	void nullArray() {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.array(() -> writer.string(null).string(null));
 		String json = writer.toJson();
 		assertThat(json).isEqualTo("""
@@ -84,7 +84,7 @@ class JsonWriter2Tests {
 
 	@Test
 	void escapeString() {
-		JsonWriter2 writer = new JsonWriter2();
+		JsonWriter writer = new JsonWriter();
 		writer.string("\"\\/\b\f\n\r\t\u0000\u001F");
 		String json = writer.toJson();
 		assertThat(json).isEqualTo("""
