@@ -22,6 +22,7 @@ package org.springframework.boot.logging.structured;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
+// TODO MH: Move to JSON package
 public class JsonWriter {
 
 	private final StringBuilder stringBuilder;
