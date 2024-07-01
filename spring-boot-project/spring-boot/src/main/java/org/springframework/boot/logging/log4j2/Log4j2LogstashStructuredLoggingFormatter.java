@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.structured;
+package org.springframework.boot.logging.log4j2;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -29,42 +29,43 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
+import org.springframework.boot.logging.structured.JsonWriter2;
+import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
 
 /**
  * Logstash logging format.
  *
  * @author Moritz Halbritter
- * @since 3.4.0
  */
-public class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
+class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
 
 	@Override
 	public String format(LogEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.objectStart();
-		Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
-			.plusNanos(event.getInstant().getNanoOfMillisecond());
-		OffsetDateTime time = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
-		writer.attribute("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-		writer.attribute("@version", "1");
-		writer.attribute("message", event.getMessage().getFormattedMessage());
-		writer.attribute("logger_name", event.getLoggerName());
-		writer.attribute("thread_name", event.getThreadName());
-		writer.attribute("level", event.getLevel().name());
-		writer.attribute("level_value", event.getLevel().intLevel());
-		addMdc(event, writer);
-		addMarkers(event, writer);
-		ThrowableProxy throwable = event.getThrownProxy();
-		if (throwable != null) {
-			writer.attribute("stack_trace", throwable.getExtendedStackTraceAsString());
-		}
-		writer.objectEnd();
+		JsonWriter2 writer = new JsonWriter2();
+		writer.object(() -> {
+			Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
+				.plusNanos(event.getInstant().getNanoOfMillisecond());
+			OffsetDateTime time = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
+			writer.stringMember("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
+			writer.stringMember("@version", "1");
+			writer.stringMember("message", event.getMessage().getFormattedMessage());
+			writer.stringMember("logger_name", event.getLoggerName());
+			writer.stringMember("thread_name", event.getThreadName());
+			writer.stringMember("level", event.getLevel().name());
+			writer.numberMember("level_value", event.getLevel().intLevel());
+			addMdc(event, writer);
+			addMarkers(event, writer);
+			ThrowableProxy throwable = event.getThrownProxy();
+			if (throwable != null) {
+				writer.stringMember("stack_trace", throwable.getExtendedStackTraceAsString());
+			}
+		});
 		writer.newLine();
-		return writer.finish();
+		return writer.toJson();
 	}
 
-	private static void addMdc(LogEvent event, JsonWriter writer) {
+	private static void addMdc(LogEvent event, JsonWriter2 writer) {
 		ReadOnlyStringMap contextData = event.getContextData();
 		if (contextData == null) {
 			return;
@@ -73,15 +74,19 @@ public class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggi
 		if (CollectionUtils.isEmpty(mdc)) {
 			return;
 		}
-		mdc.forEach(writer::attribute);
+		mdc.forEach(writer::stringMember);
 	}
 
-	private void addMarkers(LogEvent event, JsonWriter writer) {
+	private void addMarkers(LogEvent event, JsonWriter2 writer) {
 		Set<String> markers = getMarkers(event);
 		if (CollectionUtils.isEmpty(markers)) {
 			return;
 		}
-		writer.attribute("tags", markers);
+		writer.member("tags", () -> writer.array(() -> {
+			for (String marker : markers) {
+				writer.string(marker);
+			}
+		}));
 	}
 
 	private Set<String> getMarkers(LogEvent event) {
