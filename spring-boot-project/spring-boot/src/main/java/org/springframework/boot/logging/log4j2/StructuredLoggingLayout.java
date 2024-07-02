@@ -138,7 +138,8 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 			}
 			else {
 				throw new IllegalArgumentException(
-						"Unknown format '%s'. Common formats are: ecs, logstash".formatted(format));
+						"Unknown format '%s'. Supported common formats are: ecs, logstash: ecs, logstash"
+							.formatted(format));
 			}
 		}
 

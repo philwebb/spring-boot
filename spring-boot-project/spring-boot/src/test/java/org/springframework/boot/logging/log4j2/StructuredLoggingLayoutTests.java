@@ -91,7 +91,7 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 	void shouldFailIfNoCommonOrCustomFormatIsSet() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> StructuredLoggingLayout.newBuilder().setFormat("does-not-exist").build())
-			.withMessageContaining("Unknown format 'does-not-exist'. Common formats are: ecs, logstash");
+			.withMessageContaining("Unknown format 'does-not-exist'. Supported common formats are: ecs, logstash");
 	}
 
 	static final class CustomLog4j2StructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
