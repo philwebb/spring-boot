@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -66,7 +67,7 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 		private String format;
 
 		@PluginBuilderAttribute
-		private String charset;
+		private String charset = StandardCharsets.UTF_8.name();
 
 		@PluginBuilderAttribute
 		private Long pid;
@@ -82,6 +83,41 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 
 		@PluginBuilderAttribute
 		private String serviceEnvironment;
+
+		Builder setFormat(String format) {
+			this.format = format;
+			return this;
+		}
+
+		Builder setCharset(String charset) {
+			this.charset = charset;
+			return this;
+		}
+
+		Builder setPid(Long pid) {
+			this.pid = pid;
+			return this;
+		}
+
+		Builder setServiceName(String serviceName) {
+			this.serviceName = serviceName;
+			return this;
+		}
+
+		Builder setServiceVersion(String serviceVersion) {
+			this.serviceVersion = serviceVersion;
+			return this;
+		}
+
+		Builder setServiceNodeName(String serviceNodeName) {
+			this.serviceNodeName = serviceNodeName;
+			return this;
+		}
+
+		Builder setServiceEnvironment(String serviceEnvironment) {
+			this.serviceEnvironment = serviceEnvironment;
+			return this;
+		}
 
 		@Override
 		public StructuredLoggingLayout build() {

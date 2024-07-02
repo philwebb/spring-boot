@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class Log4j2LogstashStructuredLoggingFormatterTests extends AbstractStructuredLoggingFormatterTests {
+class Log4j2LogstashStructuredLoggingFormatterTests extends AbstractStructuredLoggingTests {
 
 	private Log4j2LogstashStructuredLoggingFormatter formatter;
 

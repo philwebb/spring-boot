@@ -27,16 +27,14 @@ import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.assertj.core.api.Assertions;
 
-import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Abstract base class for {@link StructuredLoggingFormatter} tests.
+ * Abstract base class for structured formatting tests.
  *
  * @author Moritz Halbritter
  */
-abstract class AbstractStructuredLoggingFormatterTests {
+abstract class AbstractStructuredLoggingTests {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
