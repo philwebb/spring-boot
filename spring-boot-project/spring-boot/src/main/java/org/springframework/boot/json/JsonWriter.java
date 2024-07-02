@@ -29,45 +29,53 @@ public interface JsonWriter<T> {
 
 	WritableJson write(T instance);
 
-	static <T> JsonWriter<T> of(Consumer<JsonNotation<T>> dunno) {
+	static <T> JsonWriter<T> of(Consumer<Members<T>> consumer) {
 		return null;
 	}
 
-	static <T> JsonWriter<T> of(BiConsumer<JsonNotation<T>, T> dunno) {
+	static <T, E> JsonWriter<T> using(BiConsumer<T, ValueWriter> consumer) {
 		return null;
 	}
 
-	interface JsonNotation<T> {
+	interface Members<T> {
 
-		<V> JsonMember<V> add(String key, Supplier<V> valueSupplier);
+		<V> Member<V> add(String key, Supplier<V> supplier);
 
-		<V> JsonMember<V> add(String key, Function<T, V> valueExtractor);
+		<V> Member<V> add(String key, Function<T, V> extractor);
 
-		<V> JsonMember<V> add(String key, V value);
+		<V> Member<V> add(String key, V value);
 
-		<V> JsonMember<V> add(Supplier<V> supplier);
+		<V> Member<V> add(Supplier<V> supplier);
 
-		<V> JsonMember<V> add(Function<T, V> extractor);
+		<V> Member<V> add(Function<T, V> extractor);
 
-		<V> JsonMember<V> add(V value);
+		<V> Member<V> add(V value);
 
 	}
 
-	interface JsonMember<T> {
+	interface Member<T> {
 
-		JsonMember<T> when(Predicate<T> predicate);
+		Member<T> when(Predicate<T> predicate);
 
-		JsonMember<T> whenNot(Predicate<T> predicate);
+		Member<T> whenNot(Predicate<T> predicate);
 
-		JsonMember<T> whenNotNull();
+		Member<T> whenNotNull();
 
-		JsonMember<T> whenHasLength();
+		Member<T> whenHasLength();
 
-		<R> JsonMember<R> as(Function<T, R> adapter);
+		<R> Member<R> as(Function<T, R> adapter);
 
-		JsonMember<T> asJson(Consumer<JsonNotation<T>> dunno); // FIXME what return type?
+		void asJson(Consumer<Members<T>> dunno);
 
-		JsonMember<T> asJson(BiConsumer<JsonNotation<T>, T> dunno); // FIXME what return
+		void asWrittenJson(BiConsumer<T, ValueWriter> dunno);
+
+	}
+
+	interface ValueWriter {
+
+		<V> void write(String key, V value);
+
+		<V> void write(V value);
 
 	}
 

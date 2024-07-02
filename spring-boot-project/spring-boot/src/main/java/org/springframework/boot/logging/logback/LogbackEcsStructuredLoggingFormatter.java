@@ -58,12 +58,46 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		});
 
 
-		write.from(event::getInstant).whenHasLength().to("@timestamp");
-		write.from(event::getLevel).to("log.level");
+		loggingEvent.add(event::getInstant).whenHasLength().to("@timestamp");
+		loggingEvent.add(event::getLevel).to("log.level");
 		// write.from(...).as(..).to("field");
-		write.from(event::getThrowableProxy).asJson((throwable) -> {
-			throwableProxy.member(throwableProxy::getClassName).to("")
+		json.add(event::getThrowableProxy).asJson((throwableProxy) -> {
+			throwableProxy.add(throwableProxy::getClassName).to("error.type");
 		});
+
+
+		new JsonWriter(ILoggingEvent.class, (json) -> {
+
+		}).write(event);
+
+
+
+		JsonWriter<ILoggingEven> writer = JsonWriter.create(this::loggingEventJson).write(event);
+
+		JsonWriter.with().create(this::loggingEventJson);
+
+		JsonWriter.of(this::loggingEventJson).with();
+
+		return JsonWriter.of((json)-> {
+			json.add("foo", event::getInstance); // as when
+			json.add("bar", event::getBar).asJson((barJson)-> ...).onlyWhenHasLength();
+		}).onlyWhenHasLength();
+
+
+
+
+				write(event).toString();
+
+
+
+
+		json.add("@timestamp", event::getInstant).whenHasLength().to();
+		json.add("log.level", event::getLevel);
+		// write.from(...).as(..).to("field");
+		json.add("error.type", event::getThrowableProxy).asJson((throwableProxy) -> {
+			throwableProxy.add(throwableProxy::getClassName).to();
+		});
+
 
 		return writer.write(event).toString();
 
