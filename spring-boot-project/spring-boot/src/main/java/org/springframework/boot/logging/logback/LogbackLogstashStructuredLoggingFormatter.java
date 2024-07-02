@@ -20,11 +20,11 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -104,7 +104,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		if (CollectionUtils.isEmpty(event.getMarkerList())) {
 			return Collections.emptySet();
 		}
-		Set<String> result = new HashSet<>();
+		Set<String> result = new TreeSet<>();
 		for (Marker marker : event.getMarkerList()) {
 			addMarker(result, marker);
 		}

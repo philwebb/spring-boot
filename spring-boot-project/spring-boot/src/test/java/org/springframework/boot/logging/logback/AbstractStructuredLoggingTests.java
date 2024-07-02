@@ -31,7 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
+import org.slf4j.helpers.BasicMarkerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,8 +48,11 @@ abstract class AbstractStructuredLoggingTests {
 
 	private ThrowableProxyConverter throwableProxyConverter;
 
+	private BasicMarkerFactory markerFactory;
+
 	@BeforeEach
 	void setUp() {
+		this.markerFactory = new BasicMarkerFactory();
 		this.throwableProxyConverter = new ThrowableProxyConverter();
 		this.throwableProxyConverter.start();
 	}
@@ -55,6 +60,10 @@ abstract class AbstractStructuredLoggingTests {
 	@AfterEach
 	void tearDown() {
 		this.throwableProxyConverter.stop();
+	}
+
+	protected Marker getMarker(String name) {
+		return this.markerFactory.getDetachedMarker(name);
 	}
 
 	protected ThrowableProxyConverter getThrowableProxyConverter() {
