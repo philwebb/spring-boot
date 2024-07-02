@@ -16,9 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -28,9 +26,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
+import org.springframework.boot.util.Instantiator;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -120,35 +118,19 @@ final class StructuredLoggingLayout extends AbstractStringLayout {
 
 	private static class CustomStructuredLoggingFormatterFactory {
 
-		private final Map<Class<?>, Object> supportedConstructorParameters;
+		private final ApplicationMetadata metadata;
 
 		CustomStructuredLoggingFormatterFactory(ApplicationMetadata metadata) {
-			this.supportedConstructorParameters = Map.of(ApplicationMetadata.class, metadata);
+			this.metadata = metadata;
 		}
 
-		@SuppressWarnings("unchecked")
 		StructuredLoggingFormatter<LogEvent> create(Class<?> clazz) {
-			// TODO MH: Use Instantiator class
-			Constructor<?> constructor = BeanUtils.getResolvableConstructor(clazz);
-			Object[] arguments = new Object[constructor.getParameterCount()];
-			int index = 0;
-			for (Class<?> parameterType : constructor.getParameterTypes()) {
-				Object argument = this.supportedConstructorParameters.get(parameterType);
-				Assert.notNull(argument, () -> "Unable to supply value to %s constructor argument of type %s"
-					.formatted(clazz.getName(), parameterType.getName()));
-				arguments[index] = argument;
-				index++;
-			}
-			Object formatter = BeanUtils.instantiateClass(constructor, arguments);
-			checkType(formatter);
+			StructuredLoggingFormatter<LogEvent> formatter = new Instantiator<StructuredLoggingFormatter<LogEvent>>(
+					StructuredLoggingFormatter.class,
+					(parameters) -> parameters.add(ApplicationMetadata.class, this.metadata))
+				.instantiateType(clazz);
 			checkTypeArgument(formatter);
-			return (StructuredLoggingFormatter<LogEvent>) formatter;
-		}
-
-		private static void checkType(Object formatter) {
-			Assert.isInstanceOf(StructuredLoggingFormatter.class, formatter,
-					() -> "Formatter must be of type %s, but was %s"
-						.formatted(StructuredLoggingFormatter.class.getName(), formatter.getClass().getName()));
+			return formatter;
 		}
 
 		private static void checkTypeArgument(Object formatter) {

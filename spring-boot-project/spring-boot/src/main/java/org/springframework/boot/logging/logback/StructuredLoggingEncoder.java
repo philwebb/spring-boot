@@ -16,19 +16,17 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
+import org.springframework.boot.util.Instantiator;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -148,37 +146,25 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private static class CustomStructuredLoggingFormatterFactory {
 
-		private final Map<Class<?>, Object> supportedConstructorParameters;
+		private final ApplicationMetadata metadata;
+
+		private final ThrowableProxyConverter throwableProxyConverter;
 
 		CustomStructuredLoggingFormatterFactory(ApplicationMetadata metadata,
 				ThrowableProxyConverter throwableProxyConverter) {
-			this.supportedConstructorParameters = Map.of(ApplicationMetadata.class, metadata,
-					ThrowableProxyConverter.class, throwableProxyConverter);
+			this.metadata = metadata;
+			this.throwableProxyConverter = throwableProxyConverter;
 		}
 
-		@SuppressWarnings("unchecked")
 		StructuredLoggingFormatter<ILoggingEvent> create(Class<?> clazz) {
-			// TODO MH: Use Instantiator class
-			Constructor<?> constructor = BeanUtils.getResolvableConstructor(clazz);
-			Object[] arguments = new Object[constructor.getParameterCount()];
-			int index = 0;
-			for (Class<?> parameterType : constructor.getParameterTypes()) {
-				Object argument = this.supportedConstructorParameters.get(parameterType);
-				Assert.notNull(argument, () -> "Unable to supply value to %s constructor argument of type %s"
-					.formatted(clazz.getName(), parameterType.getName()));
-				arguments[index] = argument;
-				index++;
-			}
-			Object formatter = BeanUtils.instantiateClass(constructor, arguments);
-			checkType(formatter);
+			StructuredLoggingFormatter<ILoggingEvent> formatter = new Instantiator<StructuredLoggingFormatter<ILoggingEvent>>(
+					StructuredLoggingFormatter.class, (parameters) -> {
+						parameters.add(ApplicationMetadata.class, this.metadata);
+						parameters.add(ThrowableProxyConverter.class, this.throwableProxyConverter);
+					})
+				.instantiateType(clazz);
 			checkTypeArgument(formatter);
-			return (StructuredLoggingFormatter<ILoggingEvent>) formatter;
-		}
-
-		private static void checkType(Object formatter) {
-			Assert.isInstanceOf(StructuredLoggingFormatter.class, formatter,
-					() -> "Formatter must be of type %s, but was %s"
-						.formatted(StructuredLoggingFormatter.class.getName(), formatter.getClass().getName()));
+			return formatter;
 		}
 
 		private static void checkTypeArgument(Object formatter) {

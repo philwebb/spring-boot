@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,16 @@ public class Instantiator<T> {
 		return instantiate(types.stream().map(TypeSupplier::forType));
 	}
 
+	/**
+	 * Instantiate the given class, injecting constructor arguments as necessary.
+	 * @param type the type to instantiate
+	 * @return the instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiateType(Class<?> type) {
+		return instantiate(TypeSupplier.forType(type));
+	}
+
 	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
 		return typeSuppliers.map(this::instantiate).sorted(AnnotationAwareOrderComparator.INSTANCE).toList();
 	}
@@ -242,7 +252,7 @@ public class Instantiator<T> {
 				}
 
 				@Override
-				public Class<?> get() throws ClassNotFoundException {
+				public Class<?> get() {
 					return type;
 				}
 
