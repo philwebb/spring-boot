@@ -21,9 +21,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
@@ -89,7 +89,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		if (event.getMarker() == null) {
 			return Collections.emptySet();
 		}
-		Set<String> result = new HashSet<>();
+		Set<String> result = new TreeSet<>();
 		addMarker(result, event.getMarker());
 		return result;
 	}
