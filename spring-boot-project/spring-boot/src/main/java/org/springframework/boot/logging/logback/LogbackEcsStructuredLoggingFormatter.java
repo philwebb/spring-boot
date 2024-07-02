@@ -31,6 +31,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import static org.assertj.core.api.Assertions.as;
+
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
  * format</a>.
@@ -51,6 +53,22 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 
 	@Override
 	public String format(ILoggingEvent event) {
+		JsonWriter<ILoggingEvent> writer = JsonWriter2.of((json)-> {
+			json.add("@timestamp", event::getInstant);
+		});
+
+
+		write.from(event::getInstant).whenHasLength().to("@timestamp");
+		write.from(event::getLevel).to("log.level");
+		// write.from(...).as(..).to("field");
+		write.from(event::getThrowableProxy).asJson((throwable) -> {
+			throwableProxy.member(throwableProxy::getClassName).to("")
+		});
+
+		return writer.write(event).toString();
+
+
+
 		JsonWriter writer = new JsonWriter();
 		writer.object(() -> {
 			writer.stringMember("@timestamp", event.getInstant().toString());

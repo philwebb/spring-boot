@@ -21,13 +21,13 @@ import java.util.Map;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
@@ -45,41 +45,30 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 
 	@Override
 	public String format(LogEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> {
-			Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
-				.plusNanos(event.getInstant().getNanoOfMillisecond());
-			writer.stringMember("@timestamp", instant.toString());
-			writer.stringMember("log.level", event.getLevel().name());
-			if (this.metadata.pid() != null) {
-				writer.numberMember("process.pid", this.metadata.pid());
-			}
-			writer.stringMember("process.thread.name", event.getThreadName());
-			if (StringUtils.hasLength(this.metadata.name())) {
-				writer.stringMember("service.name", this.metadata.name());
-			}
-			if (StringUtils.hasLength(this.metadata.version())) {
-				writer.stringMember("service.version", this.metadata.version());
-			}
-			if (StringUtils.hasLength(this.metadata.environment())) {
-				writer.stringMember("service.environment", this.metadata.environment());
-			}
-			if (StringUtils.hasLength(this.metadata.nodeName())) {
-				writer.stringMember("service.node.name", this.metadata.nodeName());
-			}
-			writer.stringMember("log.logger", event.getLoggerName());
-			writer.stringMember("message", event.getMessage().getFormattedMessage());
-			addMdc(event, writer);
-			ThrowableProxy throwable = event.getThrownProxy();
-			if (throwable != null) {
-				writer.stringMember("error.type", throwable.getThrowable().getClass().getName());
-				writer.stringMember("error.message", throwable.getMessage());
-				writer.stringMember("error.stack_trace", throwable.getExtendedStackTraceAsString());
-			}
-			writer.stringMember("ecs.version", "8.11");
+		JsonWriter<LogEvent> writer = JsonWriter.of((x, y) -> {
+			x.add("@timestamp", event::getInstant)
+				.as((instant) -> Instant.ofEpochMilli(instant.getEpochMillisecond())
+					.plusNanos(instant.getNanoOfMillisecond()));
+			x.add("log.level", () -> event.getLevel().name());
+			x.add("process.pid", this.metadata::pid).whenNotNull();
+			x.add("process.thread.name", event::getThreadName);
+			x.add("service.name", this.metadata::name).whenHasLength();
+			x.add("service.version", this.metadata::version).whenHasLength();
+			x.add("service.environment", this.metadata::environment).whenHasLength();
+			x.add("service.node.name", this.metadata::nodeName).whenHasLength();
+			x.add("log.logger", event::getLoggerName);
+			x.add("message", event::getMessage).as(Message::getFormattedMessage);
+			x.add(event::getContextData)
+				.asJson((xx, contextData) -> contextData.forEach(xx::add))
+				.whenNot(ReadOnlyStringMap::isEmpty);
+			x.add(event::getThrownProxy).asJson((xx) -> {
+				xx.add("error.type", ThrowableProxy::getThrowable).whenNotNull().as((ex) -> ex.getClass().getName());
+				xx.add("error.message", ThrowableProxy::getMessage);
+				xx.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
+			}).whenNotNull();
+			x.add("ecs.version", "8.11");
 		});
-		writer.newLine();
-		return writer.toJson();
+		return writer.write(event).toString(); // FIXME new line?
 	}
 
 	private static void addMdc(LogEvent event, JsonWriter writer) {
