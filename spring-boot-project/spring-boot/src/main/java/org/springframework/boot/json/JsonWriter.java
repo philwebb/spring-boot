@@ -53,6 +53,11 @@ public interface JsonWriter<T> {
 
 		void to(Appendable appendable);
 
+		/**
+		 * @return
+		 */
+		String toStringWithNewLine();
+
 	}
 
 	// FIXME class
@@ -87,7 +92,7 @@ public interface JsonWriter<T> {
 
 		void asJson(Consumer<Members<T>> dunno);
 
-		void asJson(JsonWriter<T> dunno);
+		void asWrittenJson(JsonWriter<T> dunno);
 
 	}
 

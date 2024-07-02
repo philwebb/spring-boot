@@ -54,7 +54,9 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 		members.add("service.node.name", metadata::nodeName).whenHasLength();
 		members.add("log.logger", LogEvent::getLoggerName);
 		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
-		members.add(LogEvent::getContextData).whenNot(ReadOnlyStringMap::isEmpty).asJson(contextJsonDataWriter());
+		members.add(LogEvent::getContextData)
+			.whenNot(ReadOnlyStringMap::isEmpty)
+			.asWrittenJson(contextJsonDataWriter());
 		members.add(LogEvent::getThrownProxy).whenNotNull().asJson(this::throwableProxyJson);
 		members.add("ecs.version", "8.11");
 	}
@@ -79,7 +81,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 
 	@Override
 	public String format(LogEvent event) {
-		return this.writer.write(event).toString(); // FIXME new line?
+		return this.writer.write(event).toStringWithNewLine();
 	}
 
 }

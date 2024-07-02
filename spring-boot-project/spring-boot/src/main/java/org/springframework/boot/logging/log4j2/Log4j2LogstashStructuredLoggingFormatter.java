@@ -54,7 +54,9 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		members.add("thread_name", LogEvent::getThreadName);
 		members.add("level", LogEvent::getLevel).as(Level::name);
 		members.add("level_value", LogEvent::getLevel).as(Level::intLevel);
-		members.add(LogEvent::getContextData).whenNot(ReadOnlyStringMap::isEmpty).asJson(contextJsonDataWriter());
+		members.add(LogEvent::getContextData)
+			.whenNot(ReadOnlyStringMap::isEmpty)
+			.asWrittenJson(contextJsonDataWriter());
 		members.add("tags", LogEvent::getMarker).whenNotNull().as(this::getMarkers);
 		members.add("stack_trace", LogEvent::getThrownProxy)
 			.whenNotNull()
@@ -89,7 +91,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 
 	@Override
 	public String format(LogEvent event) {
-		return this.writer.write(event).toString(); // FIXME new line?
+		return this.writer.write(event).toStringWithNewLine();
 	}
 
 }

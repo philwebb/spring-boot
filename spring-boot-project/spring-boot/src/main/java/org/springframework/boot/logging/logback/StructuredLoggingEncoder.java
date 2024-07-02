@@ -118,7 +118,7 @@ public class StructuredLoggingEncoder extends EncoderBase<ILoggingEvent> {
 
 	private StructuredLoggingFormatter<ILoggingEvent> getCommonFormatter(String format, ApplicationMetadata metadata) {
 		return switch (format) {
-			case "ecs" -> new LogbackEcsStructuredLoggingFormatter(this.throwableProxyConverter, metadata);
+			case "ecs" -> new LogbackEcsStructuredLoggingFormatter(metadata, this.throwableProxyConverter);
 			case "logstash" -> new LogbackLogstashStructuredLoggingFormatter(this.throwableProxyConverter);
 			default -> null;
 		};
