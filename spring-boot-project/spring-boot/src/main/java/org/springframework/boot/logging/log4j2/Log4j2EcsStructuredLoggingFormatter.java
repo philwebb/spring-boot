@@ -25,6 +25,7 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 
@@ -45,31 +46,39 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 	@Override
 	public String format(LogEvent event) {
 		JsonWriter<LogEvent> writer = JsonWriter.of((members) -> {
-			members.add("@timestamp", event::getInstant)
-				.as((instant) -> Instant.ofEpochMilli(instant.getEpochMillisecond())
-					.plusNanos(instant.getNanoOfMillisecond()));
-			members.add("log.level", LogEvent::getLevel).as(Level::name);
-			members.add("process.pid", this.metadata::pid).whenNotNull();
-			members.add("process.thread.name", event::getThreadName);
-			members.add("service.name", this.metadata::name).whenHasLength();
-			members.add("service.version", this.metadata::version).whenHasLength();
-			members.add("service.environment", this.metadata::environment).whenHasLength();
-			members.add("service.node.name", this.metadata::nodeName).whenHasLength();
-			members.add("log.logger", event::getLoggerName);
-			members.add("message", event::getMessage).as(Message::getFormattedMessage);
-			members.add(event::getContextData)
-				.whenNot(ReadOnlyStringMap::isEmpty)
-				.asWrittenJson((contextData, memberWriter) -> contextData.forEach(memberWriter::write));
-			members.add(event::getThrownProxy).whenNotNull().asJson((thrownProxyMembers) -> {
-				thrownProxyMembers.add("error.type", ThrowableProxy::getThrowable)
-					.whenNotNull()
-					.as((ex) -> ex.getClass().getName());
-				thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
-				thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
-			});
-			members.add("ecs.version", "8.11");
+			extracted(event, members);
 		});
 		return writer.write(event).toString(); // FIXME new line?
+	}
+
+	/**
+	 * @param event
+	 * @param members
+	 */
+	private void extracted(LogEvent event, Members<LogEvent> members) {
+		members.add("@timestamp", event::getInstant)
+			.as((instant) -> Instant.ofEpochMilli(instant.getEpochMillisecond())
+				.plusNanos(instant.getNanoOfMillisecond()));
+		members.add("log.level", LogEvent::getLevel).as(Level::name);
+		members.add("process.pid", this.metadata::pid).whenNotNull();
+		members.add("process.thread.name", event::getThreadName);
+		members.add("service.name", this.metadata::name).whenHasLength();
+		members.add("service.version", this.metadata::version).whenHasLength();
+		members.add("service.environment", this.metadata::environment).whenHasLength();
+		members.add("service.node.name", this.metadata::nodeName).whenHasLength();
+		members.add("log.logger", event::getLoggerName);
+		members.add("message", event::getMessage).as(Message::getFormattedMessage);
+		members.add(event::getContextData)
+			.whenNot(ReadOnlyStringMap::isEmpty)
+			.asJson(JsonWriter.using((contextData, memberWriter) -> contextData.forEach(memberWriter::write)));
+		members.add(event::getThrownProxy).whenNotNull().asJson((thrownProxyMembers) -> {
+			thrownProxyMembers.add("error.type", ThrowableProxy::getThrowable)
+				.whenNotNull()
+				.as((ex) -> ex.getClass().getName());
+			thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
+			thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
+		});
+		members.add("ecs.version", "8.11");
 	}
 
 }

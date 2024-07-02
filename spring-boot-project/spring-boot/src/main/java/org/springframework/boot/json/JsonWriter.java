@@ -23,8 +23,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * @author pwebb
+ * @author Moritz Halbritter
+ * @author Phillip Webb
+ * @since 3.4.0
  */
+@FunctionalInterface
 public interface JsonWriter<T> {
 
 	WritableJson write(T instance);
@@ -33,10 +36,26 @@ public interface JsonWriter<T> {
 		return null;
 	}
 
-	static <T, E> JsonWriter<T> using(BiConsumer<T, ValueWriter> consumer) {
+	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> dunno) {
 		return null;
 	}
 
+	interface ValueWriter {
+
+		<V> void write(String key, V value);
+
+		<V> void write(V value);
+
+	}
+
+	// FIXME class
+	interface WritableJson {
+
+		void to(Appendable appendable);
+
+	}
+
+	// FIXME class
 	interface Members<T> {
 
 		<V> Member<V> add(String key, Supplier<V> supplier);
@@ -53,6 +72,7 @@ public interface JsonWriter<T> {
 
 	}
 
+	// FIXME class
 	interface Member<T> {
 
 		Member<T> when(Predicate<T> predicate);
@@ -67,21 +87,7 @@ public interface JsonWriter<T> {
 
 		void asJson(Consumer<Members<T>> dunno);
 
-		void asWrittenJson(BiConsumer<T, ValueWriter> dunno);
-
-	}
-
-	interface ValueWriter {
-
-		<V> void write(String key, V value);
-
-		<V> void write(V value);
-
-	}
-
-	interface WritableJson {
-
-		void to(Appendable appendable);
+		void asJson(JsonWriter<T> dunno);
 
 	}
 
