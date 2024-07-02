@@ -31,8 +31,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import static org.assertj.core.api.Assertions.as;
-
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
  * format</a>.
@@ -53,55 +51,6 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 
 	@Override
 	public String format(ILoggingEvent event) {
-		JsonWriter<ILoggingEvent> writer = JsonWriter2.of((json)-> {
-			json.add("@timestamp", event::getInstant);
-		});
-
-
-		loggingEvent.add(event::getInstant).whenHasLength().to("@timestamp");
-		loggingEvent.add(event::getLevel).to("log.level");
-		// write.from(...).as(..).to("field");
-		json.add(event::getThrowableProxy).asJson((throwableProxy) -> {
-			throwableProxy.add(throwableProxy::getClassName).to("error.type");
-		});
-
-
-		new JsonWriter(ILoggingEvent.class, (json) -> {
-
-		}).write(event);
-
-
-
-		JsonWriter<ILoggingEven> writer = JsonWriter.create(this::loggingEventJson).write(event);
-
-		JsonWriter.with().create(this::loggingEventJson);
-
-		JsonWriter.of(this::loggingEventJson).with();
-
-		return JsonWriter.of((json)-> {
-			json.add("foo", event::getInstance); // as when
-			json.add("bar", event::getBar).asJson((barJson)-> ...).onlyWhenHasLength();
-		}).onlyWhenHasLength();
-
-
-
-
-				write(event).toString();
-
-
-
-
-		json.add("@timestamp", event::getInstant).whenHasLength().to();
-		json.add("log.level", event::getLevel);
-		// write.from(...).as(..).to("field");
-		json.add("error.type", event::getThrowableProxy).asJson((throwableProxy) -> {
-			throwableProxy.add(throwableProxy::getClassName).to();
-		});
-
-
-		return writer.write(event).toString();
-
-
 
 		JsonWriter writer = new JsonWriter();
 		writer.object(() -> {
