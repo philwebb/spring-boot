@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,6 @@ class InstantiatorTests {
 	void instantiateWhenAdditionalConstructorPicksMostSuitable() {
 		WithAdditionalConstructor instance = createInstance(WithAdditionalConstructor.class);
 		assertThat(instance).isInstanceOf(WithAdditionalConstructor.class);
-
 	}
 
 	@Test
@@ -122,8 +121,14 @@ class InstantiatorTests {
 			.withMessageContaining("custom failure handler message");
 	}
 
+	@Test
+	void shouldInstantiateSingleType() {
+		Object instance = createInstantiator(Object.class).instantiateType(WithMultipleConstructors.class);
+		assertThat(instance).isInstanceOf(WithMultipleConstructors.class);
+	}
+
 	private <T> T createInstance(Class<T> type) {
-		return createInstantiator(type).instantiate(Collections.singleton(type.getName())).get(0);
+		return createInstantiator(type).instantiateType(type);
 	}
 
 	private <T> Instantiator<T> createInstantiator(Class<T> type) {
