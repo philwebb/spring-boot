@@ -75,9 +75,9 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 	}
 
 	private JsonWriter<List<KeyValuePair>> keyValuePairsJsonDataWriter() {
-		return JsonWriter.using((pairs, memberWriter) -> {
+		return JsonWriter.using((pairs, valueWriter) -> {
 			if (!CollectionUtils.isEmpty(pairs)) {
-				pairs.forEach((pair) -> memberWriter.write(pair.key, pair.value));
+				valueWriter.writeObject(pairs::forEach, (pair) -> pair.key, (pair) -> pair.value);
 			}
 		});
 	}
@@ -100,7 +100,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 
 	@Override
 	public String format(ILoggingEvent event) {
-		return this.writer.write(event).toStringWithNewLine();
+		return this.writer.writeToString(event, "\n");
 	}
 
 }

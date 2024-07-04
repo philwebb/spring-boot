@@ -17,8 +17,8 @@
 package org.springframework.boot.json;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -37,18 +37,25 @@ import org.springframework.util.ObjectUtils;
 @FunctionalInterface
 public interface JsonWriter<T> {
 
-	WritableJson write(T instance);
+	default String writeToString(T instance) {
+		return writeToString(instance, null);
+	}
+
+	default String writeToString(T instance, String suffix) {
+		StringBuilder out = new StringBuilder();
+		write(instance, out);
+		out.append(suffix != null ? suffix : "");
+		return out.toString();
+	}
+
+	void write(T instance, Appendable out);
 
 	static <T> JsonWriter<T> of(Consumer<Members<T>> consumer) {
 		return null;
 	}
 
 	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> consumer) {
-		return (instance) -> {
-			ValueWriter valueWriter = new ValueWriter(null);
-			consumer.accept(instance, valueWriter);
-			return null;
-		};
+		return (instance, out) -> consumer.accept(instance, new ValueWriter(out));
 	}
 
 	public static class ValueWriter {
@@ -59,7 +66,7 @@ public interface JsonWriter<T> {
 			this.out = out;
 		}
 
-		public <V> void write(V value) throws IOException {
+		public <V> void write(V value) {
 			if (value == null) {
 				writeNull();
 			}
@@ -67,7 +74,7 @@ public interface JsonWriter<T> {
 				writeArray(value);
 			}
 			else if (value instanceof Map<?, ?> map) {
-				writeObject(map);
+				writeObject(map::forEach);
 			}
 			else if (value instanceof Number) {
 				writeNumber(value);
@@ -80,34 +87,29 @@ public interface JsonWriter<T> {
 			}
 		}
 
-		public void temp() {
-			Map<String, Object> map = new LinkedHashMap<>();
-			BiConsumer<? super String, ? super Object> foo = null;
-			writeObject(map::forEach);
+		public <T, K, V> void writeObject(Consumer<Consumer<T>> elementsProvider, Function<T, K> keyExtractor,
+				Function<T, V> valueExtractor) {
+			writeObject((pair) -> elementsProvider.accept((element) -> {
+				K key = keyExtractor.apply(element);
+				V value = valueExtractor.apply(element);
+				pair.accept(key, value);
+			}));
 		}
 
-		public void y(Consumer<Consumer<String>> arg) {
-
-		}
-
-		public <K, V> void writeObject(Consumer<BiConsumer<K, V>> dunno) {
-
-		}
-
-		private void writeObject(Map<?, ?> map) throws IOException {
+		public <K, V> void writeObject(Consumer<BiConsumer<K, V>> pairsProvider) {
 			append("{");
-			int i = 0;
-			for (Map.Entry<?, ?> entry : map.entrySet()) {
-				appendIf(i > 0, ',');
-				writeString(entry.getKey());
+			boolean[] addComma = { false };
+			pairsProvider.accept((key, value) -> {
+				appendIf(addComma[0], ',');
+				writeString(key);
 				append(":");
-				write(entry.getValue());
-				i++;
-			}
+				write(value);
+				addComma[0] = true;
+			});
 			append("}");
 		}
 
-		private void writeArray(Object value) throws IOException {
+		private void writeArray(Object value) {
 			append('[');
 			if (ObjectUtils.isArray(value)) {
 				writeElements(ObjectUtils.toObjectArray(value));
@@ -118,24 +120,24 @@ public interface JsonWriter<T> {
 			append(']');
 		}
 
-		private void writeElements(Object[] array) throws IOException {
+		private void writeElements(Object[] array) {
 			for (int i = 0; i < array.length; i++) {
 				appendIf(i > 0, ',');
 				write(array[i]);
 			}
 		}
 
-		private void writeElements(Iterable<?> iterable) throws IOException {
-			int i = 0;
+		private void writeElements(Iterable<?> iterable) {
+			boolean addComma = false;
 			for (Object element : iterable) {
-				appendIf(i > 0, ',');
+				appendIf(addComma, ',');
 				write(element);
-				i++;
+				addComma = true;
 			}
 		}
 
-		private void writeString(Object value) throws IOException {
-			this.out.append('"');
+		private void writeString(Object value) {
+			append('"');
 			String string = value.toString();
 			for (int i = 0; i < string.length(); i++) {
 				char ch = string.charAt(i);
@@ -148,32 +150,32 @@ public interface JsonWriter<T> {
 					case '\n' -> append("\\n");
 					case '\r' -> append("\\r");
 					case '\t' -> append("\\t");
-					default -> append(ch, true);
+					default -> appendWithIsoControlEscape(ch);
 				}
 			}
-			this.out.append('"');
+			append('"');
 		}
 
-		private void writeNumber(Object value) throws IOException {
+		private void writeNumber(Object value) {
 			append(value.toString());
 		}
 
-		private void writeNull() throws IOException {
+		private void writeNull() {
 			append("null");
 		}
 
-		private void writeBoolean(Object value) throws IOException {
+		private void writeBoolean(Object value) {
 			append(Boolean.TRUE.equals(value) ? "true" : "false");
 		}
 
-		private void appendIf(boolean match, char ch) throws IOException {
-			if (match) {
+		private void appendIf(boolean condition, char ch) {
+			if (condition) {
 				append(ch);
 			}
 		}
 
-		private void append(char ch, boolean escapeUnicode) throws IOException {
-			if (escapeUnicode && Character.isISOControl(ch)) {
+		private void appendWithIsoControlEscape(char ch) {
+			if (Character.isISOControl(ch)) {
 				append("\\u");
 				append(String.format("%04X", (int) ch));
 			}
@@ -182,25 +184,23 @@ public interface JsonWriter<T> {
 			}
 		}
 
-		private void append(char ch) throws IOException {
-			this.out.append(ch);
+		private void append(char ch) {
+			try {
+				this.out.append(ch);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
 
-		private void append(CharSequence value) throws IOException {
-			this.out.append(value);
+		private void append(CharSequence value) {
+			try {
+				this.out.append(value);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
-
-	}
-
-	// FIXME class
-	interface WritableJson {
-
-		void to(Appendable appendable);
-
-		/**
-		 * @return
-		 */
-		String toStringWithNewLine();
 
 	}
 

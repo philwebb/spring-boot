@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -40,17 +41,17 @@ public class JsonWriterTests {
 	class ValueWriterTests {
 
 		@Test
-		void writeWhenNullValue() throws Exception {
+		void writeWhenNullValue() {
 			assertThat(write(null)).isEqualTo("null");
 		}
 
 		@Test
-		void writeWhenStringValue() throws Exception {
+		void writeWhenStringValue() {
 			assertThat(write("test")).isEqualTo(quoted("test"));
 		}
 
 		@Test
-		void writeWhenStringValueWithEscape() throws Exception {
+		void writeWhenStringValueWithEscape() {
 			assertThat(write("\"")).isEqualTo(quoted("\\\""));
 			assertThat(write("\\")).isEqualTo(quoted("\\\\"));
 			assertThat(write("/")).isEqualTo(quoted("\\/"));
@@ -63,7 +64,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenNumberValue() throws Exception {
+		void writeWhenNumberValue() {
 			assertThat(write((byte) 123)).isEqualTo("123");
 			assertThat(write(123)).isEqualTo("123");
 			assertThat(write(123L)).isEqualTo("123");
@@ -77,7 +78,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenBooleanValue() throws Exception {
+		void writeWhenBooleanValue() {
 			assertThat(write(true)).isEqualTo("true");
 			assertThat(write(Boolean.TRUE)).isEqualTo("true");
 			assertThat(write(false)).isEqualTo("false");
@@ -85,35 +86,35 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenStringArrayValue() throws Exception {
+		void writeWhenStringArrayValue() {
 			assertThat(write(new String[] { "a", "b", "c" })).isEqualTo("""
 					["a","b","c"]""");
 		}
 
 		@Test
-		void writeWhenNumberArrayValue() throws Exception {
+		void writeWhenNumberArrayValue() {
 			assertThat(write(new int[] { 1, 2, 3 })).isEqualTo("[1,2,3]");
 			assertThat(write(new double[] { 1.0, 2.0, 3.0 })).isEqualTo("[1.0,2.0,3.0]");
 		}
 
 		@Test
-		void writeWhenBooleanArrayValue() throws Exception {
+		void writeWhenBooleanArrayValue() {
 			assertThat(write(new boolean[] { true, false, true })).isEqualTo("[true,false,true]");
 		}
 
 		@Test
-		void writeWhenNullArrayValue() throws Exception {
+		void writeWhenNullArrayValue() {
 			assertThat(write(new Object[] { null, null })).isEqualTo("[null,null]");
 		}
 
 		@Test
-		void writeWhenMixedArrayValue() throws Exception {
+		void writeWhenMixedArrayValue() {
 			assertThat(write(new Object[] { "a", "b", "c", 1, 2, true, null })).isEqualTo("""
 					["a","b","c",1,2,true,null]""");
 		}
 
 		@Test
-		void writeWhenCollectionValue() throws Exception {
+		void writeWhenCollectionValue() {
 			assertThat(write(List.of("a", "b", "c"))).isEqualTo("""
 					["a","b","c"]""");
 			assertThat(write(new LinkedHashSet<>(List.of("a", "b", "c")))).isEqualTo("""
@@ -121,7 +122,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenMapValue() throws Exception {
+		void writeWhenMapValue() {
 			Map<String, String> map = new LinkedHashMap<>();
 			map.put("a", "A");
 			map.put("b", "B");
@@ -130,7 +131,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenNumericalKeysMapValue() throws Exception {
+		void writeWhenNumericalKeysMapValue() {
 			Map<Integer, String> map = new LinkedHashMap<>();
 			map.put(1, "A");
 			map.put(2, "B");
@@ -139,7 +140,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenMixedMapValue() throws Exception {
+		void writeWhenMixedMapValue() {
 			Map<Object, Object> map = new LinkedHashMap<>();
 			map.put("a", 1);
 			map.put("b", 2.0);
@@ -148,12 +149,32 @@ public class JsonWriterTests {
 			map.put("e", null);
 			assertThat(write(map)).isEqualTo("""
 					{"a":1,"b":2.0,"c":true,"d":"d","e":null}""");
-
 		}
 
-		private <V> String write(V value) throws Exception {
+		@Test
+		void writeObject() {
+			Map<String, String> map = Map.of("a", "A");
+			String actual = doWrite((valueWriter) -> valueWriter.writeObject(map::forEach));
+			assertThat(actual).isEqualTo("""
+					{"a":"A"}""");
+		}
+
+		@Test
+		void writeObjectWhenExtracted() {
+			Map<String, String> map = Map.of("a", "A");
+			String actual = doWrite((valueWriter) -> valueWriter.writeObject(map.entrySet()::forEach, Map.Entry::getKey,
+					Map.Entry::getValue));
+			assertThat(actual).isEqualTo("""
+					{"a":"A"}""");
+		}
+
+		private <V> String write(V value) {
+			return doWrite((valueWriter) -> valueWriter.write(value));
+		}
+
+		private String doWrite(Consumer<ValueWriter> action) {
 			StringBuilder out = new StringBuilder();
-			new ValueWriter(out).write(value);
+			action.accept(new ValueWriter(out));
 			return out.toString();
 		}
 

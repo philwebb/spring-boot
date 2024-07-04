@@ -70,7 +70,8 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 	}
 
 	private JsonWriter<ReadOnlyStringMap> contextJsonDataWriter() {
-		return JsonWriter.using((contextData, valueWriter) -> contextData.forEach(memberWriter::write));
+		return JsonWriter
+			.using((contextData, valueWriter) -> valueWriter.writeObject(pairs -> contextData.forEach(pairs::accept)));
 	}
 
 	private void throwableProxyJson(Members<ThrowableProxy> thrownProxyMembers) {
@@ -81,7 +82,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 
 	@Override
 	public String format(LogEvent event) {
-		return this.writer.write(event).toStringWithNewLine();
+		return this.writer.writeToString(event, "\n");
 	}
 
 }

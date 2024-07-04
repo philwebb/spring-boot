@@ -73,7 +73,8 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 	}
 
 	private JsonWriter<ReadOnlyStringMap> contextJsonDataWriter() {
-		return JsonWriter.using((contextData, memberWriter) -> contextData.forEach(memberWriter::write));
+		return JsonWriter.using(
+				(contextData, valueWriter) -> valueWriter.writeObject((pairs) -> contextData.forEach(pairs::accept)));
 	}
 
 	private Set<String> getMarkers(Marker marker) {
@@ -93,7 +94,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 
 	@Override
 	public String format(LogEvent event) {
-		return this.writer.write(event).toStringWithNewLine();
+		return this.writer.writeToString(event, "\n");
 	}
 
 }
