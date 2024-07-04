@@ -16,7 +16,10 @@
 
 package org.springframework.boot.json;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -64,9 +67,13 @@ public class JsonWriterTests {
 			assertThat(write((byte) 123)).isEqualTo("123");
 			assertThat(write(123)).isEqualTo("123");
 			assertThat(write(123L)).isEqualTo("123");
+			assertThat(write(2.0)).isEqualTo("2.0");
+			assertThat(write(2.0f)).isEqualTo("2.0");
 			assertThat(write(Byte.valueOf((byte) 123))).isEqualTo("123");
 			assertThat(write(Integer.valueOf(123))).isEqualTo("123");
 			assertThat(write(Long.valueOf(123L))).isEqualTo("123");
+			assertThat(write(Double.valueOf(2.0))).isEqualTo("2.0");
+			assertThat(write(Float.valueOf(2.0f))).isEqualTo("2.0");
 		}
 
 		@Test
@@ -78,25 +85,70 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeWhenStringArray() throws Exception {
+		void writeWhenStringArrayValue() throws Exception {
 			assertThat(write(new String[] { "a", "b", "c" })).isEqualTo("""
 					["a","b","c"]""");
 		}
 
 		@Test
-		void writeWhenNumberArray() throws Exception {
+		void writeWhenNumberArrayValue() throws Exception {
 			assertThat(write(new int[] { 1, 2, 3 })).isEqualTo("[1,2,3]");
+			assertThat(write(new double[] { 1.0, 2.0, 3.0 })).isEqualTo("[1.0,2.0,3.0]");
 		}
 
 		@Test
-		void writeWhenBooleanArray() throws Exception {
+		void writeWhenBooleanArrayValue() throws Exception {
 			assertThat(write(new boolean[] { true, false, true })).isEqualTo("[true,false,true]");
 		}
 
 		@Test
-		void writeWhenCollection() throws Exception {
+		void writeWhenNullArrayValue() throws Exception {
+			assertThat(write(new Object[] { null, null })).isEqualTo("[null,null]");
+		}
+
+		@Test
+		void writeWhenMixedArrayValue() throws Exception {
+			assertThat(write(new Object[] { "a", "b", "c", 1, 2, true, null })).isEqualTo("""
+					["a","b","c",1,2,true,null]""");
+		}
+
+		@Test
+		void writeWhenCollectionValue() throws Exception {
 			assertThat(write(List.of("a", "b", "c"))).isEqualTo("""
 					["a","b","c"]""");
+			assertThat(write(new LinkedHashSet<>(List.of("a", "b", "c")))).isEqualTo("""
+					["a","b","c"]""");
+		}
+
+		@Test
+		void writeWhenMapValue() throws Exception {
+			Map<String, String> map = new LinkedHashMap<>();
+			map.put("a", "A");
+			map.put("b", "B");
+			assertThat(write(map)).isEqualTo("""
+					{"a":"A","b":"B"}""");
+		}
+
+		@Test
+		void writeWhenNumericalKeysMapValue() throws Exception {
+			Map<Integer, String> map = new LinkedHashMap<>();
+			map.put(1, "A");
+			map.put(2, "B");
+			assertThat(write(map)).isEqualTo("""
+					{"1":"A","2":"B"}""");
+		}
+
+		@Test
+		void writeWhenMixedMapValue() throws Exception {
+			Map<Object, Object> map = new LinkedHashMap<>();
+			map.put("a", 1);
+			map.put("b", 2.0);
+			map.put("c", true);
+			map.put("d", "d");
+			map.put("e", null);
+			assertThat(write(map)).isEqualTo("""
+					{"a":1,"b":2.0,"c":true,"d":"d","e":null}""");
+
 		}
 
 		private <V> String write(V value) throws Exception {

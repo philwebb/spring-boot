@@ -70,7 +70,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 	}
 
 	private JsonWriter<ReadOnlyStringMap> contextJsonDataWriter() {
-		return JsonWriter.using((contextData, memberWriter) -> contextData.forEach(memberWriter::write));
+		return JsonWriter.using((contextData, valueWriter) -> contextData.forEach(memberWriter::write));
 	}
 
 	private void throwableProxyJson(Members<ThrowableProxy> thrownProxyMembers) {

@@ -18,6 +18,8 @@ package org.springframework.boot.json;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -57,39 +59,79 @@ public interface JsonWriter<T> {
 			this.out = out;
 		}
 
-		public <V> void write(String key, V value) {
-		}
-
 		public <V> void write(V value) throws IOException {
-			ValueType valueType = ValueType.deduce(value);
-			switch (valueType) {
-				case OBJECT -> writeObject(value);
-				case ARRAY -> writeArray(value);
-				case STRING -> writeString(value);
-				case NUMBER -> writeNumber(value);
-				case BOOLEAN -> writeBoolean(value);
-				case NULL -> writeNull();
+			if (value == null) {
+				writeNull();
+			}
+			else if (ObjectUtils.isArray(value) || value instanceof Collection) {
+				writeArray(value);
+			}
+			else if (value instanceof Map<?, ?> map) {
+				writeObject(map);
+			}
+			else if (value instanceof Number) {
+				writeNumber(value);
+			}
+			else if (value instanceof Boolean) {
+				writeBoolean(value);
+			}
+			else {
+				writeString(value);
 			}
 		}
 
-		private void writeObject(Object value) {
+		public void temp() {
+			Map<String, Object> map = new LinkedHashMap<>();
+			BiConsumer<? super String, ? super Object> foo = null;
+			writeObject(map::forEach);
+		}
+
+		public void y(Consumer<Consumer<String>> arg) {
+
+		}
+
+		public <K, V> void writeObject(Consumer<BiConsumer<K, V>> dunno) {
+
+		}
+
+		private void writeObject(Map<?, ?> map) throws IOException {
+			append("{");
+			int i = 0;
+			for (Map.Entry<?, ?> entry : map.entrySet()) {
+				appendIf(i > 0, ',');
+				writeString(entry.getKey());
+				append(":");
+				write(entry.getValue());
+				i++;
+			}
+			append("}");
 		}
 
 		private void writeArray(Object value) throws IOException {
 			append('[');
-			writeArrayElements(value);
+			if (ObjectUtils.isArray(value)) {
+				writeElements(ObjectUtils.toObjectArray(value));
+			}
+			else {
+				writeElements((Iterable<?>) value);
+			}
 			append(']');
 		}
 
-		private void writeArrayElements(Object value) throws IOException {
-			Object[] array = ObjectUtils.toObjectArray(value);
+		private void writeElements(Object[] array) throws IOException {
 			for (int i = 0; i < array.length; i++) {
-				if (i > 0) {
-					append(',');
-				}
+				appendIf(i > 0, ',');
 				write(array[i]);
 			}
+		}
 
+		private void writeElements(Iterable<?> iterable) throws IOException {
+			int i = 0;
+			for (Object element : iterable) {
+				appendIf(i > 0, ',');
+				write(element);
+				i++;
+			}
 		}
 
 		private void writeString(Object value) throws IOException {
@@ -124,6 +166,12 @@ public interface JsonWriter<T> {
 			append(Boolean.TRUE.equals(value) ? "true" : "false");
 		}
 
+		private void appendIf(boolean match, char ch) throws IOException {
+			if (match) {
+				append(ch);
+			}
+		}
+
 		private void append(char ch, boolean escapeUnicode) throws IOException {
 			if (escapeUnicode && Character.isISOControl(ch)) {
 				append("\\u");
@@ -140,28 +188,6 @@ public interface JsonWriter<T> {
 
 		private void append(CharSequence value) throws IOException {
 			this.out.append(value);
-		}
-
-		enum ValueType {
-
-			OBJECT, ARRAY, STRING, NUMBER, BOOLEAN, NULL;
-
-			static ValueType deduce(Object value) {
-				if (value == null) {
-					return NULL;
-				}
-				if (ObjectUtils.isArray(value) || value instanceof Collection) {
-					return ARRAY;
-				}
-				if (value instanceof Number) {
-					return NUMBER;
-				}
-				if (value instanceof Boolean) {
-					return BOOLEAN;
-				}
-				return STRING;
-			}
-
 		}
 
 	}
