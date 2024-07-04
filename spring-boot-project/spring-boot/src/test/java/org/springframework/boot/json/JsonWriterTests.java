@@ -37,6 +37,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonWriterTests {
 
+	@Test
+	void using() {
+		JsonWriter<Person> writer = JsonWriter.using((person, valueWriter) -> valueWriter.writeObject((pairs) -> {
+			pairs.accept("firstName", person.firstName);
+			pairs.accept("lastName", person.lastName);
+			pairs.accept("age", person.age);
+		}));
+		assertThat(writer.writeToString(new Person("Spring", "Boot", 15))).isEqualTo("""
+				{"firstName":"Spring","lastName":"Boot","age":15}""");
+	}
+
+	@Test
+	void of() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> {
+			members.add("firstName", Person::firstName);
+			members.add("lastName", Person::lastName);
+			members.add("age", Person::age);
+		});
+		assertThat(writer.writeToString(new Person("Spring", "Boot", 15))).isEqualTo("""
+				{"firstName":"Spring","lastName":"Boot","age":15}""");
+	}
+
 	@Nested
 	class ValueWriterTests {
 
@@ -182,6 +204,9 @@ public class JsonWriterTests {
 			return "\"" + string + "\"";
 		}
 
+	}
+
+	record Person(String firstName, String lastName, int age) {
 	}
 
 }

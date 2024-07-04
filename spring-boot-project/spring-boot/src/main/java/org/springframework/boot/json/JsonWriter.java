@@ -18,14 +18,18 @@ package org.springframework.boot.json;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -51,7 +55,9 @@ public interface JsonWriter<T> {
 	void write(T instance, Appendable out);
 
 	static <T> JsonWriter<T> of(Consumer<Members<T>> consumer) {
-		return null;
+		Members<T> members = new Members<>();
+		consumer.accept(members);
+		return members.writer();
 	}
 
 	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> consumer) {
@@ -87,19 +93,19 @@ public interface JsonWriter<T> {
 			}
 		}
 
-		public <T, K, V> void writeObject(Consumer<Consumer<T>> elementsProvider, Function<T, K> keyExtractor,
+		public <T, K, V> void writeObject(Consumer<Consumer<T>> elements, Function<T, K> keyExtractor,
 				Function<T, V> valueExtractor) {
-			writeObject((pair) -> elementsProvider.accept((element) -> {
+			writeObject((pair) -> elements.accept((element) -> {
 				K key = keyExtractor.apply(element);
 				V value = valueExtractor.apply(element);
 				pair.accept(key, value);
 			}));
 		}
 
-		public <K, V> void writeObject(Consumer<BiConsumer<K, V>> pairsProvider) {
+		public <K, V> void writeObject(Consumer<BiConsumer<K, V>> pairs) {
 			append("{");
 			boolean[] addComma = { false };
-			pairsProvider.accept((key, value) -> {
+			pairs.accept((key, value) -> {
 				appendIf(addComma[0], ',');
 				writeString(key);
 				append(":");
@@ -204,39 +210,119 @@ public interface JsonWriter<T> {
 
 	}
 
-	// FIXME class
-	interface Members<T> {
+	public static final class Members<T> {
 
-		<V> Member<V> add(String key, Supplier<V> supplier);
+		private final List<Member<?>> members = new ArrayList<>();
 
-		<V> Member<V> add(String key, Function<T, V> extractor);
+		Members() {
+		}
 
-		<V> Member<V> add(String key, V value);
+		public <V> Member<V> add(String key, V value) {
+			return add(key, (instance) -> value);
+		}
 
-		<V> Member<V> add(Supplier<V> supplier);
+		public <V> Member<V> add(String key, Supplier<V> supplier) {
+			return add(key, (instance) -> supplier.get());
+		}
 
-		<V> Member<V> add(Function<T, V> extractor);
+		@SuppressWarnings("unchecked")
+		public <V> Member<V> add(String key, Function<T, V> extractor) {
+			return add(new Member<>((instance, pairs) -> pairs.accept(key, extractor.apply((T) instance))));
+		}
 
-		<V> Member<V> add(V value);
+		public <V> Member<V> add(V value) {
+			return add((instance) -> value);
+		}
+
+		public <V> Member<V> add(Supplier<V> supplier) {
+			return add((instance) -> supplier.get());
+		}
+
+		public <V> Member<V> add(Function<T, V> extractor) {
+			return new Member<>(null);
+		}
+
+		private <V> Member<V> add(Member<V> member) {
+			this.members.add(member);
+			return member;
+		}
+
+		JsonWriter<T> writer() {
+			MemberWriters memberWriters = new MemberWriters(this.members.stream().map(Member::writer));
+			return JsonWriter.using(memberWriters::write);
+		}
 
 	}
 
-	// FIXME class
-	interface Member<T> {
+	public static final class Member<T> {
 
-		Member<T> whenNotNull();
+		private final MemberWriter writer;
 
-		Member<T> whenHasLength();
+		Member(MemberWriter writer) {
+			this.writer = writer;
+		}
 
-		Member<T> when(Predicate<T> predicate);
+		public Member<T> whenNotNull() {
+			return this;
+		}
 
-		Member<T> whenNot(Predicate<T> predicate);
+		public Member<T> whenHasLength() {
+			return this;
+		}
 
-		<R> Member<R> as(Function<T, R> adapter);
+		public Member<T> when(Predicate<T> predicate) {
+			return this;
+		}
 
-		void asJson(Consumer<Members<T>> dunno);
+		public Member<T> whenNot(Predicate<T> predicate) {
+			return this;
+		}
 
-		void asWrittenJson(JsonWriter<T> dunno);
+		public <R> Member<R> as(Function<T, R> adapter) {
+			return null;
+		}
+
+		public <E, K, V> void using(Consumer<Consumer<E>> elements, Function<E, K> keyExtractor,
+				Function<E, V> valueExtractor) {
+		}
+
+		public <K, V> void using(Consumer<BiConsumer<K, V>> pairs) {
+		}
+
+		public void using(JsonWriter<T> jsonWriter) {
+		}
+
+		MemberWriter writer() {
+			Assert.state(this.writer != null,
+					"Unable to write member JSON. Please add the member with a 'key' or complete "
+							+ "the definition with the 'using(...) method");
+			return this.writer;
+		}
+
+	}
+
+	static class MemberWriters {
+
+		private final List<MemberWriter> writers;
+
+		MemberWriters(Stream<MemberWriter> writers) {
+			this.writers = writers.toList();
+		}
+
+		void write(Object instance, ValueWriter valueWriter) {
+			valueWriter.writeObject((pairs) -> write(instance, pairs));
+		}
+
+		void write(Object instance, BiConsumer<Object, Object> pairs) {
+			this.writers.forEach((memberWriter) -> memberWriter.write(instance, pairs));
+		}
+
+	}
+
+	@FunctionalInterface
+	interface MemberWriter {
+
+		void write(Object instance, BiConsumer<Object, Object> pairs);
 
 	}
 

@@ -58,10 +58,10 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
 		members.add(ILoggingEvent::getMDCPropertyMap).whenNot(CollectionUtils::isEmpty);
-		members.add(ILoggingEvent::getKeyValuePairs).asWrittenJson(keyValuePairsJsonDataWriter());
+		members.add(ILoggingEvent::getKeyValuePairs).using(keyValuePairsJsonDataWriter());
 		members.add((event) -> event)
 			.when((event) -> event.getThrowableProxy() != null)
-			.asJson((throwableMembers) -> throwableJson(throwableProxyConverter, throwableMembers));
+			.using((throwableMembers) -> throwableJson(throwableProxyConverter, throwableMembers));
 		members.add("ecs.version", "8.11");
 	}
 
@@ -82,6 +82,6 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 	@Override
 	public String format(ILoggingEvent event) {
 		return this.writer.writeToString(event, "\n");
-	}
+//	}
 
 }
