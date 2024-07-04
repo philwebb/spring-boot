@@ -22,15 +22,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Moritz Halbritter
@@ -42,26 +43,55 @@ import org.springframework.util.ObjectUtils;
 public interface JsonWriter<T> {
 
 	default String writeToString(T instance) {
-		return writeToString(instance, null);
-	}
-
-	default String writeToString(T instance, String suffix) {
 		StringBuilder out = new StringBuilder();
 		write(instance, out);
-		out.append(suffix != null ? suffix : "");
 		return out.toString();
 	}
 
 	void write(T instance, Appendable out);
 
-	static <T> JsonWriter<T> of(Consumer<Members<T>> consumer) {
-		Members<T> members = new Members<>();
-		consumer.accept(members);
-		return members.writer();
+	default JsonWriter<T> endingWithNewLine() {
+		return endingWith("\n");
 	}
 
-	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> consumer) {
-		return (instance, out) -> consumer.accept(instance, new ValueWriter(out));
+	default JsonWriter<T> endingWith(String suffix) {
+		return (instance, out) -> {
+			write(instance, out);
+			append(out, suffix);
+		};
+	}
+
+	private static void append(Appendable out, char ch) {
+		try {
+			out.append(ch);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	private static void append(Appendable out, CharSequence value) {
+		try {
+			out.append(value);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	static <T> JsonWriter<T> of(Consumer<Members<T>> members) {
+		return accept(members, new Members<>(), Members::writer);
+	}
+
+	// FIXME listOf() arrayOf()
+
+	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> writer) {
+		return (instance, out) -> writer.accept(instance, new ValueWriter(out));
+	}
+
+	private static <T, R> R accept(Consumer<T> consumer, T value, Function<T, R> finalizer) {
+		consumer.accept(value);
+		return finalizer.apply(value);
 	}
 
 	public static class ValueWriter {
@@ -80,7 +110,7 @@ public interface JsonWriter<T> {
 				writeArray(value);
 			}
 			else if (value instanceof Map<?, ?> map) {
-				writeObject(map::forEach);
+				writePairs(map::forEach);
 			}
 			else if (value instanceof Number) {
 				writeNumber(value);
@@ -93,16 +123,16 @@ public interface JsonWriter<T> {
 			}
 		}
 
-		public <T, K, V> void writeObject(Consumer<Consumer<T>> elements, Function<T, K> keyExtractor,
+		public <T, K, V> void writeEntries(Consumer<Consumer<T>> elements, Function<T, K> keyExtractor,
 				Function<T, V> valueExtractor) {
-			writeObject((pair) -> elements.accept((element) -> {
+			writePairs((pair) -> elements.accept((element) -> {
 				K key = keyExtractor.apply(element);
 				V value = valueExtractor.apply(element);
 				pair.accept(key, value);
 			}));
 		}
 
-		public <K, V> void writeObject(Consumer<BiConsumer<K, V>> pairs) {
+		public <K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
 			append("{");
 			boolean[] addComma = { false };
 			pairs.accept((key, value) -> {
@@ -191,21 +221,11 @@ public interface JsonWriter<T> {
 		}
 
 		private void append(char ch) {
-			try {
-				this.out.append(ch);
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
+			JsonWriter.append(this.out, ch);
 		}
 
 		private void append(CharSequence value) {
-			try {
-				this.out.append(value);
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
+			JsonWriter.append(this.out, value);
 		}
 
 	}
@@ -215,6 +235,10 @@ public interface JsonWriter<T> {
 		private final List<Member<?>> members = new ArrayList<>();
 
 		Members() {
+		}
+
+		public Member<T> addSelf(String key) {
+			return add(key, (instance) -> instance);
 		}
 
 		public <V> Member<V> add(String key, V value) {
@@ -227,7 +251,11 @@ public interface JsonWriter<T> {
 
 		@SuppressWarnings("unchecked")
 		public <V> Member<V> add(String key, Function<T, V> extractor) {
-			return add(new Member<>((instance, pairs) -> pairs.accept(key, extractor.apply((T) instance))));
+			return addMember((instance, pairs) -> pairs.accept(key, extractor.apply((T) instance)));
+		}
+
+		public Member<T> addSelf() {
+			return add((instance) -> instance);
 		}
 
 		public <V> Member<V> add(V value) {
@@ -242,13 +270,18 @@ public interface JsonWriter<T> {
 			return new Member<>(null);
 		}
 
-		private <V> Member<V> add(Member<V> member) {
+		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
+			return add(extractor).usingPairs(Map::forEach);
+		}
+
+		private <V> Member<V> addMember(JsonMemberWriter writer) {
+			Member<V> member = null;
 			this.members.add(member);
 			return member;
 		}
 
 		JsonWriter<T> writer() {
-			MemberWriters memberWriters = new MemberWriters(this.members.stream().map(Member::writer));
+			JsonMemberWriters memberWriters = new JsonMemberWriters(this.members.stream().map(Member::writer));
 			return JsonWriter.using(memberWriters::write);
 		}
 
@@ -256,25 +289,35 @@ public interface JsonWriter<T> {
 
 	public static final class Member<T> {
 
-		private final MemberWriter writer;
+		private JsonMemberWriter writer;
 
-		Member(MemberWriter writer) {
+		Member(JsonMemberWriter writer) {
 			this.writer = writer;
 		}
 
 		public Member<T> whenNotNull() {
-			return this;
+			return when(Objects::nonNull);
+		}
+
+		public Member<T> whenNotNull(Function<T, ?> extractor) {
+			return when((instance) -> Objects.nonNull(extractor.apply(instance)));
 		}
 
 		public Member<T> whenHasLength() {
-			return this;
+			return when((instance) -> instance != null && StringUtils.hasLength(instance.toString()));
 		}
 
-		public Member<T> when(Predicate<T> predicate) {
-			return this;
+		public Member<T> whenNotEmpty() {
+			return whenNot(ObjectUtils::isEmpty);
 		}
 
 		public Member<T> whenNot(Predicate<T> predicate) {
+			Assert.notNull(predicate, "'predicate' must not be null");
+			return when(predicate.negate());
+		}
+
+		public Member<T> when(Predicate<T> predicate) {
+			Assert.notNull(predicate, "'predicate' must not be null");
 			return this;
 		}
 
@@ -282,47 +325,30 @@ public interface JsonWriter<T> {
 			return null;
 		}
 
-		public <E, K, V> void using(Consumer<Consumer<E>> elements, Function<E, K> keyExtractor,
+		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Class<E> elementType,
+				Function<E, K> keyExtractor, Function<E, V> valueExtractor) {
+			return usingElements(elements, keyExtractor, valueExtractor);
+		}
+
+		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Function<E, K> keyExtractor,
 				Function<E, V> valueExtractor) {
+			return null;
 		}
 
-		public <K, V> void using(Consumer<BiConsumer<K, V>> pairs) {
+		public <K, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<K, V>> pairs) {
+			return null;
 		}
 
-		public void using(JsonWriter<T> jsonWriter) {
+		public Member<T> usingMembers(Consumer<Members<T>> members) {
+			return null;
 		}
 
-		MemberWriter writer() {
+		JsonMemberWriter writer() {
 			Assert.state(this.writer != null,
 					"Unable to write member JSON. Please add the member with a 'key' or complete "
 							+ "the definition with the 'using(...) method");
 			return this.writer;
 		}
-
-	}
-
-	static class MemberWriters {
-
-		private final List<MemberWriter> writers;
-
-		MemberWriters(Stream<MemberWriter> writers) {
-			this.writers = writers.toList();
-		}
-
-		void write(Object instance, ValueWriter valueWriter) {
-			valueWriter.writeObject((pairs) -> write(instance, pairs));
-		}
-
-		void write(Object instance, BiConsumer<Object, Object> pairs) {
-			this.writers.forEach((memberWriter) -> memberWriter.write(instance, pairs));
-		}
-
-	}
-
-	@FunctionalInterface
-	interface MemberWriter {
-
-		void write(Object instance, BiConsumer<Object, Object> pairs);
 
 	}
 

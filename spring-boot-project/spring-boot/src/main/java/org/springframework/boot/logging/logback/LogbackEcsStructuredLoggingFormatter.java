@@ -16,18 +16,14 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.util.List;
-
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
-import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
-import org.springframework.util.CollectionUtils;
 
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
@@ -42,7 +38,9 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 
 	LogbackEcsStructuredLoggingFormatter(ApplicationMetadata metadata,
 			ThrowableProxyConverter throwableProxyConverter) {
-		this.writer = JsonWriter.of((members) -> loggingEventJson(metadata, throwableProxyConverter, members));
+		this.writer = JsonWriter
+			.<ILoggingEvent>of((members) -> loggingEventJson(metadata, throwableProxyConverter, members))
+			.endingWithNewLine();
 	}
 
 	private void loggingEventJson(ApplicationMetadata metadata, ThrowableProxyConverter throwableProxyConverter,
@@ -57,31 +55,21 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		members.add("service.node.name", metadata::nodeName).whenHasLength();
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
-		members.add(ILoggingEvent::getMDCPropertyMap).whenNot(CollectionUtils::isEmpty);
-		members.add(ILoggingEvent::getKeyValuePairs).using(keyValuePairsJsonDataWriter());
-		members.add((event) -> event)
-			.when((event) -> event.getThrowableProxy() != null)
-			.using((throwableMembers) -> throwableJson(throwableProxyConverter, throwableMembers));
-		members.add("ecs.version", "8.11");
-	}
-
-	private JsonWriter<List<KeyValuePair>> keyValuePairsJsonDataWriter() {
-		return JsonWriter.using((pairs, valueWriter) -> {
-			if (!CollectionUtils.isEmpty(pairs)) {
-				valueWriter.writeObject(pairs::forEach, (pair) -> pair.key, (pair) -> pair.value);
-			}
+		members.addMapEntries(ILoggingEvent::getMDCPropertyMap).whenNotEmpty();
+		members.add(ILoggingEvent::getKeyValuePairs)
+			.whenNotEmpty()
+			.usingElements(Iterable::forEach, KeyValuePair.class, (pair) -> pair.key, (pair) -> pair.value);
+		members.addSelf().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
+			throwableMembers.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
+			throwableMembers.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
+			throwableMembers.add("error.stack_trace", (event) -> throwableProxyConverter.convert(event));
 		});
-	}
-
-	private void throwableJson(ThrowableProxyConverter converter, Members<ILoggingEvent> members) {
-		members.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
-		members.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
-		members.add("error.stack_trace", (event) -> converter.convert(event));
+		members.add("ecs.version", "8.11");
 	}
 
 	@Override
 	public String format(ILoggingEvent event) {
-		return this.writer.writeToString(event, "\n");
-//	}
+		return this.writer.writeToString(event);
+	}
 
 }

@@ -24,9 +24,9 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
-import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
+import org.springframework.util.ObjectUtils;
 
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
@@ -40,7 +40,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 	private final JsonWriter<LogEvent> writer;
 
 	Log4j2EcsStructuredLoggingFormatter(ApplicationMetadata metadata) {
-		this.writer = JsonWriter.of((members) -> logEventJson(metadata, members));
+		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(metadata, members)).endingWithNewLine();
 	}
 
 	private void logEventJson(ApplicationMetadata metadata, JsonWriter.Members<LogEvent> members) {
@@ -56,8 +56,14 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
 		members.add(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
-			.asWrittenJson(contextJsonDataWriter());
-		members.add(LogEvent::getThrownProxy).whenNotNull().asJson(this::throwableProxyJson);
+			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
+		members.add(LogEvent::getThrownProxy).whenNotNull().usingMembers((thrownProxyMembers) -> {
+			thrownProxyMembers.add("error.type", ThrowableProxy::getThrowable)
+				.whenNotNull()
+				.as(ObjectUtils::nullSafeClassName);
+			thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
+			thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
+		});
 		members.add("ecs.version", "8.11");
 	}
 
@@ -65,24 +71,9 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 		return java.time.Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
 	}
 
-	private String getClassName(Object object) {
-		return object.getClass().getName();
-	}
-
-	private JsonWriter<ReadOnlyStringMap> contextJsonDataWriter() {
-		return JsonWriter
-			.using((contextData, valueWriter) -> valueWriter.writeObject(pairs -> contextData.forEach(pairs::accept)));
-	}
-
-	private void throwableProxyJson(Members<ThrowableProxy> thrownProxyMembers) {
-		thrownProxyMembers.add("error.type", ThrowableProxy::getThrowable).whenNotNull().as(this::getClassName);
-		thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
-		thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
-	}
-
 	@Override
 	public String format(LogEvent event) {
-		return this.writer.writeToString(event, "\n");
+		return this.writer.writeToString(event);
 	}
 
 }

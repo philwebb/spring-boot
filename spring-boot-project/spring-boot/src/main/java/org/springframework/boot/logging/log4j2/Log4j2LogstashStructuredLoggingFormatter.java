@@ -45,7 +45,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 	private JsonWriter<LogEvent> writer;
 
 	Log4j2LogstashStructuredLoggingFormatter() {
-		this.writer = JsonWriter.of(this::logEventJson);
+		this.writer = JsonWriter.<LogEvent>of(this::logEventJson).endingWithNewLine();
 	}
 
 	private void logEventJson(JsonWriter.Members<LogEvent> members) {
@@ -58,7 +58,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		members.add("level_value", LogEvent::getLevel).as(Level::intLevel);
 		members.add(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
-			.asWrittenJson(contextJsonDataWriter());
+			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
 		members.add("tags", LogEvent::getMarker).whenNotNull().as(this::getMarkers).whenNot(CollectionUtils::isEmpty);
 		members.add("stack_trace", LogEvent::getThrownProxy)
 			.whenNotNull()
@@ -70,11 +70,6 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 			.plusNanos(instant.getNanoOfMillisecond());
 		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(javaInstant, ZoneId.systemDefault());
 		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
-	}
-
-	private JsonWriter<ReadOnlyStringMap> contextJsonDataWriter() {
-		return JsonWriter.using(
-				(contextData, valueWriter) -> valueWriter.writeObject((pairs) -> contextData.forEach(pairs::accept)));
 	}
 
 	private Set<String> getMarkers(Marker marker) {
@@ -94,7 +89,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 
 	@Override
 	public String format(LogEvent event) {
-		return this.writer.writeToString(event, "\n");
+		return this.writer.writeToString(event);
 	}
 
 }

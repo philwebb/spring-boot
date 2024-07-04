@@ -39,7 +39,7 @@ public class JsonWriterTests {
 
 	@Test
 	void using() {
-		JsonWriter<Person> writer = JsonWriter.using((person, valueWriter) -> valueWriter.writeObject((pairs) -> {
+		JsonWriter<Person> writer = JsonWriter.using((person, valueWriter) -> valueWriter.writePairs((pairs) -> {
 			pairs.accept("firstName", person.firstName);
 			pairs.accept("lastName", person.lastName);
 			pairs.accept("age", person.age);
@@ -176,7 +176,7 @@ public class JsonWriterTests {
 		@Test
 		void writeObject() {
 			Map<String, String> map = Map.of("a", "A");
-			String actual = doWrite((valueWriter) -> valueWriter.writeObject(map::forEach));
+			String actual = doWrite((valueWriter) -> valueWriter.writePairs(map::forEach));
 			assertThat(actual).isEqualTo("""
 					{"a":"A"}""");
 		}
@@ -184,8 +184,8 @@ public class JsonWriterTests {
 		@Test
 		void writeObjectWhenExtracted() {
 			Map<String, String> map = Map.of("a", "A");
-			String actual = doWrite((valueWriter) -> valueWriter.writeObject(map.entrySet()::forEach, Map.Entry::getKey,
-					Map.Entry::getValue));
+			String actual = doWrite((valueWriter) -> valueWriter.writeEntries(map.entrySet()::forEach,
+					Map.Entry::getKey, Map.Entry::getValue));
 			assertThat(actual).isEqualTo("""
 					{"a":"A"}""");
 		}

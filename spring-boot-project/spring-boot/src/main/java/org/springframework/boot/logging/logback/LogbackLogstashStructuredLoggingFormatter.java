@@ -33,7 +33,6 @@ import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Logstash logging format.
@@ -46,7 +45,8 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 	private JsonWriter<ILoggingEvent> writer;
 
 	LogbackLogstashStructuredLoggingFormatter(ThrowableProxyConverter throwableProxyConverter) {
-		this.writer = JsonWriter.of((members) -> loggingEventJson(throwableProxyConverter, members));
+		this.writer = JsonWriter.<ILoggingEvent>of((members) -> loggingEventJson(throwableProxyConverter, members))
+			.endingWithNewLine();
 	}
 
 	private void loggingEventJson(ThrowableProxyConverter throwableProxyConverter,
@@ -58,28 +58,19 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		members.add("thread_name", ILoggingEvent::getThreadName);
 		members.add("level", ILoggingEvent::getLevel);
 		members.add("level_value", ILoggingEvent::getLevel).as(Level::toInt);
-		members.add(ILoggingEvent::getMDCPropertyMap).whenNot(CollectionUtils::isEmpty);
-		members.add(ILoggingEvent::getKeyValuePairs).asWrittenJson(keyValuePairsJsonDataWriter());
-		members.add("tags", ILoggingEvent::getMarkerList)
-			.whenNotNull()
-			.as(this::getMarkers)
-			.whenNot(CollectionUtils::isEmpty);
+		members.add(ILoggingEvent::getMDCPropertyMap).whenNotEmpty();
+		members.add(ILoggingEvent::getKeyValuePairs)
+			.whenNotEmpty()
+			.usingElements(Iterable::forEach, KeyValuePair.class, (pair) -> pair.key, (pair) -> pair.value);
+		members.add("tags", ILoggingEvent::getMarkerList).whenNotNull().as(this::getMarkers).whenNotEmpty();
 		members.add("stack_trace", (event) -> event)
-			.when((event) -> event.getThrowableProxy() != null)
+			.whenNotNull(ILoggingEvent::getThrowableProxy)
 			.as(throwableProxyConverter::convert);
 	}
 
 	private String asTimestamp(Instant instant) {
 		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
 		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
-	}
-
-	private JsonWriter<List<KeyValuePair>> keyValuePairsJsonDataWriter() {
-		return JsonWriter.using((pairs, valueWriter) -> {
-			if (!CollectionUtils.isEmpty(pairs)) {
-				valueWriter.writeObject(pairs::forEach, (pair) -> pair.key, (pair) -> pair.value);
-			}
-		});
 	}
 
 	private Set<String> getMarkers(List<Marker> markers) {
@@ -100,7 +91,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 
 	@Override
 	public String format(ILoggingEvent event) {
-		return this.writer.writeToString(event, "\n");
+		return this.writer.writeToString(event);
 	}
 
 }
