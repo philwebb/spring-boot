@@ -19,7 +19,7 @@ package org.springframework.boot.logging.log4j2;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.Level;
@@ -32,11 +32,13 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Logstash logging format.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
 
@@ -57,7 +59,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		members.add(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
 			.asWrittenJson(contextJsonDataWriter());
-		members.add("tags", LogEvent::getMarker).whenNotNull().as(this::getMarkers);
+		members.add("tags", LogEvent::getMarker).whenNotNull().as(this::getMarkers).whenNot(CollectionUtils::isEmpty);
 		members.add("stack_trace", LogEvent::getThrownProxy)
 			.whenNotNull()
 			.as(ThrowableProxy::getExtendedStackTraceAsString);
@@ -75,7 +77,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 	}
 
 	private Set<String> getMarkers(Marker marker) {
-		Set<String> result = new HashSet<>();
+		Set<String> result = new LinkedHashSet<>();
 		addMarkers(result, marker);
 		return result;
 	}

@@ -47,7 +47,7 @@ public class XJsonWriter {
 	 * @param nested the {@link Runnable} to populate the object
 	 * @return this for method chaining
 	 */
-	public JsonWriter object(Runnable nested) {
+	public XJsonWriter object(Runnable nested) {
 		this.stringBuilder.append('{');
 		nested.run();
 		removeTrailingComma();
@@ -59,7 +59,7 @@ public class XJsonWriter {
 	 * Writes an empty object.
 	 * @return this for method chaining
 	 */
-	public JsonWriter object() {
+	public XJsonWriter object() {
 		return object(() -> {
 		});
 	}
@@ -68,7 +68,7 @@ public class XJsonWriter {
 	 * Writes an empty array.
 	 * @return this for method chaining
 	 */
-	public JsonWriter array() {
+	public XJsonWriter array() {
 		return array(() -> {
 		});
 	}
@@ -78,7 +78,7 @@ public class XJsonWriter {
 	 * @param nested the {@link Runnable} to populate the array
 	 * @return this for method chaining
 	 */
-	public JsonWriter array(Runnable nested) {
+	public XJsonWriter array(Runnable nested) {
 		this.stringBuilder.append('[');
 		nested.run();
 		removeTrailingComma();
@@ -91,7 +91,7 @@ public class XJsonWriter {
 	 * @param values the strings to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter stringArray(String... values) {
+	public XJsonWriter stringArray(String... values) {
 		array(() -> {
 			for (String value : values) {
 				string(value);
@@ -105,7 +105,7 @@ public class XJsonWriter {
 	 * @param values the strings to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter stringArray(Iterable<String> values) {
+	public XJsonWriter stringArray(Iterable<String> values) {
 		array(() -> {
 			for (String value : values) {
 				string(value);
@@ -119,7 +119,7 @@ public class XJsonWriter {
 	 * @param values the numbers to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter numberArray(double... values) {
+	public XJsonWriter numberArray(double... values) {
 		array(() -> {
 			for (double value : values) {
 				number(value);
@@ -133,7 +133,7 @@ public class XJsonWriter {
 	 * @param values the numbers to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter numberArray(long... values) {
+	public XJsonWriter numberArray(long... values) {
 		array(() -> {
 			for (long value : values) {
 				number(value);
@@ -147,7 +147,7 @@ public class XJsonWriter {
 	 * @param values the booleans to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter boolArray(boolean... values) {
+	public XJsonWriter boolArray(boolean... values) {
 		array(() -> {
 			for (boolean value : values) {
 				bool(value);
@@ -161,7 +161,7 @@ public class XJsonWriter {
 	 * @param value the string to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter string(String value) {
+	public XJsonWriter string(String value) {
 		if (value == null) {
 			this.stringBuilder.append("null,");
 		}
@@ -203,7 +203,7 @@ public class XJsonWriter {
 	 * @param value the number to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter number(double value) {
+	public XJsonWriter number(double value) {
 		this.stringBuilder.append(value).append(',');
 		return this;
 	}
@@ -213,7 +213,7 @@ public class XJsonWriter {
 	 * @param value the number to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter number(long value) {
+	public XJsonWriter number(long value) {
 		this.stringBuilder.append(value).append(',');
 		return this;
 	}
@@ -223,7 +223,7 @@ public class XJsonWriter {
 	 * @param value the boolean to write
 	 * @return this for method chaining
 	 */
-	public JsonWriter bool(boolean value) {
+	public XJsonWriter bool(boolean value) {
 		this.stringBuilder.append(value).append(',');
 		return this;
 	}
@@ -234,7 +234,7 @@ public class XJsonWriter {
 	 * @param value the string value
 	 * @return this for method chaining
 	 */
-	public JsonWriter stringMember(String key, String value) {
+	public XJsonWriter stringMember(String key, String value) {
 		return member(key, () -> string(value));
 	}
 
@@ -244,7 +244,7 @@ public class XJsonWriter {
 	 * @param value the number value
 	 * @return this for method chaining
 	 */
-	public JsonWriter numberMember(String key, double value) {
+	public XJsonWriter numberMember(String key, double value) {
 		return member(key, () -> number(value));
 	}
 
@@ -254,7 +254,7 @@ public class XJsonWriter {
 	 * @param value the number value
 	 * @return this for method chaining
 	 */
-	public JsonWriter numberMember(String key, long value) {
+	public XJsonWriter numberMember(String key, long value) {
 		return member(key, () -> number(value));
 	}
 
@@ -264,7 +264,7 @@ public class XJsonWriter {
 	 * @param value the boolean value
 	 * @return this for method chaining
 	 */
-	public JsonWriter boolMember(String key, boolean value) {
+	public XJsonWriter boolMember(String key, boolean value) {
 		return member(key, () -> bool(value));
 	}
 
@@ -274,7 +274,7 @@ public class XJsonWriter {
 	 * @param nested the {@link Runnable} to populate the object
 	 * @return this for method chaining
 	 */
-	public JsonWriter member(String key, Runnable nested) {
+	public XJsonWriter member(String key, Runnable nested) {
 		this.stringBuilder.append('"').append(key).append('"').append(':');
 		if (nested == null) {
 			this.stringBuilder.append("null,");
@@ -289,7 +289,7 @@ public class XJsonWriter {
 	 * Writes a new line.
 	 * @return this for method chaining
 	 */
-	public JsonWriter newLine() {
+	public XJsonWriter newLine() {
 		removeTrailingComma();
 		this.stringBuilder.append('\n');
 		return this;

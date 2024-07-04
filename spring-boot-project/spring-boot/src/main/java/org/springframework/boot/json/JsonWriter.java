@@ -16,15 +16,20 @@
 
 package org.springframework.boot.json;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.springframework.util.ObjectUtils;
+
 /**
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @param <T> The type being written
  * @since 3.4.0
  */
 @FunctionalInterface
@@ -36,15 +41,128 @@ public interface JsonWriter<T> {
 		return null;
 	}
 
-	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> dunno) {
-		return null;
+	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> consumer) {
+		return (instance) -> {
+			ValueWriter valueWriter = new ValueWriter(null);
+			consumer.accept(instance, valueWriter);
+			return null;
+		};
 	}
 
-	interface ValueWriter {
+	public static class ValueWriter {
 
-		<V> void write(String key, V value);
+		private final Appendable out;
 
-		<V> void write(V value);
+		ValueWriter(Appendable out) {
+			this.out = out;
+		}
+
+		public <V> void write(String key, V value) {
+		}
+
+		public <V> void write(V value) throws IOException {
+			ValueType valueType = ValueType.deduce(value);
+			switch (valueType) {
+				case OBJECT -> writeObject(value);
+				case ARRAY -> writeArray(value);
+				case STRING -> writeString(value);
+				case NUMBER -> writeNumber(value);
+				case BOOLEAN -> writeBoolean(value);
+				case NULL -> writeNull();
+			}
+		}
+
+		private void writeObject(Object value) {
+		}
+
+		private void writeArray(Object value) throws IOException {
+			append('[');
+			writeArrayElements(value);
+			append(']');
+		}
+
+		private void writeArrayElements(Object value) throws IOException {
+			Object[] array = ObjectUtils.toObjectArray(value);
+			for (int i = 0; i < array.length; i++) {
+				if (i > 0) {
+					append(',');
+				}
+				write(array[i]);
+			}
+
+		}
+
+		private void writeString(Object value) throws IOException {
+			this.out.append('"');
+			String string = value.toString();
+			for (int i = 0; i < string.length(); i++) {
+				char ch = string.charAt(i);
+				switch (ch) {
+					case '"' -> append("\\\"");
+					case '\\' -> append("\\\\");
+					case '/' -> append("\\/");
+					case '\b' -> append("\\b");
+					case '\f' -> append("\\f");
+					case '\n' -> append("\\n");
+					case '\r' -> append("\\r");
+					case '\t' -> append("\\t");
+					default -> append(ch, true);
+				}
+			}
+			this.out.append('"');
+		}
+
+		private void writeNumber(Object value) throws IOException {
+			append(value.toString());
+		}
+
+		private void writeNull() throws IOException {
+			append("null");
+		}
+
+		private void writeBoolean(Object value) throws IOException {
+			append(Boolean.TRUE.equals(value) ? "true" : "false");
+		}
+
+		private void append(char ch, boolean escapeUnicode) throws IOException {
+			if (escapeUnicode && Character.isISOControl(ch)) {
+				append("\\u");
+				append(String.format("%04X", (int) ch));
+			}
+			else {
+				append(ch);
+			}
+		}
+
+		private void append(char ch) throws IOException {
+			this.out.append(ch);
+		}
+
+		private void append(CharSequence value) throws IOException {
+			this.out.append(value);
+		}
+
+		enum ValueType {
+
+			OBJECT, ARRAY, STRING, NUMBER, BOOLEAN, NULL;
+
+			static ValueType deduce(Object value) {
+				if (value == null) {
+					return NULL;
+				}
+				if (ObjectUtils.isArray(value) || value instanceof Collection) {
+					return ARRAY;
+				}
+				if (value instanceof Number) {
+					return NUMBER;
+				}
+				if (value instanceof Boolean) {
+					return BOOLEAN;
+				}
+				return STRING;
+			}
+
+		}
 
 	}
 
@@ -80,13 +198,13 @@ public interface JsonWriter<T> {
 	// FIXME class
 	interface Member<T> {
 
-		Member<T> when(Predicate<T> predicate);
-
-		Member<T> whenNot(Predicate<T> predicate);
-
 		Member<T> whenNotNull();
 
 		Member<T> whenHasLength();
+
+		Member<T> when(Predicate<T> predicate);
+
+		Member<T> whenNot(Predicate<T> predicate);
 
 		<R> Member<R> as(Function<T, R> adapter);
 

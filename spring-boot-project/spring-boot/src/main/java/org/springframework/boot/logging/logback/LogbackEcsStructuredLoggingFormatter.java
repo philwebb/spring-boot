@@ -34,6 +34,7 @@ import org.springframework.util.CollectionUtils;
  * format</a>.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
 
@@ -64,18 +65,18 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		members.add("ecs.version", "8.11");
 	}
 
-	private void throwableJson(ThrowableProxyConverter converter, Members<ILoggingEvent> members) {
-		members.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
-		members.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
-		members.add("error.stack_trace", (event) -> converter.convert(event));
-	}
-
 	private JsonWriter<List<KeyValuePair>> keyValuePairsJsonDataWriter() {
 		return JsonWriter.using((pairs, memberWriter) -> {
 			if (!CollectionUtils.isEmpty(pairs)) {
 				pairs.forEach((pair) -> memberWriter.write(pair.key, pair.value));
 			}
 		});
+	}
+
+	private void throwableJson(ThrowableProxyConverter converter, Members<ILoggingEvent> members) {
+		members.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
+		members.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
+		members.add("error.stack_trace", (event) -> converter.convert(event));
 	}
 
 	@Override

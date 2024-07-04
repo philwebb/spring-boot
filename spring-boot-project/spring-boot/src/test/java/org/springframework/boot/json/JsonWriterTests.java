@@ -18,11 +18,10 @@ package org.springframework.boot.json;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.json.JsonWriter.ValueWriter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,140 +29,86 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JsonWriter}.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
-class JsonWriterTests {
+public class JsonWriterTests {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	@Nested
+	class ValueWriterTests {
 
-	@Test
-	void object() {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> writer.numberMember("a", 1)
-			.numberMember("b", 2.0)
-			.boolMember("c", true)
-			.stringMember("d", "d")
-			.member("e", null));
-		assertThatJson(writer).isEqualTo("""
-				{"a":1,"b":2.0,"c":true,"d":"d","e":null}
-				""".trim());
-	}
-
-	@Test
-	void nestedObject() {
-		JsonWriter writer = new JsonWriter();
-		writer.object(
-				() -> writer.numberMember("a", 1).member("b", () -> writer.object(() -> writer.numberMember("c", 2))));
-		assertThatJson(writer).isEqualTo("""
-				{"a":1,"b":{"c":2}}
-				""".trim());
-	}
-
-	@Test
-	void array() {
-		JsonWriter writer = new JsonWriter();
-		writer.array(() -> writer.string("a").string("b").string("c"));
-		assertThatJson(writer).isEqualTo("""
-				["a","b","c"]
-				""".trim());
-	}
-
-	@Test
-	void stringArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.stringArray("a", "b", "c");
-		assertThatJson(writer).isEqualTo("""
-				["a","b","c"]
-				""".trim());
-	}
-
-	@Test
-	void stringArrayFromIterable() {
-		JsonWriter writer = new JsonWriter();
-		writer.stringArray(List.of("a", "b", "c"));
-		assertThatJson(writer).isEqualTo("""
-				["a","b","c"]
-				""".trim());
-	}
-
-	@Test
-	void doubleArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.numberArray(1.0, 2.0, 3.0);
-		assertThatJson(writer).isEqualTo("""
-				[1.0,2.0,3.0]
-				""".trim());
-	}
-
-	@Test
-	void longArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.numberArray(1, 2, 3);
-		assertThatJson(writer).isEqualTo("""
-				[1,2,3]
-				""".trim());
-	}
-
-	@Test
-	void booleanArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.boolArray(true, false, true);
-		assertThatJson(writer).isEqualTo("""
-				[true,false,true]
-				""".trim());
-	}
-
-	@Test
-	void arrayWithObjects() {
-		JsonWriter writer = new JsonWriter();
-		writer.array(
-				() -> writer.object(() -> writer.stringMember("a", "1")).object(() -> writer.stringMember("b", "2")));
-		assertThatJson(writer).isEqualTo("""
-				[{"a":"1"},{"b":"2"}]
-				""".trim());
-	}
-
-	@Test
-	void nullArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.array(() -> writer.string(null).string(null));
-		assertThatJson(writer).isEqualTo("""
-				[null,null]
-				""".trim());
-	}
-
-	@Test
-	void escapeString() {
-		JsonWriter writer = new JsonWriter();
-		writer.string("\"\\/\b\f\n\r\t\u0000\u001F");
-		assertThatJson(writer).isEqualTo("""
-				"\\"\\\\\\/\\b\\f\\n\\r\\t\\u0000\\u001F"
-				""".trim());
-	}
-
-	@Test
-	void newLine() {
-		JsonWriter writer = new JsonWriter();
-		writer.newLine();
-		assertThatJson(writer).isEqualTo("\n");
-	}
-
-	@Test
-	void newLineWithContent() {
-		JsonWriter writer = new JsonWriter();
-		writer.object();
-		writer.newLine();
-		assertThatJson(writer).isEqualTo("{}\n");
-	}
-
-	private static AbstractStringAssert<?> assertThatJson(JsonWriter writer) {
-		String json = writer.toJson();
-		try {
-			OBJECT_MAPPER.readTree(json);
+		@Test
+		void writeWhenNullValue() throws Exception {
+			assertThat(write(null)).isEqualTo("null");
 		}
-		catch (JsonProcessingException ex) {
-			Assertions.fail("Invalid JSON produced: '%s'".formatted(json), ex);
+
+		@Test
+		void writeWhenStringValue() throws Exception {
+			assertThat(write("test")).isEqualTo(quoted("test"));
 		}
-		return assertThat(json);
+
+		@Test
+		void writeWhenStringValueWithEscape() throws Exception {
+			assertThat(write("\"")).isEqualTo(quoted("\\\""));
+			assertThat(write("\\")).isEqualTo(quoted("\\\\"));
+			assertThat(write("/")).isEqualTo(quoted("\\/"));
+			assertThat(write("\b")).isEqualTo(quoted("\\b"));
+			assertThat(write("\f")).isEqualTo(quoted("\\f"));
+			assertThat(write("\n")).isEqualTo(quoted("\\n"));
+			assertThat(write("\r")).isEqualTo(quoted("\\r"));
+			assertThat(write("\t")).isEqualTo(quoted("\\t"));
+			assertThat(write("\\u0000\\u001F")).isEqualTo(quoted("\\\\u0000\\\\u001F"));
+		}
+
+		@Test
+		void writeWhenNumberValue() throws Exception {
+			assertThat(write((byte) 123)).isEqualTo("123");
+			assertThat(write(123)).isEqualTo("123");
+			assertThat(write(123L)).isEqualTo("123");
+			assertThat(write(Byte.valueOf((byte) 123))).isEqualTo("123");
+			assertThat(write(Integer.valueOf(123))).isEqualTo("123");
+			assertThat(write(Long.valueOf(123L))).isEqualTo("123");
+		}
+
+		@Test
+		void writeWhenBooleanValue() throws Exception {
+			assertThat(write(true)).isEqualTo("true");
+			assertThat(write(Boolean.TRUE)).isEqualTo("true");
+			assertThat(write(false)).isEqualTo("false");
+			assertThat(write(Boolean.FALSE)).isEqualTo("false");
+		}
+
+		@Test
+		void writeWhenStringArray() throws Exception {
+			assertThat(write(new String[] { "a", "b", "c" })).isEqualTo("""
+					["a","b","c"]""");
+		}
+
+		@Test
+		void writeWhenNumberArray() throws Exception {
+			assertThat(write(new int[] { 1, 2, 3 })).isEqualTo("[1,2,3]");
+		}
+
+		@Test
+		void writeWhenBooleanArray() throws Exception {
+			assertThat(write(new boolean[] { true, false, true })).isEqualTo("[true,false,true]");
+		}
+
+		@Test
+		void writeWhenCollection() throws Exception {
+			assertThat(write(List.of("a", "b", "c"))).isEqualTo("""
+					["a","b","c"]""");
+		}
+
+		private <V> String write(V value) throws Exception {
+			StringBuilder out = new StringBuilder();
+			new ValueWriter(out).write(value);
+			return out.toString();
+		}
+
+		private String quoted(String string) {
+			return "\"" + string + "\"";
+		}
+
 	}
 
 }
