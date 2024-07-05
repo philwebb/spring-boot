@@ -40,7 +40,7 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 			ThrowableProxyConverter throwableProxyConverter) {
 		this.writer = JsonWriter
 			.<ILoggingEvent>of((members) -> loggingEventJson(metadata, throwableProxyConverter, members))
-			.endingWithNewLine();
+			.withNewLineAtEnd();
 	}
 
 	private void loggingEventJson(ApplicationMetadata metadata, ThrowableProxyConverter throwableProxyConverter,

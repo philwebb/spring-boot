@@ -19,7 +19,6 @@ package org.springframework.boot.json;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,26 +43,20 @@ public interface JsonWriter<T> {
 
 	default String writeToString(T instance) {
 		StringBuilder out = new StringBuilder();
-		writeUnchecked(instance, out);
+		write(instance, out);
 		return out.toString();
 	}
 
-	default void writeUnchecked(T instance, Appendable out) {
-		try {
-			write(instance, out);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+	default void write(T instance, StringBuilder out) {
 	}
 
 	void write(T instance, Appendable out) throws IOException;
 
-	default JsonWriter<T> endingWithNewLine() {
-		return endingWith("\n");
+	default JsonWriter<T> withNewLineAtEnd() {
+		return withSuffix("\n");
 	}
 
-	default JsonWriter<T> endingWith(String suffix) {
+	default JsonWriter<T> withSuffix(String suffix) {
 		return (instance, out) -> {
 			write(instance, out);
 			append(out, suffix);
@@ -94,149 +87,9 @@ public interface JsonWriter<T> {
 
 	// FIXME listOf() arrayOf()
 
-	static <T> JsonWriter<T> using(BiConsumer<T, ValueWriter> writer) {
-		return (instance, out) -> writer.accept(instance, new ValueWriter(out));
-	}
-
 	private static <T, R> R accept(Consumer<T> consumer, T value, Function<T, R> finalizer) {
 		consumer.accept(value);
 		return finalizer.apply(value);
-	}
-
-	public static class ValueWriter {
-
-		private final Appendable out;
-
-		ValueWriter(Appendable out) {
-			this.out = out;
-		}
-
-		public <V> void write(V value) {
-			if (value == null) {
-				writeNull();
-			}
-			else if (ObjectUtils.isArray(value) || value instanceof Collection) {
-				writeArray(value);
-			}
-			else if (value instanceof Map<?, ?> map) {
-				writePairs(map::forEach);
-			}
-			else if (value instanceof Number) {
-				writeNumber(value);
-			}
-			else if (value instanceof Boolean) {
-				writeBoolean(value);
-			}
-			else {
-				writeString(value);
-			}
-		}
-
-		public <T, K, V> void writeEntries(Consumer<Consumer<T>> elements, Function<T, K> keyExtractor,
-				Function<T, V> valueExtractor) {
-			writePairs((pair) -> elements.accept((element) -> {
-				K key = keyExtractor.apply(element);
-				V value = valueExtractor.apply(element);
-				pair.accept(key, value);
-			}));
-		}
-
-		public <K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
-			append("{");
-			boolean[] addComma = { false };
-			pairs.accept((key, value) -> {
-				appendIf(addComma[0], ',');
-				writeString(key);
-				append(":");
-				write(value);
-				addComma[0] = true;
-			});
-			append("}");
-		}
-
-		private void writeArray(Object value) {
-			append('[');
-			if (ObjectUtils.isArray(value)) {
-				writeElements(ObjectUtils.toObjectArray(value));
-			}
-			else {
-				writeElements((Iterable<?>) value);
-			}
-			append(']');
-		}
-
-		private void writeElements(Object[] array) {
-			for (int i = 0; i < array.length; i++) {
-				appendIf(i > 0, ',');
-				write(array[i]);
-			}
-		}
-
-		private void writeElements(Iterable<?> iterable) {
-			boolean addComma = false;
-			for (Object element : iterable) {
-				appendIf(addComma, ',');
-				write(element);
-				addComma = true;
-			}
-		}
-
-		private void writeString(Object value) {
-			append('"');
-			String string = value.toString();
-			for (int i = 0; i < string.length(); i++) {
-				char ch = string.charAt(i);
-				switch (ch) {
-					case '"' -> append("\\\"");
-					case '\\' -> append("\\\\");
-					case '/' -> append("\\/");
-					case '\b' -> append("\\b");
-					case '\f' -> append("\\f");
-					case '\n' -> append("\\n");
-					case '\r' -> append("\\r");
-					case '\t' -> append("\\t");
-					default -> appendWithIsoControlEscape(ch);
-				}
-			}
-			append('"');
-		}
-
-		private void writeNumber(Object value) {
-			append(value.toString());
-		}
-
-		private void writeNull() {
-			append("null");
-		}
-
-		private void writeBoolean(Object value) {
-			append(Boolean.TRUE.equals(value) ? "true" : "false");
-		}
-
-		private void appendIf(boolean condition, char ch) {
-			if (condition) {
-				append(ch);
-			}
-		}
-
-		private void appendWithIsoControlEscape(char ch) {
-			if (Character.isISOControl(ch)) {
-				append("\\u");
-				append(String.format("%04X", (int) ch));
-			}
-			else {
-				append(ch);
-			}
-		}
-
-		private void append(char ch) {
-			JsonWriter.append(this.out, ch);
-		}
-
-		private void append(CharSequence value) {
-			JsonWriter.append(this.out, value);
-		}
-
 	}
 
 	public static final class Members<T> {
@@ -285,30 +138,31 @@ public interface JsonWriter<T> {
 			return new Member<>(null);
 		}
 
-		private <V> Member<V> addMember(Member.Writer memberWriter) {
+		private <V> Member<V> addMember(Member.Writer<V> memberWriter) {
 			Member<V> member = new Member<>(memberWriter);
 			this.members.add(member);
 			return member;
 		}
 
 		JsonWriter<T> writer() {
-			List<Member.Writer> memberWriters = this.members.stream().map(Member::writer).toList();
-			return JsonWriter.using((instance, valueWriter) -> valueWriter.writePairs((pairs) -> {
-				for (Member.Writer memberWriter : memberWriters) {
-					memberWriter.write(instance, pairs);
-				}
-			}));
+			// List<Member.Writer> memberWriters =
+			// this.members.stream().map(Member::writer).toList();
+			// return JsonWriter.using((instance, valueWriter) ->
+			// valueWriter.writePairs((pairs) -> {
+			// for (Member.Writer memberWriter : memberWriters) {
+			// memberWriter.write(instance, pairs);
+			// }
+			// }));
+			return null;
 		}
 
 	}
 
 	public static final class Member<T> {
 
-		private Member.Writer writer;
+		private Predicate<T> predicate = (instance) -> true;
 
-		Member(Member.Writer writer) {
-			this.writer = writer;
-		}
+		private Function<T, Member<?>> delegate;
 
 		public Member<T> whenNotNull() {
 			return when(Objects::nonNull);
@@ -334,21 +188,14 @@ public interface JsonWriter<T> {
 		@SuppressWarnings("unchecked")
 		public Member<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
-			Member.Writer parentWriter = this.writer;
-			this.writer = ((instance, pairs) -> {
-				if (predicate.test((T) instance)) {
-					parentWriter.write(instance, pairs);
-				}
-			});
+			this.predicate = this.predicate.and(predicate);
 			return this;
 		}
 
 		@SuppressWarnings("unchecked")
 		public <R> Member<R> as(Function<T, R> adapter) {
 			Assert.notNull(adapter, "'adapter' must not be null");
-			Member.Writer parentWriter = this.writer;
-			this.writer = ((instance, pairs) -> parentWriter.write(adapter.apply((T) instance), pairs));
-			return (Member<R>) this;
+			return this;
 		}
 
 		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Class<E> elementType,
@@ -358,34 +205,15 @@ public interface JsonWriter<T> {
 
 		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Function<E, K> keyExtractor,
 				Function<E, V> valueExtractor) {
-			return null;
-		}
-
-		public <K, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<K, V>> pairs) {
-			return null;
-		}
-
-		public Member<T> usingMembers(Consumer<Members<T>> members) {
-			JsonWriter<T> membersWriter = JsonWriter.of(members);
-			Writer parentWriter = this.writer;
-			this.writer = (instance, pairs) -> {
-				parentWriter.write(membersWriter, pairs);
-			};
 			return this;
 		}
 
-		Member.Writer writer() {
-			Assert.state(this.writer != null,
-					"Unable to write member JSON. Please add the member with a 'key' or complete "
-							+ "the definition with the 'using(...) method");
-			return this.writer;
+		public <K, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<K, V>> pairs) {
+			return this;
 		}
 
-		@FunctionalInterface
-		interface Writer<T> {
-
-			void write(T instance, BiConsumer<Object, Object> pairs);
-
+		public Member<T> usingMembers(Consumer<Members<T>> members) {
+			return this;
 		}
 
 	}

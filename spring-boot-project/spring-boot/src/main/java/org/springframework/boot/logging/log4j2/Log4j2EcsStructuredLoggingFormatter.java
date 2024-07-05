@@ -40,7 +40,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 	private final JsonWriter<LogEvent> writer;
 
 	Log4j2EcsStructuredLoggingFormatter(ApplicationMetadata metadata) {
-		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(metadata, members)).endingWithNewLine();
+		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(metadata, members)).withNewLineAtEnd();
 	}
 
 	private void logEventJson(ApplicationMetadata metadata, JsonWriter.Members<LogEvent> members) {

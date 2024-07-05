@@ -45,7 +45,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 	private JsonWriter<LogEvent> writer;
 
 	Log4j2LogstashStructuredLoggingFormatter() {
-		this.writer = JsonWriter.<LogEvent>of(this::logEventJson).endingWithNewLine();
+		this.writer = JsonWriter.<LogEvent>of(this::logEventJson).withNewLineAtEnd();
 	}
 
 	private void logEventJson(JsonWriter.Members<LogEvent> members) {

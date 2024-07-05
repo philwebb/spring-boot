@@ -46,7 +46,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 
 	LogbackLogstashStructuredLoggingFormatter(ThrowableProxyConverter throwableProxyConverter) {
 		this.writer = JsonWriter.<ILoggingEvent>of((members) -> loggingEventJson(throwableProxyConverter, members))
-			.endingWithNewLine();
+			.withNewLineAtEnd();
 	}
 
 	private void loggingEventJson(ThrowableProxyConverter throwableProxyConverter,
