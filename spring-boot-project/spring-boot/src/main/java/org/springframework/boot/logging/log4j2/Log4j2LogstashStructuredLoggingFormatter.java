@@ -54,7 +54,7 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 			writer.stringMember("thread_name", event.getThreadName());
 			writer.stringMember("level", event.getLevel().name());
 			writer.numberMember("level_value", event.getLevel().intLevel());
-			addMdc(event, writer);
+			addContextData(event, writer);
 			addMarkers(event, writer);
 			ThrowableProxy throwable = event.getThrownProxy();
 			if (throwable != null) {
@@ -65,16 +65,13 @@ class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingForma
 		return writer.toJson();
 	}
 
-	private static void addMdc(LogEvent event, JsonWriter writer) {
+	private static void addContextData(LogEvent event, JsonWriter writer) {
 		ReadOnlyStringMap contextData = event.getContextData();
-		if (contextData == null) {
+		Map<String, String> map = (contextData != null) ? contextData.toMap() : null;
+		if (CollectionUtils.isEmpty(map)) {
 			return;
 		}
-		Map<String, String> mdc = contextData.toMap();
-		if (CollectionUtils.isEmpty(mdc)) {
-			return;
-		}
-		mdc.forEach(writer::stringMember);
+		map.forEach(writer::stringMember);
 	}
 
 	private void addMarkers(LogEvent event, JsonWriter writer) {

@@ -69,7 +69,7 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 			}
 			writer.stringMember("log.logger", event.getLoggerName());
 			writer.stringMember("message", event.getMessage().getFormattedMessage());
-			addMdc(event, writer);
+			addContextData(event, writer);
 			ThrowableProxy throwable = event.getThrownProxy();
 			if (throwable != null) {
 				writer.stringMember("error.type", throwable.getThrowable().getClass().getName());
@@ -82,16 +82,13 @@ class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<
 		return writer.toJson();
 	}
 
-	private static void addMdc(LogEvent event, JsonWriter writer) {
+	private static void addContextData(LogEvent event, JsonWriter writer) {
 		ReadOnlyStringMap contextData = event.getContextData();
-		if (contextData == null) {
+		Map<String, String> map = (contextData != null) ? contextData.toMap() : null;
+		if (CollectionUtils.isEmpty(map)) {
 			return;
 		}
-		Map<String, String> mdc = contextData.toMap();
-		if (CollectionUtils.isEmpty(mdc)) {
-			return;
-		}
-		mdc.forEach(writer::stringMember);
+		map.forEach(writer::stringMember);
 	}
 
 }
