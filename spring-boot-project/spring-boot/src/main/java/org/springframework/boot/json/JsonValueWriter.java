@@ -18,21 +18,33 @@ package org.springframework.boot.json;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.springframework.boot.json.JsonWriter.WritableJson;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 class JsonValueWriter {
 
 	private final Appendable out;
 
+	private final Queue<ActiveSeries> activeSeries = new ArrayDeque<>();
+
 	JsonValueWriter(Appendable out) {
 		this.out = out;
+	}
+
+	void start(Series series) {
+		this.activeSeries.add(new ActiveSeries(series));
+	}
+
+	void end(Series series) {
+		this.activeSeries.add(new ActiveSeries(series));
 	}
 
 	<V> void write(V value) {
@@ -59,17 +71,11 @@ class JsonValueWriter {
 		}
 	}
 
-	// FIXME we might not need this
-	<T, K, V> void writeEntries(Consumer<Consumer<T>> elements, Function<T, K> keyExtractor,
-			Function<T, V> valueExtractor) {
-		writePairs((pair) -> elements.accept((element) -> {
-			K key = keyExtractor.apply(element);
-			V value = valueExtractor.apply(element);
-			pair.accept(key, value);
-		}));
+	<K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
+		writePairs(Group.NEW, pairs);
 	}
 
-	<K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
+	<K, V> void writePairs(Group group, Consumer<BiConsumer<K, V>> pairs) {
 		append("{");
 		boolean[] addComma = { false };
 		pairs.accept((key, value) -> {
@@ -80,6 +86,34 @@ class JsonValueWriter {
 			addComma[0] = true;
 		});
 		append("}");
+	}
+
+	<E> void writeElements(Group group, Consumer<Consumer<E>> elements) {
+		append("[");
+		boolean[] addComma = { false };
+		elements.accept((value) -> {
+			appendIf(addComma[0], ',');
+			write(value);
+			addComma[0] = true;
+		});
+		append("]");
+	}
+
+	void writeSeries(Series series, Group group, Runnable action) {
+		if (group == Group.EXISTING) {
+			assertActiveSeries(series);
+			action.run();
+		}
+		else {
+			start(series);
+			action.run();
+			end(series);
+		}
+	}
+
+	private void assertActiveSeries(Series series) {
+		Assert.state(!this.activeSeries.isEmpty(), "No series has been started");
+		Assert.state(this.activeSeries.poll().is(series), () -> "Existing series is not " + series);
 	}
 
 	private void writeArray(Object value) {
@@ -161,6 +195,43 @@ class JsonValueWriter {
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	enum Group {
+
+		NEW, EXISTING
+
+	}
+
+	enum Series {
+
+		OBJECT('{', '}'), ARRAY('[', ']');
+
+		Series(char open, char close) {
+		}
+
+	}
+
+	private class ActiveSeries {
+
+		private final Series series;
+
+		private boolean commaRequired;
+
+		ActiveSeries(Series series) {
+			this.series = series;
+		}
+
+		void write(Runnable action) {
+			appendIf(this.commaRequired, ',');
+			this.commaRequired = true;
+			action.run();
+		}
+
+		boolean is(Series series) {
+			return this.series == series;
+		}
+
 	}
 
 }

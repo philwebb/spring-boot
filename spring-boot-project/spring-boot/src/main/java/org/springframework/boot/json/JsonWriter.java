@@ -28,7 +28,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.springframework.boot.json.JsonWriter2.ValueWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -81,7 +80,8 @@ public interface JsonWriter<T> {
 		return (instance, out) -> out.append(json.formatted(instance));
 	}
 
-	// FIXME listOf() arrayOf()
+	// FIXME listOf() arrayOf() ?
+	// FIXME dynamic member creation e.g. for map elements with differing types
 
 	public static class WritableJson<T> {
 
@@ -173,17 +173,12 @@ public interface JsonWriter<T> {
 			return member;
 		}
 
-		private void check() {
-			// FIXME check not mixed types
-			this.members.forEach(Member::check);
+		void check() {
+			// this.members.forEach(Member::check);
 		}
 
-		private void write(T instance, JsonValueWriter valueWriter) {
+		void write(T instance, JsonValueWriter valueWriter) {
 			this.members.get(0).write(instance, valueWriter);
-		}
-
-		BiConsumer<T, ValueWriter> writeAction() {
-			return null;
 		}
 
 	}
@@ -192,15 +187,15 @@ public interface JsonWriter<T> {
 
 		private final String name;
 
-		private final Function<?, T> extractor;
+		private Function<?, T> extractor;
 
 		private Predicate<T> predicate = (instance) -> true;
 
-		private BiConsumer<T, JsonValueWriter> writeAction;
+		private BiConsumer<T, JsonValueWriter> usingWriteAction;
 
 		Member(String name, Function<?, T> extractor) {
 			this.name = name;
-			this.extractor = extractor;
+			this.extractor = (extractor != null) ? extractor : Function.identity();
 		}
 
 		public Member<T> whenNotNull() {
@@ -261,16 +256,16 @@ public interface JsonWriter<T> {
 			return usingWriteAction(delegate::write);
 		}
 
-		private Member<T> usingWriteAction(BiConsumer<T, JsonValueWriter> writeAction) {
-			// FIXME check we're not already done this or similar
-			this.writeAction = writeAction;
+		private Member<T> usingWriteAction(BiConsumer<T, JsonValueWriter> usingWriteAction) {
+			Assert.state(this.usingWriteAction == null, "Using write action already defined");
+			this.usingWriteAction = usingWriteAction;
 			return this;
 		}
 
 		void write(Object instance, JsonValueWriter valueWriter) {
 			T extracted = extract(instance);
-			if (this.writeAction != null) {
-				this.writeAction.accept(extracted, valueWriter);
+			if (this.usingWriteAction != null) {
+				this.usingWriteAction.accept(extracted, valueWriter);
 				return;
 			}
 			valueWriter.write(extracted);
@@ -282,7 +277,9 @@ public interface JsonWriter<T> {
 		}
 
 		void check() {
-
+			Assert.state(this.name != null || this.usingWriteAction != null,
+					"Incomplete member definition. Please add the member using a 'name' or complete the "
+							+ "definition with calling an appropriate 'using...' method");
 		}
 
 	}

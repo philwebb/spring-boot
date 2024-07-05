@@ -65,6 +65,16 @@ public class JsonWriterTests {
 		assertThat(JsonWriter.ofFormatString("%s").withNewLineAtEnd().writeToString(123)).isEqualTo("123\n");
 	}
 
+	@Test
+	void testName() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> {
+			members.add("firstName", Person::firstName);
+			members.add("lastName", Person::lastName);
+			members.add("age", Person::age);
+		});
+		System.out.println(writer.write(new Person("Spring", "Boot", 10)));
+	}
+
 	private static String quoted(String value) {
 		return "\"" + value + "\"";
 	}
@@ -94,6 +104,10 @@ public class JsonWriterTests {
 		private <T> String write(T instance) {
 			return JsonWriter.standard().writeToString(instance);
 		}
+
+	}
+
+	record Person(String firstName, String lastName, int age) {
 
 	}
 
