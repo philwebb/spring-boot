@@ -16,7 +16,11 @@
 
 package org.springframework.boot.json;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class JsonWriterTests {
+
+	private static final Person PERSON = new Person("Spring", "Boot", 10);
 
 	@Test
 	void writeToStringWritesToString() {
@@ -66,14 +72,74 @@ public class JsonWriterTests {
 	}
 
 	@Test
-	void testName() {
+	void ofAddingNamedSelf() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf("test"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"test":"Spring Boot (10)"}""");
+	}
+
+	@Test
+	void ofAddingNamedValue() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", "Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"Spring":"Boot"}""");
+	}
+
+	@Test
+	void ofAddingNamedSupplier() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", () -> "Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"Spring":"Boot"}""");
+	}
+
+	@Test
+	void ofAddingUnamedSelf() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf());
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
+	}
+
+	@Test
+	void ofAddingUnamedValue() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
+	}
+
+	@Test
+	void ofAddingUnamedSupplier() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(() -> "Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
+	}
+
+	@Test
+	void ofAddingUnamedExtractor() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(Person::lastName));
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
+	}
+
+	@Test
+	void ofAddingMapEntries() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("a", "A");
+		map.put("b", 123);
+		map.put("c", true);
+		JsonWriter<List<Map<String, Object>>> writer = JsonWriter
+			.of((members) -> members.addMapEntries((list) -> list.get(0)));
+		assertThat(writer.writeToString(List.of(map))).isEqualTo("""
+				{"a":"A","b":123,"c":true}""");
+	}
+
+	@Test
+	void ofAddingNamedExtractor() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> {
 			members.add("firstName", Person::firstName);
 			members.add("lastName", Person::lastName);
 			members.add("age", Person::age);
 		});
-		System.out.println(writer.write(new Person("Spring", "Boot", 10)));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"firstName":"Spring","lastName":"Boot","age":10}""");
 	}
+
+	// FIXME check
 
 	private static String quoted(String value) {
 		return "\"" + value + "\"";
@@ -107,7 +173,116 @@ public class JsonWriterTests {
 
 	}
 
+	@Nested
+	class MemberTest {
+
+		@Test
+		void whenNotNull() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().whenNotNull());
+			assertThat(writer.writeToString("test")).isEqualTo(quoted("test"));
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenNotNullExtracted() {
+			Person personWithNull = new Person("Spring", null, 10);
+			JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf().whenNotNull(Person::lastName));
+			assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
+			assertThat(writer.writeToString(personWithNull)).isEmpty();
+		}
+
+		@Test
+		void whenHasLength() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
+			assertThat(writer.writeToString("test")).isEqualTo(quoted("test"));
+			assertThat(writer.writeToString("")).isEmpty();
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenHasLengthOnNonString() {
+			JsonWriter<StringBuilder> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
+			assertThat(writer.writeToString(new StringBuilder("test"))).isEqualTo(quoted("test"));
+			assertThat(writer.writeToString(new StringBuilder(""))).isEmpty();
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenNotEmpty() {
+			JsonWriter<Object> writer = JsonWriter.of((members) -> members.addSelf().whenNotEmpty());
+			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
+					["a"]""");
+			assertThat(writer.writeToString(List.of())).isEmpty();
+			assertThat(writer.writeToString(new Object[] {})).isEmpty();
+			assertThat(writer.writeToString(new int[] {})).isEmpty();
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenNot() {
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.addSelf().whenNot(List::isEmpty));
+			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
+					["a"]""");
+			assertThat(writer.writeToString(List.of())).isEmpty();
+		}
+
+		@Test
+		void when() {
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.addSelf().when(List::isEmpty));
+			assertThat(writer.writeToString(List.of("a"))).isEmpty();
+			assertThat(writer.writeToString(List.of())).isEqualTo("[]");
+		}
+
+		@Test
+		void chainedPredicates() {
+			Set<String> banned = Set.of("Spring", "Boot");
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf()
+				.whenHasLength()
+				.whenNot(banned::contains)
+				.whenNot((string) -> string.length() <= 2));
+			assertThat(writer.writeToString("")).isEmpty();
+			assertThat(writer.writeToString("a")).isEmpty();
+			assertThat(writer.writeToString("Boot")).isEmpty();
+			assertThat(writer.writeToString("JSON")).isEqualTo(quoted("JSON"));
+		}
+
+		@Test
+		void as() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().as(Integer::valueOf));
+			assertThat(writer.writeToString("123")).isEqualTo("123");
+		}
+
+		@Test
+		void chainedAs() {
+			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			JsonWriter<String> writer = JsonWriter
+				.of((members) -> members.addSelf().as(Integer::valueOf).as(booleanAdapter));
+			assertThat(writer.writeToString("0")).isEqualTo("false");
+			assertThat(writer.writeToString("1")).isEqualTo("true");
+		}
+
+		@Test
+		void chainedAsAndPredicates() {
+			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf()
+				.whenNot(String::isEmpty)
+				.as(Integer::valueOf)
+				.when((integer) -> integer < 2)
+				.as(booleanAdapter));
+			assertThat(writer.writeToString("")).isEmpty();
+			assertThat(writer.writeToString("0")).isEqualTo("false");
+			assertThat(writer.writeToString("1")).isEqualTo("true");
+			assertThat(writer.writeToString("2")).isEmpty();
+		}
+
+	}
+
 	record Person(String firstName, String lastName, int age) {
+
+		@Override
+		public String toString() {
+			return "%s %s (%s)".formatted(this.firstName, this.lastName, this.age);
+		}
 
 	}
 

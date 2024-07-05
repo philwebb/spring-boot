@@ -24,7 +24,10 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonValueWriter.Series;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JsonValueWriter} .
@@ -150,15 +153,64 @@ class JsonValueWriterTests {
 		assertThat(write("\n")).isEqualTo(quoted("\\n"));
 		assertThat(write("\r")).isEqualTo(quoted("\\r"));
 		assertThat(write("\t")).isEqualTo(quoted("\\t"));
-		assertThat(write("\\u0000\\u001F")).isEqualTo(quoted("\\\\u0000\\\\u001F"));
+		assertThat(write("\u0000\u001F")).isEqualTo(quoted("\\u0000\\u001F"));
 	}
 
 	@Test
-	void writePairs() {
+	void writeObject() {
 		Map<String, String> map = Map.of("a", "A");
 		String actual = doWrite((valueWriter) -> valueWriter.writeObject(map::forEach));
 		assertThat(actual).isEqualTo("""
 				{"a":"A"}""");
+	}
+
+	@Test
+	void writePairs() {
+		String actual = doWrite((valueWriter) -> {
+			valueWriter.start(Series.OBJECT);
+			valueWriter.writePairs(Map.of("a", "A")::forEach);
+			valueWriter.writePairs(Map.of("b", "B")::forEach);
+			valueWriter.end(Series.OBJECT);
+		});
+		assertThat(actual).isEqualTo("""
+				{"a":"A","b":"B"}""");
+	}
+
+	@Test
+	void writeArray() {
+		List<String> list = List.of("a", "b", "c");
+		String actual = doWrite((valueWriter) -> valueWriter.writeArray(list::forEach));
+		assertThat(actual).isEqualTo("""
+				["a","b","c"]""");
+	}
+
+	@Test
+	void writeElements() {
+		String actual = doWrite((valueWriter) -> {
+			valueWriter.start(Series.ARRAY);
+			valueWriter.writeElements(List.of("a", "b")::forEach);
+			valueWriter.writeElements(List.of("c", "d")::forEach);
+			valueWriter.end(Series.ARRAY);
+		});
+		assertThat(actual).isEqualTo("""
+				["a","b","c","d"]""");
+	}
+
+	@Test
+	void endWhenWrongSeriesThrowsException() {
+		doWrite((valueWriter) -> {
+			valueWriter.start(Series.OBJECT);
+			assertThatIllegalStateException().isThrownBy(() -> valueWriter.end(Series.ARRAY))
+				.withMessage("Existing series is not ARRAY");
+		});
+	}
+
+	@Test
+	void endWhenNotStartedThrowsException() {
+		doWrite((valueWriter) -> {
+			assertThatIllegalStateException().isThrownBy(() -> valueWriter.end(Series.ARRAY))
+				.withMessage("No series has been started");
+		});
 	}
 
 	private <V> String write(V value) {

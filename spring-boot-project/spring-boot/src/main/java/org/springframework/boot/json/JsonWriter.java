@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.springframework.boot.json.JsonValueWriter.Series;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -80,9 +81,6 @@ public interface JsonWriter<T> {
 		return (instance, out) -> out.append(json.formatted(instance));
 	}
 
-	// FIXME listOf() arrayOf() ?
-	// FIXME dynamic member creation e.g. for map elements with differing types
-
 	public static class WritableJson<T> {
 
 		private final JsonWriter<T> writer;
@@ -99,15 +97,6 @@ public interface JsonWriter<T> {
 			StringBuilder stringBuilder = new StringBuilder();
 			to(stringBuilder);
 			return stringBuilder.toString();
-		}
-
-		public void to(StringBuilder out) {
-			try {
-				this.writer.write(this.instance, out);
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
 		}
 
 		public void to(Appendable out) {
@@ -150,10 +139,6 @@ public interface JsonWriter<T> {
 			return add((instance) -> instance);
 		}
 
-		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
-			return add(extractor).usingPairs(Map::forEach);
-		}
-
 		public <V> Member<V> add(V value) {
 			return add((instance) -> value);
 		}
@@ -167,6 +152,10 @@ public interface JsonWriter<T> {
 			return addMember(null, extractor);
 		}
 
+		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
+			return add(extractor).usingPairs(Map::forEach);
+		}
+
 		private <V> Member<V> addMember(String name, Function<T, V> extractor) {
 			Member<V> member = new Member<>(name, extractor);
 			this.members.add(member);
@@ -174,11 +163,21 @@ public interface JsonWriter<T> {
 		}
 
 		void check() {
-			// this.members.forEach(Member::check);
+			Assert.state(!this.members.isEmpty(), "No members have been added");
+			if (this.members.size() > 1) {
+				this.members.forEach(Member::checkContributingToJsonObject);
+			}
 		}
 
 		void write(T instance, JsonValueWriter valueWriter) {
-			this.members.get(0).write(instance, valueWriter);
+			Member<?> firstMember = this.members.get(0);
+			if (this.members.size() == 1 && !firstMember.isContributingToJsonObject()) {
+				firstMember.write(instance, valueWriter);
+				return;
+			}
+			valueWriter.start(Series.OBJECT);
+			this.members.forEach((member) -> member.write(instance, valueWriter));
+			valueWriter.end(Series.OBJECT);
 		}
 
 	}
@@ -189,9 +188,9 @@ public interface JsonWriter<T> {
 
 		private Function<?, T> extractor;
 
-		private Predicate<T> predicate = (instance) -> true;
+		private Predicate<Object> predicate = (instance) -> true;
 
-		private BiConsumer<T, JsonValueWriter> usingWriteAction;
+		private BiConsumer<T, JsonValueWriter> writeAction;
 
 		Member(String name, Function<?, T> extractor) {
 			this.name = name;
@@ -219,53 +218,64 @@ public interface JsonWriter<T> {
 			return when(predicate.negate());
 		}
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public Member<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
-			this.predicate = this.predicate.and(predicate);
+			this.predicate = ((Predicate) this.predicate).and(predicate);
 			return this;
 		}
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public <R> Member<R> as(Function<T, R> adapter) {
 			Assert.notNull(adapter, "'adapter' must not be null");
-			return null;
+			Function existing = this.extractor;
+			this.extractor = existing.andThen(adapter);
+			return (Member<R>) this;
 		}
 
-		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Class<E> elementType,
-				Function<E, K> nameExtractor, Function<E, V> valueExtractor) {
-			return usingElements(elements, nameExtractor, valueExtractor);
+		public <E, N, V> Member<T> usingExtractedPairs(BiConsumer<T, Consumer<E>> elements,
+				PairExtractor<E> extractor) {
+			return usingExtractedPairs(elements, extractor::getName, extractor::getValue);
 		}
 
-		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Function<E, K> nameExtractor,
-				Function<E, V> valueExtractor) {
+		public <E, N, V> Member<T> usingExtractedPairs(BiConsumer<T, Consumer<E>> elements,
+				Function<E, N> nameExtractor, Function<E, V> valueExtractor) {
 			return usingPairs((instance, pairs) -> elements.accept(instance, (element) -> {
-				K name = nameExtractor.apply(element);
+				N name = nameExtractor.apply(element);
 				V value = valueExtractor.apply(element);
 				pairs.accept(name, value);
 			}));
 		}
 
-		public <K, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<K, V>> pairs) {
-			return usingWriteAction((instance, valueWriter) -> valueWriter
-				.<K, V>writeObject((valueWriterPairs) -> pairs.accept(instance, valueWriterPairs)));
+		public <N, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<N, V>> pairs) {
+			return useWriteAction((instance, valueWriter) -> valueWriter
+				.<N, V>writePairs((valueWriterPairs) -> pairs.accept(instance, valueWriterPairs)));
 		}
 
 		public Member<T> usingMembers(Consumer<Members<T>> members) {
 			Members<T> delegate = new Members<>();
 			members.accept(delegate);
 			delegate.check();
-			return usingWriteAction(delegate::write);
+			return useWriteAction(delegate::write);
 		}
 
-		private Member<T> usingWriteAction(BiConsumer<T, JsonValueWriter> usingWriteAction) {
-			Assert.state(this.usingWriteAction == null, "Using write action already defined");
-			this.usingWriteAction = usingWriteAction;
+		private Member<T> useWriteAction(BiConsumer<T, JsonValueWriter> writeAction) {
+			Assert.state(this.writeAction == null, "Write action already defined");
+			this.writeAction = writeAction;
 			return this;
 		}
 
 		void write(Object instance, JsonValueWriter valueWriter) {
+			if (!this.predicate.test(instance)) {
+				return;
+			}
 			T extracted = extract(instance);
-			if (this.usingWriteAction != null) {
-				this.usingWriteAction.accept(extracted, valueWriter);
+			if (this.writeAction != null) {
+				this.writeAction.accept(extracted, valueWriter);
+				return;
+			}
+			if (this.name != null) {
+				valueWriter.writePair(this.name, extracted);
 				return;
 			}
 			valueWriter.write(extracted);
@@ -276,10 +286,41 @@ public interface JsonWriter<T> {
 			return (T) ((Function) this.extractor).apply(instance);
 		}
 
-		void check() {
-			Assert.state(this.name != null || this.usingWriteAction != null,
-					"Incomplete member definition. Please add the member using a 'name' or complete the "
-							+ "definition with calling an appropriate 'using...' method");
+		void checkContributingToJsonObject() {
+			Assert.state(isContributingToJsonObject(),
+					"Incomplete member definition, ensure that an appropriate 'use' method has been called");
+		}
+
+		boolean isContributingToJsonObject() {
+			return this.name != null || this.writeAction != null;
+		}
+
+	}
+
+	interface PairExtractor<T> {
+
+		<N> N getName(T instance);
+
+		<V> V getValue(T instance);
+
+		static <T> PairExtractor<T> of(Function<T, ?> nameExtractor, Function<T, ?> valueExtractor) {
+			Assert.notNull(nameExtractor, "'nameExtractor' must not be null");
+			Assert.notNull(valueExtractor, "'valueExtractor' must not be null");
+			return new PairExtractor<>() {
+
+				@Override
+				@SuppressWarnings("unchecked")
+				public <N> N getName(T instance) {
+					return (N) nameExtractor.apply(instance);
+				}
+
+				@Override
+				@SuppressWarnings("unchecked")
+				public <V> V getValue(T instance) {
+					return (V) valueExtractor.apply(instance);
+				}
+
+			};
 		}
 
 	}

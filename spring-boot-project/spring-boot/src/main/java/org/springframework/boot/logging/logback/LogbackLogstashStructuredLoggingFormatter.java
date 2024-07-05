@@ -32,6 +32,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
 
 /**
@@ -41,6 +42,9 @@ import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
  * @author Phillip Webb
  */
 class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
+
+	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
+			(pair) -> pair.value);
 
 	private JsonWriter<ILoggingEvent> writer;
 
@@ -61,7 +65,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		members.add(ILoggingEvent::getMDCPropertyMap).whenNotEmpty();
 		members.add(ILoggingEvent::getKeyValuePairs)
 			.whenNotEmpty()
-			.usingElements(Iterable::forEach, KeyValuePair.class, (pair) -> pair.key, (pair) -> pair.value);
+			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
 		members.add("tags", ILoggingEvent::getMarkerList).whenNotNull().as(this::getMarkers).whenNotEmpty();
 		members.add("stack_trace", (event) -> event)
 			.whenNotNull(ILoggingEvent::getThrowableProxy)
