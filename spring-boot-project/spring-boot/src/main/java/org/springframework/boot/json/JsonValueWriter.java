@@ -25,6 +25,8 @@ import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.assertj.core.util.Arrays;
+
 import org.springframework.boot.json.JsonWriter.WritableJson;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -41,10 +43,12 @@ class JsonValueWriter {
 
 	void start(Series series) {
 		this.activeSeries.add(new ActiveSeries(series));
+		append(series.getOpenChar());
 	}
 
 	void end(Series series) {
-		this.activeSeries.add(new ActiveSeries(series));
+		this.activeSeries.remove(getActiveSeries(series));
+		append(series.closeChar);
 	}
 
 	<V> void write(V value) {
@@ -71,76 +75,40 @@ class JsonValueWriter {
 		}
 	}
 
-	<K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
-		writePairs(Group.NEW, pairs);
+	private void writeArray(Object value) {
+		if (value instanceof Iterable<?> iterable) {
+			writeElements(iterable::forEach);
+			return;
+		}
+		if (ObjectUtils.isArray(value)) {
+			writeElements(Arrays.asList(ObjectUtils.toObjectArray(value))::forEach);
+			return;
+		}
+		throw new IllegalStateException("Unknow array type");
 	}
 
-	<K, V> void writePairs(Group group, Consumer<BiConsumer<K, V>> pairs) {
-		append("{");
-		boolean[] addComma = { false };
-		pairs.accept((key, value) -> {
-			appendIf(addComma[0], ',');
+	<K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
+		start(Series.OBJECT);
+		pairs.accept(this::writePair);
+		end(Series.OBJECT);
+	}
+
+	private <V, K> void writePair(K key, V value) {
+		getActiveSeries(Series.OBJECT).write(() -> {
 			writeString(key);
 			append(":");
 			write(value);
-			addComma[0] = true;
 		});
-		append("}");
 	}
 
-	<E> void writeElements(Group group, Consumer<Consumer<E>> elements) {
-		append("[");
-		boolean[] addComma = { false };
-		elements.accept((value) -> {
-			appendIf(addComma[0], ',');
-			write(value);
-			addComma[0] = true;
-		});
-		append("]");
+	private <E> void writeElements(Consumer<Consumer<E>> elements) {
+		start(Series.ARRAY);
+		elements.accept(this::writeElement);
+		end(Series.ARRAY);
 	}
 
-	void writeSeries(Series series, Group group, Runnable action) {
-		if (group == Group.EXISTING) {
-			assertActiveSeries(series);
-			action.run();
-		}
-		else {
-			start(series);
-			action.run();
-			end(series);
-		}
-	}
-
-	private void assertActiveSeries(Series series) {
-		Assert.state(!this.activeSeries.isEmpty(), "No series has been started");
-		Assert.state(this.activeSeries.poll().is(series), () -> "Existing series is not " + series);
-	}
-
-	private void writeArray(Object value) {
-		append('[');
-		if (ObjectUtils.isArray(value)) {
-			writeElements(ObjectUtils.toObjectArray(value));
-		}
-		else {
-			writeElements((Iterable<?>) value);
-		}
-		append(']');
-	}
-
-	private void writeElements(Object[] array) {
-		for (int i = 0; i < array.length; i++) {
-			appendIf(i > 0, ',');
-			write(array[i]);
-		}
-	}
-
-	private void writeElements(Iterable<?> iterable) {
-		boolean addComma = false;
-		for (Object element : iterable) {
-			appendIf(addComma, ',');
-			write(element);
-			addComma = true;
-		}
+	private <E> void writeElement(E element) {
+		getActiveSeries(Series.ARRAY).write(() -> write(element));
 	}
 
 	private void writeString(Object value) {
@@ -197,17 +165,32 @@ class JsonValueWriter {
 		}
 	}
 
-	enum Group {
-
-		NEW, EXISTING
-
+	private ActiveSeries getActiveSeries(Series series) {
+		ActiveSeries activeSeries = this.activeSeries.peek();
+		Assert.state(activeSeries != null, "No series has been started");
+		Assert.state(activeSeries.is(series), () -> "Existing series is not " + series);
+		return activeSeries;
 	}
 
 	enum Series {
 
 		OBJECT('{', '}'), ARRAY('[', ']');
 
-		Series(char open, char close) {
+		private final char openChar;
+
+		private final char closeChar;
+
+		Series(char openChar, char closeChar) {
+			this.openChar = openChar;
+			this.closeChar = closeChar;
+		}
+
+		char getOpenChar() {
+			return this.openChar;
+		}
+
+		char getCloseChar() {
+			return this.closeChar;
 		}
 
 	}
