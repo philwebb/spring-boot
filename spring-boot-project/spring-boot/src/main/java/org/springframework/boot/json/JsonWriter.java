@@ -44,11 +44,20 @@ public interface JsonWriter<T> {
 
 	default String writeToString(T instance) {
 		StringBuilder out = new StringBuilder();
-		write(instance, out);
+		writeUnchecked(instance, out);
 		return out.toString();
 	}
 
-	void write(T instance, Appendable out);
+	default void writeUnchecked(T instance, Appendable out) {
+		try {
+			write(instance, out);
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	void write(T instance, Appendable out) throws IOException;
 
 	default JsonWriter<T> endingWithNewLine() {
 		return endingWith("\n");
@@ -251,11 +260,17 @@ public interface JsonWriter<T> {
 
 		@SuppressWarnings("unchecked")
 		public <V> Member<V> add(String key, Function<T, V> extractor) {
+			Assert.notNull(key, "'key' must not be null");
+			Assert.notNull(extractor, "'extractor' must not be null");
 			return addMember((instance, pairs) -> pairs.accept(key, extractor.apply((T) instance)));
 		}
 
 		public Member<T> addSelf() {
 			return add((instance) -> instance);
+		}
+
+		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
+			return add(extractor).usingPairs(Map::forEach);
 		}
 
 		public <V> Member<V> add(V value) {
@@ -270,28 +285,28 @@ public interface JsonWriter<T> {
 			return new Member<>(null);
 		}
 
-		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
-			return add(extractor).usingPairs(Map::forEach);
-		}
-
-		private <V> Member<V> addMember(JsonMemberWriter writer) {
-			Member<V> member = null;
+		private <V> Member<V> addMember(Member.Writer memberWriter) {
+			Member<V> member = new Member<>(memberWriter);
 			this.members.add(member);
 			return member;
 		}
 
 		JsonWriter<T> writer() {
-			JsonMemberWriters memberWriters = new JsonMemberWriters(this.members.stream().map(Member::writer));
-			return JsonWriter.using(memberWriters::write);
+			List<Member.Writer> memberWriters = this.members.stream().map(Member::writer).toList();
+			return JsonWriter.using((instance, valueWriter) -> valueWriter.writePairs((pairs) -> {
+				for (Member.Writer memberWriter : memberWriters) {
+					memberWriter.write(instance, pairs);
+				}
+			}));
 		}
 
 	}
 
 	public static final class Member<T> {
 
-		private JsonMemberWriter writer;
+		private Member.Writer writer;
 
-		Member(JsonMemberWriter writer) {
+		Member(Member.Writer writer) {
 			this.writer = writer;
 		}
 
@@ -316,13 +331,24 @@ public interface JsonWriter<T> {
 			return when(predicate.negate());
 		}
 
+		@SuppressWarnings("unchecked")
 		public Member<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
+			Member.Writer parentWriter = this.writer;
+			this.writer = ((instance, pairs) -> {
+				if (predicate.test((T) instance)) {
+					parentWriter.write(instance, pairs);
+				}
+			});
 			return this;
 		}
 
+		@SuppressWarnings("unchecked")
 		public <R> Member<R> as(Function<T, R> adapter) {
-			return null;
+			Assert.notNull(adapter, "'adapter' must not be null");
+			Member.Writer parentWriter = this.writer;
+			this.writer = ((instance, pairs) -> parentWriter.write(adapter.apply((T) instance), pairs));
+			return (Member<R>) this;
 		}
 
 		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Class<E> elementType,
@@ -340,14 +366,26 @@ public interface JsonWriter<T> {
 		}
 
 		public Member<T> usingMembers(Consumer<Members<T>> members) {
-			return null;
+			JsonWriter<T> membersWriter = JsonWriter.of(members);
+			Writer parentWriter = this.writer;
+			this.writer = (instance, pairs) -> {
+				parentWriter.write(membersWriter, pairs);
+			};
+			return this;
 		}
 
-		JsonMemberWriter writer() {
+		Member.Writer writer() {
 			Assert.state(this.writer != null,
 					"Unable to write member JSON. Please add the member with a 'key' or complete "
 							+ "the definition with the 'using(...) method");
 			return this.writer;
+		}
+
+		@FunctionalInterface
+		interface Writer<T> {
+
+			void write(T instance, BiConsumer<Object, Object> pairs);
+
 		}
 
 	}

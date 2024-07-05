@@ -38,6 +38,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JsonWriterTests {
 
 	@Test
+	void of() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> {
+			members.add("firstName", Person::firstName);
+			members.add("lastName", Person::lastName);
+			members.add("age", Person::age);
+		});
+		assertThat(writer.writeToString(new Person("Spring", "Boot", 15))).isEqualTo("""
+				{"firstName":"Spring","lastName":"Boot","age":15}""");
+	}
+
+	@Test
 	void using() {
 		JsonWriter<Person> writer = JsonWriter.using((person, valueWriter) -> valueWriter.writePairs((pairs) -> {
 			pairs.accept("firstName", person.firstName);
@@ -48,15 +59,17 @@ public class JsonWriterTests {
 				{"firstName":"Spring","lastName":"Boot","age":15}""");
 	}
 
-	@Test
-	void of() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> {
-			members.add("firstName", Person::firstName);
-			members.add("lastName", Person::lastName);
-			members.add("age", Person::age);
-		});
-		assertThat(writer.writeToString(new Person("Spring", "Boot", 15))).isEqualTo("""
-				{"firstName":"Spring","lastName":"Boot","age":15}""");
+	@Nested
+	class MembersTests {
+
+		@Test
+		void addSelfWithKey() {
+			JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf("person")
+				.usingMembers((personMembers) -> personMembers.add("name", Person::fullName)));
+			assertThat(writer.writeToString(new Person("Spring", "Boot", 15))).isEqualTo("""
+					{"firstName":"Spring","lastName":"Boot","age":15}""");
+		}
+
 	}
 
 	@Nested
@@ -174,7 +187,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeObject() {
+		void writePairs() {
 			Map<String, String> map = Map.of("a", "A");
 			String actual = doWrite((valueWriter) -> valueWriter.writePairs(map::forEach));
 			assertThat(actual).isEqualTo("""
@@ -182,7 +195,7 @@ public class JsonWriterTests {
 		}
 
 		@Test
-		void writeObjectWhenExtracted() {
+		void writeEntries() {
 			Map<String, String> map = Map.of("a", "A");
 			String actual = doWrite((valueWriter) -> valueWriter.writeEntries(map.entrySet()::forEach,
 					Map.Entry::getKey, Map.Entry::getValue));
@@ -207,6 +220,10 @@ public class JsonWriterTests {
 	}
 
 	record Person(String firstName, String lastName, int age) {
+
+		String fullName() {
+			return this.firstName + " " + this.lastName;
+		}
 	}
 
 }
