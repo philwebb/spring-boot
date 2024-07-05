@@ -156,7 +156,7 @@ class JsonValueWriterTests {
 	@Test
 	void writePairs() {
 		Map<String, String> map = Map.of("a", "A");
-		String actual = doWrite((valueWriter) -> valueWriter.writePairs(map::forEach));
+		String actual = doWrite((valueWriter) -> valueWriter.writeObject(map::forEach));
 		assertThat(actual).isEqualTo("""
 				{"a":"A"}""");
 	}

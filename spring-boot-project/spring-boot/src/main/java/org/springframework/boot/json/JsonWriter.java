@@ -246,7 +246,7 @@ public interface JsonWriter<T> {
 
 		public <K, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<K, V>> pairs) {
 			return usingWriteAction((instance, valueWriter) -> valueWriter
-				.<K, V>writePairs((valueWriterPairs) -> pairs.accept(instance, valueWriterPairs)));
+				.<K, V>writeObject((valueWriterPairs) -> pairs.accept(instance, valueWriterPairs)));
 		}
 
 		public Member<T> usingMembers(Consumer<Members<T>> members) {

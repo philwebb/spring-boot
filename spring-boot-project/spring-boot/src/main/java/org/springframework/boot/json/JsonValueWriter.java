@@ -62,7 +62,7 @@ class JsonValueWriter {
 			writeArray(value);
 		}
 		else if (value instanceof Map<?, ?> map) {
-			writePairs(map::forEach);
+			writeObject(map::forEach);
 		}
 		else if (value instanceof Number) {
 			append(value.toString());
@@ -77,20 +77,24 @@ class JsonValueWriter {
 
 	private void writeArray(Object value) {
 		if (value instanceof Iterable<?> iterable) {
-			writeElements(iterable::forEach);
+			writeArray(iterable::forEach);
 			return;
 		}
 		if (ObjectUtils.isArray(value)) {
-			writeElements(Arrays.asList(ObjectUtils.toObjectArray(value))::forEach);
+			writeArray(Arrays.asList(ObjectUtils.toObjectArray(value))::forEach);
 			return;
 		}
 		throw new IllegalStateException("Unknow array type");
 	}
 
-	<K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
+	<K, V> void writeObject(Consumer<BiConsumer<K, V>> pairs) {
 		start(Series.OBJECT);
 		pairs.accept(this::writePair);
 		end(Series.OBJECT);
+	}
+
+	<K, V> void writePairs(Consumer<BiConsumer<K, V>> pairs) {
+		pairs.accept(this::writePair);
 	}
 
 	private <V, K> void writePair(K key, V value) {
@@ -101,10 +105,14 @@ class JsonValueWriter {
 		});
 	}
 
-	private <E> void writeElements(Consumer<Consumer<E>> elements) {
+	<E> void writeArray(Consumer<Consumer<E>> elements) {
 		start(Series.ARRAY);
 		elements.accept(this::writeElement);
 		end(Series.ARRAY);
+	}
+
+	<E> void writeElements(Consumer<Consumer<E>> elements) {
+		elements.accept(this::writeElement);
 	}
 
 	private <E> void writeElement(E element) {
