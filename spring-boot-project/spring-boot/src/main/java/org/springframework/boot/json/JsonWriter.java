@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.springframework.boot.json.JsonWriter2.ValueWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -41,55 +42,83 @@ import org.springframework.util.StringUtils;
 @FunctionalInterface
 public interface JsonWriter<T> {
 
-	default String writeToString(T instance) {
-		StringBuilder out = new StringBuilder();
-		write(instance, out);
-		return out.toString();
-	}
-
-	default void write(T instance, StringBuilder out) {
-	}
-
 	void write(T instance, Appendable out) throws IOException;
+
+	default String writeToString(T instance) {
+		return write(instance).toString();
+	}
+
+	default WritableJson<T> write(T instance) {
+		return new WritableJson<>(this, instance);
+	}
 
 	default JsonWriter<T> withNewLineAtEnd() {
 		return withSuffix("\n");
 	}
 
 	default JsonWriter<T> withSuffix(String suffix) {
+		if (!StringUtils.hasLength(suffix)) {
+			return this;
+		}
 		return (instance, out) -> {
 			write(instance, out);
-			append(out, suffix);
+			out.append(suffix);
 		};
 	}
 
-	private static void append(Appendable out, char ch) {
-		try {
-			out.append(ch);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private static void append(Appendable out, CharSequence value) {
-		try {
-			out.append(value);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+	static <T> JsonWriter<T> standard() {
+		return of((members) -> members.addSelf());
 	}
 
 	static <T> JsonWriter<T> of(Consumer<Members<T>> members) {
-		return accept(members, new Members<>(), Members::writer);
+		Members<T> delegate = new Members<>();
+		members.accept(delegate);
+		delegate.check();
+		return (instance, out) -> delegate.write(instance, new JsonValueWriter(out));
+	}
+
+	static <T> JsonWriter<T> ofFormatString(String json) {
+		return (instance, out) -> out.append(json.formatted(instance));
 	}
 
 	// FIXME listOf() arrayOf()
 
-	private static <T, R> R accept(Consumer<T> consumer, T value, Function<T, R> finalizer) {
-		consumer.accept(value);
-		return finalizer.apply(value);
+	public static class WritableJson<T> {
+
+		private final JsonWriter<T> writer;
+
+		private final T instance;
+
+		WritableJson(JsonWriter<T> writer, T instance) {
+			this.writer = writer;
+			this.instance = instance;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder stringBuilder = new StringBuilder();
+			to(stringBuilder);
+			return stringBuilder.toString();
+		}
+
+		public void to(StringBuilder out) {
+			try {
+				this.writer.write(this.instance, out);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
+		}
+
+		public void to(Appendable out) {
+			try {
+				this.writer.write(this.instance, out);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
+		}
+
 	}
 
 	public static final class Members<T> {
@@ -99,23 +128,22 @@ public interface JsonWriter<T> {
 		Members() {
 		}
 
-		public Member<T> addSelf(String key) {
-			return add(key, (instance) -> instance);
+		public Member<T> addSelf(String name) {
+			return add(name, (instance) -> instance);
 		}
 
-		public <V> Member<V> add(String key, V value) {
-			return add(key, (instance) -> value);
+		public <V> Member<V> add(String name, V value) {
+			return add(name, (instance) -> value);
 		}
 
-		public <V> Member<V> add(String key, Supplier<V> supplier) {
-			return add(key, (instance) -> supplier.get());
+		public <V> Member<V> add(String name, Supplier<V> supplier) {
+			return add(name, (instance) -> supplier.get());
 		}
 
-		@SuppressWarnings("unchecked")
-		public <V> Member<V> add(String key, Function<T, V> extractor) {
-			Assert.notNull(key, "'key' must not be null");
+		public <V> Member<V> add(String name, Function<T, V> extractor) {
+			Assert.notNull(name, "'name' must not be null");
 			Assert.notNull(extractor, "'extractor' must not be null");
-			return addMember((instance, pairs) -> pairs.accept(key, extractor.apply((T) instance)));
+			return addMember(name, extractor);
 		}
 
 		public Member<T> addSelf() {
@@ -135,24 +163,26 @@ public interface JsonWriter<T> {
 		}
 
 		public <V> Member<V> add(Function<T, V> extractor) {
-			return new Member<>(null);
+			Assert.notNull(extractor, "'extractor' must not be null");
+			return addMember(null, extractor);
 		}
 
-		private <V> Member<V> addMember(Member.Writer<V> memberWriter) {
-			Member<V> member = new Member<>(memberWriter);
+		private <V> Member<V> addMember(String name, Function<T, V> extractor) {
+			Member<V> member = new Member<>(name, extractor);
 			this.members.add(member);
 			return member;
 		}
 
-		JsonWriter<T> writer() {
-			// List<Member.Writer> memberWriters =
-			// this.members.stream().map(Member::writer).toList();
-			// return JsonWriter.using((instance, valueWriter) ->
-			// valueWriter.writePairs((pairs) -> {
-			// for (Member.Writer memberWriter : memberWriters) {
-			// memberWriter.write(instance, pairs);
-			// }
-			// }));
+		private void check() {
+			// FIXME check not mixed types
+			this.members.forEach(Member::check);
+		}
+
+		private void write(T instance, JsonValueWriter valueWriter) {
+			this.members.get(0).write(instance, valueWriter);
+		}
+
+		BiConsumer<T, ValueWriter> writeAction() {
 			return null;
 		}
 
@@ -160,9 +190,18 @@ public interface JsonWriter<T> {
 
 	public static final class Member<T> {
 
+		private final String name;
+
+		private final Function<?, T> extractor;
+
 		private Predicate<T> predicate = (instance) -> true;
 
-		private Function<T, Member<?>> delegate;
+		private BiConsumer<T, JsonValueWriter> writeAction;
+
+		Member(String name, Function<?, T> extractor) {
+			this.name = name;
+			this.extractor = extractor;
+		}
 
 		public Member<T> whenNotNull() {
 			return when(Objects::nonNull);
@@ -185,35 +224,65 @@ public interface JsonWriter<T> {
 			return when(predicate.negate());
 		}
 
-		@SuppressWarnings("unchecked")
 		public Member<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
 			this.predicate = this.predicate.and(predicate);
 			return this;
 		}
 
-		@SuppressWarnings("unchecked")
 		public <R> Member<R> as(Function<T, R> adapter) {
 			Assert.notNull(adapter, "'adapter' must not be null");
-			return this;
+			return null;
 		}
 
 		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Class<E> elementType,
-				Function<E, K> keyExtractor, Function<E, V> valueExtractor) {
-			return usingElements(elements, keyExtractor, valueExtractor);
+				Function<E, K> nameExtractor, Function<E, V> valueExtractor) {
+			return usingElements(elements, nameExtractor, valueExtractor);
 		}
 
-		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Function<E, K> keyExtractor,
+		public <E, K, V> Member<T> usingElements(BiConsumer<T, Consumer<E>> elements, Function<E, K> nameExtractor,
 				Function<E, V> valueExtractor) {
-			return this;
+			return usingPairs((instance, pairs) -> elements.accept(instance, (element) -> {
+				K name = nameExtractor.apply(element);
+				V value = valueExtractor.apply(element);
+				pairs.accept(name, value);
+			}));
 		}
 
 		public <K, V> Member<T> usingPairs(BiConsumer<T, BiConsumer<K, V>> pairs) {
-			return this;
+			return usingWriteAction((instance, valueWriter) -> valueWriter
+				.<K, V>writePairs((valueWriterPairs) -> pairs.accept(instance, valueWriterPairs)));
 		}
 
 		public Member<T> usingMembers(Consumer<Members<T>> members) {
+			Members<T> delegate = new Members<>();
+			members.accept(delegate);
+			delegate.check();
+			return usingWriteAction(delegate::write);
+		}
+
+		private Member<T> usingWriteAction(BiConsumer<T, JsonValueWriter> writeAction) {
+			// FIXME check we're not already done this or similar
+			this.writeAction = writeAction;
 			return this;
+		}
+
+		void write(Object instance, JsonValueWriter valueWriter) {
+			T extracted = extract(instance);
+			if (this.writeAction != null) {
+				this.writeAction.accept(extracted, valueWriter);
+				return;
+			}
+			valueWriter.write(extracted);
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private T extract(Object instance) {
+			return (T) ((Function) this.extractor).apply(instance);
+		}
+
+		void check() {
+
 		}
 
 	}
