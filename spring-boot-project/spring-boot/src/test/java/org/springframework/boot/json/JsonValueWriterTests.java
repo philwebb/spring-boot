@@ -59,8 +59,9 @@ class JsonValueWriterTests {
 
 	@Test
 	void writeWhenWritableJson() {
-		JsonWriter<String> writer = JsonWriter.ofFormatString("""
-				{"test":"%s"}""");
+
+		JsonWriter<String> writer = (instance, out) -> out.append("""
+				{"test":"%s"}""".formatted(instance));
 		assertThat(write(writer.write("hello"))).isEqualTo("""
 				{"test":"hello"}""");
 	}

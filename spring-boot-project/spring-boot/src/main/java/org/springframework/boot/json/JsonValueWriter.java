@@ -89,7 +89,12 @@ class JsonValueWriter {
 			append("null");
 		}
 		else if (value instanceof WritableJson writableJson) {
-			writableJson.to(this.out);
+			try {
+				writableJson.to(this.out);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
 		else if (value instanceof Iterable<?> iterable) {
 			writeArray(iterable::forEach);

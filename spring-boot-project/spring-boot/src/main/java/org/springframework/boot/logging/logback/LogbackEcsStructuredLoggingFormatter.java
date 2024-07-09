@@ -59,7 +59,7 @@ class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter
 		members.add("service.node.name", metadata::nodeName).whenHasLength();
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
-		members.addMapEntries(ILoggingEvent::getMDCPropertyMap).whenNotEmpty();
+		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
 		members.add(ILoggingEvent::getKeyValuePairs)
 			.whenNotEmpty()
 			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);

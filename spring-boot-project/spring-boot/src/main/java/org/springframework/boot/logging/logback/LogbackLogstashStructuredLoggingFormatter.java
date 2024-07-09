@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import ch.qos.logback.classic.Level;
@@ -63,7 +62,7 @@ class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingForm
 		members.add("thread_name", ILoggingEvent::getThreadName);
 		members.add("level", ILoggingEvent::getLevel);
 		members.add("level_value", ILoggingEvent::getLevel).as(Level::toInt);
-		members.add(ILoggingEvent::getMDCPropertyMap).usingPairs(Map::forEach).whenNotEmpty();
+		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
 		members.add(ILoggingEvent::getKeyValuePairs)
 			.whenNotEmpty()
 			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);

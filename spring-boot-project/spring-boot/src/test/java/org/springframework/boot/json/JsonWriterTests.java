@@ -42,34 +42,34 @@ public class JsonWriterTests {
 
 	@Test
 	void writeToStringWritesToString() {
-		assertThat(JsonWriter.ofFormatString("%s").writeToString(123)).isEqualTo("123");
+		assertThat(ofFormatString("%s").writeToString(123)).isEqualTo("123");
 	}
 
 	@Test
 	void writeReturnsWritableJson() {
-		assertThat(JsonWriter.ofFormatString("%s").write(123)).isInstanceOf(WritableJson.class);
+		assertThat(ofFormatString("%s").write(123)).isInstanceOf(WritableJson.class);
 	}
 
 	@Test
 	void withSuffixAddsSuffixToWrittenString() {
-		assertThat(JsonWriter.ofFormatString("%s").withSuffix("000").writeToString(123)).isEqualTo("123000");
+		assertThat(ofFormatString("%s").withSuffix("000").writeToString(123)).isEqualTo("123000");
 	}
 
 	@Test
 	void withSuffixWhenSuffixIsNullReturnsExistingWriter() {
-		JsonWriter<?> formatter = JsonWriter.ofFormatString("%s");
-		assertThat(formatter.withSuffix(null)).isSameAs(formatter);
+		JsonWriter<?> writer = ofFormatString("%s");
+		assertThat(writer.withSuffix(null)).isSameAs(writer);
 	}
 
 	@Test
 	void withSuffixWhenSuffixIsEmptyReturnsExistingWriter() {
-		JsonWriter<?> formatter = JsonWriter.ofFormatString("%s");
-		assertThat(formatter.withSuffix("")).isSameAs(formatter);
+		JsonWriter<?> writer = ofFormatString("%s");
+		assertThat(writer.withSuffix("")).isSameAs(writer);
 	}
 
 	@Test
 	void withNewLineAtEndAddsNewLineToWrittenString() {
-		assertThat(JsonWriter.ofFormatString("%s").withNewLineAtEnd().writeToString(123)).isEqualTo("123\n");
+		assertThat(ofFormatString("%s").withNewLineAtEnd().writeToString(123)).isEqualTo("123\n");
 	}
 
 	@Test
@@ -162,6 +162,10 @@ public class JsonWriterTests {
 
 	private static String quoted(String value) {
 		return "\"" + value + "\"";
+	}
+
+	private static <T> JsonWriter<T> ofFormatString(String json) {
+		return (instance, out) -> out.append(json.formatted(instance));
 	}
 
 	@Nested
