@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 abstract class AbstractStructuredLoggingTests {
 
+	static final Instant EVENT_TIME = Instant.ofEpochMilli(1719910193000L);
+
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	protected Map<String, Object> map(Object... values) {
@@ -49,7 +52,7 @@ abstract class AbstractStructuredLoggingTests {
 
 	protected static MutableLogEvent createEvent() {
 		MutableLogEvent event = new MutableLogEvent();
-		event.setTimeMillis(1719910193000L);
+		event.setTimeMillis(EVENT_TIME.toEpochMilli());
 		event.setLevel(Level.INFO);
 		event.setThreadName("main");
 		event.setLoggerName("org.example.Test");

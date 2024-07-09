@@ -16,6 +16,9 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +58,11 @@ class LogbackLogstashStructuredLoggingFormatterTests extends AbstractStructuredL
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(
-				map("@timestamp", "2024-07-02T10:49:53+02:00", "@version", "1", "message", "message", "logger_name",
-						"org.example.Test", "thread_name", "main", "level", "INFO", "level_value", 20000, "mdc-1",
-						"mdc-v-1", "kv-1", "kv-v-1", "tags", List.of("marker-1", "marker-2")));
+		String timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+			.format(OffsetDateTime.ofInstant(EVENT_TIME, ZoneId.systemDefault()));
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", timestamp, "@version", "1",
+				"message", "message", "logger_name", "org.example.Test", "thread_name", "main", "level", "INFO",
+				"level_value", 20000, "mdc-1", "mdc-v-1", "kv-1", "kv-v-1", "tags", List.of("marker-1", "marker-2")));
 	}
 
 	@Test

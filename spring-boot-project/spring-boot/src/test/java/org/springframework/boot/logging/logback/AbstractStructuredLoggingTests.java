@@ -44,6 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 abstract class AbstractStructuredLoggingTests {
 
+	static final Instant EVENT_TIME = Instant.ofEpochSecond(1719910193L);
+
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private ThrowableProxyConverter throwableProxyConverter;
@@ -90,7 +92,7 @@ abstract class AbstractStructuredLoggingTests {
 
 	protected static LoggingEvent createEvent() {
 		LoggingEvent event = new LoggingEvent();
-		event.setInstant(Instant.ofEpochSecond(1719910193L));
+		event.setInstant(EVENT_TIME);
 		event.setLevel(Level.INFO);
 		event.setThreadName("main");
 		event.setLoggerName("org.example.Test");
