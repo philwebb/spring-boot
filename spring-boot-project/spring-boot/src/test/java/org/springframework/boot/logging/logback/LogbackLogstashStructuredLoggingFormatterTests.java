@@ -96,6 +96,7 @@ class LogbackLogstashStructuredLoggingFormatterTests extends AbstractStructuredL
 		Marker marker1 = getMarker("marker-1");
 		marker1.add(getMarker("marker-2"));
 		event.addMarker(marker1);
+		System.out.println(this.formatter.format(event));
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		for (int i = 0; i < 1000000; i++) {
