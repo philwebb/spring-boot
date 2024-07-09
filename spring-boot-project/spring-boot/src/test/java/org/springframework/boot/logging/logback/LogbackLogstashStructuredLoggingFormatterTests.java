@@ -29,6 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
 
+import org.springframework.util.StopWatch;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -84,6 +86,24 @@ class LogbackLogstashStructuredLoggingFormatterTests extends AbstractStructuredL
 						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.logback.LogbackLogstashStructuredLoggingFormatterTests.shouldFormatException
 						"""
 					.trim());
+	}
+
+	@Test
+	void benchmark() {
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Map.of("mdc-1", "mdc-v-1"));
+		event.setKeyValuePairs(keyValuePairs("kv-1", "kv-v-1"));
+		Marker marker1 = getMarker("marker-1");
+		marker1.add(getMarker("marker-2"));
+		event.addMarker(marker1);
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		for (int i = 0; i < 1000000; i++) {
+			this.formatter.format(event);
+		}
+		stopWatch.stop();
+		System.out.println(stopWatch);
+
 	}
 
 }
