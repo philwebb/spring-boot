@@ -18,8 +18,8 @@ package org.springframework.boot.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.json.JsonValueWriter.Series;
 import org.springframework.boot.json.JsonWriter.Member.Extractor;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -187,6 +187,30 @@ public interface JsonWriter<T> {
 		}
 
 		/**
+		 * Write the JSON to the provided {@link WritableResource} using
+		 * {@link StandardCharsets#UTF_8 UTF8} encoding.
+		 * @param out the {@link OutputStream} to receive the JSON
+		 * @throws IOException on IO error
+		 */
+		default void toResource(WritableResource out) throws IOException {
+			Assert.notNull(out, "'out' must not be null");
+			toOutputStream(out.getOutputStream());
+		}
+
+		/**
+		 * Write the JSON to the provided {@link WritableResource} using the given
+		 * {@link Charset}.
+		 * @param out the {@link OutputStream} to receive the JSON
+		 * @param charset the charset to use
+		 * @throws IOException on IO error
+		 */
+		default void toResource(WritableResource out, Charset charset) throws IOException {
+			Assert.notNull(out, "'out' must not be null");
+			Assert.notNull(charset, "'charset' must not be null");
+			toOutputStream(out.getOutputStream(), charset);
+		}
+
+		/**
 		 * Write the JSON to the provided {@link OutputStream} using
 		 * {@link StandardCharsets#UTF_8 UTF8} encoding.
 		 * @param out the {@link OutputStream} to receive the JSON
@@ -201,28 +225,13 @@ public interface JsonWriter<T> {
 		 * Write the JSON to the provided {@link OutputStream} using the given
 		 * {@link Charset}.
 		 * @param out the {@link OutputStream} to receive the JSON
+		 * @param charset the charset to use
 		 * @throws IOException on IO error
 		 */
 		default void toOutputStream(OutputStream out, Charset charset) throws IOException {
-			// FIXME
-		}
-
-		/**
-		 * Write the JSON to the provided {@link OutputStream}.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @throws IOException on IO error
-		 */
-		default void toWriter(Writer out) throws IOException {
-			// FIXME
-		}
-
-		/**
-		 * Write the JSON to the provided {@link OutputStream}.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @throws IOException on IO error
-		 */
-		default void toResource(Resource out) throws IOException {
-			// FIXME
+			Assert.notNull(out, "'out' must not be null");
+			Assert.notNull(charset, "'charset' must not be null");
+			to(new OutputStreamWriter(out, charset));
 		}
 
 		/**
@@ -273,8 +282,9 @@ public interface JsonWriter<T> {
 
 		private final Series series;
 
-		Members(Consumer<Members<T>> initializer, boolean contributesToExistingSeries) {
-			initializer.accept(this);
+		Members(Consumer<Members<T>> members, boolean contributesToExistingSeries) {
+			Assert.notNull(members, "'members' must not be null");
+			members.accept(this);
 			Assert.state(!this.members.isEmpty(), "No members have been added");
 			this.contributesPair = this.members.stream().anyMatch(Member::contributesPair);
 			this.series = (this.contributesPair && !contributesToExistingSeries) ? Series.OBJECT : null;
@@ -402,6 +412,7 @@ public interface JsonWriter<T> {
 		 * @param valueWriter the JSON value writer to use
 		 */
 		void write(T instance, JsonValueWriter valueWriter) {
+			Assert.notNull(instance, "'instance' must not be null");
 			valueWriter.start(this.series);
 			for (Member<?> member : this.members) {
 				member.write(instance, valueWriter);
@@ -462,6 +473,7 @@ public interface JsonWriter<T> {
 		 * @return a {@link Member} which may be configured further
 		 */
 		public Member<T> whenNotNull(Function<T, ?> extractor) {
+			Assert.notNull(extractor, "'extractor' must not be null");
 			return when((instance) -> Objects.nonNull(extractor.apply(instance)));
 		}
 
