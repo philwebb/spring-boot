@@ -173,9 +173,11 @@ public interface JsonWriter<T> {
 			return member;
 		}
 
-		void write(T instance, JsonValueWriter valueWriter) {
+		void write(T instance, JsonValueWriter valueWriter) throws IOException {
 			valueWriter.start(this.series);
-			this.members.forEach((member) -> member.write(instance, valueWriter));
+			for (Member<?> member : this.members) {
+				member.write(instance, valueWriter);
+			}
 			valueWriter.end(this.series);
 		}
 
@@ -278,7 +280,7 @@ public interface JsonWriter<T> {
 			return this.name != null || this.pairs != null || (this.members != null && this.members.contributesPair());
 		}
 
-		void write(Object instance, JsonValueWriter valueWriter) {
+		void write(Object instance, JsonValueWriter valueWriter) throws IOException {
 			T extracted = this.extractor.extract(instance);
 			if (Extractor.skip(extracted)) {
 				return;

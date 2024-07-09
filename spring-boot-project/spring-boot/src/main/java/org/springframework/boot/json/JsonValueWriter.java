@@ -17,7 +17,6 @@
 package org.springframework.boot.json;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
@@ -28,6 +27,7 @@ import org.assertj.core.util.Arrays;
 
 import org.springframework.boot.json.JsonWriter.WritableJson;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * Internal class used by {@link JsonWriter} to handle the lower-level concerns of writing
@@ -57,8 +57,9 @@ class JsonValueWriter {
 	 * @param name the name of the pair or {@code null} if only the value should be
 	 * written
 	 * @param value the value
+	 * @throws IOException on IO error
 	 */
-	<N, V> void write(N name, V value) {
+	<N, V> void write(N name, V value) throws IOException {
 		if (name != null) {
 			writePair(name, value);
 		}
@@ -80,10 +81,11 @@ class JsonValueWriter {
 	 * All other values are written as JSON strings.
 	 * @param <V> the value type
 	 * @param value the value to write
+	 * @throws IOException on IO error
 	 */
-	<V> void write(V value) {
+	<V> void write(V value) throws IOException {
 		if (value == null) {
-			append("null");
+			this.out.append("null");
 		}
 		else if (value instanceof WritableJson writableJson) {
 			writableJson.to(this.out);
@@ -98,10 +100,10 @@ class JsonValueWriter {
 			writeObject(map::forEach);
 		}
 		else if (value instanceof Number) {
-			append(value.toString());
+			this.out.append(value.toString());
 		}
 		else if (value instanceof Boolean) {
-			append(Boolean.TRUE.equals(value) ? "true" : "false");
+			this.out.append(Boolean.TRUE.equals(value) ? "true" : "false");
 		}
 		else {
 			writeString(value);
@@ -111,26 +113,28 @@ class JsonValueWriter {
 	/**
 	 * Start a new {@link Series} (JSON object or array).
 	 * @param series the series to start
+	 * @throws IOException on IO error
 	 * @see #end(Series)
 	 * @see #writePairs(Consumer)
 	 * @see #writeElements(Consumer)
 	 */
-	void start(Series series) {
+	void start(Series series) throws IOException {
 		if (series != null) {
 			this.activeSeries.push(new ActiveSeries());
-			append(series.openChar);
+			this.out.append(series.openChar);
 		}
 	}
 
 	/**
 	 * End an active {@link Series} (JSON object or array).
 	 * @param series the series type being ended (must match {@link #start(Series)})
+	 * @throws IOException on IO error
 	 * @see #start(Series)
 	 */
-	void end(Series series) {
+	void end(Series series) throws IOException {
 		if (series != null) {
 			this.activeSeries.pop();
-			append(series.closeChar);
+			this.out.append(series.closeChar);
 		}
 	}
 
@@ -139,11 +143,12 @@ class JsonValueWriter {
 	 * @param <E> the element type
 	 * @param elements a callback that will be used to provide each element. Typically a
 	 * {@code forEach} method reference.
+	 * @throws IOException on IO error
 	 * @see #writeElements(Consumer)
 	 */
-	<E> void writeArray(Consumer<Consumer<E>> elements) {
+	<E> void writeArray(Consumer<Consumer<E>> elements) throws IOException {
 		start(Series.ARRAY);
-		elements.accept(this::writeElement);
+		elements.accept(ThrowingConsumer.of(this::writeElement));
 		end(Series.ARRAY);
 	}
 
@@ -156,10 +161,10 @@ class JsonValueWriter {
 	 * @see #writeElements(Consumer)
 	 */
 	<E> void writeElements(Consumer<Consumer<E>> elements) {
-		elements.accept(this::writeElement);
+		elements.accept(ThrowingConsumer.of(this::writeElement));
 	}
 
-	<E> void writeElement(E element) {
+	<E> void writeElement(E element) throws IOException {
 		ActiveSeries activeSeries = this.activeSeries.peek();
 		activeSeries.appendCommaIfRequired();
 		write(element);
@@ -171,11 +176,12 @@ class JsonValueWriter {
 	 * @param <V> the value type in the pair
 	 * @param pairs a callback that will be used to provide each pair. Typically a
 	 * {@code forEach} method reference.
+	 * @throws IOException on IO error
 	 * @see #writePairs(Consumer)
 	 */
-	<N, V> void writeObject(Consumer<BiConsumer<N, V>> pairs) {
+	<N, V> void writeObject(Consumer<BiConsumer<N, V>> pairs) throws IOException {
 		start(Series.OBJECT);
-		pairs.accept(this::writePair);
+		pairs.accept(ThrowingBiConsumer.of(this::writePair));
 		end(Series.OBJECT);
 	}
 
@@ -189,63 +195,43 @@ class JsonValueWriter {
 	 * @see #writePairs(Consumer)
 	 */
 	<N, V> void writePairs(Consumer<BiConsumer<N, V>> pairs) {
-		pairs.accept(this::writePair);
+		pairs.accept(ThrowingBiConsumer.of(this::writePair));
 	}
 
-	private <N, V> void writePair(N name, V value) {
+	private <N, V> void writePair(N name, V value) throws IOException {
 		ActiveSeries activeSeries = this.activeSeries.peek();
 		activeSeries.appendCommaIfRequired();
 		writeString(name);
-		append(":");
+		this.out.append(":");
 		write(value);
 	}
 
-	private void writeString(Object value) {
-		append('"');
+	private void writeString(Object value) throws IOException {
+		this.out.append('"');
 		String string = value.toString();
 		for (int i = 0; i < string.length(); i++) {
 			char ch = string.charAt(i);
 			switch (ch) {
-				case '"' -> append("\\\"");
-				case '\\' -> append("\\\\");
-				case '/' -> append("\\/");
-				case '\b' -> append("\\b");
-				case '\f' -> append("\\f");
-				case '\n' -> append("\\n");
-				case '\r' -> append("\\r");
-				case '\t' -> append("\\t");
-				default -> appendWithIsoControlEscape(ch);
+				case '"' -> this.out.append("\\\"");
+				case '\\' -> this.out.append("\\\\");
+				case '/' -> this.out.append("\\/");
+				case '\b' -> this.out.append("\\b");
+				case '\f' -> this.out.append("\\f");
+				case '\n' -> this.out.append("\\n");
+				case '\r' -> this.out.append("\\r");
+				case '\t' -> this.out.append("\\t");
+				default -> {
+					if (Character.isISOControl(ch)) {
+						this.out.append("\\u");
+						this.out.append(String.format("%04X", (int) ch));
+					}
+					else {
+						this.out.append(ch);
+					}
+				}
 			}
 		}
-		append('"');
-	}
-
-	private void appendWithIsoControlEscape(char ch) {
-		if (Character.isISOControl(ch)) {
-			append("\\u");
-			append(String.format("%04X", (int) ch));
-		}
-		else {
-			append(ch);
-		}
-	}
-
-	private void append(char ch) {
-		try {
-			this.out.append(ch);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private void append(CharSequence value) {
-		try {
-			this.out.append(value);
-		}
-		catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		this.out.append('"');
 	}
 
 	/**
@@ -281,11 +267,31 @@ class JsonValueWriter {
 
 		private boolean commaRequired;
 
-		void appendCommaIfRequired() {
+		void appendCommaIfRequired() throws IOException {
 			if (this.commaRequired) {
-				append(',');
+				JsonValueWriter.this.out.append(',');
 			}
 			this.commaRequired = true;
+		}
+
+	}
+
+	interface ThrowingBiConsumer<T, U> extends BiConsumer<T, U> {
+
+		void acceptWithException(T t, U u) throws Exception;
+
+		@Override
+		default void accept(T t, U u) {
+			try {
+				acceptWithException(t, u);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		static <T, U> ThrowingBiConsumer<T, U> of(ThrowingBiConsumer<T, U> biConsumer) {
+			return biConsumer;
 		}
 
 	}
