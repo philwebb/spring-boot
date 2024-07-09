@@ -16,17 +16,18 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.apache.logging.log4j.core.time.Instant;
+import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
@@ -37,70 +38,58 @@ import org.springframework.util.CollectionUtils;
  * Logstash logging format.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class Log4j2LogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
 
-	@Override
-	public String format(LogEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> {
-			Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
-				.plusNanos(event.getInstant().getNanoOfMillisecond());
-			OffsetDateTime time = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
-			writer.stringMember("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-			writer.stringMember("@version", "1");
-			writer.stringMember("message", event.getMessage().getFormattedMessage());
-			writer.stringMember("logger_name", event.getLoggerName());
-			writer.stringMember("thread_name", event.getThreadName());
-			writer.stringMember("level", event.getLevel().name());
-			writer.numberMember("level_value", event.getLevel().intLevel());
-			addContextData(event, writer);
-			addMarkers(event, writer);
-			ThrowableProxy throwable = event.getThrownProxy();
-			if (throwable != null) {
-				writer.stringMember("stack_trace", throwable.getExtendedStackTraceAsString());
-			}
-		});
-		writer.newLine();
-		return writer.toJson();
+	private JsonWriter<LogEvent> writer;
+
+	Log4j2LogstashStructuredLoggingFormatter() {
+		this.writer = JsonWriter.<LogEvent>of(this::logEventJson).withNewLineAtEnd();
 	}
 
-	private static void addContextData(LogEvent event, JsonWriter writer) {
-		ReadOnlyStringMap contextData = event.getContextData();
-		Map<String, String> map = (contextData != null) ? contextData.toMap() : null;
-		if (CollectionUtils.isEmpty(map)) {
-			return;
-		}
-		map.forEach(writer::stringMember);
+	private void logEventJson(JsonWriter.Members<LogEvent> members) {
+		members.add("@timestamp", LogEvent::getInstant).as(this::asTimestamp);
+		members.add("@version", "1");
+		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
+		members.add("logger_name", LogEvent::getLoggerName);
+		members.add("thread_name", LogEvent::getThreadName);
+		members.add("level", LogEvent::getLevel).as(Level::name);
+		members.add("level_value", LogEvent::getLevel).as(Level::intLevel);
+		members.add(LogEvent::getContextData)
+			.whenNot(ReadOnlyStringMap::isEmpty)
+			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
+		members.add("tags", LogEvent::getMarker).whenNotNull().as(this::getMarkers).whenNot(CollectionUtils::isEmpty);
+		members.add("stack_trace", LogEvent::getThrownProxy)
+			.whenNotNull()
+			.as(ThrowableProxy::getExtendedStackTraceAsString);
 	}
 
-	private void addMarkers(LogEvent event, JsonWriter writer) {
-		Set<String> markers = getMarkers(event);
-		if (CollectionUtils.isEmpty(markers)) {
-			return;
-		}
-		writer.member("tags", () -> writer.stringArray(markers));
+	private String asTimestamp(Instant instant) {
+		java.time.Instant javaInstant = java.time.Instant.ofEpochMilli(instant.getEpochMillisecond())
+			.plusNanos(instant.getNanoOfMillisecond());
+		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(javaInstant, ZoneId.systemDefault());
+		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
 	}
 
-	private Set<String> getMarkers(LogEvent event) {
-		if (event.getMarker() == null) {
-			return Collections.emptySet();
-		}
+	private Set<String> getMarkers(Marker marker) {
 		Set<String> result = new TreeSet<>();
-		addMarker(result, event.getMarker());
+		addMarkers(result, marker);
 		return result;
 	}
 
-	private void addMarker(Set<String> result, org.apache.logging.log4j.Marker marker) {
-		if (marker == null) {
-			return;
-		}
+	private void addMarkers(Set<String> result, Marker marker) {
 		result.add(marker.getName());
 		if (marker.hasParents()) {
-			for (org.apache.logging.log4j.Marker parent : marker.getParents()) {
-				addMarker(result, parent);
+			for (Marker parent : marker.getParents()) {
+				addMarkers(result, parent);
 			}
 		}
+	}
+
+	@Override
+	public String format(LogEvent event) {
+		return this.writer.writeToString(event);
 	}
 
 }

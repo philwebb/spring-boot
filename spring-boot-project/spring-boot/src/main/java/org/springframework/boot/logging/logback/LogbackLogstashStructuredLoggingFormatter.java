@@ -16,110 +16,87 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Logstash logging format.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class LogbackLogstashStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
 
-	private final ThrowableProxyConverter throwableProxyConverter;
+	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
+			(pair) -> pair.value);
+
+	private JsonWriter<ILoggingEvent> writer;
 
 	LogbackLogstashStructuredLoggingFormatter(ThrowableProxyConverter throwableProxyConverter) {
-		this.throwableProxyConverter = throwableProxyConverter;
+		this.writer = JsonWriter.<ILoggingEvent>of((members) -> loggingEventJson(throwableProxyConverter, members))
+			.withNewLineAtEnd();
+	}
+
+	private void loggingEventJson(ThrowableProxyConverter throwableProxyConverter,
+			JsonWriter.Members<ILoggingEvent> members) {
+		members.add("@timestamp", ILoggingEvent::getInstant).as(this::asTimestamp);
+		members.add("@version", "1");
+		members.add("message", ILoggingEvent::getFormattedMessage);
+		members.add("logger_name", ILoggingEvent::getLoggerName);
+		members.add("thread_name", ILoggingEvent::getThreadName);
+		members.add("level", ILoggingEvent::getLevel);
+		members.add("level_value", ILoggingEvent::getLevel).as(Level::toInt);
+		members.add(ILoggingEvent::getMDCPropertyMap).usingPairs(Map::forEach).whenNotEmpty();
+		members.add(ILoggingEvent::getKeyValuePairs)
+			.whenNotEmpty()
+			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
+		members.add("tags", ILoggingEvent::getMarkerList).whenNotNull().as(this::getMarkers).whenNotEmpty();
+		members.add("stack_trace", (event) -> event)
+			.whenNotNull(ILoggingEvent::getThrowableProxy)
+			.as(throwableProxyConverter::convert);
+	}
+
+	private String asTimestamp(Instant instant) {
+		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
+		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
+	}
+
+	private Set<String> getMarkers(List<Marker> markers) {
+		Set<String> result = new LinkedHashSet<>();
+		addMarkers(result, markers.iterator());
+		return result;
+	}
+
+	private void addMarkers(Set<String> result, Iterator<Marker> iterator) {
+		while (iterator.hasNext()) {
+			Marker marker = iterator.next();
+			result.add(marker.getName());
+			if (marker.hasReferences()) {
+				addMarkers(result, marker.iterator());
+			}
+		}
 	}
 
 	@Override
 	public String format(ILoggingEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> {
-			OffsetDateTime time = OffsetDateTime.ofInstant(event.getInstant(), ZoneId.systemDefault());
-			writer.stringMember("@timestamp", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time));
-			writer.stringMember("@version", "1");
-			writer.stringMember("message", event.getFormattedMessage());
-			writer.stringMember("logger_name", event.getLoggerName());
-			writer.stringMember("thread_name", event.getThreadName());
-			writer.stringMember("level", event.getLevel().toString());
-			writer.numberMember("level_value", event.getLevel().toInt());
-			addMdc(event, writer);
-			addKeyValuePairs(event, writer);
-			addMarkers(event, writer);
-			IThrowableProxy throwable = event.getThrowableProxy();
-			if (throwable != null) {
-				writer.stringMember("stack_trace", this.throwableProxyConverter.convert(event));
-			}
-		});
-		writer.newLine();
-		return writer.toJson();
-	}
-
-	private void addKeyValuePairs(ILoggingEvent event, JsonWriter writer) {
-		List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
-		if (CollectionUtils.isEmpty(keyValuePairs)) {
-			return;
-		}
-		for (KeyValuePair pair : keyValuePairs) {
-			writer.stringMember(pair.key, ObjectUtils.nullSafeToString(pair.value));
-		}
-	}
-
-	private static void addMdc(ILoggingEvent event, JsonWriter writer) {
-		Map<String, String> mdc = event.getMDCPropertyMap();
-		if (CollectionUtils.isEmpty(mdc)) {
-			return;
-		}
-		mdc.forEach(writer::stringMember);
-	}
-
-	private void addMarkers(ILoggingEvent event, JsonWriter writer) {
-		Set<String> markers = getMarkers(event);
-		if (CollectionUtils.isEmpty(markers)) {
-			return;
-		}
-		writer.member("tags", () -> writer.stringArray(markers));
-	}
-
-	private Set<String> getMarkers(ILoggingEvent event) {
-		if (CollectionUtils.isEmpty(event.getMarkerList())) {
-			return Collections.emptySet();
-		}
-		Set<String> result = new TreeSet<>();
-		for (Marker marker : event.getMarkerList()) {
-			addMarker(result, marker);
-		}
-		return result;
-	}
-
-	private void addMarker(Set<String> result, Marker marker) {
-		result.add(marker.getName());
-		if (marker.hasReferences()) {
-			Iterator<Marker> iterator = marker.iterator();
-			while (iterator.hasNext()) {
-				Marker reference = iterator.next();
-				addMarker(result, reference);
-			}
-		}
+		return this.writer.writeToString(event);
 	}
 
 }

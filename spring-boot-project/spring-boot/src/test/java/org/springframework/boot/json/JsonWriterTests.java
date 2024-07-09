@@ -16,13 +16,17 @@
 
 package org.springframework.boot.json;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.json.JsonWriter.PairExtractor;
+import org.springframework.boot.json.JsonWriter.WritableJson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,140 +34,384 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JsonWriter}.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
-class JsonWriterTests {
+public class JsonWriterTests {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final Person PERSON = new Person("Spring", "Boot", 10);
 
 	@Test
-	void object() {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> writer.numberMember("a", 1)
-			.numberMember("b", 2.0)
-			.boolMember("c", true)
-			.stringMember("d", "d")
-			.member("e", null));
-		assertThatJson(writer).isEqualTo("""
-				{"a":1,"b":2.0,"c":true,"d":"d","e":null}
-				""".trim());
+	void writeToStringWritesToString() {
+		assertThat(JsonWriter.ofFormatString("%s").writeToString(123)).isEqualTo("123");
 	}
 
 	@Test
-	void nestedObject() {
-		JsonWriter writer = new JsonWriter();
-		writer.object(
-				() -> writer.numberMember("a", 1).member("b", () -> writer.object(() -> writer.numberMember("c", 2))));
-		assertThatJson(writer).isEqualTo("""
-				{"a":1,"b":{"c":2}}
-				""".trim());
+	void writeReturnsWritableJson() {
+		assertThat(JsonWriter.ofFormatString("%s").write(123)).isInstanceOf(WritableJson.class);
 	}
 
 	@Test
-	void array() {
-		JsonWriter writer = new JsonWriter();
-		writer.array(() -> writer.string("a").string("b").string("c"));
-		assertThatJson(writer).isEqualTo("""
-				["a","b","c"]
-				""".trim());
+	void withSuffixAddsSuffixToWrittenString() {
+		assertThat(JsonWriter.ofFormatString("%s").withSuffix("000").writeToString(123)).isEqualTo("123000");
 	}
 
 	@Test
-	void stringArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.stringArray("a", "b", "c");
-		assertThatJson(writer).isEqualTo("""
-				["a","b","c"]
-				""".trim());
+	void withSuffixWhenSuffixIsNullReturnsExistingWriter() {
+		JsonWriter<?> formatter = JsonWriter.ofFormatString("%s");
+		assertThat(formatter.withSuffix(null)).isSameAs(formatter);
 	}
 
 	@Test
-	void stringArrayFromIterable() {
-		JsonWriter writer = new JsonWriter();
-		writer.stringArray(List.of("a", "b", "c"));
-		assertThatJson(writer).isEqualTo("""
-				["a","b","c"]
-				""".trim());
+	void withSuffixWhenSuffixIsEmptyReturnsExistingWriter() {
+		JsonWriter<?> formatter = JsonWriter.ofFormatString("%s");
+		assertThat(formatter.withSuffix("")).isSameAs(formatter);
 	}
 
 	@Test
-	void doubleArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.numberArray(1.0, 2.0, 3.0);
-		assertThatJson(writer).isEqualTo("""
-				[1.0,2.0,3.0]
-				""".trim());
+	void withNewLineAtEndAddsNewLineToWrittenString() {
+		assertThat(JsonWriter.ofFormatString("%s").withNewLineAtEnd().writeToString(123)).isEqualTo("123\n");
 	}
 
 	@Test
-	void longArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.numberArray(1, 2, 3);
-		assertThatJson(writer).isEqualTo("""
-				[1,2,3]
-				""".trim());
+	void ofAddingNamedSelf() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf("test"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"test":"Spring Boot (10)"}""");
 	}
 
 	@Test
-	void booleanArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.boolArray(true, false, true);
-		assertThatJson(writer).isEqualTo("""
-				[true,false,true]
-				""".trim());
+	void ofAddingNamedValue() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", "Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"Spring":"Boot"}""");
 	}
 
 	@Test
-	void arrayWithObjects() {
-		JsonWriter writer = new JsonWriter();
-		writer.array(
-				() -> writer.object(() -> writer.stringMember("a", "1")).object(() -> writer.stringMember("b", "2")));
-		assertThatJson(writer).isEqualTo("""
-				[{"a":"1"},{"b":"2"}]
-				""".trim());
+	void ofAddingNamedSupplier() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", () -> "Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"Spring":"Boot"}""");
 	}
 
 	@Test
-	void nullArray() {
-		JsonWriter writer = new JsonWriter();
-		writer.array(() -> writer.string(null).string(null));
-		assertThatJson(writer).isEqualTo("""
-				[null,null]
-				""".trim());
+	void ofAddingUnamedSelf() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf());
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
 	}
 
 	@Test
-	void escapeString() {
-		JsonWriter writer = new JsonWriter();
-		writer.string("\"\\/\b\f\n\r\t\u0000\u001F");
-		assertThatJson(writer).isEqualTo("""
-				"\\"\\\\\\/\\b\\f\\n\\r\\t\\u0000\\u001F"
-				""".trim());
+	void ofAddingUnamedValue() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void newLine() {
-		JsonWriter writer = new JsonWriter();
-		writer.newLine();
-		assertThatJson(writer).isEqualTo("\n");
+	void ofAddingUnamedSupplier() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(() -> "Boot"));
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void newLineWithContent() {
-		JsonWriter writer = new JsonWriter();
-		writer.object();
-		writer.newLine();
-		assertThatJson(writer).isEqualTo("{}\n");
+	void ofAddingUnamedExtractor() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(Person::lastName));
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
-	private static AbstractStringAssert<?> assertThatJson(JsonWriter writer) {
-		String json = writer.toJson();
-		try {
-			OBJECT_MAPPER.readTree(json);
+	@Test
+	void ofAddingMapEntries() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("a", "A");
+		map.put("b", 123);
+		map.put("c", true);
+		JsonWriter<List<Map<String, Object>>> writer = JsonWriter
+			.of((members) -> members.addMapEntries((list) -> list.get(0)));
+		assertThat(writer.writeToString(List.of(map))).isEqualTo("""
+				{"a":"A","b":123,"c":true}""");
+	}
+
+	@Test
+	void ofAddingNamedExtractor() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> {
+			members.add("firstName", Person::firstName);
+			members.add("lastName", Person::lastName);
+			members.add("age", Person::age);
+		});
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"firstName":"Spring","lastName":"Boot","age":10}""");
+	}
+
+	@Test
+	void ofWhenNoMembersAddedThrowsException() {
+		// FIXME
+	}
+
+	@Test
+	void ofWhenOneContibutesPairByNameAndOneHasNoNameThrowsException() {
+		// FIXME
+	}
+
+	@Test
+	void ofWhenOneContibutesPairByUsingPairsAndOneHasNoNameThrowsException() {
+		// FIXME
+	}
+
+	@Test
+	void ofWhenOneContibutesPairByUsingMembersAndOneHasNoNameThrowsException() {
+		// FIXME
+	}
+
+	private static String quoted(String value) {
+		return "\"" + value + "\"";
+	}
+
+	@Nested
+	class StandardWriterTests {
+
+		@Test
+		void whenPrimitive() {
+			assertThat(write(null)).isEqualTo("null");
+			assertThat(write(123)).isEqualTo("123");
+			assertThat(write(true)).isEqualTo("true");
+			assertThat(write("test")).isEqualTo(quoted("test"));
 		}
-		catch (JsonProcessingException ex) {
-			Assertions.fail("Invalid JSON produced: '%s'".formatted(json), ex);
+
+		@Test
+		void whenMap() {
+			assertThat(write(Map.of("spring", "boot"))).isEqualTo("""
+					{"spring":"boot"}""");
 		}
-		return assertThat(json);
+
+		@Test
+		void whenArray() {
+			assertThat(write(new int[] { 1, 2, 3 })).isEqualTo("[1,2,3]");
+		}
+
+		private <T> String write(T instance) {
+			return JsonWriter.standard().writeToString(instance);
+		}
+
+	}
+
+	@Nested
+	class MemberTest {
+
+		@Test
+		void whenNotNull() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().whenNotNull());
+			assertThat(writer.writeToString("test")).isEqualTo(quoted("test"));
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenNotNullExtracted() {
+			Person personWithNull = new Person("Spring", null, 10);
+			JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf().whenNotNull(Person::lastName));
+			assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
+			assertThat(writer.writeToString(personWithNull)).isEmpty();
+		}
+
+		@Test
+		void whenHasLength() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
+			assertThat(writer.writeToString("test")).isEqualTo(quoted("test"));
+			assertThat(writer.writeToString("")).isEmpty();
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenHasLengthOnNonString() {
+			JsonWriter<StringBuilder> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
+			assertThat(writer.writeToString(new StringBuilder("test"))).isEqualTo(quoted("test"));
+			assertThat(writer.writeToString(new StringBuilder(""))).isEmpty();
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenNotEmpty() {
+			JsonWriter<Object> writer = JsonWriter.of((members) -> members.addSelf().whenNotEmpty());
+			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
+					["a"]""");
+			assertThat(writer.writeToString(List.of())).isEmpty();
+			assertThat(writer.writeToString(new Object[] {})).isEmpty();
+			assertThat(writer.writeToString(new int[] {})).isEmpty();
+			assertThat(writer.writeToString(null)).isEmpty();
+		}
+
+		@Test
+		void whenNot() {
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.addSelf().whenNot(List::isEmpty));
+			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
+					["a"]""");
+			assertThat(writer.writeToString(List.of())).isEmpty();
+		}
+
+		@Test
+		void when() {
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.addSelf().when(List::isEmpty));
+			assertThat(writer.writeToString(List.of("a"))).isEmpty();
+			assertThat(writer.writeToString(List.of())).isEqualTo("[]");
+		}
+
+		@Test
+		void chainedPredicates() {
+			Set<String> banned = Set.of("Spring", "Boot");
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf()
+				.whenHasLength()
+				.whenNot(banned::contains)
+				.whenNot((string) -> string.length() <= 2));
+			assertThat(writer.writeToString("")).isEmpty();
+			assertThat(writer.writeToString("a")).isEmpty();
+			assertThat(writer.writeToString("Boot")).isEmpty();
+			assertThat(writer.writeToString("JSON")).isEqualTo(quoted("JSON"));
+		}
+
+		@Test
+		void as() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().as(Integer::valueOf));
+			assertThat(writer.writeToString("123")).isEqualTo("123");
+		}
+
+		@Test
+		void chainedAs() {
+			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			JsonWriter<String> writer = JsonWriter
+				.of((members) -> members.addSelf().as(Integer::valueOf).as(booleanAdapter));
+			assertThat(writer.writeToString("0")).isEqualTo("false");
+			assertThat(writer.writeToString("1")).isEqualTo("true");
+		}
+
+		@Test
+		void chainedAsAndPredicates() {
+			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf()
+				.whenNot(String::isEmpty)
+				.as(Integer::valueOf)
+				.when((integer) -> integer < 2)
+				.as(booleanAdapter));
+			assertThat(writer.writeToString("")).isEmpty();
+			assertThat(writer.writeToString("0")).isEqualTo("false");
+			assertThat(writer.writeToString("1")).isEqualTo("true");
+			assertThat(writer.writeToString("2")).isEmpty();
+		}
+
+		@Test
+		void usingExtractedPairsWithExtractor() {
+			Map<String, Object> map = new LinkedHashMap<>();
+			map.put("a", "A");
+			map.put("b", "B");
+			PairExtractor<Map.Entry<String, Object>> extractor = PairExtractor.of(Map.Entry::getKey,
+					Map.Entry::getValue);
+			JsonWriter<Map<String, Object>> writer = JsonWriter
+				.of((members) -> members.addSelf().as(Map::entrySet).usingExtractedPairs(Set::forEach, extractor));
+			assertThat(writer.writeToString(map)).isEqualTo("""
+					{"a":"A","b":"B"}""");
+		}
+
+		@Test
+		void usingExtractedPairs() {
+			Map<String, Object> map = new LinkedHashMap<>();
+			map.put("a", "A");
+			map.put("b", "B");
+			Function<Map.Entry<String, Object>, String> nameExtractor = Map.Entry::getKey;
+			Function<Map.Entry<String, Object>, Object> valueExtractor = Map.Entry::getValue;
+			JsonWriter<Map<String, Object>> writer = JsonWriter.of((members) -> members.addSelf()
+				.as(Map::entrySet)
+				.usingExtractedPairs(Set::forEach, nameExtractor, valueExtractor));
+			assertThat(writer.writeToString(map)).isEqualTo("""
+					{"a":"A","b":"B"}""");
+		}
+
+		@Test
+		void usingPairs() {
+			Map<String, Object> map = new LinkedHashMap<>();
+			map.put("a", "A");
+			map.put("b", "B");
+			JsonWriter<Map<String, Object>> writer = JsonWriter
+				.of((members) -> members.addSelf().usingPairs(Map::forEach));
+			assertThat(writer.writeToString(map)).isEqualTo("""
+					{"a":"A","b":"B"}""");
+		}
+
+		@Test
+		void usingPairsWhenAlreadyDeclaredThrowsException() {
+			// FIXME
+		}
+
+		@Test
+		void usingPairsWhenUsingMembersThrowsException() {
+			// FIXME
+		}
+
+		@Test
+		void usingMembers() {
+			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
+			JsonWriter<Couple> writer = JsonWriter.of((member) -> {
+				member.add("personOne", Couple::person1).usingMembers((personMembers) -> {
+					personMembers.add("fn", Person::firstName);
+					personMembers.add("ln", Person::lastName);
+				});
+				member.add("personTwo", Couple::person2).usingMembers((personMembers) -> {
+					personMembers.add("details", Person::toString);
+					personMembers.add("eldest", true);
+				});
+			});
+			assertThat(writer.writeToString(couple)).isEqualTo("""
+					{"personOne":{"fn":"Spring","ln":"Boot"},""" + """
+					"personTwo":{"details":"Spring Framework (20)","eldest":true}}""");
+		}
+
+		@Test
+		void usingMembersWithoutName() {
+			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
+			JsonWriter<Couple> writer = JsonWriter.of((member) -> {
+				member.add("version", 1);
+				member.add(Couple::person1).usingMembers((personMembers) -> personMembers.add("one", Person::toString));
+				member.add(Couple::person2).usingMembers((personMembers) -> personMembers.add("two", Person::toString));
+			});
+			assertThat(writer.writeToString(couple)).isEqualTo("""
+					{"version":1,"one":"Spring Boot (10)","two":"Spring Framework (20)"}""");
+		}
+
+		@Test
+		void usingMembersWithoutNameInMember() {
+			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
+			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.add("only", Couple::person2)
+				.usingMembers((personMembers) -> personMembers.add(Person::toString)));
+			assertThat(writer.writeToString(couple)).isEqualTo("""
+					{"only":"Spring Framework (20)"}""");
+		}
+
+		@Test
+		void usingMemebersWithoutNameAtAll() {
+			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
+			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.add(Couple::person2)
+				.usingMembers((personMembers) -> personMembers.add(Person::toString)));
+			assertThat(writer.writeToString(couple)).isEqualTo(quoted("Spring Framework (20)"));
+		}
+
+		@Test
+		void usingMembersWhenAlreadyDeclaredThrowsException() {
+			// FIXME
+		}
+
+		@Test
+		void usingMembersWhenUsingPairsThrowsException() {
+			// FIXME
+		}
+
+	}
+
+	record Person(String firstName, String lastName, int age) {
+
+		@Override
+		public String toString() {
+			return "%s %s (%s)".formatted(this.firstName, this.lastName, this.age);
+		}
+
+	}
+
+	record Couple(Person person1, Person person2) {
+
 	}
 
 }

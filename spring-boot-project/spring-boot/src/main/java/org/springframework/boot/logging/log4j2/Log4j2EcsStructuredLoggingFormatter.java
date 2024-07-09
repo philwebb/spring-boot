@@ -16,79 +16,64 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.time.Instant;
-import java.util.Map;
-
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.apache.logging.log4j.core.time.Instant;
+import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
  * format</a>.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class Log4j2EcsStructuredLoggingFormatter implements StructuredLoggingFormatter<LogEvent> {
 
-	private final ApplicationMetadata metadata;
+	private final JsonWriter<LogEvent> writer;
 
 	Log4j2EcsStructuredLoggingFormatter(ApplicationMetadata metadata) {
-		this.metadata = metadata;
+		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(metadata, members)).withNewLineAtEnd();
+	}
+
+	private void logEventJson(ApplicationMetadata metadata, JsonWriter.Members<LogEvent> members) {
+		members.add("@timestamp", LogEvent::getInstant).as(this::asTimestamp);
+		members.add("log.level", LogEvent::getLevel).as(Level::name);
+		members.add("process.pid", metadata::pid).whenNotNull();
+		members.add("process.thread.name", LogEvent::getThreadName);
+		members.add("service.name", metadata::name).whenHasLength();
+		members.add("service.version", metadata::version).whenHasLength();
+		members.add("service.environment", metadata::environment).whenHasLength();
+		members.add("service.node.name", metadata::nodeName).whenHasLength();
+		members.add("log.logger", LogEvent::getLoggerName);
+		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
+		members.add(LogEvent::getContextData)
+			.whenNot(ReadOnlyStringMap::isEmpty)
+			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
+		members.add(LogEvent::getThrownProxy).whenNotNull().usingMembers((thrownProxyMembers) -> {
+			thrownProxyMembers.add("error.type", ThrowableProxy::getThrowable)
+				.whenNotNull()
+				.as(ObjectUtils::nullSafeClassName);
+			thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
+			thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
+		});
+		members.add("ecs.version", "8.11");
+	}
+
+	private java.time.Instant asTimestamp(Instant instant) {
+		return java.time.Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
 	}
 
 	@Override
 	public String format(LogEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> {
-			Instant instant = Instant.ofEpochMilli(event.getInstant().getEpochMillisecond())
-				.plusNanos(event.getInstant().getNanoOfMillisecond());
-			writer.stringMember("@timestamp", instant.toString());
-			writer.stringMember("log.level", event.getLevel().name());
-			if (this.metadata.pid() != null) {
-				writer.numberMember("process.pid", this.metadata.pid());
-			}
-			writer.stringMember("process.thread.name", event.getThreadName());
-			if (StringUtils.hasLength(this.metadata.name())) {
-				writer.stringMember("service.name", this.metadata.name());
-			}
-			if (StringUtils.hasLength(this.metadata.version())) {
-				writer.stringMember("service.version", this.metadata.version());
-			}
-			if (StringUtils.hasLength(this.metadata.environment())) {
-				writer.stringMember("service.environment", this.metadata.environment());
-			}
-			if (StringUtils.hasLength(this.metadata.nodeName())) {
-				writer.stringMember("service.node.name", this.metadata.nodeName());
-			}
-			writer.stringMember("log.logger", event.getLoggerName());
-			writer.stringMember("message", event.getMessage().getFormattedMessage());
-			addContextData(event, writer);
-			ThrowableProxy throwable = event.getThrownProxy();
-			if (throwable != null) {
-				writer.stringMember("error.type", throwable.getThrowable().getClass().getName());
-				writer.stringMember("error.message", throwable.getMessage());
-				writer.stringMember("error.stack_trace", throwable.getExtendedStackTraceAsString());
-			}
-			writer.stringMember("ecs.version", "8.11");
-		});
-		writer.newLine();
-		return writer.toJson();
-	}
-
-	private static void addContextData(LogEvent event, JsonWriter writer) {
-		ReadOnlyStringMap contextData = event.getContextData();
-		Map<String, String> map = (contextData != null) ? contextData.toMap() : null;
-		if (CollectionUtils.isEmpty(map)) {
-			return;
-		}
-		map.forEach(writer::stringMember);
+		return this.writer.writeToString(event);
 	}
 
 }

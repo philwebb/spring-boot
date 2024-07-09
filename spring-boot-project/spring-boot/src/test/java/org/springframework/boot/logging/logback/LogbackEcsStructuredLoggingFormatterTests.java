@@ -41,8 +41,8 @@ class LogbackEcsStructuredLoggingFormatterTests extends AbstractStructuredLoggin
 	@BeforeEach
 	void setUp() {
 		super.setUp();
-		this.formatter = new LogbackEcsStructuredLoggingFormatter(getThrowableProxyConverter(),
-				new ApplicationMetadata(1L, "name", "1.0.0", "test", "node-1"));
+		this.formatter = new LogbackEcsStructuredLoggingFormatter(
+				new ApplicationMetadata(1L, "name", "1.0.0", "test", "node-1"), getThrowableProxyConverter());
 	}
 
 	@Test

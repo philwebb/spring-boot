@@ -16,93 +16,64 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.util.List;
-import java.util.Map;
-
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLoggingFormatter;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * <a href="https://www.elastic.co/guide/en/ecs/current/ecs-log.html">ECS logging
  * format</a>.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class LogbackEcsStructuredLoggingFormatter implements StructuredLoggingFormatter<ILoggingEvent> {
 
-	private final ThrowableProxyConverter throwableProxyConverter;
+	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
+			(pair) -> pair.value);
 
-	private final ApplicationMetadata metadata;
+	private JsonWriter<ILoggingEvent> writer;
 
-	LogbackEcsStructuredLoggingFormatter(ThrowableProxyConverter throwableProxyConverter,
-			ApplicationMetadata metadata) {
-		this.throwableProxyConverter = throwableProxyConverter;
-		this.metadata = metadata;
+	LogbackEcsStructuredLoggingFormatter(ApplicationMetadata metadata,
+			ThrowableProxyConverter throwableProxyConverter) {
+		this.writer = JsonWriter
+			.<ILoggingEvent>of((members) -> loggingEventJson(metadata, throwableProxyConverter, members))
+			.withNewLineAtEnd();
+	}
+
+	private void loggingEventJson(ApplicationMetadata metadata, ThrowableProxyConverter throwableProxyConverter,
+			JsonWriter.Members<ILoggingEvent> members) {
+		members.add("@timestamp", ILoggingEvent::getInstant);
+		members.add("log.level", ILoggingEvent::getLevel);
+		members.add("process.pid", metadata::pid).whenNotNull();
+		members.add("process.thread.name", ILoggingEvent::getThreadName);
+		members.add("service.name", metadata::name).whenHasLength();
+		members.add("service.version", metadata::version).whenHasLength();
+		members.add("service.environment", metadata::environment).whenHasLength();
+		members.add("service.node.name", metadata::nodeName).whenHasLength();
+		members.add("log.logger", ILoggingEvent::getLoggerName);
+		members.add("message", ILoggingEvent::getFormattedMessage);
+		members.addMapEntries(ILoggingEvent::getMDCPropertyMap).whenNotEmpty();
+		members.add(ILoggingEvent::getKeyValuePairs)
+			.whenNotEmpty()
+			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
+		members.addSelf().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
+			throwableMembers.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
+			throwableMembers.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
+			throwableMembers.add("error.stack_trace", (event) -> throwableProxyConverter.convert(event));
+		});
+		members.add("ecs.version", "8.11");
 	}
 
 	@Override
 	public String format(ILoggingEvent event) {
-		JsonWriter writer = new JsonWriter();
-		writer.object(() -> {
-			writer.stringMember("@timestamp", event.getInstant().toString());
-			writer.stringMember("log.level", event.getLevel().toString());
-			if (this.metadata.pid() != null) {
-				writer.numberMember("process.pid", this.metadata.pid());
-			}
-			writer.stringMember("process.thread.name", event.getThreadName());
-			if (StringUtils.hasLength(this.metadata.name())) {
-				writer.stringMember("service.name", this.metadata.name());
-			}
-			if (StringUtils.hasLength(this.metadata.version())) {
-				writer.stringMember("service.version", this.metadata.version());
-			}
-			if (StringUtils.hasLength(this.metadata.environment())) {
-				writer.stringMember("service.environment", this.metadata.environment());
-			}
-			if (StringUtils.hasLength(this.metadata.nodeName())) {
-				writer.stringMember("service.node.name", this.metadata.nodeName());
-			}
-			writer.stringMember("log.logger", event.getLoggerName());
-			writer.stringMember("message", event.getFormattedMessage());
-			addMdc(event, writer);
-			addKeyValuePairs(event, writer);
-			IThrowableProxy throwable = event.getThrowableProxy();
-			if (throwable != null) {
-				writer.stringMember("error.type", throwable.getClassName());
-				writer.stringMember("error.message", throwable.getMessage());
-				writer.stringMember("error.stack_trace", this.throwableProxyConverter.convert(event));
-			}
-			writer.stringMember("ecs.version", "8.11");
-		});
-		writer.newLine();
-		return writer.toJson();
-	}
-
-	private void addKeyValuePairs(ILoggingEvent event, JsonWriter writer) {
-		List<KeyValuePair> keyValuePairs = event.getKeyValuePairs();
-		if (CollectionUtils.isEmpty(keyValuePairs)) {
-			return;
-		}
-		for (KeyValuePair pair : keyValuePairs) {
-			writer.stringMember(pair.key, ObjectUtils.nullSafeToString(pair.value));
-		}
-	}
-
-	private static void addMdc(ILoggingEvent event, JsonWriter writer) {
-		Map<String, String> mdc = event.getMDCPropertyMap();
-		if (CollectionUtils.isEmpty(mdc)) {
-			return;
-		}
-		mdc.forEach(writer::stringMember);
+		return this.writer.writeToString(event);
 	}
 
 }
