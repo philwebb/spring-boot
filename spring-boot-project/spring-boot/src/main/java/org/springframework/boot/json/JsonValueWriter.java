@@ -34,8 +34,8 @@ import org.springframework.util.function.ThrowingConsumer;
  * Internal class used by {@link JsonWriter} to handle the lower-level concerns of writing
  * JSON.
  *
- * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class JsonValueWriter {
 

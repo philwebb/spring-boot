@@ -74,8 +74,8 @@ import org.springframework.util.StringUtils;
  * directly to a {@link String}. To write to other types of output, the
  * {@link #write(Object)} method may be used to obtain a {@link WritableJson} instance.
  *
- * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @param <T> The type being written
  * @since 3.4.0
  */
