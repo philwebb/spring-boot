@@ -16,6 +16,12 @@
 
 package org.springframework.boot.json;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +30,16 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.json.JsonWriter.WritableJson;
+import org.springframework.core.io.FileSystemResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JsonWriter}.
@@ -39,6 +50,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JsonWriterTests {
 
 	private static final Person PERSON = new Person("Spring", "Boot", 10);
+
+	@TempDir
+	File temp;
 
 	@Test
 	void writeToStringWritesToString() {
@@ -142,22 +156,41 @@ public class JsonWriterTests {
 
 	@Test
 	void ofWhenNoMembersAddedThrowsException() {
-		// FIXME
+		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
+		})).withMessage("No members have been added");
 	}
 
 	@Test
 	void ofWhenOneContibutesPairByNameAndOneHasNoNameThrowsException() {
-		// FIXME
+		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
+			members.add("Spring", "Boot");
+			members.add("alone");
+		}))
+			.withMessage("Member at index 1 does not contribute a named pair, "
+					+ "ensure that all members have a name or call an appropriate 'using' method");
 	}
 
 	@Test
 	void ofWhenOneContibutesPairByUsingPairsAndOneHasNoNameThrowsException() {
-		// FIXME
+		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
+			members.add(Map.of("Spring", "Boot")).usingPairs(Map::forEach);
+			members.add("alone");
+		}))
+			.withMessage("Member at index 1 does not contribute a named pair, "
+					+ "ensure that all members have a name or call an appropriate 'using' method");
 	}
 
 	@Test
 	void ofWhenOneContibutesPairByUsingMembersAndOneHasNoNameThrowsException() {
-		// FIXME
+		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
+			members.add(PERSON).usingMembers((personMembers) -> {
+				personMembers.add("first", Person::firstName);
+				personMembers.add("last", Person::firstName);
+			});
+			members.add("alone");
+		}))
+			.withMessage("Member at index 1 does not contribute a named pair, "
+					+ "ensure that all members have a name or call an appropriate 'using' method");
 	}
 
 	private static String quoted(String value) {
@@ -276,6 +309,14 @@ public class JsonWriterTests {
 		}
 
 		@Test
+		void asWhenValueIsNullDoesNotCallAdapter() {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().as((value) -> {
+				throw new RuntimeException("bad");
+			}));
+			writer.writeToString(null);
+		}
+
+		@Test
 		void chainedAs() {
 			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
 			JsonWriter<String> writer = JsonWriter
@@ -338,12 +379,17 @@ public class JsonWriterTests {
 
 		@Test
 		void usingPairsWhenAlreadyDeclaredThrowsException() {
-			// FIXME
+			assertThatIllegalStateException()
+				.isThrownBy(() -> JsonWriter
+					.of((members) -> members.add(Map.of()).usingPairs(Map::forEach).usingPairs(Map::forEach)))
+				.withMessage("Pairs cannot be declared multiple times");
 		}
 
 		@Test
 		void usingPairsWhenUsingMembersThrowsException() {
-			// FIXME
+			assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> members.add(Map.of())
+				.usingMembers((mapMembers) -> mapMembers.addSelf("test"))
+				.usingPairs(Map::forEach))).withMessage("Pairs cannot be declared when using members");
 		}
 
 		@Test
@@ -395,12 +441,127 @@ public class JsonWriterTests {
 
 		@Test
 		void usingMembersWhenAlreadyDeclaredThrowsException() {
-			// FIXME
+			assertThatIllegalStateException()
+				.isThrownBy(() -> JsonWriter.of((members) -> members.add(Map.of())
+					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))
+					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))))
+				.withMessage("Members cannot be declared multiple times");
 		}
 
 		@Test
 		void usingMembersWhenUsingPairsThrowsException() {
-			// FIXME
+			assertThatIllegalStateException()
+				.isThrownBy(() -> JsonWriter.of((members) -> members.add(Map.of())
+					.usingPairs(Map::forEach)
+					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))))
+				.withMessage("Members cannot be declared when using pairs");
+		}
+
+	}
+
+	@Nested
+	class WritableJsonTests {
+
+		@Test
+		void toJsonStringReturnsString() {
+			WritableJson writable = (out) -> out.append("{}");
+			assertThat(writable.toJsonString()).isEqualTo("{}");
+		}
+
+		@Test
+		void toJsonStringWhenIOExceptionIsThrownThrowsUncheckedIOException() {
+			WritableJson writable = (out) -> {
+				throw new IOException("bad");
+			};
+			assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(() -> writable.toJsonString())
+				.havingCause()
+				.withMessage("bad");
+		}
+
+		@Test
+		void toResourceWritesJson() throws Exception {
+			File file = new File(JsonWriterTests.this.temp, "out.json");
+			WritableJson writable = (out) -> out.append("{}");
+			writable.toResource(new FileSystemResource(file));
+			assertThat(file).content().isEqualTo("{}");
+		}
+
+		@Test
+		void toResourceWithCharsetWritesJson() throws Exception {
+			File file = new File(JsonWriterTests.this.temp, "out.json");
+			WritableJson writable = (out) -> out.append("{}");
+			writable.toResource(new FileSystemResource(file), StandardCharsets.ISO_8859_1);
+			assertThat(file).content(StandardCharsets.ISO_8859_1).isEqualTo("{}");
+		}
+
+		@Test
+		void toResourceWithCharsetWhenOutIsNullThrowsException() {
+			WritableJson writable = (out) -> out.append("{}");
+			assertThatIllegalArgumentException().isThrownBy(() -> writable.toResource(null, StandardCharsets.UTF_8))
+				.withMessage("'out' must not be null");
+		}
+
+		@Test
+		void toResourceWithCharsetWhenCharsetIsNullThrowsException() {
+			File file = new File(JsonWriterTests.this.temp, "out.json");
+			WritableJson writable = (out) -> out.append("{}");
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> writable.toResource(new FileSystemResource(file), null))
+				.withMessage("'charset' must not be null");
+		}
+
+		@Test
+		void toOutputStreamWritesJson() throws Exception {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			WritableJson writable = (out) -> out.append("{}");
+			writable.toOutputStream(outputStream);
+			assertThat(outputStream.toString(StandardCharsets.UTF_8)).isEqualTo("{}");
+		}
+
+		@Test
+		void toOutputStreamWithCharsetWritesJson() throws Exception {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			WritableJson writable = (out) -> out.append("{}");
+			writable.toOutputStream(outputStream, StandardCharsets.ISO_8859_1);
+			assertThat(outputStream.toString(StandardCharsets.ISO_8859_1)).isEqualTo("{}");
+		}
+
+		@Test
+		void toOutputStreamWithCharsetWhenOutIsNullThrowsException() {
+			WritableJson writable = (out) -> out.append("{}");
+			assertThatIllegalArgumentException().isThrownBy(() -> writable.toOutputStream(null, StandardCharsets.UTF_8))
+				.withMessage("'out' must not be null");
+		}
+
+		@Test
+		void toOutputStreamWithCharsetWhenCharsetIsNullThrowsException() {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			WritableJson writable = (out) -> out.append("{}");
+			assertThatIllegalArgumentException().isThrownBy(() -> writable.toOutputStream(outputStream, null))
+				.withMessage("'charset' must not be null");
+		}
+
+		//
+
+		@Test
+		void toWriterWritesJson() throws Exception {
+			StringWriter writer = new StringWriter();
+			WritableJson writable = (out) -> out.append("{}");
+			writable.toWriter(writer);
+			assertThat(writer).hasToString("{}");
+		}
+
+		@Test
+		void toWriterWhenWriterIsNullThrowsException() {
+			WritableJson writable = (out) -> out.append("{}");
+			assertThatIllegalArgumentException().isThrownBy(() -> writable.toWriter(null))
+				.withMessage("'out' must not be null");
+		}
+
+		@Test
+		void ofReturnsInstanceWithSensibleToString() {
+			WritableJson writable = WritableJson.of((out) -> out.append("{}"));
+			assertThat(writable).hasToString("{}");
 		}
 
 	}

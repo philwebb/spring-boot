@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -194,7 +195,9 @@ public interface JsonWriter<T> {
 		 */
 		default void toResource(WritableResource out) throws IOException {
 			Assert.notNull(out, "'out' must not be null");
-			toOutputStream(out.getOutputStream());
+			try (OutputStream outputStream = out.getOutputStream()) {
+				toOutputStream(outputStream);
+			}
 		}
 
 		/**
@@ -207,12 +210,15 @@ public interface JsonWriter<T> {
 		default void toResource(WritableResource out, Charset charset) throws IOException {
 			Assert.notNull(out, "'out' must not be null");
 			Assert.notNull(charset, "'charset' must not be null");
-			toOutputStream(out.getOutputStream(), charset);
+			try (OutputStream outputStream = out.getOutputStream()) {
+				toOutputStream(outputStream, charset);
+			}
 		}
 
 		/**
 		 * Write the JSON to the provided {@link OutputStream} using
-		 * {@link StandardCharsets#UTF_8 UTF8} encoding.
+		 * {@link StandardCharsets#UTF_8 UTF8} encoding. The output stream will not be
+		 * closed.
 		 * @param out the {@link OutputStream} to receive the JSON
 		 * @throws IOException on IO error
 		 * @see #toOutputStream(OutputStream, Charset)
@@ -223,7 +229,7 @@ public interface JsonWriter<T> {
 
 		/**
 		 * Write the JSON to the provided {@link OutputStream} using the given
-		 * {@link Charset}.
+		 * {@link Charset}. The output stream will not be closed.
 		 * @param out the {@link OutputStream} to receive the JSON
 		 * @param charset the charset to use
 		 * @throws IOException on IO error
@@ -231,7 +237,20 @@ public interface JsonWriter<T> {
 		default void toOutputStream(OutputStream out, Charset charset) throws IOException {
 			Assert.notNull(out, "'out' must not be null");
 			Assert.notNull(charset, "'charset' must not be null");
-			to(new OutputStreamWriter(out, charset));
+			toWriter(new OutputStreamWriter(out, charset));
+		}
+
+		/**
+		 * Write the JSON to the provided {@link Writer}. The writer will be flushed but
+		 * not closed.
+		 * @param out the {@link Writer} to receive the JSON
+		 * @throws IOException on IO error
+		 * @see #toOutputStream(OutputStream, Charset)
+		 */
+		default void toWriter(Writer out) throws IOException {
+			Assert.notNull(out, "'out' must not be null");
+			to(out);
+			out.flush();
 		}
 
 		/**
@@ -412,7 +431,6 @@ public interface JsonWriter<T> {
 		 * @param valueWriter the JSON value writer to use
 		 */
 		void write(T instance, JsonValueWriter valueWriter) {
-			Assert.notNull(instance, "'instance' must not be null");
 			valueWriter.start(this.series);
 			for (Member<?> member : this.members) {
 				member.write(instance, valueWriter);
@@ -751,7 +769,7 @@ public interface JsonWriter<T> {
 
 		@Override
 		public String toString() {
-			return "Member #" + this.index + (this.name != null ? "{%s}".formatted(this.name) : "");
+			return "Member at index " + this.index + (this.name != null ? "{%s}".formatted(this.name) : "");
 		}
 
 		/**
