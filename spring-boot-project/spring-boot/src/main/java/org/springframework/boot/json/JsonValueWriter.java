@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import org.assertj.core.util.Arrays;
 
 import org.springframework.boot.json.JsonWriter.WritableJson;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -118,7 +117,7 @@ class JsonValueWriter {
 	 */
 	void start(Series series) {
 		if (series != null) {
-			this.activeSeries.push(new ActiveSeries(series));
+			this.activeSeries.push(new ActiveSeries());
 			append(series.openChar);
 		}
 	}
@@ -130,7 +129,7 @@ class JsonValueWriter {
 	 */
 	void end(Series series) {
 		if (series != null) {
-			this.activeSeries.remove(getActiveSeries(series));
+			this.activeSeries.pop();
 			append(series.closeChar);
 		}
 	}
@@ -161,7 +160,9 @@ class JsonValueWriter {
 	}
 
 	<E> void writeElement(E element) {
-		getActiveSeries(Series.ARRAY).write(() -> write(element));
+		ActiveSeries activeSeries = this.activeSeries.peek();
+		activeSeries.appendCommaIfRequired();
+		write(element);
 	}
 
 	/**
@@ -192,11 +193,11 @@ class JsonValueWriter {
 	}
 
 	private <N, V> void writePair(N name, V value) {
-		getActiveSeries(Series.OBJECT).write(() -> {
-			writeString(name);
-			append(":");
-			write(value);
-		});
+		ActiveSeries activeSeries = this.activeSeries.peek();
+		activeSeries.appendCommaIfRequired();
+		writeString(name);
+		append(":");
+		write(value);
 	}
 
 	private void writeString(Object value) {
@@ -247,13 +248,6 @@ class JsonValueWriter {
 		}
 	}
 
-	private ActiveSeries getActiveSeries(Series series) {
-		ActiveSeries activeSeries = this.activeSeries.peek();
-		Assert.state(activeSeries != null, "No series has been started");
-		Assert.state(activeSeries.is(series), () -> "Existing series is not " + series.name());
-		return activeSeries;
-	}
-
 	/**
 	 * A series of items that can be written to the JSON output.
 	 */
@@ -285,24 +279,13 @@ class JsonValueWriter {
 	 */
 	private class ActiveSeries {
 
-		private final Series series;
-
 		private boolean commaRequired;
 
-		ActiveSeries(Series series) {
-			this.series = series;
-		}
-
-		void write(Runnable action) {
+		void appendCommaIfRequired() {
 			if (this.commaRequired) {
 				append(',');
 			}
 			this.commaRequired = true;
-			action.run();
-		}
-
-		boolean is(Series series) {
-			return this.series == series;
 		}
 
 	}
