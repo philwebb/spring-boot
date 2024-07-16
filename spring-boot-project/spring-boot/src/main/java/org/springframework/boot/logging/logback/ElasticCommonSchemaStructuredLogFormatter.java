@@ -23,9 +23,10 @@ import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
 
 /**
  * Logback {@link StructuredLogFormatter} for
@@ -41,23 +42,20 @@ class ElasticCommonSchemaStructuredLogFormatter implements StructuredLogFormatte
 
 	private JsonWriter<ILoggingEvent> writer;
 
-	ElasticCommonSchemaStructuredLogFormatter(ApplicationMetadata metadata,
+	ElasticCommonSchemaStructuredLogFormatter(ApplicationPid pid, ElasticCommonSchemaService service,
 			ThrowableProxyConverter throwableProxyConverter) {
 		this.writer = JsonWriter
-			.<ILoggingEvent>of((members) -> loggingEventJson(metadata, throwableProxyConverter, members))
+			.<ILoggingEvent>of((members) -> loggingEventJson(pid, service, throwableProxyConverter, members))
 			.withNewLineAtEnd();
 	}
 
-	private void loggingEventJson(ApplicationMetadata metadata, ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+	private void loggingEventJson(ApplicationPid pid, ElasticCommonSchemaService service,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
 		members.add("@timestamp", ILoggingEvent::getInstant);
 		members.add("log.level", ILoggingEvent::getLevel);
-		members.add("process.pid", metadata::pid).whenNotNull();
+		members.add("process.pid", pid).when(ApplicationPid::isAvailable).as(ApplicationPid::toLong);
 		members.add("process.thread.name", ILoggingEvent::getThreadName);
-		members.add("service.name", metadata::name).whenHasLength();
-		members.add("service.version", metadata::version).whenHasLength();
-		members.add("service.environment", metadata::environment).whenHasLength();
-		members.add("service.node.name", metadata::nodeName).whenHasLength();
+		service.addToJsonMembers(members);
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
 		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);

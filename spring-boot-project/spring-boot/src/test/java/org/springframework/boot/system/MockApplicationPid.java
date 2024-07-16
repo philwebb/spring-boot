@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.structured;
+package org.springframework.boot.system;
 
 /**
- * Metadata about the application.
+ * Factory to create mock {@link ApplicationPid} instances for testing.
  *
- * @param pid the process ID of the application
- * @param name the application name
- * @param version the version of the application
- * @param environment the name of the environment the application is running in
- * @param nodeName the name of the node the application is running on
- * @author Moritz Halbritter
- * @since 3.4.0
+ * @author Phillip Webb
  */
-public record ApplicationMetadata(Long pid, String name, String version, String environment, String nodeName) {
+public class MockApplicationPid {
+
+	public static ApplicationPid of(long value) {
+		return new ApplicationPid(value);
+	}
 
 }

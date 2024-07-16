@@ -18,12 +18,17 @@ package org.springframework.boot.logging.structured;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 
+import org.springframework.boot.system.ApplicationPid;
+import org.springframework.core.env.Environment;
+
 /**
  * Formats a log event to a structured log message.
  * <p>
  * Implementing classes can declare the following parameter types in the constructor:
  * <ul>
- * <li>{@link ApplicationMetadata}</li>
+ * <li>{@link Environment}</li>
+ * <li>{@link ApplicationPid}</li>
+ * <li>{@link ElasticCommonSchemaService}</li>
  * </ul>
  * When using Logback, implementing classes can also use the following parameter types in
  * the constructor:

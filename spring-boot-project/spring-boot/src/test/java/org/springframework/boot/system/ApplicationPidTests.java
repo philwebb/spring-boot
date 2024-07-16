@@ -37,7 +37,7 @@ class ApplicationPidTests {
 
 	@Test
 	void toStringWithPid() {
-		assertThat(new ApplicationPid("123")).hasToString("123");
+		assertThat(new ApplicationPid(123L)).hasToString("123");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class ApplicationPidTests {
 
 	@Test
 	void writePid() throws Exception {
-		ApplicationPid pid = new ApplicationPid("123");
+		ApplicationPid pid = new ApplicationPid(123L);
 		File file = new File(this.tempDir, "pid");
 		pid.write(file);
 		assertThat(contentOf(file)).isEqualTo("123");
@@ -63,7 +63,7 @@ class ApplicationPidTests {
 	@Test
 	void writeNewPid() throws Exception {
 		// gh-10784
-		ApplicationPid pid = new ApplicationPid("123");
+		ApplicationPid pid = new ApplicationPid(123L);
 		File file = new File(this.tempDir, "pid");
 		file.delete();
 		pid.write(file);

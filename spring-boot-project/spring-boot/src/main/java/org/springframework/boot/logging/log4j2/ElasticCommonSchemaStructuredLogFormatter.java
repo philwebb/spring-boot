@@ -24,9 +24,10 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -40,19 +41,17 @@ class ElasticCommonSchemaStructuredLogFormatter implements StructuredLogFormatte
 
 	private final JsonWriter<LogEvent> writer;
 
-	ElasticCommonSchemaStructuredLogFormatter(ApplicationMetadata metadata) {
-		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(metadata, members)).withNewLineAtEnd();
+	ElasticCommonSchemaStructuredLogFormatter(ApplicationPid pid, ElasticCommonSchemaService service) {
+		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(pid, service, members)).withNewLineAtEnd();
 	}
 
-	private void logEventJson(ApplicationMetadata metadata, JsonWriter.Members<LogEvent> members) {
+	private void logEventJson(ApplicationPid pid, ElasticCommonSchemaService service,
+			JsonWriter.Members<LogEvent> members) {
 		members.add("@timestamp", LogEvent::getInstant).as(this::asTimestamp);
 		members.add("log.level", LogEvent::getLevel).as(Level::name);
-		members.add("process.pid", metadata::pid).whenNotNull();
+		members.add("process.pid", pid).when(ApplicationPid::isAvailable).as(ApplicationPid::toLong);
 		members.add("process.thread.name", LogEvent::getThreadName);
-		members.add("service.name", metadata::name).whenHasLength();
-		members.add("service.version", metadata::version).whenHasLength();
-		members.add("service.environment", metadata::environment).whenHasLength();
-		members.add("service.node.name", metadata::nodeName).whenHasLength();
+		service.addToJsonMembers(members);
 		members.add("log.logger", LogEvent::getLoggerName);
 		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
 		members.add(LogEvent::getContextData)

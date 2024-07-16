@@ -16,43 +16,49 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.MarkerManager.Log4jMarker;
 import org.apache.logging.log4j.core.impl.JdkMapAdapterStringMap;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ElasticCommonSchemaStructuredLogFormatter}.
+ * Tests for {@link LogstashStructuredLogFormatter}.
  *
  * @author Moritz Halbritter
  */
-class Log4j2EcsStructuredLoggingFormatterTests extends AbstractStructuredLoggingTests {
+class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
 
-	private ElasticCommonSchemaStructuredLogFormatter formatter;
+	private LogstashStructuredLogFormatter formatter;
 
 	@BeforeEach
 	void setUp() {
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(
-				new ApplicationMetadata(1L, "name", "1.0.0", "test", "node-1"));
+		this.formatter = new LogstashStructuredLogFormatter();
 	}
 
 	@Test
 	void shouldFormat() {
 		MutableLogEvent event = createEvent();
 		event.setContextData(new JdkMapAdapterStringMap(Map.of("mdc-1", "mdc-v-1"), true));
+		Log4jMarker marker1 = new Log4jMarker("marker-1");
+		marker1.addParents(new Log4jMarker("marker-2"));
+		event.setMarker(marker1);
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
-				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
-				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
-				"org.example.Test", "message", "message", "mdc-1", "mdc-v-1", "ecs.version", "8.11"));
+		String timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+			.format(OffsetDateTime.ofInstant(EVENT_TIME, ZoneId.systemDefault()));
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", timestamp, "@version", "1",
+				"message", "message", "logger_name", "org.example.Test", "thread_name", "main", "level", "INFO",
+				"level_value", 400, "mdc-1", "mdc-v-1", "tags", List.of("marker-1", "marker-2")));
 	}
 
 	@Test
@@ -61,16 +67,14 @@ class Log4j2EcsStructuredLoggingFormatterTests extends AbstractStructuredLogging
 		event.setThrown(new RuntimeException("Boom"));
 		String json = this.formatter.format(event);
 		Map<String, Object> deserialized = deserialize(json);
-		assertThat(deserialized)
-			.containsAllEntriesOf(map("error.type", "java.lang.RuntimeException", "error.message", "Boom"));
-		String stackTrace = (String) deserialized.get("error.stack_trace");
+		String stackTrace = (String) deserialized.get("stack_trace");
 		assertThat(stackTrace).startsWith(
 				"""
 						java.lang.RuntimeException: Boom
-						\tat org.springframework.boot.logging.log4j2.Log4j2EcsStructuredLoggingFormatterTests.shouldFormatException""");
+						\tat org.springframework.boot.logging.log4j2.Log4j2LogstashStructuredLoggingFormatterTests.shouldFormatException""");
 		assertThat(json).contains(
 				"""
-						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.Log4j2EcsStructuredLoggingFormatterTests.shouldFormatException""");
+						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.Log4j2LogstashStructuredLoggingFormatterTests.shouldFormatException""");
 	}
 
 }
