@@ -32,7 +32,7 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
-import org.springframework.boot.logging.structured.JsonStructuredLogFormatter;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.util.CollectionUtils;
 
@@ -42,7 +42,7 @@ import org.springframework.util.CollectionUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class LogstashStructuredLogFormatter extends JsonStructuredLogFormatter<LogEvent> {
+class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	LogstashStructuredLogFormatter() {
 		super(LogstashStructuredLogFormatter::jsonMembers);

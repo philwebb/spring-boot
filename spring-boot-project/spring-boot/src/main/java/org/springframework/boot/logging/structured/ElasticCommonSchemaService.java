@@ -22,6 +22,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
+ * Service details for Elastic Common Schema structured logging.
+ *
  * @param name the application name
  * @param version the version of the application
  * @param environment the name of the environment the application is running in

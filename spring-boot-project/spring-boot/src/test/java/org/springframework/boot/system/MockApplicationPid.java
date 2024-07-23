@@ -21,7 +21,10 @@ package org.springframework.boot.system;
  *
  * @author Phillip Webb
  */
-public class MockApplicationPid {
+public final class MockApplicationPid {
+
+	private MockApplicationPid() {
+	}
 
 	public static ApplicationPid of(long value) {
 		return new ApplicationPid(value);

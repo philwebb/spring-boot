@@ -26,7 +26,7 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
-import org.springframework.boot.logging.structured.JsonStructuredLogFormatter;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.util.ObjectUtils;
@@ -38,7 +38,7 @@ import org.springframework.util.ObjectUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class ElasticCommonSchemaStructuredLogFormatter extends JsonStructuredLogFormatter<LogEvent> {
+class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	ElasticCommonSchemaStructuredLogFormatter(ApplicationPid pid, ElasticCommonSchemaService service) {
 		super((members) -> jsonMembers(pid, service, members));

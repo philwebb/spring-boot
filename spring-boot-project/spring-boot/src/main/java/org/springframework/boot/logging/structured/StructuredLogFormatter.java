@@ -46,12 +46,18 @@ import org.springframework.core.env.Environment;
 public interface StructuredLogFormatter<E> {
 
 	/**
-	 * Formats the given log event.
+	 * Formats the given log event to a String.
 	 * @param event the log event to write
-	 * @return the formatted log event
+	 * @return the formatted log event String
 	 */
 	String format(E event);
 
+	/**
+	 * Formats the given log event to a byte array.
+	 * @param event the log event to write
+	 * @param charset the charset
+	 * @return the formatted log event bytes
+	 */
 	default byte[] format(E event, Charset charset) {
 		return format(event).getBytes(charset);
 	}

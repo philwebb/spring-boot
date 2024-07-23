@@ -23,20 +23,22 @@ import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
 
 /**
- * {@link StructuredLogFormatter} that generates JSON by using a {@link JsonWriter}.
+ * Base class for {@link StructuredLogFormatter} implementations that generates JSON using
+ * a {@link JsonWriter}.
  *
  * @param <E> the log event type
  * @author Phillip Webb
+ * @since 3.4.0
  */
-public abstract class JsonStructuredLogFormatter<E> implements StructuredLogFormatter<E> {
+public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredLogFormatter<E> {
 
 	private final JsonWriter<E> jsonWriter;
 
-	protected JsonStructuredLogFormatter(Consumer<Members<E>> members) {
+	protected JsonWriterStructuredLogFormatter(Consumer<Members<E>> members) {
 		this(JsonWriter.of(members).withNewLineAtEnd());
 	}
 
-	protected JsonStructuredLogFormatter(JsonWriter<E> jsonWriter) {
+	protected JsonWriterStructuredLogFormatter(JsonWriter<E> jsonWriter) {
 		this.jsonWriter = jsonWriter;
 	}
 
