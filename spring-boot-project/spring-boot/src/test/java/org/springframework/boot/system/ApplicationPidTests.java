@@ -71,6 +71,30 @@ class ApplicationPidTests {
 	}
 
 	@Test
+	void toLong() {
+		ApplicationPid pid = new ApplicationPid(123L);
+		assertThat(pid.toLong()).isEqualTo(123L);
+	}
+
+	@Test
+	void toLongWhenNotAvailable() {
+		ApplicationPid pid = new ApplicationPid(null);
+		assertThat(pid.toLong()).isNull();
+	}
+
+	@Test
+	void isAvailableWhenAvailable() {
+		ApplicationPid pid = new ApplicationPid(123L);
+		assertThat(pid.isAvailable()).isTrue();
+	}
+
+	@Test
+	void isAvailableWhenNotAvailable() {
+		ApplicationPid pid = new ApplicationPid(null);
+		assertThat(pid.isAvailable()).isFalse();
+	}
+
+	@Test
 	void getPidFromJvm() {
 		assertThat(new ApplicationPid().toString()).isNotEmpty();
 	}

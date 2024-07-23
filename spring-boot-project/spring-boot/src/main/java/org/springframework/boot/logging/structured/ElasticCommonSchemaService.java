@@ -42,7 +42,7 @@ public record ElasticCommonSchemaService(String name, String version, String env
 		return new ElasticCommonSchemaService(name, this.version, this.environment, this.nodeName);
 	}
 
-	public <T> void addToJsonMembers(JsonWriter.Members<T> members) {
+	public <T> void jsonMembers(JsonWriter.Members<T> members) {
 		members.add("service.name", this::name).whenHasLength();
 		members.add("service.version", this::version).whenHasLength();
 		members.add("service.environment", this::environment).whenHasLength();

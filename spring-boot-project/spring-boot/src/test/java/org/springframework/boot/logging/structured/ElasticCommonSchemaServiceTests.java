@@ -59,7 +59,7 @@ class ElasticCommonSchemaServiceTests {
 	@Test
 	void addToJsonMembersCreatesValidJson() {
 		ElasticCommonSchemaService service = new ElasticCommonSchemaService("spring", "1.2.3", "prod", "boot");
-		JsonWriter<ElasticCommonSchemaService> writer = JsonWriter.of(service::addToJsonMembers);
+		JsonWriter<ElasticCommonSchemaService> writer = JsonWriter.of(service::jsonMembers);
 		assertThat(writer.writeToString(service))
 			.isEqualTo("{\"service.name\":\"spring\",\"service.version\":\"1.2.3\","
 					+ "\"service.environment\":\"prod\",\"service.node.name\":\"boot\"}");

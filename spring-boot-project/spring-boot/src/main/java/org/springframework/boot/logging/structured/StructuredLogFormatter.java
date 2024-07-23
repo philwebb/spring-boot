@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.nio.charset.Charset;
+
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 
 import org.springframework.boot.system.ApplicationPid;
@@ -40,6 +42,7 @@ import org.springframework.core.env.Environment;
  * @author Moritz Halbritter
  * @since 3.4.0
  */
+@FunctionalInterface
 public interface StructuredLogFormatter<E> {
 
 	/**
@@ -48,5 +51,9 @@ public interface StructuredLogFormatter<E> {
 	 * @return the formatted log event
 	 */
 	String format(E event);
+
+	default byte[] format(E event, Charset charset) {
+		return format(event).getBytes(charset);
+	}
 
 }
