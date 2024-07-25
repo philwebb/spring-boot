@@ -347,7 +347,7 @@ For browser clients, there is a "`whitelabel`" error view that renders the same 
 There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
 See the xref:appendix:application-properties/index.adoc#appendix.application-properties.server[Server Properties] section of the Appendix.
 
-To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
+To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `org.springframework.boot.web.servlet.error.ErrorAttributes` to use the existing mechanism but replace the contents.
 
 TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorController`.
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
@@ -373,7 +373,7 @@ You can also define a class annotated with `@ControllerAdvice` to customize the 
 
 include-code::MyControllerAdvice[]
 
-In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
+In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the `org.springframework.boot.web.servlet.error.ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by web observations or the xref:actuator/metrics.adoc#actuator.metrics.supported.spring-mvc[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the observations by {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[setting the handled exception on the observation context].
