@@ -385,7 +385,7 @@ include-code::MyFilterConfiguration[]
 [[howto.webserver.add-servlet-filter-listener.using-scanning]]
 === Add Servlets, Filters, and Listeners by Using Classpath Scanning
 
-`@WebServlet`, `@WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
+`@WebServlet`, `@jakarta.servlet.annotation.WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
 By default, `@ServletComponentScan` scans from the package of the annotated class.
 
 
