@@ -34,7 +34,7 @@ SuccessExitStatus=143
 WantedBy=multi-user.target
 ----
 
-IMPORTANT: Remember to change the `Description`, `User`, `Group`, `Environment` and `ExecStart` fields for your application.
+IMPORTANT: Remember to change the `#Description`, `#User`, `#Group`, `#Environment` and `#ExecStart` fields for your application.
 
 NOTE: The `ExecStart` field does not declare the script action command, which means that the `run` command is used by default.
 
