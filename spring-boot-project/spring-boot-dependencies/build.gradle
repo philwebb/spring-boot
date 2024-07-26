@@ -705,8 +705,11 @@ bom {
 			]
 		}
 		links {
-			site("https://github.com/jakartaee/mail-api")
+			site { version -> "https://jakarta.ee/specifications/mail/%s.%s"
+				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/jakartaee/mail-api/releases/tag/{version}")
+			javadoc { version -> "https://jakarta.ee/specifications/mail/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Jakarta Management", "1.1.4") {
