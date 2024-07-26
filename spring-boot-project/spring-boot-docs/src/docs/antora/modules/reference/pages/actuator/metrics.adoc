@@ -972,12 +972,12 @@ spring:
 [[actuator.metrics.supported.spring-data-repository]]
 === Spring Data Repository Metrics
 
-Auto-configuration enables the instrumentation of all Spring Data `Repository` method invocations.
+Auto-configuration enables the instrumentation of all Spring Data `org.springframework.data.repository.Repository` method invocations.
 By default, metrics are generated with the name, `spring.data.repository.invocations`.
 You can customize the name by setting the configprop:management.metrics.data.repository.metric-name[] property.
 
-The `@Timed` annotation from the `io.micrometer.core.annotation` package is supported on `Repository` interfaces and methods.
-If you do not want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+The `@Timed` annotation from the `io.micrometer.core.annotation` package is supported on `org.springframework.data.repository.Repository` interfaces and methods.
+If you do not want to record metrics for all `org.springframework.data.repository.Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
 
 NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
 Long task timers require a separate metric name and can be stacked with a short task timer.
@@ -988,10 +988,10 @@ By default, repository invocation related metrics are tagged with the following 
 | Tag | Description
 
 | `repository`
-| The simple class name of the source `Repository`.
+| The simple class name of the source `org.springframework.data.repository.Repository`.
 
 | `method`
-| The name of the `Repository` method that was invoked.
+| The name of the `org.springframework.data.repository.Repository` method that was invoked.
 
 | `state`
 | The result state (`SUCCESS`, `ERROR`, `CANCELED`, or `RUNNING`).

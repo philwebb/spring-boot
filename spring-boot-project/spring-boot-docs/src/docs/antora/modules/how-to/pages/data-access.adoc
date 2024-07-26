@@ -339,9 +339,9 @@ See {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaB
 [[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
 == Use Spring Data JPA and Mongo Repositories
 
-Spring Data JPA and Spring Data Mongo can both automatically create `Repository` implementations for you.
+Spring Data JPA and Spring Data Mongo can both automatically create `org.springframework.data.repository.Repository` implementations for you.
 If they are both present on the classpath, you might have to do some extra configuration to tell Spring Boot which repositories to create.
-The most explicit way to do that is to use the standard Spring Data `+@EnableJpaRepositories+` and `+@EnableMongoRepositories+` annotations and provide the location of your `Repository` interfaces.
+The most explicit way to do that is to use the standard Spring Data `+@EnableJpaRepositories+` and `+@EnableMongoRepositories+` annotations and provide the location of your `org.springframework.data.repository.Repository` interfaces.
 
 There are also flags (`+spring.data.*.repositories.enabled+` and `+spring.data.*.repositories.type+`) that you can use to switch the auto-configured repositories on and off in external configuration.
 Doing so is useful, for instance, in case you want to switch off the Mongo repositories and still use the auto-configured `MongoTemplate`.
@@ -363,7 +363,7 @@ Note that if you are using Spring Data REST, you must use the properties in the 
 [[howto.data-access.exposing-spring-data-repositories-as-rest]]
 == Expose Spring Data Repositories as REST Endpoint
 
-Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
+Spring Data REST can expose the `org.springframework.data.repository.Repository` implementations as REST endpoints for you,
 provided Spring MVC has been enabled for the application.
 
 Spring Boot exposes a set of useful properties (from the `spring.data.rest` namespace) that customize the {url-spring-data-rest-javadoc}/org/springframework/data/rest/core/config/RepositoryRestConfiguration.html[`RepositoryRestConfiguration`].

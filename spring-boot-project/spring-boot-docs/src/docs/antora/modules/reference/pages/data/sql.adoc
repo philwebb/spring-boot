@@ -2,7 +2,7 @@
 = SQL Databases
 
 The {url-spring-framework-site}[Spring Framework] provides extensive support for working with SQL databases, from direct JDBC access using `JdbcClient` or `JdbcTemplate` to complete "`object relational mapping`" technologies such as Hibernate.
-{url-spring-data-site}[Spring Data] provides an additional level of functionality: creating `Repository` implementations directly from interfaces and using conventions to generate queries from your method names.
+{url-spring-data-site}[Spring Data] provides an additional level of functionality: creating `org.springframework.data.repository.Repository` implementations directly from interfaces and using conventions to generate queries from your method names.
 
 
 
