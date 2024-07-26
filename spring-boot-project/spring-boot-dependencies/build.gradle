@@ -725,7 +725,7 @@ bom {
 		links {
 			site { version -> "https://jakarta.ee/specifications/servlet/6.0/"
 				.formatted(version.major(), version.minor()) }
-			javadoc { version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs/jakarta.servlet"
+			javadoc { version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()) }
 		}
 	}
