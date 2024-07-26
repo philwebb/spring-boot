@@ -562,7 +562,7 @@ The single `onStartup` method provides access to the `ServletContext` and, if ne
 [[web.servlet.embedded-container.context-initializer.scanning]]
 ==== Scanning for Servlets, Filters, and listeners
 
-When using an embedded container, automatic registration of classes annotated with `@WebServlet`, `@WebFilter`, and `@WebListener` can be enabled by using `@ServletComponentScan`.
+When using an embedded container, automatic registration of classes annotated with `@jakarta.servlet.annotation.WebServlet`, `@jakarta.servlet.annotation.WebFilter`, and `@jakarta.servlet.annotation.WebListener` can be enabled by using `@ServletComponentScan`.
 
 TIP: `@ServletComponentScan` has no effect in a standalone container, where the container's built-in discovery mechanisms are used instead.
 
