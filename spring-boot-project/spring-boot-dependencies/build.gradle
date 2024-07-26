@@ -677,6 +677,12 @@ bom {
 				"jakarta.jms-api"
 			]
 		}
+		links {
+			site { version -> "https://jakarta.ee/specifications/messaging/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			javadoc { version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Json", "2.1.3") {
 		group("jakarta.json") {
