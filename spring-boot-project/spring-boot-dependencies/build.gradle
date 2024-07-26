@@ -716,6 +716,12 @@ bom {
 				"jakarta.persistence-api"
 			]
 		}
+		links {
+			site { version -> "https://jakarta.ee/specifications/persistence/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			javadoc { version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Servlet", "6.0.0") {
 		group("jakarta.servlet") {
@@ -724,7 +730,7 @@ bom {
 			]
 		}
 		links {
-			site { version -> "https://jakarta.ee/specifications/servlet/6.0/"
+			site { version -> "https://jakarta.ee/specifications/servlet/%s.%s"
 				.formatted(version.major(), version.minor()) }
 			javadoc { version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()) }
