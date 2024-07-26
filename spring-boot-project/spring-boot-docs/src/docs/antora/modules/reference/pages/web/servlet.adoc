@@ -47,7 +47,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 
 If you want to keep those Spring Boot MVC customizations and make more {url-spring-framework-docs}/web/webmvc.html[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
 
-If you want to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
+If you want to provide custom instances of `org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
 The custom instances will be subject to further initialization and configuration by Spring MVC.
 To participate in, and if desired, override that subsequent processing, a `WebMvcConfigurer` should be used.
 

@@ -141,10 +141,10 @@ The ordering is defined by the order of `HandlerMapping` beans which is by defau
 
 [cols="1,1"]
 |===
-|`RouterFunctionMapping`
+|`org.springframework.web.reactive.function.server.support.RouterFunctionMapping`
 |Endpoints declared with `org.springframework.web.reactive.function.server.RouterFunction` beans
 
-|`RequestMappingHandlerMapping`
+|`org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping`
 |Endpoints declared in `@Controller` beans
 
 |`RouterFunctionMapping` for the Welcome Page
