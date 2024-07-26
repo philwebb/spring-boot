@@ -29,7 +29,7 @@ Note that Spring Boot still tries to resolve the error view, so you should proba
 Overriding the error page with your own depends on the templating technology that you use.
 For example, if you use Thymeleaf, you can add an `error.html` template.
 If you use FreeMarker, you can add an `error.ftlh` template.
-In general, you need a `View` that resolves with a name of `error` or a `@Controller` that handles the `/error` path.
+In general, you need a `org.springframework.web.servlet.View` that resolves with a name of `error` or a `@Controller` that handles the `/error` path.
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
 See {code-spring-boot-autoconfigure-src}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
