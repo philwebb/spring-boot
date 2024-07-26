@@ -1667,6 +1667,7 @@ bom {
 		links {
 			site("https://github.com/rabbitmq/rabbitmq-java-client")
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
+			javadoc("https://rabbitmq.github.io/rabbitmq-java-client/api/current/")
 		}
 	}
 	library("Rabbit Stream Client", "0.15.0") {
