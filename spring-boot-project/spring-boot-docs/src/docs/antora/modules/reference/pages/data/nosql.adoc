@@ -387,7 +387,7 @@ Spring Data includes repository support for Elasticsearch.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed for you automatically based on method names.
 
 In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in the same way.
+You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch `@org.springframework.data.elasticsearch.annotations.Document` class rather than a JPA `@Entity`, it works in the same way.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.

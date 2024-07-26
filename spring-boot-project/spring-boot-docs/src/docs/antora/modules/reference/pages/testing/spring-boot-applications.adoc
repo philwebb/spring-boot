@@ -303,7 +303,7 @@ You can use this combination if you are not interested in "`slicing`" your appli
 To test that object JSON serialization and deserialization is working as expected, you can use the `@JsonTest` annotation.
 `@JsonTest` auto-configures the available supported JSON mapper, which can be one of the following libraries:
 
-* Jackson `ObjectMapper`, any `@JsonComponent` beans and any Jackson ``Module``s
+* Jackson `ObjectMapper`, any `@JsonComponent` beans and any Jackson ``Module!!``s
 * `Gson`
 * `Jsonb`
 
@@ -339,7 +339,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as the Jackson `Module`, you can import additional configuration classes by using `@Import` on your test.
+TIP: If you need to register extra components, such as the Jackson `com.fasterxml.jackson.databind.Module`, you can import additional configuration classes by using `@Import` on your test.
 
 Often, `@WebMvcTest` is limited to a single controller and is used in combination with `@MockBean` to provide mock implementations for required collaborators.
 
@@ -376,7 +376,7 @@ TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you 
 == Auto-configured Spring WebFlux Tests
 
 To test that {url-spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.
-`@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, `WebFilter`, and `WebFluxConfigurer`.
+`@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter` and `WebFluxConfigurer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -469,7 +469,7 @@ include-code::GraphQlIntegrationTests[]
 == Auto-configured Data Cassandra Tests
 
 You can use `@DataCassandraTest` to test Cassandra applications.
-By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
+By default, it configures a `CassandraTemplate`, scans for `@org.springframework.data.cassandra.core.mapping.Table` classes, and configures Spring Data Cassandra repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Cassandra with Spring Boot, see xref:data/nosql.adoc#data.nosql.cassandra[].)
