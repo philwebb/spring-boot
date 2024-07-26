@@ -2,7 +2,7 @@
 = JMS
 
 The `jakarta.jms.ConnectionFactory` interface provides a standard method of creating a `jakarta.jms.Connection` for interacting with a JMS broker.
-Although Spring needs a `ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
+Although Spring needs a `jakarta.jms.ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
 (See the {url-spring-framework-docs}/integration/jms.html[relevant section] of the Spring Framework reference documentation for details.)
 Spring Boot also auto-configures the necessary infrastructure to send and receive messages.
 
@@ -11,7 +11,7 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 [[messaging.jms.activemq]]
 == ActiveMQ "Classic" Support
 
-When https://activemq.apache.org/components/classic[ActiveMQ "Classic"] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
+When https://activemq.apache.org/components/classic[ActiveMQ "Classic"] is available on the classpath, Spring Boot can configure a `jakarta.jms.ConnectionFactory`.
 
 NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ "Classic" instance are provided, as is the Spring infrastructure to integrate with JMS.
 
@@ -27,7 +27,7 @@ spring:
     password: "secret"
 ----
 
-By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
+By default, a `CachingConnectionFactory` wraps the native `jakarta.jms.ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
 [configprops,yaml]
 ----
