@@ -490,7 +490,7 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 
 include-code::MyEndpoint[]
 
-Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
+Since the `@Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
 By default, the Jersey servlet is registered and mapped to `/*`.
 You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
 
