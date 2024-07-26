@@ -49,7 +49,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 
 If you want to keep Spring Boot WebFlux features and you want to add additional {url-spring-framework-docs}/web/webflux/config.html[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
 
-If you want to add additional customization to the auto-configured `HttpHandler`, you can define beans of type `WebHttpHandlerBuilderCustomizer` and use them to modify the `WebHttpHandlerBuilder`.
+If you want to add additional customization to the auto-configured `org.springframework.http.server.reactive.HttpHandler`, you can define beans of type `WebHttpHandlerBuilderCustomizer` and use them to modify the `WebHttpHandlerBuilder`.
 
 If you want to take complete control of Spring WebFlux, you can add your own `@Configuration` annotated with `@EnableWebFlux`.
 
@@ -253,8 +253,8 @@ src/
 [[web.reactive.webflux.web-filters]]
 === Web Filters
 
-Spring WebFlux provides a `WebFilter` interface that can be implemented to filter HTTP request-response exchanges.
-`WebFilter` beans found in the application context will be automatically used to filter each exchange.
+Spring WebFlux provides a `org.springframework.web.server.WebFilter` interface that can be implemented to filter HTTP request-response exchanges.
+`org.springframework.web.server.WebFilter` beans found in the application context will be automatically used to filter each exchange.
 
 Where the order of the filters is important they can implement `Ordered` or be annotated with `@Order`.
 Spring Boot auto-configuration may configure web filters for you.

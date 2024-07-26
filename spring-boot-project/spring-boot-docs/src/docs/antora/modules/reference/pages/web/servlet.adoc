@@ -632,7 +632,7 @@ server:
 ----
 
 If you want to change the `SameSite` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
-The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `SameSite` value, or `null`.
+The `CookieSameSiteSupplier` is passed a `jakarta.servlet.http.Cookie` and may return a `SameSite` value, or `null`.
 
 There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
 For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.

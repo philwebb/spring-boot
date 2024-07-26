@@ -50,8 +50,8 @@ To use `UserDetailsService` in addition to one or more of these dependencies, de
 
 Access rules can be overridden by adding a custom `SecurityFilterChain` bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
-`org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest` can be used to create a `RequestMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
-`org.springframework.boot.autoconfigure.security.servlet.PathRequest` can be used to create a `RequestMatcher` for resources in commonly used locations.
+`org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest` can be used to create a `org.springframework.security.web.util.matcher.RequestMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
+`org.springframework.boot.autoconfigure.security.servlet.PathRequest` can be used to create a `org.springframework.security.web.util.matcher.RequestMatcher` for resources in commonly used locations.
 
 
 
