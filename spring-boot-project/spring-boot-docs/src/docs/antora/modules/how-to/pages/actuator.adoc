@@ -41,7 +41,7 @@ See also the section on xref:reference:web/servlet.adoc#web.servlet.spring-mvc.e
 == Customizing Sanitization
 
 To take control over the sanitization, define a `SanitizingFunction` bean.
-The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.
+The `SanitizableData` with which the function is called provides access to the key and value as well as the `org.springframework.core.env.PropertySource` from which they came.
 This allows you to, for example, sanitize every value that comes from a particular property source.
 Each `SanitizingFunction` is called in order until a function changes the value of the sanitizable data.
 
