@@ -402,6 +402,7 @@ bom {
 		}
 		links {
 			site("https://documentation.red-gate.com/flyway")
+			javadoc("https://javadoc.io/doc/org.flywaydb/flyway-core/{version}")
 		}
 	}
 	library("FreeMarker", "2.3.33") {
