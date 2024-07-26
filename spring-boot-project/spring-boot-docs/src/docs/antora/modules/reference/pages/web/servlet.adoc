@@ -25,7 +25,7 @@ include-code::MyUserHandler[]
 Spring MVC is part of the core Spring Framework, and detailed information is available in the {url-spring-framework-docs}/web/webmvc.html[reference documentation].
 There are also several guides that cover Spring MVC available at https://spring.io/guides.
 
-TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
+TIP: You can define as many `org.springframework.web.servlet.function.RouterFunction` beans as you like to modularize the definition of the router.
 Beans can be ordered if you need to apply a precedence.
 
 
@@ -218,7 +218,7 @@ The ordering is defined by the order of `HandlerMapping` beans which is by defau
 [cols="1,1"]
 |===
 |`RouterFunctionMapping`
-|Endpoints declared with `RouterFunction` beans
+|Endpoints declared with `org.springframework.web.servlet.function.RouterFunction` beans
 
 |`RequestMappingHandlerMapping`
 |Endpoints declared in `@Controller` beans

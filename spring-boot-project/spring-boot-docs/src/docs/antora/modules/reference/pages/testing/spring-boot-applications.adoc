@@ -396,7 +396,7 @@ include-code::MyControllerTests[]
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a mocked web application only works with WebFlux at the moment.
 
 NOTE: `@WebFluxTest` cannot detect routes registered through the functional web framework.
-For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
+For testing `org.springframework.web.reactive.function.server.RouterFunction` beans in the context, consider importing your `org.springframework.web.reactive.function.server.RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
 
 NOTE: `@WebFluxTest` cannot detect custom security configuration registered as a `@Bean` of type `SecurityWebFilterChain`.
 To include that in your test, you will need to import the configuration that registers the bean by using `@Import` or by using `@SpringBootTest`.

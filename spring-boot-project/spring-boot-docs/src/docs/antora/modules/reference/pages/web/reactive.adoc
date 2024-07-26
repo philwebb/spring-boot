@@ -26,7 +26,7 @@ include-code::MyUserHandler[]
 
 "`WebFlux.fn`" is part of the Spring Framework and detailed information is available in its {url-spring-framework-docs}/web/webflux-functional.html[reference documentation].
 
-TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
+TIP: You can define as many `org.springframework.web.reactive.function.server.RouterFunction` beans as you like to modularize the definition of the router.
 Beans can be ordered if you need to apply a precedence.
 
 To get started, add the `spring-boot-starter-webflux` module to your application.
@@ -142,7 +142,7 @@ The ordering is defined by the order of `HandlerMapping` beans which is by defau
 [cols="1,1"]
 |===
 |`RouterFunctionMapping`
-|Endpoints declared with `RouterFunction` beans
+|Endpoints declared with `org.springframework.web.reactive.function.server.RouterFunction` beans
 
 |`RequestMappingHandlerMapping`
 |Endpoints declared in `@Controller` beans
