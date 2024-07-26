@@ -427,7 +427,7 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 ==== Input Type Conversion
 
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
-Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
+Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `org.springframework.core.convert.converter.Converter` or `org.springframework.core.convert.converter.GenericConverter` beans qualified with `@EndpointConverter`.
 
 
 

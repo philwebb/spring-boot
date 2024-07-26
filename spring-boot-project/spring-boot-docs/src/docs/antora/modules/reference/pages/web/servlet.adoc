@@ -39,7 +39,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
 * Support for serving static resources, including support for WebJars (covered xref:web/servlet.adoc#web.servlet.spring-mvc.static-content[later in this document]).
-* Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
+* Automatic registration of `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, and `org.springframework.format.Formatter` beans.
 * Support for `HttpMessageConverters` (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-converters[later in this document]).
 * Automatic registration of `MessageCodesResolver` (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-codes[later in this document]).
 * Static `index.html` support.
