@@ -195,22 +195,22 @@ Doing so leaves all MVC configuration in your hands.
 == Customize ViewResolvers
 
 A `org.springframework.web.servlet.ViewResolver` is a core component of Spring MVC, translating view names in `@Controller` to actual `org.springframework.web.servlet.View` implementations.
-Note that `ViewResolvers` are mainly used in UI applications, rather than REST-style services (a `View` is not used to render a `@ResponseBody`).
-There are many implementations of `ViewResolver` to choose from, and Spring on its own is not opinionated about which ones you should use.
+Note that `ViewResolvers` are mainly used in UI applications, rather than REST-style services (a `org.springframework.web.servlet.View` is not used to render a `@ResponseBody`).
+There are many implementations of `org.springframework.web.servlet.ViewResolver` to choose from, and Spring on its own is not opinionated about which ones you should use.
 Spring Boot, on the other hand, installs one or two for you, depending on what it finds on the classpath and in the application context.
 The `DispatcherServlet` uses all the resolvers it finds in the application context, trying each one in turn until it gets a result.
 If you add your own, you have to be aware of the order and in which position your resolver is added.
 
-`WebMvcAutoConfiguration` adds the following `ViewResolvers` to your context:
+`WebMvcAutoConfiguration` adds the following `org.springframework.web.servlet.ViewResolver` beans to your context:
 
 * An `InternalResourceViewResolver` named '`defaultViewResolver`'.
   This one locates physical resources that can be rendered by using the `DefaultServlet` (including static resources and JSP pages, if you use those).
   It applies a prefix and a suffix to the view name and then looks for a physical resource with that path in the servlet context (the defaults are both empty but are accessible for external configuration through `spring.mvc.view.prefix` and `spring.mvc.view.suffix`).
   You can override it by providing a bean of the same type.
 * A `BeanNameViewResolver` named '`beanNameViewResolver`'.
-  This is a useful member of the view resolver chain and picks up any beans with the same name as the `View` being resolved.
+  This is a useful member of the view resolver chain and picks up any beans with the same name as the `org.springframework.web.servlet.View` being resolved.
   It should not be necessary to override or replace it.
-* A `ContentNegotiatingViewResolver` named '`viewResolver`' is added only if there *are* actually beans of type `View` present.
+* A `ContentNegotiatingViewResolver` named '`viewResolver`' is added only if there *are* actually beans of type `org.springframework.web.servlet.View` present.
   This is a composite resolver, delegating to all the others and attempting to find a match to the '`Accept`' HTTP header sent by the client.
   There is a useful https://spring.io/blog/2013/06/03/content-negotiation-using-views[blog about `ContentNegotiatingViewResolver`] that you might like to study to learn more, and you might also look at the source code for detail.
   You can switch off the auto-configured `ContentNegotiatingViewResolver` by defining a bean named '`viewResolver`'.
