@@ -13,7 +13,7 @@ It is recommended to use a single mechanism for schema generation.
 You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's database initialization.
 Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether you are using an embedded database.
-An embedded database is identified by looking at the `Connection` type and JDBC url.
+An embedded database is identified by looking at the `java.sql.Connection` type and JDBC url.
 `hsqldb`, `h2`, or `derby` are embedded databases and others are not.
 If an embedded database is identified and no schema manager (Flyway or Liquibase) has been detected, `ddl-auto` defaults to `create-drop`.
 In all other cases, it defaults to `none`.
