@@ -78,6 +78,7 @@ public class AntoraAsciidocAttributes {
 		addGitHubAttributes(attributes);
 		addVersionAttributes(attributes);
 		addUrlArtifactRepository(attributes);
+		addUrlJava(attributes);
 		addUrlLibraryLinkAttributes(attributes);
 		addPropertyAttributes(attributes);
 		return attributes;
@@ -132,6 +133,10 @@ public class AntoraAsciidocAttributes {
 
 	private void addUrlArtifactRepository(Map<String, String> attributes) {
 		attributes.put("url-artifact-repository", this.artifactRelease.getDownloadRepo());
+	}
+
+	private void addUrlJava(Map<String, String> attributes) {
+		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api/");
 	}
 
 	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
