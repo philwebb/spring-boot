@@ -154,6 +154,7 @@ class AntoraAsciidocAttributesTests {
 	private Map<String, String> mockDependencyVersions() {
 		Map<String, String> versions = new LinkedHashMap<>();
 		addMockSpringDataVersion(versions, "spring-data-commons");
+		addMockSpringDataVersion(versions, "spring-data-cassandra");
 		addMockSpringDataVersion(versions, "spring-data-couchbase");
 		addMockSpringDataVersion(versions, "spring-data-elasticsearch");
 		addMockSpringDataVersion(versions, "spring-data-jdbc");

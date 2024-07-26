@@ -112,6 +112,7 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		addSpringDataDependencyVersion(attributes, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, "spring-data-couchbase");
+		addSpringDataDependencyVersion(attributes, "spring-data-cassandra");
 		addSpringDataDependencyVersion(attributes, "spring-data-elasticsearch");
 		addSpringDataDependencyVersion(attributes, "spring-data-jdbc");
 		addSpringDataDependencyVersion(attributes, "spring-data-jpa");
