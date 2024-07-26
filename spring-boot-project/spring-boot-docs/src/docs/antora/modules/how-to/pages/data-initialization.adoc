@@ -139,7 +139,7 @@ If you would like more control, provide a `@Bean` that implements javadoc:org.sp
 
 Flyway supports SQL and Java https://documentation.red-gate.com/fd/callback-concept-184127466.html[callbacks].
 To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` directory.
-To use Java-based callbacks, create one or more beans that implement `Callback`.
+To use Java-based callbacks, create one or more beans that implement `org.flywaydb.core.api.callback.Callback`.
 Any such beans are automatically registered with `Flyway`.
 They can be ordered by using `@Order` or by implementing `Ordered`.
 Beans that implement the deprecated `FlywayCallback` interface can also be detected, however they cannot be used alongside `Callback` beans.
