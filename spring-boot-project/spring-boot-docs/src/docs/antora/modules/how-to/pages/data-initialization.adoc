@@ -142,7 +142,7 @@ To use SQL-based callbacks, place the callback scripts in the `classpath:db/migr
 To use Java-based callbacks, create one or more beans that implement `org.flywaydb.core.api.callback.Callback`.
 Any such beans are automatically registered with `Flyway`.
 They can be ordered by using `@org.springframework.core.annotation.Order` or by implementing `org.springframework.core.Ordered`.
-Beans that implement the deprecated `FlywayCallback` interface can also be detected, however they cannot be used alongside `Callback` beans.
+Beans that implement the deprecated `FlywayCallback` interface can also be detected, however they cannot be used alongside `org.flywaydb.core.api.callback.Callback` beans.
 
 By default, Flyway autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you like to use a different `DataSource`, you can create one and mark its `@Bean` as `@FlywayDataSource`.
