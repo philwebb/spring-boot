@@ -291,7 +291,7 @@ You can force Spring Boot to use a particular logging system by using the `org.s
 The value should be the fully qualified class name of a `LoggingSystem` implementation.
 You can also disable Spring Boot's logging configuration entirely by using a value of `none`.
 
-NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is not possible to control logging from `@PropertySources` in Spring `@Configuration` files.
+NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is not possible to control logging from `@org.springframework.context.annotation.PropertySources` in Spring `@Configuration` files.
 The only way to change the logging system or disable it entirely is through System properties.
 
 Depending on your logging system, the following files are loaded:

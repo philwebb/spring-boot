@@ -267,7 +267,7 @@ See the javadoc:org.springframework.boot.test.mock.mockito.SpyBean[] API documen
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 
-TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
+TIP: If you are using `@SpyBean` to spy on a bean with `@org.springframework.cache.annotation.Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
 This ensures that the parameter names are available to the caching infrastructure once the bean has been spied upon.
 
 TIP: When you are using `@SpyBean` to spy on a bean that is proxied by Spring, you may need to remove Spring's proxy in some situations, for example when setting expectations using `given` or `when`.
@@ -333,7 +333,7 @@ include-code::MyJsonAssertJTests[tag=*]
 == Auto-configured Spring MVC Tests
 
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest` annotation.
-`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, `WebMvcRegistrations`, and `HandlerMethodArgumentResolver`.
+`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, `WebMvcRegistrations`, and `org.springframework.web.method.support.HandlerMethodArgumentResolver`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -382,7 +382,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
+TIP: If you need to register extra components, such as Jackson `com.fasterxml.jackson.databind.Module`, you can import additional configuration classes using `@Import` on your test.
 
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
 
