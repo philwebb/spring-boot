@@ -143,7 +143,7 @@ public interface JsonWriter<T> {
 	 * @return a {@link JsonWriter} instance
 	 */
 	static <T> JsonWriter<T> standard() {
-		return of((members) -> members.addSelf());
+		return of((members) -> members.fromInstance());
 	}
 
 	/**
@@ -306,7 +306,7 @@ public interface JsonWriter<T> {
 	 * the various {@code add(...)} methods. Typically members are declared with a
 	 * {@code "name"} and a {@link Function} that will extract the value from the
 	 * instance. Members can also be declared using a static value or a {@link Supplier}.
-	 * The {@link #addSelf(String)} and {@link #addSelf()} methods may be used to access
+	 * The {@link #add(String)} and {@link #fromInstance()} methods may be used to access
 	 * the actual instance being written.
 	 * <p>
 	 * Members can be added without a {@code name} when a {@code Member.using(...)} method
@@ -343,7 +343,7 @@ public interface JsonWriter<T> {
 		 * @param name the member name
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public Member<T> addSelf(String name) {
+		public Member<T> add(String name) {
 			return add(name, (instance) -> instance);
 		}
 
@@ -389,8 +389,8 @@ public interface JsonWriter<T> {
 		 * complete the configuration.
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public Member<T> addSelf() {
-			return add((instance) -> instance);
+		public Member<T> fromInstance() {
+			return from(Function.identity());
 		}
 
 		/**
@@ -401,8 +401,8 @@ public interface JsonWriter<T> {
 		 * @param value the member value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> add(V value) {
-			return add((instance) -> value);
+		public <V> Member<V> from(V value) {
+			return from((instance) -> value);
 		}
 
 		/**
@@ -413,9 +413,9 @@ public interface JsonWriter<T> {
 		 * @param supplier a supplier of the value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> add(Supplier<V> supplier) {
+		public <V> Member<V> from(Supplier<V> supplier) {
 			Assert.notNull(supplier, "'supplier' must not be null");
-			return add((instance) -> supplier.get());
+			return from((instance) -> supplier.get());
 		}
 
 		/**
@@ -426,7 +426,7 @@ public interface JsonWriter<T> {
 		 * @param extractor a function to extract the value
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <V> Member<V> add(Function<T, V> extractor) {
+		public <V> Member<V> from(Function<T, V> extractor) {
 			Assert.notNull(extractor, "'extractor' must not be null");
 			return addMember(null, extractor);
 		}
@@ -439,8 +439,8 @@ public interface JsonWriter<T> {
 		 * @param extractor a function to extract the map
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
-			return add(extractor).usingPairs(Map::forEach);
+		public <M extends Map<K, V>, K, V> Member<M> fromMapEntries(Function<T, M> extractor) {
+			return from(extractor).usingPairs(Map::forEach);
 		}
 
 		private <V> Member<V> addMember(String name, Function<T, V> extractor) {

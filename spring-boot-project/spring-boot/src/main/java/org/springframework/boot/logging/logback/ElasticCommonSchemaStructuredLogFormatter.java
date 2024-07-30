@@ -55,11 +55,11 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		service.jsonMembers(members);
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
-		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
-		members.add(ILoggingEvent::getKeyValuePairs)
+		members.fromMapEntries(ILoggingEvent::getMDCPropertyMap);
+		members.from(ILoggingEvent::getKeyValuePairs)
 			.whenNotEmpty()
 			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
-		members.addSelf().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
+		members.fromInstance().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
 			throwableMembers.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
 			throwableMembers.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
 			throwableMembers.add("error.stack_trace", (event) -> throwableProxyConverter.convert(event));
