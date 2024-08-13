@@ -26,9 +26,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,8 +48,15 @@ class SampleRedisApplicationSslTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Container
-	@ServiceConnection
+	// TODO MH: How to signal that this @ServiceConnection uses an SSL bundle?
+	// @ServiceConnection
 	static RedisContainer redis = TestImage.container(SecureRedisContainer.class);
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.redis.host", redis::getHost);
+		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;

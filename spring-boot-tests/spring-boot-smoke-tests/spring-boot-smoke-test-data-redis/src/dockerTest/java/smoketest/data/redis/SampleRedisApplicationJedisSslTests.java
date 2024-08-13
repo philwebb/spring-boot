@@ -26,10 +26,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,8 +50,14 @@ class SampleRedisApplicationJedisSslTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Container
-	@ServiceConnection
+	// @ServiceConnection
 	static RedisContainer redis = TestImage.container(SecureRedisContainer.class);
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.redis.host", redis::getHost);
+		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;
