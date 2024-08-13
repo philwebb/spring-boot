@@ -35,7 +35,8 @@ class PropertiesRedisConnectionDetailsTests {
 
 	@Test
 	void connectionIsConfiguredWithDefaults() {
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("localhost");
 		assertThat(standalone.getPort()).isEqualTo(6379);
@@ -49,7 +50,8 @@ class PropertiesRedisConnectionDetailsTests {
 	@Test
 	void credentialsAreConfiguredFromUrlWithUsernameAndPassword() {
 		this.properties.setUrl("redis://user:secret@example.com");
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getUsername()).isEqualTo("user");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 	}
@@ -59,7 +61,8 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setUrl("redis://user:@example.com");
 		this.properties.setUsername("notused");
 		this.properties.setPassword("notused");
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getUsername()).isEqualTo("user");
 		assertThat(connectionDetails.getPassword()).isEmpty();
 	}
@@ -69,7 +72,8 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setUrl("redis://:secret@example.com");
 		this.properties.setUsername("notused");
 		this.properties.setPassword("notused");
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getUsername()).isEmpty();
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 	}
@@ -79,7 +83,8 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setUrl("redis://secret@example.com");
 		this.properties.setUsername("notused");
 		this.properties.setPassword("notused");
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getUsername()).isNull();
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 	}
@@ -88,7 +93,8 @@ class PropertiesRedisConnectionDetailsTests {
 	void credentialsAreConfiguredFromProperties() {
 		this.properties.setUsername("user");
 		this.properties.setPassword("secret");
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getUsername()).isEqualTo("user");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 	}
@@ -99,7 +105,8 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setHost("notused");
 		this.properties.setPort(9999);
 		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
@@ -111,7 +118,8 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setHost("example.com");
 		this.properties.setPort(1234);
 		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
@@ -123,7 +131,8 @@ class PropertiesRedisConnectionDetailsTests {
 		RedisProperties.Cluster cluster = new RedisProperties.Cluster();
 		cluster.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setCluster(cluster);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getCluster().getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 	}
@@ -133,7 +142,8 @@ class PropertiesRedisConnectionDetailsTests {
 		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setSentinel(sentinel);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
+				null);
 		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 	}

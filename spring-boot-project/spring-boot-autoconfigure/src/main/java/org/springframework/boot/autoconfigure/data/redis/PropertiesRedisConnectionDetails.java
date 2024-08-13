@@ -16,9 +16,19 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionConfiguration.ConnectionInfo;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslManagerBundle;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapts {@link RedisProperties} to {@link RedisConnectionDetails}.
@@ -32,8 +42,11 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 	private final RedisProperties properties;
 
-	PropertiesRedisConnectionDetails(RedisProperties properties) {
+	private final SslBundles sslBundles;
+
+	PropertiesRedisConnectionDetails(RedisProperties properties, SslBundles sslBundles) {
 		this.properties = properties;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
@@ -59,9 +72,55 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = connectionInfo(this.properties.getUrl());
 			return Standalone.of(connectionInfo.getUri().getHost(), connectionInfo.getUri().getPort(),
-					this.properties.getDatabase());
+					this.properties.getDatabase(), getSslBundle());
 		}
-		return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
+		return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase(),
+				getSslBundle());
+	}
+
+	private SslBundle getSslBundle() {
+		if (!this.properties.getSsl().isEnabled()) {
+			return null;
+		}
+		if (StringUtils.hasLength(this.properties.getSsl().getBundle())) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(this.properties.getSsl().getBundle());
+		}
+		// TODO MH: Cassandra has the same thing, refactor this
+		// SSL is enabled, but no bundle has been set -> use the default SSLContext
+		return SslBundle.of(null, null, null, null, new SslManagerBundle() {
+			@Override
+			public KeyManagerFactory getKeyManagerFactory() {
+				// TODO MH: Not sure this is the correct way to do things
+				try {
+					return KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				}
+				catch (NoSuchAlgorithmException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			@Override
+			public TrustManagerFactory getTrustManagerFactory() {
+				// TODO MH: Not sure this is the correct way to do things
+				try {
+					return TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				}
+				catch (NoSuchAlgorithmException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			@Override
+			public SSLContext createSslContext(String protocol) {
+				try {
+					return SSLContext.getDefault();
+				}
+				catch (NoSuchAlgorithmException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+		});
 	}
 
 	private ConnectionInfo connectionInfo(String url) {
@@ -102,6 +161,10 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 				return sentinel.getPassword();
 			}
 
+			@Override
+			public SslBundle getSslBundle() {
+				return PropertiesRedisConnectionDetails.this.getSslBundle();
+			}
 		};
 	}
 
@@ -109,7 +172,20 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	public Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
 		List<Node> nodes = (cluster != null) ? cluster.getNodes().stream().map(this::asNode).toList() : null;
-		return (nodes != null) ? () -> nodes : null;
+		if (nodes == null) {
+			return null;
+		}
+		return new Cluster() {
+			@Override
+			public List<Node> getNodes() {
+				return nodes;
+			}
+
+			@Override
+			public SslBundle getSslBundle() {
+				return PropertiesRedisConnectionDetails.this.getSslBundle();
+			}
+		};
 	}
 
 	private Node asNode(String node) {

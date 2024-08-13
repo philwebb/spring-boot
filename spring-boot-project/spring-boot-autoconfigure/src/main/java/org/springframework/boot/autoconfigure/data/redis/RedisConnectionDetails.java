@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -98,11 +99,28 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 			return 0;
 		}
 
+		/**
+		 * SSL bundle to use.
+		 * @return the SSL bundle to use
+		 * @since 3.4.0
+		 */
+		default SslBundle getSslBundle() {
+			return null;
+		}
+
 		static Standalone of(String host, int port) {
-			return of(host, port, 0);
+			return of(host, port, 0, null);
+		}
+
+		static Standalone of(String host, int port, SslBundle sslBundle) {
+			return of(host, port, 0, sslBundle);
 		}
 
 		static Standalone of(String host, int port, int database) {
+			return of(host, port, database, null);
+		}
+
+		static Standalone of(String host, int port, int database, SslBundle sslBundle) {
 			Assert.hasLength(host, "Host must not be empty");
 			return new Standalone() {
 
@@ -121,6 +139,10 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 					return database;
 				}
 
+				@Override
+				public SslBundle getSslBundle() {
+					return sslBundle;
+				}
 			};
 		}
 
@@ -161,6 +183,15 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 */
 		String getPassword();
 
+		/**
+		 * SSL bundle to use.
+		 * @return the SSL bundle to use
+		 * @since 3.4.0
+		 */
+		default SslBundle getSslBundle() {
+			return null;
+		}
+
 	}
 
 	/**
@@ -174,6 +205,15 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @return nodes to bootstrap from
 		 */
 		List<Node> getNodes();
+
+		/**
+		 * SSL bundle to use.
+		 * @return the SSL bundle to use
+		 * @since 3.4.0
+		 */
+		default SslBundle getSslBundle() {
+			return null;
+		}
 
 	}
 

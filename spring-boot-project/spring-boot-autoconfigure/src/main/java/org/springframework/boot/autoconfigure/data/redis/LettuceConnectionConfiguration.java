@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.autoconfigure.thread.Threading;
@@ -114,19 +115,14 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> clientConfigurationBuilderCustomizers,
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
 			ClientResources clientResources) {
-		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(clientConfigurationBuilderCustomizers,
-				clientOptionsBuilderCustomizers, clientResources, getProperties().getLettuce().getPool());
-		return createLettuceConnectionFactory(clientConfig);
-	}
-
-	private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
-		if (getSentinelConfig() != null) {
-			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
-		}
-		if (getClusterConfiguration() != null) {
-			return new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
-		}
-		return new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+		LettuceClientConfiguration clientConfiguration = getLettuceClientConfiguration(
+				clientConfigurationBuilderCustomizers, clientOptionsBuilderCustomizers, clientResources,
+				getProperties().getLettuce().getPool());
+		return switch (this.mode) {
+			case STANDALONE -> new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+			case CLUSTER -> new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
+			case SENTINEL -> new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
+		};
 	}
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
@@ -134,11 +130,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
 			ClientResources clientResources, Pool pool) {
 		LettuceClientConfigurationBuilder builder = createBuilder(pool);
-		applyProperties(builder);
+		SslBundle sslBundle = getSslBundle();
+		applyProperties(builder, sslBundle);
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers));
+		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers, sslBundle));
 		builder.clientResources(clientResources);
 		clientConfigurationBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -151,15 +148,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return LettuceClientConfiguration.builder();
 	}
 
-	private void applyProperties(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		if (isSslEnabled()) {
+	private void applyProperties(LettuceClientConfigurationBuilder builder, SslBundle sslBundle) {
+		if (sslBundle != null) {
 			builder.useSsl();
 		}
 		if (getProperties().getTimeout() != null) {
 			builder.commandTimeout(getProperties().getTimeout());
 		}
 		if (getProperties().getLettuce() != null) {
-			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
+			Lettuce lettuce = getProperties().getLettuce();
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
@@ -170,14 +167,14 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private ClientOptions createClientOptions(
-			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers) {
+			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers,
+			SslBundle sslBundle) {
 		ClientOptions.Builder builder = initializeClientOptionsBuilder();
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
 			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
 		}
-		if (isSslEnabled() && getProperties().getSsl().getBundle() != null) {
-			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
+		if (sslBundle != null) {
 			io.lettuce.core.SslOptions.Builder sslOptionsBuilder = io.lettuce.core.SslOptions.builder();
 			sslOptionsBuilder.keyManager(sslBundle.getManagers().getKeyManagerFactory());
 			sslOptionsBuilder.trustManager(sslBundle.getManagers().getTrustManagerFactory());
@@ -212,7 +209,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return ClientOptions.builder();
 	}
 
-	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+	private void customizeConfigurationFromUrl(LettuceClientConfigurationBuilder builder) {
 		if (urlUsesSsl()) {
 			builder.useSsl();
 		}
