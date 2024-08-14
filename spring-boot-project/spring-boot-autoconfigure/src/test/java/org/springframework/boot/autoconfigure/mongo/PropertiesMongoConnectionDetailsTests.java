@@ -128,7 +128,7 @@ class PropertiesMongoConnectionDetailsTests {
 	}
 
 	private PropertiesMongoConnectionDetails createConnectionDetails() {
-		return new PropertiesMongoConnectionDetails(this.properties);
+		return new PropertiesMongoConnectionDetails(this.properties, null);
 	}
 
 	private ConnectionString getConnectionString() {

@@ -53,8 +53,9 @@ public class MongoReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
-	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
-		return new PropertiesMongoConnectionDetails(properties);
+	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesMongoConnectionDetails(properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
@@ -77,9 +78,9 @@ public class MongoReactiveAutoConfiguration {
 
 		@Bean
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
-				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
-			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),
-					properties.getUuidRepresentation(), properties.getSsl(), sslBundles.getIfAvailable());
+				MongoConnectionDetails connectionDetails) {
+			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails,
+					properties.getUuidRepresentation());
 		}
 
 	}

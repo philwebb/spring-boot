@@ -21,8 +21,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import com.mongodb.ConnectionString;
 
+import org.springframework.boot.autoconfigure.mongo.MongoProperties.Ssl;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslManagerBundle;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,8 +47,11 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	private final MongoProperties properties;
 
-	public PropertiesMongoConnectionDetails(MongoProperties properties) {
+	private final SslBundles sslBundles;
+
+	public PropertiesMongoConnectionDetails(MongoProperties properties, SslBundles sslBundles) {
 		this.properties = properties;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
@@ -88,6 +100,37 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	public GridFs getGridFs() {
 		return GridFs.of(PropertiesMongoConnectionDetails.this.properties.getGridfs().getDatabase(),
 				PropertiesMongoConnectionDetails.this.properties.getGridfs().getBucket());
+	}
+
+	@Override
+	public SslBundle getSslBundle() {
+		Ssl ssl = this.properties.getSsl();
+		if (!ssl.isEnabled()) {
+			return null;
+		}
+		if (StringUtils.hasLength(ssl.getBundle())) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(ssl.getBundle());
+		}
+		// TODO MH: Cassandra has the same thing, refactor this
+		// SSL is enabled, but no bundle has been set -> use the default SSLContext
+		return SslBundle.of(null, null, null, null, new SslManagerBundle() {
+			@Override
+			public KeyManagerFactory getKeyManagerFactory() {
+				return null;
+			}
+
+			@Override
+			public TrustManagerFactory getTrustManagerFactory() {
+				return null;
+			}
+
+			@Override
+			public SSLContext createSslContext(String protocol) {
+				// We can return null here, Mongo will then use the default SSL context
+				return null;
+			}
+		});
 	}
 
 	private List<String> getOptions() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.connection.SslSettings;
 import org.bson.UuidRepresentation;
 
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
@@ -37,37 +35,29 @@ import org.springframework.util.Assert;
  */
 public class StandardMongoClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
 
-	private final ConnectionString connectionString;
-
 	private final UuidRepresentation uuidRepresentation;
 
-	private final MongoProperties.Ssl ssl;
-
-	private final SslBundles sslBundles;
+	private final MongoConnectionDetails connectionDetails;
 
 	private int order = 0;
 
-	public StandardMongoClientSettingsBuilderCustomizer(ConnectionString connectionString,
-			UuidRepresentation uuidRepresentation, MongoProperties.Ssl ssl, SslBundles sslBundles) {
-		this.connectionString = connectionString;
+	public StandardMongoClientSettingsBuilderCustomizer(MongoConnectionDetails connectionDetails,
+			UuidRepresentation uuidRepresentation) {
+		this.connectionDetails = connectionDetails;
 		this.uuidRepresentation = uuidRepresentation;
-		this.ssl = ssl;
-		this.sslBundles = sslBundles;
 	}
 
 	@Override
 	public void customize(MongoClientSettings.Builder settingsBuilder) {
 		settingsBuilder.uuidRepresentation(this.uuidRepresentation);
-		settingsBuilder.applyConnectionString(this.connectionString);
-		if (this.ssl.isEnabled()) {
-			settingsBuilder.applyToSslSettings(this::configureSsl);
-		}
+		settingsBuilder.applyConnectionString(this.connectionDetails.getConnectionString());
+		settingsBuilder.applyToSslSettings(this::configureSslIfNeeded);
 	}
 
-	private void configureSsl(SslSettings.Builder settings) {
-		settings.enabled(true);
-		if (this.ssl.getBundle() != null) {
-			SslBundle sslBundle = this.sslBundles.getBundle(this.ssl.getBundle());
+	private void configureSslIfNeeded(SslSettings.Builder settings) {
+		SslBundle sslBundle = this.connectionDetails.getSslBundle();
+		if (sslBundle != null) {
+			settings.enabled(true);
 			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with MongoDB");
 			settings.context(sslBundle.createSslContext());
 		}
