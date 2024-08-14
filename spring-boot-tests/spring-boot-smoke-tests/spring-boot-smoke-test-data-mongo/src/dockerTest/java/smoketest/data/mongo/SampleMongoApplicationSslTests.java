@@ -23,9 +23,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,8 +44,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleMongoApplicationSslTests {
 
 	@Container
-	@ServiceConnection
+	// TODO MH: How to signal that this @ServiceConnection supports SSL?
+	// @ServiceConnection
 	static final MongoDBContainer mongoDb = TestImage.container(SecureMongoContainer.class);
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.mongodb.uri", mongoDb::getReplicaSetUrl);
+	}
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
