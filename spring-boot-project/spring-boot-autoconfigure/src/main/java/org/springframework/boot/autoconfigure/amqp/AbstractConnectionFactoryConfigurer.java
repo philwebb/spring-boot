@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param properties the properties to use to configure the connection factory
 	 */
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
-		this(properties, new PropertiesRabbitConnectionDetails(properties));
+		this(properties, new PropertiesRabbitConnectionDetails(properties, null));
 	}
 
 	/**
