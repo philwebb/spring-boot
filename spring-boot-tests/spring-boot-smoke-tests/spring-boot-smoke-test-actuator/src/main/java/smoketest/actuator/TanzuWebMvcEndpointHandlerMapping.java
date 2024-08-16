@@ -44,9 +44,8 @@ class TanzuWebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerMap
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 * @param linksResolver resolver for determining links to available endpoints
 	 */
-	public TanzuWebMvcEndpointHandlerMapping(Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			EndpointLinksResolver linksResolver) {
+	TanzuWebMvcEndpointHandlerMapping(Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration, EndpointLinksResolver linksResolver) {
 		super(new EndpointMapping("/tanzu"), endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.linksResolver = linksResolver;
 		setOrder(-100);
