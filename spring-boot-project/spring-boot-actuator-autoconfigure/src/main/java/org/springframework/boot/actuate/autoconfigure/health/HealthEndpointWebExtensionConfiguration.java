@@ -81,13 +81,10 @@ class HealthEndpointWebExtensionConfiguration {
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.orElseThrow(
-					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
+			.orElse(null);
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB,
-			considerEndpointExposers = false)
 	static class MvcAdditionalHealthEndpointPathsConfiguration {
 
 		@Bean
@@ -103,7 +100,6 @@ class HealthEndpointWebExtensionConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 	static class JerseyAdditionalHealthEndpointPathsConfiguration {
 
 		@Bean
@@ -164,7 +160,8 @@ class HealthEndpointWebExtensionConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.SERVER, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-				.createEndpointResources(mapping, Collections.singletonList(this.endpoint))
+				.createEndpointResources(mapping,
+						(this.endpoint != null) ? Collections.singletonList(this.endpoint) : Collections.emptyList())
 				.stream()
 				.filter(Objects::nonNull)
 				.toList();

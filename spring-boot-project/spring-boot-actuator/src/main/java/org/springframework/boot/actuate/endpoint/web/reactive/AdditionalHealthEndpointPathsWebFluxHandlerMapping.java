@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping(EndpointMapping endpointMapping,
 			ExposableWebEndpoint endpoint, Set<HealthEndpointGroup> groups) {
-		super(endpointMapping, Collections.singletonList(endpoint), null, null, false);
+		super(endpointMapping, (endpoint != null) ? Collections.singletonList(endpoint) : Collections.emptyList(), null,
+				null, false);
 		this.endpointMapping = endpointMapping;
 		this.groups = groups;
 		this.endpoint = endpoint;
@@ -55,6 +56,9 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 
 	@Override
 	protected void initHandlerMethods() {
+		if (this.endpoint == null) {
+			return;
+		}
 		for (WebOperation operation : this.endpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();

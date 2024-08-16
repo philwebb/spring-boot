@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,17 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 
 	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
 			Set<HealthEndpointGroup> groups) {
-		super(new EndpointMapping(""), Collections.singletonList(endpoint), null, false);
+		super(new EndpointMapping(""),
+				(endpoint != null) ? Collections.singletonList(endpoint) : Collections.emptyList(), null, false);
 		this.endpoint = endpoint;
 		this.groups = groups;
 	}
 
 	@Override
 	protected void initHandlerMethods() {
+		if (this.endpoint == null) {
+			return;
+		}
 		for (WebOperation operation : this.endpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
