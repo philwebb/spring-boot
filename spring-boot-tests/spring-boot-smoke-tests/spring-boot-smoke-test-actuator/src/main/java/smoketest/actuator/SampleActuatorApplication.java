@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
@@ -45,6 +46,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.web.cors.CorsConfiguration;
 
 @SpringBootApplication(proxyBeanMethods = false)
 @ConfigurationPropertiesScan
@@ -55,8 +57,10 @@ public class SampleActuatorApplication {
 	public TanzuWebMvcEndpointHandlerMapping tanzuEndpointHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
 			org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
 			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties, Environment environment,
-			ApplicationContext applicationContext, ParameterValueMapper parameterMapper) {
+			ObjectProvider<CorsEndpointProperties> corsPropertiesProvider, WebEndpointProperties webEndpointProperties,
+			Environment environment, ApplicationContext applicationContext, ParameterValueMapper parameterMapper) {
+		CorsEndpointProperties corsProperties = corsPropertiesProvider.getIfAvailable();
+		CorsConfiguration corsConfiguration = (corsProperties != null) ? corsProperties.toCorsConfiguration() : null;
 		WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(applicationContext, parameterMapper,
 				endpointMediaTypes, null, Collections.emptyList(),
 				Collections.singletonList(new IncludeExcludeEndpointFilter<>(ExposableWebEndpoint.class, environment,
@@ -66,8 +70,8 @@ public class SampleActuatorApplication {
 		allEndpoints.addAll(webEndpoints);
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		return new TanzuWebMvcEndpointHandlerMapping(webEndpoints, endpointMediaTypes,
-				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, "/tanzu"));
+		return new TanzuWebMvcEndpointHandlerMapping(webEndpoints, endpointMediaTypes, corsConfiguration,
+				new EndpointLinksResolver(allEndpoints, "/tanzu"));
 	}
 
 	@Bean
