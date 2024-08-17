@@ -16,22 +16,16 @@
 
 package smoketest.actuator;
 
-import java.util.Set;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.core.env.Environment;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.StandardAdditionalEndpointExposerFactory;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
+class TanzuIncludeExcludeEndpointFilter extends IncludeExcludeEndpointFilter<ExposableWebEndpoint> {
 
-public class TanzuEndpointExposerFactory extends StandardAdditionalEndpointExposerFactory {
+	static final String PROPERTY_PREFIX = "management.endpoints.tanzu.exposure";
 
-	static final String[] DEFAULT_INCLUDES = { "*" };
-
-	TanzuEndpointExposerFactory() {
-		super("tanzu", DEFAULT_INCLUDES);
-	}
-
-	@Override
-	protected boolean supports(Set<EndpointExposure> exposures) {
-		return exposures.contains(EndpointExposure.WEB);
+	TanzuIncludeExcludeEndpointFilter(Environment environment) {
+		super(ExposableWebEndpoint.class, environment, PROPERTY_PREFIX, "*");
 	}
 
 }

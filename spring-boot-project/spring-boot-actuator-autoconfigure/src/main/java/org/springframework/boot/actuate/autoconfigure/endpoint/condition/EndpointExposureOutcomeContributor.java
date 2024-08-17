@@ -21,31 +21,32 @@ import java.util.Set;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.core.env.Environment;
 
 /**
- * Strategy used to determine if an endpoint is exposed.
+ * Contributor loaded from the {@code spring.factories} file and used by
+ * {@link ConditionalOnAvailableEndpoint @ConditionalOnAvailableEndpoint} to determine if
+ * an endpoint is exposed. If any contributor returns a {@link ConditionOutcome#isMatch()
+ * matching} {@link ConditionOutcome} then the endpoint is considered exposed.
+ * <p>
+ * Implementations may declare a constructor that accepts an {@link Environment} argument.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.7.22
- * @see EndpointExposerFactory
- * @see StandardAdditionalEndpointExposerFactory
+ * @since 3.4.0
  */
-public interface EndpointExposer {
+public interface EndpointExposureOutcomeContributor {
 
 	/**
 	 * Return if the given endpoint is exposed for the given set of exposure technologies.
 	 * @param endpointId the endpoint ID
 	 * @param exposures the exposure technologies to check
-	 * @return if the endpoint is exposed
+	 * @param message the condition message builder
+	 * @return a {@link ConditionOutcome#isMatch() matching} {@link ConditionOutcome} if
+	 * the endpoint is exposed or {@code null} if the contributor should not apply
 	 */
-	boolean isExposed(EndpointId endpointId, Set<EndpointExposure> exposures);
-
-	/**
-	 * Return a the reason that the endpoint was exposed. This will be added to the
-	 * {@link ConditionMessage}.
-	 * @return the reason the endpoint is exposed
-	 */
-	String getExposedReason();
+	ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
+			ConditionMessage.Builder message);
 
 }

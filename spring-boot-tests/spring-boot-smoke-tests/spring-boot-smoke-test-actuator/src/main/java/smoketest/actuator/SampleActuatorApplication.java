@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
@@ -63,8 +62,7 @@ public class SampleActuatorApplication {
 		CorsConfiguration corsConfiguration = (corsProperties != null) ? corsProperties.toCorsConfiguration() : null;
 		WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(applicationContext, parameterMapper,
 				endpointMediaTypes, null, Collections.emptyList(),
-				Collections.singletonList(new IncludeExcludeEndpointFilter<>(ExposableWebEndpoint.class, environment,
-						"management.endpoints.tanzu.exposure", TanzuEndpointExposerFactory.DEFAULT_INCLUDES)));
+				Collections.singletonList(new TanzuIncludeExcludeEndpointFilter(environment)));
 		Collection<ExposableWebEndpoint> webEndpoints = discoverer.getEndpoints();
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpoints);
