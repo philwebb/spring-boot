@@ -18,8 +18,8 @@ package smoketest.actuator;
 
 import java.util.Set;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.StandardAdditionalEndpointExposerFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.StandardAdditionalEndpointExposerFactory;
 
 public class TanzuEndpointExposerFactory extends StandardAdditionalEndpointExposerFactory {
 

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.expose;
+package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Set;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 

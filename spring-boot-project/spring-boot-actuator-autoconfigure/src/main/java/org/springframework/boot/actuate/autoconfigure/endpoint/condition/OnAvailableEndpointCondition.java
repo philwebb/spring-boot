@@ -26,8 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposer;
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposerFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
