@@ -120,19 +120,18 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 			return enablementOutcome;
 		}
 		Set<EndpointExposure> exposures = getExposures(conditionAnnotation);
-		boolean considerEndpointExposers = conditionAnnotation.getBoolean("considerEndpointExposers");
 		Set<ExposureFilter> exposureFilters = getExposureFilters(environment);
 		for (ExposureFilter exposureFilter : exposureFilters) {
-			if (isConsidered(exposureFilter, considerEndpointExposers)
-					&& exposureFilter.isExposed(endpointId, exposures)) {
+			if (isConsidered(exposureFilter) && exposureFilter.isExposed(endpointId, exposures)) {
 				return ConditionOutcome.match(message.because(exposureFilter.getExposedReason()));
 			}
 		}
 		return ConditionOutcome.noMatch(message.because("no 'management.endpoints' property marked it as exposed"));
 	}
 
-	private boolean isConsidered(ExposureFilter exposureFilter, boolean considerEndpointExposers) {
-		return considerEndpointExposers || !(exposureFilter instanceof EndpointExposerExposureFilter);
+	private boolean isConsidered(ExposureFilter exposureFilter) {
+		// FIXME not sure about this now
+		return !(exposureFilter instanceof EndpointExposerExposureFilter);
 	}
 
 	private ConditionOutcome getEnablementOutcome(Environment environment,

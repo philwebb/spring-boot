@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposer;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
@@ -41,9 +40,7 @@ import org.springframework.core.env.Environment;
  * Matches exposure according to any of the {@code management.endpoints.web.exposure.<id>}
  * or {@code management.endpoints.jmx.exposure.<id>} specific properties or failing that
  * to whether the application runs on
- * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}. Endpoints can also
- * be exposed by an {@link EndpointExposer} when {@link #considerEndpointExposers()} is
- * {@code true}
+ * {@link org.springframework.boot.cloud.CloudPlatform#CLOUD_FOUNDRY}.
  * <p>
  * Both enablement and exposure conditions should match for the endpoint to be considered
  * available.
@@ -128,13 +125,5 @@ public @interface ConditionalOnAvailableEndpoint {
 	 * @since 2.6.0
 	 */
 	EndpointExposure[] exposure() default {};
-
-	/**
-	 * If {@link EndpointExposer} implementations registered in {@code spring.factories}
-	 * should also be considered.
-	 * @return if additional exposers are to be considered
-	 * @since 2.7.22
-	 */
-	boolean considerEndpointExposers() default true;
 
 }
