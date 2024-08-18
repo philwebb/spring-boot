@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -36,31 +37,34 @@ import org.springframework.web.servlet.HandlerMapping;
  */
 public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
-	private final ExposableWebEndpoint endpoint;
+	private final ExposableWebEndpoint healthEndpoint;
 
 	private final Set<HealthEndpointGroup> groups;
 
-	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint healthEndpoint,
 			Set<HealthEndpointGroup> groups) {
-		super(new EndpointMapping(""),
-				(endpoint != null) ? Collections.singletonList(endpoint) : Collections.emptyList(), null, false);
-		this.endpoint = endpoint;
+		super(new EndpointMapping(""), asList(healthEndpoint), null, false);
+		this.healthEndpoint = healthEndpoint;
 		this.groups = groups;
+	}
+
+	private static Collection<ExposableWebEndpoint> asList(ExposableWebEndpoint healthEndpoint) {
+		return (healthEndpoint != null) ? Collections.singletonList(healthEndpoint) : Collections.emptyList();
 	}
 
 	@Override
 	protected void initHandlerMethods() {
-		if (this.endpoint == null) {
+		if (this.healthEndpoint == null) {
 			return;
 		}
-		for (WebOperation operation : this.endpoint.getOperations()) {
+		for (WebOperation operation : this.healthEndpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
 				for (HealthEndpointGroup group : this.groups) {
 					AdditionalHealthEndpointPath additionalPath = group.getAdditionalPath();
 					if (additionalPath != null) {
-						registerMapping(this.endpoint, predicate, operation, additionalPath.getValue());
+						registerMapping(this.healthEndpoint, predicate, operation, additionalPath.getValue());
 					}
 				}
 			}
