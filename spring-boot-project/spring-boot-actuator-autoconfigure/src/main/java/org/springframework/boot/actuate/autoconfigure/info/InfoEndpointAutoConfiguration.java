@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration(after = InfoContributorAutoConfiguration.class)
-@ConditionalOnAvailableEndpoint(endpoint = InfoEndpoint.class)
+@ConditionalOnAvailableEndpoint(InfoEndpoint.class)
 public class InfoEndpointAutoConfiguration {
 
 	@Bean

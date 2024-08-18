@@ -38,7 +38,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @since 2.4.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = StartupEndpoint.class)
+@ConditionalOnAvailableEndpoint(StartupEndpoint.class)
 @Conditional(StartupEndpointAutoConfiguration.ApplicationStartupCondition.class)
 public class StartupEndpointAutoConfiguration {
 

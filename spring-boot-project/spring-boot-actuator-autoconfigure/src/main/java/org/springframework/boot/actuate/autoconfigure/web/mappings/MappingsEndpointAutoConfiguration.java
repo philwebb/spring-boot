@@ -43,7 +43,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = MappingsEndpoint.class)
+@ConditionalOnAvailableEndpoint(MappingsEndpoint.class)
 public class MappingsEndpointAutoConfiguration {
 
 	@Bean

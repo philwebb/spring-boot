@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = BeansEndpoint.class)
+@ConditionalOnAvailableEndpoint(BeansEndpoint.class)
 public class BeansEndpointAutoConfiguration {
 
 	@Bean

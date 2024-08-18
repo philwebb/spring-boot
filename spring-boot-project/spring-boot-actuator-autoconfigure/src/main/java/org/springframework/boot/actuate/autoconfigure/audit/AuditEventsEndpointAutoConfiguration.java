@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration(after = AuditAutoConfiguration.class)
-@ConditionalOnAvailableEndpoint(endpoint = AuditEventsEndpoint.class)
+@ConditionalOnAvailableEndpoint(AuditEventsEndpoint.class)
 public class AuditEventsEndpointAutoConfiguration {
 
 	@Bean

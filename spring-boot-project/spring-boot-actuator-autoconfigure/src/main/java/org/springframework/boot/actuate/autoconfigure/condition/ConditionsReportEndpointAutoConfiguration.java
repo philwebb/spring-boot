@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = ConditionsReportEndpoint.class)
+@ConditionalOnAvailableEndpoint(ConditionsReportEndpoint.class)
 public class ConditionsReportEndpointAutoConfiguration {
 
 	@Bean

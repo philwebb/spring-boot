@@ -32,7 +32,7 @@ import org.springframework.scheduling.config.ScheduledTaskHolder;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = ScheduledTasksEndpoint.class)
+@ConditionalOnAvailableEndpoint(ScheduledTasksEndpoint.class)
 public class ScheduledTasksEndpointAutoConfiguration {
 
 	@Bean

@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = LiquibaseAutoConfiguration.class)
 @ConditionalOnClass(SpringLiquibase.class)
-@ConditionalOnAvailableEndpoint(endpoint = LiquibaseEndpoint.class)
+@ConditionalOnAvailableEndpoint(LiquibaseEndpoint.class)
 public class LiquibaseEndpointAutoConfiguration {
 
 	@Bean

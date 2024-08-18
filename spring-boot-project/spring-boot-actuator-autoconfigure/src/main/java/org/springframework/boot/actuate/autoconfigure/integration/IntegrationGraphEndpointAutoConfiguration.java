@@ -39,7 +39,7 @@ import org.springframework.integration.graph.IntegrationGraphServer;
 @AutoConfiguration(after = IntegrationAutoConfiguration.class)
 @ConditionalOnClass(IntegrationGraphServer.class)
 @ConditionalOnBean(IntegrationConfigurationBeanFactoryPostProcessor.class)
-@ConditionalOnAvailableEndpoint(endpoint = IntegrationGraphEndpoint.class)
+@ConditionalOnAvailableEndpoint(IntegrationGraphEndpoint.class)
 public class IntegrationGraphEndpointAutoConfiguration {
 
 	@Bean

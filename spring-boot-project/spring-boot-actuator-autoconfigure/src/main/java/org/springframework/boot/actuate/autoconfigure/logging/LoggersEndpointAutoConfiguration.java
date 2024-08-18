@@ -40,7 +40,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = LoggersEndpoint.class)
+@ConditionalOnAvailableEndpoint(LoggersEndpoint.class)
 public class LoggersEndpointAutoConfiguration {
 
 	@Bean

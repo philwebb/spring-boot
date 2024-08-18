@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = HeapDumpWebEndpoint.class)
+@ConditionalOnAvailableEndpoint(HeapDumpWebEndpoint.class)
 public class HeapDumpWebEndpointAutoConfiguration {
 
 	@Bean

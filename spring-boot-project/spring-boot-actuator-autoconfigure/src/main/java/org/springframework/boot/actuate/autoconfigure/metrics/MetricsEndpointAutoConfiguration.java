@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(Timed.class)
-@ConditionalOnAvailableEndpoint(endpoint = MetricsEndpoint.class)
+@ConditionalOnAvailableEndpoint(MetricsEndpoint.class)
 public class MetricsEndpointAutoConfiguration {
 
 	@Bean
