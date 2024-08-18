@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -159,9 +159,18 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	}
 
 	private Set<EndpointExposure> getExposures(MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
-		EndpointExposure[] exposure = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
-		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class)
-				: new LinkedHashSet<>(Arrays.asList(exposure));
+		EndpointExposure[] exposures = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
+		return replaceCloudFoundryExposure(
+				(exposures.length == 0) ? EnumSet.allOf(EndpointExposure.class) : Arrays.asList(exposures));
+	}
+
+	@SuppressWarnings("removal")
+	private Set<EndpointExposure> replaceCloudFoundryExposure(Collection<EndpointExposure> exposures) {
+		Set<EndpointExposure> result = EnumSet.copyOf(exposures);
+		if (result.remove(EndpointExposure.CLOUD_FOUNDRY)) {
+			result.add(EndpointExposure.WEB);
+		}
+		return result;
 	}
 
 	private Set<EndpointExposureOutcomeContributor> getExposureOutcomeContributors(Environment environment) {
@@ -171,9 +180,6 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 			contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.WEB));
 			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
 				contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.JMX));
-			}
-			if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
-				contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.CLOUD_FOUNDRY));
 			}
 			contributors.addAll(loadExposureOutcomeContributors(environment));
 			exposureOutcomeContributorsCache.put(environment, contributors);

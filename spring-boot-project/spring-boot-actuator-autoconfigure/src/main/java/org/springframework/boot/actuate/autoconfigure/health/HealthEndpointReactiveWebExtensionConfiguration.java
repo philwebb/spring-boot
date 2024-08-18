@@ -45,8 +45,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class,
-		exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 class HealthEndpointReactiveWebExtensionConfiguration {
 
 	@Bean

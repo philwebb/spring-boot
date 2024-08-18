@@ -64,8 +64,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnBean(HealthEndpoint.class)
-@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class,
-		exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 class HealthEndpointWebExtensionConfiguration {
 
 	@Bean

@@ -374,8 +374,7 @@ class ConditionalOnAvailableEndpointTests {
 	static class ExposureEndpointConfiguration {
 
 		@Bean
-		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class,
-				exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposure = EndpointExposure.WEB)
 		String unexposed() {
 			return "unexposed";
 		}
