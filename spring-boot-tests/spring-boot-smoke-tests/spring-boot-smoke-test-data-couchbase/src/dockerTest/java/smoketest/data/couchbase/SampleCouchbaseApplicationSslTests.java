@@ -24,9 +24,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +47,8 @@ class SampleCouchbaseApplicationSslTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	@ServiceConnection
+	// TODO MH: How to signal that this @ServiceConnection supports SSL?
+	// @ServiceConnection
 	static final CouchbaseContainer couchbase = TestImage.container(SecureCouchbaseContainer.class)
 		.withBucket(new BucketDefinition(BUCKET_NAME));
 
@@ -55,6 +57,13 @@ class SampleCouchbaseApplicationSslTests {
 
 	@Autowired
 	private SampleRepository repository;
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.couchbase.connection-string", couchbase::getConnectionString);
+		registry.add("spring.couchbase.username", couchbase::getUsername);
+		registry.add("spring.couchbase.password", couchbase::getPassword);
+	}
 
 	@Test
 	void testRepository() {
