@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.util.Map;
 
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -30,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -63,8 +61,8 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
-			KafkaConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
-		Map<String, Object> properties = this.properties.buildStreamsProperties(sslBundles.getIfAvailable());
+			KafkaConnectionDetails connectionDetails) {
+		Map<String, Object> properties = this.properties.buildStreamsProperties();
 		applyKafkaConnectionDetailsForStreams(properties, connectionDetails);
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
@@ -88,9 +86,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getStreamsBootstrapServers());
-		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
-			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
-		}
+		KafkaAutoConfiguration.applySslBundle(properties, connectionDetails.getStreamsSslBundle());
 	}
 
 	// Separate class required to avoid BeanCurrentlyInCreationException

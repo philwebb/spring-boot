@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.kafka;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * Details required to establish a connection to a Kafka service.
@@ -45,11 +46,29 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
+	 * Returns the SSL bundle used for consumers.
+	 * @return the SSL bundle used for consumers
+	 * @since 3.4.0
+	 */
+	default SslBundle getConsumerSslBundle() {
+		return null;
+	}
+
+	/**
 	 * Returns the list of bootstrap servers used for producers.
 	 * @return the list of bootstrap servers used for producers
 	 */
 	default List<String> getProducerBootstrapServers() {
 		return getBootstrapServers();
+	}
+
+	/**
+	 * Returns the SSL bundle used for producers.
+	 * @return the SSL bundle used for producers
+	 * @since 3.4.0
+	 */
+	default SslBundle getProducerSslBundle() {
+		return null;
 	}
 
 	/**
@@ -61,11 +80,29 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
+	 * Returns the SSL bundle used for the admin.
+	 * @return the SSL bundle used for the admin
+	 * @since 3.4.0
+	 */
+	default SslBundle getAdminSslBundle() {
+		return null;
+	}
+
+	/**
 	 * Returns the list of bootstrap servers used for Kafka Streams.
 	 * @return the list of bootstrap servers used for Kafka Streams
 	 */
 	default List<String> getStreamsBootstrapServers() {
 		return getBootstrapServers();
+	}
+
+	/**
+	 * Returns the SSL bundle used for Kafka Streams.
+	 * @return the SSL bundle used for Kafka Streams
+	 * @since 3.4.0
+	 */
+	default SslBundle getStreamsSslBundle() {
+		return null;
 	}
 
 }
