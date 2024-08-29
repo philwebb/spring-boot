@@ -52,17 +52,17 @@ class SampleRedisApplicationSslTests {
 	// @ServiceConnection
 	static RedisContainer redis = TestImage.container(SecureRedisContainer.class);
 
-	@DynamicPropertySource
-	static void containerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", redis::getHost);
-		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
-
 	@Autowired
 	private RedisOperations<Object, Object> operations;
 
 	@Autowired
 	private SampleRepository exampleRepository;
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.redis.host", redis::getHost);
+		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Test
 	void testRepository() {

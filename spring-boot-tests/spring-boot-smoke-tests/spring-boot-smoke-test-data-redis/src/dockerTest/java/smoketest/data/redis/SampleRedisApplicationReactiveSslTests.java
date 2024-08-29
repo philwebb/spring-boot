@@ -27,9 +27,10 @@ import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 /**
  * Smoke tests for Redis using reactive operations and SSL.
@@ -44,11 +45,18 @@ import org.springframework.data.redis.core.ReactiveRedisOperations;
 class SampleRedisApplicationReactiveSslTests {
 
 	@Container
-	@ServiceConnection
+	// TODO MH: How to signal that this @ServiceConnection uses an SSL bundle?
+	// @ServiceConnection
 	static RedisContainer redis = TestImage.container(SecureRedisContainer.class);
 
 	@Autowired
 	private ReactiveRedisOperations<Object, Object> operations;
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.redis.host", redis::getHost);
+		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Test
 	void testRepository() {
