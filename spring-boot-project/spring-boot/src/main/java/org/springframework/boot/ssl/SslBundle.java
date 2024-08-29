@@ -16,9 +16,16 @@
 
 package org.springframework.boot.ssl;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.StringUtils;
@@ -27,6 +34,7 @@ import org.springframework.util.StringUtils;
  * A bundle of trust material that can be used to establish an SSL connection.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public interface SslBundle {
@@ -172,6 +180,37 @@ public interface SslBundle {
 			}
 
 		};
+	}
+
+	/**
+	 * Factory method to create a new {@link SslBundle} which uses the system default
+	 * truststore.
+	 * @return a new {@link SslBundle} instance
+	 * @since 3.4.0
+	 */
+	static SslBundle systemDefault() {
+		try {
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory
+				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			keyManagerFactory.init(null, null);
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory
+				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			trustManagerFactory.init((KeyStore) null);
+			return of(null, null, null, null, new SslManagerBundle() {
+				@Override
+				public KeyManagerFactory getKeyManagerFactory() {
+					return keyManagerFactory;
+				}
+
+				@Override
+				public TrustManagerFactory getTrustManagerFactory() {
+					return trustManagerFactory;
+				}
+			});
+		}
+		catch (NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException ex) {
+			throw new IllegalStateException("Could not initialize system default SslBundle: " + ex.getMessage(), ex);
+		}
 	}
 
 }

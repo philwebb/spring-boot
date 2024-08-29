@@ -16,17 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionConfiguration.ConnectionInfo;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -86,41 +80,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
 			return this.sslBundles.getBundle(this.properties.getSsl().getBundle());
 		}
-		// TODO MH: Cassandra has the same thing, refactor this
-		// SSL is enabled, but no bundle has been set -> use the default SSLContext
-		return SslBundle.of(null, null, null, null, new SslManagerBundle() {
-			@Override
-			public KeyManagerFactory getKeyManagerFactory() {
-				// TODO MH: Not sure this is the correct way to do things
-				try {
-					return KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-				}
-				catch (NoSuchAlgorithmException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			@Override
-			public TrustManagerFactory getTrustManagerFactory() {
-				// TODO MH: Not sure this is the correct way to do things
-				try {
-					return TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-				}
-				catch (NoSuchAlgorithmException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			@Override
-			public SSLContext createSslContext(String protocol) {
-				try {
-					return SSLContext.getDefault();
-				}
-				catch (NoSuchAlgorithmException ex) {
-					throw new IllegalStateException(ex);
-				}
-			}
-		});
+		return SslBundle.systemDefault();
 	}
 
 	private ConnectionInfo connectionInfo(String url) {

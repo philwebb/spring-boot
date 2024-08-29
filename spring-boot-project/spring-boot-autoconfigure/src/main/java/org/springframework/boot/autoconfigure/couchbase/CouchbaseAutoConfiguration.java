@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.couchbase.client.core.env.Authenticator;
@@ -54,7 +53,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.context.annotation.Bean;
@@ -272,19 +270,7 @@ public class CouchbaseAutoConfiguration {
 				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
 				return this.sslBundles.getBundle(ssl.getBundle());
 			}
-			// TODO MH: Cassandra has the same thing, refactor this
-			// SSL is enabled, but no bundle has been set -> use the default SSLContext
-			return SslBundle.of(null, null, null, null, new SslManagerBundle() {
-				@Override
-				public KeyManagerFactory getKeyManagerFactory() {
-					return null;
-				}
-
-				@Override
-				public TrustManagerFactory getTrustManagerFactory() {
-					return null;
-				}
-			});
+			return SslBundle.systemDefault();
 		}
 
 	}
