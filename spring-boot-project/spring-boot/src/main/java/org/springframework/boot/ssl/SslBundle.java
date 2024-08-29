@@ -183,8 +183,7 @@ public interface SslBundle {
 	}
 
 	/**
-	 * Factory method to create a new {@link SslBundle} which uses the system default
-	 * truststore.
+	 * Factory method to create a new {@link SslBundle} which uses the system defaults.
 	 * @return a new {@link SslBundle} instance
 	 * @since 3.4.0
 	 */
@@ -196,6 +195,7 @@ public interface SslBundle {
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
 				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			trustManagerFactory.init((KeyStore) null);
+			SSLContext sslContext = SSLContext.getDefault();
 			return of(null, null, null, null, new SslManagerBundle() {
 				@Override
 				public KeyManagerFactory getKeyManagerFactory() {
@@ -205,6 +205,11 @@ public interface SslBundle {
 				@Override
 				public TrustManagerFactory getTrustManagerFactory() {
 					return trustManagerFactory;
+				}
+
+				@Override
+				public SSLContext createSslContext(String protocol) {
+					return sslContext;
 				}
 			});
 		}
