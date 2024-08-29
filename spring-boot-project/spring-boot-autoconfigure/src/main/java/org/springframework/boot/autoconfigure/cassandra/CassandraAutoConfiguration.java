@@ -17,16 +17,11 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
@@ -55,7 +50,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
@@ -342,28 +336,7 @@ public class CassandraAutoConfiguration {
 				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
 				return this.sslBundles.getBundle(ssl.getBundle());
 			}
-			// SSL is enabled, but no bundle has been set -> use the default SSLContext
-			return SslBundle.of(null, null, null, null, new SslManagerBundle() {
-				@Override
-				public KeyManagerFactory getKeyManagerFactory() {
-					return null;
-				}
-
-				@Override
-				public TrustManagerFactory getTrustManagerFactory() {
-					return null;
-				}
-
-				@Override
-				public SSLContext createSslContext(String protocol) {
-					try {
-						return SSLContext.getDefault();
-					}
-					catch (NoSuchAlgorithmException ex) {
-						throw new IllegalStateException(ex);
-					}
-				}
-			});
+			return SslBundle.systemDefault();
 		}
 
 		private Node asNode(String contactPoint) {
