@@ -57,6 +57,12 @@ class SampleCassandraApplicationSslTests {
 	// @ServiceConnection
 	static final SecureCassandraContainer cassandra = TestImage.container(SecureCassandraContainer.class);
 
+	@Autowired
+	private CassandraTemplate cassandraTemplate;
+
+	@Autowired
+	private SampleRepository repository;
+
 	@DynamicPropertySource
 	static void containerProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.cassandra.contact-points", () -> List.of(String.format("%s:%d",
@@ -65,12 +71,6 @@ class SampleCassandraApplicationSslTests {
 		registry.add("spring.cassandra.password", cassandra::getPassword);
 		registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
 	}
-
-	@Autowired
-	private CassandraTemplate cassandraTemplate;
-
-	@Autowired
-	private SampleRepository repository;
 
 	@Test
 	void testRepository() {

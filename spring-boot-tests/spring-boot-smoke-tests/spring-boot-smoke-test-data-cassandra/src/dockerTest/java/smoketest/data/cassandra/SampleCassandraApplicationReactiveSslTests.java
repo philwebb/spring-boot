@@ -17,6 +17,7 @@
 package smoketest.data.cassandra;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -28,10 +29,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +53,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleCassandraApplicationReactiveSslTests {
 
 	@Container
-	@ServiceConnection
+	// TODO MH: How to signal that this @ServiceConnection supports SSL?
+	// @ServiceConnection
 	static final SecureCassandraContainer cassandra = TestImage.container(SecureCassandraContainer.class);
 
 	@Autowired
@@ -59,6 +62,15 @@ class SampleCassandraApplicationReactiveSslTests {
 
 	@Autowired
 	private SampleRepository repository;
+
+	@DynamicPropertySource
+	static void containerProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.cassandra.contact-points", () -> List.of(String.format("%s:%d",
+				cassandra.getContactPoint().getHostName(), cassandra.getContactPoint().getPort())));
+		registry.add("spring.cassandra.username", cassandra::getUsername);
+		registry.add("spring.cassandra.password", cassandra::getPassword);
+		registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
+	}
 
 	@Test
 	void testRepository() {
