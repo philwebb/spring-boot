@@ -67,7 +67,7 @@ class RabbitContainerConnectionDetailsFactory
 
 		@Override
 		public List<Address> getAddresses() {
-			URI uri = URI.create(getContainer().getAmqpUrl());
+			URI uri = URI.create((getSslBundle() != null) ? getContainer().getAmqpsUrl() : getContainer().getAmqpUrl());
 			return List.of(new Address(uri.getHost(), uri.getPort()));
 		}
 
