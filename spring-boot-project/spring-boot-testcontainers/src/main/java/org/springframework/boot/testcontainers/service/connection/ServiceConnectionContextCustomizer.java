@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,9 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		new TestcontainersLifecycleApplicationContextInitializer().initialize(context);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		for (ContainerConnectionSource<?> source : this.sources) {
+			source.setBeanFactory(beanFactory);
+		}
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			new ConnectionDetailsRegistrar(beanFactory, this.connectionDetailsFactories)
 				.registerBeanDefinitions(registry, this.sources);
@@ -91,10 +94,12 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	 * Relevant details from {@link ContainerConnectionSource} used as a
 	 * MergedContextConfiguration cache key.
 	 */
-	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container) {
+	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container,
+			String sslBundle) {
 
 		CacheKey(ContainerConnectionSource<?> source) {
-			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get());
+			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get(),
+					source.getSslBundleName());
 		}
 
 	}

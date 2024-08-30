@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -202,6 +203,15 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.eventPublisher = applicationContext;
+		}
+
+		/**
+		 * Returns the {@link SslBundle} associated with the container source.
+		 * @return the {@link SslBundle} or {@code null}
+		 * @since 3.4.0
+		 */
+		protected final SslBundle getSourceSslBundle() {
+			return this.source.getSslBundle();
 		}
 
 	}

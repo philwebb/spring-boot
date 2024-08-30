@@ -25,10 +25,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,21 +37,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-@SpringBootTest(properties = { "spring.data.mongodb.ssl.bundle=client",
-		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
+@SpringBootTest(properties = { "spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
 		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
 class SampleMongoApplicationReactiveSslTests {
 
 	@Container
-	// TODO MH: How to signal that this @ServiceConnection supports SSL?
-	// @ServiceConnection
+	@ServiceConnection(sslBundle = "client")
 	static final MongoDBContainer mongoDb = TestImage.container(SecureMongoContainer.class);
-
-	@DynamicPropertySource
-	static void containerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.mongodb.uri", mongoDb::getReplicaSetUrl);
-	}
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;

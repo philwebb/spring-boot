@@ -16,7 +16,6 @@
 
 package smoketest.data.cassandra;
 
-import java.util.List;
 import java.util.UUID;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -28,11 +27,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.CassandraTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 @DataCassandraTest(properties = { "spring.cassandra.schema-action=create-if-not-exists",
 		"spring.cassandra.connection.connect-timeout=60s", "spring.cassandra.connection.init-query-timeout=60s",
-		"spring.cassandra.request.timeout=60s", "spring.cassandra.ssl.bundle=client",
+		"spring.cassandra.request.timeout=60s",
 		"spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
 		"spring.ssl.bundle.jks.client.keystore.password=password",
 		"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
@@ -53,8 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleCassandraApplicationSslTests {
 
 	@Container
-	// TODO MH: How to signal that this @ServiceConnection supports SSL?
-	// @ServiceConnection
+	@ServiceConnection(sslBundle = "client")
 	static final SecureCassandraContainer cassandra = TestImage.container(SecureCassandraContainer.class);
 
 	@Autowired
@@ -62,15 +59,6 @@ class SampleCassandraApplicationSslTests {
 
 	@Autowired
 	private SampleRepository repository;
-
-	@DynamicPropertySource
-	static void containerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cassandra.contact-points", () -> List.of(String.format("%s:%d",
-				cassandra.getContactPoint().getHostName(), cassandra.getContactPoint().getPort())));
-		registry.add("spring.cassandra.username", cassandra::getUsername);
-		registry.add("spring.cassandra.password", cassandra::getPassword);
-		registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
-	}
 
 	@Test
 	void testRepository() {

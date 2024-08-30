@@ -26,11 +26,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,8 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Testcontainers(disabledWithoutDocker = true)
 @ClassPathExclusions("lettuce-core-*.jar")
-@DataRedisTest(properties = { "spring.data.redis.ssl.bundle=client",
-		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
+@DataRedisTest(properties = { "spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
 		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
 class SampleRedisApplicationJedisSslTests {
@@ -50,14 +48,8 @@ class SampleRedisApplicationJedisSslTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Container
-	// @ServiceConnection
+	@ServiceConnection(sslBundle = "client")
 	static RedisContainer redis = TestImage.container(SecureRedisContainer.class);
-
-	@DynamicPropertySource
-	static void containerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", redis::getHost);
-		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;

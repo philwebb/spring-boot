@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AliasFor;
 
@@ -87,5 +88,12 @@ public @interface ServiceConnection {
 	 * @return the connection detail types that can be created to establish the connection
 	 */
 	Class<? extends ConnectionDetails>[] type() default {};
+
+	/**
+	 * The {@link SslBundle} to be used with this service.
+	 * @return the {@link SslBundle} to use
+	 * @since 3.4.0
+	 */
+	String sslBundle() default "";
 
 }

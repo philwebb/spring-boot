@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -62,6 +63,11 @@ class ElasticsearchContainerConnectionDetailsFactory
 			String host = getContainer().getHost();
 			Integer port = getContainer().getMappedPort(DEFAULT_PORT);
 			return List.of(new Node(host, port, Protocol.HTTP, null, null));
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return getSourceSslBundle();
 		}
 
 	}
