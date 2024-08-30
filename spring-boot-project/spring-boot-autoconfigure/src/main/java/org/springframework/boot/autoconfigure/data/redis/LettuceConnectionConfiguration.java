@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.autoconfigure.thread.Threading;
@@ -156,7 +155,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			builder.commandTimeout(getProperties().getTimeout());
 		}
 		if (getProperties().getLettuce() != null) {
-			Lettuce lettuce = getProperties().getLettuce();
+			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
@@ -209,7 +208,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return ClientOptions.builder();
 	}
 
-	private void customizeConfigurationFromUrl(LettuceClientConfigurationBuilder builder) {
+	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
 		if (urlUsesSsl()) {
 			builder.useSsl();
 		}

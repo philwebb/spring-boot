@@ -76,9 +76,10 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		if (!this.properties.getSsl().isEnabled()) {
 			return null;
 		}
-		if (StringUtils.hasLength(this.properties.getSsl().getBundle())) {
+		String bundleName = this.properties.getSsl().getBundle();
+		if (StringUtils.hasLength(bundleName)) {
 			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
-			return this.sslBundles.getBundle(this.properties.getSsl().getBundle());
+			return this.sslBundles.getBundle(bundleName);
 		}
 		return SslBundle.systemDefault();
 	}
@@ -131,10 +132,10 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	@Override
 	public Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
-		List<Node> nodes = (cluster != null) ? cluster.getNodes().stream().map(this::asNode).toList() : null;
-		if (nodes == null) {
+		if (cluster == null) {
 			return null;
 		}
+		List<Node> nodes = cluster.getNodes().stream().map(this::asNode).toList();
 		return new Cluster() {
 			@Override
 			public List<Node> getNodes() {

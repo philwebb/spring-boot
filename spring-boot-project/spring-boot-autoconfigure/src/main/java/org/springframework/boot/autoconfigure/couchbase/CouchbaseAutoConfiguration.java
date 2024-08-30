@@ -156,7 +156,6 @@ public class CouchbaseAutoConfiguration {
 		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
 			.numKvConnections(io.getMinEndpoints())
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
-
 		SslBundle sslBundle = connectionDetails.getSslBundle();
 		if (sslBundle != null) {
 			configureSsl(builder, sslBundle);
