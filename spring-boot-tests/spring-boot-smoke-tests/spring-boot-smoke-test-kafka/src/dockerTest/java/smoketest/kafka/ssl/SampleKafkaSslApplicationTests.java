@@ -30,9 +30,8 @@ import smoketest.kafka.SampleMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -47,7 +46,7 @@ import static org.hamcrest.Matchers.not;
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class },
 		properties = { "spring.kafka.security.protocol=SSL",
-				"spring.kafka.properties.ssl.endpoint.identification.algorithm=", "spring.kafka.ssl.bundle=client",
+				"spring.kafka.properties.ssl.endpoint.identification.algorithm=",
 				"spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
 				"spring.ssl.bundle.jks.client.keystore.password=password",
 				"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
@@ -55,6 +54,7 @@ import static org.hamcrest.Matchers.not;
 class SampleKafkaSslApplicationTests {
 
 	@Container
+	@ServiceConnection(sslBundle = "client")
 	public static KafkaContainer kafka = TestImage.container(KafkaContainer.class)
 		.withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "PLAINTEXT:SSL,BROKER:PLAINTEXT")
 		.withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
@@ -71,12 +71,6 @@ class SampleKafkaSslApplicationTests {
 				"/etc/kafka/secrets/certs/credentials")
 		.withCopyFileToContainer(MountableFile.forClasspathResource("ssl/test-ca.p12"),
 				"/etc/kafka/secrets/certs/test-ca.p12");
-
-	@DynamicPropertySource
-	static void kafkaProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.kafka.bootstrap-servers",
-				() -> String.format("%s:%s", kafka.getHost(), kafka.getMappedPort(9093)));
-	}
 
 	@Autowired
 	private Producer producer;
