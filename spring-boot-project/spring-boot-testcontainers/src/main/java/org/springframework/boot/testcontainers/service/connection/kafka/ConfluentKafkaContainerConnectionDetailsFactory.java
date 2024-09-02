@@ -21,6 +21,7 @@ import java.util.List;
 import org.testcontainers.containers.KafkaContainer;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -54,6 +55,26 @@ class ConfluentKafkaContainerConnectionDetailsFactory
 		@Override
 		public List<String> getBootstrapServers() {
 			return List.of(getContainer().getBootstrapServers());
+		}
+
+		@Override
+		public SslBundle getConsumerSslBundle() {
+			return getSourceSslBundle();
+		}
+
+		@Override
+		public SslBundle getProducerSslBundle() {
+			return getSourceSslBundle();
+		}
+
+		@Override
+		public SslBundle getAdminSslBundle() {
+			return getSourceSslBundle();
+		}
+
+		@Override
+		public SslBundle getStreamsSslBundle() {
+			return getSourceSslBundle();
 		}
 
 	}
