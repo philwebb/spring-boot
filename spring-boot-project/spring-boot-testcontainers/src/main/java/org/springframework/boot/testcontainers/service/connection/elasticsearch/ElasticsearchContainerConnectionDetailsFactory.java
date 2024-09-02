@@ -62,7 +62,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 		public List<Node> getNodes() {
 			String host = getContainer().getHost();
 			Integer port = getContainer().getMappedPort(DEFAULT_PORT);
-			return List.of(new Node(host, port, Protocol.HTTP, null, null));
+			return List.of(new Node(host, port, (getSslBundle() != null) ? Protocol.HTTPS : Protocol.HTTP, null, null));
 		}
 
 		@Override
