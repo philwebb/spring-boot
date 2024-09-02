@@ -44,8 +44,7 @@ import static org.hamcrest.Matchers.not;
  */
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class },
-		properties = { "spring.kafka.security.protocol=SSL",
-				"spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
+		properties = { "spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
 				"spring.ssl.bundle.jks.client.keystore.password=password",
 				"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
 				"spring.ssl.bundle.jks.client.truststore.password=password" })
