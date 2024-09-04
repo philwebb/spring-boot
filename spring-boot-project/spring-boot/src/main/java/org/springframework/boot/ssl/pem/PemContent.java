@@ -34,6 +34,7 @@ import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * PEM encoded content that can provide {@link X509Certificate certificates} and
@@ -109,11 +110,11 @@ public final class PemContent {
 	 * Load {@link PemContent} from the given content (either the PEM content itself or a
 	 * reference to the resource to load).
 	 * @param content the content to load
-	 * @return a new {@link PemContent} instance
+	 * @return a new {@link PemContent} instance or {@code null}
 	 * @throws IOException on IO error
 	 */
 	static PemContent load(String content) throws IOException {
-		if (content == null) {
+		if (!StringUtils.hasLength(content)) {
 			return null;
 		}
 		if (isPresentInText(content)) {

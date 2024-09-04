@@ -24,15 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.Container;
 import org.testcontainers.utility.DockerImageName;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.log.LogMessage;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -63,30 +58,29 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Supplier<C> containerSupplier;
 
-	private final String sslBundle;
-
-	private BeanFactory beanFactory;
+	private final SslBundleSource sslBundleSource;
 
 	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
-			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier) {
+			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier,
+			SslBundleSource sslBundleSource) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
 		this.connectionName = getOrDeduceConnectionName(annotation.getString("name"), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.getClassArray("type"));
-		this.sslBundle = annotation.getString("sslBundle");
 		this.containerSupplier = containerSupplier;
+		this.sslBundleSource = sslBundleSource;
 	}
 
 	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
-			ServiceConnection annotation, Supplier<C> containerSupplier) {
+			ServiceConnection annotation, Supplier<C> containerSupplier, SslBundleSource sslBundleSource) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
 		this.connectionName = getOrDeduceConnectionName(annotation.name(), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.type());
-		this.sslBundle = annotation.sslBundle();
 		this.containerSupplier = containerSupplier;
+		this.sslBundleSource = sslBundleSource;
 	}
 
 	private static String getOrDeduceConnectionName(String connectionName, String containerImageName) {
@@ -159,26 +153,8 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.connectionDetailsTypes;
 	}
 
-	void setBeanFactory(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-	}
-
-	String getSslBundleName() {
-		return this.sslBundle;
-	}
-
-	SslBundle getSslBundle() {
-		if (!StringUtils.hasLength(this.sslBundle)) {
-			return null;
-		}
-		try {
-			Assert.state(this.beanFactory != null, "Bean factory hasn't been set");
-			SslBundles sslBundles = this.beanFactory.getBean(SslBundles.class);
-			return sslBundles.getBundle(this.sslBundle);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return null;
-		}
+	SslBundleSource getSslBundleSource() {
+		return this.sslBundleSource;
 	}
 
 	@Override

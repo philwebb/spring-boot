@@ -29,6 +29,8 @@ import smoketest.kafka.SampleMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.JksKeyStore;
+import org.springframework.boot.testcontainers.service.connection.JksTrustStore;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 
@@ -43,15 +45,13 @@ import static org.hamcrest.Matchers.not;
  * @author Eddú Meléndez
  */
 @Testcontainers(disabledWithoutDocker = true)
-@SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class },
-		properties = { "spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
-				"spring.ssl.bundle.jks.client.keystore.password=password",
-				"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
-				"spring.ssl.bundle.jks.client.truststore.password=password" })
+@SpringBootTest(classes = { SampleKafkaSslApplication.class, Producer.class, Consumer.class })
 class SampleKafkaSslApplicationTests {
 
 	@Container
-	@ServiceConnection(sslBundle = "client")
+	@ServiceConnection
+	@JksTrustStore(location = "classpath:ssl/test-ca.p12", password = "password")
+	@JksKeyStore(location = "classpath:ssl/test-client.p12", password = "password")
 	public static KafkaContainer kafka = TestImage.container(SecureKafkaContainer.class);
 
 	@Autowired

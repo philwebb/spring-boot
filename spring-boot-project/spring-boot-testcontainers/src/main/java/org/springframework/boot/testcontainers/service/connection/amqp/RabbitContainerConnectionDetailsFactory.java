@@ -73,7 +73,7 @@ class RabbitContainerConnectionDetailsFactory
 
 		@Override
 		public SslBundle getSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 	}

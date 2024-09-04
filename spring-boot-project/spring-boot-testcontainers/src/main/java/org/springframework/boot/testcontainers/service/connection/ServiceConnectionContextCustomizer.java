@@ -61,9 +61,6 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		new TestcontainersLifecycleApplicationContextInitializer().initialize(context);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		for (ContainerConnectionSource<?> source : this.sources) {
-			source.setBeanFactory(beanFactory);
-		}
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			new ConnectionDetailsRegistrar(beanFactory, this.connectionDetailsFactories)
 				.registerBeanDefinitions(registry, this.sources);
@@ -95,11 +92,11 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	 * MergedContextConfiguration cache key.
 	 */
 	private record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes, Container<?> container,
-			String sslBundle) {
+			SslBundleSource sslBundleSource) {
 
 		CacheKey(ContainerConnectionSource<?> source) {
 			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get(),
-					source.getSslBundleName());
+					source.getSslBundleSource());
 		}
 
 	}

@@ -67,7 +67,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 
 		@Override
 		public SslBundle getSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 	}

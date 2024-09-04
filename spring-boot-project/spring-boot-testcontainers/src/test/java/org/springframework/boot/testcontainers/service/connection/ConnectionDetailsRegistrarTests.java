@@ -59,7 +59,7 @@ class ConnectionDetailsRegistrarTests {
 		this.container = mock(PostgreSQLContainer.class);
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", "", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, null,
-				this.annotation, () -> this.container);
+				this.annotation, () -> this.container, null);
 		this.factories = mock(ConnectionDetailsFactories.class);
 	}
 

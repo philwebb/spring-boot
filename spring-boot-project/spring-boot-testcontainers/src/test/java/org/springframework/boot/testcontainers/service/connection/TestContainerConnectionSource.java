@@ -37,7 +37,7 @@ public final class TestContainerConnectionSource {
 			Class<C> containerType, String containerImageName, MergedAnnotation<ServiceConnection> annotation,
 			Supplier<C> containerSupplier) {
 		return new ContainerConnectionSource<>(beanNameSuffix, origin, containerType, containerImageName, annotation,
-				containerSupplier);
+				containerSupplier, null);
 	}
 
 }

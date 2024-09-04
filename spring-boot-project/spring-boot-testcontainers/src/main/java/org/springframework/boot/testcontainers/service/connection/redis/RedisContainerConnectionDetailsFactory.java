@@ -74,7 +74,7 @@ class RedisContainerConnectionDetailsFactory
 		@Override
 		public Standalone getStandalone() {
 			return Standalone.of(getContainer().getHost(), getContainer().getMappedPort(REDIS_PORT),
-					getSourceSslBundle());
+					super.getSslBundle());
 		}
 
 	}

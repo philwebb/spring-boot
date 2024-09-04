@@ -60,7 +60,7 @@ class ContainerConnectionSourceTests {
 		given(this.container.getDockerImageName()).willReturn("postgres");
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", "", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null);
 	}
 
 	@Test
@@ -180,14 +180,14 @@ class ContainerConnectionSourceTests {
 	private void setupSourceAnnotatedWithName(String name) {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", name, "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null);
 	}
 
 	private void setupSourceAnnotatedWithType(Class<?> type) {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "", "type", new Class<?>[] { type }));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null);
 	}
 
 }

@@ -69,7 +69,7 @@ class CouchbaseContainerConnectionDetailsFactory
 
 		@Override
 		public SslBundle getSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 	}

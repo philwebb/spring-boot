@@ -169,6 +169,8 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 
 		private volatile C container;
 
+		private volatile SslBundle sslBundle;
+
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ContainerConnectionSource}
@@ -195,6 +197,22 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			return this.container;
 		}
 
+		/**
+		 * Return the {@link SslBundle} to use with this connection or {@code null}.
+		 * @return the ssl bundle or {@code null}
+		 */
+		protected SslBundle getSslBundle() {
+			if (this.source.getSslBundleSource() == null) {
+				return null;
+			}
+			SslBundle sslBundle = this.sslBundle;
+			if (sslBundle == null) {
+				sslBundle = this.source.getSslBundleSource().getSslBundle();
+				this.sslBundle = sslBundle;
+			}
+			return sslBundle;
+		}
+
 		@Override
 		public Origin getOrigin() {
 			return this.source.getOrigin();
@@ -203,15 +221,6 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.eventPublisher = applicationContext;
-		}
-
-		/**
-		 * Returns the {@link SslBundle} associated with the container source.
-		 * @return the {@link SslBundle} or {@code null}
-		 * @since 3.4.0
-		 */
-		protected final SslBundle getSourceSslBundle() {
-			return this.source.getSslBundle();
 		}
 
 	}

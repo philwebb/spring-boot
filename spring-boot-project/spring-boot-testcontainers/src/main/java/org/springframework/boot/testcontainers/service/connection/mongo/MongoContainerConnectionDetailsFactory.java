@@ -62,7 +62,7 @@ class MongoContainerConnectionDetailsFactory
 
 		@Override
 		public SslBundle getSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 	}

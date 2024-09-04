@@ -60,22 +60,22 @@ class ApacheKafkaContainerConnectionDetailsFactory
 
 		@Override
 		public SslBundle getConsumerSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 		@Override
 		public SslBundle getProducerSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 		@Override
 		public SslBundle getAdminSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 		@Override
 		public SslBundle getStreamsSslBundle() {
-			return getSourceSslBundle();
+			return super.getSslBundle();
 		}
 
 	}
