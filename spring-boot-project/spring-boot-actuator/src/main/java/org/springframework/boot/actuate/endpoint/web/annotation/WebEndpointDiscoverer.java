@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -29,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
@@ -51,6 +53,8 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 
 	private final List<PathMapper> endpointPathMappers;
 
+	private final List<AdditionalPathsMapper> additionalPathsMappers;
+
 	private final RequestPredicateFactory requestPredicateFactory;
 
 	/**
@@ -61,13 +65,35 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param filters filters to apply
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #WebEndpointDiscoverer(ApplicationContext, ParameterValueMapper, EndpointMediaTypes, List, List, Collection, Collection)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
 			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
+		this(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, Collections.emptyList(),
+				invokerAdvisors, filters);
+	}
+
+	/**
+	 * Create a new {@link WebEndpointDiscoverer} instance.
+	 * @param applicationContext the source application context
+	 * @param parameterValueMapper the parameter value mapper
+	 * @param endpointMediaTypes the endpoint media types
+	 * @param endpointPathMappers the endpoint path mappers
+	 * @param additionalPathsMappers the
+	 * @param invokerAdvisors invoker advisors to apply
+	 * @param filters filters to apply
+	 */
+	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
+			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
+			List<AdditionalPathsMapper> additionalPathsMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
+			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
 		super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
 		this.endpointPathMappers = endpointPathMappers;
+		this.additionalPathsMappers = additionalPathsMappers;
 		this.requestPredicateFactory = new RequestPredicateFactory(endpointMediaTypes);
 	}
 
@@ -75,7 +101,8 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	protected ExposableWebEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
 			Collection<WebOperation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath, enabledByDefault, operations);
+		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath, enabledByDefault, operations,
+				this.additionalPathsMappers);
 	}
 
 	@Override

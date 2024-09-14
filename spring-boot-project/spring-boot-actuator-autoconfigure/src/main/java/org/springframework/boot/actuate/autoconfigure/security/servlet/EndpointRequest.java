@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortT
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
@@ -85,7 +86,7 @@ public final class EndpointRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public static EndpointRequestMatcher to(Class<?>... endpoints) {
-		return new EndpointRequestMatcher(endpoints, false);
+		return new EndpointRequestMatcher(endpoints, false, PathType.REGULAR, null);
 	}
 
 	/**
@@ -97,7 +98,7 @@ public final class EndpointRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public static EndpointRequestMatcher to(String... endpoints) {
-		return new EndpointRequestMatcher(endpoints, false);
+		return new EndpointRequestMatcher(endpoints, false, PathType.REGULAR, null);
 	}
 
 	/**
@@ -114,6 +115,15 @@ public final class EndpointRequest {
 	 */
 	public static LinksRequestMatcher toLinks() {
 		return new LinksRequestMatcher();
+	}
+
+	public static EndpointRequestMatcher toAdditionalPaths(WebServerNamespace webServerNamespace,
+			Class<?>... endpoints) {
+		return new EndpointRequestMatcher(endpoints, false, PathType.ADDITIONAL, webServerNamespace);
+	}
+
+	public static EndpointRequestMatcher toAdditionalPaths(WebServerNamespace webServerNamespace, String... endpoints) {
+		return new EndpointRequestMatcher(endpoints, false, PathType.ADDITIONAL, webServerNamespace);
 	}
 
 	/**
@@ -191,61 +201,85 @@ public final class EndpointRequest {
 
 		private final boolean includeLinks;
 
+		private final PathType pathType;
+
+		private final WebServerNamespace webServerNamespace;
+
 		private EndpointRequestMatcher(boolean includeLinks) {
-			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
+			this(Collections.emptyList(), Collections.emptyList(), includeLinks, PathType.REGULAR, null);
 		}
 
-		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks, PathType pathType,
+				WebServerNamespace webServerNamespace) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks, pathType,
+					webServerNamespace);
 		}
 
-		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks, PathType pathType,
+				WebServerNamespace webServerNamespace) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks, pathType,
+					webServerNamespace);
 		}
 
-		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
+		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks,
+				PathType pathType, WebServerNamespace webServerNamespace) {
+			Assert.isTrue(pathType == PathType.REGULAR || webServerNamespace != null,
+					"'webServerNamespace' must not be null");
 			this.includes = includes;
 			this.excludes = excludes;
 			this.includeLinks = includeLinks;
+			this.pathType = pathType;
+			this.webServerNamespace = webServerNamespace;
 		}
 
 		public EndpointRequestMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, this.pathType,
+					this.webServerNamespace);
 		}
 
 		public EndpointRequestMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks, this.pathType,
+					this.webServerNamespace);
 		}
 
 		public EndpointRequestMatcher excludingLinks() {
-			return new EndpointRequestMatcher(this.includes, this.excludes, false);
+			return new EndpointRequestMatcher(this.includes, this.excludes, false, this.pathType,
+					this.webServerNamespace);
 		}
 
 		@Override
 		protected RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory) {
-			PathMappedEndpoints pathMappedEndpoints = context.getBean(PathMappedEndpoints.class);
+			PathMappedEndpoints endpoints = context.getBean(PathMappedEndpoints.class);
 			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
-				paths.addAll(pathMappedEndpoints.getAllPaths());
+				paths.addAll(endpoints.getAllPaths());
 			}
-			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
-			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
+			streamPaths(this.includes, endpoints).forEach(paths::add);
+			streamPaths(this.excludes, endpoints).forEach(paths::remove);
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths);
-			String basePath = pathMappedEndpoints.getBasePath();
+			String basePath = endpoints.getBasePath();
 			if (this.includeLinks && StringUtils.hasText(basePath)) {
 				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
 
-		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints pathMappedEndpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
+		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints endpoints) {
+			Stream<EndpointId> endpointIds = source.stream().filter(Objects::nonNull).map(this::getEndpointId);
+			return switch (this.pathType) {
+				case REGULAR -> endpointIds.map(endpoints::getPath);
+				case ADDITIONAL -> endpointIds.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId));
+			};
+		}
+
+		private Stream<String> streamAdditionalPaths(PathMappedEndpoints pathMappedEndpoints, EndpointId endpointId) {
+			return pathMappedEndpoints.getAdditionalPaths(this.webServerNamespace, endpointId).stream();
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
@@ -320,6 +354,15 @@ public final class EndpointRequest {
 			}
 			return matcherProvider.getRequestMatcher(pattern.toString());
 		}
+
+	}
+
+	/**
+	 * The type of paths being matched.
+	 */
+	private enum PathType {
+
+		REGULAR, ADDITIONAL
 
 	}
 

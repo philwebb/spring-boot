@@ -19,6 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.EndpointRequestMatcher;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -31,6 +34,7 @@ import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAu
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.ClassUtils;
@@ -40,7 +44,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security when actuator is
  * on the classpath. It allows unauthenticated access to the {@link HealthEndpoint}. If
- * the user specifies their own{@link SecurityFilterChain} bean, this will back-off
+ * the user specifies their own {@link SecurityFilterChain} bean, this will back-off
  * completely and the user should specify all the bits that they want to configure as part
  * of the custom security configuration.
  *
@@ -58,9 +62,12 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain managementSecurityFilterChain(Environment environment, HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> {
-			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
+			EndpointRequestMatcher healthMatcher = getHealthMatcher(environment);
+			if (healthMatcher != null) {
+				requests.requestMatchers(healthMatcher).permitAll();
+			}
 			requests.anyRequest().authenticated();
 		});
 		if (ClassUtils.isPresent("org.springframework.web.servlet.DispatcherServlet", null)) {
@@ -69,6 +76,17 @@ public class ManagementWebSecurityAutoConfiguration {
 		http.formLogin(withDefaults());
 		http.httpBasic(withDefaults());
 		return http.build();
+	}
+
+	private EndpointRequestMatcher getHealthMatcher(Environment environment) {
+		ManagementPortType managementPortType = ManagementPortType.get(environment);
+		if (managementPortType == ManagementPortType.SAME) {
+			return EndpointRequest.to(HealthEndpoint.class);
+		}
+		if (managementPortType == ManagementPortType.DIFFERENT) {
+			return EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class);
+		}
+		return null;
 	}
 
 }
