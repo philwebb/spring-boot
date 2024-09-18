@@ -245,7 +245,7 @@ class WebEndpointDiscovererTests {
 			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context, parameterMapper, mediaTypes,
-					Collections.singletonList(endpointPathMapper),
+					Collections.singletonList(endpointPathMapper), Collections.emptyList(),
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList());
 			consumer.accept(discoverer);
 		}

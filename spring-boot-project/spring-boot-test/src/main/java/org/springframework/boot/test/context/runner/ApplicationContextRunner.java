@@ -48,9 +48,12 @@ public class ApplicationContextRunner extends
 	 * Create a new {@link ApplicationContextRunner} instance using the specified
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
+	 * @param additionalContextInterfaces any additional application context interfaces to
+	 * be added to the application context proxy
 	 */
-	public ApplicationContextRunner(Supplier<ConfigurableApplicationContext> contextFactory) {
-		super(contextFactory, ApplicationContextRunner::new);
+	public ApplicationContextRunner(Supplier<ConfigurableApplicationContext> contextFactory,
+			Class<?>... additionalContextInterfaces) {
+		super(contextFactory, additionalContextInterfaces, ApplicationContextRunner::new);
 	}
 
 	private ApplicationContextRunner(RunnerConfiguration<ConfigurableApplicationContext> runnerConfiguration) {

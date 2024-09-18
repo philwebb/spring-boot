@@ -52,9 +52,12 @@ public final class WebApplicationContextRunner extends
 	 * Create a new {@link WebApplicationContextRunner} instance using the specified
 	 * {@code contextFactory} as the underlying source.
 	 * @param contextFactory a supplier that returns a new instance on each call
+	 * @param additionalContextInterfaces any additional application context interfaces to
+	 * be added to the application context proxy
 	 */
-	public WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory) {
-		super(contextFactory, WebApplicationContextRunner::new);
+	public WebApplicationContextRunner(Supplier<ConfigurableWebApplicationContext> contextFactory,
+			Class<?>... additionalContextInterfaces) {
+		super(contextFactory, additionalContextInterfaces, WebApplicationContextRunner::new);
 	}
 
 	private WebApplicationContextRunner(RunnerConfiguration<ConfigurableWebApplicationContext> configuration) {

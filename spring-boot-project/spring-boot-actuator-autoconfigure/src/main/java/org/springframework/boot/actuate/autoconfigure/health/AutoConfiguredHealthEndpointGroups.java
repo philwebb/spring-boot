@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -166,6 +167,7 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 	@Override
 	public List<String> getAdditionalPaths(EndpointId endpointId, WebServerNamespace webServerNamespace) {
 		return streamAllGroups().map(HealthEndpointGroup::getAdditionalPath)
+			.filter(Objects::nonNull)
 			.filter((additionalPath) -> additionalPath.hasNamespace(webServerNamespace))
 			.map(AdditionalHealthEndpointPath::getValue)
 			.toList();

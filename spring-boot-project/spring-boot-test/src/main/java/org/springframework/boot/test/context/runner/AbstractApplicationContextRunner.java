@@ -106,6 +106,8 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
+	private static final Class<?> NO_ADDITIONAL_CONTEXT_INTERFACES[] = {};
+
 	private final RunnerConfiguration<C> runnerConfiguration;
 
 	private final Function<RunnerConfiguration<C>, SELF> instanceFactory;
@@ -118,9 +120,22 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
 			Function<RunnerConfiguration<C>, SELF> instanceFactory) {
+		this(contextFactory, NO_ADDITIONAL_CONTEXT_INTERFACES, instanceFactory);
+	}
+
+	/**
+	 * Create a new {@link AbstractApplicationContextRunner} instance.
+	 * @param contextFactory the factory used to create the actual context
+	 * @param additionalContextInterfaces any additional application context interfaces to
+	 * be added to the application context proxy
+	 * @param instanceFactory the factory used to create new instance of the runner
+	 * @since 3.4.0
+	 */
+	protected AbstractApplicationContextRunner(Supplier<C> contextFactory, Class<?>[] additionalContextInterfaces,
+			Function<RunnerConfiguration<C>, SELF> instanceFactory) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		Assert.notNull(contextFactory, "RunnerConfiguration must not be null");
-		this.runnerConfiguration = new RunnerConfiguration<>(contextFactory);
+		this.runnerConfiguration = new RunnerConfiguration<>(contextFactory, additionalContextInterfaces);
 		this.instanceFactory = instanceFactory;
 	}
 
@@ -386,7 +401,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh));
+		return ApplicationContextAssertProvider.get(assertType, contextType,
+				this.runnerConfiguration.additionalContextInterfaces, () -> createAndLoadContext(refresh));
 	}
 
 	private C createAndLoadContext(boolean refresh) {
@@ -472,6 +488,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private final Supplier<C> contextFactory;
 
+		private final Class<?>[] additionalContextInterfaces;
+
 		private boolean allowBeanDefinitionOverriding = false;
 
 		private boolean allowCircularReferences = false;
@@ -490,12 +508,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private List<Configurations> configurations = Collections.emptyList();
 
-		private RunnerConfiguration(Supplier<C> contextFactory) {
+		private RunnerConfiguration(Supplier<C> contextFactory, Class<?>[] additionalContextInterfaces) {
 			this.contextFactory = contextFactory;
+			this.additionalContextInterfaces = additionalContextInterfaces;
 		}
 
 		private RunnerConfiguration(RunnerConfiguration<C> source) {
 			this.contextFactory = source.contextFactory;
+			this.additionalContextInterfaces = source.additionalContextInterfaces;
 			this.allowBeanDefinitionOverriding = source.allowBeanDefinitionOverriding;
 			this.allowCircularReferences = source.allowCircularReferences;
 			this.initializers = source.initializers;

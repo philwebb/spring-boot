@@ -256,7 +256,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 				EndpointMediaTypes endpointMediaTypes) {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes, null,
+			return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes, null, null,
 					Collections.emptyList(), Collections.emptyList());
 		}
 

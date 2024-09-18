@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.EndpointRequestMatcher;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -64,10 +63,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	SecurityFilterChain managementSecurityFilterChain(Environment environment, HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> {
-			EndpointRequestMatcher healthMatcher = getHealthMatcher(environment);
-			if (healthMatcher != null) {
-				requests.requestMatchers(healthMatcher).permitAll();
-			}
+			requests.requestMatchers(healthMatcher(), additionalHealthPathsMatcher()).permitAll();
 			requests.anyRequest().authenticated();
 		});
 		if (ClassUtils.isPresent("org.springframework.web.servlet.DispatcherServlet", null)) {
@@ -78,15 +74,12 @@ public class ManagementWebSecurityAutoConfiguration {
 		return http.build();
 	}
 
-	private EndpointRequestMatcher getHealthMatcher(Environment environment) {
-		ManagementPortType managementPortType = ManagementPortType.get(environment);
-		if (managementPortType == ManagementPortType.SAME) {
-			return EndpointRequest.to(HealthEndpoint.class);
-		}
-		if (managementPortType == ManagementPortType.DIFFERENT) {
-			return EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class);
-		}
-		return null;
+	private EndpointRequestMatcher healthMatcher() {
+		return EndpointRequest.to(HealthEndpoint.class);
+	}
+
+	private EndpointRequestMatcher additionalHealthPathsMatcher() {
+		return EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class);
 	}
 
 }

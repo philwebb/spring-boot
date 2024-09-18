@@ -92,8 +92,9 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 			List<AdditionalPathsMapper> additionalPathsMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
 		super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
-		this.endpointPathMappers = endpointPathMappers;
-		this.additionalPathsMappers = additionalPathsMappers;
+		this.endpointPathMappers = (endpointPathMappers != null) ? endpointPathMappers : Collections.emptyList();
+		this.additionalPathsMappers = (additionalPathsMappers != null) ? additionalPathsMappers
+				: Collections.emptyList();
 		this.requestPredicateFactory = new RequestPredicateFactory(endpointMediaTypes);
 	}
 

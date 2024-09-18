@@ -45,6 +45,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -134,7 +135,7 @@ public final class EndpointRequest {
 
 		private volatile RequestMatcher delegate;
 
-		private ManagementPortType managementPortType;
+		private volatile ManagementPortType managementPortType;
 
 		AbstractRequestMatcher() {
 			super(WebApplicationContext.class);
@@ -142,11 +143,18 @@ public final class EndpointRequest {
 
 		@Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
-			if (this.managementPortType == null) {
-				this.managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+			ManagementPortType managementPortType = this.managementPortType;
+			if (managementPortType == null) {
+				managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+				this.managementPortType = managementPortType;
 			}
-			return this.managementPortType == ManagementPortType.DIFFERENT
-					&& !WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
+			return ignoreApplicationContext(applicationContext, managementPortType);
+		}
+
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext,
+				ManagementPortType managementPortType) {
+			return managementPortType == ManagementPortType.DIFFERENT && !WebServerApplicationContext
+				.hasServerNamespace(applicationContext, WebServerNamespace.MANAGEMENT.getValue());
 		}
 
 		@Override
@@ -156,7 +164,7 @@ public final class EndpointRequest {
 
 		@Override
 		protected final boolean matches(HttpServletRequest request, Supplier<WebApplicationContext> context) {
-			return this.delegate.matches(request);
+			return this.delegate != null && this.delegate.matches(request);
 		}
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
@@ -252,6 +260,16 @@ public final class EndpointRequest {
 		}
 
 		@Override
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext,
+				ManagementPortType managementPortType) {
+			return switch (this.pathType) {
+				case REGULAR -> super.ignoreApplicationContext(applicationContext, managementPortType);
+				case ADDITIONAL -> !WebServerApplicationContext.hasServerNamespace(applicationContext,
+						this.webServerNamespace.getValue());
+			};
+		}
+
+		@Override
 		protected RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory) {
 			PathMappedEndpoints endpoints = context.getBean(PathMappedEndpoints.class);
@@ -267,7 +285,7 @@ public final class EndpointRequest {
 			if (this.includeLinks && StringUtils.hasText(basePath)) {
 				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 			}
-			return new OrRequestMatcher(delegateMatchers);
+			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrRequestMatcher(delegateMatchers) : null;
 		}
 
 		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints endpoints) {
@@ -291,8 +309,8 @@ public final class EndpointRequest {
 
 		@Override
 		public String toString() {
-			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%s",
-					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks);
+			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%sm, pathType=%s",
+					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks, this.pathType);
 		}
 
 		private String toString(List<Object> endpoints, String emptyValue) {
