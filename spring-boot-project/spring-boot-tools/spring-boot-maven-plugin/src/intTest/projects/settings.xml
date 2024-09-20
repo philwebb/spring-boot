@@ -2,6 +2,7 @@
 <settings>
 	<localRepository>@localRepositoryPath@</localRepository>
 	<profiles>
+		// FIXME
 		<profile>
 			<id>it-repo</id>
 			<activation>

@@ -1,4 +1,5 @@
 <ivysettings>
+	// FIXME
 	<settings defaultResolver="chain" />
 	<caches defaultCacheDir="${projectDir}/build/ivy-cache"/>
 	<resolvers>

@@ -124,7 +124,9 @@ publishing {
 			artifact fullJar
 			artifact tar
 			artifact zip
-			artifact homebrewFormulaArtifact
+			if ("open-source".equals(project.properties["support"]) {
+				artifact homebrewFormulaArtifact
+			}
 		}
 	}
 }
