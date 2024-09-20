@@ -1,5 +1,6 @@
 <settings>
 	<localRepository>localRepositoryPath</localRepository>
+	// FIXME https://github.com/spring-projects/spring-boot-commercial/compare/9ded9470f862f63280c23dcb77a79645d7c81eaa...3.1.x#diff-98f0117b275cb62e1d20b08531860928501577223c956966f8b2ae95b8da18ee
 	<profiles>
 		<profile>
 			<id>spring-repositories</id>

@@ -92,10 +92,16 @@ class MavenPublishingConventions {
 		}
 		pom.licenses(this::customizeLicences);
 		pom.developers(this::customizeDevelopers);
-		pom.scm((scm) -> customizeScm(scm, project));
-		if (!isUserInherited(project)) {
-			pom.issueManagement(this::customizeIssueManagement);
+		if (isOpenSource()) {
+			pom.scm((scm) -> customizeScm(scm, project));
+			if (!isUserInherited(project)) {
+				pom.issueManagement(this::customizeIssueManagement);
+			}
 		}
+	}
+
+	private boolean isOpenSource() {
+		return true; // FIXME
 	}
 
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
