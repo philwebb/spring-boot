@@ -12,13 +12,45 @@ apply plugin: "io.spring.dependency-management"
 repositories {
 	maven { url "file:${rootDir}/../test-repository"}
 	mavenCentral()
-	maven {
-		url "https://repo.spring.io/milestone"
+	if (project.properties["repository.release.url"]) {
+		name "spring-release"
+		url "${repository.release.url}"
+		credentials {
+			username "${repository.release.username}"
+			password "${repository.release.password}"
+		}
+	}
+	if (project.properties["repository.milestone.url"]) {
+		name "spring-milestone"
+		url "${repository.milestone.url}"
+		credentials {
+			username "${repository.milestone.username}"
+			password "${repository.milestone.password}"
+		}
 		content {
 			excludeGroup "org.springframework.boot"
 		}
 	}
 	maven {
+		name "spring-oss-milestone"
+		url "https://repo.spring.io/milestone"
+		content {
+			excludeGroup "org.springframework.boot"
+		}
+	}
+	if (project.properties["repository.snapshot.url"]) {
+		name "spring-snapshot"
+		url "${repository.snapshot.url}"
+		credentials {
+			username "${repository.snapshot.username}"
+			password "${repository.snapshot.password}"
+		}
+		content {
+			excludeGroup "org.springframework.boot"
+		}
+	}
+	maven {
+		name "spring-oss-snapshot"
 		url "https://repo.spring.io/snapshot"
 		content {
 			excludeGroup "org.springframework.boot"

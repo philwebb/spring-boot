@@ -5,11 +5,6 @@ plugins {
 	id "eclipse"
 }
 
-repositories {
-	mavenCentral()
-	gradlePluginPortal()
-}
-
 sourceCompatibility = 17
 targetCompatibility = 17
 
@@ -24,11 +19,46 @@ new File(projectDir.parentFile, "gradle.properties").withInputStream {
 }
 versions["springFramework"] = "6.0.12"
 ext.set("versions", versions)
-if (versions.springFramework.contains("-")) {
-	repositories {
-		maven { url "https://repo.spring.io/milestone" }
-		maven { url "https://repo.spring.io/snapshot" }
+
+repositories {
+	mavenCentral()
+	if (project.properties["repository.release.url"]) {
+		name "spring-release"
+		url "${repository.release.url}"
+		credentials {
+			username "${repository.release.username}"
+			password "${repository.release.password}"
+		}
 	}
+	if (versions.springFramework.contains('-')) {
+		if (project.properties["repository.milestone.url"]) {
+			name "spring-milestone"
+			url "${repository.milestone.url}"
+			credentials {
+				username "${repository.milestone.username}"
+				password "${repository.milestone.password}"
+			}
+		}
+		maven {
+			name "spring-oss-milestone"
+			url "https://repo.spring.io/milestone"
+		}
+	}
+	if (versions.springFramework.endsWith('-SNAPSHOT')) {
+		if (project.properties["repository.snapshot.url"]) {
+			name "spring-snapshot"
+			url "${repository.snapshot.url}"
+			credentials {
+				username "${repository.snapshot.username}"
+				password "${repository.snapshot.password}"
+			}
+		}
+		maven {
+			name "spring-oss-snapshot"
+			url "https://repo.spring.io/snapshot"
+		}
+	}
+	gradlePluginPortal()
 }
 
 checkstyle {
