@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.repository;
+package org.springframework.boot.build.settings;
+
+import org.gradle.api.Plugin;
+import org.gradle.api.initialization.Settings;
+import org.gradle.api.plugins.ExtensionAware;
 
 /**
- * Utility to build repository URLs.
+ * {@link Plugin} to common apply build settings.
  *
  * @author Phillip Webb
  */
-final class RepositoryUrl {
+public class SettingsPlugin implements Plugin<Settings> {
 
-	private RepositoryUrl() {
-	}
-
-	static String openSource(String path) {
-		return "https://repo.spring.io" + path;
-	}
-
-	static String commercial(String path) {
-		return "https://usw1.packages.broadcom.com" + path;
+	@Override
+	public void apply(Settings settings) {
+		settings.getGradle().allprojects((project) -> {
+			((ExtensionAware) project.getRepositories()).getExtensions()
+				.create("spring", SpringRepositoriesExtension.class, project);
+		});
 	}
 
 }

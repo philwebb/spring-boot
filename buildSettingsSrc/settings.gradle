@@ -1,13 +1,8 @@
 pluginManagement {
-	includeBuild '../buildSettingsSrc'
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
 	}
-}
-
-plugins {
-	id "org.springframework.boot.settings"
 }
 
 gradle.rootProject((project) -> {

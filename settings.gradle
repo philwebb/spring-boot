@@ -1,4 +1,5 @@
 pluginManagement {
+	includeBuild 'buildSettingsSrc'
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
@@ -20,6 +21,7 @@ pluginManagement {
 
 plugins {
 	id "io.spring.develocity.conventions" version "0.0.21"
+	id "org.springframework.boot.settings"
 }
 
 rootProject.name="spring-boot-build"
