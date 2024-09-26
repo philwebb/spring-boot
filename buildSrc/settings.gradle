@@ -1,19 +1,15 @@
 pluginManagement {
-	includeBuild '../buildSettingsSrc'
+	new File(rootDir.parentFile, "gradle.properties").withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		properties.forEach(settings.ext::set)
+	}
+	gradle.rootProject {
+		settings.ext.properties.forEach(project.ext::set)
+	}
+	evaluate(new File("${rootDir}/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
 	}
 }
-
-plugins {
-	id "org.springframework.boot.settings"
-}
-
-gradle.rootProject((project) -> {
-	new File(rootDir.parentFile, "gradle.properties").withInputStream {
-		def properties = new Properties()
-		properties.load(it)
-		properties.forEach(project.ext::set)
-	}
-});
