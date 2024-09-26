@@ -26,10 +26,9 @@
 // version being built.
 //
 
-
 def apply(settings) {
-	version = settings.ext['version']
-	buildType = settings.ext['spring.build-type']
+	def version = settings.ext['version']
+	def buildType = settings.ext['spring.build-type']
 	SpringRepositoriesExtension.addTo(settings.pluginManagement.repositories, version, buildType)
 	settings.gradle.allprojects {
 		SpringRepositoriesExtension.addTo(repositories, version, buildType)
@@ -40,24 +39,85 @@ return this
 
 class SpringRepositoriesExtension {
 
+	private final def repositories
+	private final def version
+	private final def buildType
+	private final def environment
+
 	@javax.inject.Inject
 	SpringRepositoriesExtension(repositories, version, buildType) {
 		this(repositories, version, buildType, System::getenv)
 	}
 
 	SpringRepositoriesExtension(repositories, version, buildType, environment) {
+		this.repositories = repositories
+		this.version = version
+		this.buildType = buildType
+		this.environment = environment
 	}
 
 	def mavenRepositories() {
-		println "mavenRepositories"
+		addRepositories {
+		}
 	}
 
 	def mavenRepositories(condition) {
-		println "mavenRepositories " + condition
+		if (condition) addRepositories {
+		}
 	}
 
 	def mavenRepositoriesExcludingBootGroup() {
-		println "mavenRepositoriesExcludingBootGroup"
+		addRepositories { maven ->
+			maven.content {
+				excludeGroup("org.springframework.boot")
+			}
+		}
+	}
+
+	private void addRepositories(action) {
+		addCommercialRepository("release", "/spring-enterprise-maven-prod-local", action)
+		addOssRepository("milestone", "/milestone", action)
+		addCommercialRepository("snapshot", "/spring-enterprise-maven-dev-local", action)
+		addOssRepository("snapshot", "/snapshot", action)
+	}
+
+	private void addOssRepository(id, path, action) {
+		def name = "spring-oss-" + id
+		def url = "https://repo.spring.io" + path
+		addRepository(name, url, action)
+	}
+
+	private void addCommercialRepository(id, path, action) {
+		if (!"commercial".equalsIgnoreCase(this.buildType)) return
+		def name = "spring-commercial-" + id
+		def url = fromEnv("COMMERCIAL_%SREPO_URL", id, "https://usw1.packages.broadcom.com" + path)
+		def username = fromEnv("COMMERCIAL_%SREPO_USERNAME", id)
+		def password = fromEnv("COMMERCIAL_%SREPO_PASSWORD", id)
+		addRepository(name, url, { maven ->
+			maven.credentials { credentials ->
+				credentials.setUsername(username)
+				credentials.setPassword(password)
+			}
+			action(maven)
+		})
+	}
+
+	private void addRepository(name, url, action) {
+		this.repositories.maven {
+			setName(name)
+			setUrl(url)
+			action(maven)
+		}
+	}
+
+	private String fromEnv(template, id) {
+		return fromEnv(template, id, null)
+	}
+
+	private String fromEnv(template, id, defaultValue) {
+		String value = this.environment.apply(template.formatted(id.toUpperCase() + "_"))
+		value = (value != null) ? value : this.environment.apply(template.formatted(""))
+		return (value != null) ? value : defaultValue
 	}
 
 	static def addTo(repositories, version, buildType) {
