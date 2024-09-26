@@ -33,6 +33,8 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
  */
 public class SpringRepositoriesExtension {
 
+	// FIXME only if version matches
+
 	private static final Consumer<MavenArtifactRepository> NO_ACTION = (maven) -> {
 	};
 

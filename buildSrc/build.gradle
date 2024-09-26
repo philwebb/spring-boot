@@ -47,6 +47,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")
 	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
 	testImplementation("org.junit.jupiter:junit-jupiter:${junitJupiterVersion}")
+	testImplementation("org.mockito:mockito-core:${mockitoVersion}")
 	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -124,6 +125,6 @@ test {
 eclipse.classpath.file.whenMerged {
 	def jreEntry = entries.find { it.path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") }
 	jreEntry.entryAttributes['module'] = 'true'
-	jreEntry.entryAttributes['limit-modules'] = 'java.base'
+	jreEntry.entryAttributes['limit-modules'] = 'java.logging'
 }
 

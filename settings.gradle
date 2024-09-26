@@ -1,11 +1,9 @@
 pluginManagement {
-	includeBuild 'buildSettingsSrc'
+	evaluate(new File("${rootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		if (version.endsWith('-SNAPSHOT')) {
-			maven { url "https://repo.spring.io/snapshot" }
-		}
+		spring.mavenRepositories();
 	}
 	resolutionStrategy {
 		eachPlugin {
@@ -21,7 +19,6 @@ pluginManagement {
 
 plugins {
 	id "io.spring.develocity.conventions" version "0.0.21"
-	id "org.springframework.boot.settings"
 }
 
 rootProject.name="spring-boot-build"
