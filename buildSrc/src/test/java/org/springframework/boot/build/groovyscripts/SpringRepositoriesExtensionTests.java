@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
+import groovy.lang.Closure;
 import groovy.lang.GroovyClassLoader;
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
@@ -170,7 +171,7 @@ class SpringRepositoriesExtensionTests {
 	private SpringRepositoriesExtension createExtension(String version, String buildType,
 			UnaryOperator<String> environment) {
 		RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-		given(repositoryHandler.maven(any(Action.class))).willAnswer((Answer<?>) this::mavenAction);
+		given(repositoryHandler.maven(any(Closure.class))).willAnswer(this::mavenAction);
 		return SpringRepositoriesExtension.get(repositoryHandler, version, buildType, environment);
 	}
 
@@ -179,8 +180,8 @@ class SpringRepositoriesExtensionTests {
 		MavenArtifactRepository repository = mock(MavenArtifactRepository.class);
 		willAnswer((Answer<?>) this::contentAction).given(repository).content(any(Action.class));
 		willAnswer((Answer<?>) this::credentialsAction).given(repository).credentials(any(Action.class));
-		Action<MavenArtifactRepository> action = invocation.getArgument(0);
-		action.execute(repository);
+		Closure<MavenArtifactRepository> action = invocation.getArgument(0);
+		action.call(repository);
 		this.repositories.add(repository);
 		return null;
 	}

@@ -103,9 +103,9 @@ class SpringRepositoriesExtension {
 	}
 
 	private void addRepository(name, url, action) {
-		this.repositories.maven {
-			setName(name)
-			setUrl(url)
+		this.repositories.maven { maven ->
+			maven.setName(name)
+			maven.setUrl(url)
 			action(maven)
 		}
 	}
