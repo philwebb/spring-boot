@@ -57,28 +57,30 @@ class SpringRepositoriesExtension {
 	}
 
 	def mavenRepositories() {
-		addRepositories {
-		}
+		addRepositories { }
 	}
 
 	def mavenRepositories(condition) {
-		if (condition) addRepositories {
-		}
+		if (condition) addRepositories { }
 	}
 
 	def mavenRepositoriesExcludingBootGroup() {
 		addRepositories { maven ->
-			maven.content {
-				excludeGroup("org.springframework.boot")
+			maven.content { content ->
+				content.excludeGroup("org.springframework.boot")
 			}
 		}
 	}
 
 	private void addRepositories(action) {
 		addCommercialRepository("release", "/spring-enterprise-maven-prod-local", action)
-		addOssRepository("milestone", "/milestone", action)
-		addCommercialRepository("snapshot", "/spring-enterprise-maven-dev-local", action)
-		addOssRepository("snapshot", "/snapshot", action)
+		if (this.version.contains("-")) {
+			addOssRepository("milestone", "/milestone", action)
+		}
+		if (this.version.endsWith("-SNAPSHOT")) {
+			addCommercialRepository("snapshot", "/spring-enterprise-maven-dev-local", action)
+			addOssRepository("snapshot", "/snapshot", action)
+		}
 	}
 
 	private void addOssRepository(id, path, action) {

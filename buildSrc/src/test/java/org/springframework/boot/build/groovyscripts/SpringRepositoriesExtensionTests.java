@@ -37,7 +37,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,7 +74,7 @@ class SpringRepositoriesExtensionTests {
 	private final List<PasswordCredentials> credentials = new ArrayList<>();
 
 	@Test
-	void mavenRepositoriesWhenNotCommercial() {
+	void mavenRepositoriesWhenNotCommercialSnapshot() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
 		extension.mavenRepositories();
 		assertThat(this.repositories).hasSize(2);
@@ -86,7 +85,7 @@ class SpringRepositoriesExtensionTests {
 	}
 
 	@Test
-	void mavenRepositoriesWhenCommercial() {
+	void mavenRepositoriesWhenCommercialSnapshot() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "commercial");
 		extension.mavenRepositories();
 		assertThat(this.repositories).hasSize(4);
@@ -99,6 +98,44 @@ class SpringRepositoriesExtensionTests {
 		verify(this.repositories.get(2)).setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-dev-local");
 		verify(this.repositories.get(3)).setName("spring-oss-snapshot");
 		verify(this.repositories.get(3)).setUrl("https://repo.spring.io/snapshot");
+	}
+
+	@Test
+	void mavenRepositoriesWhenNotCommercialMilestone() {
+		SpringRepositoriesExtension extension = createExtension("0.0.0-M1", "oss");
+		extension.mavenRepositories();
+		assertThat(this.repositories).hasSize(1);
+		verify(this.repositories.get(0)).setName("spring-oss-milestone");
+		verify(this.repositories.get(0)).setUrl("https://repo.spring.io/milestone");
+	}
+
+	@Test
+	void mavenRepositoriesWhenCommercialMilestone() {
+		SpringRepositoriesExtension extension = createExtension("0.0.0-M1", "commercial");
+		extension.mavenRepositories();
+		assertThat(this.repositories).hasSize(2);
+		verify(this.repositories.get(0)).setName("spring-commercial-release");
+		verify(this.repositories.get(0))
+			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
+		verify(this.repositories.get(1)).setName("spring-oss-milestone");
+		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/milestone");
+	}
+
+	@Test
+	void mavenRepositoriesWhenNotCommercialRelease() {
+		SpringRepositoriesExtension extension = createExtension("0.0.1", "oss");
+		extension.mavenRepositories();
+		assertThat(this.repositories).isEmpty();
+	}
+
+	@Test
+	void mavenRepositoriesWhenCommercialRelease() {
+		SpringRepositoriesExtension extension = createExtension("0.0.1", "commercial");
+		extension.mavenRepositories();
+		assertThat(this.repositories).hasSize(1);
+		verify(this.repositories.get(0)).setName("spring-commercial-release");
+		verify(this.repositories.get(0))
+			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
 	}
 
 	@Test
@@ -171,17 +208,17 @@ class SpringRepositoriesExtensionTests {
 	private SpringRepositoriesExtension createExtension(String version, String buildType,
 			UnaryOperator<String> environment) {
 		RepositoryHandler repositoryHandler = mock(RepositoryHandler.class);
-		given(repositoryHandler.maven(any(Closure.class))).willAnswer(this::mavenAction);
+		given(repositoryHandler.maven(any(Closure.class))).willAnswer(this::mavenClosure);
 		return SpringRepositoriesExtension.get(repositoryHandler, version, buildType, environment);
 	}
 
 	@SuppressWarnings({ "unchecked", "unchecked" })
-	private Object mavenAction(InvocationOnMock invocation) {
+	private Object mavenClosure(InvocationOnMock invocation) {
 		MavenArtifactRepository repository = mock(MavenArtifactRepository.class);
-		willAnswer((Answer<?>) this::contentAction).given(repository).content(any(Action.class));
-		willAnswer((Answer<?>) this::credentialsAction).given(repository).credentials(any(Action.class));
-		Closure<MavenArtifactRepository> action = invocation.getArgument(0);
-		action.call(repository);
+		willAnswer(this::contentAction).given(repository).content(any(Action.class));
+		willAnswer(this::credentialsAction).given(repository).credentials(any(Action.class));
+		Closure<MavenArtifactRepository> closure = invocation.getArgument(0);
+		closure.call(repository);
 		this.repositories.add(repository);
 		return null;
 	}
