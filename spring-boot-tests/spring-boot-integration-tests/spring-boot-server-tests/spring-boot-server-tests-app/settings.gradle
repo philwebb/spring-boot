@@ -1,4 +1,5 @@
 pluginManagement {
+	evaluate(new File("${gradle.parent.rootProject.rootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		maven { url "file:${rootDir}/../test-repository"}
 		mavenCentral()
