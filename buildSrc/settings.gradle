@@ -3,9 +3,9 @@ pluginManagement {
 		def properties = new Properties()
 		properties.load(it)
 		properties.forEach(settings.ext::set)
-	}
-	gradle.rootProject {
-		settings.ext.properties.forEach(project.ext::set)
+		gradle.rootProject {
+			properties.forEach(project.ext::set)
+		}
 	}
 	evaluate(new File("${rootDir}/SpringRepositorySupport.groovy")).apply(this)
 	repositories {

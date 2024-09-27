@@ -27,12 +27,17 @@
 //
 
 def apply(settings) {
-	def version = settings.ext['version']
-	def buildType = settings.ext['spring.build-type']
+	def version =  property(settings, 'version')
+	def buildType = property(settings, 'spring.build-type')
 	SpringRepositoriesExtension.addTo(settings.pluginManagement.repositories, version, buildType)
 	settings.gradle.allprojects {
 		SpringRepositoriesExtension.addTo(repositories, version, buildType)
 	}
+}
+
+private def property(settings, name) {
+	def parentValue = settings.gradle.parent?.rootProject?.findProperty(name)
+	return (parentValue != null) ? parentValue : settings.ext[name]
 }
 
 return this

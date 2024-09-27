@@ -1,5 +1,5 @@
 pluginManagement {
-	includeBuild '/Users/pwebb/projects/spring-boot/code/3.2.x/buildSettingsSrc'
+	evaluate(new File("/Users/pwebb/projects/spring-boot/code/3.2.x/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		maven { url "file:${rootDir}/../docker-test-maven-repository"}
 		mavenCentral()
