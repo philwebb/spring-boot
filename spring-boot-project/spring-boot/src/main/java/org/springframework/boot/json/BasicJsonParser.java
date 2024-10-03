@@ -123,35 +123,31 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	private List<String> tokenize(String json) {
 		List<String> list = new ArrayList<>();
-		int index = 0;
-		int inObject = 0;
-		int inList = 0;
-		boolean inValue = false;
-		boolean inEscape = false;
+		Tracking tracking = new Tracking();
 		StringBuilder build = new StringBuilder();
+		int index = 0;
 		while (index < json.length()) {
 			char current = json.charAt(index);
-			if (inEscape) {
+			if (tracking.in(Tracked.ESCAPE)) {
 				build.append(current);
 				index++;
-				inEscape = false;
+				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
 			switch (current) {
-				case '{' -> inObject++;
-				case '}' -> inObject--;
-				case '[' -> inList++;
-				case ']' -> inList--;
+				case '{' -> tracking.update(Tracked.OBJECT, +1);
+				case '}' -> tracking.update(Tracked.OBJECT, -1);
+				case '[' -> tracking.update(Tracked.LIST, +1);
+				case ']' -> tracking.update(Tracked.LIST, -1);
+				case '"' -> tracking.toggle(Tracked.VALUE);
 			}
-			if (current == '"') {
-				inValue = !inValue;
-			}
-			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
+			if (current == ',' && !tracking.in(Tracked.OBJECT) && !tracking.in(Tracked.LIST)
+					&& tracking.in(Tracked.VALUE)) {
 				list.add(build.toString());
 				build.setLength(0);
 			}
 			else if (current == '\\') {
-				inEscape = true;
+				tracking.set(Tracked.ESCAPE, 1);
 			}
 			else {
 				build.append(current);
@@ -162,6 +158,38 @@ public class BasicJsonParser extends AbstractJsonParser {
 			list.add(build.toString().trim());
 		}
 		return list;
+	}
+
+	private static final class Tracking {
+
+		private final int[] counts = new int[Tracked.values().length];
+
+		boolean in(Tracked tracked) {
+			return get(tracked) > 0;
+		}
+
+		void toggle(Tracked tracked) {
+			set(tracked, (get(tracked) != 0) ? 0 : 1);
+		}
+
+		void update(Tracked tracked, int delta) {
+			set(tracked, get(tracked) + delta);
+		}
+
+		void set(Tracked tracked, int count) {
+			this.counts[tracked.ordinal()] = count;
+		}
+
+		private int get(Tracked tracked) {
+			return this.counts[tracked.ordinal()];
+		}
+
+	}
+
+	private enum Tracked {
+
+		OBJECT, LIST, VALUE, ESCAPE
+
 	}
 
 }
