@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.function.ThrowingConsumer;
@@ -40,6 +41,10 @@ class JsonValueWriter {
 
 	private final Appendable out;
 
+	private MemberPath path = MemberPath.ROOT;
+
+	private final Deque<JsonProcessors> jsonProcessors = new ArrayDeque<>();
+
 	private final Deque<ActiveSeries> activeSeries = new ArrayDeque<>();
 
 	/**
@@ -48,6 +53,14 @@ class JsonValueWriter {
 	 */
 	JsonValueWriter(Appendable out) {
 		this.out = out;
+	}
+
+	void pushProcessors(JsonProcessors jsonProcessors) {
+		this.jsonProcessors.addLast(jsonProcessors);
+	}
+
+	void popProcessors() {
+		this.jsonProcessors.removeLast();
 	}
 
 	/**
@@ -82,6 +95,7 @@ class JsonValueWriter {
 	 * @param value the value to write
 	 */
 	<V> void write(V value) {
+		value = processValue(value);
 		if (value == null) {
 			append("null");
 		}
@@ -110,6 +124,20 @@ class JsonValueWriter {
 		}
 	}
 
+	private String processName(String name) {
+		for (JsonProcessors jsonProcessors : this.jsonProcessors) {
+			name = (name != null) ? jsonProcessors.processName(this.path, name) : name;
+		}
+		return name;
+	}
+
+	private <V> V processValue(V value) {
+		for (JsonProcessors jsonProcessors : this.jsonProcessors) {
+			value = jsonProcessors.processValue(this.path, value);
+		}
+		return value;
+	}
+
 	/**
 	 * Start a new {@link Series} (JSON object or array).
 	 * @param series the series to start
@@ -119,7 +147,7 @@ class JsonValueWriter {
 	 */
 	void start(Series series) {
 		if (series != null) {
-			this.activeSeries.push(new ActiveSeries());
+			this.activeSeries.push(new ActiveSeries(series));
 			append(series.openChar);
 		}
 	}
@@ -164,8 +192,10 @@ class JsonValueWriter {
 	<E> void writeElement(E element) {
 		ActiveSeries activeSeries = this.activeSeries.peek();
 		Assert.notNull(activeSeries, "No series has been started");
-		activeSeries.appendCommaIfRequired();
+		this.path = activeSeries.updatePath(this.path);
+		activeSeries.incrementIndexAndAddCommaIfRequired();
 		write(element);
+		this.path = activeSeries.restorePath(this.path);
 	}
 
 	/**
@@ -196,12 +226,17 @@ class JsonValueWriter {
 	}
 
 	private <N, V> void writePair(N name, V value) {
-		ActiveSeries activeSeries = this.activeSeries.peek();
-		Assert.notNull(activeSeries, "No series has been started");
-		activeSeries.appendCommaIfRequired();
-		writeString(name);
-		append(":");
-		write(value);
+		this.path = this.path.child(name.toString());
+		String processedName = processName(name.toString());
+		if (processedName != null) {
+			ActiveSeries activeSeries = this.activeSeries.peek();
+			Assert.notNull(activeSeries, "No series has been started");
+			activeSeries.incrementIndexAndAddCommaIfRequired();
+			writeString(processedName);
+			append(":");
+			write(value);
+		}
+		this.path = this.path.parent();
 	}
 
 	private void writeString(Object value) {
@@ -287,16 +322,27 @@ class JsonValueWriter {
 	 */
 	private final class ActiveSeries {
 
-		private boolean commaRequired;
+		private final Series series;
 
-		private ActiveSeries() {
+		private int index;
+
+		private ActiveSeries(Series series) {
+			this.series = series;
 		}
 
-		void appendCommaIfRequired() {
-			if (this.commaRequired) {
+		MemberPath updatePath(MemberPath path) {
+			return (this.series != Series.ARRAY) ? path : path.child(this.index);
+		}
+
+		MemberPath restorePath(MemberPath path) {
+			return (this.series != Series.ARRAY) ? path : path.parent();
+		}
+
+		void incrementIndexAndAddCommaIfRequired() {
+			if (this.index > 0) {
 				append(',');
 			}
-			this.commaRequired = true;
+			this.index++;
 		}
 
 	}
