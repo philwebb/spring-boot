@@ -161,7 +161,7 @@ class WebFilterHandlerTests {
 
 	}
 
-	@WebFilter(initParams = { @WebInitParam(name = "a", value = "alpha"), @WebInitParam(name = "b", value = "bravo") })
+	@WebFilter(initParams = { @WebInitParam(host = "a", value = "alpha"), @WebInitParam(host = "b", value = "bravo") })
 	class InitParametersFilter extends BaseFilter {
 
 	}

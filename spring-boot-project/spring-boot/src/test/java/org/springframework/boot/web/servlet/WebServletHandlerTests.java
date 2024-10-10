@@ -131,7 +131,7 @@ class WebServletHandlerTests {
 
 	}
 
-	@WebServlet(initParams = { @WebInitParam(name = "a", value = "alpha"), @WebInitParam(name = "b", value = "bravo") })
+	@WebServlet(initParams = { @WebInitParam(host = "a", value = "alpha"), @WebInitParam(host = "b", value = "bravo") })
 	class InitParametersServlet extends HttpServlet {
 
 	}
@@ -151,7 +151,7 @@ class WebServletHandlerTests {
 
 	}
 
-	@WebServlet(name = "custom")
+	@WebServlet(host = "custom")
 	class CustomNameServlet extends HttpServlet {
 
 	}
