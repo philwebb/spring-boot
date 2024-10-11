@@ -50,7 +50,8 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		environment.setProperty("logging.structured.gelf.service.name", "name");
 		environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
 		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment, getThrowableProxyConverter());
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment, getThrowableProxyConverter(),
+				null);
 	}
 
 	@Test

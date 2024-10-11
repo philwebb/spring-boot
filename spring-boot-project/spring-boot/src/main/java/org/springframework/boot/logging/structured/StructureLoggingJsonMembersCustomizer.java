@@ -20,28 +20,24 @@ import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
 
 /**
- * Customer that can be injected into {@link JsonWriterStructuredLogFormatter}
- * implementations to customize {@link JsonWriter} {@link Members}.
+ * Customer that can be injected into a {@link StructuredLogFormatter} implementations to
+ * customize {@link JsonWriter} {@link Members}.
+ * <p>
+ * An implementation may be provided using the {@code logging.structured.json.customizer}
+ * property.
  *
  * @author Phillip Webb
  * @since 3.4.0
+ * @param <T> The type being written
+ * @see JsonWriterStructuredLogFormatter
  */
 @FunctionalInterface
 public interface StructureLoggingJsonMembersCustomizer<T> {
 
-	void customize(JsonWriter.Members<T> members);
-
-	// @formatter:off
-	/*
-
-		logging.structured.json.customizer
-		logging.structured.json.names.include
-		logging.structured.json.names.exclude
-		logging.structured.json.names.rename.old=new
-		logging.structured.json.member.foo=bar
-		logging.structures.stacktrace.filter=...
-
+	/**
+	 * Customize the given {@link Members} instance.
+	 * @param members the members instance to customize
 	 */
-	// @formatter:on
+	void customize(JsonWriter.Members<T> members);
 
 }

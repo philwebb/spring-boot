@@ -109,24 +109,21 @@ final class StructuredLogLayout extends AbstractStringLayout {
 			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, this::createLogstashFormatter);
 		}
 
-		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(
-				Instantiator<StructuredLogFormatter<LogEvent>> instantiator) {
+		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
 			StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructureLoggingJsonMembersCustomizer.class);
 			return new ElasticCommonSchemaStructuredLogFormatter(environment, jsonMembersCustomizer);
 		}
 
-		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(
-				Instantiator<StructuredLogFormatter<LogEvent>> instantiator) {
+		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {
 			Environment environment = instantiator.getArg(Environment.class);
 			StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructureLoggingJsonMembersCustomizer.class);
 			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, jsonMembersCustomizer);
 		}
 
-		private LogstashStructuredLogFormatter createLogstashFormatter(
-				Instantiator<StructuredLogFormatter<LogEvent>> instantiator) {
+		private LogstashStructuredLogFormatter createLogstashFormatter(Instantiator<?> instantiator) {
 			StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 				.getArg(StructureLoggingJsonMembersCustomizer.class);
 			return new LogstashStructuredLogFormatter(jsonMembersCustomizer);

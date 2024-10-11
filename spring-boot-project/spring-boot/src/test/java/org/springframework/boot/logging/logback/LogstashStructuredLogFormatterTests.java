@@ -44,7 +44,7 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 	@BeforeEach
 	void setUp() {
 		super.setUp();
-		this.formatter = new LogstashStructuredLogFormatter(getThrowableProxyConverter());
+		this.formatter = new LogstashStructuredLogFormatter(getThrowableProxyConverter(), null);
 	}
 
 	@Test

@@ -47,7 +47,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		environment.setProperty("logging.structured.ecs.service.environment", "test");
 		environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
 		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment, getThrowableProxyConverter());
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment, getThrowableProxyConverter(), null);
 	}
 
 	@Test

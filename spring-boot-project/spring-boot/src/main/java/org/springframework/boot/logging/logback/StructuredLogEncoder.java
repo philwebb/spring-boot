@@ -86,8 +86,7 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 		commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, this::createLogstashFormatter);
 	}
 
-	private StructuredLogFormatter<ILoggingEvent> createEcsFormatter(
-			Instantiator<StructuredLogFormatter<ILoggingEvent>> instantiator) {
+	private StructuredLogFormatter<ILoggingEvent> createEcsFormatter(Instantiator<?> instantiator) {
 		Environment environment = instantiator.getArg(Environment.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
@@ -96,8 +95,7 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 				jsonMembersCustomizer);
 	}
 
-	private StructuredLogFormatter<ILoggingEvent> createGraylogFormatter(
-			Instantiator<StructuredLogFormatter<ILoggingEvent>> instantiator) {
+	private StructuredLogFormatter<ILoggingEvent> createGraylogFormatter(Instantiator<?> instantiator) {
 		Environment environment = instantiator.getArg(Environment.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
@@ -106,8 +104,7 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 				jsonMembersCustomizer);
 	}
 
-	private StructuredLogFormatter<ILoggingEvent> createLogstashFormatter(
-			Instantiator<StructuredLogFormatter<ILoggingEvent>> instantiator) {
+	private StructuredLogFormatter<ILoggingEvent> createLogstashFormatter(Instantiator<?> instantiator) {
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
 		StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
 			.getArg(StructureLoggingJsonMembersCustomizer.class);

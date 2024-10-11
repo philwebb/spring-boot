@@ -42,7 +42,7 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@BeforeEach
 	void setUp() {
-		this.formatter = new LogstashStructuredLogFormatter();
+		this.formatter = new LogstashStructuredLogFormatter(null);
 	}
 
 	@Test
