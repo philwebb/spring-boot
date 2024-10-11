@@ -18,43 +18,26 @@ package org.springframework.boot.json;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.NameProcessor;
 import org.springframework.boot.json.JsonWriter.ValueProcessor;
-import org.springframework.boot.util.LambdaSafe;
 
 /**
  * Internal record used to hold {@link NameProcessor} and {@link ValueProcessor}
  * instances.
  *
  * @author Phillip Webb
+ * @param pathFilters the path filters
  * @param nameProcessors the name processors
  * @param valueProcessors the value processors
  */
-record JsonProcessors(List<NameProcessor> nameProcessors, List<ValueProcessor<?>> valueProcessors) {
+record JsonWriterFiltersAndProcessors(List<Predicate<MemberPath>> pathFilters, List<NameProcessor> nameProcessors,
+		List<ValueProcessor<?>> valueProcessors) {
 
-	JsonProcessors() {
-		this(new ArrayList<>(), new ArrayList<>());
-	}
-
-	String processName(MemberPath path, String name) {
-		String processed = name;
-		for (NameProcessor nameProcessor : this.nameProcessors) {
-			processed = (processed != null) ? nameProcessor.processName(path, processed) : processed;
-		}
-		return processed;
-	}
-
-	@SuppressWarnings("unchecked")
-	<V> V processValue(MemberPath path, V value) {
-		V processed = value;
-		for (ValueProcessor<?> valueProcessor : this.valueProcessors) {
-			processed = (V) LambdaSafe.callback(ValueProcessor.class, valueProcessor, path, value)
-				.invokeAnd((call) -> call.processValue(path, value))
-				.get(processed);
-		}
-		return processed;
+	JsonWriterFiltersAndProcessors() {
+		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 	}
 
 }

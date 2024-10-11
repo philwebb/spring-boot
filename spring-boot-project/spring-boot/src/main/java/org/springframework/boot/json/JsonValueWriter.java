@@ -24,10 +24,15 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.springframework.boot.json.JsonWriter.MemberPath;
+import org.springframework.boot.json.JsonWriter.NameProcessor;
+import org.springframework.boot.json.JsonWriter.ValueProcessor;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingConsumer;
 
 /**
@@ -43,7 +48,7 @@ class JsonValueWriter {
 
 	private MemberPath path = MemberPath.ROOT;
 
-	private final Deque<JsonProcessors> jsonProcessors = new ArrayDeque<>();
+	private final Deque<JsonWriterFiltersAndProcessors> filtersAndProcessors = new ArrayDeque<>();
 
 	private final Deque<ActiveSeries> activeSeries = new ArrayDeque<>();
 
@@ -55,12 +60,12 @@ class JsonValueWriter {
 		this.out = out;
 	}
 
-	void pushProcessors(JsonProcessors jsonProcessors) {
-		this.jsonProcessors.addLast(jsonProcessors);
+	void pushProcessors(JsonWriterFiltersAndProcessors jsonProcessors) {
+		this.filtersAndProcessors.addLast(jsonProcessors);
 	}
 
 	void popProcessors() {
-		this.jsonProcessors.removeLast();
+		this.filtersAndProcessors.removeLast();
 	}
 
 	/**
@@ -122,20 +127,6 @@ class JsonValueWriter {
 		else {
 			writeString(value);
 		}
-	}
-
-	private String processName(String name) {
-		for (JsonProcessors jsonProcessors : this.jsonProcessors) {
-			name = (name != null) ? jsonProcessors.processName(this.path, name) : name;
-		}
-		return name;
-	}
-
-	private <V> V processValue(V value) {
-		for (JsonProcessors jsonProcessors : this.jsonProcessors) {
-			value = jsonProcessors.processValue(this.path, value);
-		}
-		return value;
 	}
 
 	/**
@@ -227,8 +218,8 @@ class JsonValueWriter {
 
 	private <N, V> void writePair(N name, V value) {
 		this.path = this.path.child(name.toString());
-		String processedName = processName(name.toString());
-		if (processedName != null) {
+		if (!isFilteredPath()) {
+			String processedName = processName(name.toString());
 			ActiveSeries activeSeries = this.activeSeries.peek();
 			Assert.notNull(activeSeries, "No series has been started");
 			activeSeries.incrementIndexAndAddCommaIfRequired();
@@ -289,6 +280,48 @@ class JsonValueWriter {
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	private boolean isFilteredPath() {
+		for (JsonWriterFiltersAndProcessors filtersAndProcessors : this.filtersAndProcessors) {
+			for (Predicate<MemberPath> pathFilter : filtersAndProcessors.pathFilters()) {
+				if (pathFilter.test(this.path)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private String processName(String name) {
+		for (JsonWriterFiltersAndProcessors filtersAndProcessors : this.filtersAndProcessors) {
+			for (NameProcessor nameProcessor : filtersAndProcessors.nameProcessors()) {
+				name = processName(name, nameProcessor);
+			}
+		}
+		return name;
+	}
+
+	private String processName(String name, NameProcessor nameProcessor) {
+		name = nameProcessor.processName(this.path, name);
+		Assert.state(!StringUtils.isEmpty(name), "NameProcessor " + nameProcessor + " returned an empty result");
+		return name;
+	}
+
+	private <V> V processValue(V value) {
+		for (JsonWriterFiltersAndProcessors filtersAndProcessors : this.filtersAndProcessors) {
+			for (ValueProcessor<?> valueProcessor : filtersAndProcessors.valueProcessors()) {
+				value = processValue(value, valueProcessor);
+			}
+		}
+		return value;
+	}
+
+	@SuppressWarnings({ "unchecked", "unchecked" })
+	private <V> V processValue(V value, ValueProcessor<?> valueProcessor) {
+		return (V) LambdaSafe.callback(ValueProcessor.class, valueProcessor, this.path, value)
+			.invokeAnd((call) -> call.processValue(this.path, value))
+			.get(value);
 	}
 
 	/**

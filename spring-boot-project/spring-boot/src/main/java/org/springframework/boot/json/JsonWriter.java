@@ -177,7 +177,7 @@ public interface JsonWriter<T> {
 
 		private final Series series;
 
-		private final JsonProcessors jsonProcessors = new JsonProcessors();
+		private final JsonWriterFiltersAndProcessors jsonProcessors = new JsonWriterFiltersAndProcessors();
 
 		Members(Consumer<Members<T>> members, boolean contributesToExistingSeries) {
 			Assert.notNull(members, "'members' must not be null");
@@ -292,6 +292,15 @@ public interface JsonWriter<T> {
 		public <V> Member<V> from(Function<T, V> extractor) {
 			Assert.notNull(extractor, "'extractor' must not be null");
 			return addMember(null, extractor);
+		}
+
+		/**
+		 * Add a filter that will be used to restrict the members written to the JSON.
+		 * @param predicate the predicate used to filter members
+		 */
+		public void applyingPathFilter(Predicate<MemberPath> predicate) {
+			Assert.notNull(predicate, "'predicate' must not be null");
+			this.jsonProcessors.pathFilters().add(predicate);
 		}
 
 		/**
@@ -745,8 +754,7 @@ public interface JsonWriter<T> {
 	/**
 	 * A path used to identify a specific JSON member. Paths can be represented as strings
 	 * in form {@code "my.json[1].item"} where elements are separated by {@code '.' } or
-	 * {@code [<index>]}. Names that contain reserved characters are written in square
-	 * brackets with backslash escaping.
+	 * {@code [<index>]}. Reserved characters are escaped using {@code '\'}.
 	 *
 	 * @param parent the parent of this path
 	 * @param name the name of the member or {@code null} if the member is indexed. Path
@@ -755,6 +763,8 @@ public interface JsonWriter<T> {
 	 * @param index the index of the member or {@link MemberPath#UNINDEXED}
 	 */
 	record MemberPath(MemberPath parent, String name, int index) {
+
+		private static final String[] ESCAPED = { "\\", ".", "[", "]" };
 
 		public MemberPath {
 			Assert.isTrue((name != null && index < 0) || (name == null && index >= 0),
@@ -791,19 +801,31 @@ public interface JsonWriter<T> {
 
 		@Override
 		public final String toString() {
-			StringBuilder string = new StringBuilder((this.parent != null) ? this.parent.toString() : "");
+			return toString(true);
+		}
+
+		/**
+		 * Return a string representation of the path without any escaping.
+		 * @return the unescaped string representation
+		 */
+		public final String toUnescapedString() {
+			return toString(false);
+		}
+
+		private String toString(boolean escape) {
+			StringBuilder string = new StringBuilder((this.parent != null) ? this.parent.toString(escape) : "");
 			if (this.index >= 0) {
 				string.append("[").append(this.index).append("]");
 			}
 			else {
-				string.append((!string.isEmpty()) ? "." : "").append(ecapeIfNecessary(this.name));
+				string.append((!string.isEmpty()) ? "." : "").append((!escape) ? this.name : escape(this.name));
 			}
 			return string.toString();
 		}
 
-		private String ecapeIfNecessary(String name) {
-			if (name.contains(".") || name.contains("[") || name.contains("]")) {
-				return "[" + name.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]") + "]";
+		private String escape(String name) {
+			for (String escape : ESCAPED) {
+				name = name.replace(escape, "\\" + escape);
 			}
 			return name;
 		}
@@ -816,37 +838,22 @@ public interface JsonWriter<T> {
 		public static MemberPath of(String value) {
 			MemberPath path = MemberPath.ROOT;
 			StringBuilder buffer = new StringBuilder();
-			boolean inSquareBrackets = false;
 			boolean escape = false;
 			for (char ch : value.toCharArray()) {
-				if (!inSquareBrackets) {
-					if (ch == '.' || ch == '[') {
-						path = path.child(buffer.toString());
-						buffer.setLength(0);
-						inSquareBrackets = (ch == '[');
-					}
-					else {
-						buffer.append(ch);
-					}
+				if (!escape && ch == '\\') {
+					escape = true;
+				}
+				else if (!escape && (ch == '.' || ch == '[')) {
+					path = path.child(buffer.toString());
+					buffer.setLength(0);
+				}
+				else if (!escape && ch == ']') {
+					path = path.child(Integer.parseUnsignedInt(buffer.toString()));
+					buffer.setLength(0);
 				}
 				else {
-					if (!escape && ch == ']') {
-						try {
-							path = path.child(Integer.parseUnsignedInt(buffer.toString()));
-						}
-						catch (NumberFormatException ex) {
-							path = path.child(buffer.toString());
-						}
-						buffer.setLength(0);
-						inSquareBrackets = false;
-					}
-					else if (!escape && ch == '\\') {
-						escape = true;
-					}
-					else {
-						buffer.append(ch);
-						escape = false;
-					}
+					buffer.append(ch);
+					escape = false;
 				}
 			}
 			path = path.child(buffer.toString());
@@ -920,7 +927,7 @@ public interface JsonWriter<T> {
 		 * filtered entirely.
 		 * @param path the path of the member
 		 * @param existingName the existing and possibly already processed name.
-		 * @return the new name or {@code null}
+		 * @return the new name
 		 */
 		String processName(MemberPath path, String existingName);
 
@@ -957,12 +964,22 @@ public interface JsonWriter<T> {
 
 		/**
 		 * Return a new processor from this one that only applied to members with the
+		 * given path (ignoring escape characters).
+		 * @param path the patch to match
+		 * @return a new {@link ValueProcessor} that only applies when the path matches
+		 */
+		default ValueProcessor<T> whenHasUnescapedPath(String path) {
+			return whenHasPath((candidate) -> candidate.toString(false).equals(path));
+		}
+
+		/**
+		 * Return a new processor from this one that only applied to members with the
 		 * given path.
 		 * @param path the patch to match
 		 * @return a new {@link ValueProcessor} that only applies when the path matches
 		 */
 		default ValueProcessor<T> whenHasPath(String path) {
-			return whenHasPath((candidate) -> candidate.toString().equals(path));
+			return whenHasPath(MemberPath.of(path)::equals);
 		}
 
 		/**

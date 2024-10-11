@@ -496,14 +496,14 @@ class JsonWriterTests {
 
 		@Test
 		void childWithNameWhenNameSpecialChars() {
-			assertThat(MemberPath.ROOT.child("spring.io").child("boot")).hasToString("[spring.io].boot");
-			assertThat(MemberPath.ROOT.child("spring[io]").child("boot")).hasToString("[spring\\[io\\]].boot");
-			assertThat(MemberPath.ROOT.child("spring.[io]").child("boot")).hasToString("[spring.\\[io\\]].boot");
-			assertThat(MemberPath.ROOT.child("spring\\io").child("boot")).hasToString("spring\\io.boot");
-			assertThat(MemberPath.ROOT.child("spring.\\io").child("boot")).hasToString("[spring.\\\\io].boot");
-			assertThat(MemberPath.ROOT.child("spring[\\io]").child("boot")).hasToString("[spring\\[\\\\io\\]].boot");
+			assertThat(MemberPath.ROOT.child("spring.io").child("boot")).hasToString("spring\\.io.boot");
+			assertThat(MemberPath.ROOT.child("spring[io]").child("boot")).hasToString("spring\\[io\\].boot");
+			assertThat(MemberPath.ROOT.child("spring.[io]").child("boot")).hasToString("spring\\.\\[io\\].boot");
+			assertThat(MemberPath.ROOT.child("spring\\io").child("boot")).hasToString("spring\\\\io.boot");
+			assertThat(MemberPath.ROOT.child("spring.\\io").child("boot")).hasToString("spring\\.\\\\io.boot");
+			assertThat(MemberPath.ROOT.child("spring[\\io]").child("boot")).hasToString("spring\\[\\\\io\\].boot");
 			assertThat(MemberPath.ROOT.child("123").child("boot")).hasToString("123.boot");
-			assertThat(MemberPath.ROOT.child("1.2.3").child("boot")).hasToString("[1.2.3].boot");
+			assertThat(MemberPath.ROOT.child("1.2.3").child("boot")).hasToString("1\\.2\\.3.boot");
 		}
 
 		@Test
@@ -513,21 +513,50 @@ class JsonWriterTests {
 
 		@Test
 		void ofParsesPaths() {
-			assertToStringAndOf(MemberPath.ROOT.child("spring").child("boot"), "spring.boot");
-			assertToStringAndOf(MemberPath.ROOT.child("spring").child(0), "spring[0]");
-			assertToStringAndOf(MemberPath.ROOT.child("spring.io").child("boot"), "[spring.io].boot");
-			assertToStringAndOf(MemberPath.ROOT.child("spring[io]").child("boot"), "[spring\\[io\\]].boot");
-			assertToStringAndOf(MemberPath.ROOT.child("spring.[io]").child("boot"), "[spring.\\[io\\]].boot");
-			assertToStringAndOf(MemberPath.ROOT.child("spring\\io").child("boot"), "spring\\io.boot");
-			assertToStringAndOf(MemberPath.ROOT.child("spring.\\io").child("boot"), "[spring.\\\\io].boot");
-			assertToStringAndOf(MemberPath.ROOT.child("spring[\\io]").child("boot"), "[spring\\[\\\\io\\]].boot");
-			assertToStringAndOf(MemberPath.ROOT.child("123").child("boot"), "123.boot");
-			assertToStringAndOf(MemberPath.ROOT.child("1.2.3").child("boot"), "[1.2.3].boot");
+			assertOfFromToString(MemberPath.ROOT.child("spring").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("spring").child(0));
+			assertOfFromToString(MemberPath.ROOT.child("spring.io").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("spring[io]").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("spring.[io]").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("spring\\io").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("spring.\\io").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("spring[\\io]").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("123").child("boot"));
+			assertOfFromToString(MemberPath.ROOT.child("1.2.3").child("boot"));
 		}
 
-		private void assertToStringAndOf(MemberPath path, String string) {
-			assertThat(path.toString()).isEqualTo(string);
-			assertThat(MemberPath.of(string)).isEqualTo(path);
+		private void assertOfFromToString(MemberPath path) {
+			assertThat(MemberPath.of(path.toString())).isEqualTo(path);
+		}
+
+	}
+
+	/**
+	 * Tests for {@link Members#applyingPathFilter(java.util.function.Predicate)}.
+	 */
+	@Nested
+	class PathFilterTests {
+
+		@Test
+		void filteringMember() {
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("first", Person::firstName);
+				members.add("last", Person::lastName);
+				members.applyingPathFilter((path) -> path.name().equals("first"));
+			});
+			assertThat(writer.writeToString(new Person("spring", "boot", 10))).isEqualTo("""
+					{"last":"boot"}""");
+		}
+
+		@Test
+		void filteringInMap() {
+			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
+				members.add();
+				members.applyingPathFilter((path) -> path.name().equals("spring"));
+
+			});
+			assertThat(writer.writeToString(Map.of("spring", "boot", "test", "test"))).isEqualTo("""
+					{"test":"test"}""");
 		}
 
 	}
@@ -559,18 +588,6 @@ class JsonWriterTests {
 		}
 
 		@Test
-		void processNameWhenFilteringMember() {
-			JsonWriter<Person> writer = JsonWriter.of((members) -> {
-				members.add("first", Person::firstName);
-				members.add("last", Person::lastName);
-				members
-					.applyingNameProcessor((path, existingName) -> !"first".equals(existingName) ? existingName : null);
-			});
-			assertThat(writer.writeToString(new Person("spring", "boot", 10))).isEqualTo("""
-					{"last":"boot"}""");
-		}
-
-		@Test
 		void processNameWhenInMap() {
 			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
 				members.add();
@@ -578,18 +595,6 @@ class JsonWriterTests {
 			});
 			assertThat(writer.writeToString(Map.of("spring", "boot"))).isEqualTo("""
 					{"SPRING":"boot"}""");
-		}
-
-		@Test
-		void processNameWhenFilteringInMap() {
-			JsonWriter<Map<?, ?>> writer = JsonWriter.of((members) -> {
-				members.add();
-				members.applyingNameProcessor(
-						(path, existingName) -> !"spring".equals(existingName) ? existingName : null);
-
-			});
-			assertThat(writer.writeToString(Map.of("spring", "boot", "test", "test"))).isEqualTo("""
-					{"test":"test"}""");
 		}
 
 		@Test
@@ -662,6 +667,32 @@ class JsonWriterTests {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
 			writer.writeToString(couple);
 			assertThat(paths).containsExactly("one", "one.first", "one.last", "two", "two.first", "two.last");
+		}
+
+		@Test
+		void processNameWhenReturnsNullThrowsException() {
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("first", Person::firstName);
+				members.add("last", Person::lastName);
+				members
+					.applyingNameProcessor((path, existingName) -> !"first".equals(existingName) ? existingName : null);
+			});
+			assertThatIllegalStateException().isThrownBy(() -> writer.writeToString(new Person("spring", "boot", 10)))
+				.withMessageContaining("NameProcessor")
+				.withMessageContaining("returned an empty result");
+		}
+
+		@Test
+		void processNameWhenReturnsEmptyStringThrowsException() {
+			JsonWriter<Person> writer = JsonWriter.of((members) -> {
+				members.add("first", Person::firstName);
+				members.add("last", Person::lastName);
+				members
+					.applyingNameProcessor((path, existingName) -> !"first".equals(existingName) ? existingName : "");
+			});
+			assertThatIllegalStateException().isThrownBy(() -> writer.writeToString(new Person("spring", "boot", 10)))
+				.withMessageContaining("NameProcessor")
+				.withMessageContaining("returned an empty result");
 		}
 
 	}
