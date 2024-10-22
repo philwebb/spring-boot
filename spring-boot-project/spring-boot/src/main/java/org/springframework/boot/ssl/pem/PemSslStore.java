@@ -21,6 +21,8 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
@@ -93,10 +95,22 @@ public interface PemSslStore {
 	 * @return a loaded {@link PemSslStore} or {@code null}.
 	 */
 	static PemSslStore load(PemSslStoreDetails details) {
+		return load(details, new ApplicationResourceLoader());
+	}
+
+	/**
+	 * Return a {@link PemSslStore} instance loaded using the given
+	 * {@link PemSslStoreDetails}.
+	 * @param details the PEM store details
+	 * @param resourceLoader the resource loader used to load content
+	 * @return a loaded {@link PemSslStore} or {@code null}.
+	 * @since 3.3.5
+	 */
+	static PemSslStore load(PemSslStoreDetails details, ResourceLoader resourceLoader) {
 		if (details == null || details.isEmpty()) {
 			return null;
 		}
-		return new LoadedPemSslStore(details);
+		return new LoadedPemSslStore(details, resourceLoader);
 	}
 
 	/**
