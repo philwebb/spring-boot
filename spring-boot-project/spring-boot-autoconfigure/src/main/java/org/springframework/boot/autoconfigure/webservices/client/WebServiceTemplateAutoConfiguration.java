@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.webservices.client.HttpWebServiceMessageSenderBuilder;
+import org.springframework.boot.webservices.client.WebServiceMessageSenderFactory;
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -44,28 +44,25 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
-	// FIXME bit funky
-
 	@Bean
 	@ConditionalOnMissingBean
-	public HttpWebServiceMessageSenderBuilder httpWebServiceMessageSenderBuilder(
+	public WebServiceMessageSenderFactory webServiceHttpMessageSenderFactory(
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings) {
-		HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
-		clientHttpRequestFactoryBuilder.ifAvailable(builder::requestFactoryBuilder);
-		clientHttpRequestFactorySettings.ifAvailable(builder::requestFactorySettings);
-		return builder;
+		return WebServiceMessageSenderFactory.http(
+				clientHttpRequestFactoryBuilder.getIfAvailable(ClientHttpRequestFactoryBuilder::detect),
+				clientHttpRequestFactorySettings.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebServiceTemplateBuilder webServiceTemplateBuilder(
-			ObjectProvider<HttpWebServiceMessageSenderBuilder> httpWebServiceMessageSenderBuilder,
+			ObjectProvider<WebServiceMessageSenderFactory> httpWebServiceMessageSenderBuilder,
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		WebServiceTemplateBuilder templateBuilder = new WebServiceTemplateBuilder();
-		HttpWebServiceMessageSenderBuilder messageSenderBuilder = httpWebServiceMessageSenderBuilder.getIfAvailable();
-		if (messageSenderBuilder != null) {
-			templateBuilder = templateBuilder.messageSenderBuilder(messageSenderBuilder);
+		WebServiceMessageSenderFactory httpMessageSenderFactory = httpWebServiceMessageSenderBuilder.getIfAvailable();
+		if (httpMessageSenderFactory != null) {
+			templateBuilder = templateBuilder.httpMessageSenderFactory(httpMessageSenderFactory);
 		}
 		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream().toList();
 		if (!customizers.isEmpty()) {

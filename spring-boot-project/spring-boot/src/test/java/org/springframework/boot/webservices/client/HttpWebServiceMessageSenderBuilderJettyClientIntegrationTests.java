@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @ClassPathExclusions("httpclient5-*.jar")
+@Deprecated
 class HttpWebServiceMessageSenderBuilderJettyClientIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();

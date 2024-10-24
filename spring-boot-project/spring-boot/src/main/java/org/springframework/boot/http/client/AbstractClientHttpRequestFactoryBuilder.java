@@ -56,7 +56,8 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 	@Override
 	@SuppressWarnings("unchecked")
 	public final T build(ClientHttpRequestFactorySettings settings) {
-		T factory = createClientHttpRequestFactory(settings);
+		T factory = createClientHttpRequestFactory(
+				(settings != null) ? settings : ClientHttpRequestFactorySettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, factory).invoke((consumer) -> consumer.accept(factory));
 		return factory;
 	}

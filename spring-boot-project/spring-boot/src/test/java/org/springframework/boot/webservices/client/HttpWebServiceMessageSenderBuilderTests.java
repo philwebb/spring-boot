@@ -33,7 +33,9 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link HttpWebServiceMessageSenderBuilder}.
  *
  * @author Stephane Nicoll
+ * @deprecated
  */
+@Deprecated
 class HttpWebServiceMessageSenderBuilderTests {
 
 	@Test
