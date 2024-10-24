@@ -18,9 +18,9 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.web.client.RestClient;
 

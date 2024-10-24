@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.client.HttpClientAutoConfiguration;
-import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.webservices.client.HttpWebServiceMessageSenderBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;

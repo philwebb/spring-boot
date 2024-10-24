@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
-
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.fail;
-
 /**
- * Tests for {@link ReflectiveComponentsClientHttpRequestFactoryBuilder}.
- *
- * @author Phillip Webb
+ * Client-side HTTP support classes.
  */
-class ReflectiveComponentsClientHttpRequestFactoryBuilderTests {
-
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
-
-}
+package org.springframework.boot.http.client;

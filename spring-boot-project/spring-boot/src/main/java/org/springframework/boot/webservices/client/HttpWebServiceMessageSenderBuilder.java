@@ -20,8 +20,8 @@ import java.time.Duration;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
 
 import static org.junit.jupiter.api.Assertions.fail;
 

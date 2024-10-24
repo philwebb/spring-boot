@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP

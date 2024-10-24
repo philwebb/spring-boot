@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -37,14 +37,12 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * {@link RuntimeHintsRegistrar} for {@link ClientHttpRequestFactories}.
+ * {@link RuntimeHintsRegistrar} for {@link ClientHttpRequestFactory} implementations.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
-
-	// FIXME rename
+class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {

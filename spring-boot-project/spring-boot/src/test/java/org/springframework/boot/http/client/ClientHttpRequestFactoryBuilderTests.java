@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import java.io.IOException;
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ReflectiveComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;

@@ -18,6 +18,8 @@ package org.springframework.boot.web.client;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
@@ -59,7 +61,7 @@ public final class ClientHttpRequestFactories {
 	 */
 	public static ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
-		return getBuilderByConvention().build(settings);
+		return detectBuilder().build(settings.adapt());
 	}
 
 	/**
@@ -84,7 +86,7 @@ public final class ClientHttpRequestFactories {
 	public static <T extends ClientHttpRequestFactory> T get(Class<T> requestFactoryType,
 			ClientHttpRequestFactorySettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
-		return getBuilder(requestFactoryType).build(settings);
+		return getBuilder(requestFactoryType).build(settings.adapt());
 	}
 
 	/**
@@ -97,29 +99,25 @@ public final class ClientHttpRequestFactories {
 	 */
 	public static <T extends ClientHttpRequestFactory> T get(Supplier<T> requestFactorySupplier,
 			ClientHttpRequestFactorySettings settings) {
-		return ClientHttpRequestFactoryBuilder.of(requestFactorySupplier).build(settings);
+		return ClientHttpRequestFactoryBuilder.of(requestFactorySupplier).build(settings.adapt());
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <T extends ClientHttpRequestFactory> ClientHttpRequestFactoryBuilder<T> getBuilder(
 			Class<T> requestFactoryType) {
 		if (requestFactoryType == ClientHttpRequestFactory.class) {
-			return (ClientHttpRequestFactoryBuilder<T>) getBuilderByConvention();
+			return (ClientHttpRequestFactoryBuilder<T>) detectBuilder();
 		}
 		return ClientHttpRequestFactoryBuilder.of(requestFactoryType);
 	}
 
-	private static ClientHttpRequestFactoryBuilder<?> getBuilderByConvention() {
-		if (HttpComponentsClientHttpRequestFactoryBuilder.Classes.PRESENT) {
-			return ClientHttpRequestFactoryBuilder.httpComponents();
+	private static ClientHttpRequestFactoryBuilder<?> detectBuilder() {
+		ClientHttpRequestFactoryBuilder<?> builder = ClientHttpRequestFactoryBuilder.detect();
+		if (builder instanceof JdkClientHttpRequestFactoryBuilder) {
+			// Same logic as earlier versions which did not support JDK client factories
+			return ClientHttpRequestFactoryBuilder.simple();
 		}
-		if (JettyClientHttpRequestFactoryBuilder.Classes.PRESENT) {
-			return ClientHttpRequestFactoryBuilder.jetty();
-		}
-		if (ReactorClientHttpRequestFactoryBuilder.Classes.PRESENT) {
-			return ClientHttpRequestFactoryBuilder.reactor();
-		}
-		return ClientHttpRequestFactoryBuilder.simple();
+		return builder;
 	}
 
 }

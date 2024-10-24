@@ -31,6 +31,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -330,11 +332,15 @@ public class RestTemplateBuilder {
 	 * @since 3.0.0
 	 * @see ClientHttpRequestFactoryBuilder
 	 * @see #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public RestTemplateBuilder requestFactory(
-			Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
+			Function<org.springframework.boot.web.client.ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
 		Assert.notNull(requestFactoryFunction, "RequestFactoryFunction must not be null");
-		return requestFactoryBuilder(requestFactoryFunction::apply);
+		return requestFactoryBuilder((settings) -> requestFactoryFunction
+			.apply(org.springframework.boot.web.client.ClientHttpRequestFactorySettings.of(settings)));
 	}
 
 	/**

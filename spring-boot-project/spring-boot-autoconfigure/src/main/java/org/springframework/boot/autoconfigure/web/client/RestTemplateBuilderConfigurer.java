@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;

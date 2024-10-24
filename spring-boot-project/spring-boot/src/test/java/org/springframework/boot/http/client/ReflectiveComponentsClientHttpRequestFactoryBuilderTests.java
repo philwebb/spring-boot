@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.http.client.ReflectiveComponentsClientHttpRequestFactoryBuilder;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Tests for {@link JdkClientHttpRequestFactoryBuilder}.
+ * Tests for {@link ReflectiveComponentsClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
  */
-class JdkClientHttpRequestFactoryBuilderTests {
+class ReflectiveComponentsClientHttpRequestFactoryBuilderTests {
 
 	@Test
 	void test() {

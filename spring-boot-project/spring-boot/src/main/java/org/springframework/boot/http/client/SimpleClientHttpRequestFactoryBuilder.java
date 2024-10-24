@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
