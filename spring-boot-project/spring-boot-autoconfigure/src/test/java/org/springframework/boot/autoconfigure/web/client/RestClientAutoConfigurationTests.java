@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,7 +51,7 @@ import static org.mockito.Mockito.mock;
 class RestClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class, HttpClientAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
@@ -153,6 +155,19 @@ class RestClientAutoConfigurationTests {
 					.getField(restClient, "messageConverters");
 				assertThat(actualConverters).extracting(HttpMessageConverter::getClass)
 					.contains((Class) CustomHttpMessageConverter.class);
+			});
+	}
+
+	@Test
+	void whenHasFactoryProperty() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withUserConfiguration(RestClientConfig.class)
+			.withPropertyValues("spring.http.client.factory=simple")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RestClient.class);
+				RestClient restClient = context.getBean(RestClient.class);
+				assertThat(restClient).extracting("clientRequestFactory")
+					.isInstanceOf(SimpleClientHttpRequestFactory.class);
 			});
 	}
 
