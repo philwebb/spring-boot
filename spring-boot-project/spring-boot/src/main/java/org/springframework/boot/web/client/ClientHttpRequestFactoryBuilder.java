@@ -144,7 +144,9 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 */
 	@SuppressWarnings("unchecked")
 	static <T extends ClientHttpRequestFactory> ClientHttpRequestFactoryBuilder<T> of(Class<T> requestFactoryType) {
-		// FIXME Assert not ClientHttpRequestFactory
+		Assert.notNull(requestFactoryType, "'requestFactoryType' must not be null");
+		Assert.isTrue(requestFactoryType != ClientHttpRequestFactory.class,
+				"'requestFactoryType' must be an implementation of ClientHttpRequestFactory");
 		if (requestFactoryType == HttpComponentsClientHttpRequestFactory.class) {
 			return (ClientHttpRequestFactoryBuilder<T>) httpComponents();
 		}

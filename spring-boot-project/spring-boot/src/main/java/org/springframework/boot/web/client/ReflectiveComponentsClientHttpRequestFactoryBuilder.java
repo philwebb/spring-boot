@@ -64,7 +64,9 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends ClientHttpRe
 	@Override
 	public T build(ClientHttpRequestFactorySettings settings) {
 		T requestFactory = this.requestFactorySupplier.get();
-		configure(requestFactory, settings);
+		if (settings != null) {
+			configure(requestFactory, settings);
+		}
 		return requestFactory;
 	}
 
