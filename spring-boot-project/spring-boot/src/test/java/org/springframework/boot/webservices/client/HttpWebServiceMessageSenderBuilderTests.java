@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("removal")
 class HttpWebServiceMessageSenderBuilderTests {
 
 	@Test
