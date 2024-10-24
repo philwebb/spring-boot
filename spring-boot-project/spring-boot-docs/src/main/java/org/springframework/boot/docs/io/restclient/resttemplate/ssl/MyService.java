@@ -28,7 +28,7 @@ public class MyService {
 	private final RestTemplate restTemplate;
 
 	public MyService(RestTemplateBuilder restTemplateBuilder, SslBundles sslBundles) {
-		this.restTemplate = restTemplateBuilder.setSslBundle(sslBundles.getBundle("mybundle")).build();
+		this.restTemplate = restTemplateBuilder.sslBundle(sslBundles.getBundle("mybundle")).build();
 	}
 
 	public Details someRestCall(String name) {
