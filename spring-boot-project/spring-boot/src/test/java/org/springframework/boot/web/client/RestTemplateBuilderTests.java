@@ -18,6 +18,7 @@ package org.springframework.boot.web.client;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -341,6 +342,14 @@ class RestTemplateBuilderTests {
 		MockRestServiceServer.bindTo(template).build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("boot")));
+	}
+
+	@Test
+	void requestFactorySettingsAppliesSettings() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+			.withConnectTimeout(Duration.ofSeconds(1));
+		RestTemplate template = this.builder.requestFactorySettings(settings).build();
+		assertThat(template.getRequestFactory()).extracting("connectTimeout").isEqualTo(1000L);
 	}
 
 	@Test
