@@ -31,7 +31,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Phillip Webb
  * @author Scott Frederick
  * @since 3.0.0
- * @see ClientHttpRequestFactories
+ * @see ClientHttpRequestFactoryBuilder
  */
 public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
 
