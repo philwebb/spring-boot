@@ -28,6 +28,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -43,6 +44,8 @@ import org.springframework.util.ReflectionUtils;
  */
 class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 
+	// FIXME rename
+
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		if (ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestFactory", classLoader)) {
@@ -52,21 +55,29 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 
 	private void registerHints(ReflectionHints hints, ClassLoader classLoader) {
 		hints.registerField(findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory"));
-		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS, (typeHint) -> {
-			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS));
-			registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class);
-		});
-		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.JETTY_CLIENT_CLASS, (typeHint) -> {
-			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.JETTY_CLIENT_CLASS));
-			registerReflectionHints(hints, JettyClientHttpRequestFactory.class, long.class);
-		});
+		registerClientHttpRequestFactoryHints(hints, classLoader,
+				HttpComponentsClientHttpRequestFactoryBuilder.Classes.HTTP_CLIENTS,
+				() -> registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class));
+		registerClientHttpRequestFactoryHints(hints, classLoader,
+				JettyClientHttpRequestFactoryBuilder.Classes.HTTP_CLIENT,
+				() -> registerReflectionHints(hints, JettyClientHttpRequestFactory.class, long.class));
+		registerClientHttpRequestFactoryHints(hints, classLoader,
+				ReactorClientHttpRequestFactoryBuilder.Classes.HTTP_CLIENT,
+				() -> registerReflectionHints(hints, ReactorClientHttpRequestFactory.class, long.class));
+		registerClientHttpRequestFactoryHints(hints, classLoader,
+				JdkClientHttpRequestFactoryBuilder.Classes.HTTP_CLIENT,
+				() -> registerReflectionHints(hints, JdkClientHttpRequestFactory.class));
 		hints.registerType(SimpleClientHttpRequestFactory.class, (typeHint) -> {
 			typeHint.onReachableType(HttpURLConnection.class);
 			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
 		});
-		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.REACTOR_CLIENT_CLASS, (typeHint) -> {
-			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.REACTOR_CLIENT_CLASS));
-			registerReflectionHints(hints, ReactorClientHttpRequestFactory.class, long.class);
+	}
+
+	private void registerClientHttpRequestFactoryHints(ReflectionHints hints, ClassLoader classLoader, String className,
+			Runnable action) {
+		hints.registerTypeIfPresent(classLoader, className, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(className));
+			action.run();
 		});
 	}
 
