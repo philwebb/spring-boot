@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
+import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +48,8 @@ import org.springframework.web.client.RestClient.Builder;
  * @author Moritz Halbritter
  * @since 3.2.0
  */
-@AutoConfiguration(after = { HttpMessageConvertersAutoConfiguration.class, SslAutoConfiguration.class })
+@AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+		SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestClientAutoConfiguration {
@@ -64,14 +65,21 @@ public class RestClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(RestClientSsl.class)
 	@ConditionalOnBean(SslBundles.class)
-	AutoConfiguredRestClientSsl restClientSsl(SslBundles sslBundles) {
-		return new AutoConfiguredRestClientSsl(sslBundles);
+	AutoConfiguredRestClientSsl restClientSsl(
+			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder, SslBundles sslBundles) {
+		return new AutoConfiguredRestClientSsl(
+				clientHttpRequestFactoryBuilder.getIfAvailable(ClientHttpRequestFactoryBuilder::detect), sslBundles);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	RestClientBuilderConfigurer restClientBuilderConfigurer(ObjectProvider<RestClientCustomizer> customizerProvider) {
+	RestClientBuilderConfigurer restClientBuilderConfigurer(
+			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
+			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
+			ObjectProvider<RestClientCustomizer> customizerProvider) {
 		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer();
+		configurer.setRequestFactoryBuilder(clientHttpRequestFactoryBuilder.getIfAvailable());
+		configurer.setRequestFactorySettings(clientHttpRequestFactorySettings.getIfAvailable());
 		configurer.setRestClientCustomizers(customizerProvider.orderedStream().toList());
 		return configurer;
 	}
@@ -80,9 +88,7 @@ public class RestClientAutoConfiguration {
 	@Scope("prototype")
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
-		RestClient.Builder builder = RestClient.builder()
-			.requestFactory(ClientHttpRequestFactories.get(ClientHttpRequestFactorySettings.DEFAULTS));
-		return restClientBuilderConfigurer.configure(builder);
+		return restClientBuilderConfigurer.configure(RestClient.builder());
 	}
 
 }

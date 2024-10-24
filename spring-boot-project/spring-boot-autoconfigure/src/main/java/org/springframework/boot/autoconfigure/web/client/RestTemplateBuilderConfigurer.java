@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
@@ -34,11 +36,23 @@ import org.springframework.util.ObjectUtils;
  */
 public final class RestTemplateBuilderConfigurer {
 
+	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
+
+	private ClientHttpRequestFactorySettings requestFactorySettings;
+
 	private HttpMessageConverters httpMessageConverters;
 
 	private List<RestTemplateCustomizer> restTemplateCustomizers;
 
 	private List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers;
+
+	void setRequestFactoryBuilder(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
+		this.requestFactoryBuilder = requestFactoryBuilder;
+	}
+
+	void setRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+		this.requestFactorySettings = requestFactorySettings;
+	}
 
 	void setHttpMessageConverters(HttpMessageConverters httpMessageConverters) {
 		this.httpMessageConverters = httpMessageConverters;
@@ -59,6 +73,12 @@ public final class RestTemplateBuilderConfigurer {
 	 * @return the configured builder
 	 */
 	public RestTemplateBuilder configure(RestTemplateBuilder builder) {
+		if (this.requestFactoryBuilder != null) {
+			builder = builder.requestFactoryBuilder(this.requestFactoryBuilder);
+		}
+		if (this.requestFactorySettings != null) {
+			builder = builder.requestFactorySettings(this.requestFactorySettings);
+		}
 		if (this.httpMessageConverters != null) {
 			builder = builder.messageConverters(this.httpMessageConverters.getConverters());
 		}

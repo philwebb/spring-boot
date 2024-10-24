@@ -23,6 +23,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.client.HttpClientAutoConfiguration;
+import org.springframework.boot.web.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.webservices.client.HttpWebServiceMessageSenderBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -36,20 +40,36 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * @author Dmytro Nosan
  * @since 2.1.0
  */
-@AutoConfiguration
+@AutoConfiguration(after = HttpClientAutoConfiguration.class)
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public HttpWebServiceMessageSenderBuilder httpWebServiceMessageSenderBuilder(
+			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
+			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings) {
+		HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
+		clientHttpRequestFactoryBuilder.ifAvailable(builder::requestFactoryBuilder);
+		clientHttpRequestFactorySettings.ifAvailable(builder::requestFactorySettings);
+		return builder;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public WebServiceTemplateBuilder webServiceTemplateBuilder(
+			ObjectProvider<HttpWebServiceMessageSenderBuilder> httpWebServiceMessageSenderBuilder,
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
-		WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
+		WebServiceTemplateBuilder templateBuilder = new WebServiceTemplateBuilder();
+		HttpWebServiceMessageSenderBuilder messageSenderBuilder = httpWebServiceMessageSenderBuilder.getIfAvailable();
+		if (messageSenderBuilder != null) {
+			templateBuilder = templateBuilder.messageSenderBuilder(messageSenderBuilder);
+		}
 		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream().toList();
 		if (!customizers.isEmpty()) {
-			builder = builder.customizers(customizers);
+			templateBuilder = templateBuilder.customizers(customizers);
 		}
-		return builder;
+		return templateBuilder;
 	}
 
 }
