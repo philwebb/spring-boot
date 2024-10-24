@@ -16,6 +16,7 @@
 
 package org.springframework.boot.http.client;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -54,18 +55,27 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer to the {@link ClientHttpRequestFactory} after it has been built.
+	 * @param customizer the customizers to apply
+	 * @return a new {@link ClientHttpRequestFactoryBuilder} instance
+	 */
+	default ClientHttpRequestFactoryBuilder<T> withCustomizer(Consumer<T> customizer) {
+		return withCustomizers(List.of(customizer));
+	}
+
+	/**
+	 * Return a new {@link ClientHttpRequestFactoryBuilder} that applies the given
 	 * customizers to the {@link ClientHttpRequestFactory} after it has been built.
 	 * @param customizers the customizers to apply
 	 * @return a new {@link ClientHttpRequestFactoryBuilder} instance
 	 */
 	@SuppressWarnings("unchecked")
-	default ClientHttpRequestFactoryBuilder<T> withCustomizers(Consumer<T>... customizers) {
+	default ClientHttpRequestFactoryBuilder<T> withCustomizers(Collection<Consumer<T>> customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
 		Assert.noNullElements(customizers, "'customizers' must not contain null elements");
 		return (settings) -> {
 			T factory = build(settings);
-			LambdaSafe.callbacks(Consumer.class, List.of(customizers), factory)
-				.invoke((consumer) -> consumer.accept(factory));
+			LambdaSafe.callbacks(Consumer.class, customizers, factory).invoke((consumer) -> consumer.accept(factory));
 			return factory;
 		};
 	}
@@ -116,18 +126,6 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	}
 
 	/**
-	 * Return a new {@link ClientHttpRequestFactoryBuilder} from the given supplier, using
-	 * reflection to ultimately apply the {@link ClientHttpRequestFactorySettings}.
-	 * @param <T> the {@link ClientHttpRequestFactory} type
-	 * @param requestFactorySupplier the {@link ClientHttpRequestFactory} supplier
-	 * @return a new {@link ClientHttpRequestFactoryBuilder}
-	 */
-	static <T extends ClientHttpRequestFactory> ClientHttpRequestFactoryBuilder<T> of(
-			Supplier<T> requestFactorySupplier) {
-		return new ReflectiveComponentsClientHttpRequestFactoryBuilder<>(requestFactorySupplier);
-	}
-
-	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} for the given
 	 * {@code requestFactoryType}. The following implementations are supported without the
 	 * use of reflection:
@@ -163,6 +161,18 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 			return (ClientHttpRequestFactoryBuilder<T>) simple();
 		}
 		return new ReflectiveComponentsClientHttpRequestFactoryBuilder<>(requestFactoryType);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpRequestFactoryBuilder} from the given supplier, using
+	 * reflection to ultimately apply the {@link ClientHttpRequestFactorySettings}.
+	 * @param <T> the {@link ClientHttpRequestFactory} type
+	 * @param requestFactorySupplier the {@link ClientHttpRequestFactory} supplier
+	 * @return a new {@link ClientHttpRequestFactoryBuilder}
+	 */
+	static <T extends ClientHttpRequestFactory> ClientHttpRequestFactoryBuilder<T> of(
+			Supplier<T> requestFactorySupplier) {
+		return new ReflectiveComponentsClientHttpRequestFactoryBuilder<>(requestFactorySupplier);
 	}
 
 	static ClientHttpRequestFactoryBuilder<? extends ClientHttpRequestFactory> detect() {

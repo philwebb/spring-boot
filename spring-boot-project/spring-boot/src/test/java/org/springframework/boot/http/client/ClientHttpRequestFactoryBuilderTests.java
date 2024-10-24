@@ -18,20 +18,19 @@ package org.springframework.boot.http.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
+import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ReflectiveComponentsClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
@@ -46,48 +45,128 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ClientHttpRequestFactoryBuilderTests {
 
 	@Test
-	void detectReturnsExpectedBuilderType() {
-		assertThat(ClientHttpRequestFactoryBuilder.detect())
+	void withCustomizerAppliesCustomizers() {
+		ClientHttpRequestFactoryBuilder<JettyClientHttpRequestFactory> builder = (
+				settings) -> new JettyClientHttpRequestFactory();
+		builder = builder.withCustomizer(this::setJettyReadTimeout);
+		JettyClientHttpRequestFactory factory = builder.build(null);
+		assertThat(factory).extracting("readTimeout").isEqualTo(5000L);
+	}
+
+	@Test
+	void withCustomizersAppliesCustomizers() {
+		ClientHttpRequestFactoryBuilder<JettyClientHttpRequestFactory> builder = (
+				settings) -> new JettyClientHttpRequestFactory();
+		builder = builder.withCustomizers(List.of(this::setJettyReadTimeout));
+		JettyClientHttpRequestFactory factory = builder.build(null);
+		assertThat(factory).extracting("readTimeout").isEqualTo(5000L);
+	}
+
+	@Test
+	void httpComponentsReturnsHttpComponentsFactoryBuilder() {
+		assertThat(ClientHttpRequestFactoryBuilder.httpComponents())
 			.isInstanceOf(HttpComponentsClientHttpRequestFactoryBuilder.class);
 	}
 
 	@Test
-	void getOfGeneralTypeThrowsException() {
+	void jettyReturnsJettyFactoryBuilder() {
+		assertThat(ClientHttpRequestFactoryBuilder.jetty()).isInstanceOf(JettyClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	void reactorReturnsReactorFactoryBuilder() {
+		assertThat(ClientHttpRequestFactoryBuilder.reactor())
+			.isInstanceOf(ReactorClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	void jdkReturnsJdkFactoryBuilder() {
+		assertThat(ClientHttpRequestFactoryBuilder.jdk()).isInstanceOf(JdkClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	void simpleReturnsSimpleFactoryBuilder() {
+		assertThat(ClientHttpRequestFactoryBuilder.simple()).isInstanceOf(SimpleClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	void ofWhenExactlyClientHttpRequestFactoryTypeThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ClientHttpRequestFactoryBuilder.of(ClientHttpRequestFactory.class))
 			.withMessage("'requestFactoryType' must be an implementation of ClientHttpRequestFactory");
 	}
 
 	@Test
-	void getOfSimpleFactoryReturnsSimpleFactoryBuilder() {
+	void ofWhenSimpleFactoryReturnsSimpleFactoryBuilder() {
 		assertThat(ClientHttpRequestFactoryBuilder.of(SimpleClientHttpRequestFactory.class))
 			.isInstanceOf(SimpleClientHttpRequestFactoryBuilder.class);
 	}
 
 	@Test
-	void getOfHttpComponentsFactoryReturnsHttpComponentsFactoryBuilder() {
+	void ofWhenHttpComponentsFactoryReturnsHttpComponentsFactoryBuilder() {
 		assertThat(ClientHttpRequestFactoryBuilder.of(HttpComponentsClientHttpRequestFactory.class))
 			.isInstanceOf(HttpComponentsClientHttpRequestFactoryBuilder.class);
 	}
 
 	@Test
-	void getOfReactorFactoryReturnsReactorFactoryBuilder() {
+	void ofWhenReactorFactoryReturnsReactorFactoryBuilder() {
 		assertThat(ClientHttpRequestFactoryBuilder.of(ReactorClientHttpRequestFactory.class))
 			.isInstanceOf(ReactorClientHttpRequestFactoryBuilder.class);
 	}
 
 	@Test
-	void getOfJdkFactoryReturnsJdkFactoryBuilder() {
+	void ofWhenJdkFactoryReturnsJdkFactoryBuilder() {
 		assertThat(ClientHttpRequestFactoryBuilder.of(JdkClientHttpRequestFactory.class))
 			.isInstanceOf(JdkClientHttpRequestFactoryBuilder.class);
 	}
 
 	@Test
-	void getOfUnknownTypeCreatesReflectiveFactoryBuilder() {
+	void ofWhenUnknownTypeReturnsReflectiveFactoryBuilder() {
 		ClientHttpRequestFactoryBuilder<TestClientHttpRequestFactory> builder = ClientHttpRequestFactoryBuilder
 			.of(TestClientHttpRequestFactory.class);
 		assertThat(builder).isInstanceOf(ReflectiveComponentsClientHttpRequestFactoryBuilder.class);
 		assertThat(builder.build(null)).isInstanceOf(TestClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void ofWithSupplierWhenSupplierIsNullThrowsException() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ClientHttpRequestFactoryBuilder.of((Supplier<ClientHttpRequestFactory>) null))
+			.withMessage("'requestFactorySupplier' must not be null");
+	}
+
+	@Test
+	void ofWithSupplierReturnsReflectiveFactoryBuilder() {
+		assertThat(ClientHttpRequestFactoryBuilder.of(SimpleClientHttpRequestFactory::new))
+			.isInstanceOf(ReflectiveComponentsClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	void detectWhenHttpComponents() {
+		assertThat(ClientHttpRequestFactoryBuilder.detect())
+			.isInstanceOf(HttpComponentsClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	@ClassPathExclusions("httpclient5-*.jar")
+	void detectWhenJetty() {
+		assertThat(ClientHttpRequestFactoryBuilder.detect()).isInstanceOf(JettyClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+	void detectWhenReactor() {
+		assertThat(ClientHttpRequestFactoryBuilder.detect()).isInstanceOf(ReactorClientHttpRequestFactoryBuilder.class);
+	}
+
+	@Test
+	@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar", "reactor-netty-http-*.jar" })
+	void detectWhenJdk() {
+		assertThat(ClientHttpRequestFactoryBuilder.detect()).isInstanceOf(JdkClientHttpRequestFactoryBuilder.class);
+	}
+
+	private void setJettyReadTimeout(JettyClientHttpRequestFactory factory) {
+		factory.setReadTimeout(Duration.ofSeconds(5));
 	}
 
 	public static class TestClientHttpRequestFactory implements ClientHttpRequestFactory {

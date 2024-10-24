@@ -17,6 +17,7 @@
 package org.springframework.boot.http.client;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -53,9 +54,13 @@ public final class ReactorClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	@SafeVarargs
-	public final ReactorClientHttpRequestFactoryBuilder withCustomizers(
-			Consumer<ReactorClientHttpRequestFactory>... customizers) {
+	public ReactorClientHttpRequestFactoryBuilder withCustomizer(Consumer<ReactorClientHttpRequestFactory> customizer) {
+		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+	}
+
+	@Override
+	public ReactorClientHttpRequestFactoryBuilder withCustomizers(
+			Collection<Consumer<ReactorClientHttpRequestFactory>> customizers) {
 		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
 	}
 

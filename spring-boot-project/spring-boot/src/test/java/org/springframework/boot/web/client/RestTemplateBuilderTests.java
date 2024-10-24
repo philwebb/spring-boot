@@ -31,6 +31,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -272,10 +273,10 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@Deprecated
 	void requestFactoryWhenFunctionIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder
-				.requestFactory((Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.requestFactory(
+				(Function<org.springframework.boot.web.client.ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
 			.withMessageContaining("RequestFactoryFunction must not be null");
 	}
 
@@ -346,7 +347,7 @@ class RestTemplateBuilderTests {
 
 	@Test
 	void requestFactorySettingsAppliesSettings() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withConnectTimeout(Duration.ofSeconds(1));
 		RestTemplate template = this.builder.requestFactorySettings(settings).build();
 		assertThat(template.getRequestFactory()).extracting("connectTimeout").isEqualTo(1000L);

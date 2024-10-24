@@ -25,6 +25,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
@@ -43,6 +44,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Andy Wilkinson
  */
 class WebServiceMessageSenderFactoryTests {
+
+	@Test
+	void httpWhenDetectedHttpComponents() {
+		WebServiceMessageSender sender = WebServiceMessageSenderFactory.http().getWebServiceMessageSender();
+		assertRequestFactoryInstanceOf(sender, HttpComponentsClientHttpRequestFactory.class);
+	}
 
 	@Test
 	@ClassPathExclusions("httpclient5-*.jar")

@@ -19,6 +19,7 @@ package org.springframework.boot.http.client;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -49,9 +50,13 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	@SafeVarargs
-	public final SimpleClientHttpRequestFactoryBuilder withCustomizers(
-			Consumer<SimpleClientHttpRequestFactory>... customizers) {
+	public SimpleClientHttpRequestFactoryBuilder withCustomizer(Consumer<SimpleClientHttpRequestFactory> customizer) {
+		return new SimpleClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+	}
+
+	@Override
+	public SimpleClientHttpRequestFactoryBuilder withCustomizers(
+			Collection<Consumer<SimpleClientHttpRequestFactory>> customizers) {
 		return new SimpleClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
 	}
 

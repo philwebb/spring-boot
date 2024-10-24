@@ -17,6 +17,7 @@
 package org.springframework.boot.http.client;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -51,9 +52,13 @@ public final class JettyClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	@SafeVarargs
-	public final JettyClientHttpRequestFactoryBuilder withCustomizers(
-			Consumer<JettyClientHttpRequestFactory>... customizers) {
+	public JettyClientHttpRequestFactoryBuilder withCustomizer(Consumer<JettyClientHttpRequestFactory> customizer) {
+		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+	}
+
+	@Override
+	public JettyClientHttpRequestFactoryBuilder withCustomizers(
+			Collection<Consumer<JettyClientHttpRequestFactory>> customizers) {
 		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
 	}
 

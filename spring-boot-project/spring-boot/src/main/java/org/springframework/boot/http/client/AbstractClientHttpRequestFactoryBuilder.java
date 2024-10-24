@@ -17,6 +17,7 @@
 package org.springframework.boot.http.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -40,16 +41,20 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
 	}
 
-	@SafeVarargs
-	protected final List<Consumer<T>> mergedCustomizers(Consumer<T>... customizers) {
+	protected final List<Consumer<T>> mergedCustomizers(Consumer<T> customizer) {
+		Assert.notNull(this.customizers, "'customizer' must not be null");
+		return merge(this.customizers, List.of(customizer));
+	}
+
+	protected final List<Consumer<T>> mergedCustomizers(Collection<Consumer<T>> customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
 		Assert.noNullElements(customizers, "'customizers' must not contain null elements");
 		return merge(this.customizers, customizers);
 	}
 
-	private <E> List<E> merge(List<E> list, E[] elements) {
+	private <E> List<E> merge(Collection<E> list, Collection<? extends E> additional) {
 		List<E> merged = new ArrayList<>(list);
-		merged.addAll(List.of(elements));
+		merged.addAll(additional);
 		return List.copyOf(merged);
 	}
 

@@ -99,7 +99,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder(RestTemplateCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.requestFactorySettings = ClientHttpRequestFactorySettings.DEFAULTS;
+		this.requestFactorySettings = ClientHttpRequestFactorySettings.defaults();
 		this.detectRequestFactory = true;
 		this.rootUri = null;
 		this.messageConverters = null;

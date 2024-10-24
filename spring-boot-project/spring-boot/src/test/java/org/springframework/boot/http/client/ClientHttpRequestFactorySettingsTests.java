@@ -36,7 +36,7 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void defaultsHasNullValues() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS;
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -44,7 +44,7 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withConnectTimeoutReturnsInstanceWithUpdatedConnectionTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withConnectTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isNull();
@@ -53,7 +53,7 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withReadTimeoutReturnsInstanceWithUpdatedReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withReadTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isEqualTo(ONE_SECOND);
@@ -63,7 +63,8 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withSslBundleReturnsInstanceWithUpdatedSslBundle() {
 		SslBundle sslBundle = mock(SslBundle.class);
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(sslBundle);
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withSslBundle(sslBundle);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isSameAs(sslBundle);

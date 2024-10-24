@@ -18,6 +18,7 @@ package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -45,9 +46,13 @@ public class JdkClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	@SafeVarargs
+	public JdkClientHttpRequestFactoryBuilder withCustomizer(Consumer<JdkClientHttpRequestFactory> customizer) {
+		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+	}
+
+	@Override
 	public final JdkClientHttpRequestFactoryBuilder withCustomizers(
-			Consumer<JdkClientHttpRequestFactory>... customizers) {
+			Collection<Consumer<JdkClientHttpRequestFactory>> customizers) {
 		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
 	}
 

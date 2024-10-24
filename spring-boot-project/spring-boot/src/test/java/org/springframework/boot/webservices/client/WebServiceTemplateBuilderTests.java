@@ -54,6 +54,7 @@ import static org.mockito.Mockito.spy;
  *
  * @author Stephane Nicoll
  * @author Dmytro Nosan
+ * @author Phillip Webb
  */
 @ExtendWith(MockitoExtension.class)
 class WebServiceTemplateBuilderTests {

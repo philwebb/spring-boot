@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@Deprecated
 class ClientHttpRequestFactorySettingsTests {
 
 	private static final Duration ONE_SECOND = Duration.ofSeconds(1);
