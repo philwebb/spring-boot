@@ -21,8 +21,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.ws.transport.WebServiceMessageSender;
@@ -39,10 +39,13 @@ public class HttpWebServiceMessageSenderBuilder {
 
 	// FIXME change to return new instance? Check scope on aut-con
 
+	// Make a WebServiceMessageSenderBuilder interface?
+
 	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private ClientHttpRequestFactorySettings requestFactorySettings = ClientHttpRequestFactorySettings.DEFAULTS;
+	private ClientHttpRequestFactorySettings requestFactorySettings = ClientHttpRequestFactorySettings.defaults();
 
+	// FIXME JD
 	public void requestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		Assert.notNull(requestFactorySettings, "ClientHttpRequestFactorySettings must not be null");
 		this.requestFactorySettings = requestFactorySettings;

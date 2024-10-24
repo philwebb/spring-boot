@@ -19,9 +19,10 @@ package org.springframework.boot.autoconfigure.web.client;
 import java.util.function.Consumer;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 /**
@@ -49,8 +50,9 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 	@Override
 	public Consumer<RestClient.Builder> fromBundle(SslBundle bundle) {
 		return (builder) -> {
-			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(bundle);
-			builder.requestFactory(this.clientHttpRequestFactoryBuilder.build(settings));
+			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(bundle);
+			ClientHttpRequestFactory requestFactory = this.clientHttpRequestFactoryBuilder.build(settings);
+			builder.requestFactory(requestFactory);
 		};
 	}
 

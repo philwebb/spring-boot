@@ -30,16 +30,12 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 3.0.0
+ * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
  */
 public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
 
-	/**
-	 * Use defaults for the {@link ClientHttpRequestFactory} which can differ depending on
-	 * the implementation.
-	 */
-	public static final ClientHttpRequestFactorySettings DEFAULTS = new ClientHttpRequestFactorySettings(null, null,
+	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
 			null);
 
 	/**
@@ -72,6 +68,19 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
 		return new ClientHttpRequestFactorySettings(this.connectTimeout, this.readTimeout, sslBundle);
+	}
+
+	public static ClientHttpRequestFactorySettings ofSslBundle(SslBundle sslBundle) {
+		return defaults().withSslBundle(sslBundle);
+	}
+
+	/**
+	 * Use defaults for the {@link ClientHttpRequestFactory} which can differ depending on
+	 * the implementation.
+	 * @return default settings
+	 */
+	public static ClientHttpRequestFactorySettings defaults() {
+		return defaults;
 	}
 
 }

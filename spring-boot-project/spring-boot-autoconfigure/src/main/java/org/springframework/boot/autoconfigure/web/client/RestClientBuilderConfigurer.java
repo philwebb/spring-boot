@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.client;
 import java.util.List;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;

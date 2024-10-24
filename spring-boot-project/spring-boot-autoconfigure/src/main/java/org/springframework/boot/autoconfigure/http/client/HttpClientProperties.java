@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.client;
+package org.springframework.boot.autoconfigure.http.client;
 
 import java.time.Duration;
 import java.util.function.Supplier;

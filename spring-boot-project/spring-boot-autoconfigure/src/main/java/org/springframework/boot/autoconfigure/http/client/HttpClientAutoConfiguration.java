@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.client;
+package org.springframework.boot.autoconfigure.http.client;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.http.client.HttpClientProperties.Factory;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.HttpClientProperties.Factory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.client.ClientHttpRequestFactory;
