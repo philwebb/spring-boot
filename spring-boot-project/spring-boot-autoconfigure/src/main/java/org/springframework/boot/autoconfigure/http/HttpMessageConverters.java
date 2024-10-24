@@ -56,6 +56,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  */
 public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
+	// FIXME move to converter subpackage
+
 	private static final List<Class<?>> NON_REPLACING_CONVERTERS;
 
 	static {

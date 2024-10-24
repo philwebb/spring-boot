@@ -35,6 +35,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  */
 public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
 
+	// FIXME move
+
 	/**
 	 * Use defaults for the {@link ClientHttpRequestFactory} which can differ depending on
 	 * the implementation.

@@ -37,6 +37,8 @@ import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
  */
 public class HttpWebServiceMessageSenderBuilder {
 
+	// FIXME change to return new instance? Check scope on aut-con
+
 	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
 	private ClientHttpRequestFactorySettings requestFactorySettings = ClientHttpRequestFactorySettings.DEFAULTS;

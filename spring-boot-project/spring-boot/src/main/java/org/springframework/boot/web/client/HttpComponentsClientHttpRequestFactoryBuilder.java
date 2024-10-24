@@ -46,6 +46,8 @@ import org.springframework.util.ClassUtils;
 public final class HttpComponentsClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<HttpComponentsClientHttpRequestFactory> {
 
+	// FIXME move to mirror package
+
 	HttpComponentsClientHttpRequestFactoryBuilder() {
 		this(Collections.emptyList());
 	}
