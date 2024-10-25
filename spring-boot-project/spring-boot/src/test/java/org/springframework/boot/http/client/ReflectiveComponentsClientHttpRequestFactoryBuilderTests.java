@@ -16,22 +16,37 @@
 
 package org.springframework.boot.http.client;
 
-import org.junit.jupiter.api.Test;
+import org.eclipse.jetty.client.HttpClient;
 
-import org.springframework.boot.http.client.ReflectiveComponentsClientHttpRequestFactoryBuilder;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests for {@link ReflectiveComponentsClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
  */
-class ReflectiveComponentsClientHttpRequestFactoryBuilderTests {
+class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
+		extends AbstractClientHttpRequestFactoryBuilderTests<ClientHttpRequestFactory> {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	ReflectiveComponentsClientHttpRequestFactoryBuilderTests() {
+		super(ClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.of(JettyClientHttpRequestFactory::new));
+	}
+
+	@Override
+	void connectWithSslBundle(String httpMethod) throws Exception {
+		// FIXME
+	}
+
+	@Override
+	protected long connectTimeout(ClientHttpRequestFactory requestFactory) {
+		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
+	}
+
+	@Override
+	protected long readTimeout(ClientHttpRequestFactory requestFactory) {
+		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
 	}
 
 }

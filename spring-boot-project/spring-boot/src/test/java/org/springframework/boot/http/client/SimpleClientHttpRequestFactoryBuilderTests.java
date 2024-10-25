@@ -16,31 +16,30 @@
 
 package org.springframework.boot.http.client;
 
-import org.eclipse.jetty.client.HttpClient;
-
-import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link JettyClientHttpRequestFactoryBuilder}.
+ * Tests for {@link SimpleClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-class JettyClientHttpRequestFactoryBuilderTests
-		extends AbstractClientHttpRequestFactoryBuilderTests<JettyClientHttpRequestFactory> {
+class SimpleClientHttpRequestFactoryBuilderTests
+		extends AbstractClientHttpRequestFactoryBuilderTests<SimpleClientHttpRequestFactory> {
 
-	JettyClientHttpRequestFactoryBuilderTests() {
-		super(JettyClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.jetty());
+	SimpleClientHttpRequestFactoryBuilderTests() {
+		super(SimpleClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.simple());
 	}
 
 	@Override
-	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
+	protected long connectTimeout(SimpleClientHttpRequestFactory requestFactory) {
+		return (int) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
 	}
 
 	@Override
-	protected long readTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	protected long readTimeout(SimpleClientHttpRequestFactory requestFactory) {
+		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
 	}
 
 }

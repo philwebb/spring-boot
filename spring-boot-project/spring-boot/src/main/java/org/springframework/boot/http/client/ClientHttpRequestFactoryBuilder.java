@@ -46,6 +46,14 @@ import org.springframework.util.Assert;
 public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFactory> {
 
 	/**
+	 * Build a default configured {@link ClientHttpRequestFactory}.
+	 * @return a default configured {@link ClientHttpRequestFactory}.
+	 */
+	default T build() {
+		return build(null);
+	}
+
+	/**
 	 * Build a fully configured {@link ClientHttpRequestFactory}, applying the given
 	 * {@code settings} if they are provided.
 	 * @param settings the settings to apply or {@code null}

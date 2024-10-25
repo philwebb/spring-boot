@@ -16,22 +16,41 @@
 
 package org.springframework.boot.http.client;
 
-import org.junit.jupiter.api.Test;
+import org.apache.hc.client5.http.HttpRoute;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.core5.function.Resolver;
+import org.apache.hc.core5.http.io.SocketConfig;
 
-import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests for {@link HttpComponentsClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-class HttpComponentsClientHttpRequestFactoryBuilderTests {
+class HttpComponentsClientHttpRequestFactoryBuilderTests
+		extends AbstractClientHttpRequestFactoryBuilderTests<HttpComponentsClientHttpRequestFactory> {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	HttpComponentsClientHttpRequestFactoryBuilderTests() {
+		super(HttpComponentsClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.httpComponents());
+	}
+
+	@Override
+	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
+		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
+		HttpClient httpClient = requestFactory.getHttpClient();
+		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
+		SocketConfig socketConfig = ((Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils.getField(connectionManager,
+				"socketConfigResolver"))
+			.resolve(null);
+		return socketConfig.getSoTimeout().toMilliseconds();
 	}
 
 }

@@ -16,22 +16,34 @@
 
 package org.springframework.boot.http.client;
 
-import org.junit.jupiter.api.Test;
+import java.net.http.HttpClient;
+import java.time.Duration;
 
-import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests for {@link JdkClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
  */
-class JdkClientHttpRequestFactoryBuilderTests {
+class JdkClientHttpRequestFactoryBuilderTests
+		extends AbstractClientHttpRequestFactoryBuilderTests<JdkClientHttpRequestFactory> {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	JdkClientHttpRequestFactoryBuilderTests() {
+		super(JdkClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.jdk());
+	}
+
+	@Override
+	protected long connectTimeout(JdkClientHttpRequestFactory requestFactory) {
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		return httpClient.connectTimeout().get().toMillis();
+	}
+
+	@Override
+	protected long readTimeout(JdkClientHttpRequestFactory requestFactory) {
+		Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		return readTimeout.toMillis();
 	}
 
 }

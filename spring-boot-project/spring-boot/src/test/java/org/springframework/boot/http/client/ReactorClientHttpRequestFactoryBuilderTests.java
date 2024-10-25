@@ -16,22 +16,37 @@
 
 package org.springframework.boot.http.client;
 
-import org.junit.jupiter.api.Test;
+import java.time.Duration;
 
-import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
+import io.netty.channel.ChannelOption;
+import reactor.netty.http.client.HttpClient;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests for {@link ReactorClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-class ReactorClientHttpRequestFactoryBuilderTests {
+class ReactorClientHttpRequestFactoryBuilderTests
+		extends AbstractClientHttpRequestFactoryBuilderTests<ReactorClientHttpRequestFactory> {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	ReactorClientHttpRequestFactoryBuilderTests() {
+		super(ReactorClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.reactor());
+	}
+
+	@Override
+	protected long connectTimeout(ReactorClientHttpRequestFactory requestFactory) {
+		return (int) ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).configuration()
+			.options()
+			.get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
+	}
+
+	@Override
+	protected long readTimeout(ReactorClientHttpRequestFactory requestFactory) {
+		return ((Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout")).toMillis();
 	}
 
 }

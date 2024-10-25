@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-class ClientHttpRequestFactoriesRuntimeHintsTests {
+class ClientHttpRequestFactoryRuntimeHintsTests {
 
 	@Test
 	void shouldRegisterHints() {
