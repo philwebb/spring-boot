@@ -23,11 +23,10 @@ import java.util.Set;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInitializer;
 
 /**
- * {@link ClientHttpRequestFactory} to apply customizations from the
+ * {@link ClientHttpRequestInitializer} to apply customizations from the
  * {@link RestTemplateBuilder}.
  *
  * @author Dmytro Nosan
