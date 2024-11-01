@@ -23,9 +23,12 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 /**
- * @author awilkinson
+ * {@link Plugin} for a sub-project that depends on {@link AntoraContributorPlugin
+ * contributed} Antora-based documentation.
+ *
+ * @author Andy Wilkinson
  */
-public class AntoraAggregatorPlugin implements Plugin<Project> {
+public class AntoraDependenciesPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
@@ -69,7 +72,7 @@ public class AntoraAggregatorPlugin implements Plugin<Project> {
 		}
 
 		public void source() {
-			new SourceContribution(this.project).consumeFrom(this.name, this.path);
+			new SourceContribution(this.project, this.name).consumeFrom(this.path);
 		}
 
 	}

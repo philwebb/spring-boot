@@ -29,18 +29,20 @@ import org.springframework.boot.build.antora.Extensions.AntoraExtensionsConfigur
 class LocalAggregateContentContribution extends ContentContribution {
 
 	protected LocalAggregateContentContribution(Project project, String name) {
-		super(project, "local-aggregate", name);
+		super(project, name, "local-aggregate");
 	}
 
 	@Override
 	void produceFrom(CopySpec copySpec) {
 		super.configureProduction(copySpec);
-		getProject().getTasks()
-			.named("generateAntoraPlaybook", GenerateAntoraPlaybook.class,
-					(task) -> task.getAntoraExtensions()
-						.getZipContentsCollector()
-						.getAlwaysInclude()
-						.add(new AlwaysInclude(getName(), "local-aggregate-content")));
+		getProject().getTasks().named("generateAntoraPlaybook", GenerateAntoraPlaybook.class, this::addToAlwaysInclude);
+	}
+
+	private void addToAlwaysInclude(GenerateAntoraPlaybook task) {
+		task.getAntoraExtensions()
+			.getZipContentsCollector()
+			.getAlwaysInclude()
+			.add(new AlwaysInclude(getName(), "local-aggregate-content"));
 	}
 
 }

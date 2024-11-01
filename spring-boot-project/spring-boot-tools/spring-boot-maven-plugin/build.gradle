@@ -1,5 +1,5 @@
 plugins {
-	id "org.springframework.boot.antora-aggregated"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"

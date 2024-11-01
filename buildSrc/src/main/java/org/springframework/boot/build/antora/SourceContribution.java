@@ -16,14 +16,15 @@
 
 package org.springframework.boot.build.antora;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.ArchiveOperations;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
@@ -33,6 +34,8 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskInputFilePropertyBuilder;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
 
@@ -45,46 +48,51 @@ class SourceContribution extends Contribution {
 
 	private static final String CONFIGURATION_NAME = "antoraSource";
 
-	private final Project project;
-
-	SourceContribution(Project project) {
-		this.project = project;
+	SourceContribution(Project project, String name) {
+		super(project, name);
 	}
 
 	void produce() {
-		Configuration antoraSource = this.project.getConfigurations().create(CONFIGURATION_NAME);
-		TaskProvider<Zip> antoraSourceZip = this.project.getTasks().register("antoraSourceZip", Zip.class, (zip) -> {
-			zip.getDestinationDirectory().set(this.project.getLayout().getBuildDirectory().dir("antora-source"));
+		Configuration antoraSource = getProject().getConfigurations().create(CONFIGURATION_NAME);
+		TaskProvider<Zip> antoraSourceZip = getProject().getTasks().register("antoraSourceZip", Zip.class, (zip) -> {
+			zip.getDestinationDirectory().set(getProject().getLayout().getBuildDirectory().dir("antora-source"));
 			zip.from("src/docs/antora");
 			zip.setDescription("Creates a zip archive of the Antora source in src/docs/antora.");
 		});
-		this.project.getArtifacts().add(antoraSource.getName(), antoraSourceZip);
+		getProject().getArtifacts().add(antoraSource.getName(), antoraSourceZip);
 	}
 
-	void consumeFrom(String name, String path) {
-		Configuration antoraSourceConfiguration = this.project.getConfigurations()
-			.create("%sAntoraSource".formatted(toCamelCase(name)));
-		this.project.getDependencies()
-			.add(antoraSourceConfiguration.getName(), this.project.provider(() -> this.project.getDependencies()
-				.project(Map.of("path", path, "configuration", CONFIGURATION_NAME))));
-		Provider<Directory> sourceOutputDirectory = this.project.getLayout()
-			.getBuildDirectory()
-			.dir("generated/docs/antora-dependencies-source/" + name);
-		this.project.getTasks()
-			.named("generateAntoraPlaybook", GenerateAntoraPlaybook.class,
-					(generatePlaybook) -> generatePlaybook.getContentSource().addStartPath(sourceOutputDirectory));
-		TaskProvider<SyncAntoraSource> sync = this.project.getTasks()
-			.register("sync%sAntoraSource".formatted(toPascalCase(name)), SyncAntoraSource.class, (task) -> {
-				task.setSource(antoraSourceConfiguration);
-				task.getOutputDirectory().set(sourceOutputDirectory);
-				task.setDescription("Syncs the %s Antora source from %s.".formatted(name, path));
-			});
-		this.project.getTasks()
-			.named("antora",
-					(task) -> task.getInputs()
-						.dir(sync.map(SyncAntoraSource::getOutputDirectory))
-						.withPathSensitivity(PathSensitivity.RELATIVE)
-						.withPropertyName(antoraSourceConfiguration.getName()));
+	void consumeFrom(String path) {
+		Configuration configuration = createConfiguration(getName());
+		DependencyHandler dependencies = getProject().getDependencies();
+		dependencies.add(configuration.getName(),
+				getProject().provider(() -> projectDependency(path, CONFIGURATION_NAME)));
+		Provider<Directory> outputDirectory = outputDirectory("source", getName());
+		TaskContainer tasks = getProject().getTasks();
+		TaskProvider<SyncAntoraSource> syncSource = tasks.register(pascalCaseName("sync%sAntoraSource", getName()),
+				SyncAntoraSource.class, (task) -> configureSyncSource(task, path, configuration, outputDirectory));
+		tasks.named("antora", (task) -> addToTaskInputs(configuration, syncSource, task));
+		tasks.named("generateAntoraPlaybook", GenerateAntoraPlaybook.class,
+				(generatePlaybook) -> generatePlaybook.getContentSource().addStartPath(outputDirectory));
+	}
+
+	private TaskInputFilePropertyBuilder addToTaskInputs(Configuration configuration,
+			TaskProvider<SyncAntoraSource> syncSource, Task task) {
+		return task.getInputs()
+			.dir(syncSource.map(SyncAntoraSource::getOutputDirectory))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName(configuration.getName());
+	}
+
+	private void configureSyncSource(SyncAntoraSource task, String path, Configuration configuration,
+			Provider<Directory> outputDirectory) {
+		task.setDescription("Syncs the %s Antora source from %s.".formatted(getName(), path));
+		task.setSource(configuration);
+		task.getOutputDirectory().set(outputDirectory);
+	}
+
+	private Configuration createConfiguration(String name) {
+		return getProject().getConfigurations().create(pascalCaseName("%sAntoraSource", name));
 	}
 
 	static abstract class SyncAntoraSource extends DefaultTask {
@@ -115,10 +123,12 @@ class SourceContribution extends Contribution {
 
 		@TaskAction
 		void syncAntoraSource() {
-			this.fileSystemOperations.sync((sync) -> {
-				sync.into(getOutputDirectory());
-				this.source.getFiles().forEach((file) -> sync.from(this.archiveOperations.zipTree(file)));
-			});
+			this.fileSystemOperations.sync(this::syncAntoraSource);
+		}
+
+		private void syncAntoraSource(CopySpec sync) {
+			sync.into(getOutputDirectory());
+			this.source.getFiles().forEach((file) -> sync.from(this.archiveOperations.zipTree(file)));
 		}
 
 	}

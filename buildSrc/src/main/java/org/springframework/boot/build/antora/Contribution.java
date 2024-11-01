@@ -16,7 +16,14 @@
 
 package org.springframework.boot.build.antora;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.file.Directory;
+import org.gradle.api.provider.Provider;
 
 /**
  * A contribution to Antora.
@@ -25,7 +32,38 @@ import org.apache.commons.lang3.StringUtils;
  */
 abstract class Contribution {
 
-	protected static String toPascalCase(String input) {
+	private final Project project;
+
+	private final String name;
+
+	protected Contribution(Project project, String name) {
+		this.project = project;
+		this.name = name;
+	}
+
+	protected final Project getProject() {
+		return this.project;
+	}
+
+	protected final String getName() {
+		return this.name;
+	}
+
+	protected final Dependency projectDependency(String path, Object configuration) {
+		return getProject().getDependencies().project(Map.of("path", path, "configuration", configuration));
+	}
+
+	protected final Provider<Directory> outputDirectory(String dependencyType, String theName) {
+		return getProject().getLayout()
+			.getBuildDirectory()
+			.dir("generated/docs/antora-dependencies-" + dependencyType + "/" + theName);
+	}
+
+	protected String pascalCaseName(String string, String... args) {
+		return string.formatted(Arrays.stream(args).map(this::toPascalCase).toArray());
+	}
+
+	private String toPascalCase(String input) {
 		return StringUtils.capitalize(toCamelCase(input));
 	}
 

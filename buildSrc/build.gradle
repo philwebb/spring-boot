@@ -71,12 +71,12 @@ gradlePlugin {
 			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
 		}
 		antoraAggregatedPlugin {
-			id = "org.springframework.boot.antora-aggregated"
-			implementationClass = "org.springframework.boot.build.antora.AntoraAggregatedPlugin"
+			id = "org.springframework.boot.antora-contributor"
+			implementationClass = "org.springframework.boot.build.antora.AntoraContributorPlugin"
 		}
 		antoraAggregatorPlugin {
-			id = "org.springframework.boot.antora-aggregator"
-			implementationClass = "org.springframework.boot.build.antora.AntoraAggregatorPlugin"
+			id = "org.springframework.boot.antora-dependencies"
+			implementationClass = "org.springframework.boot.build.antora.AntoraDependenciesPlugin"
 		}
 		architecturePlugin {
 			id = "org.springframework.boot.architecture"

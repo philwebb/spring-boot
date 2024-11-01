@@ -2,8 +2,8 @@ plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
 	id "org.antora"
-	id "org.springframework.boot.antora-aggregated"
-	id "org.springframework.boot.antora-aggregator"
+	id "org.springframework.boot.antora-contributor"
+	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
 	id 'org.jetbrains.kotlin.jvm'
 }

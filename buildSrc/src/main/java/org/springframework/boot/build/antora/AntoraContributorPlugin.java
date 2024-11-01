@@ -26,12 +26,12 @@ import org.gradle.api.Project;
 import org.gradle.api.file.CopySpec;
 
 /**
- * {@link Plugin} for a sub-project that produces Antora-based documentation that is
+ * {@link Plugin} for a sub-project that contributes to Antora-based documentation that is
  * aggregated by another project.
  *
  * @author Andy Wilkinson
  */
-public class AntoraAggregatedPlugin implements Plugin<Project> {
+public class AntoraContributorPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
@@ -59,7 +59,7 @@ public class AntoraAggregatedPlugin implements Plugin<Project> {
 		}
 
 		public void source() {
-			new SourceContribution(this.project).produce();
+			new SourceContribution(this.project, this.name).produce();
 		}
 
 		public void catalogContent(Action<CopySpec> action) {

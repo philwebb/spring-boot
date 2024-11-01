@@ -19,7 +19,6 @@ package org.springframework.boot.build.antora;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -28,9 +27,11 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.publish.PublishingExtension;
@@ -40,6 +41,7 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskInputFilePropertyBuilder;
 import org.gradle.api.tasks.TaskProvider;
 
 /**
@@ -50,7 +52,7 @@ import org.gradle.api.tasks.TaskProvider;
 class ConsumableContentContribution extends ContentContribution {
 
 	protected ConsumableContentContribution(Project project, String type, String name) {
-		super(project, type, name);
+		super(project, name, type);
 	}
 
 	@Override
@@ -62,40 +64,51 @@ class ConsumableContentContribution extends ContentContribution {
 
 	void consumeFrom(String path) {
 		Configuration configuration = createConfiguration(getName());
-		getProject().getDependencies()
-			.add(configuration.getName(), getProject().provider(() -> getProject().getDependencies()
-				.project(Map.of("path", path, "configuration", configuration.getName()))));
-		Provider<Directory> contentOutputDirectory = getProject().getLayout()
-			.getBuildDirectory()
-			.dir("generated/docs/antora-dependencies-content/" + getName());
+		DependencyHandler dependencies = getProject().getDependencies();
+		dependencies.add(configuration.getName(), getProject().provider(() -> projectDependency(path, configuration)));
+		Provider<Directory> outputDirectory = outputDirectory("content", getName());
 		TaskContainer tasks = getProject().getTasks();
-		TaskProvider<CopyAntoraContent> copyAntoraCatalogContent = tasks.register(
-				"copy%sAntora%sContent".formatted(toPascalCase(getName()), toPascalCase(getType())),
-				CopyAntoraContent.class, (task) -> {
-					task.setSource(configuration);
-					task.getOutputFile()
-						.set(contentOutputDirectory.map((dir) -> dir.file("spring-boot-docs-%s-%s-%s-content.zip"
-							.formatted(getProject().getVersion(), getName(), getType()))));
-					task.setDescription("Syncs the %s Antora %s content from %s.".formatted(getName(),
-							toDescription(getType()), path));
-				});
-		tasks.named("antora",
-				(task) -> task.getInputs()
-					.files(copyAntoraCatalogContent)
-					.withPathSensitivity(PathSensitivity.RELATIVE)
-					.withPropertyName(configuration.getName()));
+		TaskProvider<?> copyAntoraContent = tasks.register(pascalCaseName("copy%sAntora%sContent", getName(), getType()),
+				CopyAntoraContent.class, (task) -> configureCopyContent(task, path, configuration, outputDirectory));
+		tasks.named("antora", (task) -> addToTaskInputs(task, copyAntoraContent, configuration.getName()));
 		tasks.named("generateAntoraPlaybook", GenerateAntoraPlaybook.class,
-				(task) -> task.getAntoraExtensions().getZipContentsCollector().getDependencies().add(getName()));
+				(task) -> addToZipContentsCollectorDependencies(task));
 		getProject().getExtensions()
 			.getByType(PublishingExtension.class)
 			.getPublications()
 			.withType(MavenPublication.class)
-			.configureEach((mavenPublication) -> {
-				if ("maven".equals(mavenPublication.getName())) {
-					mavenPublication.artifact(copyAntoraCatalogContent, (mavenArtifact) -> mavenArtifact
-						.setClassifier("%s-%s-content".formatted(getName(), getType())));
-				}
-			});
+			.configureEach((mavenPublication) -> addPublishedMavenArtifact(mavenPublication, copyAntoraContent));
+	}
+
+	private void configureCopyContent(CopyAntoraContent task, String path, Configuration configuration,
+			Provider<Directory> outputDirectory) {
+		task.setDescription(
+				"Syncs the %s Antora %s content from %s.".formatted(getName(), toDescription(getType()), path));
+		task.setSource(configuration);
+		task.getOutputFile().set(outputDirectory.map(this::getContentZipFile));
+	}
+
+	private TaskInputFilePropertyBuilder addToTaskInputs(Task task, TaskProvider<?> files, String propertyName) {
+		return task.getInputs()
+			.files(files)
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName(propertyName);
+	}
+
+	private void addToZipContentsCollectorDependencies(GenerateAntoraPlaybook task) {
+		task.getAntoraExtensions().getZipContentsCollector().getDependencies().add(getName());
+	}
+
+	private void addPublishedMavenArtifact(MavenPublication mavenPublication, TaskProvider<?> copyAntoraContent) {
+		if ("maven".equals(mavenPublication.getName())) {
+			String classifier = "%s-%s-content".formatted(getName(), getType());
+			mavenPublication.artifact(copyAntoraContent, (mavenArtifact) -> mavenArtifact.setClassifier(classifier));
+		}
+	}
+
+	private RegularFile getContentZipFile(Directory dir) {
+		Object version = getProject().getVersion();
+		return dir.file("spring-boot-docs-%s-%s-%s-content.zip".formatted(version, getName(), getType()));
 	}
 
 	private static String toDescription(String input) {
@@ -103,9 +116,8 @@ class ConsumableContentContribution extends ContentContribution {
 	}
 
 	private Configuration createConfiguration(String name) {
-		Configuration configuration = getProject().getConfigurations()
+		return getProject().getConfigurations()
 			.create("%sAntora%sContent".formatted(toCamelCase(name), StringUtils.capitalize(getType())));
-		return configuration;
 	}
 
 	static abstract class CopyAntoraContent extends DefaultTask {

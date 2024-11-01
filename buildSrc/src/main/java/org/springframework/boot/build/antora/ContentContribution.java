@@ -18,6 +18,7 @@ package org.springframework.boot.build.antora;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import javax.inject.Inject;
@@ -42,42 +43,28 @@ import org.gradle.api.tasks.bundling.Zip;
  */
 abstract class ContentContribution extends Contribution {
 
-	private final Project project;
-
 	private final String type;
 
-	private final String name;
-
-	protected ContentContribution(Project project, String type, String name) {
-		this.project = project;
+	protected ContentContribution(Project project, String name, String type) {
+		super(project, name);
 		this.type = type;
-		this.name = name;
-	}
-
-	protected Project getProject() {
-		return this.project;
 	}
 
 	protected String getType() {
 		return this.type;
 	}
 
-	protected String getName() {
-		return this.name;
-	}
-
 	abstract void produceFrom(CopySpec copySpec);
 
 	protected TaskProvider<? extends Task> configureProduction(CopySpec copySpec) {
-		TaskContainer tasks = this.project.getTasks();
-		TaskProvider<Zip> zipContent = tasks.register(
-				"zip%sAntora%sContent".formatted(toPascalCase(this.name), toPascalCase(this.type)), Zip.class,
-				(zip) -> {
+		TaskContainer tasks = getProject().getTasks();
+		TaskProvider<Zip> zipContent = tasks.register(pascalCaseName("zip%sAntora%sContent", getName(), this.type),
+				Zip.class, (zip) -> {
 					zip.getDestinationDirectory()
-						.set(this.project.getLayout().getBuildDirectory().dir("generated/docs/antora-content"));
-					zip.getArchiveClassifier().set("%s-%s-content".formatted(this.name, this.type));
+						.set(getProject().getLayout().getBuildDirectory().dir("generated/docs/antora-content"));
+					zip.getArchiveClassifier().set("%s-%s-content".formatted(getName(), this.type));
 					zip.with(copySpec);
-					zip.setDescription("Creates a zip archive of the %s Antora %s content.".formatted(this.name,
+					zip.setDescription("Creates a zip archive of the %s Antora %s content.".formatted(getName(),
 							toDescription(this.type)));
 				});
 		tasks.named("antora", (task) -> task.getInputs().files(zipContent).withPropertyName(zipContent.getName()));
@@ -94,7 +81,6 @@ abstract class ContentContribution extends Contribution {
 
 		@Inject
 		public CopyAntoraContent() {
-
 		}
 
 		@InputFiles
@@ -111,8 +97,9 @@ abstract class ContentContribution extends Contribution {
 
 		@TaskAction
 		void copyAntoraContent() throws IllegalStateException, IOException {
-			Files.copy(this.source.getSingleFile().toPath(), getOutputFile().getAsFile().get().toPath(),
-					StandardCopyOption.REPLACE_EXISTING);
+			Path source = this.source.getSingleFile().toPath();
+			Path target = getOutputFile().getAsFile().get().toPath();
+			Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
 		}
 
 	}

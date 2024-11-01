@@ -1,6 +1,6 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.antora-aggregated"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
