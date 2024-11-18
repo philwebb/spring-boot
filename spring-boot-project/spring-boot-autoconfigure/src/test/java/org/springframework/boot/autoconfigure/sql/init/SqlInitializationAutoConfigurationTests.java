@@ -113,8 +113,7 @@ class SqlInitializationAutoConfigurationTests {
 			.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
 			.run((context) -> {
 				BeanDefinition beanDefinition = context.getBeanFactory()
-					.getBeanDefinition(
-							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+					.getBeanDefinition(DependsOnInitializedDatabaseConfiguration.class.getName());
 				assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("r2dbcScriptDatabaseInitializer");
 			});
 	}
@@ -125,8 +124,7 @@ class SqlInitializationAutoConfigurationTests {
 			.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
 			.run((context) -> {
 				BeanDefinition beanDefinition = context.getBeanFactory()
-					.getBeanDefinition(
-							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+					.getBeanDefinition(DependsOnInitializedDatabaseConfiguration.class.getName());
 				assertThat(beanDefinition.getDependsOn())
 					.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
 			});

@@ -32,6 +32,8 @@ import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolLi
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.mongo.MongoMetricsAutoConfiguration.MongoCommandMetricsConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.mongo.MongoMetricsAutoConfiguration.MongoConnectionPoolMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -117,19 +119,19 @@ class MongoMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void whenThereIsNoMongoClientSettingsOnClasspathThenNoMetricsCommandListenerIsAdded() {
+	void whenThereIsNoMongoClientOnClasspathThenNoMetricsCommandListenerIsAdded() {
 		this.contextRunner.with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader(MongoClientSettings.class))
-			.run(assertThatMetricsCommandListenerNotAdded());
+			.withClassLoader(new FilteredClassLoader("com.mongodb"))
+			.run((context) -> assertThat(context).doesNotHaveBean(MongoCommandMetricsConfiguration.class));
 	}
 
 	@Test
-	void whenThereIsNoMongoClientSettingsOnClasspathThenNoMetricsConnectionPoolListenerIsAdded() {
+	void whenThereIsNoMongoClientOnClasspathThenNoMetricsConnectionPoolListenerIsAdded() {
 		this.contextRunner.with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader(MongoClientSettings.class))
-			.run(assertThatMetricsConnectionPoolListenerNotAdded());
+			.withClassLoader(new FilteredClassLoader("com.mongodb"))
+			.run((context) -> assertThat(context).doesNotHaveBean(MongoConnectionPoolMetricsConfiguration.class));
 	}
 
 	@Test
