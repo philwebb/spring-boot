@@ -53,7 +53,7 @@ class ConfigurationsTests {
 	void createShouldSortClassesUsingSortMethod() {
 		TestDeprecatedSortedConfigurations configurations = new TestDeprecatedSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
-		assertThat(configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
+		assertThat(Configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ConfigurationsTests {
 	void createShouldSortClasses() {
 		TestConfigurations configurations = new TestConfigurations(Sorter.instance, OutputStream.class,
 				InputStream.class);
-		assertThat(configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
+		assertThat(Configurations.getClasses()).containsExactly(InputStream.class, OutputStream.class);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class ConfigurationsTests {
 		}
 
 		TestConfigurations(UnaryOperator<Collection<Class<?>>> sorter, Class<?>... classes) {
-			super(sorter, Arrays.asList(classes));
+			super(sorter, Arrays.asList(classes), null);
 		}
 
 		TestConfigurations(Collection<Class<?>> classes) {
@@ -117,7 +117,7 @@ class ConfigurationsTests {
 		}
 
 		protected TestSortedConfigurations(Collection<Class<?>> classes) {
-			super(Sorter.instance, classes);
+			super(Sorter.instance, classes, null);
 		}
 
 		@Override

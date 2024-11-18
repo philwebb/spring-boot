@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,7 +83,8 @@ public abstract class Configurations {
 	 * @param classes the configuration classes
 	 * @since 3.4.0
 	 */
-	protected Configurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes) {
+	protected Configurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
+			Function<Class<?>, String> beanNameGenerator) {
 		Assert.notNull(sorter, "Sorter must not be null");
 		Assert.notNull(classes, "Classes must not be null");
 		Collection<Class<?>> sorted = sorter.apply(classes);
@@ -102,10 +104,6 @@ public abstract class Configurations {
 		return classes;
 	}
 
-	protected final Set<Class<?>> getClasses() {
-		return this.classes;
-	}
-
 	/**
 	 * Merge configurations from another source of the same type.
 	 * @param other the other {@link Configurations} (must be of the same type as this
@@ -114,7 +112,7 @@ public abstract class Configurations {
 	 */
 	protected Configurations merge(Configurations other) {
 		Set<Class<?>> mergedClasses = new LinkedHashSet<>(getClasses());
-		mergedClasses.addAll(other.getClasses());
+		mergedClasses.addAll(Configurations.getClasses());
 		if (this.sorter != null) {
 			mergedClasses = new LinkedHashSet<>(this.sorter.apply(mergedClasses));
 		}
@@ -127,6 +125,10 @@ public abstract class Configurations {
 	 * @return a new configurations instance (must be of the same type as this instance)
 	 */
 	protected abstract Configurations merge(Set<Class<?>> mergedClasses);
+
+	protected String getBeanName(Class<?> beanClass) {
+		return null;
+	}
 
 	/**
 	 * Return the classes from all the specified configurations in the order that they
@@ -145,30 +147,34 @@ public abstract class Configurations {
 	 * @return configuration classes in registration order
 	 */
 	public static Class<?>[] getClasses(Collection<Configurations> configurations) {
-		List<Configurations> ordered = new ArrayList<>(configurations);
-		ordered.sort(COMPARATOR);
-		List<Configurations> collated = collate(ordered);
+		List<Configurations> collated = collate(configurations);
 		LinkedHashSet<Class<?>> classes = collated.stream()
 			.flatMap(Configurations::streamClasses)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 		return ClassUtils.toClassArray(classes);
 	}
 
-	private static Stream<Class<?>> streamClasses(Configurations configurations) {
-		return configurations.getClasses().stream();
-	}
-
-	private static List<Configurations> collate(List<Configurations> orderedConfigurations) {
+	static List<Configurations> collate(Collection<Configurations> configurations) {
 		LinkedList<Configurations> collated = new LinkedList<>();
-		for (Configurations item : orderedConfigurations) {
-			if (collated.isEmpty() || collated.getLast().getClass() != item.getClass()) {
-				collated.add(item);
+		for (Configurations configuration : sortConfigurations(configurations)) {
+			if (collated.isEmpty() || collated.getLast().getClass() != configuration.getClass()) {
+				collated.add(configuration);
 			}
 			else {
-				collated.set(collated.size() - 1, collated.getLast().merge(item));
+				collated.set(collated.size() - 1, collated.getLast().merge(configuration));
 			}
 		}
 		return collated;
+	}
+
+	private static List<Configurations> sortConfigurations(Collection<Configurations> configurations) {
+		List<Configurations> sorted = new ArrayList<>(configurations);
+		sorted.sort(COMPARATOR);
+		return sorted;
+	}
+
+	private static Stream<Class<?>> streamClasses(Configurations configurations) {
+		return Configurations.getClasses().stream();
 	}
 
 }

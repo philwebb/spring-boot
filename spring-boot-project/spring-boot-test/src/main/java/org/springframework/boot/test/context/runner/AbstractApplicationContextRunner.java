@@ -19,16 +19,15 @@ package org.springframework.boot.test.context.runner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.annotation.Configurations;
@@ -40,18 +39,12 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 
 /**
@@ -448,13 +441,27 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		this.runnerConfiguration.environmentProperties.applyTo(context);
 		this.runnerConfiguration.beanRegistrations.forEach((registration) -> registration.apply(context));
 		this.runnerConfiguration.initializers.forEach((initializer) -> initializer.initialize(context));
-		Class<?>[] classes = Configurations.getClasses(this.runnerConfiguration.configurations);
-		if (classes.length > 0) {
-			ConfigurationClassesImporter.prepareEnvironment(context.getEnvironment(), classes);
-			((AnnotationConfigRegistry) context).register(ConfigurationClassesImportRegistrar.class);
+		Class<?>[] beanClasses = Configurations.getClasses(this.runnerConfiguration.configurations);
+		if (beanClasses.length > 0) {
+			getRegistrar(context).accept(beanClasses);
 		}
 		if (refresh) {
 			context.refresh();
+		}
+	}
+
+	private Consumer<Class<?>[]> getRegistrar(C context) {
+		if (context instanceof BeanDefinitionRegistry registry) {
+			AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(registry,
+					context.getEnvironment());
+			return (beanClasses) -> registerUsingReader(reader, beanClasses);
+		}
+		return ((AnnotationConfigRegistry) context)::register;
+	}
+
+	private void registerUsingReader(AnnotatedBeanDefinitionReader reader, Class<?>[] beanClasses) {
+		for (Class<?> beanClass : beanClasses) {
+			reader.registerBean(beanClass, beanClass.getName());
 		}
 	}
 
@@ -609,37 +616,6 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			List<T> result = new ArrayList<>(list);
 			result.add(element);
 			return result;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(ConfigurationClassesImporter.class)
-	static final class ConfigurationClassesImportRegistrar {
-
-	}
-
-	private static final class ConfigurationClassesImporter implements ImportSelector, EnvironmentAware {
-
-		private static final String PROPERTY_NAME = ApplicationContextRunner.class.getName() + ".configurations";
-
-		private Environment environment;
-
-		@Override
-		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return this.environment.getProperty(PROPERTY_NAME, String[].class);
-		}
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = environment;
-		}
-
-		private static void prepareEnvironment(ConfigurableEnvironment environment, Class<?>[] classes) {
-			String[] classNames = Stream.of(classes).map(Class::getName).toArray(String[]::new);
-			environment.getPropertySources()
-				.addLast(new MapPropertySource("applicationContextRunnerConfigurations",
-						Map.of(ConfigurationClassesImporter.PROPERTY_NAME, classNames)));
 		}
 
 	}
