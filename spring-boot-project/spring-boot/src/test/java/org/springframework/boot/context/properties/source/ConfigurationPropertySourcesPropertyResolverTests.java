@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.ConfigurablePropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -122,11 +124,19 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		propertySource.withProperty("v2", "${v1}");
 		environment.getPropertySources().addFirst(propertySource);
 		assertThat(environment.getProperty("v2")).isEqualTo("one");
-		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+		assertThatExceptionOfType(ConversionFailedException.class)
 			.isThrownBy(() -> environment.getProperty("v2", Integer.class))
 			.satisfies((ex) -> {
-				assertThat(ex.getName()).isEqualTo("v2");
 				assertThat(ex.getValue()).isEqualTo("one");
+				assertThat(ex.getSourceType()).isEqualTo(TypeDescriptor.valueOf(String.class));
+				assertThat(ex.getTargetType()).isEqualTo(TypeDescriptor.valueOf(Integer.class));
+			})
+			.havingCause()
+			.satisfies((ex) -> {
+				InvalidConfigurationPropertyValueException invalidValueEx = (InvalidConfigurationPropertyValueException) ex;
+				assertThat(invalidValueEx.getName()).isEqualTo("v2");
+				assertThat(invalidValueEx.getValue()).isEqualTo("one");
+				assertThat(ex).cause().isInstanceOf(NumberFormatException.class);
 			});
 	}
 

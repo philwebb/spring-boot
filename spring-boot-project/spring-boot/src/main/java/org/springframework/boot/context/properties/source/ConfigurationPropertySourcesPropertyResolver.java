@@ -84,7 +84,9 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 			return convertValueIfNecessary(value, targetValueType);
 		}
 		catch (ConversionFailedException ex) {
-			throw new InvalidConfigurationPropertyValueException(key, value, ex.getMessage());
+			Exception wrappedCause = new InvalidConfigurationPropertyValueException(key, value,
+					"Failed to convert to type " + ex.getTargetType(), ex.getCause());
+			throw new ConversionFailedException(ex.getSourceType(), ex.getTargetType(), ex.getValue(), wrappedCause);
 		}
 	}
 
