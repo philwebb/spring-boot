@@ -28,6 +28,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConfigurationPropertySourcesPropertyResolver}.
@@ -111,6 +112,22 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		environment.getPropertySources().addFirst(propertySource);
 		assertThat(environment.getProperty("v2")).isEqualTo("1");
 		assertThat(environment.getProperty("v2", Integer.class)).isOne();
+	}
+
+	@Test
+	void throwsInvalidConfigurationPropertyValueExceptionWhenGetPropertyAsTypeFailsToConvert() {
+		ResolverEnvironment environment = new ResolverEnvironment();
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.withProperty("v1", "one");
+		propertySource.withProperty("v2", "${v1}");
+		environment.getPropertySources().addFirst(propertySource);
+		assertThat(environment.getProperty("v2")).isEqualTo("one");
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(() -> environment.getProperty("v2", Integer.class))
+			.satisfies((ex) -> {
+				assertThat(ex.getName()).isEqualTo("v2");
+				assertThat(ex.getValue()).isEqualTo("one");
+			});
 	}
 
 	private CountingMockPropertySource createMockPropertySource(StandardEnvironment environment, boolean attach) {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.env.AbstractPropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
@@ -79,7 +80,12 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		if (resolveNestedPlaceholders && value instanceof String string) {
 			value = resolveNestedPlaceholders(string);
 		}
-		return convertValueIfNecessary(value, targetValueType);
+		try {
+			return convertValueIfNecessary(value, targetValueType);
+		}
+		catch (ConversionFailedException ex) {
+			throw new InvalidConfigurationPropertyValueException(key, value, ex.getMessage());
+		}
 	}
 
 	private Object findPropertyValue(String key) {
