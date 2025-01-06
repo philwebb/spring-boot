@@ -24,6 +24,9 @@ import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnOptIn;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
@@ -50,7 +53,7 @@ class ActiveMQConnectionFactoryConfiguration {
 	static class SimpleConnectionFactoryConfiguration {
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "false")
+		@ConditionalOnOptOut("spring.jms.cache")
 		ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 				ActiveMQConnectionDetails connectionDetails) {
@@ -69,8 +72,7 @@ class ActiveMQConnectionFactoryConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(CachingConnectionFactory.class)
-		@ConditionalOnProperty(prefix = "spring.jms.cache", name = "enabled", havingValue = "true",
-				matchIfMissing = true)
+		@ConditionalOnNoOptOut("spring.jms.cache")
 		static class CachingConnectionFactoryConfiguration {
 
 			@Bean
@@ -95,7 +97,7 @@ class ActiveMQConnectionFactoryConfiguration {
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true")
+		@ConditionalOnOptIn("spring.activemq.pool")
 		JmsPoolConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 				ActiveMQConnectionDetails connectionDetails) {

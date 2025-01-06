@@ -30,6 +30,7 @@ import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
@@ -43,7 +44,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnNoOptOut("spring.jmx")
 class DataSourceJmxConfiguration {
 
 	private static final Log logger = LogFactory.getLog(DataSourceJmxConfiguration.class);

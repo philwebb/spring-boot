@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
@@ -74,7 +75,7 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
-@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
+@ConditionalOnNoOptOut("spring.liquibase")
 @Conditional(LiquibaseDataSourceCondition.class)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @ImportRuntimeHints(LiquibaseAutoConfigurationRuntimeHints.class)

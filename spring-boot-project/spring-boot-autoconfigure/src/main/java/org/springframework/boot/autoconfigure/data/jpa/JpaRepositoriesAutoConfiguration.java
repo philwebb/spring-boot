@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryBuilderCustomizer;
@@ -74,8 +75,7 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnNoOptOut("spring.data.jpa.repositories")
 @Import(JpaRepositoriesImportSelector.class)
 public class JpaRepositoriesAutoConfiguration {
 

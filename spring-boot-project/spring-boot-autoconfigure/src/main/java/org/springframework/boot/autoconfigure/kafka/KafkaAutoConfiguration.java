@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnOptIn;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
@@ -142,7 +143,7 @@ public class KafkaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.kafka.jaas.enabled")
+	@ConditionalOnOptIn("spring.kafka.jaas")
 	@ConditionalOnMissingBean
 	public KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
 		KafkaJaasLoginModuleInitializer jaas = new KafkaJaasLoginModuleInitializer();
@@ -177,7 +178,7 @@ public class KafkaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.kafka.retry.topic.enabled")
+	@ConditionalOnOptIn("spring.kafka.retry.topic")
 	@ConditionalOnSingleCandidate(KafkaTemplate.class)
 	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();

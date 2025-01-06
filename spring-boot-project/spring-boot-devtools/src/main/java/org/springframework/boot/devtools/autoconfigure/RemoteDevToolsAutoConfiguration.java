@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -102,7 +103,7 @@ public class RemoteDevToolsAutoConfiguration {
 	 * Configuration for remote update and restarts.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnNoOptOut("spring.devtools.remote.restart")
 	static class RemoteRestartConfiguration {
 
 		@Bean

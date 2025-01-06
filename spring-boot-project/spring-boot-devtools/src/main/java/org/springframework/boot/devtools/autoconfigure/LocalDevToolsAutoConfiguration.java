@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
@@ -68,7 +69,7 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnNoOptOut("spring.devtools.livereload")
 	static class LiveReloadConfiguration {
 
 		@Bean
@@ -96,7 +97,7 @@ public class LocalDevToolsAutoConfiguration {
 	 */
 	@Lazy(false)
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnNoOptOut("spring.devtools.restart")
 	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;
