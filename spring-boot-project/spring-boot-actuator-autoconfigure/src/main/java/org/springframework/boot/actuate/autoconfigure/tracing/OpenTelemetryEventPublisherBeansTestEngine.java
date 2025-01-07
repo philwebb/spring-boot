@@ -16,26 +16,41 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import org.junit.platform.launcher.TestExecutionListener;
-import org.junit.platform.launcher.TestIdentifier;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.platform.engine.EngineDiscoveryRequest;
+import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestDescriptor;
+import org.junit.platform.engine.TestEngine;
+import org.junit.platform.engine.UniqueId;
+import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /**
- * JUnit {@link TestExecutionListener} to ensure
+ * JUnit {@link BeforeAllCallback} to ensure
  * {@link OpenTelemetryEventPublisherBeansApplicationListener#addWrapper()} is called as
  * early as possible.
  *
  * @author Phillip Webb
- * @since 3.4.0
+ * @since 3.4.2
  * @see OpenTelemetryEventPublisherBeansApplicationListener
- * @deprecated since 3.4.2 for removal in 3.6.0 in favor of
- * {@link OpenTelemetryEventPublisherBeansTestEngine}
  */
-@Deprecated(since = "3.4.2", forRemoval = true)
-public class OpenTelemetryEventPublisherBeansTestExecutionListener implements TestExecutionListener {
+public class OpenTelemetryEventPublisherBeansTestEngine implements TestEngine {
+
+	public OpenTelemetryEventPublisherBeansTestEngine() {
+		OpenTelemetryEventPublisherBeansApplicationListener.addWrapper();
+	}
 
 	@Override
-	public void executionStarted(TestIdentifier testIdentifier) {
-		OpenTelemetryEventPublisherBeansApplicationListener.addWrapper();
+	public String getId() {
+		return "spring-opentelemetry-wrapper-initialization";
+	}
+
+	@Override
+	public TestDescriptor discover(EngineDiscoveryRequest discoveryRequest, UniqueId uniqueId) {
+		return new EngineDescriptor(uniqueId, "Spring OpenTelemetry Wrapper Initialization");
+	}
+
+	@Override
+	public void execute(ExecutionRequest request) {
 	}
 
 }

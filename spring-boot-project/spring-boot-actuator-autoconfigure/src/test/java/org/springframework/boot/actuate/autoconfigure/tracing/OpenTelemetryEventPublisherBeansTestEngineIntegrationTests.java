@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Integration tests for {@link OpenTelemetryEventPublisherBeansTestExecutionListener}.
+ * Integration tests for {@link OpenTelemetryEventPublisherBeansTestEngine}.
  *
  * @author Phillip Webb
  */
 @ForkedClassPath
-class OpenTelemetryEventPublishingContextWrapperBeansTestExecutionListenerIntegrationTests {
+class OpenTelemetryEventPublisherBeansTestEngineIntegrationTests {
 
 	private final ContextStorage parent = mock(ContextStorage.class);
 
