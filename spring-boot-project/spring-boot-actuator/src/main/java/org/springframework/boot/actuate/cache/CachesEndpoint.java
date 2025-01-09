@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ public class CachesEndpoint {
 	 * {@code cacheManager} was provided to identify a unique candidate
 	 */
 	@ReadOperation
+	@SuppressWarnings("deprecation")
 	public CacheEntryDescriptor cache(@Selector String cache, @Nullable String cacheManager) {
 		return extractUniqueCacheEntry(cache, getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 	}
@@ -101,6 +102,7 @@ public class CachesEndpoint {
 	 * {@code cacheManager} was provided to identify a unique candidate
 	 */
 	@DeleteOperation
+	@SuppressWarnings("deprecation")
 	public boolean clearCache(@Selector String cache, @Nullable String cacheManager) {
 		CacheEntryDescriptor entry = extractUniqueCacheEntry(cache,
 				getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));

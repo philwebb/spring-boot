@@ -31,6 +31,7 @@ import org.springframework.lang.Nullable;
 public class SpecificEndpoint {
 
 	@ReadOperation
+	@SuppressWarnings("deprecation")
 	String invoke(@Nullable String param) {
 		return "test";
 	}

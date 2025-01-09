@@ -74,6 +74,7 @@ public class HeapDumpWebEndpoint {
 	}
 
 	@ReadOperation
+	@SuppressWarnings("deprecation")
 	public WebEndpointResponse<Resource> heapDump(@Nullable Boolean live) {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {

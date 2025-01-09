@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,10 @@ class RecordableServerHttpResponse implements RecordableHttpResponse {
 
 	private final Map<String, List<String>> headers;
 
+	@SuppressWarnings("removal") // TODO
 	RecordableServerHttpResponse(ServerHttpResponse response) {
 		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
-		this.headers = new LinkedHashMap<>(response.getHeaders());
+		this.headers = new LinkedHashMap<>(response.getHeaders().asMultiValueMap());
 	}
 
 	@Override

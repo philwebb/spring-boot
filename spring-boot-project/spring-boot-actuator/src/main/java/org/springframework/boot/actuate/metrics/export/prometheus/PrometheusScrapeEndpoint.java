@@ -68,6 +68,7 @@ public class PrometheusScrapeEndpoint {
 	}
 
 	@ReadOperation(producesFrom = PrometheusOutputFormat.class)
+	@SuppressWarnings("deprecation")
 	public WebEndpointResponse<byte[]> scrape(PrometheusOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(this.nextMetricsScrapeSize);

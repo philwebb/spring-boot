@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 /**
@@ -35,7 +36,7 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 
 	private final String method;
 
-	private final Map<String, List<String>> headers;
+	private final HttpHeaders headers;
 
 	private final URI uri;
 
@@ -65,8 +66,9 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 	}
 
 	@Override
+	@SuppressWarnings("removal") // TODO: asMultiValueMap is deprecated
 	public Map<String, List<String>> getHeaders() {
-		return new LinkedHashMap<>(this.headers);
+		return new LinkedHashMap<>(this.headers.asMultiValueMap());
 	}
 
 	@Override

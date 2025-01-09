@@ -122,6 +122,7 @@ class ReflectiveOperationInvokerTests {
 			return new StringBuilder(name).reverse().toString();
 		}
 
+		@SuppressWarnings("deprecation")
 		String reverseNullable(ApiVersion apiVersion, SecurityContext securityContext, @Nullable String name) {
 			assertThat(apiVersion).isEqualTo(ApiVersion.LATEST);
 			assertThat(securityContext).isNotNull();

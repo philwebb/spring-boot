@@ -57,6 +57,7 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
+	@SuppressWarnings("removal")
 	SecurityFilterChain configure(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector)
 			throws Exception {
 		http.authorizeHttpRequests((requests) -> {

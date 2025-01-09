@@ -33,6 +33,7 @@ import jakarta.persistence.TemporalType;
 import org.springframework.util.Assert;
 
 @Entity
+@SuppressWarnings("deprecation")
 public class Review implements Serializable {
 
 	private static final long serialVersionUID = 1L;

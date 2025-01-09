@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -982,6 +982,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@WriteOperation
+		@SuppressWarnings("deprecation")
 		void write(@Nullable String foo, @Nullable String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
@@ -1167,6 +1168,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class RequiredParametersEndpoint {
 
 		@ReadOperation
+		@SuppressWarnings("deprecation")
 		String read(String foo, @Nullable String bar) {
 			return foo;
 		}
@@ -1177,6 +1179,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class PrincipalEndpoint {
 
 		@ReadOperation
+		@SuppressWarnings("deprecation")
 		String read(@Nullable Principal principal) {
 			return (principal != null) ? principal.getName() : "None";
 		}

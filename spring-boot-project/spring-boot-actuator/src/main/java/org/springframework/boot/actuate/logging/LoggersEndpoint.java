@@ -98,6 +98,7 @@ public class LoggersEndpoint {
 	}
 
 	@WriteOperation
+	@SuppressWarnings("deprecation")
 	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "'name' must not be empty");
 		LoggerGroup group = this.loggerGroups.get(name);
