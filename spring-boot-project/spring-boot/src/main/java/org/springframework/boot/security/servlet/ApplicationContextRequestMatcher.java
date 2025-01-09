@@ -48,7 +48,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	private final Object initializeLock = new Object();
 
 	public ApplicationContextRequestMatcher(Class<? extends C> contextClass) {
-		Assert.notNull(contextClass, "Context class must not be null");
+		Assert.notNull(contextClass, "'contextClass' must not be null");
 		this.contextClass = contextClass;
 	}
 

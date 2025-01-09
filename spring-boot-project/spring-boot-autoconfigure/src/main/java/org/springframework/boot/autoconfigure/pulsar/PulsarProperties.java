@@ -292,9 +292,9 @@ public class PulsarProperties {
 		public record TypeMapping(Class<?> messageType, String topicName, SchemaInfo schemaInfo) {
 
 			public TypeMapping {
-				Assert.notNull(messageType, "messageType must not be null");
+				Assert.notNull(messageType, "'messageType' must not be null");
 				Assert.isTrue(topicName != null || schemaInfo != null,
-						"At least one of topicName or schemaInfo must not be null");
+						"At least one of 'topicName' or 'schemaInfo' must not be null");
 			}
 
 		}
@@ -309,10 +309,10 @@ public class PulsarProperties {
 		public record SchemaInfo(SchemaType schemaType, Class<?> messageKeyType) {
 
 			public SchemaInfo {
-				Assert.notNull(schemaType, "schemaType must not be null");
-				Assert.isTrue(schemaType != SchemaType.NONE, "schemaType 'NONE' not supported");
+				Assert.notNull(schemaType, "'schemaType' must not be null");
+				Assert.isTrue(schemaType != SchemaType.NONE, "'schemaType' must not be NONE");
 				Assert.isTrue(messageKeyType == null || schemaType == SchemaType.KEY_VALUE,
-						"messageKeyType can only be set when schemaType is KEY_VALUE");
+						"'messageKeyType' can only be set when 'schemaType' is KEY_VALUE");
 			}
 
 		}

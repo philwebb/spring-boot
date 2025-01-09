@@ -47,8 +47,8 @@ public class ManagementErrorEndpoint {
 	private final ErrorProperties errorProperties;
 
 	public ManagementErrorEndpoint(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		Assert.notNull(errorProperties, "ErrorProperties must not be null");
+		Assert.notNull(errorAttributes, "'errorAttributes' must not be null");
+		Assert.notNull(errorProperties, "'errorProperties' must not be null");
 		this.errorAttributes = errorAttributes;
 		this.errorProperties = errorProperties;
 	}

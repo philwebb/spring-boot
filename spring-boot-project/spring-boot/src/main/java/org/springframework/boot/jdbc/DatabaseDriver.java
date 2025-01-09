@@ -294,7 +294,7 @@ public enum DatabaseDriver {
 	 */
 	public static DatabaseDriver fromJdbcUrl(String url) {
 		if (StringUtils.hasLength(url)) {
-			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
+			Assert.isTrue(url.startsWith("jdbc"), "'url' must start with \"jdbc\"");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase(Locale.ENGLISH);
 			for (DatabaseDriver driver : values()) {
 				for (String urlPrefix : driver.getUrlPrefixes()) {

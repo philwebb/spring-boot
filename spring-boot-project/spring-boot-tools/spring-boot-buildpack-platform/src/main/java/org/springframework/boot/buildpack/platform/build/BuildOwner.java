@@ -84,7 +84,7 @@ class BuildOwner implements Owner {
 	 * @throws IllegalStateException if the env does not contain the correct CNB variables
 	 */
 	static BuildOwner fromEnv(Map<String, String> env) {
-		Assert.notNull(env, "Env must not be null");
+		Assert.notNull(env, "'env' must not be null");
 		return new BuildOwner(env);
 	}
 

@@ -68,7 +68,7 @@ public interface SpanExporters extends Iterable<SpanExporter> {
 	 * @return the constructed {@link SpanExporters} instance
 	 */
 	static SpanExporters of(Collection<? extends SpanExporter> spanExporters) {
-		Assert.notNull(spanExporters, "SpanExporters must not be null");
+		Assert.notNull(spanExporters, "'spanExporters' must not be null");
 		List<SpanExporter> copy = List.copyOf(spanExporters);
 		return () -> copy;
 	}

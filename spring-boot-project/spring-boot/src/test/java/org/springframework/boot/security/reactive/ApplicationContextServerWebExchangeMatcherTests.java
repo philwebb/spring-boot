@@ -50,7 +50,7 @@ class ApplicationContextServerWebExchangeMatcherTests {
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestApplicationContextServerWebExchangeMatcher<>(null))
-			.withMessageContaining("Context class must not be null");
+			.withMessageContaining("'context' class must not be null");
 	}
 
 	@Test

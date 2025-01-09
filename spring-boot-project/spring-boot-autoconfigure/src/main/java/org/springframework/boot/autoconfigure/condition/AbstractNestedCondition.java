@@ -47,7 +47,7 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 	private final ConfigurationPhase configurationPhase;
 
 	AbstractNestedCondition(ConfigurationPhase configurationPhase) {
-		Assert.notNull(configurationPhase, "ConfigurationPhase must not be null");
+		Assert.notNull(configurationPhase, "'configurationPhase' must not be null");
 		this.configurationPhase = configurationPhase;
 	}
 

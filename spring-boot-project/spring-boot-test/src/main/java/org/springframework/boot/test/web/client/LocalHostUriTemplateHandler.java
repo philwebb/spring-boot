@@ -72,8 +72,8 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
 		super(handler);
-		Assert.notNull(environment, "Environment must not be null");
-		Assert.notNull(scheme, "Scheme must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
+		Assert.notNull(scheme, "'scheme' must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
 	}

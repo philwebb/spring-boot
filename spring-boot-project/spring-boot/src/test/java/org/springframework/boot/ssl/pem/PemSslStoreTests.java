@@ -53,14 +53,14 @@ class PemSslStoreTests {
 	@Test
 	void ofWhenNullCertificatesThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PemSslStore.of(null, null, null, null, null))
-			.withMessage("Certificates must not be empty");
+			.withMessage("'certificates' must not be empty");
 	}
 
 	@Test
 	void ofWhenEmptyCertificatesThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> PemSslStore.of(null, null, null, Collections.emptyList(), null))
-			.withMessage("Certificates must not be empty");
+			.withMessage("'certificates' must not be empty");
 	}
 
 	@Test

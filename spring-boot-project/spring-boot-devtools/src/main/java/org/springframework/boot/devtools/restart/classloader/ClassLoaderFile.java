@@ -54,12 +54,12 @@ public class ClassLoaderFile implements Serializable {
 	 * @param contents the file contents
 	 */
 	public ClassLoaderFile(Kind kind, long lastModified, byte[] contents) {
-		Assert.notNull(kind, "Kind must not be null");
+		Assert.notNull(kind, "'kind' must not be null");
 		if (kind == Kind.DELETED) {
-			Assert.isTrue(contents == null, "Contents must be null");
+			Assert.isTrue(contents == null, "'contents' must be null");
 		}
 		else {
-			Assert.isTrue(contents != null, "Contents must not be null");
+			Assert.isTrue(contents != null, "'contents' must not be null");
 		}
 		this.kind = kind;
 		this.lastModified = lastModified;

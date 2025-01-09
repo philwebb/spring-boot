@@ -1060,7 +1060,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		JsonPathValue(CharSequence expression, Object... args) {
 			org.springframework.util.Assert.hasText((expression != null) ? expression.toString() : null,
-					"expression must not be null or empty");
+					"'expression' must not be empty");
 			this.expression = String.format(expression.toString(), args);
 			this.jsonPath = JsonPath.compile(this.expression);
 		}

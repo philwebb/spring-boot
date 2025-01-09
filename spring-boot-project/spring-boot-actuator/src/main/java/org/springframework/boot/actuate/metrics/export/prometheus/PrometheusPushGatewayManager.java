@@ -87,11 +87,11 @@ public class PrometheusPushGatewayManager {
 	 */
 	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, TaskScheduler scheduler,
 			Duration pushRate, String job, Map<String, String> groupingKey, ShutdownOperation shutdownOperation) {
-		Assert.notNull(pushGateway, "PushGateway must not be null");
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(scheduler, "Scheduler must not be null");
-		Assert.notNull(pushRate, "PushRate must not be null");
-		Assert.hasLength(job, "Job must not be empty");
+		Assert.notNull(pushGateway, "'pushGateway' must not be null");
+		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notNull(scheduler, "'scheduler' must not be null");
+		Assert.notNull(pushRate, "'pushRate' must not be null");
+		Assert.hasLength(job, "'job' must not be empty");
 		this.pushGateway = pushGateway;
 		this.registry = registry;
 		this.job = job;

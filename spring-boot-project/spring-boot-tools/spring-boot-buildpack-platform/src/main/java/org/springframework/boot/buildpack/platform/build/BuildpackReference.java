@@ -94,7 +94,7 @@ public final class BuildpackReference {
 	 * @return a new {@link BuildpackReference}
 	 */
 	public static BuildpackReference of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		return new BuildpackReference(value);
 	}
 

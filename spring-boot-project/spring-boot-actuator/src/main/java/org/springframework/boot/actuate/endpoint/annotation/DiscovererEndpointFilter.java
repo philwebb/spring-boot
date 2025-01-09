@@ -35,7 +35,7 @@ public abstract class DiscovererEndpointFilter implements EndpointFilter<Discove
 	 * @param discoverer the required discoverer
 	 */
 	protected DiscovererEndpointFilter(Class<? extends EndpointDiscoverer<?, ?>> discoverer) {
-		Assert.notNull(discoverer, "Discoverer must not be null");
+		Assert.notNull(discoverer, "'discoverer' must not be null");
 		this.discoverer = discoverer;
 	}
 

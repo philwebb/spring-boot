@@ -55,7 +55,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * @param classLoaderFiles the source classloader files.
 	 */
 	public ClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
-		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+		Assert.notNull(classLoaderFiles, "'classLoaderFiles' must not be null");
 		this.sourceDirectories = new LinkedHashMap<>(classLoaderFiles.sourceDirectories);
 	}
 
@@ -65,7 +65,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * @param files the files to add
 	 */
 	public void addAll(ClassLoaderFiles files) {
-		Assert.notNull(files, "Files must not be null");
+		Assert.notNull(files, "'files' must not be null");
 		for (SourceDirectory directory : files.getSourceDirectories()) {
 			for (Map.Entry<String, ClassLoaderFile> entry : directory.getFilesEntrySet()) {
 				addFile(directory.getName(), entry.getKey(), entry.getValue());
@@ -89,9 +89,9 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * @param file the file to add
 	 */
 	public void addFile(String sourceDirectory, String name, ClassLoaderFile file) {
-		Assert.notNull(sourceDirectory, "SourceDirectory must not be null");
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(file, "File must not be null");
+		Assert.notNull(sourceDirectory, "'sourceDirectory' must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(file, "'file' must not be null");
 		removeAll(name);
 		getOrCreateSourceDirectory(sourceDirectory).add(name, file);
 	}

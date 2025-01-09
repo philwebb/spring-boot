@@ -47,7 +47,7 @@ public enum Access {
 	 * @return this access if less than the maximum or the maximum permitted
 	 */
 	public Access cap(Access maxPermitted) {
-		Assert.notNull(maxPermitted, "'maxPermittedAccess' must not be null");
+		Assert.notNull(maxPermitted, "'maxPermitted' must not be null");
 		return (ordinal() <= maxPermitted.ordinal()) ? this : maxPermitted;
 	}
 

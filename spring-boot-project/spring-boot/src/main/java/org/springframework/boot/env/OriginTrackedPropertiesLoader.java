@@ -53,7 +53,7 @@ class OriginTrackedPropertiesLoader {
 	 * @param resource the resource of the {@code .properties} data
 	 */
 	OriginTrackedPropertiesLoader(Resource resource) {
-		Assert.notNull(resource, "Resource must not be null");
+		Assert.notNull(resource, "'resource' must not be null");
 		this.resource = resource;
 	}
 

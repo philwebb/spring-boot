@@ -34,8 +34,8 @@ public class DockerConnectionException extends RuntimeException {
 	}
 
 	private static String buildMessage(String host, Exception cause) {
-		Assert.notNull(host, "Host must not be null");
-		Assert.notNull(cause, "Cause must not be null");
+		Assert.notNull(host, "'host' must not be null");
+		Assert.notNull(cause, "'cause' must not be null");
 		StringBuilder message = new StringBuilder("Connection to the Docker daemon at '" + host + "' failed");
 		String causeMessage = getCauseMessage(cause);
 		if (StringUtils.hasText(causeMessage)) {

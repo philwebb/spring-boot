@@ -124,7 +124,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletRegistrationBeans(null))
-			.withMessageContaining("ServletRegistrationBeans must not be null");
+			.withMessageContaining("servletRegistrationBeans' must not be null");
 	}
 
 	@Test
@@ -132,7 +132,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
-			.withMessageContaining("ServletRegistrationBeans must not be null");
+			.withMessageContaining("'servletRegistrationBeans' must not be null");
 	}
 
 	@Test
@@ -158,28 +158,28 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlPatterns(null))
-			.withMessageContaining("UrlPatterns must not be null");
+			.withMessageContaining("'urlPatterns' must not be null");
 	}
 
 	@Test
 	void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlPatterns((String[]) null))
-			.withMessageContaining("UrlPatterns must not be null");
+			.withMessageContaining("'urlPatterns' must not be null");
 	}
 
 	@Test
 	void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletNames(null))
-			.withMessageContaining("ServletNames must not be null");
+			.withMessageContaining("'servletNames' must not be null");
 	}
 
 	@Test
 	void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addServletNames((String[]) null))
-			.withMessageContaining("ServletNames must not be null");
+			.withMessageContaining("'servletNames' must not be null");
 	}
 
 	@Test

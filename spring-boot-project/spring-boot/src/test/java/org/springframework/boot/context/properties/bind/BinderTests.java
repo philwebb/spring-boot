@@ -73,25 +73,25 @@ class BinderTests {
 	@Test
 	void createWhenSourcesIsNullArrayShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((ConfigurationPropertySource[]) null))
-			.withMessageContaining("Sources must not be null");
+			.withMessageContaining("'sources' must not be null");
 	}
 
 	@Test
 	void createWhenSourcesIsNullIterableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
-			.withMessageContaining("Sources must not be null");
+			.withMessageContaining("'sources' must not be null");
 	}
 
 	@Test
 	void createWhenArraySourcesContainsNullElementShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(new ConfigurationPropertySource[] { null }))
-			.withMessageContaining("Sources must not contain null elements");
+			.withMessageContaining("'sources' must not contain null elements");
 	}
 
 	@Test
 	void createWhenIterableSourcesContainsNullElementShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(Collections.singletonList(null)))
-			.withMessageContaining("Sources must not contain null elements");
+			.withMessageContaining("'sources' must not contain null elements");
 	}
 
 	@Test
@@ -99,14 +99,14 @@ class BinderTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null, Bindable.of(String.class),
 					BindHandler.DEFAULT))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
 	void bindWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT))
-			.withMessageContaining("Target must not be null");
+			.withMessageContaining("'target' must not be null");
 	}
 
 	@Test

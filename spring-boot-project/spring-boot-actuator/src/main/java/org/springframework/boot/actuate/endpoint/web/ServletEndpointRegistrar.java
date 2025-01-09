@@ -70,7 +70,7 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 
 	public ServletEndpointRegistrar(String basePath, Collection<ExposableServletEndpoint> servletEndpoints,
 			EndpointAccessResolver endpointAccessResolver) {
-		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
+		Assert.notNull(servletEndpoints, "'servletEndpoints' must not be null");
 		this.basePath = cleanBasePath(basePath);
 		this.servletEndpoints = servletEndpoints;
 		this.endpointAccessResolver = endpointAccessResolver;

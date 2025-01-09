@@ -63,13 +63,13 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void getUrlWithNullDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl(null))
-			.withMessageContaining("DatabaseName must not be empty");
+			.withMessageContaining("'databaseName' must not be empty");
 	}
 
 	@Test
 	void getUrlWithEmptyDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl("  "))
-			.withMessageContaining("DatabaseName must not be empty");
+			.withMessageContaining("'databaseName' must not be empty");
 	}
 
 	@ParameterizedTest(name = "{0} - {1}")

@@ -45,7 +45,7 @@ public class DispatcherFilter implements Filter {
 	private final Dispatcher dispatcher;
 
 	public DispatcherFilter(Dispatcher dispatcher) {
-		Assert.notNull(dispatcher, "Dispatcher must not be null");
+		Assert.notNull(dispatcher, "'dispatcher' must not be null");
 		this.dispatcher = dispatcher;
 	}
 

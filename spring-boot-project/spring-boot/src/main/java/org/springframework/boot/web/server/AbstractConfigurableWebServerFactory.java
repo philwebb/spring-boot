@@ -116,13 +116,13 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	@Override
 	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
-		Assert.notNull(errorPages, "ErrorPages must not be null");
+		Assert.notNull(errorPages, "'errorPages' must not be null");
 		this.errorPages = new LinkedHashSet<>(errorPages);
 	}
 
 	@Override
 	public void addErrorPages(ErrorPage... errorPages) {
-		Assert.notNull(errorPages, "ErrorPages must not be null");
+		Assert.notNull(errorPages, "'errorPages' must not be null");
 		this.errorPages.addAll(Arrays.asList(errorPages));
 	}
 

@@ -46,13 +46,13 @@ class LambdaSafeTests {
 	@Test
 	void callbackWhenCallbackTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(null, new Object(), null))
-			.withMessageContaining("CallbackType must not be null");
+			.withMessageContaining("'callbackType' must not be null");
 	}
 
 	@Test
 	void callbackWhenCallbackInstanceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(Object.class, null, null))
-			.withMessageContaining("CallbackInstance must not be null");
+			.withMessageContaining("'callbackInstance' must not be null");
 	}
 
 	@Test

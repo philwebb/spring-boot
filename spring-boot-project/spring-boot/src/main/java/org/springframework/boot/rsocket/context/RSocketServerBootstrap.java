@@ -38,7 +38,7 @@ public class RSocketServerBootstrap implements ApplicationEventPublisherAware, S
 	private ApplicationEventPublisher eventPublisher;
 
 	public RSocketServerBootstrap(RSocketServerFactory serverFactory, SocketAcceptor socketAcceptor) {
-		Assert.notNull(serverFactory, "ServerFactory must not be null");
+		Assert.notNull(serverFactory, "'serverFactory' must not be null");
 		this.server = serverFactory.create(socketAcceptor);
 	}
 

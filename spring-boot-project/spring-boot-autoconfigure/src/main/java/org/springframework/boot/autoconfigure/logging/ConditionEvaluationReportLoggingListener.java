@@ -50,15 +50,15 @@ import org.springframework.util.Assert;
 public class ConditionEvaluationReportLoggingListener
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	private final LogLevel logLevelForReport;
+	private final LogLevel logLevel;
 
 	public ConditionEvaluationReportLoggingListener() {
 		this(LogLevel.DEBUG);
 	}
 
-	private ConditionEvaluationReportLoggingListener(LogLevel logLevelForReport) {
-		Assert.isTrue(isInfoOrDebug(logLevelForReport), "LogLevel must be INFO or DEBUG");
-		this.logLevelForReport = logLevelForReport;
+	private ConditionEvaluationReportLoggingListener(LogLevel logLevel) {
+		Assert.isTrue(isInfoOrDebug(logLevel), "'logLevel' must be INFO or DEBUG");
+		this.logLevel = logLevel;
 	}
 
 	private boolean isInfoOrDebug(LogLevel logLevelForReport) {
@@ -100,8 +100,8 @@ public class ConditionEvaluationReportLoggingListener
 			else {
 				reportSupplier = this::getReport;
 			}
-			this.logger = new ConditionEvaluationReportLogger(
-					ConditionEvaluationReportLoggingListener.this.logLevelForReport, reportSupplier);
+			this.logger = new ConditionEvaluationReportLogger(ConditionEvaluationReportLoggingListener.this.logLevel,
+					reportSupplier);
 		}
 
 		private ConditionEvaluationReport getReport() {

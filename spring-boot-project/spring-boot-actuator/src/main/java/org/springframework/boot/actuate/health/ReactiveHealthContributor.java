@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
 public interface ReactiveHealthContributor {
 
 	static ReactiveHealthContributor adapt(HealthContributor healthContributor) {
-		Assert.notNull(healthContributor, "HealthContributor must not be null");
+		Assert.notNull(healthContributor, "'healthContributor' must not be null");
 		if (healthContributor instanceof HealthIndicator healthIndicator) {
 			return new HealthIndicatorReactiveAdapter(healthIndicator);
 		}

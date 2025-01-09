@@ -175,7 +175,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 	 */
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
-		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
+		Assert.notEmpty(annotatedClasses, "'annotatedClasses' must not be empty");
 		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
@@ -188,7 +188,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext extends Reactiv
 	 */
 	@Override
 	public final void scan(String... basePackages) {
-		Assert.notEmpty(basePackages, "At least one base package must be specified");
+		Assert.notEmpty(basePackages, "'basePackages' must not be empty");
 		this.basePackages = basePackages;
 	}
 

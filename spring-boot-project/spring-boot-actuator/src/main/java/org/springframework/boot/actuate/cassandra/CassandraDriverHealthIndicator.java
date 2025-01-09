@@ -47,7 +47,7 @@ public class CassandraDriverHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public CassandraDriverHealthIndicator(CqlSession session) {
 		super("Cassandra health check failed");
-		Assert.notNull(session, "session must not be null");
+		Assert.notNull(session, "'session' must not be null");
 		this.session = session;
 	}
 

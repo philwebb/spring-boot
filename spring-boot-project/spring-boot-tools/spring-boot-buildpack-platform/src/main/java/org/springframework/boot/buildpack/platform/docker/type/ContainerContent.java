@@ -56,8 +56,8 @@ public interface ContainerContent {
 	 * @return a new {@link ContainerContent} instance
 	 */
 	static ContainerContent of(TarArchive archive, String destinationPath) {
-		Assert.notNull(archive, "Archive must not be null");
-		Assert.hasText(destinationPath, "DestinationPath must not be empty");
+		Assert.notNull(archive, "'archive' must not be null");
+		Assert.hasText(destinationPath, "'destinationPath' must not be empty");
 		return new ContainerContent() {
 
 			@Override

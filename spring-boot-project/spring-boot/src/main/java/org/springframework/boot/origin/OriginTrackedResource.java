@@ -51,7 +51,7 @@ public class OriginTrackedResource implements Resource, OriginProvider {
 	 * @param origin the origin of the resource
 	 */
 	OriginTrackedResource(Resource resource, Origin origin) {
-		Assert.notNull(resource, "Resource must not be null");
+		Assert.notNull(resource, "'resource' must not be null");
 		this.resource = resource;
 		this.origin = origin;
 	}

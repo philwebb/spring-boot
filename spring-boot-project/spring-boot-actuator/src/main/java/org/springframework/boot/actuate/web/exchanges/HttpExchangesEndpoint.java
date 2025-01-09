@@ -40,7 +40,7 @@ public class HttpExchangesEndpoint {
 	 * @param repository the exchange repository
 	 */
 	public HttpExchangesEndpoint(HttpExchangeRepository repository) {
-		Assert.notNull(repository, "Repository must not be null");
+		Assert.notNull(repository, "'repository' must not be null");
 		this.repository = repository;
 	}
 

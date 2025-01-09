@@ -37,7 +37,7 @@ class LocalBaggageFields {
 	private final List<String> fields;
 
 	LocalBaggageFields(List<String> fields) {
-		Assert.notNull(fields, "fields must not be null");
+		Assert.notNull(fields, "'fields' must not be null");
 		this.fields = fields;
 	}
 

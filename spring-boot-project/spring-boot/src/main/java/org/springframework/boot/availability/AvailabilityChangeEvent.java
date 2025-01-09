@@ -74,7 +74,7 @@ public class AvailabilityChangeEvent<S extends AvailabilityState> extends Payloa
 	 * @param state the changed availability state
 	 */
 	public static <S extends AvailabilityState> void publish(ApplicationContext context, S state) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		publish(context, context, state);
 	}
 
@@ -88,7 +88,7 @@ public class AvailabilityChangeEvent<S extends AvailabilityState> extends Payloa
 	 */
 	public static <S extends AvailabilityState> void publish(ApplicationEventPublisher publisher, Object source,
 			S state) {
-		Assert.notNull(publisher, "Publisher must not be null");
+		Assert.notNull(publisher, "'publisher' must not be null");
 		publisher.publishEvent(new AvailabilityChangeEvent<>(source, state));
 	}
 

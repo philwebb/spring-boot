@@ -74,9 +74,9 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	}
 
 	private static PropertySources getSources(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment,
-				"Environment must be a ConfigurableEnvironment");
+				"'environment' must be a ConfigurableEnvironment");
 		return ((ConfigurableEnvironment) environment).getPropertySources();
 	}
 

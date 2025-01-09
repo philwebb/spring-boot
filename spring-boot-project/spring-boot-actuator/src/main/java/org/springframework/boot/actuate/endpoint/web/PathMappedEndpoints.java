@@ -47,7 +47,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param supplier the endpoint supplier
 	 */
 	public PathMappedEndpoints(String basePath, EndpointsSupplier<?> supplier) {
-		Assert.notNull(supplier, "Supplier must not be null");
+		Assert.notNull(supplier, "'supplier' must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(Collections.singleton(supplier));
 	}
@@ -58,7 +58,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param suppliers the endpoint suppliers
 	 */
 	public PathMappedEndpoints(String basePath, Collection<EndpointsSupplier<?>> suppliers) {
-		Assert.notNull(suppliers, "Suppliers must not be null");
+		Assert.notNull(suppliers, "'suppliers' must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(suppliers);
 	}

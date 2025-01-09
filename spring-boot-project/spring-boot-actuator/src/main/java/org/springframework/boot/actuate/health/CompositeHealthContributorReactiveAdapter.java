@@ -33,7 +33,7 @@ class CompositeHealthContributorReactiveAdapter implements CompositeReactiveHeal
 	private final CompositeHealthContributor delegate;
 
 	CompositeHealthContributorReactiveAdapter(CompositeHealthContributor delegate) {
-		Assert.notNull(delegate, "Delegate must not be null");
+		Assert.notNull(delegate, "'delegate' must not be null");
 		this.delegate = delegate;
 	}
 

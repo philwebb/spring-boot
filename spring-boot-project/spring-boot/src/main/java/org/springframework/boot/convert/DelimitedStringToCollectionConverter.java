@@ -39,7 +39,7 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 	private final ConversionService conversionService;
 
 	DelimitedStringToCollectionConverter(ConversionService conversionService) {
-		Assert.notNull(conversionService, "ConversionService must not be null");
+		Assert.notNull(conversionService, "'conversionService' must not be null");
 		this.conversionService = conversionService;
 	}
 

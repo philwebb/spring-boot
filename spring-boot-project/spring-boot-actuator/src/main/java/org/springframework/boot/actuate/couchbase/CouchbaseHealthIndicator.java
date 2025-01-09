@@ -42,7 +42,7 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public CouchbaseHealthIndicator(Cluster cluster) {
 		super("Couchbase health check failed");
-		Assert.notNull(cluster, "Cluster must not be null");
+		Assert.notNull(cluster, "'cluster' must not be null");
 		this.cluster = cluster;
 	}
 

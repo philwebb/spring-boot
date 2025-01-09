@@ -134,7 +134,7 @@ public final class PemContent {
 	 * @throws IOException on IO error
 	 */
 	public static PemContent load(Path path) throws IOException {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		try (InputStream in = Files.newInputStream(path, StandardOpenOption.READ)) {
 			return load(in);
 		}

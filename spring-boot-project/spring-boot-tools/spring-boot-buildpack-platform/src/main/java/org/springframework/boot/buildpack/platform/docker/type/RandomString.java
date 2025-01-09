@@ -34,7 +34,7 @@ final class RandomString {
 	}
 
 	static String generate(String prefix, int randomLength) {
-		Assert.notNull(prefix, "Prefix must not be null");
+		Assert.notNull(prefix, "'prefix' must not be null");
 		return prefix + generateRandom(randomLength);
 	}
 

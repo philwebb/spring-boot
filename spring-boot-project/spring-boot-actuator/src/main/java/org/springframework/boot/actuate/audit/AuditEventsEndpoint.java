@@ -38,7 +38,7 @@ public class AuditEventsEndpoint {
 	private final AuditEventRepository auditEventRepository;
 
 	public AuditEventsEndpoint(AuditEventRepository auditEventRepository) {
-		Assert.notNull(auditEventRepository, "AuditEventRepository must not be null");
+		Assert.notNull(auditEventRepository, "'auditEventRepository' must not be null");
 		this.auditEventRepository = auditEventRepository;
 	}
 

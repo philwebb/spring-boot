@@ -78,7 +78,7 @@ public class BasicErrorController extends AbstractErrorController {
 	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties,
 			List<ErrorViewResolver> errorViewResolvers) {
 		super(errorAttributes, errorViewResolvers);
-		Assert.notNull(errorProperties, "ErrorProperties must not be null");
+		Assert.notNull(errorProperties, "'errorProperties' must not be null");
 		this.errorProperties = errorProperties;
 	}
 

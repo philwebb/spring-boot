@@ -65,7 +65,7 @@ public class MapConfigurationPropertySource implements IterableConfigurationProp
 	 * @param map the source map
 	 */
 	public void putAll(Map<?, ?> map) {
-		Assert.notNull(map, "Map must not be null");
+		Assert.notNull(map, "'map' must not be null");
 		assertNotReadOnlySystemAttributesMap(map);
 		map.forEach(this::put);
 	}

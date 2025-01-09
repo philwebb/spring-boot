@@ -43,7 +43,7 @@ public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 	private final Supplier<String> message;
 
 	public OnlyOnceLoggingDenyMeterFilter(Supplier<String> message) {
-		Assert.notNull(message, "Message must not be null");
+		Assert.notNull(message, "'message' must not be null");
 		this.message = message;
 	}
 

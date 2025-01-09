@@ -48,19 +48,19 @@ class ValidationErrorsTests {
 	void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(), Collections.emptyList()))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
 	void createWhenBoundPropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
-			.withMessageContaining("BoundProperties must not be null");
+			.withMessageContaining("'boundProperties' must not be null");
 	}
 
 	@Test
 	void createWhenErrorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
-			.withMessageContaining("Errors must not be null");
+			.withMessageContaining("'errors' must not be null");
 	}
 
 	@Test

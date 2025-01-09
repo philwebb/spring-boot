@@ -43,8 +43,8 @@ public class ObservationRestClientCustomizer implements RestClientCustomizer {
 	 */
 	public ObservationRestClientCustomizer(ObservationRegistry observationRegistry,
 			ClientRequestObservationConvention observationConvention) {
-		Assert.notNull(observationConvention, "ObservationConvention must not be null");
-		Assert.notNull(observationRegistry, "ObservationRegistry must not be null");
+		Assert.notNull(observationConvention, "'observationConvention' must not be null");
+		Assert.notNull(observationRegistry, "'observationRegistry' must not be null");
 		this.observationRegistry = observationRegistry;
 		this.observationConvention = observationConvention;
 	}

@@ -127,7 +127,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * @since 2.2.7
 	 */
 	public void setRSocketServerCustomizers(Collection<? extends RSocketServerCustomizer> rSocketServerCustomizers) {
-		Assert.notNull(rSocketServerCustomizers, "RSocketServerCustomizers must not be null");
+		Assert.notNull(rSocketServerCustomizers, "'rSocketServerCustomizers' must not be null");
 		this.rSocketServerCustomizers = new ArrayList<>(rSocketServerCustomizers);
 	}
 
@@ -138,7 +138,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * @since 2.2.7
 	 */
 	public void addRSocketServerCustomizers(RSocketServerCustomizer... rSocketServerCustomizers) {
-		Assert.notNull(rSocketServerCustomizers, "RSocketServerCustomizers must not be null");
+		Assert.notNull(rSocketServerCustomizers, "'rSocketServerCustomizers' must not be null");
 		this.rSocketServerCustomizers.addAll(Arrays.asList(rSocketServerCustomizers));
 	}
 

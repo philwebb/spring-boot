@@ -34,8 +34,8 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 
 	FilteredConfigurationPropertiesSource(ConfigurationPropertySource source,
 			Predicate<ConfigurationPropertyName> filter) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(filter, "Filter must not be null");
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(filter, "'filter' must not be null");
 		this.source = source;
 		this.filter = filter;
 	}

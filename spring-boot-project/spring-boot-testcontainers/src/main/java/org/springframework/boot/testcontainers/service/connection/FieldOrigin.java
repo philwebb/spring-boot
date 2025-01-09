@@ -34,7 +34,7 @@ class FieldOrigin implements Origin {
 	private final Field field;
 
 	FieldOrigin(Field field) {
-		Assert.notNull(field, "Field must not be null");
+		Assert.notNull(field, "'field' must not be null");
 		this.field = field;
 	}
 

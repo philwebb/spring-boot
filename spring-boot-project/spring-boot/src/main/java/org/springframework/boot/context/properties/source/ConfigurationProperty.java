@@ -48,8 +48,8 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 
 	private ConfigurationProperty(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
 			Origin origin) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(value, "Value must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(value, "'value' must not be null");
 		this.source = source;
 		this.name = name;
 		this.value = value;

@@ -55,7 +55,7 @@ final class BuildpackResolvers {
 	 * @return a {@link Buildpacks} instance
 	 */
 	static Buildpacks resolveAll(BuildpackResolverContext context, Collection<BuildpackReference> references) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		if (CollectionUtils.isEmpty(references)) {
 			return Buildpacks.EMPTY;
 		}
@@ -67,7 +67,7 @@ final class BuildpackResolvers {
 	}
 
 	private static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
-		Assert.notNull(reference, "Reference must not be null");
+		Assert.notNull(reference, "'reference' must not be null");
 		for (BuildpackResolver resolver : resolvers) {
 			Buildpack buildpack = resolver.resolve(context, reference);
 			if (buildpack != null) {

@@ -35,7 +35,7 @@ class MapConfigurationPropertySourceTests {
 	@Test
 	void createWhenMapIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MapConfigurationPropertySource(null))
-			.withMessageContaining("Map must not be null");
+			.withMessageContaining("'map' must not be null");
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class MapConfigurationPropertySourceTests {
 	void putAllWhenMapIsNullShouldThrowException() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		assertThatIllegalArgumentException().isThrownBy(() -> source.putAll(null))
-			.withMessageContaining("Map must not be null");
+			.withMessageContaining("'map' must not be null");
 	}
 
 	@Test

@@ -42,7 +42,7 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 	 */
 	public ServletContextInitializerConfiguration(ServletContextInitializer... initializers) {
 		super(new AbstractConfiguration.Builder());
-		Assert.notNull(initializers, "Initializers must not be null");
+		Assert.notNull(initializers, "'initializers' must not be null");
 		this.initializers = initializers;
 	}
 

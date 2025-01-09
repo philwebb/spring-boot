@@ -159,7 +159,7 @@ public class LiquibaseProperties {
 	}
 
 	public void setChangeLog(String changeLog) {
-		Assert.notNull(changeLog, "ChangeLog must not be null");
+		Assert.notNull(changeLog, "'changeLog' must not be null");
 		this.changeLog = changeLog;
 	}
 

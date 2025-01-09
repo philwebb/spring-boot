@@ -70,7 +70,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	 * @since 2.1.7
 	 */
 	protected AbstractReactiveHealthIndicator(Function<Throwable, String> healthCheckFailedMessage) {
-		Assert.notNull(healthCheckFailedMessage, "HealthCheckFailedMessage must not be null");
+		Assert.notNull(healthCheckFailedMessage, "'healthCheckFailedMessage' must not be null");
 		this.healthCheckFailedMessage = healthCheckFailedMessage;
 	}
 

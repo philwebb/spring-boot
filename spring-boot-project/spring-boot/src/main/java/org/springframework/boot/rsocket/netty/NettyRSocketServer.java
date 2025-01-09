@@ -46,7 +46,7 @@ public class NettyRSocketServer implements RSocketServer {
 	private CloseableChannel channel;
 
 	public NettyRSocketServer(Mono<CloseableChannel> starter, Duration lifecycleTimeout) {
-		Assert.notNull(starter, "starter must not be null");
+		Assert.notNull(starter, "'starter' must not be null");
 		this.starter = starter;
 		this.lifecycleTimeout = lifecycleTimeout;
 	}

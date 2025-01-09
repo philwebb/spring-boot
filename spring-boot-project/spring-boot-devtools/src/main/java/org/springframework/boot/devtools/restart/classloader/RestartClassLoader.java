@@ -57,8 +57,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 */
 	public RestartClassLoader(ClassLoader parent, URL[] urls, ClassLoaderFileRepository updatedFiles) {
 		super(urls, parent);
-		Assert.notNull(parent, "Parent must not be null");
-		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
+		Assert.notNull(parent, "'parent' must not be null");
+		Assert.notNull(updatedFiles, "'updatedFiles' must not be null");
 		this.updatedFiles = updatedFiles;
 	}
 

@@ -77,8 +77,8 @@ public class HibernateProperties {
 	 */
 	public Map<String, Object> determineHibernateProperties(Map<String, String> jpaProperties,
 			HibernateSettings settings) {
-		Assert.notNull(jpaProperties, "JpaProperties must not be null");
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(jpaProperties, "'jpaProperties' must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		return getAdditionalProperties(jpaProperties, settings);
 	}
 

@@ -38,7 +38,7 @@ public class HttpRestartServerHandler implements Handler {
 	 * @param server the server to adapt
 	 */
 	public HttpRestartServerHandler(HttpRestartServer server) {
-		Assert.notNull(server, "Server must not be null");
+		Assert.notNull(server, "'server' must not be null");
 		this.server = server;
 	}
 

@@ -67,7 +67,7 @@ class StackId {
 	 * @return the extracted stack ID
 	 */
 	static StackId fromImage(Image image) {
-		Assert.notNull(image, "Image must not be null");
+		Assert.notNull(image, "'image' must not be null");
 		return fromImageConfig(image.getConfig());
 	}
 
@@ -87,7 +87,7 @@ class StackId {
 	 * @return a new stack ID instance
 	 */
 	static StackId of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		return new StackId(value);
 	}
 

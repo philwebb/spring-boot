@@ -150,7 +150,7 @@ public interface PemSslStore {
 	 */
 	static PemSslStore of(String type, String alias, String password, List<X509Certificate> certificates,
 			PrivateKey privateKey) {
-		Assert.notEmpty(certificates, "Certificates must not be empty");
+		Assert.notEmpty(certificates, "'certificates must not be empty");
 		return new PemSslStore() {
 
 			@Override

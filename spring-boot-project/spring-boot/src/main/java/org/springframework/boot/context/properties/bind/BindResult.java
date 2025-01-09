@@ -71,7 +71,7 @@ public final class BindResult<T> {
 	 * @param consumer block to execute if a value has been bound
 	 */
 	public void ifBound(Consumer<? super T> consumer) {
-		Assert.notNull(consumer, "Consumer must not be null");
+		Assert.notNull(consumer, "'consumer' must not be null");
 		if (this.value != null) {
 			consumer.accept(this.value);
 		}
@@ -87,7 +87,7 @@ public final class BindResult<T> {
 	 * to the value of this {@code BindResult}.
 	 */
 	public <U> BindResult<U> map(Function<? super T, ? extends U> mapper) {
-		Assert.notNull(mapper, "Mapper must not be null");
+		Assert.notNull(mapper, "'mapper' must not be null");
 		return of((this.value != null) ? mapper.apply(this.value) : null);
 	}
 

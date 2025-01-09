@@ -48,8 +48,8 @@ public class InvocationContext {
 	 */
 	public InvocationContext(SecurityContext securityContext, Map<String, Object> arguments,
 			OperationArgumentResolver... argumentResolvers) {
-		Assert.notNull(securityContext, "SecurityContext must not be null");
-		Assert.notNull(arguments, "Arguments must not be null");
+		Assert.notNull(securityContext, "'securityContext' must not be null");
+		Assert.notNull(arguments, "'arguments' must not be null");
 		this.arguments = arguments;
 		this.argumentResolvers = new ArrayList<>();
 		if (argumentResolvers != null) {

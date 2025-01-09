@@ -78,8 +78,8 @@ public final class Status {
 	 * @param description a description of the status
 	 */
 	public Status(String code, String description) {
-		Assert.notNull(code, "Code must not be null");
-		Assert.notNull(description, "Description must not be null");
+		Assert.notNull(code, "'code' must not be null");
+		Assert.notNull(description, "'description' must not be null");
 		this.code = code;
 		this.description = description;
 	}

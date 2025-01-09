@@ -53,8 +53,8 @@ public interface OperationArgumentResolver {
 	 * @return an {@link OperationArgumentResolver} instance
 	 */
 	static <T> OperationArgumentResolver of(Class<T> type, Supplier<? extends T> supplier) {
-		Assert.notNull(type, "Type must not be null");
-		Assert.notNull(supplier, "Supplier must not be null");
+		Assert.notNull(type, "'type' must not be null");
+		Assert.notNull(supplier, "'supplier' must not be null");
 		return new OperationArgumentResolver() {
 
 			@Override

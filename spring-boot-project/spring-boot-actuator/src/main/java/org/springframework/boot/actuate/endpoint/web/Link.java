@@ -38,7 +38,7 @@ public class Link {
 	 * @param href the href
 	 */
 	public Link(String href) {
-		Assert.notNull(href, "HREF must not be null");
+		Assert.notNull(href, "'href' must not be null");
 		this.href = href;
 		this.templated = href.contains("{");
 	}

@@ -77,8 +77,8 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory,
 				MongoConnectionDetails connectionDetails) {
-			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
-			Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
+			Assert.notNull(mongoDatabaseFactory, "'mongoDatabaseFactory' must not be null");
+			Assert.notNull(connectionDetails, "'connectionDetails' must not be null");
 			this.mongoDatabaseFactory = mongoDatabaseFactory;
 			this.connectionDetails = connectionDetails;
 		}

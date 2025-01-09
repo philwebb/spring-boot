@@ -33,8 +33,8 @@ public class HttpHeaderAccessManager implements AccessManager {
 	private final String expectedSecret;
 
 	public HttpHeaderAccessManager(String headerName, String expectedSecret) {
-		Assert.hasLength(headerName, "HeaderName must not be empty");
-		Assert.hasLength(expectedSecret, "ExpectedSecret must not be empty");
+		Assert.hasLength(headerName, "'headerName' must not be empty");
+		Assert.hasLength(expectedSecret, "'expectedSecret' must not be empty");
 		this.headerName = headerName;
 		this.expectedSecret = expectedSecret;
 	}

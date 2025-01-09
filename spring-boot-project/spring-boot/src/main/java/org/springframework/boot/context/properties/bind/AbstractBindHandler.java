@@ -42,7 +42,7 @@ public abstract class AbstractBindHandler implements BindHandler {
 	 * @param parent the parent handler
 	 */
 	public AbstractBindHandler(BindHandler parent) {
-		Assert.notNull(parent, "Parent must not be null");
+		Assert.notNull(parent, "'parent' must not be null");
 		this.parent = parent;
 	}
 

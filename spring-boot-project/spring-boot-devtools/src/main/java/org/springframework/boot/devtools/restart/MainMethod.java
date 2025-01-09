@@ -35,7 +35,7 @@ class MainMethod {
 	}
 
 	MainMethod(Thread thread) {
-		Assert.notNull(thread, "Thread must not be null");
+		Assert.notNull(thread, "'thread' must not be null");
 		this.method = getMainMethod(thread);
 	}
 

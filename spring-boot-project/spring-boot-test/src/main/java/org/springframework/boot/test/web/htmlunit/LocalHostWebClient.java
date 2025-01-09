@@ -37,7 +37,7 @@ public class LocalHostWebClient extends WebClient {
 	private final Environment environment;
 
 	public LocalHostWebClient(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 	}
 

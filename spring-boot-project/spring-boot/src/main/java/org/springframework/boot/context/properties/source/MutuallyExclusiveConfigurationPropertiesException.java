@@ -84,9 +84,9 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 
 	private static String buildMessage(Set<String> mutuallyExclusiveNames, Set<String> configuredNames) {
 		Assert.isTrue(configuredNames != null && configuredNames.size() > 1,
-				"ConfiguredNames must contain 2 or more names");
+				"'configuredNames' must contain 2 or more names");
 		Assert.isTrue(mutuallyExclusiveNames != null && mutuallyExclusiveNames.size() > 1,
-				"MutuallyExclusiveNames must contain 2 or more names");
+				"'mutuallyExclusiveNames' must contain 2 or more names");
 		return "The configuration properties '" + String.join(", ", mutuallyExclusiveNames)
 				+ "' are mutually exclusive and '" + String.join(", ", configuredNames)
 				+ "' have been configured together";

@@ -34,7 +34,7 @@ public class TemplateLocation {
 	private final String path;
 
 	public TemplateLocation(String path) {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		this.path = path;
 	}
 
@@ -45,7 +45,7 @@ public class TemplateLocation {
 	 * @return {@code true} if the location exists.
 	 */
 	public boolean exists(ResourcePatternResolver resolver) {
-		Assert.notNull(resolver, "Resolver must not be null");
+		Assert.notNull(resolver, "'resolver' must not be null");
 		if (resolver.getResource(this.path).exists()) {
 			return true;
 		}

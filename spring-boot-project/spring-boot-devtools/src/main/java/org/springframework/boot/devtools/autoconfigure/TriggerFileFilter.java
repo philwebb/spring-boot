@@ -32,7 +32,7 @@ public class TriggerFileFilter implements FileFilter {
 	private final String name;
 
 	public TriggerFileFilter(String name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
 	}
 

@@ -36,8 +36,8 @@ class BasicAuthentication {
 	private final Charset charset;
 
 	BasicAuthentication(String username, String password, Charset charset) {
-		Assert.notNull(username, "Username must not be null");
-		Assert.notNull(password, "Password must not be null");
+		Assert.notNull(username, "'username' must not be null");
+		Assert.notNull(password, "'password' must not be null");
 		this.username = username;
 		this.password = password;
 		this.charset = charset;

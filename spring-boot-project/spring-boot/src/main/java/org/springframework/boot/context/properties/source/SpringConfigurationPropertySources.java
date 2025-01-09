@@ -46,7 +46,7 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 			ReferenceType.SOFT);
 
 	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		this.sources = sources;
 	}
 

@@ -35,7 +35,7 @@ class ConnectionNamePredicate implements Predicate<DockerComposeConnectionSource
 	private final Set<String> required;
 
 	ConnectionNamePredicate(String... required) {
-		Assert.notEmpty(required, "Required must not be empty");
+		Assert.notEmpty(required, "'required' must not be empty");
 		this.required = Arrays.stream(required).map(this::asCanonicalName).collect(Collectors.toSet());
 	}
 

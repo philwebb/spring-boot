@@ -43,9 +43,9 @@ public final class ChangedFile {
 	 * @param type the type of change
 	 */
 	public ChangedFile(File sourceDirectory, File file, Type type) {
-		Assert.notNull(sourceDirectory, "SourceDirectory must not be null");
-		Assert.notNull(file, "File must not be null");
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(sourceDirectory, "'sourceDirectory' must not be null");
+		Assert.notNull(file, "'file' must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		this.sourceDirectory = sourceDirectory;
 		this.file = file;
 		this.type = type;

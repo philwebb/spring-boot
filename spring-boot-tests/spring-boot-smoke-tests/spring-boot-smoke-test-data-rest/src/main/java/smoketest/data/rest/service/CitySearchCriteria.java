@@ -30,7 +30,7 @@ public class CitySearchCriteria implements Serializable {
 	}
 
 	public CitySearchCriteria(String name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
 	}
 

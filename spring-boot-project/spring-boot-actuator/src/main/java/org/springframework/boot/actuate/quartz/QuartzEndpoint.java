@@ -75,7 +75,7 @@ public class QuartzEndpoint {
 	private final Sanitizer sanitizer;
 
 	public QuartzEndpoint(Scheduler scheduler, Iterable<SanitizingFunction> sanitizingFunctions) {
-		Assert.notNull(scheduler, "Scheduler must not be null");
+		Assert.notNull(scheduler, "'scheduler' must not be null");
 		this.scheduler = scheduler;
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
 	}

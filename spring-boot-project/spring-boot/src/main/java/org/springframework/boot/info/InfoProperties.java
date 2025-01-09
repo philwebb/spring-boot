@@ -41,7 +41,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @param entries the information to expose
 	 */
 	public InfoProperties(Properties entries) {
-		Assert.notNull(entries, "Entries must not be null");
+		Assert.notNull(entries, "'entries' must not be null");
 		this.entries = copy(entries);
 	}
 

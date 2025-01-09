@@ -46,7 +46,7 @@ public class ClassPathChangedEvent extends ApplicationEvent {
 	 */
 	public ClassPathChangedEvent(Object source, Set<ChangedFiles> changeSet, boolean restartRequired) {
 		super(source);
-		Assert.notNull(changeSet, "ChangeSet must not be null");
+		Assert.notNull(changeSet, "'changeSet' must not be null");
 		this.changeSet = changeSet;
 		this.restartRequired = restartRequired;
 	}

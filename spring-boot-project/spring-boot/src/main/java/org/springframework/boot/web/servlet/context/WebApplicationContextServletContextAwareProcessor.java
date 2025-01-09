@@ -37,7 +37,7 @@ public class WebApplicationContextServletContextAwareProcessor extends ServletCo
 	private final ConfigurableWebApplicationContext webApplicationContext;
 
 	public WebApplicationContextServletContextAwareProcessor(ConfigurableWebApplicationContext webApplicationContext) {
-		Assert.notNull(webApplicationContext, "WebApplicationContext must not be null");
+		Assert.notNull(webApplicationContext, "'webApplicationContext' must not be null");
 		this.webApplicationContext = webApplicationContext;
 	}
 

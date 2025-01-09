@@ -100,7 +100,7 @@ public class TomcatWebServer implements WebServer {
 	 * @since 2.3.0
 	 */
 	public TomcatWebServer(Tomcat tomcat, boolean autoStart, Shutdown shutdown) {
-		Assert.notNull(tomcat, "Tomcat Server must not be null");
+		Assert.notNull(tomcat, "'tomcat' must not be null");
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
 		this.gracefulShutdown = (shutdown == Shutdown.GRACEFUL) ? new GracefulShutdown(tomcat) : null;

@@ -37,14 +37,14 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	private final UriTemplateHandler handler;
 
 	protected RootUriTemplateHandler(UriTemplateHandler handler) {
-		Assert.notNull(handler, "Handler must not be null");
+		Assert.notNull(handler, "'handler' must not be null");
 		this.rootUri = null;
 		this.handler = handler;
 	}
 
 	RootUriTemplateHandler(String rootUri, UriTemplateHandler handler) {
-		Assert.notNull(rootUri, "RootUri must not be null");
-		Assert.notNull(handler, "Handler must not be null");
+		Assert.notNull(rootUri, "'rootUri' must not be null");
+		Assert.notNull(handler, "'handler' must not be null");
 		this.rootUri = rootUri;
 		this.handler = handler;
 	}

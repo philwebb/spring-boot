@@ -31,7 +31,7 @@ public class SimpleInfoContributor implements InfoContributor {
 	private final Object detail;
 
 	public SimpleInfoContributor(String prefix, Object detail) {
-		Assert.notNull(prefix, "Prefix must not be null");
+		Assert.notNull(prefix, "'prefix' must not be null");
 		this.prefix = prefix;
 		this.detail = detail;
 	}

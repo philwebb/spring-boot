@@ -56,8 +56,8 @@ public enum ConfigurationPropertyState {
 	 * {@link #ABSENT}.
 	 */
 	static <T> ConfigurationPropertyState search(Iterable<T> source, Predicate<T> predicate) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(predicate, "Predicate must not be null");
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(predicate, "'predicate' must not be null");
 		for (T item : source) {
 			if (predicate.test(item)) {
 				return PRESENT;

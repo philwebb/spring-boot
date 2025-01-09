@@ -57,8 +57,8 @@ public abstract class AbstractExposableEndpoint<O extends Operation> implements 
 	 * @since 3.4.0
 	 */
 	public AbstractExposableEndpoint(EndpointId id, Access defaultAccess, Collection<? extends O> operations) {
-		Assert.notNull(id, "ID must not be null");
-		Assert.notNull(operations, "Operations must not be null");
+		Assert.notNull(id, "'id' must not be null");
+		Assert.notNull(operations, "'operations' must not be null");
 		this.id = id;
 		this.defaultAccess = defaultAccess;
 		this.operations = List.copyOf(operations);

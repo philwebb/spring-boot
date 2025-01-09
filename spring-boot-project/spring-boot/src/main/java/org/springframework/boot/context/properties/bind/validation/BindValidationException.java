@@ -33,7 +33,7 @@ public class BindValidationException extends RuntimeException {
 
 	BindValidationException(ValidationErrors validationErrors) {
 		super(getMessage(validationErrors));
-		Assert.notNull(validationErrors, "ValidationErrors must not be null");
+		Assert.notNull(validationErrors, "'validationErrors' must not be null");
 		this.validationErrors = validationErrors;
 	}
 

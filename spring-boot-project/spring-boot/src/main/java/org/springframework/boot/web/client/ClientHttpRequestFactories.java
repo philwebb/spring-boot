@@ -61,7 +61,7 @@ public final class ClientHttpRequestFactories {
 	 */
 	@SuppressWarnings("removal")
 	public static ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		return detectBuilder().build(settings.adapt());
 	}
 
@@ -87,7 +87,7 @@ public final class ClientHttpRequestFactories {
 	@SuppressWarnings("removal")
 	public static <T extends ClientHttpRequestFactory> T get(Class<T> requestFactoryType,
 			ClientHttpRequestFactorySettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		return getBuilder(requestFactoryType).build(settings.adapt());
 	}
 

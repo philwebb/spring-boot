@@ -43,8 +43,8 @@ public class Dispatcher {
 	private final List<HandlerMapper> mappers;
 
 	public Dispatcher(AccessManager accessManager, Collection<HandlerMapper> mappers) {
-		Assert.notNull(accessManager, "AccessManager must not be null");
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(accessManager, "'accessManager' must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		this.accessManager = accessManager;
 		this.mappers = new ArrayList<>(mappers);
 		AnnotationAwareOrderComparator.sort(this.mappers);

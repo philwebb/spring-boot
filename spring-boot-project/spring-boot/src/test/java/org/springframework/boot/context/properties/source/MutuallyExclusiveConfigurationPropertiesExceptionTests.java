@@ -38,7 +38,7 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 	void createWhenConfiguredNamesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(null, Arrays.asList("a", "b")))
-			.withMessage("ConfiguredNames must contain 2 or more names");
+			.withMessage("'configuredNames' must contain 2 or more names");
 	}
 
 	@Test
@@ -46,14 +46,14 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Collections.singleton("a"),
 					Arrays.asList("a", "b")))
-			.withMessage("ConfiguredNames must contain 2 or more names");
+			.withMessage("'configuredNames' must contain 2 or more names");
 	}
 
 	@Test
 	void createWhenMutuallyExclusiveNamesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Arrays.asList("a", "b"), null))
-			.withMessage("MutuallyExclusiveNames must contain 2 or more names");
+			.withMessage("'mutuallyExclusiveNames' must contain 2 or more names");
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Arrays.asList("a", "b"),
 					Collections.singleton("a")))
-			.withMessage("MutuallyExclusiveNames must contain 2 or more names");
+			.withMessage("'mutuallyExclusiveNames' must contain 2 or more names");
 	}
 
 	@Test

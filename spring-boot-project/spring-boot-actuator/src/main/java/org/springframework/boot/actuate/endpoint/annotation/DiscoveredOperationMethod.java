@@ -41,7 +41,7 @@ public class DiscoveredOperationMethod extends OperationMethod {
 	public DiscoveredOperationMethod(Method method, OperationType operationType,
 			AnnotationAttributes annotationAttributes) {
 		super(method, operationType);
-		Assert.notNull(annotationAttributes, "AnnotationAttributes must not be null");
+		Assert.notNull(annotationAttributes, "'annotationAttributes' must not be null");
 		List<String> producesMediaTypes = new ArrayList<>();
 		producesMediaTypes.addAll(Arrays.asList(annotationAttributes.getStringArray("produces")));
 		producesMediaTypes.addAll(getProducesFromProducible(annotationAttributes));

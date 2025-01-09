@@ -49,7 +49,7 @@ public class RabbitTemplateConfigurer {
 	 * @since 2.6.0
 	 */
 	public RabbitTemplateConfigurer(RabbitProperties rabbitProperties) {
-		Assert.notNull(rabbitProperties, "RabbitProperties must not be null");
+		Assert.notNull(rabbitProperties, "'rabbitProperties' must not be null");
 		this.rabbitProperties = rabbitProperties;
 	}
 

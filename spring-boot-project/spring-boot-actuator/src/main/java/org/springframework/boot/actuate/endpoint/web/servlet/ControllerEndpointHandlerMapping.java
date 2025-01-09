@@ -88,8 +88,8 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration,
 			EndpointAccessResolver endpointAccessResolver) {
-		Assert.notNull(endpointMapping, "EndpointMapping must not be null");
-		Assert.notNull(endpoints, "Endpoints must not be null");
+		Assert.notNull(endpointMapping, "'endpointMapping' must not be null");
+		Assert.notNull(endpoints, "'endpoints' must not be null");
 		this.endpointMapping = endpointMapping;
 		this.handlers = getHandlers(endpoints);
 		this.corsConfiguration = corsConfiguration;

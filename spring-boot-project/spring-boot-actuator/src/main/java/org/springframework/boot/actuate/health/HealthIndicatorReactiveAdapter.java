@@ -32,7 +32,7 @@ class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
 	private final HealthIndicator delegate;
 
 	HealthIndicatorReactiveAdapter(HealthIndicator delegate) {
-		Assert.notNull(delegate, "Delegate must not be null");
+		Assert.notNull(delegate, "'delegate' must not be null");
 		this.delegate = delegate;
 	}
 

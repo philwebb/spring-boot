@@ -36,7 +36,7 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 	private final ConversionService conversionService;
 
 	DelimitedStringToArrayConverter(ConversionService conversionService) {
-		Assert.notNull(conversionService, "ConversionService must not be null");
+		Assert.notNull(conversionService, "'conversionService' must not be null");
 		this.conversionService = conversionService;
 	}
 

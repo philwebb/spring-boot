@@ -38,8 +38,8 @@ public class UrlHandlerMapper implements HandlerMapper {
 	 * @param handler the handler to use
 	 */
 	public UrlHandlerMapper(String url, Handler handler) {
-		Assert.hasLength(url, "URL must not be empty");
-		Assert.isTrue(url.startsWith("/"), "URL must start with '/'");
+		Assert.hasLength(url, "'url' must not be empty");
+		Assert.isTrue(url.startsWith("/"), "'url' must start with '/'");
 		this.requestUri = url;
 		this.handler = handler;
 	}

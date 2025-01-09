@@ -34,7 +34,7 @@ public class TotalProgressEvent {
 	 * @param percent the progress as a percentage
 	 */
 	public TotalProgressEvent(int percent) {
-		Assert.isTrue(percent >= 0 && percent <= 100, "Percent must be in the range 0 to 100");
+		Assert.isTrue(percent >= 0 && percent <= 100, "'percent' must be in the range 0 to 100");
 		this.percent = percent;
 	}
 

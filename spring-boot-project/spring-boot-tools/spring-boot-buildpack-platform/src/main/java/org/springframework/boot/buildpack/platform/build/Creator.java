@@ -54,7 +54,7 @@ public class Creator {
 	 * @return a new creator instance
 	 */
 	public static Creator withVersion(String version) {
-		Assert.notNull(version, "Version must not be null");
+		Assert.notNull(version, "'version' must not be null");
 		return new Creator(version);
 	}
 

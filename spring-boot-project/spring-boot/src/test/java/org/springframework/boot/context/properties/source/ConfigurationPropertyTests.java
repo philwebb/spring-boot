@@ -41,13 +41,13 @@ class ConfigurationPropertyTests {
 	@Test
 	void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
 	void createWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
-			.withMessageContaining("Value must not be null");
+			.withMessageContaining("'value' must not be null");
 	}
 
 	@Test

@@ -56,9 +56,9 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	 */
 	public ReflectiveOperationInvoker(Object target, OperationMethod operationMethod,
 			ParameterValueMapper parameterValueMapper) {
-		Assert.notNull(target, "Target must not be null");
-		Assert.notNull(operationMethod, "OperationMethod must not be null");
-		Assert.notNull(parameterValueMapper, "ParameterValueMapper must not be null");
+		Assert.notNull(target, "'target' must not be null");
+		Assert.notNull(operationMethod, "'operationMethod' must not be null");
+		Assert.notNull(parameterValueMapper, "'parameterValueMapper' must not be null");
 		ReflectionUtils.makeAccessible(operationMethod.getMethod());
 		this.target = target;
 		this.operationMethod = operationMethod;

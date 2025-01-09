@@ -65,7 +65,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 	 * @param timeToLive the maximum time in milliseconds that a response can be cached
 	 */
 	CachingOperationInvoker(OperationInvoker invoker, long timeToLive) {
-		Assert.isTrue(timeToLive > 0, "TimeToLive must be strictly positive");
+		Assert.isTrue(timeToLive > 0, "'timeToLive' must be greater than zero");
 		this.invoker = invoker;
 		this.timeToLive = timeToLive;
 		this.cachedResponses = new ConcurrentReferenceHashMap<>();

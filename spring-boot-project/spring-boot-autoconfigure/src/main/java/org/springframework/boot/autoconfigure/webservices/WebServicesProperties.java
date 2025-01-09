@@ -44,9 +44,9 @@ public class WebServicesProperties {
 	}
 
 	public void setPath(String path) {
-		Assert.notNull(path, "Path must not be null");
-		Assert.isTrue(path.length() > 1, "Path must have length greater than 1");
-		Assert.isTrue(path.startsWith("/"), "Path must start with '/'");
+		Assert.notNull(path, "'path' must not be null");
+		Assert.isTrue(path.length() > 1, "'path' must have length greater than 1");
+		Assert.isTrue(path.startsWith("/"), "'path' must start with '/'");
 		this.path = path;
 	}
 

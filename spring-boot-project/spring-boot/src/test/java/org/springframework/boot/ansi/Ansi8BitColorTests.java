@@ -50,9 +50,9 @@ class Ansi8BitColorTests {
 	@Test
 	void backgroundWhenOutsideBoundsThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Ansi8BitColor.background(-1))
-			.withMessage("Code must be between 0 and 255");
+			.withMessage("'code' must be between 0 and 255");
 		assertThatIllegalArgumentException().isThrownBy(() -> Ansi8BitColor.background(256))
-			.withMessage("Code must be between 0 and 255");
+			.withMessage("'code' must be between 0 and 255");
 	}
 
 	@Test

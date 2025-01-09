@@ -48,8 +48,8 @@ public class OperationMethod {
 	 * @param operationType the operation type
 	 */
 	public OperationMethod(Method method, OperationType operationType) {
-		Assert.notNull(method, "Method must not be null");
-		Assert.notNull(operationType, "OperationType must not be null");
+		Assert.notNull(method, "'method' must not be null");
+		Assert.notNull(operationType, "'operationType' must not be null");
 		this.method = method;
 		this.operationType = operationType;
 		this.operationParameters = new OperationMethodParameters(method, DEFAULT_PARAMETER_NAME_DISCOVERER);

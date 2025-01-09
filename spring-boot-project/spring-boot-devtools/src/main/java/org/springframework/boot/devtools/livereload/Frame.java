@@ -40,13 +40,13 @@ class Frame {
 	 * @param payload the text payload
 	 */
 	Frame(String payload) {
-		Assert.notNull(payload, "Payload must not be null");
+		Assert.notNull(payload, "'payload' must not be null");
 		this.type = Type.TEXT;
 		this.payload = payload.getBytes();
 	}
 
 	Frame(Type type) {
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		this.type = type;
 		this.payload = NO_BYTES;
 	}

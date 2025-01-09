@@ -41,13 +41,13 @@ class ExitCodeGeneratorsTests {
 		assertThatIllegalArgumentException().isThrownBy(() -> {
 			List<ExitCodeGenerator> generators = null;
 			new ExitCodeGenerators().addAll(generators);
-		}).withMessageContaining("Generators must not be null");
+		}).withMessageContaining("'generators' must not be null");
 	}
 
 	@Test
 	void addWhenGeneratorIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ExitCodeGenerators().add(null))
-			.withMessageContaining("Generator must not be null");
+			.withMessageContaining("'generator' must not be null");
 	}
 
 	@Test

@@ -35,7 +35,7 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	public RabbitHealthIndicator(RabbitTemplate rabbitTemplate) {
 		super("Rabbit health check failed");
-		Assert.notNull(rabbitTemplate, "RabbitTemplate must not be null");
+		Assert.notNull(rabbitTemplate, "'rabbitTemplate' must not be null");
 		this.rabbitTemplate = rabbitTemplate;
 	}
 

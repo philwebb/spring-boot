@@ -92,7 +92,7 @@ public interface ConfigurationPropertyCaching {
 	 * @return a caching instance that controls the matching source
 	 */
 	static ConfigurationPropertyCaching get(Iterable<ConfigurationPropertySource> sources, Object underlyingSource) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		if (underlyingSource == null) {
 			return new ConfigurationPropertySourcesCaching(sources);
 		}

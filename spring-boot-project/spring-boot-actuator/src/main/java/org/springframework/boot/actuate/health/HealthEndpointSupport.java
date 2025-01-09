@@ -63,8 +63,8 @@ abstract class HealthEndpointSupport<C, T> {
 	 */
 	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notNull(groups, "Groups must not be null");
+		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notNull(groups, "'groups' must not be null");
 		this.registry = registry;
 		this.groups = groups;
 		this.slowIndicatorLoggingThreshold = slowIndicatorLoggingThreshold;

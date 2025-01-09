@@ -78,7 +78,7 @@ public final class ConnectionFactoryBuilder {
 	 * @see EmbeddedDatabaseConnection#getUrl(String)
 	 */
 	public static ConnectionFactoryBuilder withUrl(String url) {
-		Assert.hasText(url, () -> "Url must not be null");
+		Assert.hasText(url, () -> "'url' must not be null");
 		return withOptions(ConnectionFactoryOptions.parse(url).mutate());
 	}
 

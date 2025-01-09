@@ -115,7 +115,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 	 * @param file the file containing pid
 	 */
 	public ApplicationPidFileWriter(File file) {
-		Assert.notNull(file, "File must not be null");
+		Assert.notNull(file, "'file' must not be null");
 		this.file = file;
 	}
 
@@ -128,7 +128,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 	 * @param triggerEventType the trigger event type
 	 */
 	public void setTriggerEventType(Class<? extends SpringApplicationEvent> triggerEventType) {
-		Assert.notNull(triggerEventType, "Trigger event type must not be null");
+		Assert.notNull(triggerEventType, "'triggerEventType' must not be null");
 		this.triggerEventType = triggerEventType;
 	}
 

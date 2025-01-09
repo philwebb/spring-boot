@@ -86,7 +86,7 @@ public final class StaticResourceRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public StaticResourceRequestMatcher at(Set<StaticResourceLocation> locations) {
-		Assert.notNull(locations, "Locations must not be null");
+		Assert.notNull(locations, "'locations' must not be null");
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
 	}
 
@@ -124,7 +124,7 @@ public final class StaticResourceRequest {
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
 		public StaticResourceRequestMatcher excluding(Set<StaticResourceLocation> locations) {
-			Assert.notNull(locations, "Locations must not be null");
+			Assert.notNull(locations, "'locations' must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceRequestMatcher(subset);

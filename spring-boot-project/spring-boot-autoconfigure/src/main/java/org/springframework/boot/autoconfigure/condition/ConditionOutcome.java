@@ -48,7 +48,7 @@ public class ConditionOutcome {
 	 * @param message the condition message
 	 */
 	public ConditionOutcome(boolean match, ConditionMessage message) {
-		Assert.notNull(message, "ConditionMessage must not be null");
+		Assert.notNull(message, "'message' must not be null");
 		this.match = match;
 		this.message = message;
 	}

@@ -48,7 +48,7 @@ public interface ContextConsumer<C extends ApplicationContext> {
 	 * @since 2.6.0
 	 */
 	default ContextConsumer<C> andThen(ContextConsumer<? super C> after) {
-		Assert.notNull(after, "After must not be null");
+		Assert.notNull(after, "'after' must not be null");
 		return (context) -> {
 			accept(context);
 			after.accept(context);

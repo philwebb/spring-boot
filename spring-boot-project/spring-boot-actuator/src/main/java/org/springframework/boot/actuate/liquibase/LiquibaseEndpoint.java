@@ -51,7 +51,7 @@ public class LiquibaseEndpoint {
 	private final ApplicationContext context;
 
 	public LiquibaseEndpoint(ApplicationContext context) {
-		Assert.notNull(context, "Context must be specified");
+		Assert.notNull(context, "'context' must be specified");
 		this.context = context;
 	}
 

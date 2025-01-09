@@ -41,7 +41,7 @@ class ActiveMQConnectionFactoryConfigurer {
 
 	ActiveMQConnectionFactoryConfigurer(ActiveMQProperties properties,
 			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-		Assert.notNull(properties, "Properties must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
 		this.properties = properties;
 		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers : Collections.emptyList();
 	}

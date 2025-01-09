@@ -50,8 +50,8 @@ class DirectorySnapshot {
 	 * @param directory the source directory
 	 */
 	DirectorySnapshot(File directory) {
-		Assert.notNull(directory, "Directory must not be null");
-		Assert.isTrue(!directory.isFile(), () -> "Directory '" + directory + "' must not be a file");
+		Assert.notNull(directory, "'directory' must not be null");
+		Assert.isTrue(!directory.isFile(), () -> "'directory' must not be a file [" + directory + "]");
 		this.directory = directory;
 		this.time = new Date();
 		Set<FileSnapshot> files = new LinkedHashSet<>();
@@ -74,10 +74,10 @@ class DirectorySnapshot {
 	}
 
 	ChangedFiles getChangedFiles(DirectorySnapshot snapshot, FileFilter triggerFilter) {
-		Assert.notNull(snapshot, "Snapshot must not be null");
+		Assert.notNull(snapshot, "'snapshot' must not be null");
 		File directory = this.directory;
 		Assert.isTrue(snapshot.directory.equals(directory),
-				() -> "Snapshot source directory must be '" + directory + "'");
+				() -> "'snapshot' source directory must be '" + directory + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {

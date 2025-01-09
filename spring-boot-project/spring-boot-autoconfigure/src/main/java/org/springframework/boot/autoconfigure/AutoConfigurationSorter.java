@@ -53,7 +53,7 @@ class AutoConfigurationSorter {
 
 	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory,
 			AutoConfigurationMetadata autoConfigurationMetadata, UnaryOperator<String> replacementMapper) {
-		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
+		Assert.notNull(metadataReaderFactory, "'metadataReaderFactory' must not be null");
 		this.metadataReaderFactory = metadataReaderFactory;
 		this.autoConfigurationMetadata = autoConfigurationMetadata;
 		this.replacementMapper = replacementMapper;

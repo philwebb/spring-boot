@@ -29,7 +29,7 @@ public final class ContainerReference {
 	private final String value;
 
 	private ContainerReference(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		this.value = value;
 	}
 

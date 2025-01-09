@@ -177,7 +177,7 @@ class SpringApplicationShutdownHook implements Runnable {
 
 		@Override
 		public void add(Runnable action) {
-			Assert.notNull(action, "Action must not be null");
+			Assert.notNull(action, "'action' must not be null");
 			addRuntimeShutdownHookIfNecessary();
 			synchronized (SpringApplicationShutdownHook.class) {
 				assertNotInProgress();
@@ -187,7 +187,7 @@ class SpringApplicationShutdownHook implements Runnable {
 
 		@Override
 		public void remove(Runnable action) {
-			Assert.notNull(action, "Action must not be null");
+			Assert.notNull(action, "'action' must not be null");
 			synchronized (SpringApplicationShutdownHook.class) {
 				assertNotInProgress();
 				this.actions.remove(new Handler(action));

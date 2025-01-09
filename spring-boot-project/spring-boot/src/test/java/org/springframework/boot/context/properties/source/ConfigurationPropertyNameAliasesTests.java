@@ -32,7 +32,7 @@ class ConfigurationPropertyNameAliasesTests {
 	@Test
 	void createWithStringWhenNullNameShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test

@@ -39,7 +39,7 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 	}
 
 	private PropertySource<?> loadYaml(Resource path) {
-		Assert.isTrue(path.exists(), () -> "Resource " + path + " does not exist");
+		Assert.isTrue(path.exists(), () -> "'path' must exist [%s]".formatted(path));
 		try {
 			return this.loader.load("custom-resource", path).get(0);
 		}

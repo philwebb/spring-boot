@@ -52,7 +52,7 @@ final class StructuredLogLayout extends AbstractStringLayout {
 
 	private StructuredLogLayout(Charset charset, StructuredLogFormatter<LogEvent> formatter) {
 		super(charset);
-		Assert.notNull(formatter, "Formatter must not be null");
+		Assert.notNull(formatter, "'formatter' must not be null");
 		this.formatter = formatter;
 	}
 

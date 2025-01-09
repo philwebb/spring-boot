@@ -81,7 +81,7 @@ class BindResultTests {
 	void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.ifBound(null))
-			.withMessageContaining("Consumer must not be null");
+			.withMessageContaining("'consumer' must not be null");
 	}
 
 	@Test
@@ -102,7 +102,7 @@ class BindResultTests {
 	void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.map(null))
-			.withMessageContaining("Mapper must not be null");
+			.withMessageContaining("'mapper' must not be null");
 	}
 
 	@Test

@@ -70,7 +70,7 @@ public class BasicJsonTester {
 	 * @since 1.4.1
 	 */
 	public BasicJsonTester(Class<?> resourceLoadClass, Charset charset) {
-		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
+		Assert.notNull(resourceLoadClass, "'resourceLoadClass' must not be null");
 		this.loader = new JsonLoader(resourceLoadClass, charset);
 	}
 

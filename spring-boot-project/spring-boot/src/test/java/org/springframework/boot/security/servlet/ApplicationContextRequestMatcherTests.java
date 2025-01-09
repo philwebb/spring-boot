@@ -47,7 +47,7 @@ class ApplicationContextRequestMatcherTests {
 	@Test
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
-			.withMessageContaining("Context class must not be null");
+			.withMessageContaining("'context' class must not be null");
 	}
 
 	@Test

@@ -76,8 +76,8 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 	private final ClientHttpRequestFactory requestFactory;
 
 	public ClassPathChangeUploader(String url, ClientHttpRequestFactory requestFactory) {
-		Assert.hasLength(url, "URL must not be empty");
-		Assert.notNull(requestFactory, "RequestFactory must not be null");
+		Assert.hasLength(url, "'url' must not be empty");
+		Assert.notNull(requestFactory, "'requestFactory' must not be null");
 		try {
 			this.uri = new URL(url).toURI();
 		}

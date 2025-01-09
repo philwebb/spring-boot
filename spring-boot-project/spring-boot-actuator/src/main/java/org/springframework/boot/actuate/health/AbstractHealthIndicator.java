@@ -71,7 +71,7 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	 * @since 2.0.0
 	 */
 	protected AbstractHealthIndicator(Function<Exception, String> healthCheckFailedMessage) {
-		Assert.notNull(healthCheckFailedMessage, "HealthCheckFailedMessage must not be null");
+		Assert.notNull(healthCheckFailedMessage, "'healthCheckFailedMessage' must not be null");
 		this.healthCheckFailedMessage = healthCheckFailedMessage;
 	}
 

@@ -61,8 +61,8 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	private final RequestExpectationManager expectationManager;
 
 	public RootUriRequestExpectationManager(String rootUri, RequestExpectationManager expectationManager) {
-		Assert.notNull(rootUri, "RootUri must not be null");
-		Assert.notNull(expectationManager, "ExpectationManager must not be null");
+		Assert.notNull(rootUri, "'rootUri' must not be null");
+		Assert.notNull(expectationManager, "'expectationManager' must not be null");
 		this.rootUri = rootUri;
 		this.expectationManager = expectationManager;
 	}
@@ -156,7 +156,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	 */
 	public static RequestExpectationManager forRestTemplate(RestTemplate restTemplate,
 			RequestExpectationManager expectationManager) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
+		Assert.notNull(restTemplate, "'restTemplate' must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
 		if (templateHandler instanceof RootUriTemplateHandler rootHandler) {
 			return new RootUriRequestExpectationManager(rootHandler.getRootUri(), expectationManager);

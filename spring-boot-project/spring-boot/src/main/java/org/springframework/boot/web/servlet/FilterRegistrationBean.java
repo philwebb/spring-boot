@@ -58,7 +58,7 @@ public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegi
 	 */
 	public FilterRegistrationBean(T filter, ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
-		Assert.notNull(filter, "Filter must not be null");
+		Assert.notNull(filter, "'filter' must not be null");
 		this.filter = filter;
 	}
 
@@ -72,7 +72,7 @@ public class FilterRegistrationBean<T extends Filter> extends AbstractFilterRegi
 	 * @param filter the filter
 	 */
 	public void setFilter(T filter) {
-		Assert.notNull(filter, "Filter must not be null");
+		Assert.notNull(filter, "'filter' must not be null");
 		this.filter = filter;
 	}
 

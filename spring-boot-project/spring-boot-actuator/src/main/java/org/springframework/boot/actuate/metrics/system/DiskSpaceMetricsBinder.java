@@ -39,7 +39,7 @@ public class DiskSpaceMetricsBinder implements MeterBinder {
 	private final Iterable<Tag> tags;
 
 	public DiskSpaceMetricsBinder(List<File> paths, Iterable<Tag> tags) {
-		Assert.notEmpty(paths, "Paths must not be empty");
+		Assert.notEmpty(paths, "'paths' must not be empty");
 		this.paths = paths;
 		this.tags = tags;
 	}

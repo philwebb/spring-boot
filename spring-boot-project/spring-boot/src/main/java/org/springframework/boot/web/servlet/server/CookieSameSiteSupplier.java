@@ -58,7 +58,7 @@ public interface CookieSameSiteSupplier {
 	 * name matches
 	 */
 	default CookieSameSiteSupplier whenHasName(String name) {
-		Assert.hasText(name, "Name must not be empty");
+		Assert.hasText(name, "'name' must not be empty");
 		return when((cookie) -> ObjectUtils.nullSafeEquals(cookie.getName(), name));
 	}
 
@@ -69,7 +69,7 @@ public interface CookieSameSiteSupplier {
 	 * name matches
 	 */
 	default CookieSameSiteSupplier whenHasName(Supplier<String> nameSupplier) {
-		Assert.notNull(nameSupplier, "NameSupplier must not be empty");
+		Assert.notNull(nameSupplier, "'nameSupplier' must not be null");
 		return when((cookie) -> ObjectUtils.nullSafeEquals(cookie.getName(), nameSupplier.get()));
 	}
 
@@ -81,7 +81,7 @@ public interface CookieSameSiteSupplier {
 	 * name matches the regex
 	 */
 	default CookieSameSiteSupplier whenHasNameMatching(String regex) {
-		Assert.hasText(regex, "Regex must not be empty");
+		Assert.hasText(regex, "'regex' must not be empty");
 		return whenHasNameMatching(Pattern.compile(regex));
 	}
 
@@ -93,7 +93,7 @@ public interface CookieSameSiteSupplier {
 	 * name matches the pattern
 	 */
 	default CookieSameSiteSupplier whenHasNameMatching(Pattern pattern) {
-		Assert.notNull(pattern, "Pattern must not be null");
+		Assert.notNull(pattern, "'pattern' must not be null");
 		return when((cookie) -> pattern.matcher(cookie.getName()).matches());
 	}
 
@@ -104,7 +104,7 @@ public interface CookieSameSiteSupplier {
 	 * cookie matches the predicate
 	 */
 	default CookieSameSiteSupplier when(Predicate<Cookie> predicate) {
-		Assert.notNull(predicate, "Predicate must not be null");
+		Assert.notNull(predicate, "'predicate' must not be null");
 		return (cookie) -> predicate.test(cookie) ? getSameSite(cookie) : null;
 	}
 
@@ -142,7 +142,7 @@ public interface CookieSameSiteSupplier {
 	 * @return the supplier instance
 	 */
 	static CookieSameSiteSupplier of(SameSite sameSite) {
-		Assert.notNull(sameSite, "SameSite must not be null");
+		Assert.notNull(sameSite, "'sameSite' must not be null");
 		return (cookie) -> sameSite;
 	}
 

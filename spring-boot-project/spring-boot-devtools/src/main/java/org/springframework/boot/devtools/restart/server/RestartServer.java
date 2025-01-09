@@ -68,8 +68,8 @@ public class RestartServer {
 	 * @param classLoader the application classloader
 	 */
 	public RestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter, ClassLoader classLoader) {
-		Assert.notNull(sourceDirectoryUrlFilter, "SourceDirectoryUrlFilter must not be null");
-		Assert.notNull(classLoader, "ClassLoader must not be null");
+		Assert.notNull(sourceDirectoryUrlFilter, "'sourceDirectoryUrlFilter' must not be null");
+		Assert.notNull(classLoader, "'classLoader' must not be null");
 		this.sourceDirectoryUrlFilter = sourceDirectoryUrlFilter;
 		this.classLoader = classLoader;
 	}

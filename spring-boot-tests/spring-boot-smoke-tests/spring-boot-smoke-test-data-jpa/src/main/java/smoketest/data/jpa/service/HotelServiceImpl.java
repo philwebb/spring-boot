@@ -48,20 +48,20 @@ class HotelServiceImpl implements HotelService {
 
 	@Override
 	public Hotel getHotel(City city, String name) {
-		Assert.notNull(city, "City must not be null");
-		Assert.hasLength(name, "Name must not be empty");
+		Assert.notNull(city, "'city' must not be null");
+		Assert.hasLength(name, "'name' must not be empty");
 		return this.hotelRepository.findByCityAndName(city, name);
 	}
 
 	@Override
 	public Page<Review> getReviews(Hotel hotel, Pageable pageable) {
-		Assert.notNull(hotel, "Hotel must not be null");
+		Assert.notNull(hotel, "'hotel' must not be null");
 		return this.reviewRepository.findByHotel(hotel, pageable);
 	}
 
 	@Override
 	public Review getReview(Hotel hotel, int reviewNumber) {
-		Assert.notNull(hotel, "Hotel must not be null");
+		Assert.notNull(hotel, "'hotel' must not be null");
 		return this.reviewRepository.findByHotelAndIndex(hotel, reviewNumber);
 	}
 

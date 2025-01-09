@@ -65,7 +65,7 @@ class ConfigTreePropertySourceTests {
 	void createWhenSourceDoesNotExistThrowsException() {
 		Path missing = this.directory.resolve("missing");
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", missing))
-			.withMessage("Directory '" + missing + "' does not exist");
+			.withMessage("'sourceDirectory' must exist [" + missing + "]");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ConfigTreePropertySourceTests {
 		Path file = this.directory.resolve("file");
 		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file.toFile());
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", file))
-			.withMessage("File '" + file + "' is not a directory");
+			.withMessage("'sourceDirectory' must be a directory [" + file + "]");
 	}
 
 	@Test

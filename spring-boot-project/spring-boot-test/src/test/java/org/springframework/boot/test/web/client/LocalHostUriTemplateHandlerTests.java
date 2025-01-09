@@ -57,7 +57,7 @@ class LocalHostUriTemplateHandlerTests {
 	void createWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null))
-			.withMessageContaining("Handler must not be null");
+			.withMessageContaining("'handler' must not be null");
 	}
 
 	@Test

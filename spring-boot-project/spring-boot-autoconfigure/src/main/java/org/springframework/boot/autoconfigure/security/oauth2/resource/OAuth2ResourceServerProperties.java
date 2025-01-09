@@ -26,7 +26,6 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -175,7 +174,10 @@ public class OAuth2ResourceServerProperties {
 
 		public String readPublicKey() throws IOException {
 			String key = "spring.security.oauth2.resourceserver.public-key-location";
-			Assert.notNull(this.publicKeyLocation, "PublicKeyLocation must not be null");
+			if (this.publicKeyLocation == null) {
+				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
+						"No public key location specified");
+			}
 			if (!this.publicKeyLocation.exists()) {
 				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
 						"Public key location does not exist");

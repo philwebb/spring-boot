@@ -64,7 +64,7 @@ class ConfigurationPropertyCachingTests {
 	void getFromSourcesWhenSourcesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ConfigurationPropertyCaching.get((Iterable<ConfigurationPropertySource>) null))
-			.withMessage("Sources must not be null");
+			.withMessage("'sources' must not be null");
 	}
 
 	@Test

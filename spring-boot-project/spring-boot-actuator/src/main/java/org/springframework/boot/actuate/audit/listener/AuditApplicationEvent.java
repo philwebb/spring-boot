@@ -77,7 +77,7 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	 */
 	public AuditApplicationEvent(AuditEvent auditEvent) {
 		super(auditEvent);
-		Assert.notNull(auditEvent, "AuditEvent must not be null");
+		Assert.notNull(auditEvent, "'auditEvent' must not be null");
 		this.auditEvent = auditEvent;
 	}
 

@@ -67,7 +67,7 @@ class ServletListenerRegistrationBeanTests {
 			.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
 
 			}))
-			.withMessageContaining("Listener is not of a supported type");
+			.withMessageContaining("'listener' is not of a supported type");
 	}
 
 }

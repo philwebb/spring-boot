@@ -36,7 +36,7 @@ class PeriodStyleTests {
 	@Test
 	void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.detectAndParse(null))
-			.withMessageContaining("Value must not be null");
+			.withMessageContaining("'value' must not be null");
 	}
 
 	@Test

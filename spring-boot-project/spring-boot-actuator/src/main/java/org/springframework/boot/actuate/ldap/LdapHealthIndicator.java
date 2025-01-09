@@ -41,7 +41,7 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 
 	public LdapHealthIndicator(LdapOperations ldapOperations) {
 		super("LDAP health check failed");
-		Assert.notNull(ldapOperations, "LdapOperations must not be null");
+		Assert.notNull(ldapOperations, "'ldapOperations' must not be null");
 		this.ldapOperations = ldapOperations;
 	}
 

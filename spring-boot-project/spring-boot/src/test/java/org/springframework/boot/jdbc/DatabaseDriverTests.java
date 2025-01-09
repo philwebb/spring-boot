@@ -51,7 +51,7 @@ class DatabaseDriverTests {
 	@Test
 	void failureOnMalformedJdbcUrl() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DatabaseDriver.fromJdbcUrl("malformed:url"))
-			.withMessageContaining("URL must start with");
+			.withMessageContaining("'url' must start with");
 	}
 
 	@Test

@@ -36,8 +36,8 @@ class FileSnapshot {
 	private final long lastModified;
 
 	FileSnapshot(File file) {
-		Assert.notNull(file, "File must not be null");
-		Assert.isTrue(file.isFile() || !file.exists(), "File must not be a directory");
+		Assert.notNull(file, "'file' must not be null");
+		Assert.isTrue(file.isFile() || !file.exists(), () -> "'file' must be a regular file [" + file + "]");
 		this.file = file;
 		this.exists = file.exists();
 		this.length = file.length();

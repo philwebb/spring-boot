@@ -42,7 +42,7 @@ public class InfoEndpoint {
 	 * @param infoContributors the info contributors to use
 	 */
 	public InfoEndpoint(List<InfoContributor> infoContributors) {
-		Assert.notNull(infoContributors, "Info contributors must not be null");
+		Assert.notNull(infoContributors, "'infoContributors' must not be null");
 		this.infoContributors = infoContributors;
 	}
 

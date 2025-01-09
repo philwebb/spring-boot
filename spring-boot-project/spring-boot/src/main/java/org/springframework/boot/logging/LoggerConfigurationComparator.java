@@ -35,7 +35,7 @@ class LoggerConfigurationComparator implements Comparator<LoggerConfiguration> {
 	 * @param rootLoggerName the name of the "root" logger
 	 */
 	LoggerConfigurationComparator(String rootLoggerName) {
-		Assert.notNull(rootLoggerName, "RootLoggerName must not be null");
+		Assert.notNull(rootLoggerName, "'rootLoggerName' must not be null");
 		this.rootLoggerName = rootLoggerName;
 	}
 

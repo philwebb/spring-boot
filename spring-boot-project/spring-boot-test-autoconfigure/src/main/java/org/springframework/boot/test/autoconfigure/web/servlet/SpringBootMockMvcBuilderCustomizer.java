@@ -70,7 +70,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	 * @param context the source application context
 	 */
 	public SpringBootMockMvcBuilderCustomizer(WebApplicationContext context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		this.context = context;
 	}
 

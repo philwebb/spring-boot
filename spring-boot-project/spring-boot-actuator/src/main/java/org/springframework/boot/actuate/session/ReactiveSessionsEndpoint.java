@@ -50,7 +50,7 @@ public class ReactiveSessionsEndpoint {
 	 */
 	public ReactiveSessionsEndpoint(ReactiveSessionRepository<? extends Session> sessionRepository,
 			ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
-		Assert.notNull(sessionRepository, "ReactiveSessionRepository must not be null");
+		Assert.notNull(sessionRepository, "'sessionRepository' must not be null");
 		this.sessionRepository = sessionRepository;
 		this.indexedSessionRepository = indexedSessionRepository;
 	}

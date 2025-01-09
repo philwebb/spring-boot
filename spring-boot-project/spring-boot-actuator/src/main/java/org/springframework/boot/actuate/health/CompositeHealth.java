@@ -44,7 +44,7 @@ public class CompositeHealth extends HealthComponent {
 	private final Map<String, HealthComponent> details;
 
 	CompositeHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components) {
-		Assert.notNull(status, "Status must not be null");
+		Assert.notNull(status, "'status' must not be null");
 		this.status = status;
 		this.components = (apiVersion != ApiVersion.V3) ? null : sort(components);
 		this.details = (apiVersion != ApiVersion.V2) ? null : sort(components);

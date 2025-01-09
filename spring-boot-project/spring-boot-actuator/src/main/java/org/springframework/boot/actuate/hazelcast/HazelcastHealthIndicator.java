@@ -36,7 +36,7 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 
 	public HazelcastHealthIndicator(HazelcastInstance hazelcast) {
 		super("Hazelcast health check failed");
-		Assert.notNull(hazelcast, "HazelcastInstance must not be null");
+		Assert.notNull(hazelcast, "'hazelcast' must not be null");
 		this.hazelcast = hazelcast;
 	}
 

@@ -49,7 +49,7 @@ public interface PathMapper {
 	 * @return the path of the endpoint
 	 */
 	static String getRootPath(List<PathMapper> pathMappers, EndpointId endpointId) {
-		Assert.notNull(endpointId, "EndpointId must not be null");
+		Assert.notNull(endpointId, "'endpointId' must not be null");
 		if (pathMappers != null) {
 			for (PathMapper mapper : pathMappers) {
 				String path = mapper.getRootPath(endpointId);

@@ -42,7 +42,7 @@ public class DispatcherServletRegistrationBean extends ServletRegistrationBean<D
 	 */
 	public DispatcherServletRegistrationBean(DispatcherServlet servlet, String path) {
 		super(servlet);
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		this.path = path;
 		super.addUrlMappings(getServletUrlMapping());
 	}

@@ -103,7 +103,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		}
 
 		static Standalone of(String host, int port, int database) {
-			Assert.hasLength(host, "Host must not be empty");
+			Assert.hasLength(host, "'host' must not be empty");
 			return new Standalone() {
 
 				@Override

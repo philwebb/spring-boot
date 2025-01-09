@@ -51,7 +51,7 @@ public class RootUriBuilderFactory extends RootUriTemplateHandler implements Uri
 	 * @param rootUri the root URI
 	 */
 	static void applyTo(RestTemplate restTemplate, String rootUri) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
+		Assert.notNull(restTemplate, "'restTemplate' must not be null");
 		RootUriBuilderFactory handler = new RootUriBuilderFactory(rootUri, restTemplate.getUriTemplateHandler());
 		restTemplate.setUriTemplateHandler(handler);
 	}

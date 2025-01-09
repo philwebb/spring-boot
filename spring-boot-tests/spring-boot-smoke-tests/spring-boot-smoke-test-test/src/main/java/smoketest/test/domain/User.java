@@ -46,8 +46,8 @@ public class User {
 	}
 
 	public User(String username, VehicleIdentificationNumber vin) {
-		Assert.hasLength(username, "Username must not be empty");
-		Assert.notNull(vin, "VIN must not be null");
+		Assert.hasLength(username, "'username' must not be empty");
+		Assert.notNull(vin, "'vin' must not be null");
 		this.username = username;
 		this.vin = vin;
 	}

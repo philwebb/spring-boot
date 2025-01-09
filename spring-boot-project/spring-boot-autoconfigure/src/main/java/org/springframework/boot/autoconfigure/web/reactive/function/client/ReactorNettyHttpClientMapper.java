@@ -48,7 +48,7 @@ public interface ReactorNettyHttpClientMapper {
 	 * @since 3.1.1
 	 */
 	static ReactorNettyHttpClientMapper of(Collection<ReactorNettyHttpClientMapper> mappers) {
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		return of(mappers.toArray(ReactorNettyHttpClientMapper[]::new));
 	}
 
@@ -59,7 +59,7 @@ public interface ReactorNettyHttpClientMapper {
 	 * @since 3.1.1
 	 */
 	static ReactorNettyHttpClientMapper of(ReactorNettyHttpClientMapper... mappers) {
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		return (httpClient) -> {
 			for (ReactorNettyHttpClientMapper mapper : mappers) {
 				httpClient = mapper.configure(httpClient);

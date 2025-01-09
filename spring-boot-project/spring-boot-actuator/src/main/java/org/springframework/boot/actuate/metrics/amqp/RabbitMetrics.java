@@ -45,7 +45,7 @@ public class RabbitMetrics implements MeterBinder {
 	 * @param tags tags to apply to all recorded metrics
 	 */
 	public RabbitMetrics(ConnectionFactory connectionFactory, Iterable<Tag> tags) {
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		this.connectionFactory = connectionFactory;
 		this.tags = (tags != null) ? tags : Collections.emptyList();
 	}

@@ -70,8 +70,8 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends Ab
 	public AbstractDiscoveredEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
 			Access defaultAccess, Collection<? extends O> operations) {
 		super(id, defaultAccess, operations);
-		Assert.notNull(discoverer, "Discoverer must not be null");
-		Assert.notNull(endpointBean, "EndpointBean must not be null");
+		Assert.notNull(discoverer, "'discoverer' must not be null");
+		Assert.notNull(endpointBean, "'endpointBean' must not be null");
 		this.discoverer = discoverer;
 		this.endpointBean = endpointBean;
 	}

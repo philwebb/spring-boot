@@ -56,8 +56,8 @@ public class DataSourcePoolMetrics implements MeterBinder {
 
 	public DataSourcePoolMetrics(DataSource dataSource, DataSourcePoolMetadataProvider metadataProvider, String name,
 			Iterable<Tag> tags) {
-		Assert.notNull(dataSource, "DataSource must not be null");
-		Assert.notNull(metadataProvider, "MetadataProvider must not be null");
+		Assert.notNull(dataSource, "'dataSource' must not be null");
+		Assert.notNull(metadataProvider, "'metadataProvider' must not be null");
 		this.dataSource = dataSource;
 		this.metadataProvider = new CachingDataSourcePoolMetadataProvider(metadataProvider);
 		this.tags = Tags.concat(tags, "name", name);

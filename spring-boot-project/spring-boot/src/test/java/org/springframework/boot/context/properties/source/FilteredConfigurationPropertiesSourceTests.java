@@ -35,14 +35,14 @@ class FilteredConfigurationPropertiesSourceTests {
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
-			.withMessageContaining("Source must not be null");
+			.withMessageContaining("'source' must not be null");
 	}
 
 	@Test
 	void createWhenFilterIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(), null))
-			.withMessageContaining("Filter must not be null");
+			.withMessageContaining("'filter' must not be null");
 	}
 
 	@Test

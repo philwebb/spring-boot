@@ -49,9 +49,9 @@ public class ValidationErrors implements Iterable<ObjectError> {
 
 	ValidationErrors(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
 			List<ObjectError> errors) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(boundProperties, "BoundProperties must not be null");
-		Assert.notNull(errors, "Errors must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(boundProperties, "'boundProperties' must not be null");
+		Assert.notNull(errors, "'errors' must not be null");
 		this.name = name;
 		this.boundProperties = Collections.unmodifiableSet(boundProperties);
 		this.errors = convertErrors(name, boundProperties, errors);

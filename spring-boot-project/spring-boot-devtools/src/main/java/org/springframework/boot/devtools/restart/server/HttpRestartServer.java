@@ -48,7 +48,7 @@ public class HttpRestartServer {
 	 * the local classpath
 	 */
 	public HttpRestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter) {
-		Assert.notNull(sourceDirectoryUrlFilter, "SourceDirectoryUrlFilter must not be null");
+		Assert.notNull(sourceDirectoryUrlFilter, "'sourceDirectoryUrlFilter' must not be null");
 		this.server = new RestartServer(sourceDirectoryUrlFilter);
 	}
 
@@ -57,7 +57,7 @@ public class HttpRestartServer {
 	 * @param restartServer the underlying restart server
 	 */
 	public HttpRestartServer(RestartServer restartServer) {
-		Assert.notNull(restartServer, "RestartServer must not be null");
+		Assert.notNull(restartServer, "'restartServer' must not be null");
 		this.server = restartServer;
 	}
 

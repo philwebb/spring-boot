@@ -36,27 +36,27 @@ class LoggerConfigurationTests {
 	@Test
 	void createWithLogLevelWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LoggerConfiguration(null, null, LogLevel.DEBUG))
-			.withMessage("Name must not be null");
+			.withMessage("'name' must not be null");
 	}
 
 	@Test
 	void createWithLogLevelWhenEffectiveLevelIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LoggerConfiguration("test", null, (LogLevel) null))
-			.withMessage("EffectiveLevel must not be null");
+			.withMessage("'effectiveLevel' must not be null");
 	}
 
 	@Test
 	void createWithLevelConfigurationWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration(null, null, LevelConfiguration.of(LogLevel.DEBUG)))
-			.withMessage("Name must not be null");
+			.withMessage("'name' must not be null");
 	}
 
 	@Test
 	void createWithLevelConfigurationWhenInheritedLevelConfigurationIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration("test", null, (LevelConfiguration) null))
-			.withMessage("InheritedLevelConfiguration must not be null");
+			.withMessage("'inheritedLevelConfiguration' must not be null");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class LoggerConfigurationTests {
 		@Test
 		void ofWhenLogLevelIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> LevelConfiguration.of(null))
-				.withMessage("LogLevel must not be null");
+				.withMessage("'logLevel' must not be null");
 		}
 
 		@Test

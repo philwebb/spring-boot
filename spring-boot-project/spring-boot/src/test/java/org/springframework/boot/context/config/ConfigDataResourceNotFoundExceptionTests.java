@@ -63,7 +63,7 @@ class ConfigDataResourceNotFoundExceptionTests {
 	@Test
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigDataResourceNotFoundException(null))
-			.withMessage("Resource must not be null");
+			.withMessage("'resource' must not be null");
 	}
 
 	@Test

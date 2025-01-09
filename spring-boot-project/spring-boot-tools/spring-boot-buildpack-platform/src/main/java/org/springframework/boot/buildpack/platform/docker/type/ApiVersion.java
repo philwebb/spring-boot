@@ -118,16 +118,16 @@ public final class ApiVersion {
 	 * @throws IllegalArgumentException if the value could not be parsed
 	 */
 	public static ApiVersion parse(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		Matcher matcher = PATTERN.matcher(value);
-		Assert.isTrue(matcher.matches(), () -> "Malformed version number '" + value + "'");
+		Assert.isTrue(matcher.matches(), () -> "'value' must contain a well formed version number [" + value + "]");
 		try {
 			int major = Integer.parseInt(matcher.group(1));
 			int minor = Integer.parseInt(matcher.group(2));
 			return new ApiVersion(major, minor);
 		}
 		catch (NumberFormatException ex) {
-			throw new IllegalArgumentException("Malformed version number '" + value + "'", ex);
+			throw new IllegalArgumentException("'value' must contain a well formed version number [" + value + "]", ex);
 		}
 	}
 

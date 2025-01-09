@@ -42,7 +42,7 @@ public class ImageName {
 	private final String string;
 
 	ImageName(String domain, String path) {
-		Assert.hasText(path, "Path must not be empty");
+		Assert.hasText(path, "'path' must not be empty");
 		this.domain = getDomainOrDefault(domain);
 		this.name = getNameWithDefaultPath(this.domain, path);
 		this.string = this.domain + "/" + this.name;
@@ -126,13 +126,12 @@ public class ImageName {
 	 * @return an {@link ImageName} instance
 	 */
 	public static ImageName of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		String domain = parseDomain(value);
 		String path = (domain != null) ? value.substring(domain.length() + 1) : value;
 		Assert.isTrue(Regex.PATH.matcher(path).matches(),
-				() -> "Unable to parse name \"" + value + "\". "
-						+ "Image name must be in the form '[domainHost:port/][path/]name', "
-						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+				() -> "'value' [" + value + "] must be a parsable name in the form '[domainHost:port/][path/]name' ("
+						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-])");
 		return new ImageName(domain, path);
 	}
 

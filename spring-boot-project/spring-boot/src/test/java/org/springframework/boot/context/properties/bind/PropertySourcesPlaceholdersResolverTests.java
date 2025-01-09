@@ -44,7 +44,7 @@ class PropertySourcesPlaceholdersResolverTests {
 	void placeholderResolverIfEnvironmentNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))
-			.withMessageContaining("Environment must not be null");
+			.withMessageContaining("'environment' must not be null");
 	}
 
 	@Test

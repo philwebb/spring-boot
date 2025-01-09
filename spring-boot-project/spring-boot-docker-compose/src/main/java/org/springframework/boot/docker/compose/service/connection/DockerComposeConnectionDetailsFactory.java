@@ -111,7 +111,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 		 * @param runningService the source {@link RunningService}
 		 */
 		protected DockerComposeConnectionDetails(RunningService runningService) {
-			Assert.notNull(runningService, "RunningService must not be null");
+			Assert.notNull(runningService, "'runningService' must not be null");
 			this.origin = Origin.from(runningService);
 		}
 

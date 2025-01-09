@@ -142,7 +142,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	private void addKeyDeserializerBean(KeyDeserializer deserializer, Class<?>[] types) {
-		Assert.notEmpty(types, "Type must be specified for KeyDeserializer");
+		Assert.notEmpty(types, "'types' must not be empty");
 		addBeanToModule(deserializer, Object.class, types, this::addKeyDeserializer);
 	}
 

@@ -35,7 +35,7 @@ public class ImagePlatform {
 	private final String variant;
 
 	ImagePlatform(String os, String architecture, String variant) {
-		Assert.hasText(os, "OS must not be empty");
+		Assert.hasText(os, "'os' must not be empty");
 		this.os = os;
 		this.architecture = architecture;
 		this.variant = variant;
@@ -78,7 +78,7 @@ public class ImagePlatform {
 	 * @return an {@link ImagePlatform} instance
 	 */
 	public static ImagePlatform of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		String[] split = value.split("/+");
 		return switch (split.length) {
 			case 1 -> new ImagePlatform(split[0], null, null);

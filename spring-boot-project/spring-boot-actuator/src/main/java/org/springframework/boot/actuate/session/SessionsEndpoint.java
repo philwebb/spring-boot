@@ -61,7 +61,7 @@ public class SessionsEndpoint {
 	 */
 	public SessionsEndpoint(SessionRepository<? extends Session> sessionRepository,
 			FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
-		Assert.notNull(sessionRepository, "SessionRepository must not be null");
+		Assert.notNull(sessionRepository, "'sessionRepository' must not be null");
 		this.sessionRepository = sessionRepository;
 		this.indexedSessionRepository = indexedSessionRepository;
 	}

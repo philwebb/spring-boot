@@ -39,7 +39,7 @@ public class SpringJtaPlatform extends AbstractJtaPlatform {
 	private final JtaTransactionManager transactionManager;
 
 	public SpringJtaPlatform(JtaTransactionManager transactionManager) {
-		Assert.notNull(transactionManager, "TransactionManager must not be null");
+		Assert.notNull(transactionManager, "'transactionManager' must not be null");
 		this.transactionManager = transactionManager;
 	}
 

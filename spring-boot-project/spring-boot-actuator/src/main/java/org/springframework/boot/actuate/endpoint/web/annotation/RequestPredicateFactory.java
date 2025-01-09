@@ -47,7 +47,7 @@ class RequestPredicateFactory {
 	private final EndpointMediaTypes endpointMediaTypes;
 
 	RequestPredicateFactory(EndpointMediaTypes endpointMediaTypes) {
-		Assert.notNull(endpointMediaTypes, "EndpointMediaTypes must not be null");
+		Assert.notNull(endpointMediaTypes, "'endpointMediaTypes' must not be null");
 		this.endpointMediaTypes = endpointMediaTypes;
 	}
 

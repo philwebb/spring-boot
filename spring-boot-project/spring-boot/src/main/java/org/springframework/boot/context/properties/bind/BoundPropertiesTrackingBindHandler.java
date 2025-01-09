@@ -33,7 +33,7 @@ public class BoundPropertiesTrackingBindHandler extends AbstractBindHandler {
 	private final Consumer<ConfigurationProperty> consumer;
 
 	public BoundPropertiesTrackingBindHandler(Consumer<ConfigurationProperty> consumer) {
-		Assert.notNull(consumer, "Consumer must not be null");
+		Assert.notNull(consumer, "'consumer' must not be null");
 		this.consumer = consumer;
 	}
 

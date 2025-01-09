@@ -35,7 +35,7 @@ class DurationStyleTests {
 	@Test
 	void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detectAndParse(null))
-			.withMessageContaining("Value must not be null");
+			.withMessageContaining("'value' must not be null");
 	}
 
 	@Test

@@ -90,9 +90,9 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 */
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
 			RabbitConnectionDetails connectionDetails, SslBundles sslBundles) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-		Assert.notNull(properties, "Properties must not be null");
-		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
+		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
+		Assert.notNull(connectionDetails, "'connectionDetails' must not be null");
 		this.resourceLoader = resourceLoader;
 		this.rabbitProperties = properties;
 		this.connectionDetails = connectionDetails;
@@ -115,7 +115,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 * @param factory the {@link RabbitConnectionFactoryBean} instance to configure
 	 */
 	public void configure(RabbitConnectionFactoryBean factory) {
-		Assert.notNull(factory, "RabbitConnectionFactoryBean must not be null");
+		Assert.notNull(factory, "'factory' must not be null");
 		factory.setResourceLoader(this.resourceLoader);
 		Address address = this.connectionDetails.getFirstAddress();
 		PropertyMapper map = PropertyMapper.get();

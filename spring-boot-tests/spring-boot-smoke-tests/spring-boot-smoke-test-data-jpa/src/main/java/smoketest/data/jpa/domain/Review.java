@@ -70,8 +70,8 @@ public class Review implements Serializable {
 	}
 
 	public Review(Hotel hotel, int index, ReviewDetails details) {
-		Assert.notNull(hotel, "Hotel must not be null");
-		Assert.notNull(details, "Details must not be null");
+		Assert.notNull(hotel, "'hotel' must not be null");
+		Assert.notNull(details, "'details' must not be null");
 		this.hotel = hotel;
 		this.index = index;
 		this.rating = details.getRating();

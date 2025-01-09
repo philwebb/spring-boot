@@ -38,7 +38,7 @@ public class PropertiesConfigAdapter<T> {
 	 * @param properties the source properties
 	 */
 	public PropertiesConfigAdapter(T properties) {
-		Assert.notNull(properties, "Properties must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
 		this.properties = properties;
 	}
 

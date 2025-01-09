@@ -61,10 +61,10 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 
 	public JmxEndpointExporter(MBeanServer mBeanServer, EndpointObjectNameFactory objectNameFactory,
 			JmxOperationResponseMapper responseMapper, Collection<? extends ExposableJmxEndpoint> endpoints) {
-		Assert.notNull(mBeanServer, "MBeanServer must not be null");
-		Assert.notNull(objectNameFactory, "ObjectNameFactory must not be null");
-		Assert.notNull(responseMapper, "ResponseMapper must not be null");
-		Assert.notNull(endpoints, "Endpoints must not be null");
+		Assert.notNull(mBeanServer, "'mBeanServer' must not be null");
+		Assert.notNull(objectNameFactory, "'objectNameFactory' must not be null");
+		Assert.notNull(responseMapper, "'responseMapper' must not be null");
+		Assert.notNull(endpoints, "'endpoints' must not be null");
 		this.mBeanServer = mBeanServer;
 		this.objectNameFactory = objectNameFactory;
 		this.responseMapper = responseMapper;

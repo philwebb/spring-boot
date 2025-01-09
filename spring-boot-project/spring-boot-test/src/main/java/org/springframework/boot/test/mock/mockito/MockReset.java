@@ -92,7 +92,7 @@ public enum MockReset {
 	 * @return the configured settings
 	 */
 	public static MockSettings apply(MockReset reset, MockSettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		if (reset != null && reset != NONE) {
 			settings.invocationListeners(new ResetInvocationListener(reset));
 		}

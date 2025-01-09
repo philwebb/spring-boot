@@ -63,7 +63,7 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 	 * validation
 	 */
 	public ConnectionFactoryHealthIndicator(ConnectionFactory connectionFactory, String validationQuery) {
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		this.connectionFactory = connectionFactory;
 		this.validationQuery = validationQuery;
 	}

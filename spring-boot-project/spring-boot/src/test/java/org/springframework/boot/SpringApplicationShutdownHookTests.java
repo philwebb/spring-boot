@@ -155,7 +155,7 @@ class SpringApplicationShutdownHookTests {
 	void addHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().add(null))
-			.withMessage("Action must not be null");
+			.withMessage("'action' must not be null");
 	}
 
 	@Test
@@ -171,7 +171,7 @@ class SpringApplicationShutdownHookTests {
 	void removeHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().remove(null))
-			.withMessage("Action must not be null");
+			.withMessage("'action' must not be null");
 	}
 
 	@Test

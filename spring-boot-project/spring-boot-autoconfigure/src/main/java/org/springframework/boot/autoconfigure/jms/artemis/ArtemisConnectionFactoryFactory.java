@@ -53,9 +53,9 @@ class ArtemisConnectionFactoryFactory {
 
 	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			ArtemisConnectionDetails connectionDetails) {
-		Assert.notNull(beanFactory, "BeanFactory must not be null");
-		Assert.notNull(properties, "Properties must not be null");
-		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
+		Assert.notNull(beanFactory, "'beanFactory' must not be null");
+		Assert.notNull(properties, "'properties' must not be null");
+		Assert.notNull(connectionDetails, "'connectionDetails' must not be null");
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.connectionDetails = connectionDetails;

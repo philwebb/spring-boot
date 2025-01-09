@@ -56,8 +56,8 @@ class ReactiveCloudFoundrySecurityService {
 
 	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
 			boolean skipSslValidation) {
-		Assert.notNull(webClientBuilder, "WebClient must not be null");
-		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+		Assert.notNull(webClientBuilder, "'webClientBuilder' must not be null");
+		Assert.notNull(cloudControllerUrl, "'cloudControllerUrl' must not be null");
 		if (skipSslValidation) {
 			webClientBuilder.clientConnector(buildTrustAllSslConnector());
 		}

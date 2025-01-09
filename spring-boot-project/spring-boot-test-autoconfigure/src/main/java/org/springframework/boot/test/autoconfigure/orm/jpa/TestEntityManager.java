@@ -41,7 +41,7 @@ public class TestEntityManager {
 	 * @param entityManagerFactory the source entity manager factory
 	 */
 	public TestEntityManager(EntityManagerFactory entityManagerFactory) {
-		Assert.notNull(entityManagerFactory, "EntityManagerFactory must not be null");
+		Assert.notNull(entityManagerFactory, "'entityManagerFactory' must not be null");
 		this.entityManagerFactory = entityManagerFactory;
 	}
 

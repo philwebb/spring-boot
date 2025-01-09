@@ -56,7 +56,7 @@ public class DeferredLog implements Log {
 	 * @since 2.4.0
 	 */
 	DeferredLog(Supplier<Log> destination, Lines lines) {
-		Assert.notNull(destination, "Destination must not be null");
+		Assert.notNull(destination, "'destination' must not be null");
 		this.destinationSupplier = destination;
 		this.lines = lines;
 	}

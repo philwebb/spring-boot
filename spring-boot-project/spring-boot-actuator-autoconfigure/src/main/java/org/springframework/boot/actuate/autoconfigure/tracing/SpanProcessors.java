@@ -68,7 +68,7 @@ public interface SpanProcessors extends Iterable<SpanProcessor> {
 	 * @return the constructed {@link SpanProcessors} instance
 	 */
 	static SpanProcessors of(Collection<? extends SpanProcessor> spanProcessors) {
-		Assert.notNull(spanProcessors, "SpanProcessors must not be null");
+		Assert.notNull(spanProcessors, "'spanProcessors' must not be null");
 		List<SpanProcessor> copy = List.copyOf(spanProcessors);
 		return () -> copy;
 	}

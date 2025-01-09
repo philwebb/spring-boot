@@ -108,7 +108,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
 	 */
 	public static BindableRuntimeHintsRegistrar forTypes(Iterable<Class<?>> types) {
-		Assert.notNull(types, "Types must not be null");
+		Assert.notNull(types, "'types' must not be null");
 		return forTypes(StreamSupport.stream(types.spliterator(), false).toArray(Class<?>[]::new));
 	}
 
@@ -128,7 +128,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @since 3.0.8
 	 */
 	public static BindableRuntimeHintsRegistrar forBindables(Iterable<Bindable<?>> bindables) {
-		Assert.notNull(bindables, "Bindables must not be null");
+		Assert.notNull(bindables, "'bindables' must not be null");
 		return forBindables(StreamSupport.stream(bindables.spliterator(), false).toArray(Bindable[]::new));
 	}
 

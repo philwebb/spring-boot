@@ -77,7 +77,7 @@ public class TestcontainersPropertySource extends MapPropertySource {
 			DynamicPropertyRegistryInjection registryInjection) {
 		super(NAME, Collections.unmodifiableMap(valueSuppliers));
 		this.registry = (name, valueSupplier) -> {
-			Assert.hasText(name, "'name' must not be null or blank");
+			Assert.hasText(name, "'name' must not be empty");
 			DynamicPropertyRegistryInjectionException.throwIfNecessary(name, registryInjection);
 			Assert.notNull(valueSupplier, "'valueSupplier' must not be null");
 			valueSuppliers.put(name, valueSupplier);

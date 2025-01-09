@@ -37,7 +37,7 @@ public class MongoReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	public MongoReactiveHealthIndicator(ReactiveMongoTemplate reactiveMongoTemplate) {
 		super("Mongo health check failed");
-		Assert.notNull(reactiveMongoTemplate, "ReactiveMongoTemplate must not be null");
+		Assert.notNull(reactiveMongoTemplate, "'reactiveMongoTemplate' must not be null");
 		this.reactiveMongoTemplate = reactiveMongoTemplate;
 	}
 

@@ -47,7 +47,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 	private final Object contextLock = new Object();
 
 	public ApplicationContextServerWebExchangeMatcher(Class<? extends C> contextClass) {
-		Assert.notNull(contextClass, "Context class must not be null");
+		Assert.notNull(contextClass, "'contextClass' must not be null");
 		this.contextClass = contextClass;
 	}
 

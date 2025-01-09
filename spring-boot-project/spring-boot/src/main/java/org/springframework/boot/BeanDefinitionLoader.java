@@ -81,8 +81,8 @@ class BeanDefinitionLoader {
 	 * @param sources the bean sources
 	 */
 	BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
-		Assert.notNull(registry, "Registry must not be null");
-		Assert.notEmpty(sources, "Sources must not be empty");
+		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notEmpty(sources, "'sources' must not be empty");
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
@@ -131,7 +131,7 @@ class BeanDefinitionLoader {
 	}
 
 	private void load(Object source) {
-		Assert.notNull(source, "Source must not be null");
+		Assert.notNull(source, "'source' must not be null");
 		if (source instanceof Class<?> type) {
 			load(type);
 			return;
