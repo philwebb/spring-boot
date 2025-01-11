@@ -38,13 +38,13 @@ class ContainerReferenceTests {
 	@Test
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerReference.of(null))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void ofWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerReference.of(""))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test

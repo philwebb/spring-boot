@@ -38,7 +38,7 @@ class StackIdTests {
 	@Test
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> StackId.fromImage(null))
-			.withMessage("Image must not be null");
+			.withMessage("'image' must not be null");
 	}
 
 	@Test

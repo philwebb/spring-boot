@@ -264,7 +264,7 @@ public final class ImageReference {
 			}
 		}
 		Assert.isTrue(isLowerCase(path) && matchesPathRegex(path),
-				() -> "'value' [" + value + "]  must be an image reference in the form "
+				() -> "'value' [" + value + "] must be an image reference in the form "
 						+ "'[domainHost:port/][path/]name[:tag][@digest]' "
 						+ "(with 'path' and 'name' containing only [a-z0-9][.][_][-])");
 		ImageName name = new ImageName(domain, path);

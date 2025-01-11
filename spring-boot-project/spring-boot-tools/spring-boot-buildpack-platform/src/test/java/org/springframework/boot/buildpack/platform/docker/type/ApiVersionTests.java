@@ -34,19 +34,19 @@ class ApiVersionTests {
 	@Test
 	void parseWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(null))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void parseWhenVersionIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(""))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void parseWhenVersionDoesNotMatchPatternThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse("bad"))
-			.withMessage("Malformed version number 'bad'");
+			.withMessage("'value' must contain a well formed version number [bad]");
 	}
 
 	@Test

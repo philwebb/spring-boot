@@ -48,7 +48,7 @@ class ImagePlatformTests extends AbstractJsonTests {
 	@Test
 	void ofWithEmptyValueFails() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImagePlatform.of(""))
-			.withMessageContaining("Value must not be empty");
+			.withMessageContaining("'value' must not be empty");
 	}
 
 	@Test

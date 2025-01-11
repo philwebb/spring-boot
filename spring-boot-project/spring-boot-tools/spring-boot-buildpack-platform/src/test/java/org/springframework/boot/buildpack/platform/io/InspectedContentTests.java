@@ -39,19 +39,19 @@ class InspectedContentTests {
 	@Test
 	void ofWhenInputStreamThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((InputStream) null))
-			.withMessage("InputStream must not be null");
+			.withMessage("'inputStream' must not be null");
 	}
 
 	@Test
 	void ofWhenContentIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((Content) null))
-			.withMessage("Content must not be null");
+			.withMessage("'content' must not be null");
 	}
 
 	@Test
 	void ofWhenConsumerIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((IOConsumer<OutputStream>) null))
-			.withMessage("Writer must not be null");
+			.withMessage("'writer' must not be null");
 	}
 
 	@Test

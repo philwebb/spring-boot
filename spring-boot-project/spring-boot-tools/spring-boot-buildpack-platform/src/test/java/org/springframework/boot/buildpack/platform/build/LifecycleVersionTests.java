@@ -31,19 +31,19 @@ class LifecycleVersionTests {
 	@Test
 	void parseWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse(null))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void parseWhenTooLongThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse("v1.2.3.4"))
-			.withMessage("Malformed version number '1.2.3.4'");
+			.withMessage("'value' must be a valid version number [v1.2.3.4]");
 	}
 
 	@Test
 	void parseWhenNonNumericThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse("v1.2.3a"))
-			.withMessage("Malformed version number '1.2.3a'");
+			.withMessage("'value' must be a valid version number [v1.2.3a]");
 	}
 
 	@Test

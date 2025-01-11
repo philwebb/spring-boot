@@ -35,13 +35,13 @@ class DockerConnectionExceptionTests {
 	@Test
 	void createWhenHostIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DockerConnectionException(null, null))
-			.withMessage("Host must not be null");
+			.withMessage("'host' must not be null");
 	}
 
 	@Test
 	void createWhenCauseIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DockerConnectionException(HOST, null))
-			.withMessage("Cause must not be null");
+			.withMessage("'cause' must not be null");
 	}
 
 	@Test
