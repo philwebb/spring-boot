@@ -60,7 +60,7 @@ public class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationR
 	}
 
 	private List<ConfigTreeConfigDataResource> resolve(String location) throws IOException {
-		Assert.isTrue(location.endsWith("/"),
+		Assert.state(location.endsWith("/"),
 				() -> String.format("Config tree location '%s' must end with '/'", location));
 		if (!this.resourceLoader.isPattern(location)) {
 			return Collections.singletonList(new ConfigTreeConfigDataResource(location));

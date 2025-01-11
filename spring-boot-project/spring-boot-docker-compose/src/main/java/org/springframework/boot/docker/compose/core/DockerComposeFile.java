@@ -47,7 +47,7 @@ public final class DockerComposeFile {
 	private final List<File> files;
 
 	private DockerComposeFile(List<File> files) {
-		Assert.state(!files.isEmpty(), "Files must not be empty");
+		Assert.isTrue(!files.isEmpty(), "'files' must not be empty");
 		this.files = files.stream().map(DockerComposeFile::toCanonicalFile).toList();
 	}
 
@@ -112,7 +112,7 @@ public final class DockerComposeFile {
 		if (!base.exists()) {
 			return null;
 		}
-		Assert.isTrue(base.isDirectory(), () -> "'%s' is not a directory".formatted(base));
+		Assert.state(base.isDirectory(), () -> "'%s' is not a directory".formatted(base));
 		Path basePath = base.toPath();
 		for (String candidate : SEARCH_ORDER) {
 			Path resolved = basePath.resolve(candidate);

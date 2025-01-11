@@ -213,8 +213,8 @@ class SpringApplicationTests {
 
 	@Test
 	void sourcesMustNotBeEmpty() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication().run())
-			.withMessageContaining("Sources must not be empty");
+		assertThatIllegalStateException().isThrownBy(() -> new SpringApplication().run())
+			.withMessageContaining("No sources defined");
 	}
 
 	@Test

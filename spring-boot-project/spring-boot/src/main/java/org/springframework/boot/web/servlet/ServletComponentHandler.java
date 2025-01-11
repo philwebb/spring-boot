@@ -52,7 +52,7 @@ abstract class ServletComponentHandler {
 		String[] value = (String[]) attributes.get("value");
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
 		if (urlPatterns.length > 0) {
-			Assert.state(value.length == 0, "The urlPatterns and value attributes are mutually exclusive.");
+			Assert.state(value.length == 0, "The urlPatterns and value attributes are mutually exclusive");
 			return urlPatterns;
 		}
 		return value;

@@ -209,7 +209,7 @@ public class HeapDumpWebEndpoint {
 
 		@Override
 		public File dumpHeap(Boolean live) throws IOException, InterruptedException {
-			Assert.isNull(live, "OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
+			Assert.state(live == null, "OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
 			return new File(
 					(String) ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, "heap", null));
 		}

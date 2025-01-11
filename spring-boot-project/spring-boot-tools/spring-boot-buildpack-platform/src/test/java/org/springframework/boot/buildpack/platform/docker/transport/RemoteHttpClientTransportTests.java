@@ -28,7 +28,7 @@ import org.springframework.boot.buildpack.platform.docker.configuration.Resolved
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -92,7 +92,7 @@ class RemoteHttpClientTransportTests {
 	void createIfPossibleWhenTlsVerifyWithMissingCertPathThrowsException() {
 		ResolvedDockerHost dockerHost = ResolvedDockerHost
 			.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376", true, null));
-		assertThatIllegalArgumentException().isThrownBy(() -> RemoteHttpClientTransport.createIfPossible(dockerHost))
+		assertThatIllegalStateException().isThrownBy(() -> RemoteHttpClientTransport.createIfPossible(dockerHost))
 			.withMessageContaining("Docker host TLS verification requires trust material");
 	}
 

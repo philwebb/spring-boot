@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.aot.AbstractAotProcessor.Settings;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -84,8 +83,7 @@ class SpringApplicationAotProcessorTests {
 
 	@Test
 	void invokeMainWithMissingArguments() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> SpringApplicationAotProcessor.main(new String[] { "Test" }))
+		assertThatIllegalStateException().isThrownBy(() -> SpringApplicationAotProcessor.main(new String[] { "Test" }))
 			.withMessageContaining("Usage:");
 	}
 

@@ -27,6 +27,7 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link DockerComposeFile}.
@@ -104,7 +105,7 @@ class DockerComposeFileTests {
 	@Test
 	void findWhenWorkingDirectoryIsNotDirectoryThrowsException() throws Exception {
 		File file = createTempFile("iamafile");
-		assertThatIllegalArgumentException().isThrownBy(() -> DockerComposeFile.find(file))
+		assertThatIllegalStateException().isThrownBy(() -> DockerComposeFile.find(file))
 			.withMessageEndingWith("is not a directory");
 	}
 

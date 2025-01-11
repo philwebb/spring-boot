@@ -99,7 +99,7 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	public static boolean isEmbedded(ConnectionFactory connectionFactory) {
 		OptionsCapableConnectionFactory optionsCapable = OptionsCapableConnectionFactory.unwrapFrom(connectionFactory);
-		Assert.notNull(optionsCapable,
+		Assert.state(optionsCapable != null,
 				() -> "Cannot determine database's type as ConnectionFactory is not options-capable. To be "
 						+ "options-capable, a ConnectionFactory should be created with "
 						+ ConnectionFactoryBuilder.class.getName());

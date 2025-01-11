@@ -128,13 +128,13 @@ class IndexedJarStructure implements JarStructure {
 	}
 
 	private String toStructureDependency(String libEntryName) {
-		Assert.state(libEntryName.startsWith(this.libLocation), "Invalid library location " + libEntryName);
+		Assert.state(libEntryName.startsWith(this.libLocation), () -> "Invalid library location " + libEntryName);
 		return libEntryName.substring(this.libLocation.length());
 	}
 
 	private static String getMandatoryAttribute(Manifest manifest, String attribute) {
 		String value = manifest.getMainAttributes().getValue(attribute);
-		Assert.state(value != null, "Manifest attribute '" + attribute + "' is mandatory");
+		Assert.state(value != null, () -> "Manifest attribute '" + attribute + "' is mandatory");
 		return value;
 	}
 

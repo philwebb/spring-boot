@@ -175,7 +175,7 @@ public class UndertowWebServer implements WebServer {
 				this.closeables.add(closeable);
 			}
 			if (handler instanceof GracefulShutdownHandler shutdownHandler) {
-				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdownHandler can be defined");
+				Assert.state(this.gracefulShutdown == null, "Only a single GracefulShutdownHandler can be defined");
 				this.gracefulShutdown = shutdownHandler;
 			}
 		}

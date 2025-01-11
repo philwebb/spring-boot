@@ -272,7 +272,7 @@ public class Restarter {
 	}
 
 	private Throwable doStart() throws Exception {
-		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
+		Assert.state(this.mainClassName != null, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
 		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader, urls, updatedFiles);

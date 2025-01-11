@@ -27,6 +27,7 @@ import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -64,7 +65,7 @@ class BuildpackMetadataTests extends AbstractJsonTests {
 		ImageConfig imageConfig = mock(ImageConfig.class);
 		given(image.getConfig()).willReturn(imageConfig);
 		given(imageConfig.getLabels()).willReturn(Collections.singletonMap("alpha", "a"));
-		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackMetadata.fromImage(image))
+		assertThatIllegalStateException().isThrownBy(() -> BuildpackMetadata.fromImage(image))
 			.withMessage("No 'io.buildpacks.buildpackage.metadata' label found in image config labels 'alpha'");
 	}
 

@@ -445,7 +445,7 @@ final class PemPrivateKeyParser {
 		public static final String PBES2_ALGORITHM = "PBES2";
 
 		static PKCS8EncodedKeySpec decrypt(byte[] bytes, String password) {
-			Assert.notNull(password, "Password is required for an encrypted private key");
+			Assert.state(password != null, "Password is required for an encrypted private key");
 			try {
 				EncryptedPrivateKeyInfo keyInfo = new EncryptedPrivateKeyInfo(bytes);
 				AlgorithmParameters algorithmParameters = keyInfo.getAlgParameters();

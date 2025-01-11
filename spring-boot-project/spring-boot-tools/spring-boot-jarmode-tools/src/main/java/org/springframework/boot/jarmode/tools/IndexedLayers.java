@@ -60,7 +60,7 @@ class IndexedLayers implements Layers {
 				this.layers.put(line.substring(3, line.length() - 2), contents);
 			}
 			else if (line.startsWith("  - ")) {
-				Assert.notNull(contents, "Contents must not be null. Check if the index file is malformed!");
+				Assert.state(contents != null, "Contents must not be null. Check if the index file is malformed!");
 				contents.add(line.substring(5, line.length() - 1));
 			}
 			else {

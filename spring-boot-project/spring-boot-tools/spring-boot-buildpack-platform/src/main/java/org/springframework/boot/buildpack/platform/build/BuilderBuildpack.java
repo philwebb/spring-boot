@@ -65,7 +65,7 @@ class BuilderBuildpack implements Buildpack {
 			.of(unambiguous ? reference.getSubReference(PREFIX) : reference.toString());
 		BuildpackMetadata buildpackMetadata = findBuildpackMetadata(context, builderReference);
 		if (unambiguous) {
-			Assert.isTrue(buildpackMetadata != null, () -> "Buildpack '" + reference + "' not found in builder");
+			Assert.state(buildpackMetadata != null, () -> "Buildpack '" + reference + "' not found in builder");
 		}
 		return (buildpackMetadata != null) ? new BuilderBuildpack(buildpackMetadata) : null;
 	}

@@ -53,7 +53,7 @@ class CertificateMatcher {
 		Assert.notNull(privateKey, "Private key must not be null");
 		this.privateKey = privateKey;
 		this.signature = createSignature(privateKey);
-		Assert.notNull(this.signature, "Failed to create signature");
+		Assert.state(this.signature != null, "Failed to create signature");
 		this.generatedSignature = sign(this.signature, privateKey);
 	}
 

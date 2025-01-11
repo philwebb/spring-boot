@@ -127,7 +127,7 @@ public final class PropertiesSslBundle implements SslBundle {
 		if (properties.isVerifyKeys()) {
 			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
 			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
-					"Private key in %s matches none of the certificates in the chain".formatted(propertyName));
+					() -> "Private key in %s matches none of the certificates in the chain".formatted(propertyName));
 		}
 		return pemSslStore;
 	}

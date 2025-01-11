@@ -69,7 +69,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 		if (!this.statusMappings.containsKey(null) && Enum.class.isAssignableFrom(stateType)) {
 			EnumSet elements = EnumSet.allOf((Class) stateType);
 			for (Object element : elements) {
-				Assert.isTrue(this.statusMappings.containsKey(element),
+				Assert.state(this.statusMappings.containsKey(element),
 						() -> "StatusMappings does not include " + element);
 			}
 		}

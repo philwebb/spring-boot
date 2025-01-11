@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link EmbeddedDatabaseConnection}.
@@ -85,7 +85,7 @@ class EmbeddedDatabaseConnectionTests {
 
 	@Test
 	void whenConnectionFactoryIsNotOptionsCapableThenIsEmbeddedThrows() {
-		assertThatIllegalArgumentException()
+		assertThatIllegalStateException()
 			.isThrownBy(() -> EmbeddedDatabaseConnection
 				.isEmbedded(ConnectionFactories.get("r2dbc:pool:h2:mem:///" + UUID.randomUUID())))
 			.withMessage("Cannot determine database's type as ConnectionFactory is not options-capable. To be "

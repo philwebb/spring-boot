@@ -95,8 +95,9 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	private WebApplicationContext getWebApplicationContext() {
-		Assert.notNull(this.applicationContext, "ApplicationContext be injected");
-		Assert.isInstanceOf(WebApplicationContext.class, this.applicationContext);
+		Assert.state(this.applicationContext != null, "ApplicationContext has not been injected");
+		Assert.state(this.applicationContext instanceof WebApplicationContext,
+				"Injected ApplicationContext is not a WebApplicationContext");
 		return (WebApplicationContext) this.applicationContext;
 	}
 

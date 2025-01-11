@@ -147,7 +147,7 @@ public class StructuredLogFormatterFactory<E> {
 	private void checkTypeArgument(Object formatter) {
 		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(formatter.getClass(),
 				StructuredLogFormatter.class);
-		Assert.isTrue(this.logEventType.equals(typeArgument),
+		Assert.state(this.logEventType.equals(typeArgument),
 				() -> "Type argument of %s must be %s but was %s".formatted(formatter.getClass().getName(),
 						this.logEventType.getName(), (typeArgument != null) ? typeArgument.getName() : "null"));
 

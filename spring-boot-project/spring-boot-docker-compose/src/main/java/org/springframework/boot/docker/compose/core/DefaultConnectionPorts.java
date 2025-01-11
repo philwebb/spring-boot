@@ -97,7 +97,8 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	@Override
 	public int get(int containerPort) {
 		Integer hostPort = this.portMappings.get(containerPort);
-		Assert.state(hostPort != null, "No host port mapping found for container port %s".formatted(containerPort));
+		Assert.state(hostPort != null,
+				() -> "No host port mapping found for container port %s".formatted(containerPort));
 		return hostPort;
 	}
 

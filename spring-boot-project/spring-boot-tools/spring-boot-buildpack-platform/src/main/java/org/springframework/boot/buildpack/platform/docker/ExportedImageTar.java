@@ -127,7 +127,8 @@ class ExportedImageTar implements Closeable {
 					entry = tar.getNextEntry();
 				}
 				Assert.state(index != null || manifest != null,
-						"Exported image '%s' does not contain 'index.json' or 'manifest.json'".formatted(reference));
+						() -> "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
+							.formatted(reference));
 				return (index != null) ? new IndexLayerArchiveFactory(tarFile, index)
 						: new ManifestLayerArchiveFactory(tarFile, manifest);
 			}

@@ -69,7 +69,7 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		try {
 			Process process = processBuilder.start();
-			Assert.isTrue(process.waitFor(30, TimeUnit.SECONDS), "Process did not exit within 30 seconds");
+			Assert.state(process.waitFor(30, TimeUnit.SECONDS), "Process did not exit within 30 seconds");
 			Assert.state(process.exitValue() == 0, () -> "Process exited with %d".formatted(process.exitValue()));
 			process.destroy();
 		}

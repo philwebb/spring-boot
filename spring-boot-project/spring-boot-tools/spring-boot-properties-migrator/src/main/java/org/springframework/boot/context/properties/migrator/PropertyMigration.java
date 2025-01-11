@@ -154,7 +154,7 @@ class PropertyMigration {
 		ConfigurationPropertyName oldName = property.getName();
 		ConfigurationPropertyName oldPrefix = ConfigurationPropertyName.of(metadata.getId());
 		Assert.state(oldPrefix.isAncestorOf(oldName),
-				String.format("'%s' is not an ancestor of '%s'", oldPrefix, oldName));
+				() -> "'%s' is not an ancestor of '%s'".formatted(oldPrefix, oldName));
 		ConfigurationPropertyName newPrefix = ConfigurationPropertyName.of(replacement.getId());
 		return newPrefix.append(oldName.subName(oldPrefix.getNumberOfElements()));
 	}

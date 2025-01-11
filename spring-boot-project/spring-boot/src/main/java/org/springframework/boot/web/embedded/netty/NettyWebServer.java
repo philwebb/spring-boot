@@ -162,7 +162,7 @@ public class NettyWebServer implements WebServer {
 		}
 		if (this.resourceFactory != null) {
 			LoopResources resources = this.resourceFactory.getLoopResources();
-			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");
+			Assert.state(resources != null, "No LoopResources: is ReactorResourceFactory not initialized yet?");
 			server = server.runOn(resources);
 		}
 		if (this.lifecycleTimeout != null) {

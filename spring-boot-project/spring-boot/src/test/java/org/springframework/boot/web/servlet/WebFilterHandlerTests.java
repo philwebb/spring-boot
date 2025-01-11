@@ -130,7 +130,7 @@ class WebFilterHandlerTests {
 	void urlPatternsDeclaredTwice() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
-			.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
+			.withMessageContaining("The urlPatterns and value attributes are mutually exclusive");
 	}
 
 	private AnnotatedBeanDefinition createBeanDefinition(Class<?> filterClass) throws IOException {

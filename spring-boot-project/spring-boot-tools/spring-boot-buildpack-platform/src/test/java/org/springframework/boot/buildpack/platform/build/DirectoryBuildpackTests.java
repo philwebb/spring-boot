@@ -37,7 +37,7 @@ import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.mock;
 
@@ -89,8 +89,7 @@ class DirectoryBuildpackTests {
 	void resolveWhenDirectoryWithoutBuildpackTomlThrowsException() throws Exception {
 		Files.createDirectories(this.buildpackDir.toPath());
 		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
+		assertThatIllegalStateException().isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
 			.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
 			.withMessageContaining(this.buildpackDir.getAbsolutePath());
 	}

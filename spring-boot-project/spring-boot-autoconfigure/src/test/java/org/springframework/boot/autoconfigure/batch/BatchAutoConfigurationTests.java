@@ -91,7 +91,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -484,7 +484,7 @@ class BatchAutoConfigurationTests {
 		JobLauncherApplicationRunner runner = createInstance();
 		runner.setJobs(Arrays.asList(mockJob("one"), mockJob("two")));
 		runner.setJobName("three");
-		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
+		assertThatIllegalStateException().isThrownBy(runner::afterPropertiesSet)
 			.withMessage("No job found with name 'three'");
 	}
 
@@ -492,7 +492,7 @@ class BatchAutoConfigurationTests {
 	void whenTheUserDefinesAJobNameThatDoesNotExistWithRegisteredJobFailsFast() {
 		JobLauncherApplicationRunner runner = createInstance("one", "two");
 		runner.setJobName("three");
-		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
+		assertThatIllegalStateException().isThrownBy(runner::afterPropertiesSet)
 			.withMessage("No job found with name 'three'");
 	}
 

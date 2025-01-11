@@ -43,6 +43,7 @@ import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
@@ -156,7 +157,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		given(resolverContext.fetchImage(any(), any())).willReturn(image);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:latest");
-		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
+		assertThatIllegalStateException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
 			.withMessageContaining("No 'io.buildpacks.buildpackage.metadata' label found");
 	}
 

@@ -158,7 +158,7 @@ class BuilderMetadata extends MappedObject {
 	static BuilderMetadata fromImageConfig(ImageConfig imageConfig) throws IOException {
 		Assert.notNull(imageConfig, "ImageConfig must not be null");
 		String json = imageConfig.getLabels().get(LABEL_NAME);
-		Assert.notNull(json, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
+		Assert.state(json != null, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
 				+ StringUtils.collectionToCommaDelimitedString(imageConfig.getLabels().keySet()) + "'");
 		return fromJson(json);
 	}

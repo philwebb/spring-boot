@@ -140,7 +140,7 @@ class InstantiatorTests {
 	@Test
 	void getArgWhenUnknownThrowsException() {
 		Instantiator<?> instantiator = createInstantiator(WithMultipleConstructors.class);
-		assertThatIllegalArgumentException().isThrownBy(() -> instantiator.getArg(InputStream.class))
+		assertThatIllegalStateException().isThrownBy(() -> instantiator.getArg(InputStream.class))
 			.withMessageStartingWith("Unknown argument type");
 	}
 

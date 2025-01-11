@@ -91,7 +91,7 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	 * already.
 	 */
 	public void startRecording() {
-		Assert.state(this.events.isEmpty(), "Cannot restart recording once steps have been buffered.");
+		Assert.state(this.events.isEmpty(), "Cannot restart recording once steps have been buffered");
 		this.startTime = this.clock.instant();
 	}
 

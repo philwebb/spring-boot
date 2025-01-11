@@ -88,7 +88,7 @@ class BufferingApplicationStartupTests {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		applicationStartup.start("first").end();
 		assertThatIllegalStateException().isThrownBy(applicationStartup::startRecording)
-			.withMessage("Cannot restart recording once steps have been buffered.");
+			.withMessage("Cannot restart recording once steps have been buffered");
 	}
 
 	@Test

@@ -56,7 +56,7 @@ final class DirectoryBuildpack implements Buildpack {
 
 	private BuildpackCoordinates findBuildpackCoordinates(Path path) {
 		Path buildpackToml = path.resolve("buildpack.toml");
-		Assert.isTrue(Files.exists(buildpackToml),
+		Assert.state(Files.exists(buildpackToml),
 				() -> "Buildpack descriptor 'buildpack.toml' is required in buildpack '" + path + "'");
 		try {
 			try (InputStream inputStream = Files.newInputStream(buildpackToml)) {

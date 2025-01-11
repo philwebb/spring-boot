@@ -517,7 +517,7 @@ class BuilderTests {
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack@1.2.3");
 		BuildRequest request = getTestRequest().withBuildpacks(reference);
-		assertThatIllegalArgumentException().isThrownBy(() -> builder.build(request))
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
 			.withMessageContaining("'urn:cnb:builder:example/buildpack@1.2.3'")
 			.withMessageContaining("not found in builder");
 	}

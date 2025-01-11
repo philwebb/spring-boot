@@ -409,7 +409,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = getLoggerFactory();
-		Assert.isInstanceOf(LoggerContext.class, factory,
+		Assert.state(factory instanceof LoggerContext,
 				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "

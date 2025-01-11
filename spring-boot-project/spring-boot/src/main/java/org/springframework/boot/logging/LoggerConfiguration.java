@@ -190,7 +190,7 @@ public final class LoggerConfiguration {
 		 * @throws IllegalStateException if this is a {@link #isCustom() custom} level
 		 */
 		public LogLevel getLevel() {
-			Assert.state(this.logLevel != null, "Unable to provide LogLevel for '" + this.name + "'");
+			Assert.state(this.logLevel != null, () -> "Unable to provide LogLevel for '" + this.name + "'");
 			return this.logLevel;
 		}
 
