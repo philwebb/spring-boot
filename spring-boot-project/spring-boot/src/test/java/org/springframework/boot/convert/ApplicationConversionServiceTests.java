@@ -29,6 +29,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
@@ -39,6 +41,7 @@ import org.springframework.format.Printer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
@@ -183,6 +186,70 @@ class ApplicationConversionServiceTests {
 		assertUnmodifiableExceptionThrown(() -> instance.removeConvertible(null, null));
 	}
 
+	@Test
+	void addPrinterWithTypeConvertsUsingTypeInformation() {
+		ApplicationConversionService service = new ApplicationConversionService();
+		Printer<?> printer = (object, locale) -> object.toString().toUpperCase(locale);
+		service.addPrinter(printer, ResolvableType.forClassWithGenerics(Printer.class, ExampleRecord.class));
+		assertThat(service.convert(new ExampleRecord("test"), String.class)).isEqualTo("TEST");
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> service.convert(new UnknownRecord("test"), String.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> service.addPrinter(printer))
+			.withMessageContaining("Unable to extract");
+	}
+
+	@Test
+	void addParserWithTypeConvertsUsingTypeInformation() {
+		ApplicationConversionService service = new ApplicationConversionService();
+		Parser<?> parser = (text, locale) -> new ExampleRecord(text.toString());
+		service.addParser(parser, ResolvableType.forClassWithGenerics(Parser.class, ExampleRecord.class));
+		assertThat(service.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> service.convert("test", UnknownRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> service.addParser(parser))
+			.withMessageContaining("Unable to extract");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void addFormatterWithType() {
+		ApplicationConversionService service = new ApplicationConversionService();
+		Formatter<?> formatter = new Formatter() {
+
+			@Override
+			public String print(Object object, Locale locale) {
+				return object.toString().toUpperCase(locale);
+			}
+
+			@Override
+			public Object parse(String text, Locale locale) throws ParseException {
+				return new ExampleRecord(text.toString());
+			}
+
+		};
+		service.addFormatter(formatter, ResolvableType.forClassWithGenerics(Formatter.class, ExampleRecord.class));
+		assertThat(service.convert(new ExampleRecord("test"), String.class)).isEqualTo("TEST");
+		assertThat(service.convert("test", ExampleRecord.class)).isEqualTo(new ExampleRecord("test"));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> service.convert(new UnknownRecord("test"), String.class));
+		assertThatExceptionOfType(ConverterNotFoundException.class)
+			.isThrownBy(() -> service.convert("test", UnknownRecord.class));
+		assertThatIllegalArgumentException().isThrownBy(() -> service.addFormatter(formatter))
+			.withMessageContaining("Unable to extract");
+	}
+
+	@Test
+	@Disabled
+	void addConverterWithType() {
+
+	}
+
+	@Test
+	@Disabled
+	void addConverterFactoryWithType() {
+
+	}
+
 	private void assertUnmodifiableExceptionThrown(ThrowingCallable throwingCallable) {
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(throwingCallable)
 			.withMessage("This ApplicationConversionService cannot be modified");
@@ -270,6 +337,19 @@ class ApplicationConversionServiceTests {
 		Parser<Integer> parser() {
 			return (text, locale) -> Integer.valueOf(text);
 		}
+
+	}
+
+	record ExampleRecord(String value) {
+
+		@Override
+		public final String toString() {
+			return value();
+		}
+
+	}
+
+	record UnknownRecord(String value) {
 
 	}
 
