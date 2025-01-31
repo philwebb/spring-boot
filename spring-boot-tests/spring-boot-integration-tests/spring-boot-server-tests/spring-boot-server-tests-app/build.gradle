@@ -16,6 +16,7 @@ repositories {
 	maven { url "file:${rootDir}/../test-repository"}
 	mavenCentral()
 	spring.mavenRepositoriesExcludingBootGroup()
+	maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
 }
 
 configurations {
