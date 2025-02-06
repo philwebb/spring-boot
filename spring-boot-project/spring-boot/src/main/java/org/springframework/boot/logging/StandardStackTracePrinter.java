@@ -43,8 +43,9 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		dejaVu.add(throwable);
 		println(out, throwable.toString());
 		StackTraceElement[] trace = throwable.getStackTrace();
-		for (StackTraceElement traceElement : trace) {
-			println(out, "\tat " + traceElement);
+		int m = trace.length - 1;
+		for (int i = 0; i <= m; i++) {
+			println(out, "\tat " + trace[i]);
 		}
 		for (Throwable se : throwable.getSuppressed()) {
 			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, "\t", dejaVu);
