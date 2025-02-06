@@ -45,21 +45,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		int m = trace.length - 1;
 		String prefix = "";
 		int framesInCommon = 0;
-
-		println(out, throwable.toString());
-		for (int i = 0; i <= m; i++) {
-			println(out, prefix + "\tat " + trace[i]);
-		}
-		if (framesInCommon != 0) {
-			println(out, prefix + "\t... " + framesInCommon + " more");
-		}
-		for (Throwable se : throwable.getSuppressed()) {
-			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", dejaVu);
-		}
-		Throwable ourCause = throwable.getCause();
-		if (ourCause != null) {
-			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, dejaVu);
-		}
+		extracted2(throwable, out, prefix, "", dejaVu, trace, m, framesInCommon);
 	}
 
 	private void printEnclosedStackTrace(Throwable throwable, Appendable out, StackTraceElement[] enclosingTrace,
@@ -78,21 +64,25 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 				n--;
 			}
 			int framesInCommon = trace.length - 1 - m;
+			extracted2(throwable, out, prefix, caption, dejaVu, trace, m, framesInCommon);
+		}
+	}
 
-			println(out, prefix + caption + throwable);
-			for (int i = 0; i <= m; i++) {
-				println(out, prefix + "\tat " + trace[i]);
-			}
-			if (framesInCommon != 0) {
-				println(out, prefix + "\t... " + framesInCommon + " more");
-			}
-			for (Throwable se : throwable.getSuppressed()) {
-				printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", dejaVu);
-			}
-			Throwable ourCause = throwable.getCause();
-			if (ourCause != null) {
-				printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, dejaVu);
-			}
+	private void extracted2(Throwable throwable, Appendable out, String prefix, String caption, Set<Throwable> dejaVu,
+			StackTraceElement[] trace, int m, int framesInCommon) throws IOException {
+		println(out, prefix + caption + throwable);
+		for (int i = 0; i <= m; i++) {
+			println(out, prefix + "\tat " + trace[i]);
+		}
+		if (framesInCommon != 0) {
+			println(out, prefix + "\t... " + framesInCommon + " more");
+		}
+		for (Throwable se : throwable.getSuppressed()) {
+			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", dejaVu);
+		}
+		Throwable ourCause = throwable.getCause();
+		if (ourCause != null) {
+			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, dejaVu);
 		}
 	}
 
