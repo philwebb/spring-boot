@@ -41,30 +41,36 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		Set<Throwable> dejaVu = Collections.newSetFromMap(new IdentityHashMap<>());
 		dejaVu.add(throwable);
-		println(out, throwable.toString());
 		StackTraceElement[] trace = throwable.getStackTrace();
 		int m = trace.length - 1;
+		String prefix = "";
+		int framesInCommon = 0;
+
+		println(out, throwable.toString());
 		for (int i = 0; i <= m; i++) {
-			println(out, "\tat " + trace[i]);
+			println(out, prefix + "\tat " + trace[i]);
+		}
+		if (framesInCommon != 0) {
+			println(out, prefix + "\t... " + framesInCommon + " more");
 		}
 		for (Throwable se : throwable.getSuppressed()) {
-			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, "\t", dejaVu);
+			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", dejaVu);
 		}
 		Throwable ourCause = throwable.getCause();
 		if (ourCause != null) {
-			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, "", dejaVu);
+			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, dejaVu);
 		}
 	}
 
-	private void printEnclosedStackTrace(Throwable dis, Appendable out, StackTraceElement[] enclosingTrace,
+	private void printEnclosedStackTrace(Throwable throwable, Appendable out, StackTraceElement[] enclosingTrace,
 			String caption, String prefix, Set<Throwable> dejaVu) throws IOException {
-		if (dejaVu.contains(dis)) {
+		if (dejaVu.contains(throwable)) {
 			out.append(prefix + caption + "[CIRCULAR REFERENCE: " + this + "]");
 			out.append("\n");
 		}
 		else {
-			dejaVu.add(dis);
-			StackTraceElement[] trace = dis.getStackTrace();
+			dejaVu.add(throwable);
+			StackTraceElement[] trace = throwable.getStackTrace();
 			int m = trace.length - 1;
 			int n = enclosingTrace.length - 1;
 			while (m >= 0 && n >= 0 && trace[m].equals(enclosingTrace[n])) {
@@ -72,17 +78,18 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 				n--;
 			}
 			int framesInCommon = trace.length - 1 - m;
-			println(out, prefix + caption + dis);
+
+			println(out, prefix + caption + throwable);
 			for (int i = 0; i <= m; i++) {
 				println(out, prefix + "\tat " + trace[i]);
 			}
 			if (framesInCommon != 0) {
 				println(out, prefix + "\t... " + framesInCommon + " more");
 			}
-			for (Throwable se : dis.getSuppressed()) {
+			for (Throwable se : throwable.getSuppressed()) {
 				printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", dejaVu);
 			}
-			Throwable ourCause = dis.getCause();
+			Throwable ourCause = throwable.getCause();
 			if (ourCause != null) {
 				printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, dejaVu);
 			}
