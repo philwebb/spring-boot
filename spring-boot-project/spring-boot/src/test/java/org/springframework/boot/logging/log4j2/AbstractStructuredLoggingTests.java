@@ -60,12 +60,17 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected static MutableLogEvent createEvent() {
+		return createEvent(null);
+	}
+
+	protected static MutableLogEvent createEvent(Throwable thrown) {
 		MutableLogEvent event = new MutableLogEvent();
 		event.setTimeMillis(EVENT_TIME.toEpochMilli());
 		event.setLevel(Level.INFO);
 		event.setThreadName("main");
 		event.setLoggerName("org.example.Test");
 		event.setMessage(new SimpleMessage("message"));
+		event.setThrown(thrown);
 		return event;
 	}
 
