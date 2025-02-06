@@ -33,56 +33,53 @@ import java.util.function.UnaryOperator;
  */
 public final class StandardStackTracePrinter implements StackTracePrinter {
 
+	private static final StackTraceElement[] NO_ELEMENTS = {};
+
 	private static final String CAUSE_CAPTION = "Caused by: ";
 
 	private static final String SUPPRESSED_CAPTION = "Suppressed: ";
 
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
-		Set<Throwable> dejaVu = Collections.newSetFromMap(new IdentityHashMap<>());
-		dejaVu.add(throwable);
-		StackTraceElement[] trace = throwable.getStackTrace();
-		int m = trace.length - 1;
-		String prefix = "";
-		int framesInCommon = 0;
-		extracted2(throwable, out, prefix, "", dejaVu, trace, m, framesInCommon);
+		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+		printEnclosedStackTrace(throwable, out, NO_ELEMENTS, "", "", seen);
 	}
 
 	private void printEnclosedStackTrace(Throwable throwable, Appendable out, StackTraceElement[] enclosingTrace,
-			String caption, String prefix, Set<Throwable> dejaVu) throws IOException {
-		if (dejaVu.contains(throwable)) {
-			out.append(prefix + caption + "[CIRCULAR REFERENCE: " + this + "]");
-			out.append("\n");
+			String caption, String prefix, Set<Throwable> seen) throws IOException {
+		if (seen.add(throwable)) {
+			StackTraceElement[] trace = throwable.getStackTrace();
+			int traceCount = trace.length - 1;
+			int enclosingTraceCount = enclosingTrace.length - 1;
+			while (traceCount >= 0 && enclosingTraceCount >= 0
+					&& trace[traceCount].equals(enclosingTrace[enclosingTraceCount])) {
+				traceCount--;
+				enclosingTraceCount--;
+			}
+			int framesInCommon = trace.length - 1 - traceCount;
+			extracted2(throwable, out, prefix, caption, seen, trace, traceCount, framesInCommon);
 		}
 		else {
-			dejaVu.add(throwable);
-			StackTraceElement[] trace = throwable.getStackTrace();
-			int m = trace.length - 1;
-			int n = enclosingTrace.length - 1;
-			while (m >= 0 && n >= 0 && trace[m].equals(enclosingTrace[n])) {
-				m--;
-				n--;
-			}
-			int framesInCommon = trace.length - 1 - m;
-			extracted2(throwable, out, prefix, caption, dejaVu, trace, m, framesInCommon);
+			out.append(prefix + caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			out.append("\n");
 		}
 	}
 
-	private void extracted2(Throwable throwable, Appendable out, String prefix, String caption, Set<Throwable> dejaVu,
-			StackTraceElement[] trace, int m, int framesInCommon) throws IOException {
+	private void extracted2(Throwable throwable, Appendable out, String prefix, String caption, Set<Throwable> seen,
+			StackTraceElement[] trace, int traceCount, int framesInCommon) throws IOException {
 		println(out, prefix + caption + throwable);
-		for (int i = 0; i <= m; i++) {
+		for (int i = 0; i <= traceCount; i++) {
 			println(out, prefix + "\tat " + trace[i]);
 		}
 		if (framesInCommon != 0) {
 			println(out, prefix + "\t... " + framesInCommon + " more");
 		}
 		for (Throwable se : throwable.getSuppressed()) {
-			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", dejaVu);
+			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", seen);
 		}
 		Throwable ourCause = throwable.getCause();
 		if (ourCause != null) {
-			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, dejaVu);
+			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, seen);
 		}
 	}
 
