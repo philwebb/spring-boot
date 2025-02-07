@@ -48,20 +48,21 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
-		printEnclosedStackTrace(Collections.newSetFromMap(new IdentityHashMap<>()), throwable, out, NO_ELEMENTS, "",
-				"");
+		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+		Printer printer = new Printer(out);
+		printStackTrace(seen, throwable, printer, NO_ELEMENTS, "");
 	}
 
-	private void printEnclosedStackTrace(Set<Throwable> seen, Throwable throwable, Appendable out,
-			StackTraceElement[] enclosingElements, String caption, String prefix) throws IOException {
+	private void printStackTrace(Set<Throwable> seen, Throwable throwable, Printer printer,
+			StackTraceElement[] enclosingElements, String caption) throws IOException {
 		if (!seen.add(throwable)) {
-			println(out, prefix + caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			printer.println(caption + "[CIRCULAR REFERENCE: " + throwable + "]");
 			return;
 		}
 		StackTraceElement[] elements = throwable.getStackTrace();
 		Throwable cause = throwable.getCause();
 		if (cause != null && this.rootFirst) {
-			printEnclosedStackTrace(seen, cause, out, elements, caption, prefix);
+			printStackTrace(seen, cause, printer, elements, caption);
 			caption = "Wrapped by: ";
 		}
 		int elementsCount = elements.length - 1;
@@ -74,26 +75,22 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			}
 		}
 		int framesInCommon = elements.length - 1 - elementsCount;
-		println(out, prefix + caption + throwable);
-		for (int i = 0; i <= elementsCount; i++) {
-			println(out, prefix + "\tat " + elements[i]);
+		printer.println(caption + throwable);
+		int elementsCountFinal = elementsCount;
+		for (int i = 0; i <= elementsCountFinal; i++) {
+			printer.println("\tat " + elements[i]);
 		}
 		if (framesInCommon != 0) {
-			println(out, prefix + "\t... " + framesInCommon + " more");
+			printer.println("\t... " + framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
 			for (Throwable suppressed : throwable.getSuppressed()) {
-				printEnclosedStackTrace(seen, suppressed, out, elements, "Suppressed: ", prefix + "\t");
+				printer.indent(() -> printStackTrace(seen, suppressed, printer, elements, "Suppressed: "));
 			}
 		}
 		if (cause != null && !this.rootFirst) {
-			printEnclosedStackTrace(seen, cause, out, elements, "Caused by: ", prefix);
+			printStackTrace(seen, cause, printer, elements, "Caused by: ");
 		}
-	}
-
-	private void println(Appendable out, String string) throws IOException {
-		out.append(string);
-		out.append("\n");
 	}
 
 	public StandardStackTracePrinter withMaximumLength(int maximumLength) {
@@ -142,6 +139,41 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 */
 	public static StandardStackTracePrinter rootFirst() {
 		return new StandardStackTracePrinter(true, false);
+	}
+
+	private static class Printer {
+
+		private final Appendable out;
+
+		private String indent = "";
+
+		Printer(Appendable out) {
+			this.out = out;
+		}
+
+		void indent(Action action) throws IOException {
+			String previous = this.indent;
+			try {
+				this.indent = previous + "\t";
+				action.run();
+			}
+			finally {
+				this.indent = previous;
+			}
+		}
+
+		public void println(String string) throws IOException {
+			this.out.append(this.indent + string);
+			this.out.append("\n");
+		}
+
+	}
+
+	@FunctionalInterface
+	private interface Action {
+
+		void run() throws IOException;
+
 	}
 
 }
