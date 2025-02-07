@@ -71,8 +71,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 	}
 
-	private void extracted(Set<Throwable> seen, Print print, Frames frames, Frames enclosingFrames) throws IOException {
-		int framesInCommon = getFramesInCommon(enclosingFrames, frames);
+	private void extracted(Set<Throwable> seen, Print print, Frames frames, Frames enclosing) throws IOException {
+		int framesInCommon = getFramesInCommon(enclosing, frames);
 		print.exceptionDetails(frames.throwable);
 		for (int i = 0; i < frames.frames.length - framesInCommon; i++) {
 			print.at(frames.frames[i]);
