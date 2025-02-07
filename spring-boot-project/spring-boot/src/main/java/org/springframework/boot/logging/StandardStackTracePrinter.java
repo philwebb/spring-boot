@@ -74,17 +74,21 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	private void springSingleStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
 			throws IOException {
 		print.thrown(stackTrace.throwable);
+		printFrames(print, stackTrace, enclosing);
+		if (!this.hideSupressed) {
+			for (StackTrace suppressed : stackTrace.getSuppressed()) {
+				printFullStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
+			}
+		}
+	}
+
+	private void printFrames(Print print, StackTrace stackTrace, StackTrace enclosing) throws IOException {
 		int framesInCommon = getFramesInCommon(stackTrace, enclosing);
 		for (int i = 0; i < stackTrace.frames.length - framesInCommon; i++) {
 			print.at(stackTrace.frames[i]);
 		}
 		if (framesInCommon != 0) {
 			print.omitted(framesInCommon + " more");
-		}
-		if (!this.hideSupressed) {
-			for (StackTrace suppressed : stackTrace.getSuppressed()) {
-				printFullStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
-			}
 		}
 	}
 
