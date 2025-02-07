@@ -47,11 +47,11 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printStackTrace(seen, new Print(out, "", ""), throwable, Frames.NONE);
+		printStackTrace(seen, new Print(out, "", ""), throwable, Thrown.NONE);
 	}
 
-	private void printStackTrace(Set<Throwable> seen, Print print, Throwable throwable,
-			Frames enclosingFrames) throws IOException {
+	private void printStackTrace(Set<Throwable> seen, Print print, Throwable throwable, Thrown enclosingFrames)
+			throws IOException {
 		if (throwable == null) {
 			return;
 		}
@@ -59,36 +59,36 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			print.circularReference(throwable);
 			return;
 		}
-		Frames frames = new Frames(throwable.getStackTrace());
+		Thrown thrown = new Thrown(throwable, throwable.getStackTrace());
 		Throwable cause = throwable.getCause();
 		if (this.rootFirst) {
-			printStackTrace(seen, print, cause, frames);
-			extracted(seen, print.withWrappedByCaption(cause), throwable, frames, enclosingFrames);
+			printStackTrace(seen, print, cause, thrown);
+			extracted(seen, print.withWrappedByCaption(cause), throwable, thrown, enclosingFrames);
 		}
 		else {
-			extracted(seen, print, throwable, frames, enclosingFrames);
-			printStackTrace(seen, print.withCausedByCaption(cause), cause, frames);
+			extracted(seen, print, throwable, thrown, enclosingFrames);
+			printStackTrace(seen, print.withCausedByCaption(cause), cause, thrown);
 		}
 	}
 
-	private void extracted(Set<Throwable> seen, Print print, Throwable throwable, Frames frames,
-			Frames enclosingFrames) throws IOException {
-		int framesInCommon = getFramesInCommon(enclosingFrames, frames);
+	private void extracted(Set<Throwable> seen, Print print, Throwable throwable, Thrown thrown, Thrown enclosingFrames)
+			throws IOException {
+		int framesInCommon = getFramesInCommon(enclosingFrames, thrown);
 		print.exceptionDetails(throwable);
-		for (int i = 0; i < frames.frames.length - framesInCommon; i++) {
-			print.at(frames.frames[i]);
+		for (int i = 0; i < thrown.frames.length - framesInCommon; i++) {
+			print.at(thrown.frames[i]);
 		}
 		if (framesInCommon != 0) {
 			print.filtered(framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
 			for (Throwable suppressed : throwable.getSuppressed()) {
-				printStackTrace(seen, print.withSuppressedCaption(), suppressed, frames);
+				printStackTrace(seen, print.withSuppressedCaption(), suppressed, thrown);
 			}
 		}
 	}
 
-	private int getFramesInCommon(Frames enclosingElements, Frames elements) {
+	private int getFramesInCommon(Thrown enclosingElements, Thrown elements) {
 		int elementsCount = elements.frames.length - 1;
 		int enclosingElementsCount = enclosingElements.frames.length - 1;
 		if (!this.includeCommonFrames) {
@@ -200,9 +200,13 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	}
 
-	record Frames(StackTraceElement... frames) {
+	record Thrown(Throwable throwable, StackTraceElement[] frames) {
 
-		static final Frames NONE = new Frames();
+		static final Thrown NONE = new Thrown(null, new StackTraceElement[0]);
+
+		static Thrown of(Throwable throwable) {
+			return new Thrown(throwable, throwable.getStackTrace());
+		}
 
 	}
 
