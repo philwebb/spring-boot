@@ -59,7 +59,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return;
 		}
 		if (!seen.add(throwable)) {
-			printer.println(prefix + "[CIRCULAR REFERENCE: " + throwable + "]");
+			printer.circularReference(prefix, throwable);
 			return;
 		}
 		StackTraceElement[] elements = throwable.getStackTrace();
@@ -87,12 +87,12 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			}
 		}
 		int framesInCommon = elements.length - 1 - elementsCount;
-		printer.println(prefix.toString() + throwable);
+		printer.caption(prefix, throwable);
 		for (int i = 0; i <= elementsCount; i++) {
-			printer.println(prefix.indent() + "\tat " + elements[i]);
+			printer.at(prefix, elements[i]);
 		}
 		if (framesInCommon != 0) {
-			printer.println(prefix.indent() + "\t... " + framesInCommon + " more");
+			printer.dotdotdot(prefix, framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
 			for (Throwable suppressed : throwable.getSuppressed()) {
@@ -166,18 +166,44 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	}
 
-	private static class Printer {
+	private static final class Printer {
 
 		private final Appendable out;
+
+		private String indent;
+
+		private Prefix3 prefix;
 
 		Printer(Appendable out) {
 			this.out = out;
 		}
 
-		public void println(String string) throws IOException {
+		void circularReference(Prefix prefix, Throwable throwable) throws IOException {
+			xprintln(prefix + "[CIRCULAR REFERENCE: " + throwable + "]");
+		}
+
+		void caption(Prefix prefix, Throwable throwable) throws IOException {
+			xprintln(prefix.toString() + throwable);
+		}
+
+		void at(Prefix prefix, StackTraceElement elements) throws IOException {
+			xprintln(prefix.indent() + "\tat " + elements);
+		}
+
+		void dotdotdot(Prefix prefix, String msg) throws IOException {
+			xprintln(prefix.indent() + "\t... " + msg);
+		}
+
+		private void xprintln(String string) throws IOException {
 			this.out.append(string);
 			this.out.append("\n");
 		}
+
+	}
+
+	enum Prefix3 {
+
+		SUPRESSSED, CAUSED_BY, WRAPPED_BY
 
 	}
 
