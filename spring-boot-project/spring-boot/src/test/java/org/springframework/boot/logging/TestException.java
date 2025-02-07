@@ -38,10 +38,22 @@ public class TestException {
 
 	private static Exception createTestException() {
 		Throwable root = new RuntimeException("root");
-		Throwable cause = new RuntimeException("cause", root);
-		Exception exception = new RuntimeException("exception", cause);
+		Throwable cause = createCause(root);
+		Exception exception = createException(cause);
 		exception.addSuppressed(new RuntimeException("supressed"));
 		return exception;
+	}
+
+	private static Throwable createCause(Throwable root) {
+		return new RuntimeException("cause", root);
+	}
+
+	private static Exception createException(Throwable cause) {
+		return actualCreateException(cause);
+	}
+
+	private static Exception actualCreateException(Throwable cause) {
+		return new RuntimeException("exception", cause);
 	}
 
 }

@@ -37,6 +37,8 @@ class StandardStackTracePrinterTests {
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast();
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:56)
+					at org.springframework.boot.logging.TestException.createException(TestException.java:52)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
@@ -44,6 +46,7 @@ class StandardStackTracePrinterTests {
 						at org.springframework.boot.logging.TestException.createTestException(TestException.java:43)
 						... 2 more
 				Caused by: java.lang.RuntimeException: cause
+					at org.springframework.boot.logging.TestException.createCause(TestException.java:48)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
 					... 2 more
 				Caused by: java.lang.RuntimeException: root
@@ -68,6 +71,8 @@ class StandardStackTracePrinterTests {
 		System.out.println(printer.printStackTraceToString(exception));
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:56)
+					at org.springframework.boot.logging.TestException.createException(TestException.java:52)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
@@ -76,6 +81,7 @@ class StandardStackTracePrinterTests {
 						at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 						at java.base/java.lang.Thread.run(Thread.java:840)
 				Caused by: java.lang.RuntimeException: cause
+					at org.springframework.boot.logging.TestException.createCause(TestException.java:48)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
@@ -95,9 +101,12 @@ class StandardStackTracePrinterTests {
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
 					... 2 more
 				Wrapped by: java.lang.RuntimeException: cause
+					at org.springframework.boot.logging.TestException.createCause(TestException.java:48)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
 					... 2 more
 				Wrapped by: java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:56)
+					at org.springframework.boot.logging.TestException.createException(TestException.java:52)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
@@ -117,10 +126,13 @@ class StandardStackTracePrinterTests {
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
 				Wrapped by: java.lang.RuntimeException: cause
+					at org.springframework.boot.logging.TestException.createCause(TestException.java:48)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
 				Wrapped by: java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:56)
+					at org.springframework.boot.logging.TestException.createException(TestException.java:52)
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
