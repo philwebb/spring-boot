@@ -50,32 +50,32 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		Printer printer = new Printer(out);
 		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printStackTrace(printer, seen, "", "", throwable, NO_ELEMENTS);
+		printStackTrace(printer, seen, new Prefix("", ""), throwable, NO_ELEMENTS);
 	}
 
-	private void printStackTrace(Printer printer, Set<Throwable> seen, String prefix, String caption,
-			Throwable throwable, StackTraceElement[] enclosingElements) throws IOException {
+	private void printStackTrace(Printer printer, Set<Throwable> seen, Prefix prefix, Throwable throwable,
+			StackTraceElement[] enclosingElements) throws IOException {
 		if (throwable == null) {
 			return;
 		}
 		if (!seen.add(throwable)) {
-			printer.println(prefix + caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			printer.println(prefix + "[CIRCULAR REFERENCE: " + throwable + "]");
 			return;
 		}
 		StackTraceElement[] elements = throwable.getStackTrace();
 		Throwable cause = throwable.getCause();
 		if (this.rootFirst) {
-			printStackTrace(printer, seen, prefix, caption, cause, elements);
-			extracted(printer, seen, prefix, (cause != null) ? "Wrapped by: " : caption, throwable, enclosingElements,
+			printStackTrace(printer, seen, prefix, cause, elements);
+			extracted(printer, seen, prefix.withCauseCaption(cause, "Wrapped by: "), throwable, enclosingElements,
 					elements);
 		}
 		else {
-			extracted(printer, seen, prefix, caption, throwable, enclosingElements, elements);
-			printStackTrace(printer, seen, prefix, cause != null ? "Caused by: " : caption, cause, elements);
+			extracted(printer, seen, prefix, throwable, enclosingElements, elements);
+			printStackTrace(printer, seen, prefix.withCauseCaption(cause, "Caused by: "), cause, elements);
 		}
 	}
 
-	private void extracted(Printer printer, Set<Throwable> seen, String prefix, String caption, Throwable throwable,
+	private void extracted(Printer printer, Set<Throwable> seen, Prefix prefix, Throwable throwable,
 			StackTraceElement[] enclosingElements, StackTraceElement[] elements) throws IOException {
 		int elementsCount = elements.length - 1;
 		int enclosingElementsCount = enclosingElements.length - 1;
@@ -87,16 +87,16 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			}
 		}
 		int framesInCommon = elements.length - 1 - elementsCount;
-		printer.println(prefix + caption + throwable);
+		printer.println(prefix.toString() + throwable);
 		for (int i = 0; i <= elementsCount; i++) {
-			printer.println(prefix + "\tat " + elements[i]);
+			printer.println(prefix.indent() + "\tat " + elements[i]);
 		}
 		if (framesInCommon != 0) {
-			printer.println(prefix + "\t... " + framesInCommon + " more");
+			printer.println(prefix.indent() + "\t... " + framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
 			for (Throwable suppressed : throwable.getSuppressed()) {
-				printStackTrace(printer, seen, prefix + "\t", "Suppressed: ", suppressed, elements);
+				printStackTrace(printer, seen, prefix.withSuppressed(), suppressed, elements);
 			}
 		}
 	}
@@ -149,7 +149,20 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		return new StandardStackTracePrinter(true, false);
 	}
 
-	private record Prefix(String intent, String caption) {
+	private record Prefix(String indent, String caption) {
+
+		public Prefix withCauseCaption(Throwable cause, String caption) {
+			return (cause != null) ? new Prefix(this.indent, caption) : this;
+		}
+
+		public Prefix withSuppressed() {
+			return new Prefix(this.indent + "\t", "Suppressed: ");
+		}
+
+		@Override
+		public final String toString() {
+			return this.indent + this.caption;
+		}
 
 	}
 
