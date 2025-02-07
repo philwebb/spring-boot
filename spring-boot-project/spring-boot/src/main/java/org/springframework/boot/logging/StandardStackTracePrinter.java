@@ -83,7 +83,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	}
 
 	private void printFrames(Print print, StackTrace stackTrace, StackTrace enclosing) throws IOException {
-		int framesInCommon = getFramesInCommon(stackTrace, enclosing);
+		int framesInCommon = (!this.includeCommonFrames) ? getFramesInCommon(stackTrace, enclosing) : 0;
 		for (int i = 0; i < stackTrace.frames.length - framesInCommon; i++) {
 			print.at(stackTrace.frames[i]);
 		}
@@ -95,12 +95,10 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	private int getFramesInCommon(StackTrace stackTrace, StackTrace enclosingStackTrace) {
 		int elementsCount = stackTrace.frames.length - 1;
 		int enclosingElementsCount = enclosingStackTrace.frames.length - 1;
-		if (!this.includeCommonFrames) {
-			while (elementsCount >= 0 && enclosingElementsCount >= 0
-					&& stackTrace.frames[elementsCount].equals(enclosingStackTrace.frames[enclosingElementsCount])) {
-				elementsCount--;
-				enclosingElementsCount--;
-			}
+		while (elementsCount >= 0 && enclosingElementsCount >= 0
+				&& stackTrace.frames[elementsCount].equals(enclosingStackTrace.frames[enclosingElementsCount])) {
+			elementsCount--;
+			enclosingElementsCount--;
 		}
 		int framesInCommon = stackTrace.frames.length - 1 - elementsCount;
 		return framesInCommon;
