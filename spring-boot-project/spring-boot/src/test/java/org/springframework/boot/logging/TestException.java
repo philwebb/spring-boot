@@ -37,7 +37,8 @@ public class TestException {
 	}
 
 	private static Exception createTestException() {
-		Throwable cause = new RuntimeException("root");
+		Throwable root = new RuntimeException("root");
+		Throwable cause = new RuntimeException("cause", root);
 		Exception exception = new RuntimeException("exception", cause);
 		exception.addSuppressed(new RuntimeException("supressed"));
 		return exception;

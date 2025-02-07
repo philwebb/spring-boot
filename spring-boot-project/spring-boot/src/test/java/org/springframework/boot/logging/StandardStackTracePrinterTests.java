@@ -16,6 +16,10 @@
 
 package org.springframework.boot.logging;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,13 +37,28 @@ class StandardStackTracePrinterTests {
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast();
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: exception
-					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
+					Suppressed: java.lang.RuntimeException: supressed
+						at org.springframework.boot.logging.TestException.createTestException(TestException.java:43)
+						... 2 more
+				Caused by: java.lang.RuntimeException: cause
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					... 2 more
 				Caused by: java.lang.RuntimeException: root
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
 					... 2 more
 					""");
+	}
+
+	@Test
+	void rootLastPrintsStackTraceThatMatchesJvm() {
+		Throwable exception = TestException.create();
+		Writer printedJvmStackTrace = new StringWriter();
+		exception.printStackTrace(new PrintWriter(printedJvmStackTrace));
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast();
+		assertThat(printer.printStackTraceToString(exception)).isEqualTo(printedJvmStackTrace.toString());
 	}
 
 	@Test
@@ -48,6 +67,14 @@ class StandardStackTracePrinterTests {
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFramesIncluded();
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+					Suppressed: java.lang.RuntimeException: supressed
+						at org.springframework.boot.logging.TestException.createTestException(TestException.java:43)
+						at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+						at java.base/java.lang.Thread.run(Thread.java:840)
+				Caused by: java.lang.RuntimeException: cause
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
@@ -61,31 +88,45 @@ class StandardStackTracePrinterTests {
 	@Test
 	void rootFirstPrintsStackTrace() {
 		Throwable exception = TestException.create();
-		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootFirst();
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: root
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
 					... 2 more
-				Wrapped by: java.lang.RuntimeException: exception
+				Wrapped by: java.lang.RuntimeException: cause
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					... 2 more
+				Wrapped by: java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
-					at java.lang.Thread.run(Thread.java:840)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+					Suppressed: java.lang.RuntimeException: supressed
+						at org.springframework.boot.logging.TestException.createTestException(TestException.java:43)
+						... 2 more
 						""");
 	}
 
 	@Test
 	void rootFirstWithCommonFramesIncludedPrintsStackTrace() {
 		Throwable exception = TestException.create();
-		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFramesIncluded();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootFirst().withCommonFramesIncluded();
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: root
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
 					at java.base/java.lang.Thread.run(Thread.java:840)
-				Wrapped by: java.lang.RuntimeException: exception
+				Wrapped by: java.lang.RuntimeException: cause
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
 					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
-					at java.lang.Thread.run(Thread.java:840)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+				Wrapped by: java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+					Suppressed: java.lang.RuntimeException: supressed
+						at org.springframework.boot.logging.TestException.createTestException(TestException.java:43)
+						at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+						at java.base/java.lang.Thread.run(Thread.java:840)
 						""");
 	}
 

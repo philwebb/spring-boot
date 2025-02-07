@@ -39,7 +39,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	private final boolean includeCommonFrames; // FIXME enumset at some point
 
-	private final boolean hideSupressed = true;
+	private final boolean hideSupressed = false;
 
 	private StandardStackTracePrinter(boolean rootFirst, boolean includeCommonFrames) {
 		this.rootFirst = rootFirst;
@@ -60,6 +60,10 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 		StackTraceElement[] elements = throwable.getStackTrace();
 		Throwable cause = throwable.getCause();
+		if (cause != null && this.rootFirst) {
+			printEnclosedStackTrace(seen, cause, out, elements, caption, prefix);
+			caption = "Wrapped by: ";
+		}
 		int elementsCount = elements.length - 1;
 		int enclosingElementsCount = enclosingElements.length - 1;
 		if (!this.includeCommonFrames) {
@@ -81,9 +85,6 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			for (Throwable suppressed : throwable.getSuppressed()) {
 				printEnclosedStackTrace(seen, suppressed, out, elements, "Suppressed: ", prefix + "\t");
 			}
-		}
-		if (cause != null && this.rootFirst) {
-			printEnclosedStackTrace(seen, cause, out, elements, "Wrapped by: ", prefix);
 		}
 		if (cause != null && !this.rootFirst) {
 			printEnclosedStackTrace(seen, cause, out, elements, "Caused by: ", prefix);
