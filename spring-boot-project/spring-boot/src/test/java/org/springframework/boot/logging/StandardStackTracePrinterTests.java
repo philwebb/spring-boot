@@ -65,6 +65,7 @@ class StandardStackTracePrinterTests {
 	void rootLastWithCommonFramesIncludedPrintsStacktrace() {
 		Throwable exception = TestException.create();
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFramesIncluded();
+		System.out.println(printer.printStackTraceToString(exception));
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: exception
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:42)

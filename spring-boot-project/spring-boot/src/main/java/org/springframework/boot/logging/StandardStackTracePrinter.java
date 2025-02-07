@@ -73,18 +73,9 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	private void extracted(Set<Throwable> seen, Print print, Throwable throwable, StackTraceElements enclosingElements,
 			StackTraceElements elements) throws IOException {
-		int elementsCount = elements.elements.length - 1;
-		int enclosingElementsCount = enclosingElements.elements.length - 1;
-		if (!this.includeCommonFrames) {
-			while (elementsCount >= 0 && enclosingElementsCount >= 0
-					&& elements.elements[elementsCount].equals(enclosingElements.elements[enclosingElementsCount])) {
-				elementsCount--;
-				enclosingElementsCount--;
-			}
-		}
-		int framesInCommon = elements.elements.length - 1 - elementsCount;
+		int framesInCommon = getFramesInCommon(enclosingElements, elements);
 		print.exceptionDetails(throwable);
-		for (int i = 0; i <= elementsCount; i++) {
+		for (int i = 0; i < elements.elements.length - framesInCommon; i++) {
 			print.at(elements.elements[i]);
 		}
 		if (framesInCommon != 0) {
@@ -95,6 +86,20 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 				printStackTrace(seen, print.withSuppressedCaption(), suppressed, elements);
 			}
 		}
+	}
+
+	private int getFramesInCommon(StackTraceElements enclosingElements, StackTraceElements elements) {
+		int elementsCount = elements.elements.length - 1;
+		int enclosingElementsCount = enclosingElements.elements.length - 1;
+		if (!this.includeCommonFrames) {
+			while (elementsCount >= 0 && enclosingElementsCount >= 0
+					&& elements.elements[elementsCount].equals(enclosingElements.elements[enclosingElementsCount])) {
+				elementsCount--;
+				enclosingElementsCount--;
+			}
+		}
+		int framesInCommon = elements.elements.length - 1 - elementsCount;
+		return framesInCommon;
 	}
 
 	public StandardStackTracePrinter withMaximumLength(int maximumLength) {
