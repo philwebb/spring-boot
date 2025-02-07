@@ -47,57 +47,58 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printStackTrace(seen, new Print(out, "", ""), throwable, Frames.NONE);
+		printStackTrace(seen, new Print(out, "", ""), throwable, StackTrace.NONE);
 	}
 
-	private void printStackTrace(Set<Throwable> seen, Print print, Throwable throwable, Frames enclosing)
+	private void printStackTrace(Set<Throwable> seen, Print print, Throwable thrown, StackTrace enclosingStackTrace)
 			throws IOException {
-		if (throwable == null) {
+		if (thrown == null) {
 			return;
 		}
-		if (!seen.add(throwable)) {
-			print.circularReference(throwable);
+		if (!seen.add(thrown)) {
+			print.circularReference(thrown);
 			return;
 		}
-		Frames frames = new Frames(throwable, throwable.getStackTrace());
-		Throwable cause = throwable.getCause();
+		StackTrace stackTrace = StackTrace.from(thrown);
+		Throwable cause = thrown.getCause();
 		if (this.rootFirst) {
-			printStackTrace(seen, print, cause, frames);
-			extracted(seen, print.withWrappedByCaption(cause), frames, enclosing);
+			printStackTrace(seen, print, cause, stackTrace);
+			extracted(seen, print.withWrappedByCaption(cause), stackTrace, enclosingStackTrace);
 		}
 		else {
-			extracted(seen, print, frames, enclosing);
-			printStackTrace(seen, print.withCausedByCaption(cause), cause, frames);
+			extracted(seen, print, stackTrace, enclosingStackTrace);
+			printStackTrace(seen, print.withCausedByCaption(cause), cause, stackTrace);
 		}
 	}
 
-	private void extracted(Set<Throwable> seen, Print print, Frames frames, Frames enclosing) throws IOException {
-		int framesInCommon = getFramesInCommon(enclosing, frames);
-		print.exceptionDetails(frames.throwable);
-		for (int i = 0; i < frames.frames.length - framesInCommon; i++) {
-			print.at(frames.frames[i]);
+	private void extracted(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosingStackTrace)
+			throws IOException {
+		int framesInCommon = getFramesInCommon(stackTrace, enclosingStackTrace);
+		print.exceptionDetails(stackTrace.throwable);
+		for (int i = 0; i < stackTrace.frames.length - framesInCommon; i++) {
+			print.at(stackTrace.frames[i]);
 		}
 		if (framesInCommon != 0) {
 			print.filtered(framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
-			for (Throwable suppressed : frames.throwable.getSuppressed()) {
-				printStackTrace(seen, print.withSuppressedCaption(), suppressed, frames);
+			for (Throwable suppressed : stackTrace.throwable.getSuppressed()) {
+				printStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
 			}
 		}
 	}
 
-	private int getFramesInCommon(Frames enclosingElements, Frames elements) {
-		int elementsCount = elements.frames.length - 1;
-		int enclosingElementsCount = enclosingElements.frames.length - 1;
+	private int getFramesInCommon(StackTrace stackTrace, StackTrace enclosingStackTrace) {
+		int elementsCount = stackTrace.frames.length - 1;
+		int enclosingElementsCount = enclosingStackTrace.frames.length - 1;
 		if (!this.includeCommonFrames) {
 			while (elementsCount >= 0 && enclosingElementsCount >= 0
-					&& elements.frames[elementsCount].equals(enclosingElements.frames[enclosingElementsCount])) {
+					&& stackTrace.frames[elementsCount].equals(enclosingStackTrace.frames[enclosingElementsCount])) {
 				elementsCount--;
 				enclosingElementsCount--;
 			}
 		}
-		int framesInCommon = elements.frames.length - 1 - elementsCount;
+		int framesInCommon = stackTrace.frames.length - 1 - elementsCount;
 		return framesInCommon;
 	}
 
@@ -199,12 +200,12 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	}
 
-	record Frames(Throwable throwable, StackTraceElement[] frames) {
+	record StackTrace(Throwable throwable, StackTraceElement[] frames) {
 
-		static final Frames NONE = new Frames(null, new StackTraceElement[0]);
+		static final StackTrace NONE = new StackTrace(null, new StackTraceElement[0]);
 
-		static Frames of(Throwable throwable) {
-			return new Frames(throwable, throwable.getStackTrace());
+		static StackTrace from(Throwable throwable) {
+			return new StackTrace(throwable, throwable.getStackTrace());
 		}
 
 	}
