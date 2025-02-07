@@ -16,9 +16,6 @@
 
 package org.springframework.boot.logging;
 
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
-
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,25 +28,65 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StandardStackTracePrinterTests {
 
 	@Test
-	void rootLastPrintsRootLastStacktrace() {
-		Throwable exception = createException();
+	void rootLastPrintsStacktrace() {
+		Throwable exception = TestException.create();
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast();
-		CharArrayWriter writer = new CharArrayWriter();
-		exception.printStackTrace(new PrintWriter(writer));
-		String actual = printer.printStackTraceToString(exception);
-		System.out.println(actual);
-		assertThat(actual).isEqualTo(writer.toString());
+		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
+				java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+				Caused by: java.lang.RuntimeException: root
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
+					... 2 more
+					""");
 	}
 
 	@Test
-	void rootFirstPrintsRootFirstStackTrace() {
+	void rootLastWithCommonFramesIncludedPrintsStacktrace() {
+		Throwable exception = TestException.create();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFramesIncluded();
+		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
+				java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+				Caused by: java.lang.RuntimeException: root
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+					""");
 	}
 
-	private Throwable createException() {
-		Throwable cause = new RuntimeException("root");
-		RuntimeException exception = new RuntimeException("exception", cause);
-		exception.addSuppressed(new RuntimeException("supressed"));
-		return exception;
+	@Test
+	void rootFirstPrintsStackTrace() {
+		Throwable exception = TestException.create();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast();
+		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
+				java.lang.RuntimeException: root
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
+					... 2 more
+				Wrapped by: java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.lang.Thread.run(Thread.java:840)
+						""");
+	}
+
+	@Test
+	void rootFirstWithCommonFramesIncludedPrintsStackTrace() {
+		Throwable exception = TestException.create();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFramesIncluded();
+		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
+				java.lang.RuntimeException: root
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.base/java.lang.Thread.run(Thread.java:840)
+				Wrapped by: java.lang.RuntimeException: exception
+					at org.springframework.boot.logging.TestException.createTestException(TestException.java:41)
+					at org.springframework.boot.logging.TestException.lambda$0(TestException.java:28)
+					at java.lang.Thread.run(Thread.java:840)
+						""");
 	}
 
 }

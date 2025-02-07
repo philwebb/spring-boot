@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.structured;
+package org.springframework.boot.logging;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import org.springframework.boot.logging.temp.ShortenedThrowableConverter;
  *
  * @author pwebb
  */
-class StackTracePrinterTests {
+class TempStackTracePrinterTests {
 
 	@Test
 	void logback() {
@@ -48,7 +48,7 @@ class StackTracePrinterTests {
 	}
 
 	@Test
-	void logback2() {
+	void logbackref() {
 		Throwable ex = createException();
 		ch.qos.logback.classic.spi.ThrowableProxy proxy = new ch.qos.logback.classic.spi.ThrowableProxy(ex);
 		LoggingEvent event = new LoggingEvent();
@@ -57,7 +57,7 @@ class StackTracePrinterTests {
 		converter.setOptionList(List.of("full", "full", "full", "rootFirst", "omitCommonFrames"));
 		((LifeCycle) converter.getClassNameAbbreviator()).start();
 		converter.start();
-		System.out.println("Logback2");
+		System.out.println("Logbackrev");
 		System.out.println(converter.convert(event));
 	}
 
@@ -84,10 +84,7 @@ class StackTracePrinterTests {
 	}
 
 	private Throwable createException() {
-		Throwable cause = new RuntimeException("root");
-		RuntimeException exception = new RuntimeException("exception", cause);
-		exception.addSuppressed(new RuntimeException("supressed"));
-		return exception;
+		return TestException.create();
 	}
 
 }

@@ -35,51 +35,58 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	private static final StackTraceElement[] NO_ELEMENTS = {};
 
-	private static final String CAUSE_CAPTION = "Caused by: ";
+	private final boolean rootFirst;
 
-	private static final String SUPPRESSED_CAPTION = "Suppressed: ";
+	private final boolean includeCommonFrames; // FIXME enumset at some point
+
+	private final boolean hideSupressed = true;
+
+	private StandardStackTracePrinter(boolean rootFirst, boolean includeCommonFrames) {
+		this.rootFirst = rootFirst;
+		this.includeCommonFrames = includeCommonFrames;
+	}
 
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
-		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printEnclosedStackTrace(throwable, out, NO_ELEMENTS, "", "", seen);
+		printEnclosedStackTrace(Collections.newSetFromMap(new IdentityHashMap<>()), throwable, out, NO_ELEMENTS, "",
+				"");
 	}
 
-	private void printEnclosedStackTrace(Throwable throwable, Appendable out, StackTraceElement[] enclosingTrace,
-			String caption, String prefix, Set<Throwable> seen) throws IOException {
-		if (seen.add(throwable)) {
-			StackTraceElement[] trace = throwable.getStackTrace();
-			int traceCount = trace.length - 1;
-			int enclosingTraceCount = enclosingTrace.length - 1;
-			while (traceCount >= 0 && enclosingTraceCount >= 0
-					&& trace[traceCount].equals(enclosingTrace[enclosingTraceCount])) {
-				traceCount--;
-				enclosingTraceCount--;
+	private void printEnclosedStackTrace(Set<Throwable> seen, Throwable throwable, Appendable out,
+			StackTraceElement[] enclosingElements, String caption, String prefix) throws IOException {
+		if (!seen.add(throwable)) {
+			println(out, prefix + caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			return;
+		}
+		StackTraceElement[] elements = throwable.getStackTrace();
+		Throwable cause = throwable.getCause();
+		int elementsCount = elements.length - 1;
+		int enclosingElementsCount = enclosingElements.length - 1;
+		if (!this.includeCommonFrames) {
+			while (elementsCount >= 0 && enclosingElementsCount >= 0
+					&& elements[elementsCount].equals(enclosingElements[enclosingElementsCount])) {
+				elementsCount--;
+				enclosingElementsCount--;
 			}
-			int framesInCommon = trace.length - 1 - traceCount;
-			extracted2(throwable, out, prefix, caption, seen, trace, traceCount, framesInCommon);
 		}
-		else {
-			out.append(prefix + caption + "[CIRCULAR REFERENCE: " + throwable + "]");
-			out.append("\n");
-		}
-	}
-
-	private void extracted2(Throwable throwable, Appendable out, String prefix, String caption, Set<Throwable> seen,
-			StackTraceElement[] trace, int traceCount, int framesInCommon) throws IOException {
+		int framesInCommon = elements.length - 1 - elementsCount;
 		println(out, prefix + caption + throwable);
-		for (int i = 0; i <= traceCount; i++) {
-			println(out, prefix + "\tat " + trace[i]);
+		for (int i = 0; i <= elementsCount; i++) {
+			println(out, prefix + "\tat " + elements[i]);
 		}
 		if (framesInCommon != 0) {
 			println(out, prefix + "\t... " + framesInCommon + " more");
 		}
-		for (Throwable se : throwable.getSuppressed()) {
-			printEnclosedStackTrace(se, out, trace, SUPPRESSED_CAPTION, prefix + "\t", seen);
+		if (!this.hideSupressed) {
+			for (Throwable suppressed : throwable.getSuppressed()) {
+				printEnclosedStackTrace(seen, suppressed, out, elements, "Suppressed: ", prefix + "\t");
+			}
 		}
-		Throwable ourCause = throwable.getCause();
-		if (ourCause != null) {
-			printEnclosedStackTrace(ourCause, out, trace, CAUSE_CAPTION, prefix, seen);
+		if (cause != null && this.rootFirst) {
+			printEnclosedStackTrace(seen, cause, out, elements, "Wrapped by: ", prefix);
+		}
+		if (cause != null && !this.rootFirst) {
+			printEnclosedStackTrace(seen, cause, out, elements, "Caused by: ", prefix);
 		}
 	}
 
@@ -108,6 +115,10 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		return this;
 	}
 
+	public StandardStackTracePrinter withCommonFramesIncluded() {
+		return new StandardStackTracePrinter(this.rootFirst, true);
+	}
+
 	// Printer?
 
 	public StandardStackTracePrinter with() {
@@ -120,7 +131,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root last
 	 */
 	public static StandardStackTracePrinter rootLast() {
-		return new StandardStackTracePrinter();
+		return new StandardStackTracePrinter(false, false);
 	}
 
 	/**
@@ -129,7 +140,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root first
 	 */
 	public static StandardStackTracePrinter rootFirst() {
-		return new StandardStackTracePrinter();
+		return new StandardStackTracePrinter(true, false);
 	}
 
 }
