@@ -66,11 +66,11 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		Throwable cause = throwable.getCause();
 		if (this.rootFirst) {
 			printStackTrace(printer, seen, cause, elements);
-			extracted(printer.withCauseCaption(cause, "Wrapped by: "), seen, throwable, enclosingElements, elements);
+			extracted(printer.withWrappedByCaption(cause), seen, throwable, enclosingElements, elements);
 		}
 		else {
 			extracted(printer, seen, throwable, enclosingElements, elements);
-			printStackTrace(printer.withCauseCaption(cause, "Caused by: "), seen, cause, elements);
+			printStackTrace(printer.withCausedByCaption(cause), seen, cause, elements);
 		}
 	}
 
@@ -163,27 +163,36 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 
 		void circularReference(Throwable throwable) throws IOException {
-			xprintln(this.indent + this.caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			xprintln(this.caption + "[CIRCULAR REFERENCE: " + throwable + "]");
 		}
 
 		void caption(Throwable throwable) throws IOException {
-			xprintln(this.indent + this.caption + throwable);
+			xprintln(this.caption + throwable);
 		}
 
 		void at(StackTraceElement elements) throws IOException {
-			xprintln(this.indent + "\tat " + elements);
+			xprintln("\tat " + elements);
 		}
 
 		void dotdotdot(String msg) throws IOException {
-			xprintln(this.indent + "\t... " + msg);
+			xprintln("\t... " + msg);
 		}
 
 		private void xprintln(String string) throws IOException {
+			this.out.append(this.indent);
 			this.out.append(string);
 			this.out.append("\n");
 		}
 
-		public Printer withCauseCaption(Throwable cause, String caption) {
+		Printer withCausedByCaption(Throwable caused) {
+			return withCauseCaption(caused, "Caused by: ");
+		}
+
+		Printer withWrappedByCaption(Throwable caused) {
+			return withCauseCaption(caused, "Wrapped by: ");
+		}
+
+		private Printer withCauseCaption(Throwable cause, String caption) {
 			return (cause != null) ? new Printer(this.out, this.indent, caption) : this;
 		}
 
