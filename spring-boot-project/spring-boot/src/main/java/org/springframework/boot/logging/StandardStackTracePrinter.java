@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
@@ -47,43 +48,42 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printStackTrace(seen, new Print(out, "", ""), throwable, StackTrace.NONE);
+		printFullStackTrace(seen, new Print(out, "", ""), StackTrace.from(throwable), StackTrace.NONE);
 	}
 
-	private void printStackTrace(Set<Throwable> seen, Print print, Throwable thrown, StackTrace enclosingStackTrace)
+	private void printFullStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
 			throws IOException {
-		if (thrown == null) {
+		if (stackTrace == null) {
 			return;
 		}
-		if (!seen.add(thrown)) {
-			print.circularReference(thrown);
+		if (!seen.add(stackTrace.throwable())) {
+			print.circularReference(stackTrace.throwable());
 			return;
 		}
-		StackTrace stackTrace = StackTrace.from(thrown);
-		Throwable cause = thrown.getCause();
+		StackTrace cause = stackTrace.getCause();
 		if (this.rootFirst) {
-			printStackTrace(seen, print, cause, stackTrace);
-			extracted(seen, print.withWrappedByCaption(cause), stackTrace, enclosingStackTrace);
+			printFullStackTrace(seen, print, cause, stackTrace);
+			springSingleStackTrace(seen, print.withWrappedByCaption(cause), stackTrace, enclosing);
 		}
 		else {
-			extracted(seen, print, stackTrace, enclosingStackTrace);
-			printStackTrace(seen, print.withCausedByCaption(cause), cause, stackTrace);
+			springSingleStackTrace(seen, print, stackTrace, enclosing);
+			printFullStackTrace(seen, print.withCausedByCaption(cause), cause, stackTrace);
 		}
 	}
 
-	private void extracted(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosingStackTrace)
+	private void springSingleStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
 			throws IOException {
-		int framesInCommon = getFramesInCommon(stackTrace, enclosingStackTrace);
-		print.exceptionDetails(stackTrace.throwable);
+		print.thrown(stackTrace.throwable);
+		int framesInCommon = getFramesInCommon(stackTrace, enclosing);
 		for (int i = 0; i < stackTrace.frames.length - framesInCommon; i++) {
 			print.at(stackTrace.frames[i]);
 		}
 		if (framesInCommon != 0) {
-			print.filtered(framesInCommon + " more");
+			print.omitted(framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
-			for (Throwable suppressed : stackTrace.throwable.getSuppressed()) {
-				printStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
+			for (StackTrace suppressed : stackTrace.getSuppressed()) {
+				printFullStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
 			}
 		}
 	}
@@ -168,7 +168,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			println(this.caption + "[CIRCULAR REFERENCE: " + throwable + "]");
 		}
 
-		void exceptionDetails(Throwable throwable) throws IOException {
+		void thrown(Throwable throwable) throws IOException {
 			println(this.caption + throwable);
 		}
 
@@ -176,7 +176,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			println("\tat " + element);
 		}
 
-		void filtered(String message) throws IOException {
+		void omitted(String message) throws IOException {
 			println("\t... " + message);
 		}
 
@@ -186,11 +186,11 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			this.out.append("\n");
 		}
 
-		Print withCausedByCaption(Throwable causedBy) {
+		Print withCausedByCaption(StackTrace causedBy) {
 			return new Print(this.out, this.indent, "Caused by: ");
 		}
 
-		Print withWrappedByCaption(Throwable wrappedBy) {
+		Print withWrappedByCaption(StackTrace wrappedBy) {
 			return (wrappedBy != null) ? new Print(this.out, this.indent, "Wrapped by: ") : this;
 		}
 
@@ -205,7 +205,15 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		static final StackTrace NONE = new StackTrace(null, new StackTraceElement[0]);
 
 		static StackTrace from(Throwable throwable) {
-			return new StackTrace(throwable, throwable.getStackTrace());
+			return (throwable != null) ? new StackTrace(throwable, throwable.getStackTrace()) : null;
+		}
+
+		public StackTrace[] getSuppressed() {
+			return Arrays.stream(throwable().getSuppressed()).map(StackTrace::from).toArray(StackTrace[]::new);
+		}
+
+		public StackTrace getCause() {
+			return StackTrace.from(this.throwable.getCause());
 		}
 
 	}
