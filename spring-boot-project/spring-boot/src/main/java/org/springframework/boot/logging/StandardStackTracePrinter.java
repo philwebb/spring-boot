@@ -33,8 +33,6 @@ import java.util.function.UnaryOperator;
  */
 public final class StandardStackTracePrinter implements StackTracePrinter {
 
-	private static final StackTraceElement[] NO_ELEMENTS = {};
-
 	private final boolean rootFirst;
 
 	private final boolean includeCommonFrames; // FIXME enumset at some point
@@ -49,11 +47,11 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printStackTrace(seen, new Print(out, "", ""), throwable, NO_ELEMENTS);
+		printStackTrace(seen, new Print(out, "", ""), throwable, StackTraceElements.NONE);
 	}
 
 	private void printStackTrace(Set<Throwable> seen, Print print, Throwable throwable,
-			StackTraceElement[] enclosingElements) throws IOException {
+			StackTraceElements enclosingElements) throws IOException {
 		if (throwable == null) {
 			return;
 		}
@@ -61,7 +59,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			print.circularReference(throwable);
 			return;
 		}
-		StackTraceElement[] elements = throwable.getStackTrace();
+		StackTraceElements elements = new StackTraceElements(throwable.getStackTrace());
 		Throwable cause = throwable.getCause();
 		if (this.rootFirst) {
 			printStackTrace(seen, print, cause, elements);
@@ -73,28 +71,28 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 	}
 
-	private void extracted(Set<Throwable> seen, Print print, Throwable throwable, StackTraceElement[] enclosingElements,
-			StackTraceElement[] elements) throws IOException {
-		int elementsCount = elements.length - 1;
-		int enclosingElementsCount = enclosingElements.length - 1;
+	private void extracted(Set<Throwable> seen, Print print, Throwable throwable, StackTraceElements enclosingElements,
+			StackTraceElements elements) throws IOException {
+		int elementsCount = elements.elements.length - 1;
+		int enclosingElementsCount = enclosingElements.elements.length - 1;
 		if (!this.includeCommonFrames) {
 			while (elementsCount >= 0 && enclosingElementsCount >= 0
-					&& elements[elementsCount].equals(enclosingElements[enclosingElementsCount])) {
+					&& elements.elements[elementsCount].equals(enclosingElements.elements[enclosingElementsCount])) {
 				elementsCount--;
 				enclosingElementsCount--;
 			}
 		}
-		int framesInCommon = elements.length - 1 - elementsCount;
+		int framesInCommon = elements.elements.length - 1 - elementsCount;
 		print.exceptionDetails(throwable);
 		for (int i = 0; i <= elementsCount; i++) {
-			print.at(elements[i]);
+			print.at(elements.elements[i]);
 		}
 		if (framesInCommon != 0) {
 			print.filtered(framesInCommon + " more");
 		}
 		if (!this.hideSupressed) {
 			for (Throwable suppressed : throwable.getSuppressed()) {
-				printStackTrace(seen, print.withSuppressed(), suppressed, elements);
+				printStackTrace(seen, print.withSuppressedCaption(), suppressed, elements);
 			}
 		}
 	}
@@ -173,8 +171,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			println("\tat " + element);
 		}
 
-		void filtered(String msg) throws IOException {
-			println("\t... " + msg);
+		void filtered(String message) throws IOException {
+			println("\t... " + message);
 		}
 
 		private void println(String string) throws IOException {
@@ -191,9 +189,15 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return (wrappedBy != null) ? new Print(this.out, this.indent, "Wrapped by: ") : this;
 		}
 
-		public Print withSuppressed() {
+		public Print withSuppressedCaption() {
 			return new Print(this.out, this.indent + "\t", "Suppressed: ");
 		}
+
+	}
+
+	record StackTraceElements(StackTraceElement... elements) {
+
+		static final StackTraceElements NONE = new StackTraceElements();
 
 	}
 
