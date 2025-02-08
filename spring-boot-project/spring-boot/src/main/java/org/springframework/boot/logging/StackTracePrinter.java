@@ -37,7 +37,7 @@ public interface StackTracePrinter {
 	 */
 	default String printStackTraceToString(Throwable throwable) {
 		try {
-			StringBuilder out = new StringBuilder();
+			StringBuilder out = new StringBuilder(4096);
 			printStackTrace(throwable, out);
 			return out.toString();
 		}

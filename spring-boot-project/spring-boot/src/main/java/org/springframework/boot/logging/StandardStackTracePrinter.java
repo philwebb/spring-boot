@@ -38,26 +38,32 @@ import org.springframework.util.Assert;
  */
 public final class StandardStackTracePrinter implements StackTracePrinter {
 
-	private static final Predicate<?> ALWAYS = (t) -> true;
+	private static final int UNLIMTED = Integer.MAX_VALUE;
 
 	private final EnumSet<Option> options;
 
 	private final Predicate<Throwable> filter;
 
-	private final BiPredicate<Integer, StackTraceElement> elementFilter;
+	private final BiPredicate<Integer, StackTraceElement> frameFilter;
+
+	private final String lineSeparator;
+
+	private final int maximumLength;
 
 	private StandardStackTracePrinter(EnumSet<Option> options, Predicate<Throwable> filter,
-			BiPredicate<Integer, StackTraceElement> elementFilter) {
+			BiPredicate<Integer, StackTraceElement> frameFilter, String lineSeparator, int maximumLength) {
 		this.options = options;
-		this.filter = filter;
-		this.elementFilter = elementFilter;
+		this.filter = (filter != null) ? filter : (t) -> true;
+		this.frameFilter = (frameFilter != null) ? frameFilter : (i, t) -> true;
+		this.lineSeparator = (lineSeparator != null) ? lineSeparator : System.lineSeparator();
+		this.maximumLength = maximumLength;
 	}
 
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
 		if (this.filter.test(throwable)) {
 			Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-			printFullStackTrace(seen, new Print(out, "", ""), StackTrace.from(throwable), StackTrace.NONE);
+			printFullStackTrace(seen, new Print(out), StackTrace.from(throwable), StackTrace.NONE);
 		}
 	}
 
@@ -94,11 +100,20 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	private void printFrames(Print print, StackTrace stackTrace, StackTrace enclosing) throws IOException {
 		int commonFrames = (!hasOption(Option.SHOW_COMMON_FRAMES)) ? stackTrace.commonFramesCount(enclosing) : 0;
+		int filteredFrames = 0;
 		for (int i = 0; i < stackTrace.frames().length - commonFrames; i++) {
-			print.at(stackTrace.frames[i]);
+			StackTraceElement element = stackTrace.frames[i];
+			if (!this.frameFilter.test(i, element)) {
+				filteredFrames++;
+				continue;
+			}
+			print.omittedFilteredFrames(filteredFrames);
+			filteredFrames = 0;
+			print.at(element);
 		}
+		print.omittedFilteredFrames(filteredFrames);
 		if (commonFrames != 0) {
-			print.omitted(commonFrames + " more");
+			print.omittedCommonFrames(commonFrames);
 		}
 	}
 
@@ -108,26 +123,40 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	public StandardStackTracePrinter withFilter(Predicate<Throwable> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
-		return new StandardStackTracePrinter(this.options, this.filter.and(predicate));
+		return new StandardStackTracePrinter(this.options, this.filter.and(predicate), this.frameFilter,
+				this.lineSeparator, this.maximumLength);
 	}
 
 	public StandardStackTracePrinter withMaximumLength(int maximumLength) {
-		// FIXME
-		return this;
+		Assert.isTrue(maximumLength > 0, "'maximumLength' must be positive");
+		return new StandardStackTracePrinter(this.options, this.filter, this.frameFilter, this.lineSeparator,
+				maximumLength);
 	}
 
 	public StandardStackTracePrinter withMaximumThrowableDepth(int maximumThrowableDepth) {
-		return withElementFilter((index, element) -> index < maximumThrowableDepth);
+		Assert.isTrue(maximumThrowableDepth > 0, "'maximumThrowableDepth' must be positive");
+		return withFrameFilter((index, element) -> index < maximumThrowableDepth);
 	}
 
-	public StandardStackTracePrinter withElementFilter(BiPredicate<Integer, StackTraceElement> predicate) {
-		// FIXME
-		return this;
+	public StandardStackTracePrinter withFrameFilter(BiPredicate<Integer, StackTraceElement> predicate) {
+		Assert.notNull(predicate, "'predicate' must not be null");
+		return new StandardStackTracePrinter(this.options, this.filter, this.frameFilter.and(predicate),
+				this.lineSeparator, this.maximumLength);
 	}
 
 	public StandardStackTracePrinter withClassNameFormatter(UnaryOperator<String> classNameFormatter) {
 		// FIXME
 		return this;
+	}
+
+	public StandardStackTracePrinter withEscapedLineSeprator() {
+		return withLineSeparator("\\n");
+	}
+
+	public StandardStackTracePrinter withLineSeparator(String lineSeparator) {
+		Assert.notNull(lineSeparator, "'lineSeparator' must not be null");
+		return new StandardStackTracePrinter(this.options, this.filter, this.frameFilter, lineSeparator,
+				this.maximumLength);
 	}
 
 	public StandardStackTracePrinter withCommonFrames() {
@@ -141,7 +170,8 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	private StandardStackTracePrinter withOption(Option option) {
 		EnumSet<Option> options = EnumSet.copyOf(this.options);
 		options.add(option);
-		return new StandardStackTracePrinter(options, this.filter);
+		return new StandardStackTracePrinter(options, this.filter, this.frameFilter, this.lineSeparator,
+				this.maximumLength);
 	}
 
 	/**
@@ -150,7 +180,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root last
 	 */
 	public static StandardStackTracePrinter rootLast() {
-		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), always());
+		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), null, null, null, UNLIMTED);
 	}
 
 	/**
@@ -159,12 +189,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root first
 	 */
 	public static StandardStackTracePrinter rootFirst() {
-		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), always());
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> Predicate<T> always() {
-		return (Predicate<T>) ALWAYS;
+		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), null, null, null, UNLIMTED);
 	}
 
 	private enum Option {
@@ -173,7 +198,11 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	}
 
-	private static final class Print {
+	private final class Print {
+
+		private static final String ELLIPSIS = "...";
+
+		private static final String OMITTED = "\t" + ELLIPSIS + " ";
 
 		private final Appendable out;
 
@@ -181,10 +210,17 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 		private final String caption;
 
-		Print(Appendable out, String indent, String caption) {
+		private int remaining;
+
+		Print(Appendable out) {
+			this(out, "", "", StandardStackTracePrinter.this.maximumLength - ELLIPSIS.length());
+		}
+
+		Print(Appendable out, String indent, String caption, int remaining) {
 			this.out = out;
 			this.indent = indent;
 			this.caption = caption;
+			this.remaining = remaining;
 		}
 
 		void circularReference(Throwable throwable) throws IOException {
@@ -199,14 +235,32 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			line("\tat " + element);
 		}
 
-		void omitted(String message) throws IOException {
-			line("\t... " + message);
+		void omittedFilteredFrames(int filteredFrameCount) throws IOException {
+			if (filteredFrameCount > 0) {
+				line(OMITTED + filteredFrameCount + " filtered");
+			}
 		}
 
-		private void line(String string) throws IOException {
+		void omittedCommonFrames(int commonFrameCount) throws IOException {
+			line(OMITTED + commonFrameCount + " more");
+		}
+
+		private void line(String line) throws IOException {
+			String lineSeparator = StandardStackTracePrinter.this.lineSeparator;
+			if (this.remaining == 0) {
+				return;
+			}
+			int length = this.indent.length() + line.length() + lineSeparator.length();
+			if (length > this.remaining) {
+				this.out.append((this.indent + line + lineSeparator).substring(0, this.remaining));
+				this.out.append(ELLIPSIS);
+				this.remaining = 0;
+				return;
+			}
 			this.out.append(this.indent);
-			this.out.append(string);
-			this.out.append("\n");
+			this.out.append(line);
+			this.out.append(lineSeparator);
+			this.remaining -= length;
 		}
 
 		Print withCausedByCaption(StackTrace causedBy) {
@@ -222,7 +276,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 
 		private Print withCaption(boolean test, String extraIndent, String caption) {
-			return (test) ? new Print(this.out, this.indent + extraIndent, caption) : this;
+			return (test) ? new Print(this.out, this.indent + extraIndent, caption, this.remaining) : this;
 		}
 
 	}
