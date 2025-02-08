@@ -23,15 +23,15 @@ import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 import org.springframework.util.Assert;
 
 /**
  * {@link StackTracePrinter} that prints a stack trace in a standard form. This printer
  * can produce a result in a similar form to {@link Throwable#printStackTrace()}, but
- * offers many more customization options.
+ * offers more customization options.
  *
  * @author Phillip Webb
  * @since 3.5.0
@@ -42,21 +42,28 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	private final EnumSet<Option> options;
 
+	private final int maximumLength;
+
+	private final String lineSeparator;
+
 	private final Predicate<Throwable> filter;
 
 	private final BiPredicate<Integer, StackTraceElement> frameFilter;
 
-	private final String lineSeparator;
+	private final Function<Throwable, String> formatter;
 
-	private final int maximumLength;
+	private final Function<StackTraceElement, String> frameFormatter;
 
-	private StandardStackTracePrinter(EnumSet<Option> options, Predicate<Throwable> filter,
-			BiPredicate<Integer, StackTraceElement> frameFilter, String lineSeparator, int maximumLength) {
+	private StandardStackTracePrinter(EnumSet<Option> options, int maximumLength, String lineSeparator,
+			Predicate<Throwable> filter, BiPredicate<Integer, StackTraceElement> frameFilter,
+			Function<Throwable, String> formatter, Function<StackTraceElement, String> frameFormatter) {
 		this.options = options;
+		this.maximumLength = maximumLength;
+		this.lineSeparator = (lineSeparator != null) ? lineSeparator : System.lineSeparator();
 		this.filter = (filter != null) ? filter : (t) -> true;
 		this.frameFilter = (frameFilter != null) ? frameFilter : (i, t) -> true;
-		this.lineSeparator = (lineSeparator != null) ? lineSeparator : System.lineSeparator();
-		this.maximumLength = maximumLength;
+		this.formatter = (formatter != null) ? formatter : Object::toString;
+		this.frameFormatter = (frameFormatter != null) ? frameFormatter : Object::toString;
 	}
 
 	@Override
@@ -78,16 +85,16 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 		StackTrace cause = stackTrace.getCause();
 		if (!hasOption(Option.ROOT_FIRST)) {
-			springSingleStackTrace(seen, print, stackTrace, enclosing);
+			printSingleStackTrace(seen, print, stackTrace, enclosing);
 			printFullStackTrace(seen, print.withCausedByCaption(cause), cause, stackTrace);
 		}
 		else {
 			printFullStackTrace(seen, print, cause, stackTrace);
-			springSingleStackTrace(seen, print.withWrappedByCaption(cause), stackTrace, enclosing);
+			printSingleStackTrace(seen, print.withWrappedByCaption(cause), stackTrace, enclosing);
 		}
 	}
 
-	private void springSingleStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
+	private void printSingleStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
 			throws IOException {
 		print.thrown(stackTrace.throwable);
 		printFrames(print, stackTrace, enclosing);
@@ -117,61 +124,129 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 	}
 
-	private boolean hasOption(Option option) {
-		return this.options.contains(option);
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that will print all
+	 * common frames rather the replacing them with the {@literal "... N more"} message.
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 */
+	public StandardStackTracePrinter withCommonFrames() {
+		return withOption(Option.SHOW_COMMON_FRAMES);
 	}
 
-	public StandardStackTracePrinter withFilter(Predicate<Throwable> predicate) {
-		Assert.notNull(predicate, "'predicate' must not be null");
-		return new StandardStackTracePrinter(this.options, this.filter.and(predicate), this.frameFilter,
-				this.lineSeparator, this.maximumLength);
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that will not print
+	 * {@link Throwable#getSuppressed() suppressed} items.
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 */
+	public StandardStackTracePrinter withoutSuppressed() {
+		return withOption(Option.HIDE_SUPPRESSED);
 	}
 
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that will use ellipses
+	 * to truncate output longer that the specified length.
+	 * @param maximumLength the maximum length that can be printed
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 */
 	public StandardStackTracePrinter withMaximumLength(int maximumLength) {
 		Assert.isTrue(maximumLength > 0, "'maximumLength' must be positive");
-		return new StandardStackTracePrinter(this.options, this.filter, this.frameFilter, this.lineSeparator,
-				maximumLength);
+		return new StandardStackTracePrinter(this.options, maximumLength, this.lineSeparator, this.filter,
+				this.frameFilter, this.formatter, this.frameFormatter);
 	}
 
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that filter frames
+	 * (including caused and suppressed) deeper then the specified maximum.
+	 * @param maximumThrowableDepth the maximum throwable depth
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 */
 	public StandardStackTracePrinter withMaximumThrowableDepth(int maximumThrowableDepth) {
 		Assert.isTrue(maximumThrowableDepth > 0, "'maximumThrowableDepth' must be positive");
 		return withFrameFilter((index, element) -> index < maximumThrowableDepth);
 	}
 
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that will only include
+	 * throwables (excluding caused and suppressed) that match the given predicate.
+	 * @param predicate the predicate used to filter the throwable
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 */
+	public StandardStackTracePrinter withFilter(Predicate<Throwable> predicate) {
+		Assert.notNull(predicate, "'predicate' must not be null");
+		return new StandardStackTracePrinter(this.options, this.maximumLength, this.lineSeparator,
+				this.filter.and(predicate), this.frameFilter, this.formatter, this.frameFormatter);
+	}
+
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that will only include
+	 * frames that match the given predicate.
+	 * @param predicate the predicate used to filter frames
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 */
 	public StandardStackTracePrinter withFrameFilter(BiPredicate<Integer, StackTraceElement> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
-		return new StandardStackTracePrinter(this.options, this.filter, this.frameFilter.and(predicate),
-				this.lineSeparator, this.maximumLength);
+		return new StandardStackTracePrinter(this.options, this.maximumLength, this.lineSeparator, this.filter,
+				this.frameFilter.and(predicate), this.formatter, this.frameFormatter);
 	}
 
-	public StandardStackTracePrinter withClassNameFormatter(UnaryOperator<String> classNameFormatter) {
-		// FIXME
-		return this;
-	}
-
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that print the stack
+	 * trace on a single line using {@literal "\n"} as the line separator.
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 * @see #withLineSeparator(String)
+	 */
 	public StandardStackTracePrinter withEscapedLineSeprator() {
 		return withLineSeparator("\\n");
 	}
 
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that print the stack
+	 * trace using the specified line separator.
+	 * @param lineSeparator the line separator to use
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 * @see #withEscapedLineSeprator()
+	 */
 	public StandardStackTracePrinter withLineSeparator(String lineSeparator) {
 		Assert.notNull(lineSeparator, "'lineSeparator' must not be null");
-		return new StandardStackTracePrinter(this.options, this.filter, this.frameFilter, lineSeparator,
-				this.maximumLength);
+		return new StandardStackTracePrinter(this.options, this.maximumLength, lineSeparator, this.filter,
+				this.frameFilter, this.formatter, this.frameFormatter);
 	}
 
-	public StandardStackTracePrinter withCommonFrames() {
-		return withOption(Option.SHOW_COMMON_FRAMES);
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one uses the specified
+	 * formatter to create a string representation of a throwable.
+	 * @param formatter the formatter to use
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 * @see #withLineSeparator(String)
+	 */
+	public StandardStackTracePrinter withFormatter(Function<Throwable, String> formatter) {
+		Assert.notNull(formatter, "'formatter' must not be null");
+		return new StandardStackTracePrinter(this.options, this.maximumLength, this.lineSeparator, this.filter,
+				this.frameFilter, formatter, this.frameFormatter);
 	}
 
-	public StandardStackTracePrinter withoutSuppressed() {
-		return withOption(Option.HIDE_SUPPRESSED);
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one uses the specified
+	 * formatter to create a string representation of a frame.
+	 * @param frameFormatter the frame formatter to use
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 * @see #withLineSeparator(String)
+	 */
+	public StandardStackTracePrinter withFrameFormatter(Function<StackTraceElement, String> frameFormatter) {
+		Assert.notNull(frameFormatter, "'frameFormatter' must not be null");
+		return new StandardStackTracePrinter(this.options, this.maximumLength, this.lineSeparator, this.filter,
+				this.frameFilter, this.formatter, frameFormatter);
 	}
 
 	private StandardStackTracePrinter withOption(Option option) {
 		EnumSet<Option> options = EnumSet.copyOf(this.options);
 		options.add(option);
-		return new StandardStackTracePrinter(options, this.filter, this.frameFilter, this.lineSeparator,
-				this.maximumLength);
+		return new StandardStackTracePrinter(options, this.maximumLength, this.lineSeparator, this.filter,
+				this.frameFilter, this.formatter, this.frameFormatter);
+	}
+
+	private boolean hasOption(Option option) {
+		return this.options.contains(option);
 	}
 
 	/**
@@ -180,7 +255,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root last
 	 */
 	public static StandardStackTracePrinter rootLast() {
-		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), null, null, null, UNLIMTED);
+		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), UNLIMTED, null, null, null, null, null);
 	}
 
 	/**
@@ -189,15 +264,21 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root first
 	 */
 	public static StandardStackTracePrinter rootFirst() {
-		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), null, null, null, UNLIMTED);
+		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), UNLIMTED, null, null, null, null, null);
 	}
 
+	/**
+	 * Options supported by this printer.
+	 */
 	private enum Option {
 
 		ROOT_FIRST, SHOW_COMMON_FRAMES, HIDE_SUPPRESSED
 
 	}
 
+	/**
+	 * Prints the actual line output.
+	 */
 	private final class Print {
 
 		private static final String ELLIPSIS = "...";
@@ -224,15 +305,19 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 
 		void circularReference(Throwable throwable) throws IOException {
-			line(this.caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			line(this.caption + "[CIRCULAR REFERENCE: " + format(throwable) + "]");
 		}
 
 		void thrown(Throwable throwable) throws IOException {
-			line(this.caption + throwable);
+			line(this.caption + format(throwable));
+		}
+
+		private String format(Throwable throwable) {
+			return StandardStackTracePrinter.this.formatter.apply(throwable);
 		}
 
 		void at(StackTraceElement element) throws IOException {
-			line("\tat " + element);
+			line("\tat " + StandardStackTracePrinter.this.frameFormatter.apply(element));
 		}
 
 		void omittedFilteredFrames(int filteredFrameCount) throws IOException {
@@ -281,6 +366,12 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 	}
 
+	/**
+	 * Holds the stacktrace for a specific throwable.
+	 *
+	 * @param throwable the throwable that created the stack trace
+	 * @param frames the frames of the stack trace
+	 */
 	record StackTrace(Throwable throwable, StackTraceElement[] frames) {
 
 		static final StackTrace NONE = new StackTrace(null, new StackTraceElement[0]);
