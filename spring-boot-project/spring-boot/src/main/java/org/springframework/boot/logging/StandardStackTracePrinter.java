@@ -19,6 +19,7 @@ package org.springframework.boot.logging;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -34,15 +35,10 @@ import java.util.function.UnaryOperator;
  */
 public final class StandardStackTracePrinter implements StackTracePrinter {
 
-	private final boolean rootFirst;
+	private final EnumSet<Option> options;
 
-	private final boolean includeCommonFrames; // FIXME enumset at some point
-
-	private final boolean hideSupressed = false;
-
-	private StandardStackTracePrinter(boolean rootFirst, boolean includeCommonFrames) {
-		this.rootFirst = rootFirst;
-		this.includeCommonFrames = includeCommonFrames;
+	private StandardStackTracePrinter(EnumSet<Option> options) {
+		this.options = options;
 	}
 
 	@Override
@@ -61,13 +57,13 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return;
 		}
 		StackTrace cause = stackTrace.getCause();
-		if (this.rootFirst) {
-			printFullStackTrace(seen, print, cause, stackTrace);
-			springSingleStackTrace(seen, print.withWrappedByCaption(cause), stackTrace, enclosing);
-		}
-		else {
+		if (!hasOption(Option.ROOT_FIRST)) {
 			springSingleStackTrace(seen, print, stackTrace, enclosing);
 			printFullStackTrace(seen, print.withCausedByCaption(cause), cause, stackTrace);
+		}
+		else {
+			printFullStackTrace(seen, print, cause, stackTrace);
+			springSingleStackTrace(seen, print.withWrappedByCaption(cause), stackTrace, enclosing);
 		}
 	}
 
@@ -75,7 +71,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			throws IOException {
 		print.thrown(stackTrace.throwable);
 		printFrames(print, stackTrace, enclosing);
-		if (!this.hideSupressed) {
+		if (!hasOption(Option.HIDE_SUPPRESSED)) {
 			for (StackTrace suppressed : stackTrace.getSuppressed()) {
 				printFullStackTrace(seen, print.withSuppressedCaption(), suppressed, stackTrace);
 			}
@@ -83,25 +79,17 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	}
 
 	private void printFrames(Print print, StackTrace stackTrace, StackTrace enclosing) throws IOException {
-		int framesInCommon = (!this.includeCommonFrames) ? getFramesInCommon(stackTrace, enclosing) : 0;
-		for (int i = 0; i < stackTrace.frames.length - framesInCommon; i++) {
+		int commonFrames = (!hasOption(Option.SHOW_COMMON_FRAMES)) ? stackTrace.commonFramesCount(enclosing) : 0;
+		for (int i = 0; i < stackTrace.frames().length - commonFrames; i++) {
 			print.at(stackTrace.frames[i]);
 		}
-		if (framesInCommon != 0) {
-			print.omitted(framesInCommon + " more");
+		if (commonFrames != 0) {
+			print.omitted(commonFrames + " more");
 		}
 	}
 
-	private int getFramesInCommon(StackTrace stackTrace, StackTrace enclosingStackTrace) {
-		int elementsCount = stackTrace.frames.length - 1;
-		int enclosingElementsCount = enclosingStackTrace.frames.length - 1;
-		while (elementsCount >= 0 && enclosingElementsCount >= 0
-				&& stackTrace.frames[elementsCount].equals(enclosingStackTrace.frames[enclosingElementsCount])) {
-			elementsCount--;
-			enclosingElementsCount--;
-		}
-		int framesInCommon = stackTrace.frames.length - 1 - elementsCount;
-		return framesInCommon;
+	private boolean hasOption(Option option) {
+		return this.options.contains(option);
 	}
 
 	public StandardStackTracePrinter withMaximumLength(int maximumLength) {
@@ -124,14 +112,18 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		return this;
 	}
 
-	public StandardStackTracePrinter withCommonFramesIncluded() {
-		return new StandardStackTracePrinter(this.rootFirst, true);
+	public StandardStackTracePrinter withCommonFrames() {
+		return withOption(Option.SHOW_COMMON_FRAMES);
 	}
 
-	// Printer?
+	public StandardStackTracePrinter withoutSuppressed() {
+		return withOption(Option.HIDE_SUPPRESSED);
+	}
 
-	public StandardStackTracePrinter with() {
-		return this;
+	private StandardStackTracePrinter withOption(Option option) {
+		EnumSet<Option> options = EnumSet.copyOf(this.options);
+		options.add(option);
+		return new StandardStackTracePrinter(options);
 	}
 
 	/**
@@ -140,7 +132,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root last
 	 */
 	public static StandardStackTracePrinter rootLast() {
-		return new StandardStackTracePrinter(false, false);
+		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class));
 	}
 
 	/**
@@ -149,7 +141,13 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root first
 	 */
 	public static StandardStackTracePrinter rootFirst() {
-		return new StandardStackTracePrinter(true, false);
+		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST));
+	}
+
+	private enum Option {
+
+		ROOT_FIRST, SHOW_COMMON_FRAMES, HIDE_SUPPRESSED
+
 	}
 
 	private static final class Print {
@@ -210,6 +208,16 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			return (throwable != null) ? new StackTrace(throwable, throwable.getStackTrace()) : null;
 		}
 
+		public int commonFramesCount(StackTrace other) {
+			int i = this.frames.length - 1;
+			int j = other.frames.length - 1;
+			while (i >= 0 && j >= 0 && this.frames[i].equals(other.frames[j])) {
+				i--;
+				j--;
+			}
+			return this.frames.length - 1 - i;
+		}
+
 		public StackTrace[] getSuppressed() {
 			return Arrays.stream(throwable().getSuppressed()).map(StackTrace::from).toArray(StackTrace[]::new);
 		}
@@ -217,13 +225,6 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		public StackTrace getCause() {
 			return StackTrace.from(this.throwable.getCause());
 		}
-
-	}
-
-	@FunctionalInterface
-	private interface Action {
-
-		void run() throws IOException;
 
 	}
 

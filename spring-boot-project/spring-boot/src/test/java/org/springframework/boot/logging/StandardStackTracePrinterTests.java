@@ -67,7 +67,7 @@ class StandardStackTracePrinterTests {
 	@Test
 	void rootLastWithCommonFramesIncludedPrintsStacktrace() {
 		Throwable exception = TestException.create();
-		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFramesIncluded();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withCommonFrames();
 		System.out.println(printer.printStackTraceToString(exception));
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: exception
@@ -119,7 +119,7 @@ class StandardStackTracePrinterTests {
 	@Test
 	void rootFirstWithCommonFramesIncludedPrintsStackTrace() {
 		Throwable exception = TestException.create();
-		StandardStackTracePrinter printer = StandardStackTracePrinter.rootFirst().withCommonFramesIncluded();
+		StandardStackTracePrinter printer = StandardStackTracePrinter.rootFirst().withCommonFrames();
 		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
 				java.lang.RuntimeException: root
 					at org.springframework.boot.logging.TestException.createTestException(TestException.java:40)
