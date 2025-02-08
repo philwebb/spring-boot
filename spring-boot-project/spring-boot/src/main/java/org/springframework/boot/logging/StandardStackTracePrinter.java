@@ -29,9 +29,9 @@ import java.util.function.Predicate;
 import org.springframework.util.Assert;
 
 /**
- * {@link StackTracePrinter} that prints a stack trace in a standard form. This printer
- * can produce a result in a similar form to {@link Throwable#printStackTrace()}, but
- * offers more customization options.
+ * {@link StackTracePrinter} that prints a standard form stack trace. This printer
+ * produces a result in a similar form to {@link Throwable#printStackTrace()}, but offers
+ * more customization options.
  *
  * @author Phillip Webb
  * @since 3.5.0
@@ -397,6 +397,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		static StackTrace from(Throwable throwable) {
 			return (throwable != null) ? new StackTrace(throwable, throwable.getStackTrace()) : null;
 		}
+
 	}
 
 }
