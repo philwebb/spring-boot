@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 
@@ -34,13 +36,15 @@ import org.springframework.core.env.Environment;
  * @param exclude the paths that should be excluded. An empty set excludes nothing
  * @param rename a map of path to replacement names
  * @param add a map of additional elements {@link StructuredLoggingJsonMembersCustomizer}
+ * @param stackTrace stack trace properties
  * @param customizer the fully qualified names of
  * {@link StructuredLoggingJsonMembersCustomizer} implementations
  * @author Phillip Webb
  * @author Yanming Zhou
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
+		Map<String, String> add, StackTrace stackTrace,
+		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
 	StructuredLoggingJsonProperties {
 		customizer = (customizer != null) ? customizer : Collections.emptySet();
@@ -55,6 +59,45 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		return Binder.get(environment)
 			.bind("logging.structured.json", StructuredLoggingJsonProperties.class)
 			.orElse(null);
+	}
+
+	/**
+	 * Properties to influence stack trace printing.
+	 *
+	 * @param root the root ordering (root first or root last)
+	 * @param maxLength the maximum length to print
+	 * @param maxThrowableDepth the maximum throwable depth
+	 * @param include the parts of the stack trace to include
+	 * @param singleLine if the stacktrace should be printed as a single line
+	 * @param printer the name of a {@link StackTracePrinter} class with either a default
+	 * constructor or a constructor that accepts a single
+	 * {@link StandardStackTracePrinter} instance.
+	 */
+	record StackTrace(RootOrder root, Integer maxLength, Integer maxThrowableDepth, Set<Include> include,
+			Boolean singleLine, Class<? extends StackTracePrinter> printer) {
+
+		// FIXME make printer a string, standard, logging-system, or null
+		// null = use standard if any other properties are set
+		// also class name for instant
+
+		/**
+		 * Root ordering.
+		 */
+		enum RootOrder {
+
+			FIRST, LAST
+
+		}
+
+		/**
+		 * Stack trace elements to include.
+		 */
+		enum Include {
+
+			COMMON_FRAMES, SUPRESSED
+
+		}
+
 	}
 
 	static class StructuredLoggingJsonPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {

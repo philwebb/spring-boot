@@ -16,29 +16,20 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
+ * Tests for {@link StackTracePrinterFactory}.
+ *
  * @author Phillip Webb
  */
-@FunctionalInterface
-public interface StackTracePrinter {
+class StackTracePrinterFactoryTests {
 
-	String printStackTrace(Throwable throwable);
-
-	// Predicate for the throwable
-	// Predicate for the StackTraceElement
-	// Limit to StackTrace Depth (part of filter)
-	// The filter might want to indicate if always or allow if just one
-
-	// max length
-	// max depth per throwable
-	// hash?
-	// classname printer
-
-	// StackTracePrinter.ofMaximumLength();
-	// StackTracePrinter.fullLength();
-	// StackTracePrinter.shortLength();
-
-	// StackTracePrinter.ofUnlimitedLength()
-	// StackTracePrinter.ofMaximumLength()
+	@Test
+	void test() {
+		fail("Not yet implemented");
+	}
 
 }
