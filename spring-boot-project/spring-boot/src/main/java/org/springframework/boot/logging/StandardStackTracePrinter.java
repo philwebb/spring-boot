@@ -22,8 +22,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+
+import org.springframework.util.Assert;
 
 /**
  * {@link StackTracePrinter} that prints a stack trace in a standard form. This printer
@@ -35,16 +38,27 @@ import java.util.function.UnaryOperator;
  */
 public final class StandardStackTracePrinter implements StackTracePrinter {
 
+	private static final Predicate<?> ALWAYS = (t) -> true;
+
 	private final EnumSet<Option> options;
 
-	private StandardStackTracePrinter(EnumSet<Option> options) {
+	private final Predicate<Throwable> filter;
+
+	private final BiPredicate<Integer, StackTraceElement> elementFilter;
+
+	private StandardStackTracePrinter(EnumSet<Option> options, Predicate<Throwable> filter,
+			BiPredicate<Integer, StackTraceElement> elementFilter) {
 		this.options = options;
+		this.filter = filter;
+		this.elementFilter = elementFilter;
 	}
 
 	@Override
 	public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
-		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-		printFullStackTrace(seen, new Print(out, "", ""), StackTrace.from(throwable), StackTrace.NONE);
+		if (this.filter.test(throwable)) {
+			Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+			printFullStackTrace(seen, new Print(out, "", ""), StackTrace.from(throwable), StackTrace.NONE);
+		}
 	}
 
 	private void printFullStackTrace(Set<Throwable> seen, Print print, StackTrace stackTrace, StackTrace enclosing)
@@ -92,23 +106,27 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		return this.options.contains(option);
 	}
 
+	public StandardStackTracePrinter withFilter(Predicate<Throwable> predicate) {
+		Assert.notNull(predicate, "'predicate' must not be null");
+		return new StandardStackTracePrinter(this.options, this.filter.and(predicate));
+	}
+
 	public StandardStackTracePrinter withMaximumLength(int maximumLength) {
+		// FIXME
 		return this;
 	}
 
 	public StandardStackTracePrinter withMaximumThrowableDepth(int maximumThrowableDepth) {
-		return this;
+		return withElementFilter((index, element) -> index < maximumThrowableDepth);
 	}
 
-	public StandardStackTracePrinter withFilter(Predicate<Throwable> predicate) {
-		return this;
-	}
-
-	public StandardStackTracePrinter withElementFilter(Predicate<StackTraceElement> predicate) {
+	public StandardStackTracePrinter withElementFilter(BiPredicate<Integer, StackTraceElement> predicate) {
+		// FIXME
 		return this;
 	}
 
 	public StandardStackTracePrinter withClassNameFormatter(UnaryOperator<String> classNameFormatter) {
+		// FIXME
 		return this;
 	}
 
@@ -123,7 +141,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	private StandardStackTracePrinter withOption(Option option) {
 		EnumSet<Option> options = EnumSet.copyOf(this.options);
 		options.add(option);
-		return new StandardStackTracePrinter(options);
+		return new StandardStackTracePrinter(options, this.filter);
 	}
 
 	/**
@@ -132,7 +150,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root last
 	 */
 	public static StandardStackTracePrinter rootLast() {
-		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class));
+		return new StandardStackTracePrinter(EnumSet.noneOf(Option.class), always());
 	}
 
 	/**
@@ -141,7 +159,12 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * @return a {@link StandardStackTracePrinter} that prints the stack trace root first
 	 */
 	public static StandardStackTracePrinter rootFirst() {
-		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST));
+		return new StandardStackTracePrinter(EnumSet.of(Option.ROOT_FIRST), always());
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Predicate<T> always() {
+		return (Predicate<T>) ALWAYS;
 	}
 
 	private enum Option {
@@ -165,37 +188,41 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 		}
 
 		void circularReference(Throwable throwable) throws IOException {
-			println(this.caption + "[CIRCULAR REFERENCE: " + throwable + "]");
+			line(this.caption + "[CIRCULAR REFERENCE: " + throwable + "]");
 		}
 
 		void thrown(Throwable throwable) throws IOException {
-			println(this.caption + throwable);
+			line(this.caption + throwable);
 		}
 
 		void at(StackTraceElement element) throws IOException {
-			println("\tat " + element);
+			line("\tat " + element);
 		}
 
 		void omitted(String message) throws IOException {
-			println("\t... " + message);
+			line("\t... " + message);
 		}
 
-		private void println(String string) throws IOException {
+		private void line(String string) throws IOException {
 			this.out.append(this.indent);
 			this.out.append(string);
 			this.out.append("\n");
 		}
 
 		Print withCausedByCaption(StackTrace causedBy) {
-			return new Print(this.out, this.indent, "Caused by: ");
+			return withCaption(causedBy != null, "", "Caused by: ");
 		}
 
 		Print withWrappedByCaption(StackTrace wrappedBy) {
-			return (wrappedBy != null) ? new Print(this.out, this.indent, "Wrapped by: ") : this;
+			return withCaption(wrappedBy != null, "", "Wrapped by: ");
 		}
 
 		public Print withSuppressedCaption() {
-			return new Print(this.out, this.indent + "\t", "Suppressed: ");
+			return withCaption(true, "\t", "Suppressed: ");
+		}
+
+		private Print withCaption(boolean test, String extraIndent, String caption) {
+			return (test) ? new Print(this.out, this.indent + extraIndent, caption) : this;
 		}
 
 	}
@@ -204,28 +231,27 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 
 		static final StackTrace NONE = new StackTrace(null, new StackTraceElement[0]);
 
-		static StackTrace from(Throwable throwable) {
-			return (throwable != null) ? new StackTrace(throwable, throwable.getStackTrace()) : null;
-		}
-
-		public int commonFramesCount(StackTrace other) {
-			int i = this.frames.length - 1;
-			int j = other.frames.length - 1;
-			while (i >= 0 && j >= 0 && this.frames[i].equals(other.frames[j])) {
-				i--;
-				j--;
+		int commonFramesCount(StackTrace other) {
+			int index = this.frames.length - 1;
+			int otherIndex = other.frames.length - 1;
+			while (index >= 0 && otherIndex >= 0 && this.frames[index].equals(other.frames[otherIndex])) {
+				index--;
+				otherIndex--;
 			}
-			return this.frames.length - 1 - i;
+			return this.frames.length - 1 - index;
 		}
 
-		public StackTrace[] getSuppressed() {
+		StackTrace[] getSuppressed() {
 			return Arrays.stream(throwable().getSuppressed()).map(StackTrace::from).toArray(StackTrace[]::new);
 		}
 
-		public StackTrace getCause() {
+		StackTrace getCause() {
 			return StackTrace.from(this.throwable.getCause());
 		}
 
+		static StackTrace from(Throwable throwable) {
+			return (throwable != null) ? new StackTrace(throwable, throwable.getStackTrace()) : null;
+		}
 	}
 
 }
