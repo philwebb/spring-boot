@@ -17,11 +17,17 @@
 package org.springframework.boot.logging;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * @author pwebb
+ * Creates a test exception without too much stacktrace.
+ *
+ * @author Phillip Webb
  */
 public class TestException {
+
+	private static final Pattern LINE_NUMBER_PATTERN = Pattern.compile("\\.java\\:\\d+\\)");
 
 	public static Exception create() {
 		AtomicReference<Exception> exception = new AtomicReference<>();
@@ -54,6 +60,11 @@ public class TestException {
 
 	private static Exception actualCreateException(Throwable cause) {
 		return new RuntimeException("exception", cause);
+	}
+
+	public static String withoutLineNumbers(String actual) {
+		Matcher matcher = LINE_NUMBER_PATTERN.matcher(actual);
+		return matcher.replaceAll(".java:NN)");
 	}
 
 }

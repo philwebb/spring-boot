@@ -38,6 +38,8 @@ import org.springframework.util.Assert;
  */
 public final class StandardStackTracePrinter implements StackTracePrinter {
 
+	private static final String DEFAULT_LINE_SEPARATOR = System.lineSeparator();
+
 	private static final int UNLIMTED = Integer.MAX_VALUE;
 
 	private final EnumSet<Option> options;
@@ -59,7 +61,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 			Function<Throwable, String> formatter, Function<StackTraceElement, String> frameFormatter) {
 		this.options = options;
 		this.maximumLength = maximumLength;
-		this.lineSeparator = (lineSeparator != null) ? lineSeparator : System.lineSeparator();
+		this.lineSeparator = (lineSeparator != null) ? lineSeparator : DEFAULT_LINE_SEPARATOR;
 		this.filter = (filter != null) ? filter : (t) -> true;
 		this.frameFilter = (frameFilter != null) ? frameFilter : (i, t) -> true;
 		this.formatter = (formatter != null) ? formatter : Object::toString;
@@ -193,10 +195,23 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * Return a new {@link StandardStackTracePrinter} from this one that print the stack
 	 * trace on a single line using {@literal "\n"} as the line separator.
 	 * @return a new {@link StandardStackTracePrinter} instance
+	 * @see #withSingleLineOutput(boolean)
 	 * @see #withLineSeparator(String)
 	 */
-	public StandardStackTracePrinter withEscapedLineSeprator() {
-		return withLineSeparator("\\n");
+	public StandardStackTracePrinter withSingleLineOutput() {
+		return withSingleLineOutput(true);
+	}
+
+	/**
+	 * Return a new {@link StandardStackTracePrinter} from this one that print the stack
+	 * trace on a single line using {@literal "\n"} as the line separator.
+	 * @param escapedLineSeparator if single line output should be printed
+	 * @return a new {@link StandardStackTracePrinter} instance
+	 * @see #withSingleLineOutput()
+	 * @see #withLineSeparator(String)
+	 */
+	public StandardStackTracePrinter withSingleLineOutput(boolean escapedLineSeparator) {
+		return withLineSeparator((!escapedLineSeparator) ? DEFAULT_LINE_SEPARATOR : "\\n");
 	}
 
 	/**
@@ -204,7 +219,7 @@ public final class StandardStackTracePrinter implements StackTracePrinter {
 	 * trace using the specified line separator.
 	 * @param lineSeparator the line separator to use
 	 * @return a new {@link StandardStackTracePrinter} instance
-	 * @see #withEscapedLineSeprator()
+	 * @see #withSingleLineOutput()
 	 */
 	public StandardStackTracePrinter withLineSeparator(String lineSeparator) {
 		Assert.notNull(lineSeparator, "'lineSeparator' must not be null");

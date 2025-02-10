@@ -19,9 +19,15 @@ package org.springframework.boot.logging.structured;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.StackTracePrinter;
@@ -64,37 +70,66 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 	/**
 	 * Properties to influence stack trace printing.
 	 *
+	 * @param printer the name of the printer to use. Can be {@code null},
+	 * {@code "standard"}, {@code "logging-system"}, or the fully-qualified class name of
+	 * a {@link StackTracePrinter} implementation. A {@code null} value will be treated as
+	 * {@code "standard"} when any other property is set, otherwise it will be treated as
+	 * {@code "logging-system"}. {@link StackTracePrinter} implementations may optionally
+	 * inject a {@link StandardStackTracePrinter} instance into their constructor which
+	 * will be configured from the properties.
 	 * @param root the root ordering (root first or root last)
 	 * @param maxLength the maximum length to print
 	 * @param maxThrowableDepth the maximum throwable depth
-	 * @param include the parts of the stack trace to include
+	 * @param showCommonFrames if common frames should be shown
 	 * @param singleLine if the stacktrace should be printed as a single line
-	 * @param printer the name of a {@link StackTracePrinter} class with either a default
-	 * constructor or a constructor that accepts a single
-	 * {@link StandardStackTracePrinter} instance.
 	 */
-	record StackTrace(RootOrder root, Integer maxLength, Integer maxThrowableDepth, Set<Include> include,
-			Boolean singleLine, Class<? extends StackTracePrinter> printer) {
+	record StackTrace(String printer, Root root, Integer maxLength, Integer maxThrowableDepth, Boolean showCommonFrames,
+			Boolean singleLine) {
 
-		// FIXME make printer a string, standard, logging-system, or null
-		// null = use standard if any other properties are set
-		// also class name for instant
+		StackTracePrinter createPrinter() {
+			String name = (printer() != null) ? printer() : "";
+			name = name.toLowerCase(Locale.getDefault()).replace("-", "");
+			if ("loggingsystem".equals(name) || (name.isEmpty() && !hasAnyOtherProperty())) {
+				return null;
+			}
+			StandardStackTracePrinter standardPrinter = createStandardPrinter();
+			if ("standard".equals(name) || name.isEmpty()) {
+				return standardPrinter;
+			}
+			return (StackTracePrinter) new Instantiator<>(StackTracePrinter.class,
+					(parameters) -> parameters.add(StandardStackTracePrinter.class, standardPrinter))
+				.instantiate(printer());
+		}
+
+		private boolean hasAnyOtherProperty() {
+			return Stream.of(root(), maxLength(), maxThrowableDepth(), singleLine(), showCommonFrames())
+				.anyMatch(Objects::nonNull);
+		}
+
+		private StandardStackTracePrinter createStandardPrinter() {
+			StandardStackTracePrinter printer = (root() != Root.FIRST) ? StandardStackTracePrinter.rootFirst()
+					: StandardStackTracePrinter.rootLast();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			printer = map.from(this::maxLength).to(printer, StandardStackTracePrinter::withMaximumLength);
+			printer = map.from(this::maxThrowableDepth)
+				.to(printer, StandardStackTracePrinter::withMaximumThrowableDepth);
+			printer = map.from(this::showCommonFrames).to(printer, apply(StandardStackTracePrinter::withCommonFrames));
+			printer = map.from(this::singleLine)
+				.to(printer, apply(StandardStackTracePrinter::withSingleLineOutput));
+			return printer;
+		}
+
+		private BiFunction<StandardStackTracePrinter, Boolean, StandardStackTracePrinter> apply(
+				UnaryOperator<StandardStackTracePrinter> action) {
+			return (printer, value) -> (!value) ? printer : action.apply(printer);
+		}
 
 		/**
 		 * Root ordering.
 		 */
-		enum RootOrder {
+		enum Root {
 
-			FIRST, LAST
-
-		}
-
-		/**
-		 * Stack trace elements to include.
-		 */
-		enum Include {
-
-			COMMON_FRAMES, SUPRESSED
+			LAST, FIRST
 
 		}
 
