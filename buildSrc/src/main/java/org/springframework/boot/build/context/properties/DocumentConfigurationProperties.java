@@ -69,6 +69,8 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		snippets.add("application-properties.server", "Server Properties", this::serverPrefixes);
 		snippets.add("application-properties.security", "Security Properties", this::securityPrefixes);
 		snippets.add("application-properties.rsocket", "RSocket Properties", this::rsocketPrefixes);
+		snippets.add("application-properties.interface-clients", "Interface Clients Properties",
+				this::interfaceClientsPrefixes);
 		snippets.add("application-properties.actuator", "Actuator Properties", this::actuatorPrefixes);
 		snippets.add("application-properties.devtools", "Devtools Properties", this::devtoolsPrefixes);
 		snippets.add("application-properties.docker-compose", "Docker Compose Properties", this::dockerComposePrefixes);
@@ -204,6 +206,10 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 
 	private void rsocketPrefixes(Config prefix) {
 		prefix.accept("spring.rsocket");
+	}
+
+	private void interfaceClientsPrefixes(Config prefix) {
+		prefix.accept("spring.interface-clients");
 	}
 
 	private void actuatorPrefixes(Config prefix) {
