@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.client.AutoConfiguredClientHttpRequestFactories;
+import org.springframework.boot.autoconfigure.http.client.DefaultHttpClientProperties;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,6 +35,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.client.RestClientBuilders;
 import org.springframework.boot.web.client.RestClientCustomizer;
+import org.springframework.boot.web.client.RestClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Scope;
@@ -99,8 +102,18 @@ public class RestClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	RestClientBuilders restClientBuilders(RestClientsProperties properties,
-			RestClientBuilderConfigurer restClientBuilderConfigurer) {
-		return new AutoConfiguredRestClientBuilders(propertiers, restClientBuilderConfigurer);
+			DefaultHttpClientProperties defaultHttpClientProperties, ObjectProvider<SslBundles> sslBundles,
+			ObjectProvider<RestClientCustomizer> customizers) {
+		AutoConfiguredClientHttpRequestFactories httpRequestFactories = new AutoConfiguredClientHttpRequestFactories(
+				defaultHttpClientProperties, sslBundles);
+		return new AutoConfiguredRestClientBuilders(properties, httpRequestFactories, customizers);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(RestClientBuilders.class)
+	RestClients restClients(RestClientBuilders restClientBuilders) {
+		return RestClients.fromBuilders(restClientBuilders);
 	}
 
 }

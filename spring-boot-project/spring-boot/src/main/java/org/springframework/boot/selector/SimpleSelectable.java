@@ -25,9 +25,9 @@ import org.springframework.util.Assert;
  * @param name the name of the selectable
  * @param labels the labels associated with the selectable
  */
-record SimpleSelectable(String name, Labels labels) implements SelectablePredicate {
+record SimpleSelectable(String name, Labels labels) implements Selectable {
 
-	static final SimpleSelectable ANONYMOUS = new SimpleSelectable(null, null);
+	static final SimpleSelectable BLANK = new SimpleSelectable(null, null);
 
 	SimpleSelectable {
 		name = (name != null) ? name : "";

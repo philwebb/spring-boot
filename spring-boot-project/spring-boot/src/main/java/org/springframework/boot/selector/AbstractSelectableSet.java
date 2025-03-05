@@ -115,8 +115,8 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	 * @param <V> the map value type
 	 * @param map the source map
 	 * @param selectableProvider a bi-function that provides the {@link Selectable}
-	 * @param elementProvider a bi-function that provides the element
 	 * @param elementScope the scope of the elements in the set
+	 * @param elementProvider a bi-function that provides the element
 	 * @param elementPostProcessor a post processor to apply to the element
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set

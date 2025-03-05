@@ -113,7 +113,7 @@ class SelectableTests {
 		Selector<?> s2 = Selector.select().onlyWhenLabeled("foo");
 		Selector<?> s3 = Selector.select().onlyWhenNamed("bar");
 		Selector<?> s4 = Selector.select();
-		assertThat(Stream.of(s1, s2, s3, s4).filter(Selectable.blank())).containsExactly(s1, s4);
+		assertThat(Stream.of(s1, s2, s3, s4).filter(Selector.selectingBlank())).containsExactly(s1, s4);
 	}
 
 	interface MySelector extends Selector<MySelector> {

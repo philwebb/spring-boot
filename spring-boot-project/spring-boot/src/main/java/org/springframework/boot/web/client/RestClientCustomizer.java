@@ -16,7 +16,12 @@
 
 package org.springframework.boot.web.client;
 
+import java.util.function.Predicate;
+
+import org.springframework.boot.selector.Selectable;
+import org.springframework.boot.selector.Selector;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 /**
  * Callback interface that can be used to customize a
@@ -26,7 +31,7 @@ import org.springframework.web.client.RestClient;
  * @since 3.2.0
  */
 @FunctionalInterface
-public interface RestClientCustomizer {
+public interface RestClientCustomizer extends Selector<RestClientCustomizer> {
 
 	/**
 	 * Callback to customize a {@link org.springframework.web.client.RestClient.Builder
@@ -34,5 +39,23 @@ public interface RestClientCustomizer {
 	 * @param restClientBuilder the client builder to customize
 	 */
 	void customize(RestClient.Builder restClientBuilder);
+
+	@Override
+	default RestClientCustomizer onlyWhen(Predicate<Selectable> predicate) {
+		return new RestClientCustomizer() {
+
+			@Override
+			public boolean selects(Selectable selectable) {
+				return (selectable != null) && RestClientCustomizer.this.selects(selectable)
+						&& predicate.test(selectable);
+			}
+
+			@Override
+			public void customize(Builder restClientBuilder) {
+				RestClientCustomizer.this.customize(restClientBuilder);
+			}
+
+		};
+	}
 
 }

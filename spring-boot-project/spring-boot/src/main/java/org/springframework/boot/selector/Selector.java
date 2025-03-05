@@ -19,6 +19,7 @@ package org.springframework.boot.selector;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 
@@ -183,6 +184,18 @@ public interface Selector<S extends Selector<S>> {
 	 */
 	static <S extends Selector<S>> S select() {
 		return SimpleSelector.instance();
+	}
+
+	static <S extends Selector<S>> Stream<S> streamSelected(Collection<S> selectors, Selectable selectable) {
+		return (selectors != null) ? selectors.stream().filter(selecting(selectable)) : Stream.empty();
+	}
+
+	static Predicate<? super Selector<?>> selectingBlank() {
+		return selecting(Selectable.blank());
+	}
+
+	static <S extends Selector<?>> Predicate<S> selecting(Selectable selectable) {
+		return (selector) -> selector.selects(selectable);
 	}
 
 }
