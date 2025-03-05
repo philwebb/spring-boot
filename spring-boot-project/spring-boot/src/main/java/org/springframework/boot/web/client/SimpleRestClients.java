@@ -1,0 +1,68 @@
+/*
+ * Copyright 2012-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.web.client;
+
+import java.util.Map;
+import java.util.function.Predicate;
+
+import org.springframework.boot.selector.AbstractSelectableSet;
+import org.springframework.boot.selector.SelectableSet;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
+
+/**
+ * Simple {@link RestClients} implementation backed by a {@link RestClientBuilders}.
+ *
+ * @author Phillip Webb
+ */
+final class SimpleRestClients extends AbstractSelectableSet<RestClients, RestClient> implements RestClients {
+
+	private final RestClientBuilders builders;
+
+	SimpleRestClients(RestClientBuilders restClientBuilders) {
+		super(entries(restClientBuilders), SelectableSet.Entry::selectable, SimpleRestClients::buildRestClient);
+		this.builders = restClientBuilders;
+	}
+
+	private SimpleRestClients(RestClientBuilders restClientBuilders, Map<String, Entry<RestClient>> entries,
+			Predicate<Entry<RestClient>> predicate) {
+		super(entries, predicate);
+		this.builders = restClientBuilders;
+	}
+
+	private static RestClient buildRestClient(Entry<Builder> entry) {
+		return entry.element().build();
+	}
+
+	@Override
+	protected RestClients withPredicate(Map<String, Entry<RestClient>> entries,
+			Predicate<Entry<RestClient>> predicate) {
+		return new SimpleRestClients(this.builders, entries, predicate);
+	}
+
+	@Override
+	public RestClientBuilders builders() {
+		return this.builders;
+	}
+
+	private static Iterable<Entry<RestClient.Builder>> entries(RestClientBuilders restClientBuilders) {
+		Assert.notNull(restClientBuilders, "'restClientBuilders' must not be null");
+		return restClientBuilders.entries();
+	}
+
+}
