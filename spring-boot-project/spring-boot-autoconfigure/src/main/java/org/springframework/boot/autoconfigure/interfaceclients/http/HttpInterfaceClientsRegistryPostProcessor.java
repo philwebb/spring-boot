@@ -58,12 +58,12 @@ public class HttpInterfaceClientsRegistryPostProcessor implements BeanDefinition
 
 		// TODO: support both RestClient and WebClient registries at different levels
 		RestClientHttpServiceProxyRegistry interfaceClientRegistry = beanFactory
-				.getBean(RestClientHttpServiceProxyRegistry.class);
+			.getBean(RestClientHttpServiceProxyRegistry.class);
 
 		// TODO: also support configuring proxy factory
 		beanFactory.getBeansOfType(RestClientHttpServiceGroupConfigurer.class)
-				.values()
-				.forEach(interfaceClientRegistry::apply);
+			.values()
+			.forEach(interfaceClientRegistry::apply);
 
 		Map<String, Set<MergedAnnotation<InterfaceClientGroup>>> annotationsMap = getAnnotations(beanFactory, registry);
 
@@ -76,15 +76,18 @@ public class HttpInterfaceClientsRegistryPostProcessor implements BeanDefinition
 
 		addClientGroups(annotationsMap, interfaceClientRegistry);
 
-		for (RestClientHttpServiceGroup group : interfaceClientRegistry.getGroups()) {
+		for (Map.Entry<String, RestClientHttpServiceGroup> entry : interfaceClientRegistry.getGroups().entrySet()) {
+			String name = entry.getKey();
+			RestClientHttpServiceGroup group = entry.getValue();
 			for (Class<?> httpServiceType : group.httpServiceTypes()) {
 				// TODO: improve bean naming:
 				// - better handle missing group names (set to null and check
 				// for that while constructing group lookup in registry) and
 				// name clashes (use just simple name to begin with, but proactively use
 				// a more advanced naming strategy: groupName + FQN if required)
-				String beanName = group.name() + httpServiceType.getSimpleName();
-				registerBeanDefinitions(registry, beanName, httpServiceType, () -> group.getProxy(httpServiceType));
+				String beanName = name + httpServiceType.getSimpleName();
+				registerBeanDefinitions(registry, beanName, httpServiceType,
+						() -> group.getClientProxy(httpServiceType));
 			}
 		}
 	}
@@ -96,18 +99,11 @@ public class HttpInterfaceClientsRegistryPostProcessor implements BeanDefinition
 			for (MergedAnnotation<InterfaceClientGroup> annotation : annotations) {
 				Class<?>[] serviceTypes = annotation.getClassArray("httpServiceTypes");
 
-				interfaceClientRegistry.registerGroup(annotation.getString("baseUrl"),
-						annotation.getString(MergedAnnotation.VALUE), group -> {
-							group.addHttpServiceTypes(serviceTypes);
-							String[] basePackages = annotation.getStringArray("basePackages");
-							Class<?>[] basePackageClasses = annotation.getClassArray("basePackageClasses");
-							if (basePackages.length > 0 || basePackageClasses.length > 0) {
-								group.detectHttpServiceTypes(scanSpec -> {
-									scanSpec.basePackages(basePackages);
-									scanSpec.basePackages(basePackageClasses);
-								});
-							}
-						});
+				interfaceClientRegistry.registerGroup(annotation.getString(MergedAnnotation.VALUE), group -> {
+					group.addHttpServiceTypes(serviceTypes);
+					group.detectHttpServiceTypes(annotation.getStringArray("basePackages"));
+					group.detectHttpServiceTypes(annotation.getClassArray("basePackageClasses"));
+				});
 			}
 		}
 	}
@@ -115,9 +111,9 @@ public class HttpInterfaceClientsRegistryPostProcessor implements BeanDefinition
 	private <T> void registerBeanDefinitions(BeanDefinitionRegistry registry, String beanName, Class<?> beanClass,
 			Supplier<T> instanceSupplier) {
 		BeanDefinition definition = BeanDefinitionBuilder
-				.rootBeanDefinition(ResolvableType.forClass(beanClass), instanceSupplier)
-				.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE)
-				.getBeanDefinition();
+			.rootBeanDefinition(ResolvableType.forClass(beanClass), instanceSupplier)
+			.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE)
+			.getBeanDefinition();
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, beanName);
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 	}
@@ -133,15 +129,15 @@ public class HttpInterfaceClientsRegistryPostProcessor implements BeanDefinition
 			AnnotationMetadata metadata = annotatedBeanDefinition.getMetadata();
 			Set<MergedAnnotation<InterfaceClientGroup>> annotationSet = new HashSet<>();
 			MergedAnnotation<EnableInterfaceClients> containerAnnotation = annotatedBeanDefinition.getMetadata()
-					.getAnnotations()
-					.get(EnableInterfaceClients.class);
+				.getAnnotations()
+				.get(EnableInterfaceClients.class);
 			if (containerAnnotation.isPresent()) {
 				Collections.addAll(annotationSet,
 						containerAnnotation.getAnnotationArray(MergedAnnotation.VALUE, InterfaceClientGroup.class));
 			}
 			MergedAnnotation<InterfaceClientGroup> annotation = annotatedBeanDefinition.getMetadata()
-					.getAnnotations()
-					.get(InterfaceClientGroup.class);
+				.getAnnotations()
+				.get(InterfaceClientGroup.class);
 			if (annotation.isPresent()) {
 				annotationSet.add(annotation);
 			}
