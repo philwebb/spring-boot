@@ -21,7 +21,6 @@ import java.util.function.Predicate;
 import org.springframework.boot.selector.Selectable;
 import org.springframework.boot.selector.Selector;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClient.Builder;
 
 /**
  * Callback interface that can be used to customize a
@@ -51,7 +50,7 @@ public interface RestClientCustomizer extends Selector<RestClientCustomizer> {
 			}
 
 			@Override
-			public void customize(Builder restClientBuilder) {
+			public void customize(RestClient.Builder restClientBuilder) {
 				RestClientCustomizer.this.customize(restClientBuilder);
 			}
 
