@@ -18,6 +18,7 @@ package org.springframework.boot.selector;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 class SelectableTests {
-
-	@Test
-	void anonymous() {
-		assertThat(Selectable.ANONYMOUS.name()).isEmpty();
-		assertThat(Selectable.ANONYMOUS.labels()).isEmpty();
-	}
 
 	@Test
 	void ofWithStringCreateSelectable() {
@@ -104,6 +99,27 @@ class SelectableTests {
 		Selectable selectable = Selectable.from(source, Object::toString, null);
 		assertThat(selectable.name()).isEqualTo("test");
 		assertThat(selectable.labels()).isSameAs(Labels.NONE);
+	}
+
+	@Test
+	void blankReturnsSelectableWithNoNameOrLabels() {
+		assertThat(Selectable.blank().name()).isEmpty();
+		assertThat(Selectable.blank().labels()).isEmpty();
+	}
+
+	@Test
+	void blankCanBeUsedToFilterSelectors() {
+		Selector<?> s1 = Selector.select();
+		Selector<?> s2 = Selector.select().onlyWhenLabeled("foo");
+		Selector<?> s3 = Selector.select().onlyWhenNamed("bar");
+		Selector<?> s4 = Selector.select();
+		assertThat(Stream.of(s1, s2, s3, s4).filter(Selectable.blank())).containsExactly(s1, s4);
+	}
+
+	interface MySelector extends Selector<MySelector> {
+
+		void doit();
+
 	}
 
 }

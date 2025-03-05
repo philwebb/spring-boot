@@ -147,11 +147,11 @@ class SelectorTests {
 	}
 
 	@Test
-	void anonymousSelection() {
+	void bankSelection() {
 		Selector<?> selector = Selector.select();
-		assertThat(selector.selects(Selectable.ANONYMOUS)).isTrue();
-		assertThat(selector.onlyWhenNamed("").selects(Selectable.ANONYMOUS)).isTrue();
-		assertThat(selector.onlyWhenNamed("anon").selects(Selectable.ANONYMOUS)).isFalse();
+		assertThat(selector.selects(Selectable.blank())).isTrue();
+		assertThat(selector.onlyWhenNamed("").selects(Selectable.blank())).isTrue();
+		assertThat(selector.onlyWhenNamed("anon").selects(Selectable.blank())).isFalse();
 	}
 
 }

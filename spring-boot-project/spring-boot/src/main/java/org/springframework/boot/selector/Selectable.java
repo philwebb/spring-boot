@@ -32,12 +32,6 @@ import org.springframework.util.Assert;
 public interface Selectable {
 
 	/**
-	 * A special {@link Selectable} that can be used to select anonymous items (items
-	 * without any name or labels).
-	 */
-	Selectable ANONYMOUS = SimpleSelectable.ANONYMOUS;
-
-	/**
 	 * The item name or an empty {@link String} if the there is no name. This method must
 	 * never return {@code null}.
 	 * @return the name of the item
@@ -52,47 +46,49 @@ public interface Selectable {
 	Labels labels();
 
 	/**
-	 * Factory method to create simple {@link Selectable} consisting of only a name.
+	 * Factory method to create simple {@link SelectablePredicate} consisting of only a
+	 * name.
 	 * @param name the name of the selectable
-	 * @return a simple {@link Selectable} instance
+	 * @return a simple {@link SelectablePredicate} instance
 	 */
-	static Selectable of(String name) {
+	static SelectablePredicate of(String name) {
 		return SimpleSelectable.of(name, Labels.NONE);
 	}
 
 	/**
-	 * Factory method to create simple {@link Selectable} consisting of only a name and
-	 * some labels.
+	 * Factory method to create simple {@link SelectablePredicate} consisting of only a
+	 * name and some labels.
 	 * @param name the name of the selectable
 	 * @param labels the labels of the selectable or {@code null} to use
 	 * {@link Labels#NONE}
-	 * @return a simple {@link Selectable} instance
+	 * @return a simple {@link SelectablePredicate} instance
 	 */
-	static Selectable of(String name, Map<String, String> labels) {
+	static SelectablePredicate of(String name, Map<String, String> labels) {
 		return SimpleSelectable.of(name, Labels.fromMap(labels));
 	}
 
 	/**
-	 * Factory method to create simple {@link Selectable} consisting of only a name and
-	 * some labels.
+	 * Factory method to create simple {@link SelectablePredicate} consisting of only a
+	 * name and some labels.
 	 * @param name the name of the selectable
 	 * @param labels the labels of the selectable or {@code null} to use
 	 * {@link Labels#NONE}
-	 * @return a simple {@link Selectable} instance
+	 * @return a simple {@link SelectablePredicate} instance
 	 */
-	static Selectable of(String name, Labels labels) {
+	static SelectablePredicate of(String name, Labels labels) {
 		return SimpleSelectable.of(name, labels);
 	}
 
 	/**
-	 * Factory method to create a {@link Selectable} from a {@link Map} entry.
+	 * Factory method to create a {@link SelectablePredicate} from a {@link Map} entry.
 	 * @param <V> the map entry value type
 	 * @param mapEntry the map entry
 	 * @param labelsProvider a function to provide the label given the map value (may be
 	 * {@code null} if there are no labels)
-	 * @return a new {@link Selectable} instance
+	 * @return a new {@link SelectablePredicate} instance
 	 */
-	static <V> Selectable fromMapEntry(Map.Entry<String, V> mapEntry, Function<? super V, Labels> labelsProvider) {
+	static <V> SelectablePredicate fromMapEntry(Map.Entry<String, V> mapEntry,
+			Function<? super V, Labels> labelsProvider) {
 		Assert.notNull(mapEntry, "'mapEntry' must not be null");
 		Assert.notNull(mapEntry.getKey(), "'mapEntry' must not have an emtpty key");
 		V value = mapEntry.getValue();
@@ -100,21 +96,31 @@ public interface Selectable {
 	}
 
 	/**
-	 * Factory method to create a {@link Selectable} from any {@link Object}.
+	 * Factory method to create a {@link SelectablePredicate} from any {@link Object}.
 	 * @param <T> the object type
 	 * @param object the source object
 	 * @param nameProvider a function to provide the name of the object or {@code null} to
 	 * use the object's {@code toString}.
 	 * @param labelsProvider a function to provide the label of the object (may be
 	 * {@code null} if there are no labels)
-	 * @return a new {@link Selectable} instance
+	 * @return a new {@link SelectablePredicate} instance
 	 */
-	static <T> Selectable from(T object, Function<? super T, String> nameProvider,
+	static <T> SelectablePredicate from(T object, Function<? super T, String> nameProvider,
 			Function<? super T, Labels> labelsProvider) {
 		Assert.notNull(object, "'Object' must not be null");
 		String name = (nameProvider != null) ? nameProvider.apply(object) : object.toString();
 		Labels labels = (labelsProvider != null) ? labelsProvider.apply(object) : null;
 		return of(name, labels);
+	}
+
+	/**
+	 * A special {@link SelectablePredicate} that has no name or label. Can be used to
+	 * filter {@link Selector selectors} to those not having any {@code onlyWhen...}
+	 * restrictions.
+	 * @return a blank {@link SelectablePredicate}
+	 */
+	static SelectablePredicate blank() {
+		return SimpleSelectable.ANONYMOUS;
 	}
 
 }
