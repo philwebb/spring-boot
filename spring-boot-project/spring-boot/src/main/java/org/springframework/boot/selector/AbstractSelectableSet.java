@@ -254,4 +254,6 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 		return map.entrySet();
 	}
 
+	// FIXME put scope back?
+
 }

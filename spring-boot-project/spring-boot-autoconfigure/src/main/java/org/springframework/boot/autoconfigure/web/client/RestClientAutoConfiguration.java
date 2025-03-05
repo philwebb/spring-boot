@@ -27,9 +27,11 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.client.RestClientBuilders;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -54,6 +56,7 @@ import org.springframework.web.client.RestClient.Builder;
 		SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
+@EnableConfigurationProperties(RestClientsProperties.class)
 public class RestClientAutoConfiguration {
 
 	@Bean
@@ -91,6 +94,13 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
 		return restClientBuilderConfigurer.configure(RestClient.builder());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	RestClientBuilders restClientBuilders(RestClientsProperties properties,
+			RestClientBuilderConfigurer restClientBuilderConfigurer) {
+		return new AutoConfiguredRestClientBuilders(propertiers, restClientBuilderConfigurer);
 	}
 
 }
