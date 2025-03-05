@@ -24,14 +24,13 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
+ * Base class for {@link ConfigurationProperties @ConfigurationProperties} that directly
+ * or indirectly use Spring's blocking HTTP clients.
  *
  * @author Phillip Webb
  * @since 3.4.0
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties {
+public abstract class HttpClientProperties {
 
 	/**
 	 * Default factory used for a client HTTP request.
