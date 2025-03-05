@@ -43,26 +43,27 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@EnableConfigurationProperties(HttpClientProperties.class)
+@EnableConfigurationProperties(DefaultHttpClientProperties.class)
 public class HttpClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties) {
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(
+			DefaultHttpClientProperties httpClientProperties) {
 		Factory factory = httpClientProperties.getFactory();
 		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(HttpClientProperties httpClientProperties,
+	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(DefaultHttpClientProperties httpClientProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		SslBundle sslBundle = getSslBundle(httpClientProperties.getSsl(), sslBundles);
 		return new ClientHttpRequestFactorySettings(httpClientProperties.getRedirects(),
 				httpClientProperties.getConnectTimeout(), httpClientProperties.getReadTimeout(), sslBundle);
 	}
 
-	private SslBundle getSslBundle(HttpClientProperties.Ssl properties, ObjectProvider<SslBundles> sslBundles) {
+	private SslBundle getSslBundle(DefaultHttpClientProperties.Ssl properties, ObjectProvider<SslBundles> sslBundles) {
 		String name = properties.getBundle();
 		return (StringUtils.hasLength(name)) ? sslBundles.getObject().getBundle(name) : null;
 	}

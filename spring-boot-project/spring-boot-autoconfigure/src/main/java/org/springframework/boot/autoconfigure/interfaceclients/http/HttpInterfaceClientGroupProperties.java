@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.http.client.DefaultHttpClientProperties;
 import org.springframework.boot.autoconfigure.http.client.HttpClientProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 
@@ -129,7 +130,7 @@ public class HttpInterfaceClientGroupProperties {
 		this.redirects = redirects;
 	}
 
-	public HttpClientProperties.Ssl getSsl() {
+	public DefaultHttpClientProperties.Ssl getSsl() {
 		return this.ssl;
 	}
 

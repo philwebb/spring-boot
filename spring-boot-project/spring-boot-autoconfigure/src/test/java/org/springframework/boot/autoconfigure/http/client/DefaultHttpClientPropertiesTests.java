@@ -29,11 +29,11 @@ import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilde
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpClientProperties}.
+ * Tests for {@link DefaultHttpClientProperties}.
  *
  * @author Phillip Webb
  */
-class HttpClientPropertiesTests {
+class DefaultHttpClientPropertiesTests {
 
 	@Nested
 	class FactoryTests {
