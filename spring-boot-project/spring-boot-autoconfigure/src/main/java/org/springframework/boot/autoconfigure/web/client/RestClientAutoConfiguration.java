@@ -23,12 +23,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.AutoConfiguredClientHttpRequestFactories;
 import org.springframework.boot.autoconfigure.http.client.DefaultHttpClientProperties;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.service.invoker.HttpServiceProxyAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -43,6 +45,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
+import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.invoker.HttpExchangeAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RestClient}.
@@ -57,7 +61,7 @@ import org.springframework.web.client.RestClient.Builder;
  * @since 3.2.0
  */
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-		SslAutoConfiguration.class })
+		SslAutoConfiguration.class }, before = HttpServiceProxyAutoConfiguration.class)
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(RestClientsProperties.class)
@@ -115,6 +119,19 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnBean(RestClientBuilders.class)
 	RestClients restClients(RestClientBuilders restClientBuilders) {
 		return RestClients.fromBuilders(restClientBuilders);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnSingleCandidate(RestClient.Builder.class)
+	HttpExchangeAdapter restClientHttpExchangeAdapter(RestClient.Builder restClientBuilder) {
+		return RestClientAdapter.create(restClientBuilder.build());
+	}
+
+	@Bean
+	@ConditionalOnBean(RestClients.class)
+	RestClientHttpExchangeAdapters restClientHttpExchangeAdapters(RestClients restClients) {
+		return new RestClientHttpExchangeAdapters(restClients);
 	}
 
 }

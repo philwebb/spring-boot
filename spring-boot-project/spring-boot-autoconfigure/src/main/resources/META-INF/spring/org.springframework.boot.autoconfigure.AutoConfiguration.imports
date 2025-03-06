@@ -141,6 +141,7 @@ org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConf
 org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
+org.springframework.boot.autoconfigure.web.service.invoker.HttpServiceProxyAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
