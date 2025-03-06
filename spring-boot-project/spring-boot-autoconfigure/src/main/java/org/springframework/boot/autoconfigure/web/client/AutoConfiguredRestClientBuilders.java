@@ -28,7 +28,6 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.selector.AbstractSelectableSet;
 import org.springframework.boot.selector.Selectable;
-import org.springframework.boot.selector.SelectableSet.ElementProvider.Scope;
 import org.springframework.boot.selector.Selector;
 import org.springframework.boot.web.client.RestClientBuilders;
 import org.springframework.boot.web.client.RestClientCustomizer;
@@ -47,12 +46,18 @@ class AutoConfiguredRestClientBuilders extends AbstractSelectableSet<RestClientB
 	AutoConfiguredRestClientBuilders(RestClientsProperties properties,
 			AutoConfiguredClientHttpRequestFactories httpRequestFactories,
 			ObjectProvider<RestClientCustomizer> customizers) {
-		super(properties, AutoConfiguredRestClientBuilders::asSelectable, Scope.PROTOTYPE, (name,
-				clientProperties) -> asRestClientBuilder(httpRequestFactories, customizers, name, clientProperties));
+		super(properties, (name, clientProperties) -> asRestClientBuilder2(httpRequestFactories, customizers, name,
+				clientProperties));
 	}
 
 	private AutoConfiguredRestClientBuilders(Map<String, Entry<Builder>> entries, Predicate<Entry<Builder>> predicate) {
 		super(entries, predicate);
+	}
+
+	private static Entry<RestClient.Builder> asRestClientBuilder2(
+			AutoConfiguredClientHttpRequestFactories httpRequestFactories,
+			ObjectProvider<RestClientCustomizer> customizers, String name, RestClientProperties properties) {
+		return null;
 	}
 
 	private static RestClient.Builder asRestClientBuilder(AutoConfiguredClientHttpRequestFactories httpRequestFactories,

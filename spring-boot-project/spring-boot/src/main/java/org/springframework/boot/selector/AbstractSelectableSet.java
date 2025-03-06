@@ -21,12 +21,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,82 +56,19 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 		this(Collections.emptyMap());
 	}
 
-	/**
-	 * Create a new {@link AbstractSelectableSet} instance populated from the given
-	 * {@link Iterable}.
-	 * @param <T> the type returned from the iterable
-	 * @param iterable the source iterable
-	 * @param selectableProvider a function that provides the {@link Selectable}
-	 * @param elementProvider a function that provides the element
-	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
-	 * names} would be added to the set
-	 */
-	@Deprecated
-	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Selectable> selectableProvider,
-			ElementProvider<? super T, E> elementProvider) throws DuplicateSelectableNameException {
-		this(iterable, selectableProvider, elementProvider, UnaryOperator.identity());
-	}
-
-	/**
-	 * Create a new {@link AbstractSelectableSet} instance populated from the given
-	 * {@link Iterable}.
-	 * @param <T> the type returned from the iterable
-	 * @param iterable the source iterable
-	 * @param selectableProvider a function that provides the {@link Selectable}
-	 * @param elementProvider a function that provides the element
-	 * @param elementPostProcessor a post processor to apply to the element
-	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
-	 * names} would be added to the set
-	 */
-	@Deprecated
-	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Selectable> selectableProvider,
-			ElementProvider<? super T, E> elementProvider, UnaryOperator<E> elementPostProcessor)
-			throws DuplicateSelectableNameException {
-		this(buildEntries(iterable, selectableProvider, elementProvider.withPostProcessor(elementPostProcessor)));
-	}
-
 	protected <T> AbstractSelectableSet(Stream<T> stream, Function<? super T, Entry<E>> entryProvider)
 			throws DuplicateSelectableNameException {
 		this(buildEntries(stream, entryProvider));
 	}
 
-	/**
-	 * Create a new {@link AbstractSelectableSet} instance populated from the given
-	 * {@link Map}.
-	 * @param <K> the map key type
-	 * @param <V> the map value type
-	 * @param map the source map
-	 * @param selectableProvider a bi-function that provides the {@link Selectable}
-	 * @param elementScope the scope of the elements in the set
-	 * @param elementProvider a bi-function that provides the element
-	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
-	 * names} would be added to the set
-	 */ // FIXME deprecate
-	protected <K, V> AbstractSelectableSet(Map<K, V> map,
-			BiFunction<? super K, ? super V, Selectable> selectableProvider, ElementProvider.Scope elementScope,
-			BiFunction<? super K, ? super V, E> elementProvider) throws DuplicateSelectableNameException {
-		this(map, selectableProvider, elementProvider, elementScope, UnaryOperator.identity());
+	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		this(buildEntries(iterable, entryProvider));
 	}
 
-	/**
-	 * Create a new {@link AbstractSelectableSet} instance populated from the given
-	 * {@link Map}.
-	 * @param <K> the map key type
-	 * @param <V> the map value type
-	 * @param map the source map
-	 * @param selectableProvider a bi-function that provides the {@link Selectable}
-	 * @param elementScope the scope of the elements in the set
-	 * @param elementProvider a bi-function that provides the element
-	 * @param elementPostProcessor a post processor to apply to the element
-	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
-	 * names} would be added to the set
-	 */
-	protected <K, V> AbstractSelectableSet(Map<K, V> map,
-			BiFunction<? super K, ? super V, Selectable> selectableProvider,
-			BiFunction<? super K, ? super V, E> elementProvider, ElementProvider.Scope elementScope,
-			UnaryOperator<E> elementPostProcessor) throws DuplicateSelectableNameException {
-		this(buildEntries(entrySet(map), adaptForMapEntry(selectableProvider),
-				adaptForMapEntry(elementScope, elementPostProcessor, elementProvider)));
+	protected <K, V> AbstractSelectableSet(Map<K, V> map, BiFunction<? super K, ? super V, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		this(buildEntries(map, entryProvider));
 	}
 
 	private AbstractSelectableSet(Map<String, Entry<E>> entries) {
@@ -162,30 +97,19 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	 */
 	protected abstract S withPredicate(Map<String, Entry<E>> entries, Predicate<Entry<E>> predicate);
 
-	@Deprecated
-	private static <T, E> Map<String, Entry<E>> buildEntries(Iterable<T> iterable,
-			Function<? super T, Selectable> selectableFactory, ElementProvider<? super T, E> elementProvider)
-			throws DuplicateSelectableNameException {
-		Assert.notNull(iterable, "'iterable' must not be null");
-		Assert.notNull(selectableFactory, "'selectableFactory' must not be null");
-		Assert.notNull(elementProvider, "'elementProvider' must not be null");
-		Map<String, Entry<E>> entries = new LinkedHashMap<>();
-		for (T source : iterable) {
-			Selectable selectable = selectableFactory.apply(source);
-			Assert.state(StringUtils.hasText(selectable.name()), "Selectable instances must have a name");
-			Entry<E> entry = Entry.of(selectable, source, elementProvider);
-			Entry<E> duplicate = entries.put(selectable.name(), entry);
-			if (duplicate != null) {
-				List<Selectable> duplicates = List.of(entry.selectable(), entry.selectable());
-				throw new DuplicateSelectableNameException(null, duplicates, null);
-			}
-		}
-		return Collections.unmodifiableMap(entries);
+	private static <K, V, E> Map<String, Entry<E>> buildEntries(Map<K, V> map,
+			BiFunction<? super K, ? super V, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
+		return null; // FIXME
+	}
+
+	private static <T, E> Map<String, Entry<E>> buildEntries(Iterable<T> stream,
+			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
+		return null; // FIXME
 	}
 
 	private static <T, E> Map<String, Entry<E>> buildEntries(Stream<T> stream,
 			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
-		Assert.notNull(stream, "'iterable' must not be null");
+		Assert.notNull(stream, "'stream' must not be null");
 		Assert.notNull(entryProvider, "'entryProvider' must not be null");
 		Map<String, Entry<E>> entries = new LinkedHashMap<>();
 		stream.forEach((source) -> {
@@ -262,24 +186,5 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 		}
 		return toString;
 	}
-
-	private static <K, V, R> ElementProvider<Map.Entry<V, K>, R> adaptForMapEntry(ElementProvider.Scope elementScope,
-			UnaryOperator<R> elementPostProcessor, BiFunction<? super V, ? super K, R> biFunction) {
-		ElementProvider<Map.Entry<V, K>, R> elementProvider = ElementProvider.of(elementScope,
-				adaptForMapEntry(biFunction));
-		return elementProvider.withPostProcessor(elementPostProcessor);
-	}
-
-	private static <K, V, R> Function<? super Map.Entry<K, V>, R> adaptForMapEntry(
-			BiFunction<? super K, ? super V, R> biFunction) {
-		return (biFunction != null) ? (entry) -> biFunction.apply(entry.getKey(), entry.getValue()) : null;
-	}
-
-	private static <K, V> Set<Map.Entry<K, V>> entrySet(Map<K, V> map) {
-		Assert.notNull(map, "'map' must not be null");
-		return map.entrySet();
-	}
-
-	// FIXME put scope back?
 
 }

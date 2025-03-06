@@ -19,6 +19,7 @@ package org.springframework.boot.selector;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Simple {@link SimpleSelectableSet} implementation.
@@ -34,9 +35,14 @@ final class SimpleSelectableSet<S extends SelectableSet<S, E>, E> extends Abstra
 	private SimpleSelectableSet() {
 	}
 
-	private <T> SimpleSelectableSet(Iterable<T> iterable, Function<? super T, Selectable> selectableProvider,
-			ElementProvider<? super T, E> elementProvider) {
-		super(iterable, selectableProvider, elementProvider);
+	<T> SimpleSelectableSet(Iterable<T> iterable, Function<? super T, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		super(iterable, entryProvider);
+	}
+
+	<T> SimpleSelectableSet(Stream<T> stream, Function<? super T, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		super(stream, entryProvider);
 	}
 
 	private SimpleSelectableSet(Map<String, Entry<E>> entries, Predicate<Entry<E>> predicate) {
@@ -47,12 +53,6 @@ final class SimpleSelectableSet<S extends SelectableSet<S, E>, E> extends Abstra
 	@SuppressWarnings("unchecked")
 	protected S withPredicate(Map<String, Entry<E>> entries, Predicate<Entry<E>> predicate) {
 		return (S) new SimpleSelectableSet<>(entries, predicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	static <S extends SelectableSet<S, E>, E, T> SelectableSet<S, E> from(Iterable<T> iterable,
-			Function<? super T, Selectable> selectableProvider, ElementProvider<? super T, E> elementProvider) {
-		return (S) new SimpleSelectableSet<>(iterable, selectableProvider, elementProvider);
 	}
 
 	@SuppressWarnings("unchecked")

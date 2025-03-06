@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.web.client;
 import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.web.service.invoker.HttpExchangeAdapters;
-import org.springframework.boot.selector.SelectableSet;
-import org.springframework.boot.selector.SelectableSet.ElementProvider;
 import org.springframework.boot.selector.SelectableSet.Entry;
 import org.springframework.boot.web.client.RestClients;
 import org.springframework.web.client.RestClient;
@@ -46,8 +44,7 @@ class RestClientHttpExchangeAdapters implements HttpExchangeAdapters {
 	}
 
 	private Entry<HttpExchangeAdapter> asHttpExchangeAdapterEntry(Entry<RestClient> restClientEntry) {
-		return SelectableSet.Entry.of(restClientEntry.selectable(), restClientEntry.element(),
-				ElementProvider.ofPrototype(RestClientAdapter::create));
+		return Entry.ofInstance(restClientEntry.selectable(), RestClientAdapter.create(restClientEntry.element()));
 	}
 
 }

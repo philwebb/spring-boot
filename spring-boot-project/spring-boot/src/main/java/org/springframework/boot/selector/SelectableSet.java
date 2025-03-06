@@ -22,10 +22,10 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-import org.springframework.boot.selector.SelectableSet.ElementProvider.Scope;
+import org.springframework.util.Assert;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * A set of elements that can be selected based on various criteria.
@@ -246,8 +246,11 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 */
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromMap(Map<String, E> map,
 			Function<? super E, Labels> labelsProvider) {
-		Stream<Map.Entry<String, E>> mapEntries = (map != null) ? map.entrySet().stream() : Stream.empty();
-		return from(mapEntries, (entry) -> Selectable.fromMapEntry(entry, labelsProvider), Map.Entry::getValue);
+		Assert.notNull(map, "'map' must not be null");
+		return from(map.entrySet(), (mapEntry) -> {
+			Selectable selectable = Selectable.fromMapEntry(mapEntry, labelsProvider);
+			return Entry.ofInstance(selectable, mapEntry.getValue());
+		});
 	}
 
 	/**
@@ -261,7 +264,6 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
-	@Deprecated
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromCollection(Collection<E> collection,
 			Function<? super E, String> nameProvider) throws DuplicateSelectableNameException {
 		return fromCollection(collection, nameProvider, null);
@@ -279,49 +281,13 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
-	@Deprecated
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromCollection(Collection<E> collection,
 			Function<? super E, String> nameProvider, Function<? super E, Labels> labelsProvider)
 			throws DuplicateSelectableNameException {
-		return fromIterable(collection, nameProvider, labelsProvider);
-	}
-
-	/**
-	 * Factory method that can be used to create a {@link SelectableSet} from a
-	 * {@link Collection}.
-	 * @param <S> a self reference for fluent methods
-	 * @param <E> the element type of the {@link SelectableSet}
-	 * @param iterable an {@link Iterable} of the elements to use
-	 * @param nameProvider a function that provides the name of an element
-	 * @return a new {@link SelectableSet}
-	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
-	 * names} would be added to the set
-	 */
-	@Deprecated
-	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromIterable(Iterable<E> iterable,
-			Function<? super E, String> nameProvider) throws DuplicateSelectableNameException {
-		return fromIterable(iterable, nameProvider, null);
-	}
-
-	/**
-	 * Factory method that can be used to create a {@link SelectableSet} from a
-	 * {@link Collection}.
-	 * @param <S> a self reference for fluent methods
-	 * @param <E> the element type of the {@link SelectableSet}
-	 * @param iterable an {@link Iterable} of the elements to use
-	 * @param nameProvider a function that provides the name of an element or {@code null}
-	 * to use the elements {@code toString}
-	 * @param labelsProvider a function that provides the {@link Labels} for an element
-	 * @return a new {@link SelectableSet}
-	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
-	 * names} would be added to the set
-	 */
-	@Deprecated
-	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromIterable(Iterable<E> iterable,
-			Function<? super E, String> nameProvider, Function<? super E, Labels> labelsProvider)
-			throws DuplicateSelectableNameException {
-		return from(iterable, (element) -> Selectable.from(element, nameProvider, labelsProvider),
-				ElementProvider.identity(Scope.SINGLETON));
+		Assert.notNull(collection, "'collection' must not be null");
+		return from(collection.stream(), (element) -> {
+			return null;
+		});
 	}
 
 	/**
@@ -343,10 +309,9 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * names} would be added to the set
 	 */
 	@Deprecated
-	static <S extends SelectableSet<S, E>, E, T> SelectableSet<S, E> from(Stream<T> stream,
-			Function<? super T, Selectable> selectableProvider, ElementProvider<? super T, E> elementProvider)
-			throws DuplicateSelectableNameException {
-		return (stream != null) ? from(stream::iterator, selectableProvider, elementProvider) : empty();
+	static <S extends SelectableSet<S, E>, T, E> SelectableSet<S, E> from(Stream<T> stream,
+			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
+		return new SimpleSelectableSet<>(stream, entryProvider);
 	}
 
 	/**
@@ -369,9 +334,8 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 */
 	@Deprecated
 	static <S extends SelectableSet<S, E>, E, T> SelectableSet<S, E> from(Iterable<T> iterable,
-			Function<? super T, Selectable> selectableProvider, ElementProvider<? super T, E> elementProvider)
-			throws DuplicateSelectableNameException {
-		return SimpleSelectableSet.from(iterable, selectableProvider, elementProvider);
+			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
+		return new SimpleSelectableSet<>(iterable, entryProvider);
 	}
 
 	/**
@@ -392,29 +356,37 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	interface Entry<E> {
 
 		/**
-		 * Return element managed by this entry.
-		 * @return the element entry
-		 */
-		E element();
-
-		/**
 		 * Return {@link Selectable} used with this entry.
 		 * @return the element {@link Selectable}
 		 */
 		Selectable selectable();
 
 		/**
+		 * Return element managed by this entry.
+		 * @return the element entry
+		 */
+		E element();
+
+		/**
 		 * Factory method to create a new {@link Entry}.
-		 * @param <T> the source type
 		 * @param <E> the element type
-		 * @param selectable the selectable used to select the entry
-		 * @param source the source
-		 * @param elementProvider an {@link ElementProvider} to provider the element from
-		 * a source
+		 * @param selectable the selectable used to select the entry a source
+		 * @param element the supplier used to provide the element
 		 * @return a new {@link Entry}
 		 */
-		static <T, E> Entry<E> of(Selectable selectable, T source, ElementProvider<T, E> elementProvider) {
-			return of(selectable, elementProvider.asScopedSupplier(source));
+		static <E> Entry<E> ofInstance(Selectable selectable, E element) {
+			return of(selectable, () -> element);
+		}
+
+		/**
+		 * Factory method to create a new {@link Entry}.
+		 * @param <E> the element type
+		 * @param selectable the selectable used to select the entry a source
+		 * @param elementSupplier the supplier used to provide the element
+		 * @return a new {@link Entry}
+		 */
+		static <E> Entry<E> ofSingleton(Selectable selectable, Supplier<E> elementSupplier) {
+			return of(selectable, SingletonSupplier.of(elementSupplier));
 		}
 
 		/**
@@ -428,122 +400,9 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 			return new SimpleSelectableSetEntry<>(selectable, elementSupplier);
 		}
 
-	}
-
-	/**
-	 * Functional interface used to provide an element within a specific scope.
-	 *
-	 * @param <T> the source type
-	 * @param <E> the element type
-	 */
-	@FunctionalInterface
-	interface ElementProvider<T, E> {
-
-		// FIXME might not need
-
-		/**
-		 * Return the the scope of the element.
-		 * @return the element scope
-		 */
-		default Scope getScope() {
-			return Scope.SINGLETON;
-		}
-
-		/**
-		 * Get the provided element.
-		 * @param source the source of the element
-		 * @return the element
-		 */
-		E getElement(T source);
-
-		/**
-		 * Return a {@link Supplier} that will supply the element respecting
-		 * {@link #getScope()}.
-		 * @param source the source of the element
-		 * @return a supplier that supplies the element by calling
-		 * {@link #getElement(Object)} only when necessary.
-		 */
-		default Supplier<E> asScopedSupplier(T source) {
-			return SimpleSelectableSetElementProvider.asScopedSupplier(this, source);
-		}
-
-		/**
-		 * Factory method to create an {@link ElementProvider} from the given
-		 * {@link Function} in {@link Scope#SINGLETON singleton scope}.
-		 * @param <T> the source type
-		 * @param <E> the element type
-		 * @param function a function the provides the element
-		 * @return a new {@link ElementProvider} instance
-		 */
-		static <T, E> ElementProvider<T, E> ofSingleton(Function<? super T, E> function) {
-			return of(Scope.SINGLETON, function);
-		}
-
-		/**
-		 * Factory method to create an {@link ElementProvider} from the given
-		 * {@link Function} in {@link Scope#PROTOTYPE prototype scope}.
-		 * @param <T> the source type
-		 * @param <E> the element type
-		 * @param function a function the provides the element
-		 * @return a new {@link ElementProvider} instance
-		 */
-		static <T, E> ElementProvider<T, E> ofPrototype(Function<? super T, E> function) {
-			return of(Scope.PROTOTYPE, function);
-		}
-
-		/**
-		 * Factory method to create an {@link ElementProvider} from the given
-		 * {@link Function} in the specified {@link Scope}.
-		 * @param <T> the source type
-		 * @param <E> the element type
-		 * @param scope the scope
-		 * @param function a function the provides the element
-		 * @return a new {@link ElementProvider} instance.
-		 */
-		static <T, E> ElementProvider<T, E> of(Scope scope, Function<? super T, E> function) {
-			return new SimpleSelectableSetElementProvider<>(scope, function);
-		}
-
-		/**
-		 * Returns an {@link ElementProvider} that always returns its input argument.
-		 * @param <T> the source type
-		 * @param scope the scope of the element provider
-		 * @return a new {@link ElementProvider} instance.
-		 */
-		static <T> ElementProvider<T, T> identity(Scope scope) {
-			return of(scope, Function.identity());
-		}
-
-		/**
-		 * Return new {@link ElementProvider} that applies the given post processor.
-		 * @param postProcessor the post processor to apply
-		 * @return a new element provider
-		 */
-		default ElementProvider<T, E> withPostProcessor(UnaryOperator<E> postProcessor) {
-			if (postProcessor == null) {
-				return this;
-			}
-			Function<T, E> function = this::getElement;
-			return new SimpleSelectableSetElementProvider<>(getScope(), function.andThen(postProcessor));
-		}
-
-		/**
-		 * The scope of an element.
-		 */
-		enum Scope {
-
-			/**
-			 * Singleton scope where the {@link ElementProvider#getElement(Object)} method
-			 * will be called the first time that the element is needed.
-			 */
-			SINGLETON,
-
-			/**
-			 * Prototype scope where the {@link ElementProvider#getElement(Object)} method
-			 * will be called the each time that the element is needed.
-			 */
-			PROTOTYPE
-
+		static <E> Entry<E> fromInstance(E element, Function<? super E, String> nameProvider,
+				Function<? super E, Labels> labelsProvider) {
+			throw new RuntimeException();
 		}
 
 	}
