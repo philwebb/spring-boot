@@ -57,4 +57,8 @@ public interface RestClientCustomizer extends Selector<RestClientCustomizer> {
 		};
 	}
 
+	static RestClientCustomizer of(RestClientCustomizer customizer) {
+		return customizer;
+	}
+
 }

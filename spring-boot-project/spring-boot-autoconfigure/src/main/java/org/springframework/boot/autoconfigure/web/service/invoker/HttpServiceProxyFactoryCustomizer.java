@@ -48,4 +48,8 @@ public interface HttpServiceProxyFactoryCustomizer extends Selector<HttpServiceP
 		};
 	}
 
+	static HttpServiceProxyFactoryCustomizer of(HttpServiceProxyFactoryCustomizer customizer) {
+		return customizer;
+	}
+
 }

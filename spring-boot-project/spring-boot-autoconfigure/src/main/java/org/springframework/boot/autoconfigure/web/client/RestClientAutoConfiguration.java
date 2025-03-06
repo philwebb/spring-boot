@@ -43,10 +43,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
-import org.springframework.web.client.support.RestClientAdapter;
-import org.springframework.web.service.invoker.HttpExchangeAdapter;
-import org.springframework.web.service.invoker.HttpServiceProxyFactories;
-import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RestClient}.
@@ -118,17 +114,6 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnBean(RestClientBuilders.class)
 	RestClients restClients(RestClientBuilders restClientBuilders) {
 		return RestClients.fromBuilders(restClientBuilders);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	HttpServiceProxyFactories httpServiceProxyFactories(RestClients restClients) {
-		return (name) -> {
-			RestClient restClient = restClients.get(name);
-			HttpExchangeAdapter exchangeAdapter = RestClientAdapter.create(restClient);
-			HttpServiceProxyFactory.HttpServiceProxyFactoryBuilders builder = HttpServiceProxyFactory.builderFor(exchangeAdapter);
-			return builder.build();
-		};
 	}
 
 }
