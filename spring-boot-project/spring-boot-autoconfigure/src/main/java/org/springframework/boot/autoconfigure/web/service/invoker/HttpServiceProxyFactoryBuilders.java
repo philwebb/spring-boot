@@ -19,6 +19,14 @@ package org.springframework.boot.autoconfigure.web.service.invoker;
 import org.springframework.boot.selector.SelectableSet;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+/**
+ * A {@link SelectableSet} of
+ * {@link org.springframework.web.service.invoker.HttpServiceProxyFactory.Builder HTTP
+ * service proxy factory builders}.
+ *
+ * @author Phillip Webb
+ * @since 4.0.0
+ */
 public interface HttpServiceProxyFactoryBuilders
 		extends SelectableSet<HttpServiceProxyFactoryBuilders, HttpServiceProxyFactory.Builder> {
 

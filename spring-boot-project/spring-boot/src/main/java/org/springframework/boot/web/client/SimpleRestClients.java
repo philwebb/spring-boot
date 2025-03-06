@@ -35,7 +35,7 @@ final class SimpleRestClients extends AbstractSelectableSet<RestClients, RestCli
 	private final RestClientBuilders builders;
 
 	SimpleRestClients(RestClientBuilders builders) {
-		super(streamEntries(builders), (builderEntry) -> asRestClientEntry(builderEntry));
+		super(streamEntries(builders), SimpleRestClients::asRestClientEntry);
 		this.builders = builders;
 	}
 
@@ -51,10 +51,7 @@ final class SimpleRestClients extends AbstractSelectableSet<RestClients, RestCli
 	}
 
 	private static Entry<RestClient> asRestClientEntry(Entry<Builder> builderEntry) {
-		Builder builder = builderEntry.element();
-		RestClient restClient = builder.build();
-		return Entry.of(builderEntry.selectable(), () -> restClient); // FIXME
-																		// ofSingleton?
+		return Entry.ofSingleton(builderEntry.selectable(), () -> builderEntry.element().build());
 	}
 
 	@Override

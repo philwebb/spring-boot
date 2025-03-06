@@ -29,15 +29,22 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory.Builder;
 
 /**
+ * Auto-configured {@link HttpServiceProxyFactoryBuilders}.
+ *
  * @author Phillip Webb
  */
 class AutoConfiguredHttpServiceProxyFactoryBuilders
 		extends AbstractSelectableSet<HttpServiceProxyFactoryBuilders, HttpServiceProxyFactory.Builder>
 		implements HttpServiceProxyFactoryBuilders {
 
-	public AutoConfiguredHttpServiceProxyFactoryBuilders(Stream<Entry<HttpExchangeAdapter>> adapterEntries,
+	AutoConfiguredHttpServiceProxyFactoryBuilders(Stream<Entry<HttpExchangeAdapter>> adapterEntries,
 			List<HttpServiceProxyFactoryCustomizer> customizers) {
 		super(adapterEntries, (adapterEntry) -> asBuilderEntry(adapterEntry, customizers));
+	}
+
+	private AutoConfiguredHttpServiceProxyFactoryBuilders(Map<String, Entry<Builder>> entries,
+			Predicate<Entry<Builder>> predicate) {
+		super(entries, predicate);
 	}
 
 	private static Entry<HttpServiceProxyFactory.Builder> asBuilderEntry(Entry<HttpExchangeAdapter> adapterEntry,
@@ -54,7 +61,7 @@ class AutoConfiguredHttpServiceProxyFactoryBuilders
 	@Override
 	protected HttpServiceProxyFactoryBuilders withPredicate(Map<String, Entry<Builder>> entries,
 			Predicate<Entry<Builder>> predicate) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		return new AutoConfiguredHttpServiceProxyFactoryBuilders(entries, predicate);
 	}
 
 }

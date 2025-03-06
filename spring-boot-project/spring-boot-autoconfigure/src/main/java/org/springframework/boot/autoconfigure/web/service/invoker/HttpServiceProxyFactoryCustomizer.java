@@ -23,11 +23,22 @@ import org.springframework.boot.selector.Selector;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 /**
- * @author pwebb
+ * Callback interface that can be used to customize a
+ * {@link org.springframework.web.service.invoker.HttpServiceProxyFactory.Builder
+ * HttpServiceProxyFactory.Builder}.
+ *
+ * @author Phillip Webb
  */
 @FunctionalInterface
 public interface HttpServiceProxyFactoryCustomizer extends Selector<HttpServiceProxyFactoryCustomizer> {
 
+	/**
+	 * Callback to customize a
+	 * {@link org.springframework.web.service.invoker.HttpServiceProxyFactory.Builder
+	 * HttpServiceProxyFactory.Builder}.instance.
+	 * @param httpServiceProxyFactoryBuilder the HTTP service proxy factory builder to
+	 * customize
+	 */
 	void customize(HttpServiceProxyFactory.Builder httpServiceProxyFactoryBuilder);
 
 	@Override
@@ -48,6 +59,12 @@ public interface HttpServiceProxyFactoryCustomizer extends Selector<HttpServiceP
 		};
 	}
 
+	/**
+	 * Helper method that can be used to create a
+	 * {@link HttpServiceProxyFactoryCustomizer} from a lambda for method chaining.
+	 * @param customizer the source customizer
+	 * @return the customizer
+	 */
 	static HttpServiceProxyFactoryCustomizer of(HttpServiceProxyFactoryCustomizer customizer) {
 		return customizer;
 	}

@@ -53,6 +53,7 @@ import org.springframework.web.client.RestClient.Builder;
  *
  * @author Arjen Poutsma
  * @author Moritz Halbritter
+ * @author Phillip Webb
  * @since 3.2.0
  */
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
@@ -101,7 +102,7 @@ public class RestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	RestClientBuilders restClientBuilders(RestClientsProperties properties,
+	AutoConfiguredRestClientBuilders restClientBuilders(RestClientsProperties properties,
 			DefaultHttpClientProperties defaultHttpClientProperties, ObjectProvider<SslBundles> sslBundles,
 			ObjectProvider<RestClientCustomizer> customizers) {
 		AutoConfiguredClientHttpRequestFactories httpRequestFactories = new AutoConfiguredClientHttpRequestFactories(
@@ -114,6 +115,12 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnBean(RestClientBuilders.class)
 	RestClients restClients(RestClientBuilders restClientBuilders) {
 		return RestClients.fromBuilders(restClientBuilders);
+	}
+
+	@Bean
+	@ConditionalOnBean(RestClients.class)
+	RestClientHttpExchangeAdapters restClientHttpExchangeAdapters(RestClients restClients) {
+		return new RestClientHttpExchangeAdapters(restClients);
 	}
 
 }

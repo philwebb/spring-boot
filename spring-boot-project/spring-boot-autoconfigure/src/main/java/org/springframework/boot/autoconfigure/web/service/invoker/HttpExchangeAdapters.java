@@ -22,11 +22,18 @@ import org.springframework.boot.selector.SelectableSet;
 import org.springframework.web.service.invoker.HttpExchangeAdapter;
 
 /**
- * @author pwebb
+ * Strategy interface to provide a stream of {@link HttpExchangeAdapter} entries to add to
+ * {@link HttpServiceProxyFactoryBuilders}.
+ *
+ * @author Phillip Webb
  */
 @FunctionalInterface
 public interface HttpExchangeAdapters {
 
-	Stream<SelectableSet.Entry<HttpExchangeAdapter>> streamEntries();
+	/**
+	 * Return a stream of the {@link HttpExchangeAdapter} entries to add.
+	 * @return the stream of entry
+	 */
+	Stream<SelectableSet.Entry<HttpExchangeAdapter>> streamHttpExchangeAdapters();
 
 }

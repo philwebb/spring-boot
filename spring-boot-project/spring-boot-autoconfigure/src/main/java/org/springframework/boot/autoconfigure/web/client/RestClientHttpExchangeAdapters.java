@@ -39,12 +39,13 @@ class RestClientHttpExchangeAdapters implements HttpExchangeAdapters {
 	}
 
 	@Override
-	public Stream<Entry<HttpExchangeAdapter>> streamEntries() {
+	public Stream<Entry<HttpExchangeAdapter>> streamHttpExchangeAdapters() {
 		return this.restClients.streamEntries().map(this::asHttpExchangeAdapterEntry);
 	}
 
 	private Entry<HttpExchangeAdapter> asHttpExchangeAdapterEntry(Entry<RestClient> restClientEntry) {
-		return Entry.ofInstance(restClientEntry.selectable(), RestClientAdapter.create(restClientEntry.element()));
+		return Entry.ofSingleton(restClientEntry.selectable(),
+				() -> RestClientAdapter.create(restClientEntry.element()));
 	}
 
 }

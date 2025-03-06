@@ -37,6 +37,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
 /**
+ * Auto-configured {@link RestClientBuilders}.
+ *
  * @author Phillip Webb
  * @author Olga Maciaszek-Sharma
  */
@@ -46,7 +48,7 @@ class AutoConfiguredRestClientBuilders extends AbstractSelectableSet<RestClientB
 	AutoConfiguredRestClientBuilders(RestClientsProperties properties,
 			AutoConfiguredClientHttpRequestFactories httpRequestFactories,
 			ObjectProvider<RestClientCustomizer> customizers) {
-		super(properties, (name, clientProperties) -> asRestClientBuilder2(httpRequestFactories, customizers, name,
+		super(properties, (name, clientProperties) -> asRestClientBuilder(httpRequestFactories, customizers, name,
 				clientProperties));
 	}
 
@@ -54,25 +56,20 @@ class AutoConfiguredRestClientBuilders extends AbstractSelectableSet<RestClientB
 		super(entries, predicate);
 	}
 
-	private static Entry<RestClient.Builder> asRestClientBuilder2(
+	private static Entry<RestClient.Builder> asRestClientBuilder(
 			AutoConfiguredClientHttpRequestFactories httpRequestFactories,
 			ObjectProvider<RestClientCustomizer> customizers, String name, RestClientProperties properties) {
-		return null;
-	}
-
-	private static RestClient.Builder asRestClientBuilder(AutoConfiguredClientHttpRequestFactories httpRequestFactories,
-			ObjectProvider<RestClientCustomizer> customizers, String name, RestClientProperties properties) {
+		Selectable selectable = Selectable.of(name, properties.getLabel());
 		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = httpRequestFactories.builder(properties);
 		ClientHttpRequestFactorySettings requestFactorySettings = httpRequestFactories.settings(properties);
 		ClientHttpRequestFactory requestFactory = requestFactoryBuilder.build(requestFactorySettings);
 		RestClient.Builder restClientBuilder = RestClient.builder().requestFactory(requestFactory);
-		customizeRestClientBuilder(restClientBuilder, customizers, name, properties);
-		return restClientBuilder;
+		extracted(restClientBuilder, properties, customizers, selectable);
+		return Entry.of(selectable, () -> restClientBuilder.clone());
 	}
 
-	private static void customizeRestClientBuilder(RestClient.Builder restClientBuilder,
-			ObjectProvider<RestClientCustomizer> customizers, String name, RestClientProperties properties) {
-		Selectable selectable = asSelectable(name, properties);
+	private static void extracted(RestClient.Builder restClientBuilder, RestClientProperties properties,
+			ObjectProvider<RestClientCustomizer> customizers, Selectable selectable) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getBaseUrl).to(restClientBuilder::baseUrl);
 		map.from(properties::getDefaultHeaders)
@@ -85,10 +82,6 @@ class AutoConfiguredRestClientBuilders extends AbstractSelectableSet<RestClientB
 
 	static Consumer<HttpHeaders> defaultHeaders(Map<String, List<String>> defaultHeaders) {
 		return (headers) -> defaultHeaders.forEach(headers::addAll);
-	}
-
-	private static Selectable asSelectable(String name, RestClientProperties properties) {
-		return Selectable.of(name, properties.getLabel());
 	}
 
 	@Override

@@ -57,6 +57,12 @@ public interface RestClientCustomizer extends Selector<RestClientCustomizer> {
 		};
 	}
 
+	/**
+	 * Helper method that can be used to create a {@link RestClientCustomizer} from a
+	 * lambda for method chaining.
+	 * @param customizer the source customizer
+	 * @return the customizer
+	 */
 	static RestClientCustomizer of(RestClientCustomizer customizer) {
 		return customizer;
 	}
