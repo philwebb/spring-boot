@@ -18,9 +18,9 @@ package org.springframework.boot.web.client;
 
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.springframework.boot.selector.AbstractSelectableSet;
-import org.springframework.boot.selector.SelectableSet;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
@@ -34,9 +34,9 @@ final class SimpleRestClients extends AbstractSelectableSet<RestClients, RestCli
 
 	private final RestClientBuilders builders;
 
-	SimpleRestClients(RestClientBuilders restClientBuilders) {
-		super(entries(restClientBuilders), SelectableSet.Entry::selectable, SimpleRestClients::buildRestClient);
-		this.builders = restClientBuilders;
+	SimpleRestClients(RestClientBuilders builders) {
+		super(streamEntries(builders), (builderEntry) -> asRestClientEntry(builderEntry));
+		this.builders = builders;
 	}
 
 	private SimpleRestClients(RestClientBuilders restClientBuilders, Map<String, Entry<RestClient>> entries,
@@ -45,8 +45,16 @@ final class SimpleRestClients extends AbstractSelectableSet<RestClients, RestCli
 		this.builders = restClientBuilders;
 	}
 
-	private static RestClient buildRestClient(Entry<Builder> entry) {
-		return entry.element().build();
+	private static Stream<Entry<Builder>> streamEntries(RestClientBuilders builders) {
+		Assert.notNull(builders, "'builders' must not be null");
+		return builders.streamEntries();
+	}
+
+	private static Entry<RestClient> asRestClientEntry(Entry<Builder> builderEntry) {
+		Builder builder = builderEntry.element();
+		RestClient restClient = builder.build();
+		return Entry.of(builderEntry.selectable(), () -> restClient); // FIXME
+																		// ofSingleton?
 	}
 
 	@Override
@@ -58,11 +66,6 @@ final class SimpleRestClients extends AbstractSelectableSet<RestClients, RestCli
 	@Override
 	public RestClientBuilders builders() {
 		return this.builders;
-	}
-
-	private static Iterable<Entry<RestClient.Builder>> entries(RestClientBuilders restClientBuilders) {
-		Assert.notNull(restClientBuilders, "'restClientBuilders' must not be null");
-		return restClientBuilders.entries();
 	}
 
 }

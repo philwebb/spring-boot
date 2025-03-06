@@ -246,8 +246,8 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 */
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromMap(Map<String, E> map,
 			Function<? super E, Labels> labelsProvider) {
-		Stream<Map.Entry<String, E>> stream = (map != null) ? map.entrySet().stream() : Stream.empty();
-		return from(stream, (entry) -> Selectable.fromMapEntry(entry, labelsProvider), Map.Entry::getValue);
+		Stream<Map.Entry<String, E>> mapEntries = (map != null) ? map.entrySet().stream() : Stream.empty();
+		return from(mapEntries, (entry) -> Selectable.fromMapEntry(entry, labelsProvider), Map.Entry::getValue);
 	}
 
 	/**
@@ -261,6 +261,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromCollection(Collection<E> collection,
 			Function<? super E, String> nameProvider) throws DuplicateSelectableNameException {
 		return fromCollection(collection, nameProvider, null);
@@ -278,6 +279,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromCollection(Collection<E> collection,
 			Function<? super E, String> nameProvider, Function<? super E, Labels> labelsProvider)
 			throws DuplicateSelectableNameException {
@@ -295,6 +297,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromIterable(Iterable<E> iterable,
 			Function<? super E, String> nameProvider) throws DuplicateSelectableNameException {
 		return fromIterable(iterable, nameProvider, null);
@@ -313,6 +316,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	static <S extends SelectableSet<S, E>, E> SelectableSet<S, E> fromIterable(Iterable<E> iterable,
 			Function<? super E, String> nameProvider, Function<? super E, Labels> labelsProvider)
 			throws DuplicateSelectableNameException {
@@ -338,6 +342,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	static <S extends SelectableSet<S, E>, E, T> SelectableSet<S, E> from(Stream<T> stream,
 			Function<? super T, Selectable> selectableProvider, ElementProvider<? super T, E> elementProvider)
 			throws DuplicateSelectableNameException {
@@ -362,6 +367,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	static <S extends SelectableSet<S, E>, E, T> SelectableSet<S, E> from(Iterable<T> iterable,
 			Function<? super T, Selectable> selectableProvider, ElementProvider<? super T, E> elementProvider)
 			throws DuplicateSelectableNameException {
@@ -408,7 +414,18 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 		 * @return a new {@link Entry}
 		 */
 		static <T, E> Entry<E> of(Selectable selectable, T source, ElementProvider<T, E> elementProvider) {
-			return new SimpleSelectableSetEntry<>(selectable, elementProvider.asScopedSupplier(source));
+			return of(selectable, elementProvider.asScopedSupplier(source));
+		}
+
+		/**
+		 * Factory method to create a new {@link Entry}.
+		 * @param <E> the element type
+		 * @param selectable the selectable used to select the entry a source
+		 * @param elementSupplier the supplier used to provide the element
+		 * @return a new {@link Entry}
+		 */
+		static <E> Entry<E> of(Selectable selectable, Supplier<E> elementSupplier) {
+			return new SimpleSelectableSetEntry<>(selectable, elementSupplier);
 		}
 
 	}
@@ -421,6 +438,8 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 */
 	@FunctionalInterface
 	interface ElementProvider<T, E> {
+
+		// FIXME might not need
 
 		/**
 		 * Return the the scope of the element.

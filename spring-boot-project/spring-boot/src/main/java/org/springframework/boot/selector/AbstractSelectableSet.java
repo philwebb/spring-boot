@@ -68,6 +68,7 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Selectable> selectableProvider,
 			ElementProvider<? super T, E> elementProvider) throws DuplicateSelectableNameException {
 		this(iterable, selectableProvider, elementProvider, UnaryOperator.identity());
@@ -84,10 +85,16 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
+	@Deprecated
 	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Selectable> selectableProvider,
 			ElementProvider<? super T, E> elementProvider, UnaryOperator<E> elementPostProcessor)
 			throws DuplicateSelectableNameException {
 		this(buildEntries(iterable, selectableProvider, elementProvider.withPostProcessor(elementPostProcessor)));
+	}
+
+	protected <T> AbstractSelectableSet(Stream<T> stream, Function<? super T, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		this(buildEntries(stream, entryProvider));
 	}
 
 	/**
@@ -101,7 +108,7 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	 * @param elementProvider a bi-function that provides the element
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
-	 */
+	 */ // FIXME deprecate
 	protected <K, V> AbstractSelectableSet(Map<K, V> map,
 			BiFunction<? super K, ? super V, Selectable> selectableProvider, ElementProvider.Scope elementScope,
 			BiFunction<? super K, ? super V, E> elementProvider) throws DuplicateSelectableNameException {
@@ -155,6 +162,7 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	 */
 	protected abstract S withPredicate(Map<String, Entry<E>> entries, Predicate<Entry<E>> predicate);
 
+	@Deprecated
 	private static <T, E> Map<String, Entry<E>> buildEntries(Iterable<T> iterable,
 			Function<? super T, Selectable> selectableFactory, ElementProvider<? super T, E> elementProvider)
 			throws DuplicateSelectableNameException {
@@ -172,6 +180,24 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 				throw new DuplicateSelectableNameException(null, duplicates, null);
 			}
 		}
+		return Collections.unmodifiableMap(entries);
+	}
+
+	private static <T, E> Map<String, Entry<E>> buildEntries(Stream<T> stream,
+			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
+		Assert.notNull(stream, "'iterable' must not be null");
+		Assert.notNull(entryProvider, "'entryProvider' must not be null");
+		Map<String, Entry<E>> entries = new LinkedHashMap<>();
+		stream.forEach((source) -> {
+			Entry<E> entry = entryProvider.apply(source);
+			String name = entry.selectable().name();
+			Assert.state(StringUtils.hasText(name), "Selectable instances must have a name");
+			Entry<E> duplicate = entries.put(name, entry);
+			if (duplicate != null) {
+				List<Selectable> duplicates = List.of(entry.selectable(), entry.selectable());
+				throw new DuplicateSelectableNameException(null, duplicates, null);
+			}
+		});
 		return Collections.unmodifiableMap(entries);
 	}
 
