@@ -1,0 +1,6 @@
+spring:
+  http:
+    restclient:
+      zuplo:
+        connect-timeout: 3s
+        base-url: https://echo.zuplo.io
