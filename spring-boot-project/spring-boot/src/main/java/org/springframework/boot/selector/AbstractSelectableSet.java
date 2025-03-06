@@ -56,25 +56,6 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 		this(Collections.emptyMap());
 	}
 
-	protected <T> AbstractSelectableSet(Stream<T> stream, Function<? super T, Entry<E>> entryProvider)
-			throws DuplicateSelectableNameException {
-		this(buildEntries(stream, entryProvider));
-	}
-
-	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Entry<E>> entryProvider)
-			throws DuplicateSelectableNameException {
-		this(buildEntries(iterable, entryProvider));
-	}
-
-	protected <K, V> AbstractSelectableSet(Map<K, V> map, BiFunction<? super K, ? super V, Entry<E>> entryProvider)
-			throws DuplicateSelectableNameException {
-		this(buildEntries(map, entryProvider));
-	}
-
-	private AbstractSelectableSet(Map<String, Entry<E>> entries) {
-		this(entries, (entry) -> true);
-	}
-
 	/**
 	 * Create a new {@link AbstractSelectableSet} instance with the given entries and
 	 * predicate.
@@ -85,6 +66,51 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 	protected AbstractSelectableSet(Map<String, Entry<E>> entries, Predicate<Entry<E>> predicate) {
 		this.entries = entries;
 		this.predicate = predicate;
+	}
+
+	/**
+	 * Create a new {@link AbstractSelectableSet} instance from the given {@link Stream}.
+	 * @param <T> the type managed by the stream
+	 * @param stream the source stream
+	 * @param entryProvider a function to to create an {@link SelectableSet.Entry} from a
+	 * stream element
+	 * @throws DuplicateSelectableNameException if duplicate selectable names are used
+	 */
+	protected <T> AbstractSelectableSet(Stream<T> stream, Function<? super T, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		this(buildEntries(stream, entryProvider));
+	}
+
+	/**
+	 * Create a new {@link AbstractSelectableSet} instance from the given {@link Map}.
+	 * @param <K> the map key type
+	 * @param <V> the map value type
+	 * @param map the source mao
+	 * @param entryProvider a bi-function to to create an {@link SelectableSet.Entry} from
+	 * a map entry
+	 * @throws DuplicateSelectableNameException if duplicate selectable names are used
+	 */
+	protected <K, V> AbstractSelectableSet(Map<K, V> map, BiFunction<? super K, ? super V, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		this(buildEntries(map, entryProvider));
+	}
+
+	/**
+	 * Create a new {@link AbstractSelectableSet} instance from the given
+	 * {@link Iterable}.
+	 * @param <T> the type managed by the iterable
+	 * @param iterable the source iterable
+	 * @param entryProvider a function to to create an {@link SelectableSet.Entry} from a
+	 * stream element
+	 * @throws DuplicateSelectableNameException if duplicate selectable names are used
+	 */
+	protected <T> AbstractSelectableSet(Iterable<T> iterable, Function<? super T, Entry<E>> entryProvider)
+			throws DuplicateSelectableNameException {
+		this(buildEntries(iterable, entryProvider));
+	}
+
+	private AbstractSelectableSet(Map<String, Entry<E>> entries) {
+		this(entries, (entry) -> true);
 	}
 
 	/**
@@ -99,20 +125,22 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 
 	private static <K, V, E> Map<String, Entry<E>> buildEntries(Map<K, V> map,
 			BiFunction<? super K, ? super V, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
-		return null; // FIXME
-	}
-
-	private static <T, E> Map<String, Entry<E>> buildEntries(Iterable<T> stream,
-			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
-		return null; // FIXME
+		Assert.notNull(map, "'map' must not be null");
+		return buildEntries(map.entrySet(), (mapEntry) -> entryProvider.apply(mapEntry.getKey(), mapEntry.getValue()));
 	}
 
 	private static <T, E> Map<String, Entry<E>> buildEntries(Stream<T> stream,
 			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
 		Assert.notNull(stream, "'stream' must not be null");
+		return buildEntries(stream::iterator, entryProvider);
+	}
+
+	private static <T, E> Map<String, Entry<E>> buildEntries(Iterable<T> iterable,
+			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
+		Assert.notNull(iterable, "'iterable' must not be null");
 		Assert.notNull(entryProvider, "'entryProvider' must not be null");
 		Map<String, Entry<E>> entries = new LinkedHashMap<>();
-		stream.forEach((source) -> {
+		for (T source : iterable) {
 			Entry<E> entry = entryProvider.apply(source);
 			String name = entry.selectable().name();
 			Assert.state(StringUtils.hasText(name), "Selectable instances must have a name");
@@ -121,7 +149,7 @@ public abstract class AbstractSelectableSet<S extends SelectableSet<S, E>, E> im
 				List<Selectable> duplicates = List.of(entry.selectable(), entry.selectable());
 				throw new DuplicateSelectableNameException(null, duplicates, null);
 			}
-		});
+		}
 		return Collections.unmodifiableMap(entries);
 	}
 

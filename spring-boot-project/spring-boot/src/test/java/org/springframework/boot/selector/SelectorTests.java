@@ -154,4 +154,6 @@ class SelectorTests {
 		assertThat(selector.onlyWhenNamed("anon").selects(Selectable.blank())).isFalse();
 	}
 
+	// FIXME streamSelected selectingBlank selecting
+
 }

@@ -286,7 +286,8 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 			throws DuplicateSelectableNameException {
 		Assert.notNull(collection, "'collection' must not be null");
 		return from(collection.stream(), (element) -> {
-			return null;
+			Selectable selectable = Selectable.from(element, nameProvider, labelsProvider);
+			return Entry.ofInstance(selectable, element);
 		});
 	}
 
@@ -297,9 +298,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * more suitable.
 	 * @param stream a {@link Stream} of objects that will ultimately provide the
 	 * {@link Selectable} and element.
-	 * @param selectableProvider a function to provide the {@link Selectable} from a
-	 * streamed object
-	 * @param elementProvider an {@link ElementProvider} to provide the element from a
+	 * @param entryProvider a {@link Function} to provide then {@link Entry} from a
 	 * streamed object
 	 * @param <S> a self reference for fluent methods
 	 * @param <E> the element type of the {@link SelectableSet}
@@ -308,7 +307,6 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
-	@Deprecated
 	static <S extends SelectableSet<S, E>, T, E> SelectableSet<S, E> from(Stream<T> stream,
 			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
 		return new SimpleSelectableSet<>(stream, entryProvider);
@@ -321,9 +319,7 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * more suitable.
 	 * @param iterable an {@link Iterable} of objects that will ultimately provide the
 	 * {@link Selectable} and element.
-	 * @param selectableProvider a function to provide the {@link Selectable} from an
-	 * iterated object
-	 * @param elementProvider an {@link ElementProvider} to provide the element from a
+	 * @param entryProvider a {@link Function} to provide then {@link Entry} from an
 	 * iterated object
 	 * @param <S> a self reference for fluent methods
 	 * @param <E> the element type of the {@link SelectableSet}
@@ -332,7 +328,6 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 	 * @throws DuplicateSelectableNameException if duplicate {@link Selectable#name()
 	 * names} would be added to the set
 	 */
-	@Deprecated
 	static <S extends SelectableSet<S, E>, E, T> SelectableSet<S, E> from(Iterable<T> iterable,
 			Function<? super T, Entry<E>> entryProvider) throws DuplicateSelectableNameException {
 		return new SimpleSelectableSet<>(iterable, entryProvider);
@@ -397,12 +392,21 @@ public interface SelectableSet<S extends SelectableSet<S, E>, E> extends Iterabl
 		 * @return a new {@link Entry}
 		 */
 		static <E> Entry<E> of(Selectable selectable, Supplier<E> elementSupplier) {
-			return new SimpleSelectableSetEntry<>(selectable, elementSupplier);
+			return SimpleSelectableSetEntry.of(selectable, elementSupplier);
 		}
 
+		/**
+		 * Factory method to create a new {@link Entry} for a given element.
+		 * @param <E> the element type
+		 * @param element the source element
+		 * @param nameProvider a function to provide the element name
+		 * @param labelsProvider a function to provide the element labels or {@code null}
+		 * if there are no labels
+		 * @return a new {@link Entry}
+		 */
 		static <E> Entry<E> fromInstance(E element, Function<? super E, String> nameProvider,
 				Function<? super E, Labels> labelsProvider) {
-			throw new RuntimeException();
+			return SimpleSelectableSetEntry.fromInstance(element, nameProvider, labelsProvider);
 		}
 
 	}

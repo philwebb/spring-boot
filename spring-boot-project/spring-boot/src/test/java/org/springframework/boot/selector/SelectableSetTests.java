@@ -21,16 +21,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.selector.SelectableSet.ElementProvider;
-import org.springframework.boot.selector.SelectableSet.ElementProvider.Scope;
 import org.springframework.boot.selector.SelectableSet.Entry;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -221,18 +216,10 @@ class SelectableSetTests {
 	}
 
 	@Test
-	void fromIterable() {
-		Iterable<TestName> iterable = List.of(new TestName("spring", "framework"), new TestName("spring", "boot"));
-		SelectableSet<?, TestName> selectableSet = SelectableSet.fromIterable(iterable, TestName::last);
-		assertThat(selectableSet.stream()).containsExactlyElementsOf(iterable);
-		assertThat(selectableSet.get("framework")).isEqualTo(new TestName("spring", "framework"));
-	}
-
-	@Test
 	void fromWithStream() {
 		Stream<TestName> stream = Stream.of(new TestName("spring", "framework"), new TestName("spring", "boot"));
-		SelectableSet<?, TestName> selectableSet = SelectableSet.from(stream, (name) -> Selectable.of(name.last()),
-				ElementProvider.identity(Scope.SINGLETON));
+		SelectableSet<?, TestName> selectableSet = SelectableSet.from(stream,
+				(name) -> Entry.ofInstance(Selectable.of(name.last()), name));
 		assertThat(selectableSet.stream()).containsExactly(new TestName("spring", "framework"),
 				new TestName("spring", "boot"));
 		assertThat(selectableSet.get("framework")).isEqualTo(new TestName("spring", "framework"));
@@ -241,8 +228,8 @@ class SelectableSetTests {
 	@Test
 	void fromWithIterable() {
 		Iterable<TestName> iterable = List.of(new TestName("spring", "framework"), new TestName("spring", "boot"));
-		SelectableSet<?, TestName> selectableSet = SelectableSet.from(iterable, (name) -> Selectable.of(name.last()),
-				ElementProvider.identity(Scope.SINGLETON));
+		SelectableSet<?, TestName> selectableSet = SelectableSet.from(iterable,
+				(name) -> Entry.ofInstance(Selectable.of(name.last()), name));
 		assertThat(selectableSet.stream()).containsExactlyElementsOf(iterable);
 		assertThat(selectableSet.get("framework")).isEqualTo(new TestName("spring", "framework"));
 	}
@@ -278,93 +265,13 @@ class SelectableSetTests {
 		});
 	}
 
+	/**
+	 * Tests for {@link Entry}.
+	 */
 	@Nested
-	class ElementProviderTests {
+	class EntryTests {
 
-		@Test
-		void getScopeReturnsSingletonByDefault() {
-			ElementProvider<String, String> provider = (source) -> source;
-			assertThat(provider.getScope()).isEqualTo(Scope.SINGLETON);
-		}
-
-		@Test
-		void ofSingletonCallsFunctionOnce() {
-			AtomicInteger atomic = new AtomicInteger();
-			Supplier<Integer> supplier = ElementProvider.ofSingleton(AtomicInteger::incrementAndGet)
-				.asScopedSupplier(atomic);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(1);
-		}
-
-		@Test
-		void ofPrototypeCallsFunctionEachTime() {
-			AtomicInteger atomic = new AtomicInteger();
-			Supplier<Integer> supplier = ElementProvider.ofPrototype(AtomicInteger::incrementAndGet)
-				.asScopedSupplier(atomic);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(2);
-			assertThat(supplier.get()).isEqualTo(3);
-		}
-
-		@Test
-		void ofWithScopeWhenSingletonCallsFunctionOnce() {
-			AtomicInteger atomic = new AtomicInteger();
-			Supplier<Integer> supplier = ElementProvider.of(Scope.SINGLETON, AtomicInteger::incrementAndGet)
-				.asScopedSupplier(atomic);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(1);
-		}
-
-		@Test
-		void ofWithScopeWhenPrototypeCallsFunctionOnce() {
-			AtomicInteger atomic = new AtomicInteger();
-			Supplier<Integer> supplier = ElementProvider.of(Scope.PROTOTYPE, AtomicInteger::incrementAndGet)
-				.asScopedSupplier(atomic);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(2);
-			assertThat(supplier.get()).isEqualTo(3);
-		}
-
-		@Test
-		void identityReturnInputArgInScope() {
-			ElementProvider<Object, Object> singleton = ElementProvider.identity(Scope.SINGLETON);
-			assertThat(singleton.getScope()).isEqualTo(Scope.SINGLETON);
-			assertThat(singleton.getElement("test")).isEqualTo("test");
-			ElementProvider<Object, Object> prototype = ElementProvider.identity(Scope.PROTOTYPE);
-			assertThat(prototype.getScope()).isEqualTo(Scope.PROTOTYPE);
-			assertThat(prototype.getElement("test")).isEqualTo("test");
-		}
-
-		@Test
-		void asElementSupplierWorksWithCustomImplementation() {
-			ElementProvider<AtomicInteger, Integer> provider = new ElementProvider<>() {
-
-				@Override
-				public Scope getScope() {
-					return Scope.PROTOTYPE;
-				}
-
-				@Override
-				public Integer getElement(AtomicInteger source) {
-					return source.incrementAndGet();
-				}
-
-			};
-			AtomicInteger atomic = new AtomicInteger();
-			Supplier<Integer> supplier = provider.asScopedSupplier(atomic);
-			assertThat(supplier.get()).isEqualTo(1);
-			assertThat(supplier.get()).isEqualTo(2);
-			assertThat(supplier.get()).isEqualTo(3);
-		}
-
-		@Test
-		void withPostProcessorAppliesPostProcessors() {
-			ElementProvider<String, String> provider = ElementProvider.ofSingleton(Function.identity());
-			provider = provider.withPostProcessor(String::toLowerCase).withPostProcessor((string) -> string + "!");
-			assertThat(provider.asScopedSupplier("TEST").get()).isEqualTo("test!");
-		}
+		// FIXME
 
 	}
 

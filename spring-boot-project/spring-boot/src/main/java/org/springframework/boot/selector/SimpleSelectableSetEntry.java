@@ -16,7 +16,11 @@
 
 package org.springframework.boot.selector;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import org.springframework.boot.selector.SelectableSet.Entry;
+import org.springframework.util.Assert;
 
 /**
  * Simple {@link SelectableSet.Entry} implementation.
@@ -41,6 +45,21 @@ record SimpleSelectableSetEntry<E>(Selectable selectable,
 
 	static <E> String toString(SelectableSet.Entry<E> entry) {
 		return "%s -> '%s'".formatted(entry.selectable(), entry.element());
+	}
+
+	static <E> Entry<E> of(Selectable selectable, Supplier<E> elementSupplier) {
+		Assert.notNull(selectable, "'selectable' must not be null");
+		Assert.notNull(elementSupplier, "'elementSupplier' must not be null");
+		return new SimpleSelectableSetEntry<>(selectable, elementSupplier);
+	}
+
+	static <E> Entry<E> fromInstance(E element, Function<? super E, String> nameProvider,
+			Function<? super E, Labels> labelsProvider) {
+		Assert.notNull(element, "'element' must not be null");
+		Assert.notNull(nameProvider, "'nameProvider' must not be null");
+		Selectable selectable = Selectable.from(element, nameProvider, labelsProvider);
+		return new SimpleSelectableSetEntry<>(selectable, () -> element);
+
 	}
 
 }
