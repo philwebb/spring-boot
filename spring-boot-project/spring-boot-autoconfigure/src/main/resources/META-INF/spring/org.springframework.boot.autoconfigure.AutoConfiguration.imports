@@ -66,7 +66,6 @@ org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
 org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
-org.springframework.boot.autoconfigure.interfaceclients.http.HttpInterfaceClientsAutoConfiguration
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration
