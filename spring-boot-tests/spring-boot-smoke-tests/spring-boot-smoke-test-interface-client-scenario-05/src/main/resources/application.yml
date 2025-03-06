@@ -1,0 +1,7 @@
+spring:
+  http:
+    restclient:
+      zuplo:
+        base-url: https://echo.zuplo.io
+        label:
+          secure: true

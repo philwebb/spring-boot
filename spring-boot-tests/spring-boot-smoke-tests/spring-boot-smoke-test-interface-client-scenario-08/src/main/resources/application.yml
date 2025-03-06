@@ -1,0 +1,11 @@
+spring:
+  http:
+    restclient:
+      zuplo1:
+        base-url: https://echo.zuplo.io
+        label:
+          mode: uppercase
+      zuplo2:
+        base-url: https://echo.zuplo.io 
+        label:
+          mode: normal
