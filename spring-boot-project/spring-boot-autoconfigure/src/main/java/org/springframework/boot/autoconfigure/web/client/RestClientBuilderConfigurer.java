@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.selector.Selectable;
+import org.springframework.boot.selector.Selector;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
@@ -28,6 +30,7 @@ import org.springframework.web.client.RestClient.Builder;
  * Configure {@link Builder RestClient.Builder} with sensible defaults.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  * @since 3.2.0
  */
 public class RestClientBuilderConfigurer {
@@ -64,12 +67,9 @@ public class RestClientBuilderConfigurer {
 		return builder;
 	}
 
-	private void applyCustomizers(Builder builder) {
-		if (this.customizers != null) {
-			for (RestClientCustomizer customizer : this.customizers) {
-				customizer.customize(builder);
-			}
-		}
+	private void applyCustomizers(RestClient.Builder builder) {
+		Selector.streamSelected(this.customizers, Selectable.blank())
+			.forEach((customizer) -> customizer.customize(builder));
 	}
 
 }
