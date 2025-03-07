@@ -25,12 +25,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.client.AutoConfiguredClientHttpRequestFactories;
+import org.springframework.boot.autoconfigure.http.client.DefaultHttpClientProperties;
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.client.RestClientBuilders;
 import org.springframework.boot.web.client.RestClientCustomizer;
+import org.springframework.boot.web.client.RestClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Scope;
@@ -48,12 +53,14 @@ import org.springframework.web.client.RestClient.Builder;
  *
  * @author Arjen Poutsma
  * @author Moritz Halbritter
+ * @author Phillip Webb
  * @since 3.2.0
  */
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 		SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
+@EnableConfigurationProperties(RestClientsProperties.class)
 public class RestClientAutoConfiguration {
 
 	@Bean
@@ -91,6 +98,23 @@ public class RestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
 		return restClientBuilderConfigurer.configure(RestClient.builder());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	AutoConfiguredRestClientBuilders restClientBuilders(RestClientsProperties properties,
+			DefaultHttpClientProperties defaultHttpClientProperties, ObjectProvider<SslBundles> sslBundles,
+			ObjectProvider<RestClientCustomizer> customizers) {
+		AutoConfiguredClientHttpRequestFactories httpRequestFactories = new AutoConfiguredClientHttpRequestFactories(
+				defaultHttpClientProperties, sslBundles);
+		return new AutoConfiguredRestClientBuilders(properties, httpRequestFactories, customizers);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(RestClientBuilders.class)
+	RestClients restClients(RestClientBuilders restClientBuilders) {
+		return RestClients.fromBuilders(restClientBuilders);
 	}
 
 }
