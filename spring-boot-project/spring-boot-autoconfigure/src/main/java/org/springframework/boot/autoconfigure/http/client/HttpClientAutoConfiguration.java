@@ -21,17 +21,14 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.client.HttpClientProperties.Factory;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -46,26 +43,24 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(DefaultHttpClientProperties.class)
 public class HttpClientAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(
-			DefaultHttpClientProperties httpClientProperties) {
-		Factory factory = httpClientProperties.getFactory();
-		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect();
-	}
+	private final AutoConfiguredClientHttpRequestFactories clientHttpRequestFactories;
 
-	@Bean
-	@ConditionalOnMissingBean
-	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(DefaultHttpClientProperties httpClientProperties,
+	HttpClientAutoConfiguration(DefaultHttpClientProperties defaultHttpClientProperties,
 			ObjectProvider<SslBundles> sslBundles) {
-		SslBundle sslBundle = getSslBundle(httpClientProperties.getSsl(), sslBundles);
-		return new ClientHttpRequestFactorySettings(httpClientProperties.getRedirects(),
-				httpClientProperties.getConnectTimeout(), httpClientProperties.getReadTimeout(), sslBundle);
+		this.clientHttpRequestFactories = new AutoConfiguredClientHttpRequestFactories(defaultHttpClientProperties,
+				sslBundles);
 	}
 
-	private SslBundle getSslBundle(DefaultHttpClientProperties.Ssl properties, ObjectProvider<SslBundles> sslBundles) {
-		String name = properties.getBundle();
-		return (StringUtils.hasLength(name)) ? sslBundles.getObject().getBundle(name) : null;
+	@Bean
+	@ConditionalOnMissingBean
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder() {
+		return this.clientHttpRequestFactories.builder();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings() {
+		return this.clientHttpRequestFactories.settings();
 	}
 
 }
