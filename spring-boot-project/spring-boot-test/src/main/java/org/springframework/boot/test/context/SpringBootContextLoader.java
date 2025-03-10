@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
@@ -109,7 +110,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	@Override
-	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig) throws Exception {
+	public ApplicationContext loadContextForAotProcessing(MergedContextConfiguration mergedConfig,
+			RuntimeHints runtimeHints) throws Exception {
 		return loadContext(mergedConfig, Mode.AOT_PROCESSING, null);
 	}
 
