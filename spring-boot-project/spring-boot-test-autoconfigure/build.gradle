@@ -83,7 +83,7 @@ dependencies {
 	optional("io.micrometer:micrometer-tracing")
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-all"))
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")

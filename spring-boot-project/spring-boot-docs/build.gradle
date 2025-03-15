@@ -53,7 +53,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure-all", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-jetty", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-reactor-netty", configuration: "autoConfigurationMetadata"))
@@ -64,7 +64,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-amqp", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-all", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure-all", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
@@ -80,7 +80,7 @@ dependencies {
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-test"))
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-all"))
-	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-amqp"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure-all"))
 	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
@@ -199,7 +199,7 @@ dependencies {
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure-all"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
@@ -327,7 +327,7 @@ def getRelativeExamplesPath(var outputs) {
 
 antoraDependencies {
 	'actuator-rest-api' {
-		path = ":spring-boot-project:spring-boot-actuator-autoconfigure"
+		path = ":spring-boot-project:spring-boot-actuator-autoconfigure-all"
 		source()
 		aggregateContent()
 	}

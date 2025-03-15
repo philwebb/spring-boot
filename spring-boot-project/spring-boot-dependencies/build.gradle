@@ -2026,7 +2026,7 @@ bom {
 				"spring-boot-test-autoconfigure",
 				"spring-boot-testcontainers",
 				"spring-boot-actuator-all",
-				"spring-boot-actuator-autoconfigure",
+				"spring-boot-actuator-autoconfigure-all",
 				"spring-boot-amqp",
 				"spring-boot-autoconfigure",
 				"spring-boot-autoconfigure-processor",
