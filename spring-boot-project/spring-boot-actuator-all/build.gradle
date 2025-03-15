@@ -6,7 +6,7 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
-description = "Spring Boot Actuator"
+description = "Spring Boot Actuator All"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-all"))

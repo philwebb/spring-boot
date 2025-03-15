@@ -21,7 +21,7 @@ dependencies {
 if (project.hasProperty("oldVersion") && project.hasProperty("newVersion")) {
 	dependencies {
 		["spring-boot",
-		 "spring-boot-actuator",
+		 "spring-boot-actuator-all",
 		 "spring-boot-actuator-autoconfigure",
 		 "spring-boot-autoconfigure",
 		 "spring-boot-devtools",
