@@ -4,5 +4,3 @@ plugins {
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.deployed"
 }
-
-description = "Spring Boot Actuator"

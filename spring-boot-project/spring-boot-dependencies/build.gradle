@@ -2043,6 +2043,7 @@ bom {
 				"spring-boot-loader-classic",
 				"spring-boot-loader-tools",
 				"spring-boot-properties-migrator",
+				"spring-boot-starter-quartz",
 				"spring-boot-reactor-netty",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",
