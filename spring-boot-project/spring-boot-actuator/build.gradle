@@ -1,0 +1,8 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Actuator"
