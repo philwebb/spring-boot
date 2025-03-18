@@ -18,8 +18,8 @@ package org.springframework.boot.jetty.servlet.autoconfigure;
 
 import jakarta.servlet.ServletContextListener;
 
-import org.springframework.boot.autoconfigure.web.server.servlet.AbstractServletWebServerServletContextListenerTests;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.AbstractServletWebServerServletContextListenerTests;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
