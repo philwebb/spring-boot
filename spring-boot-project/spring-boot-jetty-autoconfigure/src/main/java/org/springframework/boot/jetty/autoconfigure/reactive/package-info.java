@@ -17,4 +17,4 @@
 /**
  * Classes related to the auto-configuration of a reactive web server using Jetty.
  */
-package org.springframework.boot.jetty.reactive.autoconfigure;
+package org.springframework.boot.jetty.autoconfigure.reactive;

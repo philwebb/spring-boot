@@ -2038,6 +2038,7 @@ bom {
 				"spring-boot-jarmode-tools",
 				"spring-boot-jdbc",
 				"spring-boot-jetty",
+				"spring-boot-jetty-autoconfigure",
 				"spring-boot-jms",
 				"spring-boot-jsonb",
 				"spring-boot-loader",

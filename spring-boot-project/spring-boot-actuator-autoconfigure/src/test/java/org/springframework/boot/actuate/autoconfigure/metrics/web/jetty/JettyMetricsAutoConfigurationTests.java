@@ -27,10 +27,10 @@ import org.springframework.boot.actuate.metrics.web.jetty.JettyServerThreadPoolM
 import org.springframework.boot.actuate.metrics.web.jetty.JettySslHandshakeMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.jetty.autoconfigure.reactive.JettyReactiveWebServerAutoConfiguration;
+import org.springframework.boot.jetty.autoconfigure.servlet.JettyServletWebServerAutoConfiguration;
 import org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory;
-import org.springframework.boot.jetty.reactive.autoconfigure.JettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory;
-import org.springframework.boot.jetty.servlet.autoconfigure.JettyServletWebServerAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;

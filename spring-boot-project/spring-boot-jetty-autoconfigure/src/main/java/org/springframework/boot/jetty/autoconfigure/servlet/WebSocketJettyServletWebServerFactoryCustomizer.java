@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jetty.servlet.autoconfigure;
+package org.springframework.boot.jetty.autoconfigure.servlet;
 
 import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jetty.reactive.autoconfigure;
+package org.springframework.boot.jetty.autoconfigure.reactive;
 
 import jakarta.servlet.ServletContext;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
