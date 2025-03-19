@@ -15,6 +15,6 @@
  */
 
 /**
- * Classes related to the auto-configuration of a reactive web server using Tomcat.
+ * Classes related to the auto-configuration of a servlet web server using Tomcat.
  */
-package org.springframework.boot.tomcat.reactive.autoconfigure;
+package org.springframework.boot.tomcat.autoconfigure.servlet;

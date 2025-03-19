@@ -5,7 +5,7 @@ plugins {
 description = "Starter for using Tomcat as the embedded servlet container. Default servlet container starter used by spring-boot-starter-web"
 
 dependencies {
-	api(project(":spring-boot-project:spring-boot-tomcat"))
+	api(project(":spring-boot-project:spring-boot-tomcat-autoconfigure"))
 	api("jakarta.annotation:jakarta.annotation-api")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.apache.tomcat.embed:tomcat-embed-websocket") {

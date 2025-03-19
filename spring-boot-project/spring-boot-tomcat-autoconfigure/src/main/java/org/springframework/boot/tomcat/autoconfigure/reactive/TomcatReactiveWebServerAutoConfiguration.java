@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.reactive.autoconfigure;
+package org.springframework.boot.tomcat.autoconfigure.reactive;
 
 import org.apache.catalina.startup.Tomcat;
 

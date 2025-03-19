@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.servlet.autoconfigure;
+package org.springframework.boot.tomcat.autoconfigure.servlet;
 
 import org.apache.catalina.Context;
 import org.junit.jupiter.api.BeforeEach;

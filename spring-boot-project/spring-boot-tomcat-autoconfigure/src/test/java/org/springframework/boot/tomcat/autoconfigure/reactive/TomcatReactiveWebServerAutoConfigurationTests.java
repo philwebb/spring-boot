@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.servlet.autoconfigure;
+package org.springframework.boot.tomcat.autoconfigure.reactive;
 
-import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContext;
+import jakarta.websocket.server.ServerContainer;
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.web.server.servlet.AbstractServletWebServerAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.web.server.reactive.AbstractReactiveWebServerAutoConfigurationTests;
 import org.springframework.boot.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatProtocolHandlerCustomizer;
-import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.tomcat.TomcatWebServer;
+import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,24 +42,23 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link TomcatServletWebServerAutoConfiguration}.
+ * Tests for {@link TomcatReactiveWebServerAutoConfiguration}.
  *
- * @author Dave Syer
- * @author Phillip Webb
- * @author Stephane Nicoll
+ * @author Brian Clozel
  * @author Raheela Aslam
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
-class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebServerAutoConfigurationTests {
+class TomcatReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebServerAutoConfigurationTests {
 
-	TomcatServletWebServerAutoConfigurationTests() {
-		super(TomcatServletWebServerAutoConfiguration.class);
+	TomcatReactiveWebServerAutoConfigurationTests() {
+		super(TomcatReactiveWebServerAutoConfiguration.class);
 	}
 
 	@Test
 	void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		this.serverRunner.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class).run((context) -> {
-			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
 					TomcatConnectorCustomizer.class);
 			assertThat(factory.getConnectorCustomizers()).contains(customizer);
@@ -67,7 +70,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 	void tomcatConnectorCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		this.serverRunner.withUserConfiguration(DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
 			.run((context) -> {
-				TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+				TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 				TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
 						TomcatConnectorCustomizer.class);
 				assertThat(factory.getConnectorCustomizers()).contains(customizer);
@@ -78,7 +81,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 	@Test
 	void tomcatContextCustomizerBeanIsAddedToFactory() {
 		this.serverRunner.withUserConfiguration(TomcatContextCustomizerConfiguration.class).run((context) -> {
-			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
 			assertThat(factory.getContextCustomizers()).contains(customizer);
 			then(customizer).should().customize(any(Context.class));
@@ -89,7 +92,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 	void tomcatContextCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		this.serverRunner.withUserConfiguration(DoubleRegistrationTomcatContextCustomizerConfiguration.class)
 			.run((context) -> {
-				TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+				TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 				TomcatContextCustomizer customizer = context.getBean("contextCustomizer",
 						TomcatContextCustomizer.class);
 				assertThat(factory.getContextCustomizers()).contains(customizer);
@@ -100,7 +103,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 	@Test
 	void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		this.serverRunner.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class).run((context) -> {
-			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
 					TomcatProtocolHandlerCustomizer.class);
 			assertThat(factory.getProtocolHandlerCustomizers()).contains(customizer);
@@ -112,7 +115,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 	void tomcatProtocolHandlerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		this.serverRunner.withUserConfiguration(DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
 			.run((context) -> {
-				TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
+				TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 				TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
 						TomcatProtocolHandlerCustomizer.class);
 				assertThat(factory.getProtocolHandlerCustomizers()).contains(customizer);
@@ -121,27 +124,23 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 	}
 
 	@Test
-	void whenUsingFrameworkForwardHeadersStrategyAndRelativeRedirectsAreEnabledThenFilterIsConfiguredToUseRelativeRedirects() {
-		this.serverRunner
-			.withPropertyValues("server.forward-headers-strategy=framework",
-					"server.tomcat.use-relative-redirects=true", "server.port=0")
-			.run((context) -> {
-				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-				assertThat(filter).extracting("relativeRedirects").isEqualTo(true);
-			});
+	void webSocketServerContainerIsAvailableFromServletContext() {
+		this.serverRunner.run((context) -> {
+			WebServer webServer = ((ReactiveWebServerApplicationContext) context.getSourceApplicationContext())
+				.getWebServer();
+			ServletContext servletContext = findContext(((TomcatWebServer) webServer).getTomcat()).getServletContext();
+			Object serverContainer = servletContext.getAttribute("jakarta.websocket.server.ServerContainer");
+			assertThat(serverContainer).isInstanceOf(ServerContainer.class);
+		});
 	}
 
-	@Test
-	void whenUsingFrameworkForwardHeadersStrategyAndNotUsingRelativeRedirectsThenFilterIsNotConfiguredToUseRelativeRedirects() {
-		this.serverRunner
-			.withPropertyValues("server.forward-headers-strategy=framework",
-					"server.tomcat.use-relative-redirects=false", "server.port=0")
-			.run((context) -> {
-				Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
-				assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
-				assertThat(filter).extracting("relativeRedirects").isEqualTo(false);
-			});
+	private static Context findContext(Tomcat tomcat) {
+		for (Container child : tomcat.getHost().findChildren()) {
+			if (child instanceof Context context) {
+				return context;
+			}
+		}
+		throw new IllegalStateException("The Host does not contain a Context");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -165,7 +164,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 		}
 
 		@Bean
-		WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addConnectorCustomizers(this.customizer);
 		}
 
@@ -192,7 +191,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 		}
 
 		@Bean
-		WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addContextCustomizers(this.customizer);
 		}
 
@@ -219,7 +218,7 @@ class TomcatServletWebServerAutoConfigurationTests extends AbstractServletWebSer
 		}
 
 		@Bean
-		WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
+		WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> tomcatCustomizer() {
 			return (tomcat) -> tomcat.addProtocolHandlerCustomizers(this.customizer);
 		}
 

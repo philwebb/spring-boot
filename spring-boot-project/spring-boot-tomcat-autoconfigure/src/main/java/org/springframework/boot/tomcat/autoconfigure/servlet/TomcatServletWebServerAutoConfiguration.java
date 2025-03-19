@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.servlet.autoconfigure;
+package org.springframework.boot.tomcat.autoconfigure.servlet;
 
 import jakarta.servlet.ServletRequest;
 import org.apache.catalina.startup.Tomcat;

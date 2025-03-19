@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration
-import org.springframework.boot.tomcat.servlet.autoconfigure.TomcatServletWebServerAutoConfiguration
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

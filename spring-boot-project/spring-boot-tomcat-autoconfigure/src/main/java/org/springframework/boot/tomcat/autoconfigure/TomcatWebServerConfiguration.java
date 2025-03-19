@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeplo
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.tomcat.reactive.autoconfigure.TomcatReactiveWebServerAutoConfiguration;
-import org.springframework.boot.tomcat.servlet.autoconfigure.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

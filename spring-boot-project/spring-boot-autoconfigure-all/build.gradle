@@ -48,7 +48,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-jdbc"))
 	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor-netty"))
-	optional(project(":spring-boot-project:spring-boot-tomcat"))
+	optional(project(":spring-boot-project:spring-boot-tomcat-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-tx"))
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"

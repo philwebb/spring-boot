@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.servlet.autoconfigure;
+package org.springframework.boot.tomcat.autoconfigure.servlet;
 
 import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.tomcat.autoconfigure.TomcatServerProperties;

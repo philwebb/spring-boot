@@ -119,7 +119,7 @@ dependencies {
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.thymeleaf:thymeleaf")
 
-	testRuntimeOnly(project(":spring-boot-project:spring-boot-tomcat"))
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-tomcat-autoconfigure"))
 }
 
 configurations {
