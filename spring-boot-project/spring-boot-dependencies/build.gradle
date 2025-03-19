@@ -2107,7 +2107,8 @@ bom {
 				"spring-boot-tomcat",
 				"spring-boot-tomcat-autoconfigure",
 				"spring-boot-tx",
-				"spring-boot-undertow"
+				"spring-boot-undertow",
+				"spring-boot-undertow-autoconfigure"
 			]
 			plugins = [
 				"spring-boot-maven-plugin"

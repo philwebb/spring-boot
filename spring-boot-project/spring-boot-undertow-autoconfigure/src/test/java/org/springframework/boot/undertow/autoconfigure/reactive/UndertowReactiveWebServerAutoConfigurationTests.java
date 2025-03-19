@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.undertow.reactive.autoconfigure;
+package org.springframework.boot.undertow.autoconfigure.reactive;
 
 import io.undertow.Undertow.Builder;
 import org.junit.jupiter.api.Test;

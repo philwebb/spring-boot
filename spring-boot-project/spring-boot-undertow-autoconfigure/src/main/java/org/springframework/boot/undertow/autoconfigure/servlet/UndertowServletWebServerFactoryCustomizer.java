@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.undertow.servlet.autoconfigure;
+package org.springframework.boot.undertow.autoconfigure.servlet;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.undertow.autoconfigure.UndertowServerProperties;

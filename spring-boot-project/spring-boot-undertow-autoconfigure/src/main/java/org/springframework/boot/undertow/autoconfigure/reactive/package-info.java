@@ -17,4 +17,4 @@
 /**
  * Classes related to the auto-configuration of a reactive web server using Undertow.
  */
-package org.springframework.boot.undertow.reactive.autoconfigure;
+package org.springframework.boot.undertow.autoconfigure.reactive;

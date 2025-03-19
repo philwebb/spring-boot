@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.undertow.servlet.autoconfigure;
+package org.springframework.boot.undertow.autoconfigure.servlet;
 
 import jakarta.servlet.ServletContextListener;
 

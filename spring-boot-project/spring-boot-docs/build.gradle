@@ -67,7 +67,7 @@ dependencies {
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-tomcat-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-tx", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-undertow", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-undertow-autoconfigure", configuration: "autoConfigurationMetadata"))
 
 	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-activemq", configuration: "configurationPropertiesMetadata"))
@@ -89,7 +89,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-tomcat-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-tx", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-undertow", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-undertow-autoconfigure", configuration: "configurationPropertiesMetadata"))
 
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-all"))
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-test"))
@@ -111,7 +111,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-tomcat-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
-	implementation(project(path: ":spring-boot-project:spring-boot-undertow"))
+	implementation(project(path: ":spring-boot-project:spring-boot-undertow-autoconfigure"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")

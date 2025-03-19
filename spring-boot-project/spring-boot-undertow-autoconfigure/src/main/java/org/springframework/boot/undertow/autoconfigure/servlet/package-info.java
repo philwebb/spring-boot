@@ -17,4 +17,4 @@
 /**
  * Classes related to the auto-configuration of a servlet web server using Undertow.
  */
-package org.springframework.boot.undertow.servlet.autoconfigure;
+package org.springframework.boot.undertow.autoconfigure.servlet;
