@@ -2047,6 +2047,7 @@ bom {
 				"spring-boot-mail",
 				"spring-boot-properties-migrator",
 				"spring-boot-reactor-netty",
+				"spring-boot-reactor-netty-autoconfigure",
 				"spring-boot-starter",
 				"spring-boot-starter-activemq",
 				"spring-boot-starter-actuator",
