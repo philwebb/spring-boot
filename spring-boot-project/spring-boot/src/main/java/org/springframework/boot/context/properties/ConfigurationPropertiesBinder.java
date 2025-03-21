@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.springframework.beans.BeansException;
@@ -90,8 +91,19 @@ class ConfigurationPropertiesBinder {
 	BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		ConfigurationProperties annotation = propertiesBean.getAnnotation();
-		BindHandler bindHandler = getBindHandler(target, annotation);
-		return getBinder().bind(annotation.prefix(), target, bindHandler);
+		boolean interesting = target.getType()
+			.toString()
+			.contains("org.springframework.cloud.stream.config.BindingServiceProperties");
+		long start = System.nanoTime();
+		try {
+			BindHandler bindHandler = getBindHandler(target, annotation);
+			return getBinder().bind(annotation.prefix(), target, bindHandler);
+		}
+		finally {
+			if (interesting) {
+				System.err.println(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
+			}
+		}
 	}
 
 	Object bindOrCreate(ConfigurationPropertiesBean propertiesBean) {
