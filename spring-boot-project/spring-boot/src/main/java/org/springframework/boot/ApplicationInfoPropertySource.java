@@ -19,6 +19,8 @@ package org.springframework.boot;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -32,7 +34,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Moritz Halbritter
  */
-class ApplicationInfoPropertySource extends MapPropertySource {
+class ApplicationInfoPropertySource extends MapPropertySource implements OriginLookup<String> {
 
 	static final String NAME = "applicationInfo";
 
@@ -42,6 +44,16 @@ class ApplicationInfoPropertySource extends MapPropertySource {
 
 	ApplicationInfoPropertySource(String applicationVersion) {
 		super(NAME, getProperties(applicationVersion));
+	}
+
+	@Override
+	public Origin getOrigin(String key) {
+		return null;
+	}
+
+	@Override
+	public boolean isImmutable() {
+		return true;
 	}
 
 	private static Map<String, Object> getProperties(String applicationVersion) {

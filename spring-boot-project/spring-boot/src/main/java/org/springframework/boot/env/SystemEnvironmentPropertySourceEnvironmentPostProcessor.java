@@ -121,6 +121,11 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 			return this.prefix;
 		}
 
+		@Override
+		public boolean isImmutable() {
+			return (Object) getSource() == System.getenv();
+		}
+
 	}
 
 }
