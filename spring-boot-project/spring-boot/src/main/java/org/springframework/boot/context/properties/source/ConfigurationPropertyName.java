@@ -380,12 +380,19 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	private boolean elementsEqual(ConfigurationPropertyName name) {
+		if (toStringMatches(toString(), name.toString())) {
+			return true;
+		}
 		for (int i = this.elements.getSize() - 1; i >= 0; i--) {
 			if (elementDiffers(this.elements, name.elements, i)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	private boolean toStringMatches(String s1, String s2) {
+		return s1.hashCode() == s2.hashCode() && s1.equals(s2);
 	}
 
 	private boolean elementDiffers(Elements e1, Elements e2, int i) {
