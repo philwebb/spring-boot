@@ -60,23 +60,26 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	/**
 	 * An empty {@link ConfigurationPropertyName}.
 	 */
-	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(Elements.EMPTY);
+	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(null, Elements.EMPTY);
 
 	private final Elements elements;
 
 	private final CharSequence[] uniformElements;
 
+	private ConfigurationPropertyName parent;
+
 	private int hashCode;
 
 	private String[] string = new String[ToStringFormat.values().length];
 
-	private volatile Boolean hasDashedElement;
+	private Boolean hasDashedElement;
 
-	private volatile ConfigurationPropertyName systemEnvironmentLegacyName;
+	private ConfigurationPropertyName systemEnvironmentLegacyName;
 
 	private Map<String, ConfigurationPropertyName> appendCache = new ConcurrentReferenceHashMap<>();
 
-	private ConfigurationPropertyName(Elements elements) {
+	private ConfigurationPropertyName(ConfigurationPropertyName parent, Elements elements) {
+		this.parent = parent;
 		this.elements = elements;
 		this.uniformElements = new CharSequence[elements.getSize()];
 	}
@@ -217,7 +220,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		ConfigurationPropertyName appended = this.appendCache.get(suffix);
 		if (appended == null) {
 			Elements additionalElements = probablySingleElementOf(suffix);
-			appended = new ConfigurationPropertyName(this.elements.append(additionalElements));
+			appended = new ConfigurationPropertyName(this, this.elements.append(additionalElements));
 			this.appendCache.put(suffix, appended);
 		}
 		return appended;
@@ -233,7 +236,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (suffix == null) {
 			return this;
 		}
-		return new ConfigurationPropertyName(this.elements.append(suffix.elements));
+		return new ConfigurationPropertyName(this, this.elements.append(suffix.elements));
 	}
 
 	/**
@@ -242,8 +245,13 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return the parent name
 	 */
 	public ConfigurationPropertyName getParent() {
-		int numberOfElements = getNumberOfElements();
-		return (numberOfElements <= 1) ? EMPTY : chop(numberOfElements - 1);
+		ConfigurationPropertyName parent = this.parent;
+		if (parent == null) {
+			int numberOfElements = getNumberOfElements();
+			parent = (numberOfElements <= 1) ? EMPTY : chop(numberOfElements - 1);
+			this.parent = parent;
+		}
+		return parent;
 	}
 
 	/**
@@ -257,7 +265,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (size >= getNumberOfElements()) {
 			return this;
 		}
-		return new ConfigurationPropertyName(this.elements.chop(size));
+		return new ConfigurationPropertyName(null, this.elements.chop(size));
 	}
 
 	/**
@@ -278,7 +286,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (offset < 0 || offset > getNumberOfElements()) {
 			throw new IndexOutOfBoundsException("Offset: " + offset + ", NumberOfElements: " + getNumberOfElements());
 		}
-		return new ConfigurationPropertyName(this.elements.subElements(offset));
+		return new ConfigurationPropertyName(null, this.elements.subElements(offset));
 	}
 
 	/**
@@ -665,7 +673,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 */
 	static ConfigurationPropertyName of(CharSequence name, boolean returnNullIfInvalid) {
 		Elements elements = elementsOf(name, returnNullIfInvalid);
-		return (elements != null) ? new ConfigurationPropertyName(elements) : null;
+		return (elements != null) ? new ConfigurationPropertyName(null, elements) : null;
 	}
 
 	private static Elements probablySingleElementOf(CharSequence name) {
@@ -747,7 +755,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (elements.getSize() == 0) {
 			return EMPTY;
 		}
-		return new ConfigurationPropertyName(elements);
+		return new ConfigurationPropertyName(null, elements);
 	}
 
 	/**

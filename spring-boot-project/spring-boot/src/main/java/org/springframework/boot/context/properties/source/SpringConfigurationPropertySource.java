@@ -21,6 +21,7 @@ import java.util.Random;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
@@ -134,6 +135,17 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public String toString() {
 		return this.propertySource.toString();
+	}
+
+	boolean isImmutablePropertySource() {
+		PropertySource<?> source = getPropertySource();
+		if (source instanceof OriginLookup<?> originLookup) {
+			return originLookup.isImmutable();
+		}
+		if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
+			return source.getSource() == System.getenv();
+		}
+		return false;
 	}
 
 	/**
