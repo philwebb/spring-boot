@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -72,6 +73,8 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	private Boolean hasDashedElement;
 
 	private ConfigurationPropertyName systemEnvironmentLegacyName;
+
+	private Map<String, ConfigurationPropertyName> appendCache;
 
 	private ConfigurationPropertyName(Elements elements) {
 		this.elements = elements;
@@ -211,8 +214,18 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (!StringUtils.hasLength(suffix)) {
 			return this;
 		}
-		Elements additionalElements = probablySingleElementOf(suffix);
-		return new ConfigurationPropertyName(this.elements.append(additionalElements));
+		Map<String, ConfigurationPropertyName> appendCache = this.appendCache;
+		if (appendCache == null) {
+			appendCache = new ConcurrentReferenceHashMap<>();
+			this.appendCache = appendCache;
+		}
+		ConfigurationPropertyName appended = appendCache.get(suffix);
+		if (appended == null) {
+			Elements additionalElements = probablySingleElementOf(suffix);
+			appended = new ConfigurationPropertyName(this.elements.append(additionalElements));
+			appendCache.put(suffix, appended);
+		}
+		return appended;
 	}
 
 	/**
