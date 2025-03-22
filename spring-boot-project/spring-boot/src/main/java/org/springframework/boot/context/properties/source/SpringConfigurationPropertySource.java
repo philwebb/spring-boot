@@ -106,11 +106,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		// since we've already done the mapping
 		PropertySource<?> propertySource = getPropertySource();
 		return (!this.systemEnvironmentSource) ? propertySource.getProperty(name)
-				: getSystemEnvironmentPropertySourceProperty(
-						((SystemEnvironmentPropertySource) propertySource).getSource(), name);
+				: getSystemEnvironmentProperty(((SystemEnvironmentPropertySource) propertySource).getSource(), name);
 	}
 
-	Object getSystemEnvironmentPropertySourceProperty(Map<String, Object> systemEnvironment, String name) {
+	Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
 		return systemEnvironment.get(name);
 	}
 

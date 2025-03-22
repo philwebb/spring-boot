@@ -120,6 +120,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
+			// FIXME flatten?
 			List<NodeTuple> newValue = new ArrayList<>();
 			node.getValue().stream().map(KeyScalarNode::get).forEach(newValue::add);
 			node.setValue(newValue);

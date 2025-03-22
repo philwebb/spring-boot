@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -53,7 +54,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private final BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck;
 
-	private final SoftReferenceConfigurationPropertyCache<Mappings> cache;
+	private final SoftReferenceConfigurationPropertyCache<Cache> cache;
 
 	private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
@@ -104,7 +105,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		if (configurationProperty != null) {
 			return configurationProperty;
 		}
-		for (String candidate : getMappings().getMapped(name)) {
+		for (String candidate : getCache().getMapped(name)) {
 			Object value = getPropertySourceProperty(candidate);
 			if (value != null) {
 				Origin origin = PropertySourceOrigin.get(getPropertySource(), candidate);
@@ -115,8 +116,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	@Override
-	protected Object getSystemEnvironmentPropertySourceProperty(Map<String, Object> systemEnvironment, String name) {
-		return super.getSystemEnvironmentPropertySourceProperty(systemEnvironment, name);
+	protected Object getSystemEnvironmentProperty(Map<String, Object> systemEnvironment, String name) {
+		return getCache().getSystemEnvironmentProperty(name);
 	}
 
 	@Override
@@ -137,7 +138,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return result;
 		}
 		if (this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK) {
-			return getMappings().defaultAncestorCheckContainsDescendantOf(name);
+			return getCache().defaultAncestorCheckContainsDescendantOf(name);
 		}
 		// FIXME will this consume too much memory?
 		result = (this.containsDescendantOfCache != null) ? this.containsDescendantOfCache.get(name) : null;
@@ -161,7 +162,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private ConfigurationPropertyName[] getConfigurationPropertyNames() {
-		Mappings mappings = getMappings();
+		Cache mappings = getCache();
 		if (!isImmutablePropertySource()) {
 			return mappings.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 		}
@@ -173,16 +174,17 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return configurationPropertyNames;
 	}
 
-	private Mappings getMappings() {
-		return this.cache.get(this::createMappings, this::updateMappings);
+	private Cache getCache() {
+		return this.cache.get(this::createCache, this::updateCache);
 	}
 
-	private Mappings createMappings() {
-		return new Mappings(getMappers(), isImmutablePropertySource(),
-				this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK);
+	private Cache createCache() {
+		boolean immutable = isImmutablePropertySource();
+		boolean captureDescendants = this.ancestorOfCheck == PropertyMapper.DEFAULT_ANCESTOR_OF_CHECK;
+		return new Cache(getMappers(), immutable, captureDescendants, isSystemEnvironmentSource());
 	}
 
-	private Mappings updateMappings(Mappings mappings, boolean immediateExpire) {
+	private Cache updateCache(Cache mappings, boolean immediateExpire) {
 		mappings.updateMappings(getPropertySource());
 		return mappings;
 	}
@@ -192,7 +194,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return (EnumerablePropertySource<?>) super.getPropertySource();
 	}
 
-	private static class Mappings {
+	private static class Cache {
 
 		private static final ConfigurationPropertyName[] EMPTY_NAMES_ARRAY = {};
 
@@ -202,6 +204,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final boolean captureDescendants;
 
+		private final boolean systemEnvironmentSource;
+
 		private volatile Map<ConfigurationPropertyName, Set<String>> mappings;
 
 		private volatile Map<String, ConfigurationPropertyName> reverseMappings;
@@ -210,14 +214,16 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private volatile ConfigurationPropertyName[] configurationPropertyNames;
 
-		private volatile Map<String, Object> copy;
+		private volatile Map<String, Object> systemEnvironmentCopy;
 
 		private volatile String[] lastUpdated;
 
-		Mappings(PropertyMapper[] mappers, boolean immutable, boolean captureDescendants) {
+		Cache(PropertyMapper[] mappers, boolean immutable, boolean captureDescendants,
+				boolean systemEnvironmentSource) {
 			this.mappers = mappers;
 			this.immutable = immutable;
 			this.captureDescendants = captureDescendants;
+			this.systemEnvironmentSource = systemEnvironmentSource;
 		}
 
 		void updateMappings(EnumerablePropertySource<?> propertySource) {
@@ -225,7 +231,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				int count = 0;
 				while (true) {
 					try {
-						updateMappings(propertySource.getPropertyNames());
+						tryUpdateMappings(propertySource);
 						return;
 					}
 					catch (ConcurrentModificationException ex) {
@@ -237,7 +243,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 		}
 
-		private void updateMappings(String[] propertyNames) {
+		private void tryUpdateMappings(EnumerablePropertySource<?> propertySource) {
+			String[] propertyNames = propertySource.getPropertyNames();
 			String[] lastUpdated = this.lastUpdated;
 			if (lastUpdated != null && Arrays.equals(lastUpdated, propertyNames)) {
 				return;
@@ -246,6 +253,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			Map<ConfigurationPropertyName, Set<String>> mappings = cloneOrCreate(this.mappings, size);
 			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(this.reverseMappings, size);
 			Set<ConfigurationPropertyName> descendants = (!this.captureDescendants) ? null : new HashSet<>();
+			Map<String, Object> systemEnvironmentCopy = (!this.systemEnvironmentSource) ? null
+					: copySource(propertySource);
 			for (PropertyMapper propertyMapper : this.mappers) {
 				for (String propertyName : propertyNames) {
 					if (!reverseMappings.containsKey(propertyName)) {
@@ -265,7 +274,13 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				this.lastUpdated = this.immutable ? null : propertyNames;
 				this.configurationPropertyNames = this.immutable
 						? reverseMappings.values().toArray(new ConfigurationPropertyName[0]) : null;
+				this.systemEnvironmentCopy = systemEnvironmentCopy;
 			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private HashMap<String, Object> copySource(EnumerablePropertySource<?> propertySource) {
+			return new HashMap<>((Map<String, Object>) propertySource.getSource());
 		}
 
 		private <K, V> Map<K, V> cloneOrCreate(Map<K, V> source, int size) {
@@ -315,6 +330,10 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 			return !this.descendants.contains(name) ? ConfigurationPropertyState.ABSENT
 					: ConfigurationPropertyState.PRESENT;
+		}
+
+		Object getSystemEnvironmentProperty(String name) {
+			return this.systemEnvironmentCopy.get(name);
 		}
 
 	}
