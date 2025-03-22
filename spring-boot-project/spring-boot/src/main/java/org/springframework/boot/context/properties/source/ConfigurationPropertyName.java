@@ -74,7 +74,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	private ConfigurationPropertyName systemEnvironmentLegacyName;
 
-	private Map<String, ConfigurationPropertyName> appendCache = new ConcurrentReferenceHashMap<>();
+	private Map<String, ConfigurationPropertyName> appendCache;
 
 	private ConfigurationPropertyName(Elements elements) {
 		this.elements = elements;
@@ -214,11 +214,16 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (!StringUtils.hasLength(suffix)) {
 			return this;
 		}
-		ConfigurationPropertyName appended = this.appendCache.get(suffix);
+		Map<String, ConfigurationPropertyName> appendCache = this.appendCache;
+		if (appendCache == null) {
+			appendCache = new ConcurrentReferenceHashMap<>();
+			this.appendCache = appendCache;
+		}
+		ConfigurationPropertyName appended = appendCache.get(suffix);
 		if (appended == null) {
 			Elements additionalElements = probablySingleElementOf(suffix);
 			appended = new ConfigurationPropertyName(this.elements.append(additionalElements));
-			this.appendCache.put(suffix, appended);
+			appendCache.put(suffix, appended);
 		}
 		return appended;
 	}
@@ -262,7 +267,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	/**
 	 * Return a new {@link ConfigurationPropertyName} by based on this name offset by
-	 * specific element index. For example, {@code chop(1)} on the name {@code foo.bar}
+	 * specific element index. For example, {@code subName(1)} on the name {@code foo.bar}
 	 * will return {@code bar}.
 	 * @param offset the element offset
 	 * @return the sub name
