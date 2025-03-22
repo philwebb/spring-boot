@@ -577,8 +577,8 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		return switch (format) {
 			case DEFAULT -> buildDefaultToString();
 			case SYSTEM_ENVIRONMENT ->
-				buildSimpleToString('-', (i) -> getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
-			case LEGACY_SYSTEM_ENVIRONMENT -> buildSimpleToString('-',
+				buildSimpleToString('_', (i) -> getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
+			case LEGACY_SYSTEM_ENVIRONMENT -> buildSimpleToString('_',
 					(i) -> getElement(i, Form.ORIGINAL).replace('-', '_').toUpperCase(Locale.ENGLISH));
 		};
 	}

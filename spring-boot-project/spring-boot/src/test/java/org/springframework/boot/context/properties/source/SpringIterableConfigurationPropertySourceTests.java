@@ -239,6 +239,30 @@ class SpringIterableConfigurationPropertySourceTests {
 				"test.map.bravo", "test.map.charlie", "test.map.delta");
 	}
 
+	@Test
+	void temp() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("test.map.alpha.one", "value1");
+		map.put("test.map.alpha.two", "value2");
+		map.put("test.map.bravo.one", "value3");
+		map.put("test.map.bravo.two", "value4");
+		EnumerablePropertySource<?> source = new OriginTrackedMapPropertySource("test", map, true);
+		SpringIterableConfigurationPropertySource propertySource = new SpringIterableConfigurationPropertySource(source,
+				DefaultPropertyMapper.INSTANCE);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("test.map.alpha.one")))
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("test.map.alpha")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("test.map.bravo")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("test.map")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("test")))
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
+		assertThat(propertySource.containsDescendantOf(ConfigurationPropertyName.of("test.map.missing")))
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 *
