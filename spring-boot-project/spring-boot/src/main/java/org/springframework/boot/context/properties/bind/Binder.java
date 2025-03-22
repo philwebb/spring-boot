@@ -490,6 +490,8 @@ public class Binder {
 	}
 
 	private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
+		// FIXME replace with for loop
+
 		return this.dataObjectBinders.get(bindMethod)
 			.stream()
 			.map(operation)

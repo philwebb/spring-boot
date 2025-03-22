@@ -108,7 +108,7 @@ class SoftReferenceConfigurationPropertyCacheTests {
 		return new Value(this.createCount.getAndIncrement(), -1);
 	}
 
-	private Value updateValue(Value value) {
+	private Value updateValue(Value value, boolean immediateExpire) {
 		return new Value(value.createCount, value.refreshCount + 1);
 	}
 
@@ -128,17 +128,17 @@ class SoftReferenceConfigurationPropertyCacheTests {
 			super(neverExpire);
 		}
 
-		@CacheOverride
+		@Override
 		protected Value getValue() {
 			return this.value;
 		}
 
-		@CacheOverride
+		@Override
 		protected void setValue(Value value) {
 			this.value = value;
 		}
 
-		@CacheOverride
+		@Override
 		protected Instant now() {
 			return SoftReferenceConfigurationPropertyCacheTests.this.clock.instant();
 		}

@@ -172,7 +172,6 @@ class ConfigurationPropertySourcesTests {
 				for (ConfigurationPropertySource source : sources) {
 					assertThat(source.containsDescendantOf(missing)).isEqualTo(ConfigurationPropertyState.ABSENT);
 				}
-				System.out.println(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
 			}
 			return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 		};
