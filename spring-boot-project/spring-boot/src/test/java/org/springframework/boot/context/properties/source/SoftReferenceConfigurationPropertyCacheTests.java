@@ -128,17 +128,17 @@ class SoftReferenceConfigurationPropertyCacheTests {
 			super(neverExpire);
 		}
 
-		@Override
+		@CacheOverride
 		protected Value getValue() {
 			return this.value;
 		}
 
-		@Override
+		@CacheOverride
 		protected void setValue(Value value) {
 			this.value = value;
 		}
 
-		@Override
+		@CacheOverride
 		protected Instant now() {
 			return SoftReferenceConfigurationPropertyCacheTests.this.clock.instant();
 		}

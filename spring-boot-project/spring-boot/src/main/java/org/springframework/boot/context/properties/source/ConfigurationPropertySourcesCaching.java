@@ -17,6 +17,8 @@
 package org.springframework.boot.context.properties.source;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -53,6 +55,13 @@ class ConfigurationPropertySourcesCaching implements ConfigurationPropertyCachin
 		forEach(ConfigurationPropertyCaching::clear);
 	}
 
+	@Override
+	public CacheOverride override() {
+		CacheOverrides override = new CacheOverrides();
+		forEach(override::add);
+		return override;
+	}
+
 	private void forEach(Consumer<ConfigurationPropertyCaching> action) {
 		if (this.sources != null) {
 			for (ConfigurationPropertySource source : this.sources) {
@@ -62,6 +71,24 @@ class ConfigurationPropertySourcesCaching implements ConfigurationPropertyCachin
 				}
 			}
 		}
+	}
+
+	/**
+	 * Composite {@link CacheOverride}.
+	 */
+	private class CacheOverrides implements CacheOverride {
+
+		private List<CacheOverride> overrides = new ArrayList<>();
+
+		void add(ConfigurationPropertyCaching caching) {
+			this.overrides.add(caching.override());
+		}
+
+		@Override
+		public void close() {
+			this.overrides.forEach(CacheOverride::close);
+		}
+
 	}
 
 }

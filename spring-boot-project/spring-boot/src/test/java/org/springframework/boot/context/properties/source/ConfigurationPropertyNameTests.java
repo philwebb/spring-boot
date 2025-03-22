@@ -762,4 +762,14 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.of("foo.bar").hasIndexedElement()).isFalse();
 	}
 
+	@Test
+	void temp() {
+		ConfigurationPropertyName name = ConfigurationPropertyName
+			.of("tests-config-root.test-config.config-file-id-25.mainconfigpart.stages[0].actions[0].actionparameters.connection.poolproperties.connectiontimeout");
+		while (!name.getParent().isEmpty()) {
+			name = name.getParent();
+			System.out.println(name);
+		}
+	}
+
 }
