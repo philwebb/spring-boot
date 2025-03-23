@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.lang.ref.SoftReference;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -65,6 +66,13 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 		this.lastAccessed = null;
 	}
 
+	@Override
+	public ActiveCacheOverride override() {
+		ActiveCacheOverride override = new ActiveCacheOverride(this.timeToLive);
+		this.timeToLive = UNLIMITED;
+		return override;
+	}
+
 	/**
 	 * Get a value from the cache, creating it if necessary.
 	 * @param factory a factory used to create the item if there is no reference to it.
@@ -109,6 +117,28 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 
 	protected void setValue(T value) {
 		this.value = new SoftReference<>(value);
+	}
+
+	/**
+	 * An active {@link CacheOverride} with a stored time-to-live.
+	 */
+	private class ActiveCacheOverride implements CacheOverride {
+
+		private final Duration timeToLive;
+
+		private final AtomicBoolean active = new AtomicBoolean();
+
+		ActiveCacheOverride(Duration timeToLive) {
+			this.timeToLive = timeToLive;
+		}
+
+		@Override
+		public void close() {
+			if (this.active.compareAndSet(false, true)) {
+				SoftReferenceConfigurationPropertyCache.this.timeToLive = this.timeToLive;
+			}
+		}
+
 	}
 
 }
