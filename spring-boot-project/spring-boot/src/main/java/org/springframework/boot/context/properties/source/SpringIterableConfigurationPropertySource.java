@@ -220,15 +220,17 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private void tryUpdate(String[] propertyNames) {
 			Data data = this.data;
-			String[] lastUpdated = data.lastUpdated();
+			String[] lastUpdated = (data != null) ? data.lastUpdated() : null;
 			if (lastUpdated != null && Arrays.equals(lastUpdated, propertyNames)) {
 				return;
 			}
 			int size = propertyNames.length;
-			Map<ConfigurationPropertyName, Set<String>> mappings = cloneOrCreate(data.mappings(), size);
-			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(data.reverseMappings(), size);
+			Map<ConfigurationPropertyName, Set<String>> mappings = cloneOrCreate(
+					(data != null) ? data.mappings() : null, size);
+			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(
+					(data != null) ? data.reverseMappings() : null, size);
 			Map<ConfigurationPropertyName, Set<ConfigurationPropertyName>> descendants = cloneOrCreate(
-					data.descendants(), size);
+					(data != null) ? data.descendants() : null, size);
 			for (PropertyMapper propertyMapper : this.mappers) {
 				for (String propertyName : propertyNames) {
 					if (!reverseMappings.containsKey(propertyName)) {
