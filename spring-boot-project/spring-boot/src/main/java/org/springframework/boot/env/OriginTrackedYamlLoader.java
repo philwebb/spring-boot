@@ -120,8 +120,11 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
-			List<NodeTuple> newValue = new ArrayList<>();
-			node.getValue().stream().map(KeyScalarNode::get).forEach(newValue::add);
+			List<NodeTuple> value = node.getValue();
+			List<NodeTuple> newValue = new ArrayList<>(value.size());
+			for (NodeTuple tuple : value) {
+				newValue.add(KeyScalarNode.get(tuple));
+			}
 			node.setValue(newValue);
 		}
 
