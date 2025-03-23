@@ -20,8 +20,8 @@ import java.lang.ref.SoftReference;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 /**
  * Simple cache that uses a {@link SoftReference} to cache a value for as long as
@@ -79,15 +79,14 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 	 * @param refreshAction action called to refresh the value if it has expired
 	 * @return the value from the cache
 	 */
-	T get(Supplier<T> factory, BiFunction<T, Boolean, T> refreshAction) {
-		boolean immediateExpire = this.timeToLive == null;
+	T get(Supplier<T> factory, UnaryOperator<T> refreshAction) {
 		T value = getValue();
 		if (value == null) {
-			value = refreshAction.apply(factory.get(), immediateExpire);
+			value = refreshAction.apply(factory.get());
 			setValue(value);
 		}
 		else if (hasExpired()) {
-			value = refreshAction.apply(value, immediateExpire);
+			value = refreshAction.apply(value);
 			setValue(value);
 		}
 		if (!this.neverExpire) {

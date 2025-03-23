@@ -192,8 +192,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return new Cache(getMappers(), immutable, captureDescendants, isSystemEnvironmentSource());
 	}
 
-	private Cache updateCache(Cache cache, boolean immediateExpire) {
-		cache.update(getPropertySource(), immediateExpire);
+	private Cache updateCache(Cache cache) {
+		cache.update(getPropertySource());
 		return cache;
 	}
 
@@ -235,12 +235,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			this.systemEnvironmentSource = systemEnvironmentSource;
 		}
 
-		void update(EnumerablePropertySource<?> propertySource, boolean immediateExpire) {
+		void update(EnumerablePropertySource<?> propertySource) {
 			if (this.data == null || !this.immutable) {
 				int count = 0;
 				while (true) {
 					try {
-						tryUpdate(propertySource, immediateExpire);
+						tryUpdate(propertySource);
 						return;
 					}
 					catch (ConcurrentModificationException ex) {
@@ -252,7 +252,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			}
 		}
 
-		private void tryUpdate(EnumerablePropertySource<?> propertySource, boolean immediateExpire) {
+		private void tryUpdate(EnumerablePropertySource<?> propertySource) {
 			Data data = this.data;
 			String[] lastUpdated = (data != null) ? data.lastUpdated() : null;
 			String[] propertyNames = propertySource.getPropertyNames();
@@ -264,8 +264,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 					(data != null) ? data.mappings() : null, size);
 			Map<String, ConfigurationPropertyName> reverseMappings = cloneOrCreate(
 					(data != null) ? data.reverseMappings() : null, size);
-			Set<ConfigurationPropertyName> descendants = (!this.captureDescendants || immediateExpire) ? null
-					: new HashSet<>();
+			Set<ConfigurationPropertyName> descendants = (!this.captureDescendants) ? null : new HashSet<>();
 			Map<String, Object> systemEnvironmentCopy = (!this.systemEnvironmentSource) ? null
 					: copySource(propertySource);
 			for (PropertyMapper propertyMapper : this.mappers) {
