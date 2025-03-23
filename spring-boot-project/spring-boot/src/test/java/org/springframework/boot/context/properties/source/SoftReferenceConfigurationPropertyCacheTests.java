@@ -108,7 +108,7 @@ class SoftReferenceConfigurationPropertyCacheTests {
 		return new Value(this.createCount.getAndIncrement(), -1);
 	}
 
-	private Value updateValue(Value value) {
+	private Value updateValue(Value value, boolean immediateExpire) {
 		return new Value(value.createCount, value.refreshCount + 1);
 	}
 
