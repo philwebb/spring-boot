@@ -21,9 +21,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
-import org.springframework.web.service.invoker.annotation.HttpServiceClient;
 
-@HttpServiceClient
 @HttpExchange(url = "https://echo.zuplo.io")
 public interface EchoServiceClient {
 

@@ -17,23 +17,18 @@
 package org.springframework.boot.autoconfigure.web.service.invoker;
 
 import java.util.List;
-import java.util.stream.Stream;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.selector.Selectable;
-import org.springframework.boot.selector.SelectableSet.Entry;
 import org.springframework.boot.selector.Selector;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.service.invoker.HttpExchangeAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import org.springframework.web.service.invoker.HttpServiceProxyFactoryProvider;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for HTTP service proxies.
@@ -43,6 +38,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactoryProvider;
  */
 @AutoConfiguration
 @ConditionalOnClass(HttpServiceProxyFactory.class)
+@Import(HttpServiceComponentRegistrar.class)
 public class HttpServiceProxyAutoConfiguration {
 
 	@Bean
@@ -54,36 +50,6 @@ public class HttpServiceProxyAutoConfiguration {
 		Selector.streamSelected(httpServiceProxyFactoryCustomizers, Selectable.blank())
 			.forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(HttpExchangeAdapters.class)
-	HttpServiceProxyFactoryBuilders httpServiceProxyFactoryBuilders(
-			ObjectProvider<HttpExchangeAdapters> httpExchangeAdapters,
-			List<HttpServiceProxyFactoryCustomizer> httpServiceProxyFactoryCustomizers) {
-		return new AutoConfiguredHttpServiceProxyFactoryBuilders(streamHttpExchangeAdapters(httpExchangeAdapters),
-				httpServiceProxyFactoryCustomizers);
-	}
-
-	private Stream<Entry<HttpExchangeAdapter>> streamHttpExchangeAdapters(
-			ObjectProvider<HttpExchangeAdapters> adapters) {
-		return adapters.orderedStream().flatMap(HttpExchangeAdapters::streamHttpExchangeAdapters);
-	}
-
-	@Bean
-	@ConditionalOnSingleCandidate(HttpServiceProxyFactoryBuilders.class)
-	HttpServiceProxyFactoryProvider httpServiceProxyFactoryBuildersServiceProxyFactoryProvider(
-			HttpServiceProxyFactoryBuilders httpServiceProxyFactoryBuilders) {
-		return (name) -> httpServiceProxyFactoryBuilders.get(name).build();
-	}
-
-	@Bean
-	@Primary
-	AutoConfiguredHttpServiceProxyFactoryProvider httpServiceProxyFactoryProvider(
-			List<HttpServiceProxyFactoryProvider> providers) {
-		// FIXME we probably need a ConditionalOnMissingSingleCandidate
-		return new AutoConfiguredHttpServiceProxyFactoryProvider(providers);
 	}
 
 }

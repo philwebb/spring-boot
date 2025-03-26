@@ -46,14 +46,18 @@ public class SampleInterfaceClient6Application {
 		};
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleInterfaceClient6Application.class, args);
-	}
-
 	@Bean
 	HttpServiceProxyFactoryCustomizer httpServiceProxyFactoryCustomizer() {
 		return (builder) -> builder.customArgumentResolver(this::resolve);
 	}
+
+	// FIXME or this
+	// @Bean
+	// RestClientHttpServiceGroupConfigurer httpServiceGroupConfigurer() {
+	// return (groups) -> groups
+	// .configureProxyFactory((group, builder) ->
+	// builder.customArgumentResolver(this::resolve));
+	// }
 
 	private boolean resolve(Object argument, MethodParameter parameter, HttpRequestValues.Builder requestValues) {
 		if (argument instanceof EchoArgument echoArgument) {
@@ -61,6 +65,10 @@ public class SampleInterfaceClient6Application {
 			return true;
 		}
 		return false;
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleInterfaceClient6Application.class, args);
 	}
 
 }

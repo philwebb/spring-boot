@@ -20,16 +20,14 @@ import java.util.Map;
 
 import smoktest.interfaceclient.scenario1.functional.SampleInterfaceClient1FunctionalApplication.Registrar;
 
-import org.springframework.beans.factory.BeanRegistrar;
-import org.springframework.beans.factory.BeanRegistry;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
-import org.springframework.web.client.support.RestClientHttpServiceProxyRegistry;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.web.service.registry.AbstractHttpServiceRegistrar;
 
 @Configuration
 @EnableAutoConfiguration
@@ -57,11 +55,11 @@ public class SampleInterfaceClient1FunctionalApplication {
 		SpringApplication.run(SampleInterfaceClient1FunctionalApplication.class, args);
 	}
 
-	static class Registrar implements BeanRegistrar {
+	static class Registrar extends AbstractHttpServiceRegistrar {
 
 		@Override
-		public void register(BeanRegistry registry, Environment env) {
-			new RestClientHttpServiceProxyRegistry(registry).registerBean(EchoServiceClient.class);
+		protected void registerHttpServices(HttpServiceRegistry registry, AnnotationMetadata importingClassMetadata) {
+			registry.forDefaultGroup().register(EchoServiceClient.class);
 		}
 
 	}

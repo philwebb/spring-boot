@@ -23,20 +23,18 @@ import java.util.Map;
 
 import smoktest.interfaceclient.scenario8.functional.SampleInterfaceClient8FunctionalApplication.Registrar;
 
-import org.springframework.beans.factory.BeanRegistrar;
-import org.springframework.beans.factory.BeanRegistry;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.web.client.RestClientBuilders;
+import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.support.RestClientHttpServiceProxyRegistry;
+import org.springframework.web.service.registry.AbstractHttpServiceRegistrar;
 
 @Configuration
 @EnableAutoConfiguration
@@ -62,25 +60,28 @@ public class SampleInterfaceClient8FunctionalApplication {
 		};
 	}
 
+	@Bean
+	RestClientCustomizer restClientCustomizer() {
+		return RestClientCustomizer.of((builder) -> builder.requestInterceptor(this::intercept))
+			.onlyWhenLabeled("mode", "uppercase");
+	}
+
+	ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+			throws IOException {
+		return execution.execute(request,
+				new String(body, StandardCharsets.UTF_8).toUpperCase().getBytes(StandardCharsets.UTF_8));
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(SampleInterfaceClient8FunctionalApplication.class, args);
 	}
 
-	static class Registrar implements BeanRegistrar {
+	static class Registrar extends AbstractHttpServiceRegistrar {
 
 		@Override
-		public void register(BeanRegistry registry, Environment env) {
-			RestClientHttpServiceProxyRegistry proxies = new RestClientHttpServiceProxyRegistry(registry,
-					RestClientBuilders.class, RestClientBuilders::get);
-			proxies.registerBean("zuplo1", EchoService.class);
-			proxies.registerBean("zuplo2", EchoService.class,
-					(spec) -> spec.restClient((restClient) -> restClient.requestInterceptor(this::intercept)));
-		}
-
-		ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
-				throws IOException {
-			return execution.execute(request,
-					new String(body, StandardCharsets.UTF_8).toUpperCase().getBytes(StandardCharsets.UTF_8));
+		protected void registerHttpServices(HttpServiceRegistry registry, AnnotationMetadata importingClassMetadata) {
+			registry.forGroup("zuplo").register(EchoService.class);
+			registry.forGroup("beeceptor").register(EchoService.class);
 		}
 
 	}

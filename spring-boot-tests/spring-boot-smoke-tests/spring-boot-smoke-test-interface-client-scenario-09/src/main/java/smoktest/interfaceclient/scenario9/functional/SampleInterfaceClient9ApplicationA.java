@@ -19,7 +19,6 @@ package smoktest.interfaceclient.scenario9.functional;
 import java.util.Map;
 
 import smoktest.interfaceclient.scenario9.functional.SampleInterfaceClient9ApplicationA.Registrar;
-import smoktest.interfaceclient.scenario9.springcloud.SpringCloudSupport;
 
 import org.springframework.beans.factory.BeanRegistrar;
 import org.springframework.beans.factory.BeanRegistry;
@@ -30,7 +29,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.web.client.support.RestClientHttpServiceProxyRegistry;
 
 @Configuration
 @EnableAutoConfiguration
@@ -62,8 +60,10 @@ public class SampleInterfaceClient9ApplicationA {
 
 		@Override
 		public void register(BeanRegistry registry, Environment env) {
-			new RestClientHttpServiceProxyRegistry(registry).registerBean(EchoService.class,
-					(spec) -> spec.baseUrl("https://echo.zuplo.io").restClient(SpringCloudSupport::apply));
+			// FIXME new
+			// RestClientHttpServiceProxyRegistry(registry).registerBean(EchoService.class,
+			// (spec) ->
+			// spec.baseUrl("https://echo.zuplo.io").restClient(SpringCloudSupport::apply));
 		}
 
 	}

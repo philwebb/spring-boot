@@ -19,10 +19,10 @@ package smoktest.interfaceclient.scenario6.classic;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
-import org.springframework.web.service.invoker.annotation.HttpServiceClient;
 
-@HttpServiceClient(group = "zuplo")
+@HttpExchange("@zuplo")
 public interface EchoService {
 
 	@PostExchange

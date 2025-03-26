@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
+import java.util.List;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -31,6 +33,7 @@ import org.springframework.boot.autoconfigure.http.client.DefaultHttpClientPrope
 import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.service.invoker.HttpServiceProxyAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.service.invoker.HttpServiceProxyFactoryCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -43,9 +46,11 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.client.support.RestClientHttpServiceGroupAdapter;
 import org.springframework.web.service.invoker.HttpExchangeAdapter;
 
 /**
@@ -129,9 +134,18 @@ public class RestClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(RestClients.class)
-	RestClientHttpExchangeAdapters restClientHttpExchangeAdapters(RestClients restClients) {
-		return new RestClientHttpExchangeAdapters(restClients);
+	@ConditionalOnMissingBean(RestClientHttpServiceGroupAdapter.class)
+	AutoConfiguredRestClientHttpServiceGroupAdapter autoConfiguredRestClientHttpServiceGroupAdapter(
+			RestClientBuilders restClientBuilders) {
+		return new AutoConfiguredRestClientHttpServiceGroupAdapter(restClientBuilders);
+	}
+
+	@Bean
+	AutoConfiguredRestClientHttpServiceGroupConfigurer autoConfiguredRestClientHttpServiceGroupConfigurer(
+			Environment environment, RestClientBuilders restClientBuilders,
+			List<HttpServiceProxyFactoryCustomizer> proxyFactoryCustomizers) {
+		return new AutoConfiguredRestClientHttpServiceGroupConfigurer(environment, restClientBuilders,
+				proxyFactoryCustomizers);
 	}
 
 }

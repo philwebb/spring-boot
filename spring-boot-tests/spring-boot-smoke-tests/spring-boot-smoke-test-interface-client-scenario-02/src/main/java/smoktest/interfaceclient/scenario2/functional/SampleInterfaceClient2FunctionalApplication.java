@@ -21,17 +21,16 @@ import java.util.Map;
 import smoktest.interfaceclient.scenario2.functional.SampleInterfaceClient2FunctionalApplication.Registrar;
 import smoktest.interfaceclient.scenario2.generated.EchoService;
 
-import org.springframework.beans.factory.BeanRegistrar;
-import org.springframework.beans.factory.BeanRegistry;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
-import org.springframework.web.client.support.RestClientHttpServiceProxyRegistry;
-import org.springframework.web.service.registry.HttpServiceTypes;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
+import org.springframework.web.service.registry.AbstractHttpServiceRegistrar;
+import org.springframework.web.service.registry.HttpServiceGroup;
 
 @Configuration
 @EnableAutoConfiguration
@@ -55,17 +54,22 @@ public class SampleInterfaceClient2FunctionalApplication {
 		};
 	}
 
+	@Bean
+	RestClientHttpServiceGroupConfigurer httpServiceGroupConfigurer() {
+		// FIXME overload without the group?
+		return (groups) -> groups.configureClient((group, builder) -> builder.baseUrl("https://echo.zuplo.io"));
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(SampleInterfaceClient2FunctionalApplication.class, args);
 	}
 
-	static class Registrar implements BeanRegistrar {
+	static class Registrar extends AbstractHttpServiceRegistrar {
 
 		@Override
-		public void register(BeanRegistry registry, Environment env) {
-			HttpServiceTypes serviceTypes = HttpServiceTypes.ofScan("smoktest.interfaceclient.scenario2.generated");
-			new RestClientHttpServiceProxyRegistry(registry).registerBeans(serviceTypes,
-					(serviceType, spec) -> spec.baseUrl("https://echo.zuplo.io"));
+		protected void registerHttpServices(HttpServiceRegistry registry, AnnotationMetadata importingClassMetadata) {
+			registry.forGroup(HttpServiceGroup.DEFAULT_GROUP_NAME)
+				.detectInBasePackages("smoktest.interfaceclient.scenario2.generated");
 		}
 
 	}

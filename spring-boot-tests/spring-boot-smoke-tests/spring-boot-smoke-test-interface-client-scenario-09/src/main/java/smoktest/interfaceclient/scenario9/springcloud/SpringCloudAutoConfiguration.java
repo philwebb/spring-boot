@@ -28,7 +28,7 @@ public class SpringCloudAutoConfiguration {
 
 	@Bean
 	RestClientCustomizer springCloudRestClientCustomizer() {
-		return SpringCloudSupport::apply;
+		return RestClientCustomizer.of(SpringCloudSupport::apply);
 	}
 
 }

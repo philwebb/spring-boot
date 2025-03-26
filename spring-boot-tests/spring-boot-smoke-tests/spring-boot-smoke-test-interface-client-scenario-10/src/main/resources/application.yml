@@ -8,7 +8,8 @@ spring:
       zuplo2:
         base-url: https://echo.zuplo.io 
 
-
+		
+		
 # Option 1, match by name (implied)
 spring:
   security:

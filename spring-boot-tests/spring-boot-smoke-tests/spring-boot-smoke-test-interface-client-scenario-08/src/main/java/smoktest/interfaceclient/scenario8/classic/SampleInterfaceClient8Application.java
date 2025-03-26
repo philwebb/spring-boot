@@ -29,11 +29,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.service.invoker.annotation.ImportHttpServiceClients;
+import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServiceClients(group = "zuplo1", clients = EchoService.class)
-@ImportHttpServiceClients(group = "zuplo2", clients = EchoService.class)
+@ImportHttpServices(group = "zuplo1", types = EchoService.class)
+@ImportHttpServices(group = "zuplo2", types = EchoService.class)
 public class SampleInterfaceClient8Application {
 
 	// The same interface for the same host, but with different client setup.

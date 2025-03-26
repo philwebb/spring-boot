@@ -25,10 +25,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.service.invoker.annotation.ImportHttpServiceClients;
+import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServiceClients(basePackages = "smoktest.interfaceclient.scenario2.generated")
+@ImportHttpServices(basePackages = "smoktest.interfaceclient.scenario2.generated")
 public class SampleInterfaceClient2Application {
 
 	// Basic example with code generated interfaces (e.g. Open API).

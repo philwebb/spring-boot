@@ -4,4 +4,4 @@ spring:
       zuplo:
         base-url: https://echo.zuplo.io
       beeceptor:
-        base-url: https://echo.free.beeceptor.com 
+        base-url: https://echo.free.beeceptor.com

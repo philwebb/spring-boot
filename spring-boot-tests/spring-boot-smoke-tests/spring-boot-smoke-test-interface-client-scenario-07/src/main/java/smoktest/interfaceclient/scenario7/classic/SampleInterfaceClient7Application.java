@@ -23,11 +23,13 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.service.invoker.annotation.ImportHttpServiceClients;
+import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServiceClients(group = "zuplo", clients = EchoService.class)
-@ImportHttpServiceClients(group = "beeceptor", clients = EchoService.class)
+// FIXME change httpServiceTypes to types?
+// FIXME should the value alias group or httpServiceTypes?
+@ImportHttpServices(group = "zuplo", types = EchoService.class)
+@ImportHttpServices(group = "beeceptor", types = EchoService.class)
 public class SampleInterfaceClient7Application {
 
 	// The same interface for different hosts.
