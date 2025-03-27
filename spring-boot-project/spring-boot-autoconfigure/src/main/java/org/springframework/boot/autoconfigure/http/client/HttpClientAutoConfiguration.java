@@ -16,22 +16,25 @@
 
 package org.springframework.boot.autoconfigure.http.client;
 
+import java.util.List;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.http.client.HttpClientProperties.Factory;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -48,23 +51,36 @@ public class HttpClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties) {
-		Factory factory = httpClientProperties.getFactory();
-		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect();
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(HttpClientProperties httpClientProperties,
+			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
+		ClientHttpRequestFactoryBuilder<?> builder = httpClientProperties.factoryBuilder();
+		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
+	}
+
+	@SuppressWarnings("unchecked")
+	private ClientHttpRequestFactoryBuilder<?> customize(ClientHttpRequestFactoryBuilder<?> builder,
+			List<ClientHttpRequestFactoryBuilderCustomizer<?>> customizers) {
+		ClientHttpRequestFactoryBuilder<?>[] builderReference = { builder };
+		LambdaSafe.callbacks(ClientHttpRequestFactoryBuilderCustomizer.class, customizers, builderReference[0])
+			.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
+		return builderReference[0];
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(HttpClientProperties httpClientProperties,
 			ObjectProvider<SslBundles> sslBundles) {
-		SslBundle sslBundle = getSslBundle(httpClientProperties.getSsl(), sslBundles);
-		return new ClientHttpRequestFactorySettings(httpClientProperties.getRedirects(),
-				httpClientProperties.getConnectTimeout(), httpClientProperties.getReadTimeout(), sslBundle);
+		HttpClientSettings settings = httpClientProperties.httpClientSettings(sslBundles);
+		return new ClientHttpRequestFactorySettings(asRequestFactoryRedirects(settings.redirects()),
+				settings.connectTimeout(), settings.readTimeout(), settings.sslBundle());
 	}
 
-	private SslBundle getSslBundle(HttpClientProperties.Ssl properties, ObjectProvider<SslBundles> sslBundles) {
-		String name = properties.getBundle();
-		return (StringUtils.hasLength(name)) ? sslBundles.getObject().getBundle(name) : null;
+	private Redirects asRequestFactoryRedirects(HttpRedirects redirects) {
+		return switch (redirects) {
+			case FOLLOW_WHEN_POSSIBLE -> Redirects.FOLLOW_WHEN_POSSIBLE;
+			case FOLLOW -> Redirects.FOLLOW;
+			case DONT_FOLLOW -> Redirects.DONT_FOLLOW;
+		};
 	}
 
 }

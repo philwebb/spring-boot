@@ -41,7 +41,8 @@ import static org.mockito.Mockito.mock;
 class WebClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(
+				org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration.class,
 				WebClientAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test

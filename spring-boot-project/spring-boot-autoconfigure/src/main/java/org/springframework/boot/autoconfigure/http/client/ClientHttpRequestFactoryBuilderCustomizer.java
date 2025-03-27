@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,23 @@
 
 package org.springframework.boot.autoconfigure.http.client;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
+ * Customizer that can be used to modify the auto-configured
+ * {@link ClientHttpRequestFactoryBuilder} when its type matches.
  *
  * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
+ * @param <B> the builder type
+ * @since 3.5.0
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+public interface ClientHttpRequestFactoryBuilderCustomizer<B extends ClientHttpRequestFactoryBuilder<?>> {
+
+	/**
+	 * Customize the given builder.
+	 * @param builder the builder to customize
+	 * @return the customized builder
+	 */
+	B customize(B builder);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.client;
+package org.springframework.boot.autoconfigure.http.client.reactive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
+ * {@link ConfigurationProperties @ConfigurationProperties} to configure settings that
+ * apply to Spring's reactive client HTTP connectors.
  *
  * @author Phillip Webb
  * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
+ * @see ClientHttpConnectorSettings
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+@ConfigurationProperties("spring.http.reactiveclient.settings")
+public class HttpReactiveClientSettingsProperties extends AbstractClientHttpConnectorProperties {
 
 }

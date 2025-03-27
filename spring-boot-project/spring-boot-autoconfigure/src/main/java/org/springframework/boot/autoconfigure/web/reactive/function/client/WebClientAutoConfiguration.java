@@ -23,14 +23,19 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -42,6 +47,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * will receive a newly cloned instance of the builder.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.0.0
  */
 @AutoConfiguration(after = { CodecsAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class })
@@ -58,11 +64,19 @@ public class WebClientAutoConfiguration {
 	}
 
 	@Bean
+	@Lazy
+	@Order(0)
+	@ConditionalOnBean(ClientHttpConnector.class)
+	public WebClientCustomizer webClientHttpConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
+		return (builder) -> builder.clientConnector(clientHttpConnector);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(WebClientSsl.class)
 	@ConditionalOnBean(SslBundles.class)
-	AutoConfiguredWebClientSsl webClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory,
-			SslBundles sslBundles) {
-		return new AutoConfiguredWebClientSsl(clientHttpConnectorFactory, sslBundles);
+	AutoConfiguredWebClientSsl webClientSsl(ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder,
+			ClientHttpConnectorSettings clientHttpConnectorSettings, SslBundles sslBundles) {
+		return new AutoConfiguredWebClientSsl(clientHttpConnectorBuilder, clientHttpConnectorSettings, sslBundles);
 	}
 
 	@Configuration(proxyBeanMethods = false)

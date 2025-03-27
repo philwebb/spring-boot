@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
+@Deprecated(since = "3.5.0", forRemoval = true)
 class ReactorNettyHttpClientMapperTests {
 
 	@Test

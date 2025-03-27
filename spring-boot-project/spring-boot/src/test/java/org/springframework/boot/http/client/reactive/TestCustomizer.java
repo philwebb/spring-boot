@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.client;
+package org.springframework.boot.http.client.reactive;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import java.util.function.Consumer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
+ * Test customizer that can assert that it has been called.
  *
+ * @param <T> type being customized
  * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+class TestCustomizer<T> implements Consumer<T> {
+
+	private boolean called;
+
+	@Override
+	public void accept(T t) {
+		this.called = true;
+	}
+
+	void assertCalled() {
+		assertThat(this.called).isTrue();
+	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.http.client;
+package org.springframework.boot.http.client;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import java.util.function.Consumer;
 
 /**
- * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
- * clients.
+ * Helper for empty functional interfaces.
  *
  * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
  */
-@ConfigurationProperties("spring.http.client")
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+final class Empty {
+
+	private static final Consumer<?> EMPTY_CUSTOMIZER = (t) -> {
+	};
+
+	private Empty() {
+	}
+
+	@SuppressWarnings("unchecked")
+	static <T> Consumer<T> consumer() {
+		return (Consumer<T>) EMPTY_CUSTOMIZER;
+	}
 
 }
