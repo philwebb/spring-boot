@@ -38,7 +38,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
  */
 @AutoConfiguration
 @ConditionalOnClass(HttpServiceProxyFactory.class)
-@Import(HttpServiceComponentRegistrar.class)
+@Import({ HttpServiceComponentRegistrar.class, AutoConfigurationPackagesHttpServiceScanRegistrar.class })
 public class HttpServiceProxyAutoConfiguration {
 
 	@Bean

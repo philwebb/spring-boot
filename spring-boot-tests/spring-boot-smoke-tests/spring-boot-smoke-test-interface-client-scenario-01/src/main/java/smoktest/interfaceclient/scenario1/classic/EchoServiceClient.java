@@ -18,11 +18,13 @@ package smoktest.interfaceclient.scenario1.classic;
 
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.web.service.invoker.HttpService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 
-@HttpExchange(url = "https://echo.zuplo.io")
+@HttpService
+@HttpExchange("https://echo.zuplo.io")
 public interface EchoServiceClient {
 
 	@PostExchange
