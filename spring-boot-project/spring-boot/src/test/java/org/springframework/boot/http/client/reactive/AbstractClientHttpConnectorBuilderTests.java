@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client;
+package org.springframework.boot.http.client.reactive;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -34,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
@@ -47,32 +46,32 @@ import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
+import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.ExchangeFunctions;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Base class for {@link ClientHttpRequestFactoryBuilder} tests.
+ * Base class for {@link ClientHttpConnectorBuilder} tests.
  *
- * @param <T> The {@link ClientHttpRequestFactory} type
+ * @param <T> The {@link ClientHttpConnector} type
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
 @DirtiesUrlFactories
-abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttpRequestFactory> {
+abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConnector> {
 
 	private static final Function<HttpMethod, HttpStatus> ALWAYS_FOUND = (method) -> HttpStatus.FOUND;
 
 	private final Class<T> requestFactoryType;
 
-	private final ClientHttpRequestFactoryBuilder<T> builder;
+	private final ClientHttpConnectorBuilder<T> builder;
 
-	AbstractClientHttpRequestFactoryBuilderTests(Class<T> requestFactoryType,
-			ClientHttpRequestFactoryBuilder<T> builder) {
+	AbstractClientHttpConnectorBuilderTests(Class<T> requestFactoryType, ClientHttpConnectorBuilder<T> builder) {
 		this.requestFactoryType = requestFactoryType;
 		this.builder = builder;
 	}
@@ -81,22 +80,6 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	void buildReturnsRequestFactoryOfExpectedType() {
 		T requestFactory = this.builder.build();
 		assertThat(requestFactory).isInstanceOf(this.requestFactoryType);
-	}
-
-	@Test
-	void buildWhenHasConnectTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(60));
-		T requestFactory = this.builder.build(settings);
-		assertThat(connectTimeout(requestFactory)).isEqualTo(Duration.ofSeconds(60).toMillis());
-	}
-
-	@Test
-	void buildWhenHadReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(Duration.ofSeconds(120));
-		T requestFactory = this.builder.build(settings);
-		assertThat(readTimeout(requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
 
 	@ParameterizedTest
@@ -111,15 +94,17 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("https://localhost:%s".formatted(port));
-			ClientHttpRequestFactory insecureRequestFactory = this.builder.build();
-			ClientHttpRequest insecureRequest = request(insecureRequestFactory, uri, httpMethod);
-			assertThatExceptionOfType(SSLHandshakeException.class)
-				.isThrownBy(() -> insecureRequest.execute().getBody());
-			ClientHttpRequestFactory secureRequestFactory = this.builder
-				.build(ClientHttpRequestFactorySettings.ofSslBundle(sslBundle()));
-			ClientHttpRequest secureRequest = request(secureRequestFactory, uri, httpMethod);
-			String secureResponse = StreamUtils.copyToString(secureRequest.execute().getBody(), StandardCharsets.UTF_8);
-			assertThat(secureResponse).contains("Received " + httpMethod + " request to /");
+			ClientHttpConnector insecureConnector = this.builder.build();
+			ClientRequest insecureRequest = createRequest(httpMethod, uri);
+			assertThatExceptionOfType(WebClientRequestException.class)
+				.isThrownBy(() -> getResponse(insecureConnector, insecureRequest))
+				.withCauseInstanceOf(SSLHandshakeException.class);
+			ClientHttpConnector secureConnector = this.builder
+				.build(ClientHttpConnectorSettings.ofSslBundle(sslBundle()));
+			ClientRequest secureRequest = createRequest(httpMethod, uri);
+			ClientResponse secureResponse = getResponse(secureConnector, secureRequest);
+			assertThat(secureResponse.bodyToMono(String.class).block())
+				.contains("Received " + httpMethod + " request to /");
 		}
 		finally {
 			webServer.stop();
@@ -138,10 +123,12 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("https://localhost:%s".formatted(port));
-			ClientHttpRequestFactory requestFactory = this.builder.build(ClientHttpRequestFactorySettings
+			ClientHttpConnector secureConnector = this.builder.build(ClientHttpConnectorSettings
 				.ofSslBundle(sslBundle(SslOptions.of(Set.of("TLS_AES_256_GCM_SHA384"), null))));
-			ClientHttpRequest secureRequest = request(requestFactory, uri, httpMethod);
-			assertThatExceptionOfType(SSLHandshakeException.class).isThrownBy(() -> secureRequest.execute().getBody());
+			ClientRequest secureRequest = createRequest(httpMethod, uri);
+			assertThatExceptionOfType(WebClientRequestException.class)
+				.isThrownBy(() -> getResponse(secureConnector, secureRequest))
+				.withCauseInstanceOf(SSLHandshakeException.class);
 		}
 		finally {
 			webServer.stop();
@@ -157,7 +144,7 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectFollow(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.defaults()
 			.withHttpRedirects(HttpRedirects.FOLLOW);
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), this::getExpectedRedirect);
 	}
@@ -165,13 +152,13 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectDontFollow(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.defaults()
 			.withHttpRedirects(HttpRedirects.DONT_FOLLOW);
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), ALWAYS_FOUND);
 	}
 
-	protected final void testRedirect(ClientHttpRequestFactorySettings settings, HttpMethod httpMethod,
-			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException, IOException {
+	protected final void testRedirect(ClientHttpConnectorSettings settings, HttpMethod httpMethod,
+			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException {
 		HttpStatus expectedStatus = expectedStatusForMethod.apply(httpMethod);
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		WebServer webServer = webServerFactory
@@ -180,12 +167,12 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
-			ClientHttpRequestFactory requestFactory = this.builder.build(settings);
-			ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
-			ClientHttpResponse response = request.execute();
-			assertThat(response.getStatusCode()).isEqualTo(expectedStatus);
+			ClientHttpConnector connector = this.builder.build(settings);
+			ClientRequest request = createRequest(httpMethod, uri);
+			ClientResponse response = getResponse(connector, request);
+			assertThat(response.statusCode()).isEqualTo(expectedStatus);
 			if (expectedStatus == HttpStatus.OK) {
-				assertThat(response.getBody()).asString(StandardCharsets.UTF_8).contains("request to /redirected");
+				assertThat(response.bodyToMono(String.class).block()).contains("request to /redirected");
 			}
 		}
 		finally {
@@ -193,8 +180,16 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		}
 	}
 
-	private ClientHttpRequest request(ClientHttpRequestFactory factory, URI uri, String method) throws IOException {
-		return factory.createRequest(uri, HttpMethod.valueOf(method));
+	private ClientRequest createRequest(String httpMethod, URI uri) {
+		return createRequest(HttpMethod.valueOf(httpMethod), uri);
+	}
+
+	private ClientRequest createRequest(HttpMethod httpMethod, URI uri) {
+		return ClientRequest.create(httpMethod, uri).build();
+	}
+
+	private ClientResponse getResponse(ClientHttpConnector connector, ClientRequest request) {
+		return ExchangeFunctions.create(connector).exchange(request).block();
 	}
 
 	private Ssl ssl(String... ciphers) {
@@ -222,10 +217,6 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	protected HttpStatus getExpectedRedirect(HttpMethod httpMethod) {
 		return HttpStatus.OK;
 	}
-
-	protected abstract long connectTimeout(T requestFactory);
-
-	protected abstract long readTimeout(T requestFactory);
 
 	public static class TestServlet extends HttpServlet {
 

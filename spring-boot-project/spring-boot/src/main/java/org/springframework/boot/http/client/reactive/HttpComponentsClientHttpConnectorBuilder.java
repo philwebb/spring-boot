@@ -16,14 +16,34 @@
 
 package org.springframework.boot.http.client.reactive;
 
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.util.ClassUtils;
 
 /**
- * @author pwebb
+ * Builder for {@link ClientHttpRequestFactoryBuilder#httpComponents()}.
+ *
+ * @author Phillip Webb
  */
 public class HttpComponentsClientHttpConnectorBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<HttpComponentsClientHttpConnector> {
+
+	HttpComponentsClientHttpConnectorBuilder() {
+		this(null);
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	protected HttpComponentsClientHttpConnectorBuilder(List<Consumer<HttpComponentsClientHttpConnector>> customizers) {
+		super(customizers);
+	}
+
+	@Override
+	protected HttpComponentsClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
 
 	static class Classes {
 

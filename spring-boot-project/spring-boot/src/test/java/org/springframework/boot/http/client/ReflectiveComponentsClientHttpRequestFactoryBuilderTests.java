@@ -22,7 +22,6 @@ import java.time.Duration;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
@@ -56,7 +55,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	@Override
 	void redirectFollow(String httpMethod) throws Exception {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.FOLLOW);
+			.withHttpRedirects(HttpRedirects.FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set redirect follow using reflection");
 	}
@@ -64,7 +63,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	@Override
 	void redirectDontFollow(String httpMethod) throws Exception {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(Redirects.DONT_FOLLOW);
+			.withHttpRedirects(HttpRedirects.DONT_FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set redirect follow using reflection");
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.web.client;
 import java.time.Duration;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -79,8 +80,8 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	}
 
 	org.springframework.boot.http.client.ClientHttpRequestFactorySettings adapt() {
-		return new org.springframework.boot.http.client.ClientHttpRequestFactorySettings(null, connectTimeout(),
-				readTimeout(), sslBundle());
+		return new org.springframework.boot.http.client.ClientHttpRequestFactorySettings((HttpRedirects) null,
+				connectTimeout(), readTimeout(), sslBundle());
 	}
 
 	static ClientHttpRequestFactorySettings of(

@@ -46,7 +46,7 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -158,8 +158,8 @@ public class TestRestTemplate {
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder.redirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
-						? Redirects.FOLLOW : Redirects.DONT_FOLLOW);
+				builder = builder.httpRedirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
+						? HttpRedirects.FOLLOW : HttpRedirects.DONT_FOLLOW);
 				builder = builder.requestFactoryBuilder(
 						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
@@ -1067,8 +1067,8 @@ public class TestRestTemplate {
 		@SuppressWarnings("removal")
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
-			this(httpClientOptions, new ClientHttpRequestFactorySettings(null, settings.connectTimeout(),
-					settings.readTimeout(), settings.sslBundle()));
+			this(httpClientOptions, new ClientHttpRequestFactorySettings((HttpRedirects) null,
+					settings.connectTimeout(), settings.readTimeout(), settings.sslBundle()));
 		}
 
 		/**
@@ -1080,7 +1080,7 @@ public class TestRestTemplate {
 				ClientHttpRequestFactorySettings settings) {
 			this.cookieSpec = (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
-			this.enableRedirects = settings.redirects() != Redirects.DONT_FOLLOW;
+			this.enableRedirects = settings.httpRedirects() != HttpRedirects.DONT_FOLLOW;
 			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
 			if (settings.readTimeout() != null || ssl) {
 				setHttpClient(createHttpClient(settings.readTimeout(), ssl));

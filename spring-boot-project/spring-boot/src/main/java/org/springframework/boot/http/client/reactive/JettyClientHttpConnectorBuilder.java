@@ -109,7 +109,10 @@ public class JettyClientHttpConnectorBuilder extends AbstractClientHttpRequestFa
 
 		static final String HTTP_CLIENT = "org.eclipse.jetty.client.HttpClient";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+		static final String REACTIVE_REQUEST = "org.eclipse.jetty.reactive.client.ReactiveRequest";
+
+		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null)
+				&& ClassUtils.isPresent(REACTIVE_REQUEST, null);
 
 	}
 

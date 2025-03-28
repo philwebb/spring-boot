@@ -35,18 +35,10 @@ import org.springframework.util.Assert;
 abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpConnector>
 		implements ClientHttpConnectorBuilder<T> {
 
-	private static final Consumer<?> EMPTY_CUSTOMIZER = (t) -> {
-	};
-
 	private final List<Consumer<T>> customizers;
 
 	protected AbstractClientHttpRequestFactoryBuilder(List<Consumer<T>> customizers) {
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
-	}
-
-	@SuppressWarnings("unchecked")
-	protected static <T> Consumer<T> emptyCustomizer() {
-		return (Consumer<T>) EMPTY_CUSTOMIZER;
 	}
 
 	protected final List<Consumer<T>> getCustomizers() {
@@ -73,8 +65,7 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpConne
 	@Override
 	@SuppressWarnings("unchecked")
 	public final T build(ClientHttpConnectorSettings settings) {
-		T factory = createClientHttpConnector(
-				(settings != null) ? settings : ClientHttpConnectorSettings.defaults());
+		T factory = createClientHttpConnector((settings != null) ? settings : ClientHttpConnectorSettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, factory).invoke((consumer) -> consumer.accept(factory));
 		return factory;
 	}
