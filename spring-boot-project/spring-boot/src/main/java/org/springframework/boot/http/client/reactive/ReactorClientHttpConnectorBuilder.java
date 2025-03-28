@@ -74,10 +74,6 @@ public class ReactorClientHttpConnectorBuilder
 
 	@Override
 	protected ReactorClientHttpConnector createClientHttpRequestFactory(ClientHttpConnectorSettings settings) {
-		return createConnector(settings);
-	}
-
-	private ReactorClientHttpConnector createConnector(ClientHttpConnectorSettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
 		return new ReactorClientHttpConnector(httpClient);
 	}

@@ -45,7 +45,7 @@ public class JdkClientHttpRequestFactoryBuilder
 	private final Consumer<HttpClient.Builder> httpClientCustomizer;
 
 	JdkClientHttpRequestFactoryBuilder() {
-		this(null, emptyCustomizer());
+		this(null, Empty.consumer());
 	}
 
 	private JdkClientHttpRequestFactoryBuilder(List<Consumer<JdkClientHttpRequestFactory>> customizers,
