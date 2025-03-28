@@ -234,28 +234,12 @@ public final class EndpointRequest {
 		@SuppressWarnings("removal")
 		protected RequestMatcherProvider getRequestMatcherProvider(WebApplicationContext context) {
 			try {
-				return getRequestMatcherProviderBean(context);
+				return context.getBean(RequestMatcherProvider.class);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return (pattern, method) -> new org.springframework.security.web.util.matcher.AntPathRequestMatcher(
 						pattern, (method != null) ? method.name() : null);
 			}
-		}
-
-		private RequestMatcherProvider getRequestMatcherProviderBean(WebApplicationContext context) {
-			try {
-				return context.getBean(RequestMatcherProvider.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				return getAndAdaptDeprecatedRequestMatcherProviderBean(context);
-			}
-		}
-
-		@SuppressWarnings("removal")
-		private RequestMatcherProvider getAndAdaptDeprecatedRequestMatcherProviderBean(WebApplicationContext context) {
-			org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider bean = context
-				.getBean(org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider.class);
-			return (pattern, method) -> bean.getRequestMatcher(pattern);
 		}
 
 		protected String toString(List<Object> endpoints, String emptyValue) {
