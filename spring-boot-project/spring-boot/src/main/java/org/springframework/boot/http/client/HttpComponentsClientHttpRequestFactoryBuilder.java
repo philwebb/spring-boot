@@ -69,7 +69,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	private final Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory;
 
 	HttpComponentsClientHttpRequestFactoryBuilder() {
-		this(Collections.emptyList(), emptyCustomizer(), emptyCustomizer(), emptyCustomizer(), emptyCustomizer(),
+		this(Collections.emptyList(), Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
 				HttpComponentsClientHttpRequestFactoryBuilder::createTlsSocketStrategy);
 	}
 

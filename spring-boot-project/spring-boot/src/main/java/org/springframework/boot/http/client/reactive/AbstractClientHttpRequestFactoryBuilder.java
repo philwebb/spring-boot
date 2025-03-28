@@ -73,12 +73,12 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpConne
 	@Override
 	@SuppressWarnings("unchecked")
 	public final T build(ClientHttpConnectorSettings settings) {
-		T factory = createClientHttpRequestFactory(
+		T factory = createClientHttpConnector(
 				(settings != null) ? settings : ClientHttpConnectorSettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, factory).invoke((consumer) -> consumer.accept(factory));
 		return factory;
 	}
 
-	protected abstract T createClientHttpRequestFactory(ClientHttpConnectorSettings settings);
+	protected abstract T createClientHttpConnector(ClientHttpConnectorSettings settings);
 
 }

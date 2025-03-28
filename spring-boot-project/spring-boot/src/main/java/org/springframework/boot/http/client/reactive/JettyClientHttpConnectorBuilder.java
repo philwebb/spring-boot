@@ -100,7 +100,7 @@ public class JettyClientHttpConnectorBuilder extends AbstractClientHttpRequestFa
 	}
 
 	@Override
-	protected JettyClientHttpConnector createClientHttpRequestFactory(ClientHttpConnectorSettings settings) {
+	protected JettyClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
 		return new JettyClientHttpConnector(httpClient);
 	}

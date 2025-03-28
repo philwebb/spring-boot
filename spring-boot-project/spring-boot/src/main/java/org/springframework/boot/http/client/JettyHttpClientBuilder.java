@@ -50,10 +50,10 @@ public class JettyHttpClientBuilder {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer());
 	}
 
-	private JettyHttpClientBuilder(Consumer<HttpClient> httpClientCustomizer,
+	private JettyHttpClientBuilder(Consumer<HttpClient> customizer,
 			Consumer<HttpClientTransport> httpClientTransportCustomizer,
 			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
-		this.customizer = httpClientCustomizer;
+		this.customizer = customizer;
 		this.httpClientTransportCustomizer = httpClientTransportCustomizer;
 		this.clientConnectorCustomizerCustomizer = clientConnectorCustomizerCustomizer;
 	}
@@ -97,6 +97,12 @@ public class JettyHttpClientBuilder {
 				this.clientConnectorCustomizerCustomizer.andThen(clientConnectorCustomizerCustomizer));
 	}
 
+	/**
+	 * Build a new {@link HttpClient} instance with the given settings applied.
+	 * @param httpRedirects the HTTP follow redirects strategy
+	 * @param sslBundle the SSL bundle to use
+	 * @return a new {@link HttpClient} instance
+	 */
 	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
 		HttpClientTransport transport = createTransport(sslBundle);
 		this.httpClientTransportCustomizer.accept(transport);
