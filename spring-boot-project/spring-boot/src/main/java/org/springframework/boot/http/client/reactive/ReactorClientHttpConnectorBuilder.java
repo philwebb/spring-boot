@@ -21,18 +21,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
-import javax.net.ssl.SSLException;
-
-import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.SslProvider.SslContextSpec;
 
 import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings.Redirects;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslManagerBundle;
-import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -86,31 +78,8 @@ public class ReactorClientHttpConnectorBuilder
 	}
 
 	private ReactorClientHttpConnector createConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings);
+		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
 		return new ReactorClientHttpConnector(httpClient);
-	}
-
-	private boolean followRedirects(Redirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
-			case DONT_FOLLOW -> false;
-		};
-	}
-
-	HttpClient applyDefaults(HttpClient httpClient) {
-		// Aligns with ReactorClientHttpConnector defaults
-		return httpClient.compress(true);
-	}
-
-	private void configureSsl(SslContextSpec spec, SslBundle sslBundle) throws SSLException {
-		SslOptions options = sslBundle.getOptions();
-		SslManagerBundle managers = sslBundle.getManagers();
-		SslContextBuilder builder = SslContextBuilder.forClient()
-			.keyManager(managers.getKeyManagerFactory())
-			.trustManager(managers.getTrustManagerFactory())
-			.ciphers(SslOptions.asSet(options.getCiphers()))
-			.protocols(options.getEnabledProtocols());
-		spec.sslContext(builder.build());
 	}
 
 	static class Classes {

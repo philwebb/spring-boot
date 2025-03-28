@@ -61,11 +61,11 @@ public class ReactorHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param sslBundle the SSL bundle to use
 	 * @param httpRedirects the HTTP follow redirects strategy
+	 * @param sslBundle the SSL bundle to use
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(SslBundle sslBundle, HttpRedirects httpRedirects) {
+	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
 		HttpClient httpClient = applyDefaults(HttpClient.create());
 		httpClient = httpClient.followRedirect(followRedirects(httpRedirects));
 		if (sslBundle != null) {
