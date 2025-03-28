@@ -15,9 +15,22 @@
  */
 
 package org.springframework.boot.http.client.reactive;
+
+import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
+import org.springframework.util.ClassUtils;
+
 /**
  * @author pwebb
  */
-public class HttpComponentsClientHttpConnectorBuilder {
+public class HttpComponentsClientHttpConnectorBuilder
+		extends AbstractClientHttpRequestFactoryBuilder<HttpComponentsClientHttpConnector> {
+
+	static class Classes {
+
+		static final String HTTP_CLIENTS = "org.apache.hc.client5.http.impl.classic.HttpClients";
+
+		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENTS, null);
+
+	}
 
 }

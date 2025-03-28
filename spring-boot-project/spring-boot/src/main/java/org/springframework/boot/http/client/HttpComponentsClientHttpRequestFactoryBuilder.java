@@ -41,7 +41,6 @@ import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.protocol.HttpContext;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -200,14 +199,14 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	private HttpClient createHttpClient(ClientHttpRequestFactorySettings settings) {
 		HttpClientBuilder builder = HttpClientBuilder.create()
 			.useSystemProperties()
-			.setRedirectStrategy(asRedirectStrategy(settings.redirects()))
+			.setRedirectStrategy(asRedirectStrategy(settings.httpRedirects()))
 			.setConnectionManager(createConnectionManager(settings))
 			.setDefaultRequestConfig(createDefaultRequestConfig());
 		this.httpClientCustomizer.accept(builder);
 		return builder.build();
 	}
 
-	private RedirectStrategy asRedirectStrategy(Redirects redirects) {
+	private RedirectStrategy asRedirectStrategy(HttpRedirects redirects) {
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> DefaultRedirectStrategy.INSTANCE;
 			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;

@@ -16,24 +16,66 @@
 
 package org.springframework.boot.http.client.reactive;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 
 /**
  * Settings that can be applied when creating a {@link ClientHttpConnector}.
  *
+ * @param redirects the follow redirect strategy to use or null to redirect whenever the
+ * underlying library allows it
+ * @param sslBundle the SSL bundle providing SSL configuration
  * @author Phillip Webb
  * @since 3.5.0
  * @see ClientHttpConnectorBuilder
  */
 public record ClientHttpConnectorSettings(Redirects redirects, SslBundle sslBundle) {
 
-	public static ClientHttpConnectorSettings defaults() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private static final ClientHttpConnectorSettings defaults = new ClientHttpConnectorSettings(null, null);
+
+	public ClientHttpConnectorSettings {
+		redirects = (redirects != null) ? redirects : Redirects.FOLLOW_WHEN_POSSIBLE;
 	}
 
-	// FIXME extract this or copy paste
+	/**
+	 * Return a new {@link ClientHttpConnectorSettings} instance with an updated SSL
+	 * bundle setting.
+	 * @param sslBundle the new SSL bundle setting
+	 * @return a new {@link ClientHttpConnectorSettings} instance
+	 */
+	public ClientHttpConnectorSettings withSslBundle(SslBundle sslBundle) {
+		return new ClientHttpConnectorSettings(this.redirects, sslBundle);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpConnectorSettings} instance with an updated redirect
+	 * setting.
+	 * @param redirects the new redirects setting
+	 * @return a new {@link ClientHttpConnectorSettings} instance
+	 */
+	public ClientHttpConnectorSettings withRedirects(Redirects redirects) {
+		return new ClientHttpConnectorSettings(redirects, this.sslBundle);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpConnectorSettings} using defaults for all settings
+	 * other than the provided SSL bundle.
+	 * @param sslBundle the SSL bundle setting
+	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 */
+	public static ClientHttpConnectorSettings ofSslBundle(SslBundle sslBundle) {
+		return defaults().withSslBundle(sslBundle);
+	}
+
+	/**
+	 * Use defaults for the {@link ClientHttpConnectorSettings} which can differ depending
+	 * on the implementation.
+	 * @return default settings
+	 */
+	public static ClientHttpConnectorSettings defaults() {
+		return defaults;
+	}
 
 	/**
 	 * Redirect strategies.

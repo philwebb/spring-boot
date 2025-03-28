@@ -22,21 +22,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
-import javax.net.ssl.SSLException;
-
-import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.SslProvider.SslContextSpec;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslManagerBundle;
-import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * Builder for {@link ClientHttpRequestFactoryBuilder#reactor()}.
@@ -49,27 +40,27 @@ import org.springframework.util.function.ThrowingConsumer;
 public final class ReactorClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<ReactorClientHttpRequestFactory> {
 
-	private final UnaryOperator<HttpClient> httpClientCustomizer;
+	private final ReactorHttpClientBuilder httpClientBuilder;
 
 	ReactorClientHttpRequestFactoryBuilder() {
-		this(null, UnaryOperator.identity());
+		this(null, new ReactorHttpClientBuilder());
 	}
 
 	private ReactorClientHttpRequestFactoryBuilder(List<Consumer<ReactorClientHttpRequestFactory>> customizers,
-			UnaryOperator<HttpClient> httpClientCustomizer) {
+			ReactorHttpClientBuilder httpClientBuilder) {
 		super(customizers);
-		this.httpClientCustomizer = httpClientCustomizer;
+		this.httpClientBuilder = httpClientBuilder;
 	}
 
 	@Override
 	public ReactorClientHttpRequestFactoryBuilder withCustomizer(Consumer<ReactorClientHttpRequestFactory> customizer) {
-		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientCustomizer);
+		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientBuilder);
 	}
 
 	@Override
 	public ReactorClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<ReactorClientHttpRequestFactory>> customizers) {
-		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientCustomizer);
+		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
 	}
 
 	/**
@@ -82,7 +73,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 			UnaryOperator<HttpClient> httpClientCustomizer) {
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new ReactorClientHttpRequestFactoryBuilder(getCustomizers(),
-				(t) -> httpClientCustomizer.apply(this.httpClientCustomizer.apply(t)));
+				this.httpClientBuilder.withHttpClientCustomizer(httpClientCustomizer));
 	}
 
 	@Override
@@ -96,36 +87,8 @@ public final class ReactorClientHttpRequestFactoryBuilder
 	}
 
 	private ReactorClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = applyDefaults(HttpClient.create());
-		httpClient = httpClient.followRedirect(followRedirects(settings.redirects()));
-		if (settings.sslBundle() != null) {
-			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, settings.sslBundle()))));
-		}
-		httpClient = this.httpClientCustomizer.apply(httpClient);
+		HttpClient httpClient = this.httpClientBuilder.build(settings.sslBundle(), settings.httpRedirects());
 		return new ReactorClientHttpRequestFactory(httpClient);
-	}
-
-	private boolean followRedirects(Redirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
-			case DONT_FOLLOW -> false;
-		};
-	}
-
-	HttpClient applyDefaults(HttpClient httpClient) {
-		// Aligns with ReactorClientHttpRequestFactory defaults
-		return httpClient.compress(true);
-	}
-
-	private void configureSsl(SslContextSpec spec, SslBundle sslBundle) throws SSLException {
-		SslOptions options = sslBundle.getOptions();
-		SslManagerBundle managers = sslBundle.getManagers();
-		SslContextBuilder builder = SslContextBuilder.forClient()
-			.keyManager(managers.getKeyManagerFactory())
-			.trustManager(managers.getTrustManagerFactory())
-			.ciphers(SslOptions.asSet(options.getCiphers()))
-			.protocols(options.getEnabledProtocols());
-		spec.sslContext(builder.build());
 	}
 
 	static class Classes {

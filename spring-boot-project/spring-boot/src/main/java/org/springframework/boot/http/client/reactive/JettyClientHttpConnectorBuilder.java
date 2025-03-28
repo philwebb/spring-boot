@@ -15,9 +15,21 @@
  */
 
 package org.springframework.boot.http.client.reactive;
+
+import org.springframework.http.client.reactive.JettyClientHttpConnector;
+import org.springframework.util.ClassUtils;
+
 /**
  * @author pwebb
  */
-public class JettyClientHttpConnectorBuilder {
+public class JettyClientHttpConnectorBuilder extends AbstractClientHttpRequestFactoryBuilder<JettyClientHttpConnector> {
+
+	static class Classes {
+
+		static final String HTTP_CLIENT = "org.eclipse.jetty.client.HttpClient";
+
+		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+
+	}
 
 }

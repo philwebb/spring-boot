@@ -27,8 +27,8 @@ import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ReactorHttpClientBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslManagerBundle;
@@ -36,7 +36,6 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * Builder for {@link ClientHttpConnectorBuilder#reactor()}.
@@ -46,27 +45,27 @@ import org.springframework.util.function.ThrowingConsumer;
 public class ReactorClientHttpConnectorBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<ReactorClientHttpConnector> {
 
-	private final UnaryOperator<HttpClient> httpClientCustomizer;
+	private final ReactorHttpClientBuilder httpClientBuilder;
 
 	ReactorClientHttpConnectorBuilder() {
-		this(null, UnaryOperator.identity());
+		this(null, new ReactorHttpClientBuilder());
 	}
 
 	private ReactorClientHttpConnectorBuilder(List<Consumer<ReactorClientHttpConnector>> customizers,
-			UnaryOperator<HttpClient> httpClientCustomizer) {
+			ReactorHttpClientBuilder httpClientBuilder) {
 		super(customizers);
-		this.httpClientCustomizer = httpClientCustomizer;
+		this.httpClientBuilder = httpClientBuilder;
 	}
 
 	@Override
 	public ReactorClientHttpConnectorBuilder withCustomizer(Consumer<ReactorClientHttpConnector> customizer) {
-		return new ReactorClientHttpConnectorBuilder(mergedCustomizers(customizer), this.httpClientCustomizer);
+		return new ReactorClientHttpConnectorBuilder(mergedCustomizers(customizer), this.httpClientBuilder);
 	}
 
 	@Override
 	public ReactorClientHttpConnectorBuilder withCustomizers(
 			Collection<Consumer<ReactorClientHttpConnector>> customizers) {
-		return new ReactorClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientCustomizer);
+		return new ReactorClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
 	}
 
 	/**
@@ -78,27 +77,16 @@ public class ReactorClientHttpConnectorBuilder
 	public ReactorClientHttpConnectorBuilder withHttpClientCustomizer(UnaryOperator<HttpClient> httpClientCustomizer) {
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new ReactorClientHttpConnectorBuilder(getCustomizers(),
-				(t) -> httpClientCustomizer.apply(this.httpClientCustomizer.apply(t)));
+				this.httpClientBuilder.withHttpClientCustomizer(httpClientCustomizer));
 	}
 
 	@Override
 	protected ReactorClientHttpConnector createClientHttpRequestFactory(ClientHttpConnectorSettings settings) {
-		ReactorClientHttpConnector connector = createConnector(settings);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		// map.from(settings::connectTimeout).asInt(Duration::toMillis).to(connector::setConnectTimeout);
-		// map.from(settings::readTimeout).asInt(Duration::toMillis).to(connector::setReadTimeout);
-		return connector;
+		return createConnector(settings);
 	}
 
-	// FIXME extract common code or copy/paste
-
 	private ReactorClientHttpConnector createConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = applyDefaults(HttpClient.create());
-		httpClient = httpClient.followRedirect(followRedirects(settings.redirects()));
-		if (settings.sslBundle() != null) {
-			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, settings.sslBundle()))));
-		}
-		httpClient = this.httpClientCustomizer.apply(httpClient);
+		HttpClient httpClient = this.httpClientBuilder.build(settings);
 		return new ReactorClientHttpConnector(httpClient);
 	}
 

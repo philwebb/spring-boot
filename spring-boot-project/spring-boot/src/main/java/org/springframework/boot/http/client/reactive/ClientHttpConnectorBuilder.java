@@ -19,11 +19,14 @@ package org.springframework.boot.http.client.reactive;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
@@ -35,12 +38,12 @@ import org.springframework.util.Assert;
  * Interface used to build a fully configured {@link ClientHttpConnector}. Builders for
  * {@link #httpComponents() Apache HTTP Components}, {@link #jetty() Jetty},
  * {@link #reactor() Reactor} and {@link #jdk() JDK} can be obtained using the factory
- * methods on this interface. The {@link #of(Class)} and {@link #of(Supplier)} methods may
- * be used to instantiate other {@link ClientHttpConnector} instances using reflection.
+ * methods on this interface. The {@link #of(Class)} method may be used to instantiate
+ * based on the connector type.
  *
  * @param <T> the {@link ClientHttpConnector} type
  * @author Phillip Webb
- * @since 3.4.0
+ * @since 3.5.0
  */
 @FunctionalInterface
 public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
@@ -124,6 +127,65 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 		return new JdkClientHttpConnectorBuilder();
 	}
 
-	// FIXME of
+	/**
+	 * Return a new {@link ClientHttpRequestFactoryBuilder} for the given
+	 * {@code requestFactoryType}. The following implementations are supported:
+	 * <ul>
+	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
+	 * <li>{@link JdkClientHttpRequestFactory}</li>
+	 * <li>{@link JettyClientHttpRequestFactory}</li>
+	 * <li>{@link ReactorClientHttpRequestFactory}</li>
+	 * </ul>
+	 * @param <T> the {@link ClientHttpConnector} type
+	 * @param clientHttpConnectorType the {@link ClientHttpConnector} type
+	 * @return a new {@link ClientHttpConnectorBuilder}
+	 */
+	@SuppressWarnings("unchecked")
+	static <T extends ClientHttpConnector> ClientHttpConnectorBuilder<T> of(Class<T> clientHttpConnectorType) {
+		Assert.notNull(clientHttpConnectorType, "'requestFactoryType' must not be null");
+		Assert.isTrue(clientHttpConnectorType != ClientHttpRequestFactory.class,
+				"'requestFactoryType' must be an implementation of ClientHttpRequestFactory");
+		if (clientHttpConnectorType == HttpComponentsClientHttpRequestFactory.class) {
+			return (ClientHttpConnectorBuilder<T>) httpComponents();
+		}
+		if (clientHttpConnectorType == JettyClientHttpRequestFactory.class) {
+			return (ClientHttpConnectorBuilder<T>) jetty();
+		}
+		if (clientHttpConnectorType == ReactorClientHttpRequestFactory.class) {
+			return (ClientHttpConnectorBuilder<T>) reactor();
+		}
+		if (clientHttpConnectorType == JdkClientHttpRequestFactory.class) {
+			return (ClientHttpConnectorBuilder<T>) jdk();
+		}
+		throw new IllegalArgumentException(
+				"'clientHttpConnectorType' type %s is not supported".formatted(clientHttpConnectorType.getName()));
+	}
+
+	/**
+	 * Detect the most suitable {@link ClientHttpRequestFactoryBuilder} based on the
+	 * classpath. The methods favors builders in the following order:
+	 * <ol>
+	 * <li>{@link #reactor()}</li>
+	 * <li>{@link #jetty()}</li>
+	 * <li>{@link #httpComponents()}</li>
+	 * <li>{@link #jdk()}</li>
+	 * </ol>
+	 * @return the most suitable {@link ClientHttpRequestFactoryBuilder} for the classpath
+	 */
+	static ClientHttpConnectorBuilder<? extends ClientHttpConnector> detect() {
+		if (ReactorClientHttpConnectorBuilder.Classes.PRESENT) {
+			return reactor();
+		}
+		if (JettyClientHttpConnectorBuilder.Classes.PRESENT) {
+			return jetty();
+		}
+		if (HttpComponentsClientHttpConnectorBuilder.Classes.PRESENT) {
+			return httpComponents();
+		}
+		if (JdkClientHttpConnectorBuilder.Classes.PRESENT) {
+			return jdk();
+		}
+		throw new IllegalStateException("Unable to detect any ClientHttpConnectorBuilder");
+	}
 
 }

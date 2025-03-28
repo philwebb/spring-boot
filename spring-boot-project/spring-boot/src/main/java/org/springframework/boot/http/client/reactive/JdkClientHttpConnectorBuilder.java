@@ -15,9 +15,25 @@
  */
 
 package org.springframework.boot.http.client.reactive;
+
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.http.client.reactive.JdkClientHttpConnector;
+import org.springframework.util.ClassUtils;
+
 /**
- * @author pwebb
+ * Builder for {@link ClientHttpRequestFactoryBuilder#jdk()}.
+ *
+ * @author Phillip Webb
+ * @since 3.5.0
  */
-public class JdkClientHttpConnectorBuilder {
+public class JdkClientHttpConnectorBuilder extends AbstractClientHttpRequestFactoryBuilder<JdkClientHttpConnector> {
+
+	static class Classes {
+
+		static final String HTTP_CLIENT = "java.net.http.HttpClient";
+
+		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENT, null);
+
+	}
 
 }

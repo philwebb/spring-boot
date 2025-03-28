@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLParameters;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
@@ -94,7 +93,7 @@ public class JdkClientHttpRequestFactoryBuilder
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
 		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
-		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
+		map.from(settings::httpRedirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
 		this.httpClientCustomizer.accept(builder);
 		return builder.build();
 	}
@@ -107,7 +106,7 @@ public class JdkClientHttpRequestFactoryBuilder
 		return parameters;
 	}
 
-	private Redirect asHttpClientRedirect(Redirects redirects) {
+	private Redirect asHttpClientRedirect(HttpRedirects redirects) {
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
 			case DONT_FOLLOW -> Redirect.NEVER;
