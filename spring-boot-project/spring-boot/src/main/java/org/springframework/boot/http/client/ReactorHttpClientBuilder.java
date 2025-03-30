@@ -68,6 +68,8 @@ public class ReactorHttpClientBuilder {
 	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
 		HttpClient httpClient = applyDefaults(HttpClient.create());
 		httpClient = httpClient.followRedirect(followRedirects(httpRedirects));
+		// FIXME httpClient = httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 0);
+		// httpClient.responseTimeout(readTimeout);
 		if (sslBundle != null) {
 			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, sslBundle))));
 		}

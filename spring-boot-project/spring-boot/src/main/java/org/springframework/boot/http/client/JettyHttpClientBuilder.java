@@ -22,6 +22,7 @@ import javax.net.ssl.SSLContext;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
@@ -106,7 +107,16 @@ public class JettyHttpClientBuilder {
 	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
 		HttpClientTransport transport = createTransport(sslBundle);
 		this.httpClientTransportCustomizer.accept(transport);
-		HttpClient httpClient = new HttpClient(transport);
+		HttpClient httpClient = new HttpClient(transport) {
+
+			@Override
+			public org.eclipse.jetty.client.Request newRequest(java.net.URI uri) {
+				Request request = super.newRequest(uri);
+				// FIXME request.timeout(1, null);
+				return request;
+			}
+
+		};
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(httpRedirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);

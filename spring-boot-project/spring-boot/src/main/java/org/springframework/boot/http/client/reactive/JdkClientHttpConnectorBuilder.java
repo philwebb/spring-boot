@@ -72,7 +72,9 @@ public class JdkClientHttpConnectorBuilder extends AbstractClientHttpRequestFact
 	@Override
 	protected JdkClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
-		return new JdkClientHttpConnector(httpClient);
+		JdkClientHttpConnector connector = new JdkClientHttpConnector(httpClient);
+		// FIXME connector.setReadTimeout(null); + connect timeout to builder
+		return connector;
 	}
 
 	static class Classes {
