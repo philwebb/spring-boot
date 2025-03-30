@@ -27,7 +27,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -63,7 +63,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
+	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
 		SslBundle sslBundle = settings.sslBundle();
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);
 		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
@@ -80,9 +80,9 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	 */
 	private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
 
-		private final ClientHttpRequestFactorySettings settings;
+		private final HttpClientSettings settings;
 
-		SimpleClientHttpsRequestFactory(ClientHttpRequestFactorySettings settings) {
+		SimpleClientHttpsRequestFactory(HttpClientSettings settings) {
 			this.settings = settings;
 		}
 

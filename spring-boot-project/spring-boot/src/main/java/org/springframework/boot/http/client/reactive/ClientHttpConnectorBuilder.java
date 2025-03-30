@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -62,7 +63,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpRequestFactory}.
 	 */
-	T build(ClientHttpConnectorSettings settings);
+	T build(HttpClientSettings settings);
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} that applies the given

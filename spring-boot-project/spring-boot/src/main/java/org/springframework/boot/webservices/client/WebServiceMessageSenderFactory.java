@@ -18,6 +18,7 @@ package org.springframework.boot.webservices.client;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.ws.transport.WebServiceMessageSender;
@@ -44,7 +45,7 @@ public interface WebServiceMessageSenderFactory {
 	 * @return a new {@link WebServiceMessageSenderFactory}
 	 */
 	static WebServiceMessageSenderFactory http() {
-		return http(ClientHttpRequestFactoryBuilder.detect(), null);
+		return http(ClientHttpRequestFactoryBuilder.detect(), (HttpClientSettings) null);
 	}
 
 	/**
@@ -52,9 +53,12 @@ public interface WebServiceMessageSenderFactory {
 	 * by a detected {@link ClientHttpRequestFactory}.
 	 * @param requestFactorySettings the setting to apply
 	 * @return a new {@link WebServiceMessageSenderFactory}
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #http(HttpClientSettings)}
 	 */
+	@Deprecated
 	static WebServiceMessageSenderFactory http(ClientHttpRequestFactorySettings requestFactorySettings) {
-		return http(ClientHttpRequestFactoryBuilder.detect(), requestFactorySettings);
+		return http(ClientHttpRequestFactorySettings.asHttpClientSettings(requestFactorySettings));
 	}
 
 	/**
@@ -64,11 +68,38 @@ public interface WebServiceMessageSenderFactory {
 	 * @param requestFactoryBuilder the request factory builder to use
 	 * @param requestFactorySettings the settings to apply
 	 * @return a new {@link WebServiceMessageSenderFactory}
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #http(ClientHttpRequestFactoryBuilder, HttpClientSettings)}
 	 */
+	@Deprecated
 	static WebServiceMessageSenderFactory http(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
 			ClientHttpRequestFactorySettings requestFactorySettings) {
 		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");
-		return () -> new ClientHttpRequestMessageSender(requestFactoryBuilder.build(requestFactorySettings));
+		return http(ClientHttpRequestFactorySettings.asHttpClientSettings(requestFactorySettings));
+	}
+
+	/**
+	 * Returns a factory that will create a {@link ClientHttpRequestMessageSender} backed
+	 * by a detected {@link ClientHttpRequestFactory}.
+	 * @param httpClientSettings the setting to apply
+	 * @return a new {@link WebServiceMessageSenderFactory}
+	 */
+	static WebServiceMessageSenderFactory http(HttpClientSettings httpClientSettings) {
+		return http(ClientHttpRequestFactoryBuilder.detect(), httpClientSettings);
+	}
+
+	/**
+	 * Returns a factory that will create a {@link ClientHttpRequestMessageSender} backed
+	 * by a {@link ClientHttpRequestFactory} created from the given
+	 * {@link ClientHttpRequestFactoryBuilder}.
+	 * @param requestFactoryBuilder the request factory builder to use
+	 * @param httpClientSettings the settings to apply
+	 * @return a new {@link WebServiceMessageSenderFactory}
+	 */
+	static WebServiceMessageSenderFactory http(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
+			HttpClientSettings httpClientSettings) {
+		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");
+		return () -> new ClientHttpRequestMessageSender(requestFactoryBuilder.build(httpClientSettings));
 	}
 
 }

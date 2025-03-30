@@ -23,6 +23,7 @@ import java.util.function.UnaryOperator;
 
 import reactor.netty.http.client.HttpClient;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -73,8 +74,8 @@ public class ReactorClientHttpConnectorBuilder
 	}
 
 	@Override
-	protected ReactorClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
+	protected ReactorClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle());
 		return new ReactorClientHttpConnector(httpClient);
 	}
 

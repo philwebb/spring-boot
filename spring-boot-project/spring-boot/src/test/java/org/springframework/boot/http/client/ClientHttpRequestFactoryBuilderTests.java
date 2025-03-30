@@ -49,7 +49,7 @@ class ClientHttpRequestFactoryBuilderTests {
 		ClientHttpRequestFactoryBuilder<JettyClientHttpRequestFactory> builder = (
 				settings) -> new JettyClientHttpRequestFactory();
 		builder = builder.withCustomizer(this::setJettyReadTimeout);
-		JettyClientHttpRequestFactory factory = builder.build(null);
+		JettyClientHttpRequestFactory factory = builder.build((HttpClientSettings) null);
 		assertThat(factory).extracting("readTimeout").isEqualTo(5000L);
 	}
 
@@ -58,7 +58,7 @@ class ClientHttpRequestFactoryBuilderTests {
 		ClientHttpRequestFactoryBuilder<JettyClientHttpRequestFactory> builder = (
 				settings) -> new JettyClientHttpRequestFactory();
 		builder = builder.withCustomizers(List.of(this::setJettyReadTimeout));
-		JettyClientHttpRequestFactory factory = builder.build(null);
+		JettyClientHttpRequestFactory factory = builder.build((HttpClientSettings) null);
 		assertThat(factory).extracting("readTimeout").isEqualTo(5000L);
 	}
 
@@ -125,7 +125,7 @@ class ClientHttpRequestFactoryBuilderTests {
 		ClientHttpRequestFactoryBuilder<TestClientHttpRequestFactory> builder = ClientHttpRequestFactoryBuilder
 			.of(TestClientHttpRequestFactory.class);
 		assertThat(builder).isInstanceOf(ReflectiveComponentsClientHttpRequestFactoryBuilder.class);
-		assertThat(builder.build(null)).isInstanceOf(TestClientHttpRequestFactory.class);
+		assertThat(builder.build((HttpClientSettings) null)).isInstanceOf(TestClientHttpRequestFactory.class);
 	}
 
 	@Test

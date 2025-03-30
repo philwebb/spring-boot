@@ -34,7 +34,9 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Scott Frederick
  * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
+ * @deprecated since 3.5.0 in favor of {@link HttpClientSettings}
  */
+@Deprecated
 public record ClientHttpRequestFactorySettings(Redirects redirects, Duration connectTimeout, Duration readTimeout,
 		SslBundle sslBundle) {
 
@@ -86,6 +88,16 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
+	public static HttpClientSettings asHttpClientSettings(ClientHttpRequestFactorySettings settings) {
+		return new HttpClientSettings(Redirects.asHttpClientRedirects(settings.redirects), settings.connectTimeout,
+				settings.readTimeout, settings.sslBundle);
+	}
+
+	public static ClientHttpRequestFactorySettings asClientHttpRequestFactorySettings(
+			HttpClientSettings httpClientSettings) {
+		return null; // FIXME
+	}
+
 	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} using defaults for all
 	 * settings other than the provided SSL bundle.
@@ -113,17 +125,31 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 		/**
 		 * Follow redirects (if the underlying library has support).
 		 */
-		FOLLOW_WHEN_POSSIBLE,
+		FOLLOW_WHEN_POSSIBLE(HttpClientSettings.Redirects.FOLLOW_WHEN_POSSIBLE),
 
 		/**
 		 * Follow redirects (fail if the underlying library has no support).
 		 */
-		FOLLOW,
+		FOLLOW(HttpClientSettings.Redirects.FOLLOW),
 
 		/**
 		 * Don't follow redirects (fail if the underlying library has no support).
 		 */
-		DONT_FOLLOW
+		DONT_FOLLOW(HttpClientSettings.Redirects.DONT_FOLLOW);
+
+		private final HttpClientSettings.Redirects httpClientRedirects;
+
+		Redirects(HttpClientSettings.Redirects httpClientRedirects) {
+			this.httpClientRedirects = httpClientRedirects;
+		}
+
+		public static HttpClientSettings.Redirects asHttpClientRedirects(Redirects redirects) {
+			return (redirects != null) ? redirects.httpClientRedirects : null;
+		}
+
+		Redirects asX(HttpClientSettings.Redirects redirects) {
+			return null; // FIXME
+		}
 
 	}
 

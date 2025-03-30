@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
@@ -85,16 +86,14 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 
 	@Test
 	void buildWhenHasConnectTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(60));
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(60));
 		T requestFactory = this.builder.build(settings);
 		assertThat(connectTimeout(requestFactory)).isEqualTo(Duration.ofSeconds(60).toMillis());
 	}
 
 	@Test
 	void buildWhenHadReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(Duration.ofSeconds(120));
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(Duration.ofSeconds(120));
 		T requestFactory = this.builder.build(settings);
 		assertThat(readTimeout(requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
@@ -116,7 +115,7 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			assertThatExceptionOfType(SSLHandshakeException.class)
 				.isThrownBy(() -> insecureRequest.execute().getBody());
 			ClientHttpRequestFactory secureRequestFactory = this.builder
-				.build(ClientHttpRequestFactorySettings.ofSslBundle(sslBundle()));
+				.build(HttpClientSettings.ofSslBundle(sslBundle()));
 			ClientHttpRequest secureRequest = request(secureRequestFactory, uri, httpMethod);
 			String secureResponse = StreamUtils.copyToString(secureRequest.execute().getBody(), StandardCharsets.UTF_8);
 			assertThat(secureResponse).contains("Received " + httpMethod + " request to /");
@@ -138,8 +137,8 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("https://localhost:%s".formatted(port));
-			ClientHttpRequestFactory requestFactory = this.builder.build(ClientHttpRequestFactorySettings
-				.ofSslBundle(sslBundle(SslOptions.of(Set.of("TLS_AES_256_GCM_SHA384"), null))));
+			ClientHttpRequestFactory requestFactory = this.builder.build(
+					HttpClientSettings.ofSslBundle(sslBundle(SslOptions.of(Set.of("TLS_AES_256_GCM_SHA384"), null))));
 			ClientHttpRequest secureRequest = request(requestFactory, uri, httpMethod);
 			assertThatExceptionOfType(SSLHandshakeException.class).isThrownBy(() -> secureRequest.execute().getBody());
 		}
@@ -157,20 +156,18 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectFollow(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withHttpRedirects(HttpRedirects.FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(Redirects.FOLLOW);
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), this::getExpectedRedirect);
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectDontFollow(String httpMethod) throws Exception {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withHttpRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(Redirects.DONT_FOLLOW);
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), ALWAYS_FOUND);
 	}
 
-	protected final void testRedirect(ClientHttpRequestFactorySettings settings, HttpMethod httpMethod,
+	protected final void testRedirect(HttpClientSettings settings, HttpMethod httpMethod,
 			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException, IOException {
 		HttpStatus expectedStatus = expectedStatusForMethod.apply(httpMethod);
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);

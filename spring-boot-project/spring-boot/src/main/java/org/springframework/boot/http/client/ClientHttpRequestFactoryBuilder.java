@@ -50,7 +50,20 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @return a default configured {@link ClientHttpRequestFactory}.
 	 */
 	default T build() {
-		return build(null);
+		return build((HttpClientSettings) null);
+	}
+
+	/**
+	 * Build a fully configured {@link ClientHttpRequestFactory}, applying the given
+	 * {@code settings} if they are provided.
+	 * @param settings the settings to apply or {@code null}
+	 * @return a fully configured {@link ClientHttpRequestFactory}.
+	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * {@link #build(HttpClientSettings)}
+	 */
+	@Deprecated
+	default T build(ClientHttpRequestFactorySettings settings) {
+		return build(ClientHttpRequestFactorySettings.asHttpClientSettings(settings));
 	}
 
 	/**
@@ -59,7 +72,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpRequestFactory}.
 	 */
-	T build(ClientHttpRequestFactorySettings settings);
+	T build(HttpClientSettings settings);
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} that applies the given

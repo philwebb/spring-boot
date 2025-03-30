@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.util.Assert;
@@ -70,8 +71,8 @@ public class JdkClientHttpConnectorBuilder extends AbstractClientHttpRequestFact
 	}
 
 	@Override
-	protected JdkClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
+	protected JdkClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle());
 		JdkClientHttpConnector connector = new JdkClientHttpConnector(httpClient);
 		// FIXME connector.setReadTimeout(null); + connect timeout to builder
 		return connector;

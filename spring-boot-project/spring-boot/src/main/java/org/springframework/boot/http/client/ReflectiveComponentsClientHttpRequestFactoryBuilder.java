@@ -23,7 +23,7 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -65,7 +65,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 	}
 
 	@Override
-	public T build(ClientHttpRequestFactorySettings settings) {
+	public T build(HttpClientSettings settings) {
 		T requestFactory = this.requestFactorySupplier.get();
 		if (settings != null) {
 			configure(requestFactory, settings);
@@ -73,7 +73,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 		return requestFactory;
 	}
 
-	private void configure(ClientHttpRequestFactory requestFactory, ClientHttpRequestFactorySettings settings) {
+	private void configure(ClientHttpRequestFactory requestFactory, HttpClientSettings settings) {
 		Assert.state(settings.sslBundle() == null, "Unable to set SSL bundle using reflection");
 		Assert.state(settings.redirects() == Redirects.FOLLOW_WHEN_POSSIBLE,
 				"Unable to set redirect follow using reflection");

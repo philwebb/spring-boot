@@ -74,7 +74,7 @@ public class JdkClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
+	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle(),
 				settings.connectTimeout());
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);

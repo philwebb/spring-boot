@@ -46,7 +46,9 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.HttpClientSettings.Redirects;
+import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -158,8 +160,8 @@ public class TestRestTemplate {
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder.httpRedirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
-						? HttpRedirects.FOLLOW : HttpRedirects.DONT_FOLLOW);
+				builder = builder.redirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
+						? Redirects.FOLLOW : Redirects.DONT_FOLLOW);
 				builder = builder.requestFactoryBuilder(
 						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
@@ -963,12 +965,15 @@ public class TestRestTemplate {
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will apply the given {@link ClientHttpRequestFactorySettings}. The
+	 * except that it will apply the given
+	 * {@link org.springframework.boot.web.client.ClientHttpRequestFactorySettings}. The
 	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
 	 * request factory type (when possible).
 	 * @param requestFactorySettings the new request factory settings
 	 * @return the new template
 	 * @since 3.4.1
+	 * @deprecated since 3.5.0 in favor of
+	 * {@link #withHttpClientSettings(HttpClientSettings)}
 	 */
 	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
@@ -977,17 +982,51 @@ public class TestRestTemplate {
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will customize the {@link ClientHttpRequestFactorySettings}. The
+	 * except that it will customize the
+	 * {@link org.springframework.boot.web.client.ClientHttpRequestFactorySettings}. The
 	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
 	 * request factory type (when possible).
 	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update the
 	 * settings
 	 * @return the new template
 	 * @since 3.4.1
+	 * @deprecated since 3.5.0 in favor of {@link #withHttpClientSettings(UnaryOperator)}
 	 */
+	@Deprecated
 	public TestRestTemplate withRequestFactorySettings(
-			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
-		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettingsCustomizer),
+			UnaryOperator<org.springframework.boot.web.client.ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
+		return withHttpClientSettings(
+				(settings) -> ClientHttpRequestFactorySettings.asHttpClientSettings(requestFactorySettingsCustomizer
+					.apply(ClientHttpRequestFactorySettings.asClientHttpRequestFactorySettings(settings)))));
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will apply the given
+	 * {@link org.springframework.boot.web.client.ClientHttpRequestFactorySettings}. The
+	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
+	 * request factory type (when possible).
+	 * @param httpClientSettings the new HTTP client settings
+	 * @return the new template
+	 * @since 3.5.0
+	 */
+	public TestRestTemplate withHttpClientSettings(HttpClientSettings httpClientSettings) {
+		return new TestRestTemplate(this.builder.httpClientSettings(httpClientSettings),
+				this.restTemplate.getUriTemplateHandler());
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will customize the
+	 * {@link org.springframework.boot.web.client.ClientHttpRequestFactorySettings}. The
+	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
+	 * request factory type (when possible).
+	 * @param httpClientSettingsCustomizer a {@link UnaryOperator} to update the settings
+	 * @return the new template
+	 * @since 3.5.0
+	 */
+	public TestRestTemplate withHttpClientSettings(UnaryOperator<HttpClientSettings> httpClientSettingsCustomizer) {
+		return new TestRestTemplate(this.builder.httpClientSettings(httpClientSettingsCustomizer),
 				this.restTemplate.getUriTemplateHandler());
 	}
 
@@ -1067,20 +1106,33 @@ public class TestRestTemplate {
 		@SuppressWarnings("removal")
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
-			this(httpClientOptions, new ClientHttpRequestFactorySettings((HttpRedirects) null,
-					settings.connectTimeout(), settings.readTimeout(), settings.sslBundle()));
+			this(httpClientOptions, new HttpClientSettings(null, settings.connectTimeout(), settings.readTimeout(),
+					settings.sslBundle()));
 		}
 
 		/**
 		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
 		 * @param httpClientOptions the {@link HttpClient} options
 		 * @param settings the settings to apply
+		 * @deprecated since 3.5.0 in favor of {@link #TestRestTemplate(HttpClientOption[], HttpClientSettings)}
 		 */
+		@Deprecated
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
+			this(httpClientOptions, ClientHttpRequestFactorySettings.asHttpClientSettings(settings))
+		}
+
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 * @since 3.5.0
+		 */
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				HttpClientSettings settings) {
 			this.cookieSpec = (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
-			this.enableRedirects = settings.httpRedirects() != HttpRedirects.DONT_FOLLOW;
+			this.enableRedirects = settings.redirects() != Redirects.DONT_FOLLOW;
 			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
 			if (settings.readTimeout() != null || ssl) {
 				setHttpClient(createHttpClient(settings.readTimeout(), ssl));

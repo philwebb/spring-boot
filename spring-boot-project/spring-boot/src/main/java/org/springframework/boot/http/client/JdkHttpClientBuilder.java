@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLParameters;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
@@ -60,7 +60,7 @@ public class JdkHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param httpRedirects the HTTP follow redirects strategy
+	 * @param redirects the HTTP follow redirects strategy
 	 * @param sslBundle the SSL bundle to use
 	 * @return a new {@link HttpClient} instance
 	 */

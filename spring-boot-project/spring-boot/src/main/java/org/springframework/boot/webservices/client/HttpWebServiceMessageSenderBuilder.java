@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -35,7 +36,7 @@ import org.springframework.ws.transport.WebServiceMessageSender;
  * @author Stephane Nicoll
  * @since 2.1.0
  * @deprecated since 3.4.0 in favor of
- * {@link WebServiceMessageSenderFactory#http(ClientHttpRequestFactorySettings)}
+ * {@link WebServiceMessageSenderFactory#http(HttpClientSettings)}
  */
 @Deprecated(since = "3.4.0", forRemoval = true)
 public class HttpWebServiceMessageSenderBuilder {
@@ -98,7 +99,8 @@ public class HttpWebServiceMessageSenderBuilder {
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
 		Assert.notNull(requestFactoryFunction, "'requestFactoryFunction' must not be null");
-		this.requestFactoryBuilder = requestFactoryFunction::apply;
+		this.requestFactoryBuilder = (settings) -> requestFactoryFunction
+			.apply(ClientHttpRequestFactorySettings.asClientHttpRequestFactorySettings(settings));
 		return this;
 	}
 

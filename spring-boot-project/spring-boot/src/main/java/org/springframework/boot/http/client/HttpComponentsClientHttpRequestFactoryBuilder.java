@@ -41,7 +41,7 @@ import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.protocol.HttpContext;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
+import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -188,8 +188,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(
-			ClientHttpRequestFactorySettings settings) {
+	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
 		HttpClient httpClient = createHttpClient(settings);
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -197,7 +196,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		return factory;
 	}
 
-	private HttpClient createHttpClient(ClientHttpRequestFactorySettings settings) {
+	private HttpClient createHttpClient(HttpClientSettings settings) {
 		HttpClientBuilder builder = HttpClientBuilder.create()
 			.useSystemProperties()
 			.setRedirectStrategy(asRedirectStrategy(settings.redirects()))
@@ -214,7 +213,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		};
 	}
 
-	private PoolingHttpClientConnectionManager createConnectionManager(ClientHttpRequestFactorySettings settings) {
+	private PoolingHttpClientConnectionManager createConnectionManager(HttpClientSettings settings) {
 		PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create()
 			.useSystemProperties();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -224,7 +223,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		return builder.build();
 	}
 
-	private SocketConfig createSocketConfig(ClientHttpRequestFactorySettings settings) {
+	private SocketConfig createSocketConfig(HttpClientSettings settings) {
 		SocketConfig.Builder builder = SocketConfig.custom();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::readTimeout)

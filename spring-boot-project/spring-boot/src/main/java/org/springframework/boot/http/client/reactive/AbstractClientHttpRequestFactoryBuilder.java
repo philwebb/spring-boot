@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.util.Assert;
@@ -64,12 +65,12 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpConne
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final T build(ClientHttpConnectorSettings settings) {
-		T factory = createClientHttpConnector((settings != null) ? settings : ClientHttpConnectorSettings.defaults());
+	public final T build(HttpClientSettings settings) {
+		T factory = createClientHttpConnector((settings != null) ? settings : HttpClientSettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, factory).invoke((consumer) -> consumer.accept(factory));
 		return factory;
 	}
 
-	protected abstract T createClientHttpConnector(ClientHttpConnectorSettings settings);
+	protected abstract T createClientHttpConnector(HttpClientSettings settings);
 
 }

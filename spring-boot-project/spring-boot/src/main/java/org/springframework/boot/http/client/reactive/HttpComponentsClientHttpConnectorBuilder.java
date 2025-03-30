@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.util.ClassUtils;
 
@@ -41,7 +42,7 @@ public class HttpComponentsClientHttpConnectorBuilder
 	}
 
 	@Override
-	protected HttpComponentsClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
+	protected HttpComponentsClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 

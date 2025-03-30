@@ -40,7 +40,6 @@ class ClientHttpRequestFactorySettingsTests {
 	void defaults() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults();
 		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
-		assertThat(settings.httpRedirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -48,10 +47,8 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void createWithNullsUsesDefaults() {
-		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings((HttpRedirects) null, null,
-				null, null);
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null);
 		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
-		assertThat(settings.httpRedirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -90,15 +87,6 @@ class ClientHttpRequestFactorySettingsTests {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withRedirects(Redirects.DONT_FOLLOW);
 		assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);
-		assertThat(settings.httpRedirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
-	}
-
-	@Test
-	void withHttpRedirectsReturnsInstanceWithUpdatedRedirect() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withHttpRedirects(HttpRedirects.DONT_FOLLOW);
-		assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);
-		assertThat(settings.httpRedirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
 	}
 
 }
