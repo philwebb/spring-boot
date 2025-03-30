@@ -87,7 +87,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 	}
 
 	private ReactorClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle());
+		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle());
 		return new ReactorClientHttpRequestFactory(httpClient);
 	}
 

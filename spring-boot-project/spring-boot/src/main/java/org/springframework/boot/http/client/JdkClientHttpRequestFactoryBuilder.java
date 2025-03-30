@@ -75,7 +75,7 @@ public class JdkClientHttpRequestFactoryBuilder
 
 	@Override
 	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings.httpRedirects(), settings.sslBundle(),
+		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle(),
 				settings.connectTimeout());
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

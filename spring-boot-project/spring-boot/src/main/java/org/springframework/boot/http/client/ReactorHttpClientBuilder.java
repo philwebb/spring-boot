@@ -24,6 +24,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -61,13 +62,13 @@ public class ReactorHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param httpRedirects the HTTP follow redirects strategy
+	 * @param redirects the HTTP follow redirects strategy
 	 * @param sslBundle the SSL bundle to use
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
+	public HttpClient build(Redirects redirects, SslBundle sslBundle) {
 		HttpClient httpClient = applyDefaults(HttpClient.create());
-		httpClient = httpClient.followRedirect(followRedirects(httpRedirects));
+		httpClient = httpClient.followRedirect(followRedirects(redirects));
 		// FIXME httpClient = httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 0);
 		// httpClient.responseTimeout(readTimeout);
 		if (sslBundle != null) {
@@ -76,8 +77,8 @@ public class ReactorHttpClientBuilder {
 		return this.customizer.apply(httpClient);
 	}
 
-	private boolean followRedirects(HttpRedirects httpRedirects) {
-		return switch (httpRedirects) {
+	private boolean followRedirects(Redirects redirects) {
+		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
 			case DONT_FOLLOW -> false;
 		};

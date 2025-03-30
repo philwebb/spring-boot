@@ -29,6 +29,7 @@ import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
@@ -100,11 +101,11 @@ public class JettyHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param httpRedirects the HTTP follow redirects strategy
+	 * @param redirects the HTTP follow redirects strategy
 	 * @param sslBundle the SSL bundle to use
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
+	public HttpClient build(Redirects redirects, SslBundle sslBundle) {
 		HttpClientTransport transport = createTransport(sslBundle);
 		this.httpClientTransportCustomizer.accept(transport);
 		HttpClient httpClient = new HttpClient(transport) {
@@ -118,7 +119,7 @@ public class JettyHttpClientBuilder {
 
 		};
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(httpRedirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
+		map.from(redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);
 		return httpClient;
 	}
@@ -154,7 +155,7 @@ public class JettyHttpClientBuilder {
 		return factory;
 	}
 
-	private boolean followRedirects(HttpRedirects redirects) {
+	private boolean followRedirects(Redirects redirects) {
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
 			case DONT_FOLLOW -> false;

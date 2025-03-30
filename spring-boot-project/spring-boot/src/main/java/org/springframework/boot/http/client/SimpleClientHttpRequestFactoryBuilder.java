@@ -93,7 +93,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 				SSLSocketFactory socketFactory = this.settings.sslBundle().createSslContext().getSocketFactory();
 				secureConnection.setSSLSocketFactory(socketFactory);
 			}
-			if (this.settings.httpRedirects() == HttpRedirects.DONT_FOLLOW) {
+			if (this.settings.redirects() == Redirects.DONT_FOLLOW) {
 				connection.setInstanceFollowRedirects(false);
 			}
 		}

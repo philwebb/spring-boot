@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLParameters;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
@@ -63,21 +64,21 @@ public class JdkHttpClientBuilder {
 	 * @param sslBundle the SSL bundle to use
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle) {
-		return build(httpRedirects, sslBundle, null);
+	public HttpClient build(Redirects redirects, SslBundle sslBundle) {
+		return build(redirects, sslBundle, null);
 	}
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param httpRedirects the HTTP follow redirects strategy
+	 * @param redirects the HTTP follow redirects strategy
 	 * @param sslBundle the SSL bundle to use
 	 * @param connectTimeout the connect timeout
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpRedirects httpRedirects, SslBundle sslBundle, Duration connectTimeout) {
+	public HttpClient build(Redirects redirects, SslBundle sslBundle, Duration connectTimeout) {
 		HttpClient.Builder builder = HttpClient.newBuilder();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(httpRedirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
+		map.from(redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
 		map.from(connectTimeout).to(builder::connectTimeout);
 		map.from(sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
 		map.from(sslBundle).as(this::asSslParameters).to(builder::sslParameters);
@@ -93,7 +94,7 @@ public class JdkHttpClientBuilder {
 		return parameters;
 	}
 
-	private Redirect asHttpClientRedirect(HttpRedirects redirects) {
+	private Redirect asHttpClientRedirect(Redirects redirects) {
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
 			case DONT_FOLLOW -> Redirect.NEVER;

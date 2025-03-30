@@ -24,8 +24,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 /**
  * Settings that can be applied when creating a {@link ClientHttpRequestFactory}.
  *
- * @param httpRedirects the follow redirect strategy to use or null to redirect whenever
- * the underlying library allows it
+ * @param redirects the follow redirect strategy to use or null to redirect whenever the
+ * underlying library allows it
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
@@ -35,30 +35,14 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
  */
-public record ClientHttpRequestFactorySettings(HttpRedirects httpRedirects, Duration connectTimeout,
-		Duration readTimeout, SslBundle sslBundle) {
+public record ClientHttpRequestFactorySettings(Redirects redirects, Duration connectTimeout, Duration readTimeout,
+		SslBundle sslBundle) {
 
-	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(
-			(HttpRedirects) null, null, null, null);
+	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
+			null, null);
 
 	public ClientHttpRequestFactorySettings {
-		httpRedirects = (httpRedirects != null) ? httpRedirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
-	}
-
-	/**
-	 * Create a new {@link ClientHttpRequestFactorySettings} instance.
-	 * @param redirects the follow redirect strategy to use or null to redirect whenever
-	 * the underlying library allows it
-	 * @param connectTimeout the connect timeout
-	 * @param readTimeout the read timeout
-	 * @param sslBundle the SSL bundle providing SSL configuration
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
-	 * {@link #ClientHttpRequestFactorySettings(HttpRedirects, Duration, Duration, SslBundle)}
-	 */
-	@Deprecated
-	public ClientHttpRequestFactorySettings(Redirects redirects, Duration connectTimeout, Duration readTimeout,
-			SslBundle sslBundle) {
-		this(Redirects.replace(redirects), connectTimeout, readTimeout, sslBundle);
+		redirects = (redirects != null) ? redirects : Redirects.FOLLOW_WHEN_POSSIBLE;
 	}
 
 	/**
@@ -68,8 +52,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects httpRedirects, Dura
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withConnectTimeout(Duration connectTimeout) {
-		return new ClientHttpRequestFactorySettings(this.httpRedirects, connectTimeout, this.readTimeout,
-				this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -80,8 +63,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects httpRedirects, Dura
 	 */
 
 	public ClientHttpRequestFactorySettings withReadTimeout(Duration readTimeout) {
-		return new ClientHttpRequestFactorySettings(this.httpRedirects, this.connectTimeout, readTimeout,
-				this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -91,8 +73,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects httpRedirects, Dura
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
-		return new ClientHttpRequestFactorySettings(this.httpRedirects, this.connectTimeout, this.readTimeout,
-				sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
 	}
 
 	/**
@@ -103,29 +84,6 @@ public record ClientHttpRequestFactorySettings(HttpRedirects httpRedirects, Dura
 	 */
 	public ClientHttpRequestFactorySettings withRedirects(Redirects redirects) {
 		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
-	}
-
-	/**
-	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
-	 * redirect setting.
-	 * @param httpRedirects the new redirects setting
-	 * @return a new {@link ClientHttpRequestFactorySettings} instance
-	 * @since 3.5.0
-	 */
-	public ClientHttpRequestFactorySettings withHttpRedirects(HttpRedirects httpRedirects) {
-		return new ClientHttpRequestFactorySettings(httpRedirects, this.connectTimeout, this.readTimeout,
-				this.sslBundle);
-	}
-
-	/**
-	 * Return the follow redirect strategy to use or null to redirect whenever the
-	 * underlying library allows it.
-	 * @return the redirect strategy
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link #httpRedirects()}
-	 */
-	@Deprecated
-	public Redirects redirects() {
-		return Redirects.forReplaced(httpRedirects());
 	}
 
 	/**
@@ -149,45 +107,23 @@ public record ClientHttpRequestFactorySettings(HttpRedirects httpRedirects, Dura
 
 	/**
 	 * Redirect strategies.
-	 *
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of {@link HttpRedirects}.
 	 */
-	@Deprecated
 	public enum Redirects {
 
 		/**
 		 * Follow redirects (if the underlying library has support).
 		 */
-		FOLLOW_WHEN_POSSIBLE(HttpRedirects.FOLLOW_WHEN_POSSIBLE),
+		FOLLOW_WHEN_POSSIBLE,
 
 		/**
 		 * Follow redirects (fail if the underlying library has no support).
 		 */
-		FOLLOW(HttpRedirects.FOLLOW_WHEN_POSSIBLE),
+		FOLLOW,
 
 		/**
 		 * Don't follow redirects (fail if the underlying library has no support).
 		 */
-		DONT_FOLLOW(HttpRedirects.DONT_FOLLOW);
-
-		private final HttpRedirects replacement;
-
-		Redirects(HttpRedirects replacement) {
-			this.replacement = replacement;
-		}
-
-		static HttpRedirects replace(Redirects redirects) {
-			return (redirects != null) ? redirects.replacement : null;
-		}
-
-		static Redirects forReplaced(HttpRedirects httpRedirects) {
-			for (Redirects candidate : values()) {
-				if (candidate.replacement == httpRedirects) {
-					return candidate;
-				}
-			}
-			throw new IllegalStateException("Unable to find Redirects enum value for " + httpRedirects);
-		}
+		DONT_FOLLOW
 
 	}
 
