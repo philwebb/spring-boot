@@ -49,7 +49,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
 		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class },
-		afterName = { "org.springframework.boot.security.autoconfigure.saml2.Saml2RelyingPartyAutoConfiguration",
+		afterName = { "org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyAutoConfiguration",
 				"org.springframework.boot.security.oauth2.client.autoconfigure.servlet.OAuth2ClientAutoConfiguration",
 				"org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
