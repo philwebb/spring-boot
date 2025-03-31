@@ -16,23 +16,19 @@
 
 package org.springframework.boot.http.client.reactive;
 
-import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 
 /**
- * Tests for {@link HttpComponentsClientHttpRequestFactoryBuilder}.
+ * Tests for {@link HttpComponentsClientHttpConnectorBuilder}.
  *
  * @author Phillip Webb
  */
-class HttpComponentsClientHttpRequestFactoryBuilderTests {
+class HttpComponentsClientHttpConnectorBuilderTests
+		extends AbstractClientHttpConnectorBuilderTests<HttpComponentsClientHttpConnector> {
 
-	// extends
-	// AbstractClientHttpConnectorBuilderTests<HttpComponentsClientHttpRequestFactory> {
-
-	//
-	// HttpComponentsClientHttpRequestFactoryBuilderTests() {
-	// super(HttpComponentsClientHttpRequestFactory.class,
-	// ClientHttpRequestFactoryBuilder.httpComponents());
-	// }
+	HttpComponentsClientHttpConnectorBuilderTests() {
+		super(HttpComponentsClientHttpConnector.class, ClientHttpConnectorBuilder.httpComponents());
+	}
 	//
 	// @Test
 	// void withCustomizers() {

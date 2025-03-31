@@ -127,7 +127,7 @@ public class HttpComponentsClientHttpConnectorBuilder
 
 	@Override
 	protected HttpComponentsClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
-		CloseableHttpAsyncClient client = null;
+		CloseableHttpAsyncClient client = this.httpClientBuilder.build(settings);
 		return new HttpComponentsClientHttpConnector(client);
 	}
 
@@ -135,7 +135,10 @@ public class HttpComponentsClientHttpConnectorBuilder
 
 		static final String HTTP_CLIENTS = "org.apache.hc.client5.http.impl.classic.HttpClients";
 
-		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENTS, null);
+		static final String REACTIVE_RESPONSE_CONSUMER = "org.apache.hc.core5.reactive.ReactiveResponseConsumer";
+
+		static final boolean PRESENT = ClassUtils.isPresent(HTTP_CLIENTS, null)
+				&& ClassUtils.isPresent(REACTIVE_RESPONSE_CONSUMER, null);
 
 	}
 

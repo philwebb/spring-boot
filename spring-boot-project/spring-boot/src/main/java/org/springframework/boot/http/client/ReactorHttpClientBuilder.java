@@ -75,8 +75,8 @@ public class ReactorHttpClientBuilder {
 		HttpClient httpClient = applyDefaults(HttpClient.create());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		httpClient = map.from(settings::connectTimeout).to(httpClient, this::setConnectTimeout);
-		httpClient = map.from(settings::readTimeout).toInstance(httpClient::responseTimeout);
-		httpClient = map.from(settings::redirects).as(this::followRedirects).toInstance(httpClient::followRedirect);
+		httpClient = map.from(settings::readTimeout).to(httpClient, HttpClient::responseTimeout);
+		httpClient = map.from(settings::redirects).as(this::followRedirects).to(httpClient, HttpClient::followRedirect);
 		httpClient = map.from(settings::sslBundle).to(httpClient, this::secure);
 		return this.customizer.apply(httpClient);
 	}
