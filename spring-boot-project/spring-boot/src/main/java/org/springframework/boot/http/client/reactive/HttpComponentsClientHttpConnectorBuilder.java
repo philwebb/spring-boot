@@ -19,6 +19,8 @@ package org.springframework.boot.http.client.reactive;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
@@ -43,7 +45,8 @@ public class HttpComponentsClientHttpConnectorBuilder
 
 	@Override
 	protected HttpComponentsClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		CloseableHttpAsyncClient client = null;
+		return new HttpComponentsClientHttpConnector(client);
 	}
 
 	static class Classes {

@@ -45,7 +45,9 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
 
 /**
- * Builder that can be used to create a JDK {@link HttpClient}.
+ * Builder that can be used to create a
+ * <a href="https://hc.apache.org/httpcomponents-client-ga/">Apache HttpComponents</a>
+ * {@link HttpClient}.
  *
  * @author Phillip Webb
  * @since 3.5.0
