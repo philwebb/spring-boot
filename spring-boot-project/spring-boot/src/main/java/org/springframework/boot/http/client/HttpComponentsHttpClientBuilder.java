@@ -56,7 +56,7 @@ public class HttpComponentsHttpClientBuilder {
 
 	private final Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory;
 
-	HttpComponentsHttpClientBuilder() {
+	public HttpComponentsHttpClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
 				HttpComponentsSslBundleTlsStrategy::get);
 	}

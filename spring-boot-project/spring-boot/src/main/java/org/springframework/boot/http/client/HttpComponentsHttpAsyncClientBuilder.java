@@ -56,7 +56,7 @@ public class HttpComponentsHttpAsyncClientBuilder {
 
 	private final Function<SslBundle, TlsStrategy> tlsStrategyFactory;
 
-	HttpComponentsHttpAsyncClientBuilder() {
+	public HttpComponentsHttpAsyncClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
 				HttpComponentsSslBundleTlsStrategy::get);
 	}
@@ -71,6 +71,78 @@ public class HttpComponentsHttpAsyncClientBuilder {
 		this.connectionConfigCustomizer = connectionConfigCustomizer;
 		this.defaultRequestConfigCustomizer = defaultRequestConfigCustomizer;
 		this.tlsStrategyFactory = tlsStrategyFactory;
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpAsyncClientBuilder} that applies additional
+	 * customization to the underlying {@link HttpAsyncClientBuilder}.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
+	 */
+	public HttpComponentsHttpAsyncClientBuilder withCustomizer(Consumer<HttpAsyncClientBuilder> customizer) {
+		Assert.notNull(customizer, "'customizer' must not be null");
+		return new HttpComponentsHttpAsyncClientBuilder(this.customizer.andThen(customizer),
+				this.connectionManagerCustomizer, this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer,
+				this.tlsStrategyFactory);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpAsyncClientBuilder} that applies additional
+	 * customization to the underlying {@link PoolingAsyncClientConnectionManagerBuilder}.
+	 * @param connectionManagerCustomizer the customizer to apply
+	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
+	 */
+	public HttpComponentsHttpAsyncClientBuilder withConnectionManagerCustomizer(
+			Consumer<PoolingAsyncClientConnectionManagerBuilder> connectionManagerCustomizer) {
+		Assert.notNull(connectionManagerCustomizer, "'connectionManagerCustomizer' must not be null");
+		return new HttpComponentsHttpAsyncClientBuilder(this.customizer,
+				this.connectionManagerCustomizer.andThen(connectionManagerCustomizer), this.connectionConfigCustomizer,
+				this.defaultRequestConfigCustomizer, this.tlsStrategyFactory);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpAsyncClientBuilder} that applies additional
+	 * customization to the underlying
+	 * {@link org.apache.hc.client5.http.config.ConnectionConfig.Builder}.
+	 * @param connectionConfigCustomizer the customizer to apply
+	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
+	 */
+	public HttpComponentsHttpAsyncClientBuilder withConnectionConfigCustomizer(
+			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer) {
+		Assert.notNull(connectionConfigCustomizer, "'connectionConfigCustomizer' must not be null");
+		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.connectionConfigCustomizer.andThen(connectionConfigCustomizer),
+				this.defaultRequestConfigCustomizer, this.tlsStrategyFactory);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpAsyncClientBuilder} with a replacement
+	 * {@link TlsStrategy} factory.
+	 * @param tlsStrategyFactory the new factory used to create a {@link TlsStrategy} for
+	 * a given {@link SslBundle}
+	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
+	 */
+	public HttpComponentsHttpAsyncClientBuilder withTlsStrategyFactory(
+			Function<SslBundle, TlsStrategy> tlsStrategyFactory) {
+		Assert.notNull(tlsStrategyFactory, "'tlsStrategyFactory' must not be null");
+		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, this.tlsStrategyFactory);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpAsyncClientBuilder} that applies additional
+	 * customization to the underlying
+	 * {@link org.apache.hc.client5.http.config.RequestConfig.Builder} used for default
+	 * requests.
+	 * @param defaultRequestConfigCustomizer the customizer to apply
+	 * @return a new {@link HttpComponentsHttpAsyncClientBuilder} instance
+	 */
+	public HttpComponentsHttpAsyncClientBuilder withDefaultRequestConfigCustomizer(
+			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer) {
+		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
+		return new HttpComponentsHttpAsyncClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.connectionConfigCustomizer,
+				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer), this.tlsStrategyFactory);
 	}
 
 	/**
