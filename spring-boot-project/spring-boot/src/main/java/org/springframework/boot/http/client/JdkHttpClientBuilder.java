@@ -58,6 +58,14 @@ public class JdkHttpClientBuilder {
 	}
 
 	/**
+	 * Build a new {@link HttpClient} instance.
+	 * @return a new {@link HttpClient} instance
+	 */
+	public HttpClient build() {
+		return build(HttpClientSettings.defaults());
+	}
+
+	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
 	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance

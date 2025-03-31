@@ -48,7 +48,6 @@ import org.apache.hc.core5.ssl.TrustStrategy;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpClientSettings.Redirects;
-import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -975,6 +974,7 @@ public class TestRestTemplate {
 	 * @deprecated since 3.5.0 in favor of
 	 * {@link #withHttpClientSettings(HttpClientSettings)}
 	 */
+	@Deprecated
 	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
 				this.restTemplate.getUriTemplateHandler());
@@ -994,10 +994,9 @@ public class TestRestTemplate {
 	 */
 	@Deprecated
 	public TestRestTemplate withRequestFactorySettings(
-			UnaryOperator<org.springframework.boot.web.client.ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
-		return withHttpClientSettings(
-				(settings) -> ClientHttpRequestFactorySettings.asHttpClientSettings(requestFactorySettingsCustomizer
-					.apply(ClientHttpRequestFactorySettings.asClientHttpRequestFactorySettings(settings)))));
+			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
+		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettingsCustomizer),
+				this.restTemplate.getUriTemplateHandler());
 	}
 
 	/**
@@ -1103,7 +1102,6 @@ public class TestRestTemplate {
 		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], ClientHttpRequestFactorySettings)}
 		 */
 		@Deprecated(since = "3.4.0", forRemoval = true)
-		@SuppressWarnings("removal")
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
 			this(httpClientOptions, new HttpClientSettings(null, settings.connectTimeout(), settings.readTimeout(),
@@ -1114,12 +1112,13 @@ public class TestRestTemplate {
 		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
 		 * @param httpClientOptions the {@link HttpClient} options
 		 * @param settings the settings to apply
-		 * @deprecated since 3.5.0 in favor of {@link #TestRestTemplate(HttpClientOption[], HttpClientSettings)}
+		 * @deprecated since 3.5.0 in favor of
+		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], HttpClientSettings)}
 		 */
-		@Deprecated
+		@Deprecated(since = "3.4.0", forRemoval = true)
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
-			this(httpClientOptions, ClientHttpRequestFactorySettings.asHttpClientSettings(settings))
+			this(httpClientOptions, ClientHttpRequestFactorySettings.asHttpClientSettings(settings));
 		}
 
 		/**
