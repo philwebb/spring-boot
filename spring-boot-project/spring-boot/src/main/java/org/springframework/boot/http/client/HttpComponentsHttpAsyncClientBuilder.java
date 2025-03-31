@@ -16,7 +16,6 @@
 
 package org.springframework.boot.http.client;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -25,23 +24,14 @@ import java.util.function.Function;
 import org.apache.hc.client5.http.async.HttpAsyncClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.protocol.RedirectStrategy;
-import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
-import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
-import org.apache.hc.core5.http.HttpRequest;
-import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
-import org.apache.hc.core5.http.protocol.HttpContext;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
 
 /**
@@ -66,15 +56,7 @@ public class HttpComponentsHttpAsyncClientBuilder {
 
 	HttpComponentsHttpAsyncClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
-				HttpComponentsHttpAsyncClientBuilder::createTlsSocketStrategy);
-	}
-
-	// FIXME pull up or extract
-
-	private static TlsStrategy createTlsSocketStrategy(SslBundle sslBundle) {
-		SslOptions options = sslBundle.getOptions();
-		return new DefaultClientTlsStrategy(sslBundle.createSslContext(), options.getEnabledProtocols(),
-				options.getCiphers(), null, new DefaultHostnameVerifier());
+				HttpComponentsSslBundleTlsStrategy::get);
 	}
 
 	private HttpComponentsHttpAsyncClientBuilder(Consumer<HttpAsyncClientBuilder> customizer,
@@ -106,7 +88,7 @@ public class HttpComponentsHttpAsyncClientBuilder {
 		Assert.notNull(settings, "'settings' must not be null");
 		HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create()
 			.useSystemProperties()
-			.setRedirectStrategy(asRedirectStrategy(settings.redirects()))
+			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))
 			.setConnectionManager(createConnectionManager(settings))
 			.setDefaultRequestConfig(createDefaultRequestConfig());
 		this.customizer.accept(builder);
@@ -133,39 +115,10 @@ public class HttpComponentsHttpAsyncClientBuilder {
 		return builder.build();
 	}
 
-	private RedirectStrategy asRedirectStrategy(Redirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> DefaultRedirectStrategy.INSTANCE;
-			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;
-		};
-	}
-
 	private RequestConfig createDefaultRequestConfig() {
 		RequestConfig.Builder builder = RequestConfig.custom();
 		this.defaultRequestConfigCustomizer.accept(builder);
 		return builder.build();
-	}
-
-	/**
-	 * {@link RedirectStrategy} that never follows redirects.
-	 */
-	private static final class NoFollowRedirectStrategy implements RedirectStrategy {
-
-		private static final RedirectStrategy INSTANCE = new NoFollowRedirectStrategy();
-
-		private NoFollowRedirectStrategy() {
-		}
-
-		@Override
-		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
-			return false;
-		}
-
-		@Override
-		public URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context) {
-			return null;
-		}
-
 	}
 
 }

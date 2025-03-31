@@ -16,7 +16,6 @@
 
 package org.springframework.boot.http.client;
 
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -24,24 +23,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.protocol.RedirectStrategy;
-import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
-import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
-import org.apache.hc.core5.http.HttpRequest;
-import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.io.SocketConfig;
-import org.apache.hc.core5.http.protocol.HttpContext;
 
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslOptions;
 import org.springframework.util.Assert;
 
 /**
@@ -66,13 +56,7 @@ public class HttpComponentsHttpClientBuilder {
 
 	HttpComponentsHttpClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
-				HttpComponentsHttpClientBuilder::createTlsSocketStrategy);
-	}
-
-	private static TlsSocketStrategy createTlsSocketStrategy(SslBundle sslBundle) {
-		SslOptions options = sslBundle.getOptions();
-		return new DefaultClientTlsStrategy(sslBundle.createSslContext(), options.getEnabledProtocols(),
-				options.getCiphers(), null, new DefaultHostnameVerifier());
+				HttpComponentsSslBundleTlsStrategy::get);
 	}
 
 	private HttpComponentsHttpClientBuilder(Consumer<HttpClientBuilder> customizer,
@@ -177,18 +161,11 @@ public class HttpComponentsHttpClientBuilder {
 		Assert.notNull(settings, "'settings' must not be null");
 		HttpClientBuilder builder = HttpClientBuilder.create()
 			.useSystemProperties()
-			.setRedirectStrategy(asRedirectStrategy(settings.redirects()))
+			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))
 			.setConnectionManager(createConnectionManager(settings))
 			.setDefaultRequestConfig(createDefaultRequestConfig());
 		this.customizer.accept(builder);
 		return builder.build();
-	}
-
-	private RedirectStrategy asRedirectStrategy(Redirects redirects) {
-		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> DefaultRedirectStrategy.INSTANCE;
-			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;
-		};
 	}
 
 	private PoolingHttpClientConnectionManager createConnectionManager(HttpClientSettings settings) {
@@ -215,28 +192,6 @@ public class HttpComponentsHttpClientBuilder {
 		RequestConfig.Builder builder = RequestConfig.custom();
 		this.defaultRequestConfigCustomizer.accept(builder);
 		return builder.build();
-	}
-
-	/**
-	 * {@link RedirectStrategy} that never follows redirects.
-	 */
-	private static final class NoFollowRedirectStrategy implements RedirectStrategy {
-
-		private static final RedirectStrategy INSTANCE = new NoFollowRedirectStrategy();
-
-		private NoFollowRedirectStrategy() {
-		}
-
-		@Override
-		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
-			return false;
-		}
-
-		@Override
-		public URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context) {
-			return null;
-		}
-
 	}
 
 }
