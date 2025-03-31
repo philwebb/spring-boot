@@ -104,16 +104,12 @@ public final class JettyClientHttpRequestFactoryBuilder
 
 	@Override
 	protected JettyClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
-		JettyClientHttpRequestFactory requestFactory = createRequestFactory(settings);
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withTimeouts(null, null));
+		JettyClientHttpRequestFactory requestFactory = new JettyClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
-	}
-
-	private JettyClientHttpRequestFactory createRequestFactory(HttpClientSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle());
-		return new JettyClientHttpRequestFactory(httpClient);
 	}
 
 	static class Classes {

@@ -37,10 +37,10 @@ import org.springframework.util.Assert;
 
 /**
  * Interface used to build a fully configured {@link ClientHttpConnector}. Builders for
- * {@link #httpComponents() Apache HTTP Components}, {@link #jetty() Jetty},
- * {@link #reactor() Reactor} and {@link #jdk() JDK} can be obtained using the factory
- * methods on this interface. The {@link #of(Class)} method may be used to instantiate
- * based on the connector type.
+ * {@link #reactor() Reactor}, {@link #jetty() Jetty}, {@link #httpComponents() Apache
+ * HTTP Components} and {@link #jdk() JDK} can be obtained using the factory methods on
+ * this interface. The {@link #of(Class)} method may be used to instantiate based on the
+ * connector type.
  *
  * @param <T> the {@link ClientHttpConnector} type
  * @author Phillip Webb
@@ -132,10 +132,10 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} for the given
 	 * {@code requestFactoryType}. The following implementations are supported:
 	 * <ul>
+	 * <li>{@link ReactorClientHttpRequestFactory}</li>
+	 * <li>{@link JettyClientHttpRequestFactory}</li>
 	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
 	 * <li>{@link JdkClientHttpRequestFactory}</li>
-	 * <li>{@link JettyClientHttpRequestFactory}</li>
-	 * <li>{@link ReactorClientHttpRequestFactory}</li>
 	 * </ul>
 	 * @param <T> the {@link ClientHttpConnector} type
 	 * @param clientHttpConnectorType the {@link ClientHttpConnector} type
@@ -146,14 +146,14 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 		Assert.notNull(clientHttpConnectorType, "'requestFactoryType' must not be null");
 		Assert.isTrue(clientHttpConnectorType != ClientHttpRequestFactory.class,
 				"'requestFactoryType' must be an implementation of ClientHttpRequestFactory");
-		if (clientHttpConnectorType == HttpComponentsClientHttpRequestFactory.class) {
-			return (ClientHttpConnectorBuilder<T>) httpComponents();
+		if (clientHttpConnectorType == ReactorClientHttpRequestFactory.class) {
+			return (ClientHttpConnectorBuilder<T>) reactor();
 		}
 		if (clientHttpConnectorType == JettyClientHttpRequestFactory.class) {
 			return (ClientHttpConnectorBuilder<T>) jetty();
 		}
-		if (clientHttpConnectorType == ReactorClientHttpRequestFactory.class) {
-			return (ClientHttpConnectorBuilder<T>) reactor();
+		if (clientHttpConnectorType == HttpComponentsClientHttpRequestFactory.class) {
+			return (ClientHttpConnectorBuilder<T>) httpComponents();
 		}
 		if (clientHttpConnectorType == JdkClientHttpRequestFactory.class) {
 			return (ClientHttpConnectorBuilder<T>) jdk();

@@ -66,6 +66,16 @@ public record HttpClientSettings(Redirects redirects, Duration connectTimeout, D
 	}
 
 	/**
+	 * Return a new {@link HttpClientSettings} instance with an updated timeout setting.
+	 * @param connectTimeout the new connect timeout
+	 * @param readTimeout the new read timeout
+	 * @return a new {@link HttpClientSettings} instance
+	 */
+	public HttpClientSettings withTimeouts(Duration connectTimeout, Duration readTimeout) {
+		return new HttpClientSettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
+	}
+
+	/**
 	 * Return a new {@link HttpClientSettings} instance with an updated SSL bundle
 	 * setting.
 	 * @param sslBundle the new SSL bundle setting

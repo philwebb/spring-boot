@@ -16,14 +16,17 @@
 
 package org.springframework.boot.http.client;
 
+import java.time.Duration;
 import java.util.function.UnaryOperator;
 
 import javax.net.ssl.SSLException;
 
+import io.netty.channel.ChannelOption;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslManagerBundle;
@@ -62,19 +65,27 @@ public class ReactorHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param redirects the HTTP follow redirects strategy
-	 * @param sslBundle the SSL bundle to use
+	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(Redirects redirects, SslBundle sslBundle) {
+	public HttpClient build(HttpClientSettings settings) {
+		Assert.notNull(settings, "'settings' must not be null");
 		HttpClient httpClient = applyDefaults(HttpClient.create());
-		httpClient = httpClient.followRedirect(followRedirects(redirects));
-		// FIXME httpClient = httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 0);
-		// httpClient.responseTimeout(readTimeout);
-		if (sslBundle != null) {
-			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, sslBundle))));
-		}
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		httpClient = map.from(settings::connectTimeout).to(httpClient, this::setConnectTimeout);
+		httpClient = map.from(settings::readTimeout).toInstance(httpClient::responseTimeout);
+		httpClient = map.from(settings::redirects).as(this::followRedirects).toInstance(httpClient::followRedirect);
+		httpClient = map.from(settings::sslBundle).to(httpClient, this::secure);
 		return this.customizer.apply(httpClient);
+	}
+
+	HttpClient applyDefaults(HttpClient httpClient) {
+		// Aligns with Spring Framework defaults
+		return httpClient.compress(true);
+	}
+
+	private HttpClient setConnectTimeout(HttpClient httpClient, Duration timeout) {
+		return httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) timeout.toMillis());
 	}
 
 	private boolean followRedirects(Redirects redirects) {
@@ -84,9 +95,8 @@ public class ReactorHttpClientBuilder {
 		};
 	}
 
-	HttpClient applyDefaults(HttpClient httpClient) {
-		// Aligns with Spring Framework defaults
-		return httpClient.compress(true);
+	private HttpClient secure(HttpClient httpClient, SslBundle sslBundle) {
+		return httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, sslBundle))));
 	}
 
 	private void configureSsl(SslContextSpec spec, SslBundle sslBundle) throws SSLException {

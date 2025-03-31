@@ -16,6 +16,8 @@
 
 package org.springframework.boot.http.client;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import javax.net.ssl.SSLContext;
@@ -101,31 +103,28 @@ public class JettyHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param redirects the HTTP follow redirects strategy
-	 * @param sslBundle the SSL bundle to use
+	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(Redirects redirects, SslBundle sslBundle) {
-		HttpClientTransport transport = createTransport(sslBundle);
+	public HttpClient build(HttpClientSettings settings) {
+		Assert.notNull(settings, "'settings' must not be null");
+		HttpClientTransport transport = createTransport(settings);
 		this.httpClientTransportCustomizer.accept(transport);
-		HttpClient httpClient = new HttpClient(transport) {
-
-			@Override
-			public org.eclipse.jetty.client.Request newRequest(java.net.URI uri) {
-				Request request = super.newRequest(uri);
-				// FIXME request.timeout(1, null);
-				return request;
-			}
-
-		};
+		HttpClient httpClient = createHttpClient(settings.readTimeout(), transport);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
+		map.from(settings::connectTimeout).as(Duration::toMillis).to(httpClient::setConnectTimeout);
+		map.from(settings::redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);
 		return httpClient;
 	}
 
-	private HttpClientTransport createTransport(SslBundle sslBundle) {
-		ClientConnector connector = createClientConnector(sslBundle);
+	private HttpClient createHttpClient(Duration readTimeout, HttpClientTransport transport) {
+		return (readTimeout != null) ? new HttpClientWithReadTimeout(transport, readTimeout)
+				: new HttpClient(transport);
+	}
+
+	private HttpClientTransport createTransport(HttpClientSettings settings) {
+		ClientConnector connector = createClientConnector(settings.sslBundle());
 		return (connector.getSslContextFactory() != null) ? new HttpClientTransportDynamic(connector)
 				: new HttpClientTransportOverHTTP(connector);
 	}
@@ -160,6 +159,27 @@ public class JettyHttpClientBuilder {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
 			case DONT_FOLLOW -> false;
 		};
+	}
+
+	/**
+	 * {@link HttpClient} subclass that sets the read timeout.
+	 */
+	static class HttpClientWithReadTimeout extends HttpClient {
+
+		private final Duration readTimeout;
+
+		HttpClientWithReadTimeout(HttpClientTransport transport, Duration readTimeout) {
+			super(transport);
+			this.readTimeout = readTimeout;
+		}
+
+		@Override
+		public org.eclipse.jetty.client.Request newRequest(java.net.URI uri) {
+			Request request = super.newRequest(uri);
+			request.timeout(this.readTimeout.toMillis(), TimeUnit.MILLISECONDS);
+			return request;
+		}
+
 	}
 
 }

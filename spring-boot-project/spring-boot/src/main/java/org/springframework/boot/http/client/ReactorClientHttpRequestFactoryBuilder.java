@@ -78,16 +78,12 @@ public final class ReactorClientHttpRequestFactoryBuilder
 
 	@Override
 	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
-		ReactorClientHttpRequestFactory requestFactory = createRequestFactory(settings);
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withTimeouts(null, null));
+		ReactorClientHttpRequestFactory requestFactory = new ReactorClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
-	}
-
-	private ReactorClientHttpRequestFactory createRequestFactory(HttpClientSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(settings.redirects(), settings.sslBundle());
-		return new ReactorClientHttpRequestFactory(httpClient);
 	}
 
 	static class Classes {

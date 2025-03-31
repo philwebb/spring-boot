@@ -18,7 +18,6 @@ package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
-import java.time.Duration;
 import java.util.function.Consumer;
 
 import javax.net.ssl.SSLParameters;
@@ -60,28 +59,18 @@ public class JdkHttpClientBuilder {
 
 	/**
 	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param redirects the HTTP follow redirects strategy
-	 * @param sslBundle the SSL bundle to use
+	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(Redirects redirects, SslBundle sslBundle) {
-		return build(redirects, sslBundle, null);
-	}
-
-	/**
-	 * Build a new {@link HttpClient} instance with the given settings applied.
-	 * @param redirects the HTTP follow redirects strategy
-	 * @param sslBundle the SSL bundle to use
-	 * @param connectTimeout the connect timeout
-	 * @return a new {@link HttpClient} instance
-	 */
-	public HttpClient build(Redirects redirects, SslBundle sslBundle, Duration connectTimeout) {
+	public HttpClient build(HttpClientSettings settings) {
+		Assert.notNull(settings, "'settings' must not be null");
+		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
 		HttpClient.Builder builder = HttpClient.newBuilder();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
-		map.from(connectTimeout).to(builder::connectTimeout);
-		map.from(sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
-		map.from(sslBundle).as(this::asSslParameters).to(builder::sslParameters);
+		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
+		map.from(settings::connectTimeout).to(builder::connectTimeout);
+		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
+		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
 		this.customizer.accept(builder);
 		return builder.build();
 	}
