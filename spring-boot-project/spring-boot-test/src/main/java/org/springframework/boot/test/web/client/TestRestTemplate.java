@@ -971,10 +971,10 @@ public class TestRestTemplate {
 	 * @param requestFactorySettings the new request factory settings
 	 * @return the new template
 	 * @since 3.4.1
-	 * @deprecated since 3.5.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #withHttpClientSettings(HttpClientSettings)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
 				this.restTemplate.getUriTemplateHandler());
@@ -990,9 +990,10 @@ public class TestRestTemplate {
 	 * settings
 	 * @return the new template
 	 * @since 3.4.1
-	 * @deprecated since 3.5.0 in favor of {@link #withHttpClientSettings(UnaryOperator)}
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+	 * {@link #withHttpClientSettings(UnaryOperator)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public TestRestTemplate withRequestFactorySettings(
 			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
 		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettingsCustomizer),
@@ -1112,7 +1113,7 @@ public class TestRestTemplate {
 		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
 		 * @param httpClientOptions the {@link HttpClient} options
 		 * @param settings the settings to apply
-		 * @deprecated since 3.5.0 in favor of
+		 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], HttpClientSettings)}
 		 */
 		@Deprecated(since = "3.4.0", forRemoval = true)

@@ -38,6 +38,8 @@ import org.springframework.util.function.ThrowingConsumer;
  * Builder that can be used to create a Rector Netty {@link HttpClient}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 3.5.0
  */
 public class ReactorHttpClientBuilder {

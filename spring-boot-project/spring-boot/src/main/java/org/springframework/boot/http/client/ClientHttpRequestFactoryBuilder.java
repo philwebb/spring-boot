@@ -58,10 +58,10 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * {@code settings} if they are provided.
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpRequestFactory}.
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #build(HttpClientSettings)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	default T build(ClientHttpRequestFactorySettings settings) {
 		return build(ClientHttpRequestFactorySettings.asHttpClientSettings(settings));
 	}

@@ -53,10 +53,10 @@ public interface WebServiceMessageSenderFactory {
 	 * by a detected {@link ClientHttpRequestFactory}.
 	 * @param requestFactorySettings the setting to apply
 	 * @return a new {@link WebServiceMessageSenderFactory}
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #http(HttpClientSettings)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	static WebServiceMessageSenderFactory http(ClientHttpRequestFactorySettings requestFactorySettings) {
 		return http(ClientHttpRequestFactorySettings.asHttpClientSettings(requestFactorySettings));
 	}
@@ -68,10 +68,10 @@ public interface WebServiceMessageSenderFactory {
 	 * @param requestFactoryBuilder the request factory builder to use
 	 * @param requestFactorySettings the settings to apply
 	 * @return a new {@link WebServiceMessageSenderFactory}
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #http(ClientHttpRequestFactoryBuilder, HttpClientSettings)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	static WebServiceMessageSenderFactory http(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
 			ClientHttpRequestFactorySettings requestFactorySettings) {
 		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");

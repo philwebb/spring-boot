@@ -27,7 +27,11 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.springframework.boot.http.client.HttpClientSettings.Redirects;
 
 /**
- * @author pwebb
+ * Adapts {@link Redirects} to an
+ * <a href="https://hc.apache.org/httpcomponents-client-ga/">Apache HttpComponents</a>
+ * {@link RedirectStrategy}.
+ *
+ * @author Phillip Webb
  */
 class HttpComponentsRedirectStrategy {
 

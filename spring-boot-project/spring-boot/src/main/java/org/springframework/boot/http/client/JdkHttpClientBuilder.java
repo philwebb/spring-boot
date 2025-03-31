@@ -32,6 +32,8 @@ import org.springframework.util.Assert;
  * Builder that can be used to create a JDK {@link HttpClient}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 3.5.0
  */
 public class JdkHttpClientBuilder {

@@ -23,6 +23,10 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 
 /**
+ * Adapts {@link SslBundle} to an
+ * <a href="https://hc.apache.org/httpcomponents-client-ga/">Apache HttpComponents</a>
+ * {@link DefaultClientTlsStrategy}.
+ *
  * @author Phillip Webb
  */
 class HttpComponentsSslBundleTlsStrategy {

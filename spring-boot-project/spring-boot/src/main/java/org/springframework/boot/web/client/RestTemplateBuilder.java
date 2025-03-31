@@ -444,10 +444,10 @@ public class RestTemplateBuilder {
 	 * @param requestFactorySettings the request factory settings
 	 * @return a new builder instance
 	 * @since 3.4.0
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #httpClientSettings(HttpClientSettings)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public RestTemplateBuilder requestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		Assert.notNull(requestFactorySettings, "'requestFactorySettings' must not be null");
 		return new RestTemplateBuilder(ClientHttpRequestFactorySettings.asHttpClientSettings(requestFactorySettings),
@@ -462,10 +462,10 @@ public class RestTemplateBuilder {
 	 * factory settings
 	 * @return a new builder instance
 	 * @since 3.4.1
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #httpClientSettings(UnaryOperator)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public RestTemplateBuilder requestFactorySettings(
 			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
 		Assert.notNull(requestFactorySettingsCustomizer, "'requestFactorySettingsCustomizer' must not be null");
@@ -562,10 +562,10 @@ public class RestTemplateBuilder {
 	 * @param redirects the redirect strategy
 	 * @return a new builder instance.
 	 * @since 3.4.1
-	 * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #redirects(Redirects)}
 	 */
-	@Deprecated
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public RestTemplateBuilder redirects(ClientHttpRequestFactorySettings.Redirects redirects) {
 		return redirects(ClientHttpRequestFactorySettings.Redirects.asHttpClientRedirects(redirects));
 	}

@@ -40,6 +40,8 @@ import org.springframework.util.Assert;
  * {@link HttpAsyncClient}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 3.5.0
  */
 public class HttpComponentsHttpAsyncClientBuilder {
