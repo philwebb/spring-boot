@@ -152,7 +152,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 			return (ClientHttpConnectorBuilder<T>) jdk();
 		}
 		throw new IllegalArgumentException(
-				"'clientHttpConnectorType' type %s is not supported".formatted(clientHttpConnectorType.getName()));
+				"'clientHttpConnectorType' %s is not supported".formatted(clientHttpConnectorType.getName()));
 	}
 
 	/**

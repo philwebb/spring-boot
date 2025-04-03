@@ -49,7 +49,7 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  */
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass({ ClientHttpConnector.class, Mono.class })
-@EnableConfigurationProperties(HttpReactiveClientSettingsProperties.class)
+@EnableConfigurationProperties(ReactiveClientSettingsProperties.class)
 public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader beanClassLoader;
@@ -62,7 +62,7 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 	@Bean
 	@ConditionalOnMissingBean
 	ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder(
-			HttpReactiveClientSettingsProperties httpReactiveClientSettingsProperties,
+			ReactiveClientSettingsProperties httpReactiveClientSettingsProperties,
 			ObjectProvider<ClientHttpConnectorBuilderCustomizer<?>> clientHttpConnectorBuilderCustomizers) {
 		ClientHttpConnectorBuilder<?> builder = httpReactiveClientSettingsProperties
 			.connectorBuilder(this.beanClassLoader);
@@ -81,7 +81,7 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 	@Bean
 	@ConditionalOnMissingBean
 	ClientHttpConnectorSettings clientHttpRequestFactorySettings(
-			HttpReactiveClientSettingsProperties httpReactiveClientSettingsProperties,
+			ReactiveClientSettingsProperties httpReactiveClientSettingsProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		HttpClientSettings settings = httpReactiveClientSettingsProperties.httpClientSettings(sslBundles);
 		return new ClientHttpConnectorSettings(settings.redirects(), settings.connectTimeout(), settings.readTimeout(),

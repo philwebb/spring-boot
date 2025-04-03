@@ -28,6 +28,6 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings
  * @see ClientHttpConnectorSettings
  */
 @ConfigurationProperties("spring.http.reactiveclient.settings")
-public class HttpReactiveClientSettingsProperties extends AbstractClientHttpConnectorProperties {
+public class ReactiveClientSettingsProperties extends AbstractClientHttpConnectorProperties {
 
 }

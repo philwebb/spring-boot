@@ -132,7 +132,7 @@ public final class HttpComponentsClientHttpConnectorBuilder
 
 	static class Classes {
 
-		static final String HTTP_CLIENTS = "org.apache.hc.client5.http.impl.classic.HttpAsyncClients";
+		static final String HTTP_CLIENTS = "org.apache.hc.client5.http.impl.async.HttpAsyncClients";
 
 		static final String REACTIVE_RESPONSE_CONSUMER = "org.apache.hc.core5.reactive.ReactiveResponseConsumer";
 
