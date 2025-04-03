@@ -28,7 +28,3 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
-
-tasks.getByName("checkAutoConfigurationClasses") {
-	enabled = false
-}
