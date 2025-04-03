@@ -53,6 +53,7 @@ public class ClientHttpConnectorAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HttpClient.class)
 	@Import(ReactorNettyConfigurations.class)
+	@SuppressWarnings("removal")
 	static class ReactorNetty {
 
 		@Bean

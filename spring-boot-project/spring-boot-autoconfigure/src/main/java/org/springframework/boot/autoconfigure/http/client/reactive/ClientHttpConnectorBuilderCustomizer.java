@@ -23,8 +23,8 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
  * {@link ClientHttpConnectorBuilder} when its type matches.
  *
  * @author Phillip Webb
- * @param <B> the builder type
  * @since 3.5.0
+ * @param <B> the builder type
  */
 public interface ClientHttpConnectorBuilderCustomizer<B extends ClientHttpConnectorBuilder<?>> {
 
