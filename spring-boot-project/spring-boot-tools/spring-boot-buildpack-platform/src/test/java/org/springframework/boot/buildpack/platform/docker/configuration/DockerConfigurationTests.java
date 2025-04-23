@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Wei Jiang
  * @author Scott Frederick
  */
+@SuppressWarnings("removal")
 class DockerConfigurationTests {
 
 	@Test
