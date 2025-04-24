@@ -19,7 +19,8 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Docker registry authentication configuration using user credentials.
+ * {@link DockerRegistryAuthentication} for
+ * {@link DockerRegistryAuthentication#token(String)}.
  *
  * @author Scott Frederick
  */
