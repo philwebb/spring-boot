@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -40,6 +41,8 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 	private static final String DEFAULT_DOMAIN = "docker.io";
 
 	private static final String INDEX_URL = "https://index.docker.io/v1/";
+
+	private static Map<String, Credential> credentialFromHelperCache = new ConcurrentHashMap<>();
 
 	private final DockerRegistryAuthentication fallback;
 
@@ -110,17 +113,20 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 	}
 
 	private Credential getCredentialsFromHelper(String serverUrl) {
-		if (StringUtils.hasText(serverUrl)) {
-			CredentialHelper credentialHelper = getCredentialHelper(serverUrl);
-			if (credentialHelper != null) {
-				try {
-					return credentialHelper.get(serverUrl);
-				}
-				catch (IOException ex) {
-					String message = "Error retrieving credentials for '%s' due to: %s".formatted(serverUrl,
-							ex.getMessage());
-					this.credentialHelperExceptionHandler.accept(message, ex);
-				}
+		return (StringUtils.hasText(serverUrl))
+				? credentialFromHelperCache.computeIfAbsent(serverUrl, this::computeCredentialsFromHelper) : null;
+	}
+
+	private Credential computeCredentialsFromHelper(String serverUrl) {
+		CredentialHelper credentialHelper = getCredentialHelper(serverUrl);
+		if (credentialHelper != null) {
+			try {
+				return credentialHelper.get(serverUrl);
+			}
+			catch (IOException ex) {
+				String message = "Error retrieving credentials for '%s' due to: %s".formatted(serverUrl,
+						ex.getMessage());
+				this.credentialHelperExceptionHandler.accept(message, ex);
 			}
 		}
 		return null;
