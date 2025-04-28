@@ -18,53 +18,56 @@ package org.springframework.boot.autoconfigure.web.service.invoker;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.service.registry.AbstractHttpServiceRegistrar;
-import org.springframework.web.service.registry.HttpServiceGroup;
 import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 /**
- * Indicates that an annotated class is an HTTP service to be registered with an
- * {@link HttpServiceGroup}.
- * <p>
- * Classes annotated with {@link HttpService @HttpService} are eligible for discovery
- * using {@link HttpServiceScan @HttpServiceScan}.
- * <p>
- * <strong>NOTE:</strong> The {@link #group()} and {@link #clientType()} attributes are
- * only used for scanned services. They will not be considered if the interface is also
- * imported or discovered using {@link ImportHttpServices @ImportHttpServices}.
+ * Configures scanning directives for use with {@link HttpServiceClient @HttpService}
+ * classes.
  *
  * @author Phillip Webb
- * @since 4.0.0
- * @see ImportHttpServices
  */
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 @Documented
-public @interface HttpService {
+@Repeatable(HttpServiceClientScan.Container.class)
+public @interface HttpServiceClientScan {
 
 	/**
-	 * The name of the HTTP Service group.
+	 * Alias for {@link #basePackages}.
 	 * <p>
-	 * If not specified, declared HTTP Services are grouped under the
-	 * {@link HttpServiceGroup#DEFAULT_GROUP_NAME}.
+	 * Allows for more concise annotation declarations if no other attributes are needed
+	 * &mdash; for example, {@code @ComponentScan("org.my.pkg")} instead of
+	 * {@code @ComponentScan(basePackages = "org.my.pkg")}.
 	 */
-	@AliasFor("group")
-	String value() default HttpServiceGroup.DEFAULT_GROUP_NAME;
+	@AliasFor("basePackages")
+	String[] value() default {};
 
 	/**
-	 * The name of the HTTP Service group.
+	 * Base packages to scan for annotated components.
 	 * <p>
-	 * If not specified, declared HTTP Services are grouped under the
-	 * {@link HttpServiceGroup#DEFAULT_GROUP_NAME}.
+	 * {@link #value} is an alias for (and mutually exclusive with) this attribute.
+	 * <p>
+	 * Use {@link #basePackageClasses} for a type-safe alternative to String-based package
+	 * names.
 	 */
 	@AliasFor("value")
-	String group() default HttpServiceGroup.DEFAULT_GROUP_NAME;
+	String[] basePackages() default {};
+
+	/**
+	 * Type-safe alternative to {@link #basePackages} for specifying the packages to scan
+	 * for annotated components. The package of each class specified will be scanned.
+	 * <p>
+	 * Consider creating a special no-op marker class or interface in each package that
+	 * serves no purpose other than being referenced by this attribute.
+	 */
+	Class<?>[] basePackageClasses() default {};
 
 	/**
 	 * Specify the type of client to use for the group.
@@ -74,5 +77,17 @@ public @interface HttpService {
 	 * {@link AbstractHttpServiceRegistrar#setDefaultClientType}.
 	 */
 	ClientType clientType() default ClientType.UNSPECIFIED;
+
+	/**
+	 * Repeatable container for {@link HttpServiceClientScan @HttpServiceScan}
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@Documented
+	@interface Container {
+
+		HttpServiceClientScan[] value();
+
+	}
 
 }

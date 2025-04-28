@@ -24,7 +24,7 @@ import org.springframework.web.service.registry.AbstractHttpServiceRegistrar;
 import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
 
 /**
- * {@link AbstractHttpServiceRegistrar} for {@link HttpService @HttpService} annotated
+ * {@link AbstractHttpServiceRegistrar} for {@link HttpServiceClient @HttpService} annotated
  * classes found in {@link AutoConfigurationPackages}.
  *
  * @author Phillip Webb
@@ -51,15 +51,15 @@ class AutoConfigurationPackagesHttpServiceScanRegistrar extends AbstractHttpServ
 	}
 
 	private boolean isHttpService(AnnotationMetadata metadata) {
-		return metadata.getAnnotations().isPresent(HttpService.class);
+		return metadata.getAnnotations().isPresent(HttpServiceClient.class);
 	}
 
 	private String getGroupName(Class<?> type) {
-		return MergedAnnotations.from(type).get(HttpService.class).getString("group");
+		return MergedAnnotations.from(type).get(HttpServiceClient.class).getString("group");
 	}
 
 	private ClientType getClientType(Class<?> type) {
-		return MergedAnnotations.from(type).get(HttpService.class).getEnum("clientType", ClientType.class);
+		return MergedAnnotations.from(type).get(HttpServiceClient.class).getEnum("clientType", ClientType.class);
 	}
 
 }

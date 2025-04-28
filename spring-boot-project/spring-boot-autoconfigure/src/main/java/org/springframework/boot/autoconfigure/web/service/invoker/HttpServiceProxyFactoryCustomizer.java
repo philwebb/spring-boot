@@ -106,4 +106,6 @@ public interface HttpServiceProxyFactoryCustomizer extends Selector<HttpServiceP
 
 	}
 
+	// FIXME spring.http.service.client.<name>.reactive
+
 }

@@ -28,7 +28,7 @@ import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
 
 /**
  * {@link AbstractHttpServiceRegistrar} to support
- * {@link HttpServiceScan @HttpServiceScan} for {@link HttpService @HttpService} annotated
+ * {@link HttpServiceClientScan @HttpServiceScan} for {@link HttpServiceClient @HttpService} annotated
  * interfaces.
  *
  * @author Phillip Webb
@@ -43,20 +43,20 @@ class HttpServiceScanRegistrar extends AbstractHttpServiceRegistrar {
 	private void registerHttpServices(HttpServiceRegistry.GroupSpec registry,
 			AnnotationMetadata importingClassMetadata) {
 		MergedAnnotations annotations = importingClassMetadata.getAnnotations();
-		annotations.stream(HttpServiceScan.Container.class)
+		annotations.stream(HttpServiceClientScan.Container.class)
 			.flatMap(this::getContainedAnnotations)
 			.forEach(annotation -> register(registry, importingClassMetadata, annotation));
-		annotations.stream(HttpServiceScan.class)
+		annotations.stream(HttpServiceClientScan.class)
 			.forEach(annotation -> register(registry, importingClassMetadata, annotation));
 	}
 
-	private Stream<MergedAnnotation<HttpServiceScan>> getContainedAnnotations(
-			MergedAnnotation<HttpServiceScan.Container> container) {
-		return Arrays.stream(container.getAnnotationArray(MergedAnnotation.VALUE, HttpServiceScan.class));
+	private Stream<MergedAnnotation<HttpServiceClientScan>> getContainedAnnotations(
+			MergedAnnotation<HttpServiceClientScan.Container> container) {
+		return Arrays.stream(container.getAnnotationArray(MergedAnnotation.VALUE, HttpServiceClientScan.class));
 	}
 
 	private void register(HttpServiceRegistry.GroupSpec registry, AnnotationMetadata importingClassMetadata,
-			MergedAnnotation<HttpServiceScan> annotation) {
+			MergedAnnotation<HttpServiceClientScan> annotation) {
 		String[] basePackages = annotation.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = annotation.getClassArray("basePackageClasses");
 		if (basePackages.length == 0 && basePackageClasses.length == 0) {
@@ -67,15 +67,15 @@ class HttpServiceScanRegistrar extends AbstractHttpServiceRegistrar {
 	}
 
 	private boolean isHttpService(AnnotationMetadata metadata) {
-		return metadata.getAnnotations().isPresent(HttpService.class);
+		return metadata.getAnnotations().isPresent(HttpServiceClient.class);
 	}
 
 	private String getGroupName(Class<?> type) {
-		return MergedAnnotations.from(type).get(HttpService.class).getString("group");
+		return MergedAnnotations.from(type).get(HttpServiceClient.class).getString("group");
 	}
 
 	private ClientType getClientType(Class<?> type) {
-		return MergedAnnotations.from(type).get(HttpService.class).getEnum("clientType", ClientType.class);
+		return MergedAnnotations.from(type).get(HttpServiceClient.class).getEnum("clientType", ClientType.class);
 	}
 
 }
