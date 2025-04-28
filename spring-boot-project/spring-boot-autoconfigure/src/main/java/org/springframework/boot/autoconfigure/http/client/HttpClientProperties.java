@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.http.client;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -23,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * clients.
  *
  * @author Phillip Webb
+ * @author Olga Maciaszek-Sharma
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.http.client")
@@ -33,6 +39,11 @@ public class HttpClientProperties {
 	 */
 	private Settings settings = new Settings();
 
+	/**
+	 * Group settings.
+	 */
+	private Map<String, Group> group = new LinkedHashMap<>();
+
 	public Settings getSettings() {
 		return this.settings;
 	}
@@ -41,10 +52,53 @@ public class HttpClientProperties {
 		this.settings = settings;
 	}
 
+	public Map<String, Group> getGroup() {
+		return this.group;
+	}
+
+	public void setGroup(Map<String, Group> group) {
+		this.group = group;
+	}
+
 	/**
 	 * {@link AbstractHttpRequestFactoryProperties} for the default settings.
 	 */
 	public static class Settings extends AbstractHttpRequestFactoryProperties {
+
+	}
+
+	/**
+	 * {@link AbstractHttpRequestFactoryProperties} for an individual group.
+	 */
+	public static class Group extends AbstractHttpRequestFactoryProperties {
+
+		/**
+		 * Base url to set in the underlying HTTP client group. By default, set to
+		 * {@code null}.
+		 */
+		private String baseUrl;
+
+		/**
+		 * Default request headers for interface client group. By default, set to empty
+		 * {@link Map}.
+		 */
+		private Map<String, List<String>> defaultHeaders = Collections.emptyMap();
+
+		public String getBaseUrl() {
+			return this.baseUrl;
+		}
+
+		public void setBaseUrl(String baseUrl) {
+			this.baseUrl = baseUrl;
+		}
+
+		public Map<String, List<String>> getDefaultHeaders() {
+			return this.defaultHeaders;
+		}
+
+		public void setDefaultHeaders(Map<String, List<String>> defaultHeaders) {
+			this.defaultHeaders = defaultHeaders;
+		}
 
 	}
 
