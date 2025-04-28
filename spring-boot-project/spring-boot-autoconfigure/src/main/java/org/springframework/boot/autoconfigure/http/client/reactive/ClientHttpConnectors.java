@@ -72,6 +72,9 @@ class ClientHttpConnectors {
 	private <P, T> T getProperty(Function<AbstractClientHttpConnectorProperties, P> accessor, Function<P, T> extractor,
 			Predicate<T> predicate) {
 		for (AbstractClientHttpConnectorProperties properties : this.orderedProperties) {
+			if (properties == null) {
+				continue;
+			}
 			P value = accessor.apply(properties);
 			T extracted = (value != null) ? extractor.apply(value) : null;
 			if (predicate.test(extracted)) {

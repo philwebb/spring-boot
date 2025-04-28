@@ -16,55 +16,36 @@
 
 package org.springframework.boot.autoconfigure.http.client;
 
-import java.time.Duration;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.HttpRedirects;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
  * clients.
  *
  * @author Phillip Webb
- * @since 3.4.0
- * @see ClientHttpRequestFactorySettings
- * @deprecated since 3.5.0 for removal in 4.0.0 in favor of
- * {@link HttpClientSettingsProperties}
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.http.client")
-@Deprecated(since = "3.5.0", forRemoval = true)
-public class HttpClientProperties extends AbstractHttpRequestFactoryProperties {
+public class HttpClientProperties {
 
-	@Override
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.client.settings.factory")
-	public Factory getFactory() {
-		return super.getFactory();
+	/**
+	 * Default settings.
+	 */
+	private Settings settings = new Settings();
+
+	public Settings getSettings() {
+		return this.settings;
 	}
 
-	@Override
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.client.settings.redirects")
-	public HttpRedirects getRedirects() {
-		return super.getRedirects();
+	public void setSettings(Settings settings) {
+		this.settings = settings;
 	}
 
-	@Override
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.client.settings.connect-timeout")
-	public Duration getConnectTimeout() {
-		return super.getConnectTimeout();
-	}
+	/**
+	 * {@link AbstractHttpRequestFactoryProperties} for the default settings.
+	 */
+	public static class Settings extends AbstractHttpRequestFactoryProperties {
 
-	@Override
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.client.settings.read-timeout")
-	public Duration getReadTimeout() {
-		return super.getReadTimeout();
-	}
-
-	@Override
-	@DeprecatedConfigurationProperty(since = "3.5.0", replacement = "spring.http.client.settings.ssl")
-	public Ssl getSsl() {
-		return super.getSsl();
 	}
 
 }

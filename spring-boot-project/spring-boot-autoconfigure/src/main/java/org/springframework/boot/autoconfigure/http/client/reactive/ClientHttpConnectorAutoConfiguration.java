@@ -48,7 +48,7 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  */
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass({ ClientHttpConnector.class, Mono.class })
-@EnableConfigurationProperties(HttpReactiveClientSettingsProperties.class)
+@EnableConfigurationProperties(HttpReactiveClientProperties.class)
 public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpConnectors connectors;
@@ -56,8 +56,8 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 	private ClassLoader beanClassLoader;
 
 	ClientHttpConnectorAutoConfiguration(ObjectProvider<SslBundles> sslBundles,
-			HttpReactiveClientSettingsProperties properties) {
-		this.connectors = new ClientHttpConnectors(sslBundles, properties);
+			HttpReactiveClientProperties properties) {
+		this.connectors = new ClientHttpConnectors(sslBundles, properties.getSettings());
 	}
 
 	@Override
