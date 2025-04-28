@@ -65,6 +65,8 @@ org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfigurati
 org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
+org.springframework.boot.autoconfigure.http.interfaceclient.HttpInterfaceClientAutoConfiguration
+org.springframework.boot.autoconfigure.http.interfaceclient.reactive.ReactiveHttpInterfaceClientAutoConfiguration
 org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
