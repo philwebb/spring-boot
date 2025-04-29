@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket.servlet;
+package org.springframework.boot.websocket.autoconfigure.servlet;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
-import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -47,13 +46,13 @@ import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebSer
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
+import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.SimpleMessageConverter;
@@ -66,7 +65,6 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
-import org.springframework.security.util.FieldUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -145,27 +143,25 @@ class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	@Test
-	void predefinedThreadExecutorIsSelectedForInboundChannel() throws Throwable {
+	void predefinedThreadExecutorIsSelectedForInboundChannel() {
 		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
 		ChannelRegistration registration = new ChannelRegistration();
-		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
+		WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
 		configuration.configureClientInboundChannel(registration);
-		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
-		assertThat(executor).isEqualTo(expectedExecutor);
+		assertThat(registration).extracting("executor").isEqualTo(expectedExecutor);
 	}
 
 	@Test
-	void predefinedThreadExecutorIsSelectedForOutboundChannel() throws Throwable {
+	void predefinedThreadExecutorIsSelectedForOutboundChannel() {
 		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
 		ChannelRegistration registration = new ChannelRegistration();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper(),
 				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
 		configuration.configureClientOutboundChannel(registration);
-		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
-		assertThat(executor).isEqualTo(expectedExecutor);
+		assertThat(registration).extracting("executor").isEqualTo(expectedExecutor);
 	}
 
 	@Test
