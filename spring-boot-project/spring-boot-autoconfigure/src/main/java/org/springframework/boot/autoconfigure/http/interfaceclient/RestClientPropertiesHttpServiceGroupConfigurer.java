@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.http.client.ClientHttpRequestFactories;
 import org.springframework.boot.autoconfigure.http.client.HttpClientProperties;
+import org.springframework.boot.autoconfigure.http.client.HttpClientProperties.Group;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -76,8 +77,11 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 	private void configureClient(HttpServiceGroup group, RestClient.Builder builder) {
 		HttpClientProperties.Group groupProperties = this.properties.getGroup().get(group.name());
 		builder.requestFactory(getRequestFactory(groupProperties));
+		Group defaults = this.properties.getGroups();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(defaults::getBaseUrl).whenHasText().to(builder::baseUrl);
+		map.from(defaults::getDefaultHeaders).as(this::putAllHeaders).to(builder::defaultHeaders);
 		if (groupProperties != null) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(groupProperties::getBaseUrl).whenHasText().to(builder::baseUrl);
 			map.from(groupProperties::getDefaultHeaders).as(this::putAllHeaders).to(builder::defaultHeaders);
 		}
@@ -89,7 +93,7 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	private ClientHttpRequestFactory getRequestFactory(HttpClientProperties.Group groupProperties) {
 		ClientHttpRequestFactories factories = new ClientHttpRequestFactories(this.sslBundles, groupProperties,
-				this.properties.getSettings());
+				this.properties.getGroups(), this.properties.getSettings());
 		ClientHttpRequestFactoryBuilder<?> builder = this.requestFactoryBuilder
 			.getIfAvailable(() -> factories.builder(this.classLoader));
 		ClientHttpRequestFactorySettings settings = this.requestFactorySettings.getIfAvailable(factories::settings);

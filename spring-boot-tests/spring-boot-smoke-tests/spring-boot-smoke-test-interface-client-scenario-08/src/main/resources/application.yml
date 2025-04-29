@@ -1,8 +1,5 @@
 spring:
   http:
     client:
-      group:
-        zuplo1:
-          base-url: https://echo.zuplo.io
-        zuplo2:
-          base-url: https://echo.zuplo.io 
+      groups:
+        base-url: https://echo.zuplo.io

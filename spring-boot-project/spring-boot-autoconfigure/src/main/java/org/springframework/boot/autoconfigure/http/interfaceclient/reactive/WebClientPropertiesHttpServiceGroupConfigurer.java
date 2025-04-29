@@ -24,6 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.http.client.HttpClientProperties;
 import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectors;
 import org.springframework.boot.autoconfigure.http.client.reactive.HttpReactiveClientProperties;
+import org.springframework.boot.autoconfigure.http.client.reactive.HttpReactiveClientProperties.Group;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
@@ -80,8 +81,11 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 	private void configureClient(HttpServiceGroup group, WebClient.Builder builder) {
 		HttpReactiveClientProperties.Group groupProperties = this.properties.getGroup().get(group.name());
 		builder.clientConnector(getClientConnector(groupProperties));
+		Group defaults = this.properties.getGroups();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(defaults::getBaseUrl).whenHasText().to(builder::baseUrl);
+		map.from(defaults::getDefaultHeaders).as(this::putAllHeaders).to(builder::defaultHeaders);
 		if (groupProperties != null) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(groupProperties::getBaseUrl).whenHasText().to(builder::baseUrl);
 			map.from(groupProperties::getDefaultHeaders).as(this::putAllHeaders).to(builder::defaultHeaders);
 		}
@@ -93,7 +97,7 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	private ClientHttpConnector getClientConnector(HttpReactiveClientProperties.Group groupProperties) {
 		ClientHttpConnectors connectors = new ClientHttpConnectors(this.sslBundles, groupProperties,
-				this.properties.getSettings());
+				this.properties.getGroups(), this.properties.getSettings());
 		ClientHttpConnectorBuilder<?> builder = this.clientConnectorBuilder
 			.getIfAvailable(() -> connectors.builder(this.classLoader));
 		ClientHttpConnectorSettings settings = this.clientConnectorSettings.getIfAvailable(connectors::settings);

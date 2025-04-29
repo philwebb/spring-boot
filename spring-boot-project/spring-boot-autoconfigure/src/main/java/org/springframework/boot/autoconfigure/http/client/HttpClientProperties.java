@@ -40,6 +40,11 @@ public class HttpClientProperties {
 	private Settings settings = new Settings();
 
 	/**
+	 * Default group settings that always apply unless overridden by individual groups.
+	 */
+	private Group groups = new Group();
+
+	/**
 	 * Group settings.
 	 */
 	private Map<String, Group> group = new LinkedHashMap<>();
@@ -50,6 +55,14 @@ public class HttpClientProperties {
 
 	public void setSettings(Settings settings) {
 		this.settings = settings;
+	}
+
+	public Group getGroups() {
+		return this.groups;
+	}
+
+	public void setGroups(Group groups) {
+		this.groups = groups;
 	}
 
 	public Map<String, Group> getGroup() {

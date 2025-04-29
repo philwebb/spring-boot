@@ -46,12 +46,25 @@ public class HttpReactiveClientProperties {
 	 */
 	private Map<String, Group> group = new LinkedHashMap<>();
 
+	/**
+	 * Default group settings that always apply unless overridden by individual groups.
+	 */
+	private Group groups = new Group();
+
 	public Settings getSettings() {
 		return this.settings;
 	}
 
 	public void setSettings(Settings settings) {
 		this.settings = settings;
+	}
+
+	public Group getGroups() {
+		return this.groups;
+	}
+
+	public void setGroups(Group groups) {
+		this.groups = groups;
 	}
 
 	public Map<String, Group> getGroup() {
