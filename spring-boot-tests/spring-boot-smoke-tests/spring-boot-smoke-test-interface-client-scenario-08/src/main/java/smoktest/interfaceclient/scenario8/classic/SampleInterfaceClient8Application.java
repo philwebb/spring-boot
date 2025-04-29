@@ -31,6 +31,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.registry.HttpServiceGroup;
+import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
@@ -51,6 +52,22 @@ public class SampleInterfaceClient8Application {
 			for (EchoService echoService : echoServices) {
 				System.out.println(echoService.echo(Map.of("hello", "world")));
 			}
+			System.out.println("==========================");
+			System.out.println();
+			System.out.println();
+		};
+	}
+
+	@Bean
+	ApplicationRunner commandLineRunnerByName(HttpServiceProxyRegistry registry) {
+		return (args) -> {
+			System.out.println();
+			System.out.println();
+			System.out.println("==========================");
+			System.out.println("Scenario #8 (classic by name)");
+			System.out.println();
+			System.out.println(registry.getClient("zuplo1", EchoService.class).echo(Map.of("hello", "world")));
+			System.out.println(registry.getClient("zuplo2", EchoService.class).echo(Map.of("hello", "universe")));
 			System.out.println("==========================");
 			System.out.println();
 			System.out.println();
