@@ -29,10 +29,12 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
@@ -46,6 +48,8 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	private final ClassLoader classLoader;
 
+	private final Environment environment;
+
 	private final ObjectProvider<SslBundles> sslBundles;
 
 	private final HttpClientSettingsProperties settingsProperties;
@@ -56,11 +60,13 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	private final ObjectProvider<ClientHttpRequestFactorySettings> requestFactorySettings;
 
-	RestClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, ObjectProvider<SslBundles> sslBundles,
-			HttpClientSettingsProperties settingsProperties, HttpClientServiceProperties serviceProperties,
+	RestClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, Environment environment,
+			ObjectProvider<SslBundles> sslBundles, HttpClientSettingsProperties settingsProperties,
+			HttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> requestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> requestFactorySettings) {
 		this.classLoader = classLoader;
+		this.environment = environment;
 		this.sslBundles = sslBundles;
 		this.settingsProperties = settingsProperties;
 		this.serviceProperties = serviceProperties;
@@ -75,7 +81,7 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	@Override
 	public void configureGroups(Groups<RestClient.Builder> groups) {
-		groups.configureClient(this::configureClient);
+		groups.configure(this::configureClient, this::configureProxyFactory);
 	}
 
 	private void configureClient(HttpServiceGroup group, RestClient.Builder builder) {
@@ -101,6 +107,15 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 			.getIfAvailable(() -> factories.builder(this.classLoader));
 		ClientHttpRequestFactorySettings settings = this.requestFactorySettings.getIfAvailable(factories::settings);
 		return builder.build(settings);
+	}
+
+	private void configureProxyFactory(HttpServiceGroup group, HttpServiceProxyFactory.Builder builder) {
+		builder.embeddedValueResolver((value) -> resolveEmbeddedValue(value, group));
+	}
+
+	private String resolveEmbeddedValue(String value, HttpServiceGroup group) {
+		value = this.environment.resolvePlaceholders(value);
+		return (value != null && value.startsWith("clientservicegroup://")) ? "" : value;
 	}
 
 }

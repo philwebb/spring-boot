@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package smoktest.interfaceclient.scenario4.classic;
+package org.springframework.boot.autoconfigure.http.client.service;
 
-import java.util.Map;
+import org.springframework.context.annotation.Conditional;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.service.annotation.HttpExchange;
-import org.springframework.web.service.annotation.PostExchange;
+/**
+ * {@link Conditional @Conditional} that matches when one or more HTTP Service bean has
+ * been registered.
+ *
+ * @author Phillip Webb
+ */
+public @interface ConditionalOnHttpServiceProxyBean {
 
-@HttpExchange("clientservicegroup://zuplo")
-public interface EchoService {
-
-	@PostExchange
-	Map<?, ?> echo(@RequestBody Map<String, String> message);
+	static final String HTTP_SERVICE_GROUP_NAME_ATTRIBUTE = "httpServiceGroupName";
 
 }

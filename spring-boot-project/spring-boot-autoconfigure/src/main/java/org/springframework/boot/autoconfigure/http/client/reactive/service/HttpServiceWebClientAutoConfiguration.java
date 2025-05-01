@@ -19,10 +19,11 @@ package org.springframework.boot.autoconfigure.http.client.reactive.service;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.client.reactive.HttpReactiveClientSettingsProperties;
+import org.springframework.boot.autoconfigure.http.client.service.ConditionalOnHttpServiceProxyBean;
+import org.springframework.boot.autoconfigure.http.client.service.HttpServicesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
@@ -31,11 +32,11 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
-import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
 
 /**
- * AutoConfiguration for Spring reactive HTTP Service Clients.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link WebClientAdapter} backed
+ * HTTP Service clients.
  * <p>
  * This will result in the creation of reactive HTTP Service client beans defined by
  * {@link ImportHttpServices @ImportHttpServices} annotations.
@@ -45,15 +46,15 @@ import org.springframework.web.service.registry.ImportHttpServices;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = { ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class })
+@AutoConfiguration(after = { WebClientAutoConfiguration.class, HttpServicesAutoConfiguration.class })
 @ConditionalOnClass(WebClientAdapter.class)
-@ConditionalOnBean(HttpServiceProxyRegistry.class)
+@ConditionalOnHttpServiceProxyBean
 @EnableConfigurationProperties(ReactiveHttpClientServiceProperties.class)
-public class ReactiveHttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
+public class HttpServiceWebClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader beanClassLoader;
 
-	ReactiveHttpServiceClientAutoConfiguration() {
+	HttpServiceWebClientAutoConfiguration() {
 	}
 
 	@Override

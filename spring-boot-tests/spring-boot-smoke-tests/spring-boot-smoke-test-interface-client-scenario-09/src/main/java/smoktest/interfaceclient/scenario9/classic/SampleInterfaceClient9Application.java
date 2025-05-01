@@ -22,10 +22,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServices(group = "zuplo", types = EchoService.class)
 public class SampleInterfaceClient9Application {
 
 	// 3rd party like Spring Cloud plugs in to customize client.

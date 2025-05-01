@@ -22,10 +22,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServices(group = "zuplo", types = EchoService.class)
 public class SampleInterfaceClient3Application {
 
 	// Basic example with just an id (baseUrl to be set later by SC)

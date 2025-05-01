@@ -28,10 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServices(group = "zuplo", types = EchoService.class)
 public class SampleInterfaceClient5Application {
 
 	// Basic example that also sets adds interceptor to all clients.

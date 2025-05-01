@@ -75,7 +75,7 @@ public class SampleInterfaceClient8Application {
 		};
 	}
 
-	// FIXME @Bean
+	@Bean
 	ApplicationRunner commandLineRunnerByQualifier(@Qualifier("zuplo1") EchoService echoService) {
 		return (args) -> {
 			System.out.println();

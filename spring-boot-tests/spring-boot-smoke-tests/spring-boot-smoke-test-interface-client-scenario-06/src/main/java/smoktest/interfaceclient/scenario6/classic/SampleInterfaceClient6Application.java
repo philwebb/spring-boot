@@ -27,10 +27,8 @@ import org.springframework.web.client.support.RestClientHttpServiceGroupConfigur
 import org.springframework.web.service.invoker.HttpRequestValues;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-@ImportHttpServices(group = "zuplo", types = EchoService.class)
 public class SampleInterfaceClient6Application {
 
 	// Basic example that also sets adds custom argument resolver via proxy factory.
