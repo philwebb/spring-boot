@@ -1,0 +1,9 @@
+spring:
+  http:
+    client:
+      service:
+        group:
+          zuplo:
+            base-url: https://echo.zuplo.io
+          beeceptor:
+            base-url: https://echo.free.beeceptor.com

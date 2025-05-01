@@ -1,0 +1,7 @@
+spring:
+  http:
+    client:
+      service:
+        group:
+          default:
+            base-url: https://echo.zuplo.io

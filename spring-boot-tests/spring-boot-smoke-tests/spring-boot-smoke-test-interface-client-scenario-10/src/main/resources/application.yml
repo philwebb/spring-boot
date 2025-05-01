@@ -1,0 +1,41 @@
+spring:
+  http:
+    client:
+      service:
+        group:
+          zuplo1:
+            base-url: https://echo.zuplo.io
+            label:
+              secure: true
+          zuplo2:
+            base-url: https://echo.zuplo.io 
+
+
+# Option 1, match by name (implied)
+spring:
+  security:
+    oauth:
+      zuplo1:
+        someconfig: foo
+
+# Option 2, match by name (specified)
+spring:
+  security:
+    oauth:
+      standard:
+        select:
+          named: [ zuplo1 ]
+        someconfig: foo
+
+# Option 3, match by labels
+spring:
+  security:
+    oauth:
+      standard:
+        select:
+          labeled:
+            secure: true
+        someconfig: foo
+
+# See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+
