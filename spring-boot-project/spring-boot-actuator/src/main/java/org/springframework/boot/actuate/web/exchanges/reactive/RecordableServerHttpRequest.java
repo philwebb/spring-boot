@@ -19,11 +19,13 @@ package org.springframework.boot.actuate.web.exchanges.reactive;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 /**
@@ -35,7 +37,7 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 
 	private final String method;
 
-	private final Map<String, List<String>> headers;
+	private final HttpHeaders headers;
 
 	private final URI uri;
 
@@ -66,7 +68,9 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 
 	@Override
 	public Map<String, List<String>> getHeaders() {
-		return new LinkedHashMap<>(this.headers);
+		Map<String, List<String>> headers = new LinkedHashMap<>();
+		this.headers.forEach(headers::put);
+		return Collections.unmodifiableMap(headers);
 	}
 
 	@Override

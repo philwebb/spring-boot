@@ -342,7 +342,7 @@ class LiveReloadServerTests {
 			requestHeaders.forEach((key, value) -> uppercaseRequestHeaders.put(key.toUpperCase(Locale.ROOT), value));
 			requestHeaders.clear();
 			requestHeaders.putAll(uppercaseRequestHeaders);
-			requestHeaders.putAll(this.headers);
+			this.headers.forEach(requestHeaders::put);
 		}
 
 		@Override

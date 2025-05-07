@@ -25,11 +25,10 @@ import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import java.util.Map;
 
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier.Factory;
-
-import org.springframework.util.MultiValueMap;
 
 /**
  * A {@link HttpSender} which uses the JDK {@link HttpClient} for HTTP communication.
@@ -50,12 +49,12 @@ class ZipkinHttpClientSender extends HttpSender {
 	}
 
 	@Override
-	void postSpans(URI endpoint, MultiValueMap<String, String> headers, byte[] body) throws IOException {
+	void postSpans(URI endpoint, Map<String, String> headers, byte[] body) throws IOException {
 		Builder request = HttpRequest.newBuilder()
 			.POST(BodyPublishers.ofByteArray(body))
 			.uri(endpoint)
 			.timeout(this.readTimeout);
-		headers.forEach((name, values) -> values.forEach((value) -> request.header(name, value)));
+		headers.forEach((name, value) -> request.header(name, value));
 		try {
 			HttpResponse<Void> response = this.httpClient.send(request.build(), BodyHandlers.discarding());
 			if (response.statusCode() / 100 != 2) {

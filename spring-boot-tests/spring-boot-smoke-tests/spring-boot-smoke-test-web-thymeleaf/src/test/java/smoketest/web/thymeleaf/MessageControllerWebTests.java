@@ -54,7 +54,7 @@ class MessageControllerWebTests {
 		assertThat(this.mvc.post().uri("/").param("text", "FOO text").param("summary", "FOO"))
 			.hasStatus(HttpStatus.FOUND)
 			.headers()
-			.hasEntrySatisfying("Location",
+			.hasHeaderSatisfying("Location",
 					(values) -> assertThat(values).hasSize(1)
 						.element(0)
 						.satisfies(HamcrestCondition.matching(RegexMatcher.matches("/[0-9]+"))));
