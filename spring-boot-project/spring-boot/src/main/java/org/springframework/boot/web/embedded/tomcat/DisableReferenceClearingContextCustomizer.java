@@ -33,7 +33,6 @@ class DisableReferenceClearingContextCustomizer implements TomcatContextCustomiz
 			return;
 		}
 		try {
-			standardContext.setClearReferencesObjectStreamClassCaches(false);
 			standardContext.setClearReferencesRmiTargets(false);
 			standardContext.setClearReferencesThreadLocals(false);
 		}
