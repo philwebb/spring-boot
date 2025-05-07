@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.endpoint;
+package org.springframework.boot.actuate.endpoint.annotation;
 
-import org.springframework.boot.configurationsample.OptionalParameter;
-import org.springframework.boot.configurationsample.ReadOperation;
-import org.springframework.boot.configurationsample.WebEndpoint;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A meta-annotated endpoint. Also with a package private read operation that has an
- * optional argument.
+ * Annotation that indicates that an operation parameter is optional.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 4.0.0
  */
-@SuppressWarnings({ "deprecation", "removal" })
-@WebEndpoint(id = "specific", enableByDefault = true)
-public class SpecificEndpoint {
-
-	@ReadOperation
-	String invoke(@OptionalParameter String param) {
-		return "test";
-	}
+@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface OptionalParameter {
 
 }

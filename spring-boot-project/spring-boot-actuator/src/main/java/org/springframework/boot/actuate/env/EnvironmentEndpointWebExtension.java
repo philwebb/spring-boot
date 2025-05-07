@@ -20,13 +20,13 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
+import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
-import org.springframework.lang.Nullable;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link EnvironmentEndpoint}.
@@ -51,7 +51,7 @@ public class EnvironmentEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public EnvironmentDescriptor environment(SecurityContext securityContext, @Nullable String pattern) {
+	public EnvironmentDescriptor environment(SecurityContext securityContext, @OptionalParameter String pattern) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return this.delegate.getEnvironmentDescriptor(pattern, showUnsanitized);
 	}

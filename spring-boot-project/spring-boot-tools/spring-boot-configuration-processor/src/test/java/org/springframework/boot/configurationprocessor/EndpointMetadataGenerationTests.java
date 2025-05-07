@@ -171,7 +171,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(4);
-		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
+		project.replaceText(IncrementalEndpoint.class, "@OptionalParameter String param", "String param");
 		metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
