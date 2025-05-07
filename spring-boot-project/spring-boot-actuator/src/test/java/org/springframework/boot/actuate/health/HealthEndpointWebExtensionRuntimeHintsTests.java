@@ -41,8 +41,7 @@ class HealthEndpointWebExtensionRuntimeHintsTests {
 		for (Class<?> bindingType : bindingTypes) {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(bindingType)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-				.accepts(runtimeHints);
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 		}
 	}
 

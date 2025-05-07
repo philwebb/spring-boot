@@ -67,10 +67,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		RuntimeHints runtimeHints = this.generationContext.getRuntimeHints();
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(RenameMixInClass.class)
-			.withMemberCategories(MemberCategory.DECLARED_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-			.accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(RenameMixInClass.class, "getName").introspect())
-			.accepts(runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 
 	@Test

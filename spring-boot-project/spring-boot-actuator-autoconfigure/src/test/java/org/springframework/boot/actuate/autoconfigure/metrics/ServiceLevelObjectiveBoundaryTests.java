@@ -84,7 +84,7 @@ class ServiceLevelObjectiveBoundaryTests {
 				getClass().getClassLoader());
 		ReflectionUtils.doWithLocalMethods(ServiceLevelObjectiveBoundary.class, (method) -> {
 			if ("valueOf".equals(method.getName())) {
-				assertThat(RuntimeHintsPredicates.reflection().onMethod(method)).accepts(runtimeHints);
+				assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(method)).accepts(runtimeHints);
 			}
 		});
 	}

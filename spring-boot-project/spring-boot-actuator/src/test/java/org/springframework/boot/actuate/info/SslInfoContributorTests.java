@@ -56,8 +56,7 @@ class SslInfoContributorTests {
 		new SslInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(SslInfo.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 
 }

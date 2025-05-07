@@ -90,8 +90,7 @@ class GitInfoContributorTests {
 		new GitInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(GitProperties.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 
 	}
 

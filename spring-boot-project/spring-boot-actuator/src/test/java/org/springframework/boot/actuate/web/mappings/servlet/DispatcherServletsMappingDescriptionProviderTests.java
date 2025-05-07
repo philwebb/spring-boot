@@ -39,8 +39,7 @@ class DispatcherServletsMappingDescriptionProviderTests {
 				getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(DispatcherServletMappingDescription.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 
 }

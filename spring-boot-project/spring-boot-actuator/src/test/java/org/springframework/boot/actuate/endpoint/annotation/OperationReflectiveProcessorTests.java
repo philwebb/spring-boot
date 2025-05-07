@@ -47,7 +47,7 @@ class OperationReflectiveProcessorTests {
 	void shouldRegisterMethodAsInvokable() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "string");
 		runProcessor(method);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(method)).accepts(this.runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(method)).accepts(this.runtimeHints);
 	}
 
 	@Test
@@ -82,12 +82,10 @@ class OperationReflectiveProcessorTests {
 	private void assertHintsForDto() {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(Dto.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(this.runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(this.runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(NestedDto.class)
-			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(this.runtimeHints);
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(this.runtimeHints);
 	}
 
 	private void runProcessor(Method method) {
