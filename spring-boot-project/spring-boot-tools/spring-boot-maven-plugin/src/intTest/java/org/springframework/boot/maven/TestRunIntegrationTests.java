@@ -42,7 +42,7 @@ class TestRunIntegrationTests {
 				.contains("1. " + canonicalPathOf(project, "target/test-classes"))
 				.contains("2. " + canonicalPathOf(project, "target/classes"))
 				.containsPattern("3\\. .*spring-core")
-				.containsPattern("4\\. .*spring-jcl"));
+				.containsPattern("4\\. .*commons-logging"));
 	}
 
 	private String canonicalPathOf(File project, String path) throws IOException {
