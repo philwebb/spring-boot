@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.http.client.AbstractHttpRequestFac
  * @author Rossen Stoyanchev
  * @author Phillip Webb
  */
-abstract class AbstractHttpClientServiceProperties extends AbstractHttpRequestFactoryProperties {
+public abstract class AbstractHttpClientServiceProperties extends AbstractHttpRequestFactoryProperties {
 
 	/**
 	 * Base url to set in the underlying HTTP client group. By default, set to
