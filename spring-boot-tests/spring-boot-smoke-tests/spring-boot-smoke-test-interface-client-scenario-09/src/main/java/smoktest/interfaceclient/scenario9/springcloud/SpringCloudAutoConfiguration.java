@@ -18,6 +18,7 @@ package smoktest.interfaceclient.scenario9.springcloud;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +43,7 @@ public class SpringCloudAutoConfiguration {
 	private ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 		return execution.execute(request,
-				new String(body, StandardCharsets.UTF_8).toUpperCase().getBytes(StandardCharsets.UTF_8));
+				new String(body, StandardCharsets.UTF_8).toUpperCase(Locale.ROOT).getBytes(StandardCharsets.UTF_8));
 	}
 
 }

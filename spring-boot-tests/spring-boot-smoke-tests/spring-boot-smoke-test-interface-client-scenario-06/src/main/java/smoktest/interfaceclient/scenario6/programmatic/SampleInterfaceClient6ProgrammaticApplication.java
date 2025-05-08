@@ -16,6 +16,7 @@
 
 package smoktest.interfaceclient.scenario6.programmatic;
 
+import java.util.Locale;
 import java.util.Map;
 
 import smoktest.interfaceclient.scenario6.programmatic.SampleInterfaceClient6ProgrammaticApplication.Registrar;
@@ -67,7 +68,7 @@ public class SampleInterfaceClient6ProgrammaticApplication {
 
 	private boolean resolve(Object argument, MethodParameter parameter, HttpRequestValues.Builder requestValues) {
 		if (argument instanceof EchoArgument echoArgument) {
-			requestValues.setBodyValue(Map.of(echoArgument.hello(), echoArgument.world().toUpperCase()));
+			requestValues.setBodyValue(Map.of(echoArgument.hello(), echoArgument.world().toUpperCase(Locale.ROOT)));
 			return true;
 		}
 		return false;

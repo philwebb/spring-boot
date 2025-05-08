@@ -19,6 +19,7 @@ package smoktest.interfaceclient.scenario8.classic;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -104,7 +105,7 @@ public class SampleInterfaceClient8Application {
 	ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 		return execution.execute(request,
-				new String(body, StandardCharsets.UTF_8).toUpperCase().getBytes(StandardCharsets.UTF_8));
+				new String(body, StandardCharsets.UTF_8).toUpperCase(Locale.ROOT).getBytes(StandardCharsets.UTF_8));
 	}
 
 	public static void main(String[] args) {
