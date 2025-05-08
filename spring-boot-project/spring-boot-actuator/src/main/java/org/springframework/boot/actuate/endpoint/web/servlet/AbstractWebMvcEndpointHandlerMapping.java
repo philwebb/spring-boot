@@ -234,6 +234,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	@Override
+	protected CorsConfiguration getCorsConfiguration(Object handler, HttpServletRequest request) {
+		CorsConfiguration corsConfiguration = super.getCorsConfiguration(handler, request);
+		return (corsConfiguration != null) ? corsConfiguration : this.corsConfiguration;
+	}
+
+	@Override
 	protected boolean isHandler(Class<?> beanType) {
 		return false;
 	}
