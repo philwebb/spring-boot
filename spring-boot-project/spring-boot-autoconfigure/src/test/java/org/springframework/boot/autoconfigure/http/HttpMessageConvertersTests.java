@@ -33,6 +33,7 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.http.converter.yaml.MappingJackson2YamlHttpMessageConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -56,7 +57,7 @@ class HttpMessageConvertersTests {
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class,
-				MappingJackson2XmlHttpMessageConverter.class);
+				MappingJackson2YamlHttpMessageConverter.class, MappingJackson2XmlHttpMessageConverter.class);
 	}
 
 	@Test
@@ -125,7 +126,8 @@ class HttpMessageConvertersTests {
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
+				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class,
+				MappingJackson2YamlHttpMessageConverter.class);
 	}
 
 	@Test
@@ -146,7 +148,8 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
+				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class,
+				MappingJackson2YamlHttpMessageConverter.class);
 	}
 
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {
