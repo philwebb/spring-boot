@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Phillip Webb
  */
 @ConfigurationProperties("spring.http.client.service")
-class HttpClientServiceProperties extends AbstractHttpClientServiceProperties {
+public class HttpClientServiceProperties extends AbstractHttpClientServiceProperties {
 
 	/**
 	 * Group settings.
@@ -44,7 +44,7 @@ class HttpClientServiceProperties extends AbstractHttpClientServiceProperties {
 		this.group = group;
 	}
 
-	static class Group extends AbstractHttpClientServiceProperties {
+	public static class Group extends AbstractHttpClientServiceProperties {
 
 	}
 
