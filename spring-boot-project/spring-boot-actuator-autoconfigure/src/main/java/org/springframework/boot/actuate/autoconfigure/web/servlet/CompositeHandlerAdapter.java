@@ -60,14 +60,6 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 		return null;
 	}
 
-	@Override
-	@Deprecated(since = "2.4.9", forRemoval = false)
-	@SuppressWarnings("deprecation")
-	public long getLastModified(HttpServletRequest request, Object handler) {
-		Optional<HandlerAdapter> adapter = getAdapter(handler);
-		return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);
-	}
-
 	private Optional<HandlerAdapter> getAdapter(Object handler) {
 		if (this.adapters == null) {
 			this.adapters = extractAdapters();

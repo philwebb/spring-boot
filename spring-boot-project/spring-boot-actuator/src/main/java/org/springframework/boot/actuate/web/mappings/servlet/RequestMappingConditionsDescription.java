@@ -70,6 +70,7 @@ public class RequestMappingConditionsDescription {
 			.toList();
 	}
 
+	@SuppressWarnings("removal")
 	private Set<String> extractPathPatterns(RequestMappingInfo requestMapping) {
 		PatternsRequestCondition patternsCondition = requestMapping.getPatternsCondition();
 		return (patternsCondition != null) ? patternsCondition.getPatterns()
