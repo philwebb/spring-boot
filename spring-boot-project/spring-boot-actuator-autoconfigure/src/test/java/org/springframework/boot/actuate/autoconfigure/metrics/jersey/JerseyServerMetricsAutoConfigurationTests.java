@@ -82,6 +82,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 	void httpRequestsAreTimed() {
 		this.webContextRunner.run((context) -> {
 			doRequest(context);
+			Thread.sleep(500);
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			Timer timer = registry.get("http.server.requests").tag("uri", "/users/{id}").timer();
 			assertThat(timer.count()).isOne();
