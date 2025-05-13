@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Phillip Webb
  */
 @ConfigurationProperties("spring.http.reactiveclient.service")
-class ReactiveHttpClientServiceProperties extends AbstractHttpReactiveClientServiceProperties {
+public class ReactiveHttpClientServiceProperties extends AbstractHttpReactiveClientServiceProperties {
 
 	/**
 	 * Group settings.
@@ -44,7 +44,7 @@ class ReactiveHttpClientServiceProperties extends AbstractHttpReactiveClientServ
 		this.group = group;
 	}
 
-	static class Group extends AbstractHttpReactiveClientServiceProperties {
+	public static class Group extends AbstractHttpReactiveClientServiceProperties {
 
 	}
 

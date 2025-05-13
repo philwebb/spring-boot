@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.http.client.reactive.AbstractClien
  * @author Rossen Stoyanchev
  * @author Phillip Webb
  */
-abstract class AbstractHttpReactiveClientServiceProperties extends AbstractClientHttpConnectorProperties {
+public abstract class AbstractHttpReactiveClientServiceProperties extends AbstractClientHttpConnectorProperties {
 
 	/**
 	 * Base url to set in the underlying HTTP client group. By default, set to
