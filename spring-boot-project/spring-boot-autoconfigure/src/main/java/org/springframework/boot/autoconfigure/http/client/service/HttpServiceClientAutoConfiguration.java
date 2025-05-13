@@ -47,7 +47,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
  */
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
-@ConditionalOnBean(HttpServiceProxyRegistry.class)
+@ConditionalOnBean({ HttpServiceProxyRegistry.class, HttpClientSettingsProperties.class })
 @EnableConfigurationProperties(HttpClientServiceProperties.class)
 public class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
 
