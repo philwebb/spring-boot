@@ -54,6 +54,10 @@ public class SslInfo {
 
 	private final Clock clock;
 
+	public SslInfo(SslBundles sslBundles) {
+		this(sslBundles, null, null);
+	}
+
 	/**
 	 * Creates a new instance.
 	 * @param sslBundles the {@link SslBundles} to extract the info from
@@ -235,6 +239,9 @@ public class SslInfo {
 		}
 
 		private boolean isExpiringSoon(X509Certificate certificate, Duration threshold) {
+			if (threshold == null) {
+				return false;
+			}
 			Instant shouldBeValidAt = Instant.now(SslInfo.this.clock).plus(threshold);
 			Instant expiresAt = certificate.getNotAfter().toInstant();
 			return shouldBeValidAt.isAfter(expiresAt);
