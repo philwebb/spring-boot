@@ -21,7 +21,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:neo4j")
 
-	optional(project(":spring-boot-project:spring-boot-actuator"))
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
