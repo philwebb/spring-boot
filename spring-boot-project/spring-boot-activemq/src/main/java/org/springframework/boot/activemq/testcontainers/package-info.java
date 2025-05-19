@@ -17,4 +17,4 @@
 /**
  * Support for testcontainers ActiveMQ service connections.
  */
-package org.springframework.boot.testcontainers.service.connection.activemq;
+package org.springframework.boot.activemq.testcontainers;
