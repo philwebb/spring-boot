@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.ConnectionPorts;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBuilder;
+import org.springframework.boot.jdbc.docker.compose.JdbcUrlBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
