@@ -1515,6 +1515,16 @@
       "defaultValue": [
         "."
       ]
+    },
+    {
+      "name": "management.observations.annotations.long-lask-timer.enabled",
+      "type": "java.lang.boolean",
+      "description": "Whether to create a LongTaskTimer for every observation.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.observations.ignored-meters"
+      }
     }
   ]
 }

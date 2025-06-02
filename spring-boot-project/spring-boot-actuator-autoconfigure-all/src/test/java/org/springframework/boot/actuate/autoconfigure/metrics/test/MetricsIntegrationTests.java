@@ -34,12 +34,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.observability.ObservabilityAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jdbc.metrics.autoconfigure.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.boot.jpa.hibernate.metrics.autoconfigure.HibernateMetricsAutoConfiguration;
+import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.jvm.JvmMetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration;
@@ -143,8 +143,8 @@ class MetricsIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
-			ObservabilityAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
+	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+			ObservationAutoConfiguration.class, JvmMetricsAutoConfiguration.class,
 			LogbackMetricsAutoConfiguration.class, SystemMetricsAutoConfiguration.class,
 			DataSourcePoolMetricsAutoConfiguration.class, HibernateMetricsAutoConfiguration.class,
 			RestTemplateObservationAutoConfiguration.class, WebFluxObservationAutoConfiguration.class,
