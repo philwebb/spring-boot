@@ -51,7 +51,7 @@ import org.springframework.core.type.MethodMetadata;
 @ConditionalOnClass(ConnectionFactory.class)
 @ConditionalOnEnabledDevTools
 @Conditional(DevToolsConnectionFactoryCondition.class)
-@AutoConfiguration(after = R2dbcAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration")
 public class DevToolsR2dbcAutoConfiguration {
 
 	@Bean

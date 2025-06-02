@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
+import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionProperties;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -55,9 +57,8 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
 @AutoConfiguration(before = SessionAutoConfiguration.class,
 		beforeName = { "org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration",
 				"org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration" },
-		afterName = { "org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration",
-				"org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration",
-				"org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration" })
+		after = { MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class },
+		afterName = { "org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration" })
 @EnableConfigurationProperties(MongoSessionProperties.class)
 public class MongoSessionAutoConfiguration {
 

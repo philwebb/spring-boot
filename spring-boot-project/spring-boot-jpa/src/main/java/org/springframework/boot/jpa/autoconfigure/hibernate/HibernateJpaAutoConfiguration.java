@@ -28,6 +28,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerA
 import org.springframework.boot.jpa.autoconfigure.JpaProperties;
 import org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration;
 import org.springframework.boot.transaction.autoconfigure.TransactionManagerCustomizationAutoConfiguration;
+import org.springframework.boot.transaction.jta.autoconfigure.JtaAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -41,8 +42,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @since 4.0.0
  */
 @AutoConfiguration(
-		after = { DataSourceAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class },
-		afterName = "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
+		after = { DataSourceAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class,
+				JtaAutoConfiguration.class },
 		before = { TransactionAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class, SessionImplementor.class })
 @EnableConfigurationProperties(JpaProperties.class)

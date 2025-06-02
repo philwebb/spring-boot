@@ -19,6 +19,7 @@ package org.springframework.boot.restclient.autoconfigure.observation;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,7 +27,6 @@ import org.springframework.boot.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.observation.ClientRequestObservationConvention;
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.web.client.RestTemplate;
@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Brian Clozel
  * @since 4.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass({ RestTemplate.class, ObservationRestTemplateCustomizer.class, ObservationRegistry.class,
 		ObservationProperties.class })
 @ConditionalOnBean({ ObservationRegistry.class, RestTemplateBuilder.class })

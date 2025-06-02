@@ -1,3 +1,7 @@
+org.springframework.boot.metrics.actuate.endpoint.autoconfigure.MetricsEndpointAutoConfiguration
+org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration
+org.springframework.boot.metrics.autoconfigure.MetricsAspectsAutoConfiguration
+org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.appoptics.AppOpticsMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.atlas.AtlasMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.datadog.DatadogMetricsExportAutoConfiguration
@@ -15,10 +19,6 @@ org.springframework.boot.metrics.autoconfigure.export.prometheus.PrometheusMetri
 org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.stackdriver.StackdriverMetricsExportAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.export.statsd.StatsdMetricsExportAutoConfiguration
-org.springframework.boot.metrics.actuate.endpoint.autoconfigure.MetricsEndpointAutoConfiguration
-org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration
-org.springframework.boot.metrics.autoconfigure.MetricsAspectsAutoConfiguration
-org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.jvm.JvmMetricsAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.logging.log4j2.Log4J2MetricsAutoConfiguration
 org.springframework.boot.metrics.autoconfigure.logging.logback.LogbackMetricsAutoConfiguration

@@ -27,6 +27,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionProperties;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -68,9 +70,8 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 @AutoConfiguration(before = SessionAutoConfiguration.class,
 		beforeName = { "org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration",
 				"org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration" },
-		afterName = { "org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration",
-				"org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration",
-				"org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration" })
+		after = { RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class },
+		afterName = { "org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration" })
 @EnableConfigurationProperties({ RedisSessionProperties.class, ServerProperties.class, SessionProperties.class })
 public class RedisSessionAutoConfiguration {
 

@@ -29,9 +29,6 @@ import org.springframework.boot.data.metrics.DefaultRepositoryTagsProvider;
 import org.springframework.boot.data.metrics.MetricsRepositoryMethodInvocationListener;
 import org.springframework.boot.data.metrics.RepositoryTagsProvider;
 import org.springframework.boot.data.metrics.autoconfigure.DataMetricsProperties.Repository;
-import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
-import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -41,8 +38,9 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfiguration(afterName = { "org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
+		"org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
+		"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration" })
 @ConditionalOnClass(org.springframework.data.repository.Repository.class)
 @ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties(DataMetricsProperties.class)

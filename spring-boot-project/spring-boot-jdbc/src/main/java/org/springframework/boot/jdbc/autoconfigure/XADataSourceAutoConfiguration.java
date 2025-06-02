@@ -41,6 +41,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties.DataSourceBeanCreationException;
+import org.springframework.boot.transaction.jta.autoconfigure.JtaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
@@ -57,8 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 4.0.0
  */
-@AutoConfiguration(before = DataSourceAutoConfiguration.class,
-		afterName = "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration")
+@AutoConfiguration(before = DataSourceAutoConfiguration.class, after = JtaAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class, EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)

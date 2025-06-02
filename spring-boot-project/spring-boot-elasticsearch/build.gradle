@@ -16,6 +16,7 @@ dependencies {
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-docker-compose"))
+	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional(project(":spring-boot-project:spring-boot-reactor"))
 	optional(project(":spring-boot-project:spring-boot-testcontainers"))
 	optional("co.elastic.clients:elasticsearch-java") {

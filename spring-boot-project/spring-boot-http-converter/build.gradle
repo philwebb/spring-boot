@@ -15,7 +15,9 @@ dependencies {
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
-	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional(project(":spring-boot-project:spring-boot-gson"))
+	optional(project(":spring-boot-project:spring-boot-jackson"))
+	optional(project(":spring-boot-project:spring-boot-jsonb"))
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.google.code.gson:gson")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
