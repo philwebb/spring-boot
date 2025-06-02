@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
@@ -59,7 +60,7 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
  * @author Christoph Strobl
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration")
+@AutoConfiguration(after = CassandraAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, CassandraAdminOperations.class })
 @ConditionalOnBean(CqlSession.class)
 public class CassandraDataAutoConfiguration {

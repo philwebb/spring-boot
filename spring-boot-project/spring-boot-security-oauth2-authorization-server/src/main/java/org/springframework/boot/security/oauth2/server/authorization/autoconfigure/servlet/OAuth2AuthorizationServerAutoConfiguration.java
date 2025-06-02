@@ -42,7 +42,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
  * @see OAuth2AuthorizationServerJwtAutoConfiguration
  */
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
-		beforeName = "org.springframework.boot.security.oauth2.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration")
+		beforeName = "org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration")
 @ConditionalOnClass(OAuth2Authorization.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Import({ OAuth2AuthorizationServerConfiguration.class, OAuth2AuthorizationServerWebSecurityConfiguration.class })

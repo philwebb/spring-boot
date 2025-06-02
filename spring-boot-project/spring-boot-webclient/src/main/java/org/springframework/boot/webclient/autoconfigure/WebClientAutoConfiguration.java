@@ -27,6 +27,7 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.http.client.reactive.autoconfigure.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webclient.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -49,8 +50,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = ClientHttpConnectorAutoConfiguration.class,
-		afterName = "org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration")
+@AutoConfiguration(after = { ClientHttpConnectorAutoConfiguration.class, CodecsAutoConfiguration.class })
 @ConditionalOnClass(WebClient.class)
 public class WebClientAutoConfiguration {
 

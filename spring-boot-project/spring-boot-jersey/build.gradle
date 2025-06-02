@@ -11,7 +11,6 @@ description = "Spring Boot Jersey"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	api(project(":spring-boot-project:spring-boot-jackson"))
 	api("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	api("org.glassfish.jersey.containers:jersey-container-servlet")
 	api("org.glassfish.jersey.core:jersey-server")
@@ -23,6 +22,7 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-jackson"))
 	optional(project(":spring-boot-project:spring-boot-metrics"))
 	optional(project(":spring-boot-project:spring-boot-observation"))
 	optional("io.projectreactor:reactor-core")

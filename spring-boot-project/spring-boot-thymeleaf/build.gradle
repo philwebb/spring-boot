@@ -14,9 +14,9 @@ dependencies {
 	api("org.springframework:spring-web")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
+	optional(project(":spring-boot-project:spring-boot-webflux"))
+	optional(project(":spring-boot-project:spring-boot-webmvc"))
 	optional("org.springframework.security:spring-security-web")
-	optional("org.springframework:spring-webmvc")
-	optional("org.springframework:spring-webflux")
 	optional("org.thymeleaf:thymeleaf")
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")

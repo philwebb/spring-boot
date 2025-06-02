@@ -61,7 +61,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @ConditionalOnClass(DataSource.class)
 @ConditionalOnEnabledDevTools
 @Conditional(DevToolsDataSourceCondition.class)
-@AutoConfiguration(after = DataSourceAutoConfiguration.class)
+@AutoConfiguration(afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @Import(DatabaseShutdownExecutorEntityManagerFactoryDependsOnConfiguration.class)
 public class DevToolsDataSourceAutoConfiguration {
 
