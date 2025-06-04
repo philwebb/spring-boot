@@ -67,6 +67,7 @@ public interface ObservationHandlerGroup extends Comparable<ObservationHandlerGr
 	/**
 	 * Static factory method to create a {@link ObservationHandlerGroup} with members of
 	 * the given handler type.
+	 * @param <H> the handler type
 	 * @param handlerType the handler type
 	 * @return a new {@link ObservationHandlerGroup}
 	 */

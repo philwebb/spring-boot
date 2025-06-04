@@ -35,7 +35,6 @@ import org.springframework.util.MultiValueMap;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
- * @since 4.0.0
  */
 class ObservationHandlerGroups {
 
