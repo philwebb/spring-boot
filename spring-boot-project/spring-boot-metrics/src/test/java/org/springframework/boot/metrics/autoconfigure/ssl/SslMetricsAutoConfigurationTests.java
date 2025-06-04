@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.ssl;
+package org.springframework.boot.metrics.autoconfigure.ssl;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -28,39 +27,37 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SslObservabilityAutoConfiguration}.
+ * Tests for {@link SslMetricsAutoConfiguration}.
  *
  * @author Moritz Halbritter
  */
-class SslObservabilityAutoConfigurationTests {
+class SslMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-					SslAutoConfiguration.class, SslObservabilityAutoConfiguration.class));
+					SslAutoConfiguration.class, SslMetricsAutoConfiguration.class));
 
 	private final ApplicationContextRunner contextRunnerWithoutSslBundles = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-				CompositeMeterRegistryAutoConfiguration.class, SslObservabilityAutoConfiguration.class));
+				CompositeMeterRegistryAutoConfiguration.class, SslMetricsAutoConfiguration.class));
 
 	private final ApplicationContextRunner contextRunnerWithoutMeterRegistry = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class, SslObservabilityAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class, SslMetricsAutoConfiguration.class));
 
 	@Test
-	void shouldSupplyBeans() {
-		this.contextRunner
-			.run((context) -> assertThat(context).hasSingleBean(SslMeterBinder.class).hasSingleBean(SslInfo.class));
+	void shouldSupplyMeterBinder() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(SslMeterBinder.class));
 	}
 
 	@Test
 	void shouldBackOffIfSslBundlesIsMissing() {
-		this.contextRunnerWithoutSslBundles
-			.run((context) -> assertThat(context).doesNotHaveBean(SslMeterBinder.class).doesNotHaveBean(SslInfo.class));
+		this.contextRunnerWithoutSslBundles.run((context) -> assertThat(context).doesNotHaveBean(SslMeterBinder.class));
 	}
 
 	@Test
 	void shouldBackOffIfMeterRegistryIsMissing() {
 		this.contextRunnerWithoutMeterRegistry
-			.run((context) -> assertThat(context).doesNotHaveBean(SslMeterBinder.class).doesNotHaveBean(SslInfo.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SslMeterBinder.class));
 	}
 
 }
