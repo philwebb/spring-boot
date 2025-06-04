@@ -44,6 +44,7 @@ import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Format;
@@ -106,7 +107,7 @@ import org.springframework.web.server.session.WebSessionManager;
  */
 @AutoConfiguration(
 		after = { ReactiveMultipartAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class,
-				WebFluxAutoConfiguration.class },
+				CodecsAutoConfiguration.class },
 		afterName = "org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
