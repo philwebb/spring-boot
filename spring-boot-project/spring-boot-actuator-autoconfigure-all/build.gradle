@@ -143,11 +143,3 @@ dependencies {
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
-
-tasks.getByName("checkAutoConfigurationImports") {
-	enabled = false
-}
-
-tasks.getByName("checkAutoConfigurationClasses") {
-	enabled = false
-}
