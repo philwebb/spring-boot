@@ -132,33 +132,6 @@ class ManagementWebSecurityAutoConfigurationTests {
 		});
 	}
 
-	// @formatter:off
-
-	// FIXME
-
-//	@Test
-//	void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
-//		this.contextRunner.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
-//			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
-//			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
-//				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
-//	}
-//
-//	@Test
-//	@WithPackageResources("saml-certificate")
-//	void backOffIfSaml2RelyingPartyAutoConfigurationPresent() {
-//		this.contextRunner.withConfiguration(AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class))
-//			.withPropertyValues(
-//					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.url=https://simplesaml-for-spring-saml/SSOService.php",
-//					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request=false",
-//					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
-//					"spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.verification.credentials[0].certificate-location=classpath:saml-certificate")
-//			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
-//				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
-//	}
-
-	// @formatter:on
-
 	@Test
 	void backOffIfRemoteDevToolsSecurityFilterChainIsPresent() {
 		this.contextRunner.withUserConfiguration(TestRemoteDevToolsSecurityFilterChainConfig.class).run((context) -> {
