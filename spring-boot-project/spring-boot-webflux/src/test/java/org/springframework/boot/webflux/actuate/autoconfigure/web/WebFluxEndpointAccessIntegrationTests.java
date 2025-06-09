@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.webflux.actuate.autoconfigure.web;
 
-import java.io.IOException;
 import java.time.Duration;
-import java.util.function.Supplier;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -31,38 +25,40 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
-import org.springframework.boot.test.context.FilteredClassLoader;
-import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
-import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
-import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
+import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for controlling access to endpoints exposed by Jersey.
+ * Integration tests for controlling access to endpoints exposed by Spring WebFlux.
  *
  * @author Andy Wilkinson
  */
-class JerseyEndpointAccessIntegrationTests {
+class WebFluxEndpointAccessIntegrationTests {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
-			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
-				EndpointAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-				BeansEndpointAutoConfiguration.class))
-		.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
-		.withUserConfiguration(CustomServletEndpoint.class)
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
+			AnnotationConfigReactiveWebServerApplicationContext::new)
+		.withConfiguration(AutoConfigurations.of(NettyReactiveWebServerAutoConfiguration.class,
+				HttpHandlerAutoConfiguration.class, JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
+				WebFluxAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(BeansEndpointAutoConfiguration.class))
+		.withUserConfiguration(CustomWebFluxEndpoint.class)
 		.withPropertyValues("server.port:0");
 
 	@Test
@@ -70,8 +66,8 @@ class JerseyEndpointAccessIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=*").run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isAccessible(client, HttpMethod.GET, "beans")).isTrue();
-			assertThat(isAccessible(client, HttpMethod.GET, "customservlet")).isTrue();
-			assertThat(isAccessible(client, HttpMethod.POST, "customservlet")).isTrue();
+			assertThat(isAccessible(client, HttpMethod.GET, "customwebflux")).isTrue();
+			assertThat(isAccessible(client, HttpMethod.POST, "customwebflux")).isTrue();
 		});
 	}
 
@@ -83,8 +79,8 @@ class JerseyEndpointAccessIntegrationTests {
 			.run((context) -> {
 				WebTestClient client = createClient(context);
 				assertThat(isAccessible(client, HttpMethod.GET, "beans")).isTrue();
-				assertThat(isAccessible(client, HttpMethod.GET, "customservlet")).isTrue();
-				assertThat(isAccessible(client, HttpMethod.POST, "customservlet")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.GET, "customwebflux")).isTrue();
+				assertThat(isAccessible(client, HttpMethod.POST, "customwebflux")).isFalse();
 			});
 	}
 
@@ -96,8 +92,8 @@ class JerseyEndpointAccessIntegrationTests {
 			.run((context) -> {
 				WebTestClient client = createClient(context);
 				assertThat(isAccessible(client, HttpMethod.GET, "beans")).isFalse();
-				assertThat(isAccessible(client, HttpMethod.GET, "customservlet")).isFalse();
-				assertThat(isAccessible(client, HttpMethod.POST, "customservlet")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.GET, "customwebflux")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.POST, "customwebflux")).isFalse();
 			});
 	}
 
@@ -105,12 +101,12 @@ class JerseyEndpointAccessIntegrationTests {
 	void accessForOneEndpointCanOverrideTheDefaultAccess() {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.exposure.include=*",
-					"management.endpoints.access.default=NONE", "management.endpoint.customservlet.access=READ_ONLY")
+					"management.endpoints.access.default=NONE", "management.endpoint.customwebflux.access=UNRESTRICTED")
 			.run((context) -> {
 				WebTestClient client = createClient(context);
 				assertThat(isAccessible(client, HttpMethod.GET, "beans")).isFalse();
-				assertThat(isAccessible(client, HttpMethod.GET, "customservlet")).isTrue();
-				assertThat(isAccessible(client, HttpMethod.POST, "customservlet")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.GET, "customwebflux")).isTrue();
+				assertThat(isAccessible(client, HttpMethod.POST, "customwebflux")).isTrue();
 			});
 	}
 
@@ -123,8 +119,8 @@ class JerseyEndpointAccessIntegrationTests {
 			.run((context) -> {
 				WebTestClient client = createClient(context);
 				assertThat(isAccessible(client, HttpMethod.GET, "beans")).isTrue();
-				assertThat(isAccessible(client, HttpMethod.GET, "customservlet")).isTrue();
-				assertThat(isAccessible(client, HttpMethod.POST, "customservlet")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.GET, "customwebflux")).isTrue();
+				assertThat(isAccessible(client, HttpMethod.POST, "customwebflux")).isFalse();
 			});
 	}
 
@@ -135,13 +131,13 @@ class JerseyEndpointAccessIntegrationTests {
 			.run((context) -> {
 				WebTestClient client = createClient(context);
 				assertThat(isAccessible(client, HttpMethod.GET, "beans")).isFalse();
-				assertThat(isAccessible(client, HttpMethod.GET, "customservlet")).isFalse();
-				assertThat(isAccessible(client, HttpMethod.POST, "customservlet")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.GET, "customwebflux")).isFalse();
+				assertThat(isAccessible(client, HttpMethod.POST, "customwebflux")).isFalse();
 			});
 	}
 
-	private WebTestClient createClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
+	private WebTestClient createClient(AssertableReactiveWebApplicationContext context) {
+		int port = context.getSourceApplicationContext(ReactiveWebServerApplicationContext.class)
 			.getWebServer()
 			.getPort();
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
@@ -167,26 +163,18 @@ class JerseyEndpointAccessIntegrationTests {
 				String.format("Unexpected %s HTTP status for endpoint %s", result.getStatus(), path));
 	}
 
-	@org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint(id = "customservlet")
-	@SuppressWarnings({ "deprecation", "removal" })
-	static class CustomServletEndpoint
-			implements Supplier<org.springframework.boot.actuate.endpoint.web.EndpointServlet> {
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "customwebflux")
+	@SuppressWarnings("removal")
+	static class CustomWebFluxEndpoint {
 
-		@Override
-		public org.springframework.boot.actuate.endpoint.web.EndpointServlet get() {
-			return new org.springframework.boot.actuate.endpoint.web.EndpointServlet(new HttpServlet() {
+		@GetMapping("/")
+		String get() {
+			return "get";
+		}
 
-				@Override
-				protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-						throws ServletException, IOException {
-				}
-
-				@Override
-				protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-						throws ServletException, IOException {
-				}
-
-			});
+		@PostMapping("/")
+		String post() {
+			return "post";
 		}
 
 	}

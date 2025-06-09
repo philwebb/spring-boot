@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.integrationtest;
+package org.springframework.boot.jersey.actuate.autoconfigure;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.integrationtest.AbstractHealthEndpointAdditionalPathIntegrationTests;
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.jersey.actuate.autoconfigure.health.HealthEndpointJerseyExtensionAutoConfiguration;
+import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
 import org.springframework.boot.servlet.actuate.autoconfigure.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -31,28 +33,24 @@ import org.springframework.boot.tomcat.actuate.autoconfigure.web.TomcatServletMa
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.webmvc.actuate.autoconfigure.health.WebMvcHealthEndpointExtensionAutoConfiguration;
-import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
- * Integration tests for MVC health groups on an additional path.
+ * Integration tests for health groups on an additional path on Jersey.
  *
  * @author Madhura Bhave
  */
-class WebMvcHealthEndpointAdditionalPathIntegrationTests extends
+class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 		AbstractHealthEndpointAdditionalPathIntegrationTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
-	WebMvcHealthEndpointAdditionalPathIntegrationTests() {
+	JerseyHealthEndpointAdditionalPathIntegrationTests() {
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
-					HttpMessageConvertersAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-					TomcatServletWebServerAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
-					TomcatServletManagementContextAutoConfiguration.class, WebMvcAutoConfiguration.class,
-					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, WebMvcHealthEndpointExtensionAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
+					EndpointAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					JerseyAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					HealthEndpointJerseyExtensionAutoConfiguration.class,
 					DiskSpaceHealthContributorAutoConfiguration.class))
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())
 			.withPropertyValues("server.port=0"));

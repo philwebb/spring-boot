@@ -1977,7 +1977,6 @@ bom {
 				"spring-boot-activemq",
 				"spring-boot-actuator",
 				"spring-boot-actuator-autoconfigure",
-				"spring-boot-actuator-autoconfigure-all",
 				"spring-boot-all",
 				"spring-boot-amqp",
 				"spring-boot-artemis",
