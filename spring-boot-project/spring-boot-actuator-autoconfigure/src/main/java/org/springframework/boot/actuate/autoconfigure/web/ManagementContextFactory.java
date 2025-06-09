@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,9 @@ public final class ManagementContextFactory {
 
 	public void registerWebServerFactoryBeans(ApplicationContext parentContext,
 			ConfigurableApplicationContext managementContext, AnnotationConfigRegistry registry) {
-		registry.register(this.autoConfigurationClasses);
+		if (this.autoConfigurationClasses != null && this.autoConfigurationClasses.length > 0) {
+			registry.register(this.autoConfigurationClasses);
+		}
 		registerWebServerFactoryFromParent(parentContext, managementContext);
 	}
 
