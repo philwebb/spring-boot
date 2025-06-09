@@ -16,6 +16,7 @@
 
 package org.springframework.boot.security.actuate.autoconfigure.servlet;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -50,7 +51,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		afterName = { "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",
 				"org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass(RequestMatcher.class)
+@ConditionalOnClass({ RequestMatcher.class, WebEndpointAutoConfiguration.class })
 @ConditionalOnDefaultWebSecurity
 public class ManagementWebSecurityAutoConfiguration {
 

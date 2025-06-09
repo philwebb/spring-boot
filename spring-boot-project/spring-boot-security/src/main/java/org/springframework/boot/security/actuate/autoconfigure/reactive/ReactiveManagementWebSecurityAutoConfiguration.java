@@ -18,6 +18,7 @@ package org.springframework.boot.security.actuate.autoconfigure.reactive;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -55,7 +56,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		afterName = { "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",
 				"org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration",
 				"org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration" })
-@ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })
+@ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class, WebEndpointAutoConfiguration.class })
 @ConditionalOnMissingBean({ SecurityWebFilterChain.class, WebFilterChainProxy.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveManagementWebSecurityAutoConfiguration {
