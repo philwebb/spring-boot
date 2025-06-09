@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security.reactive;
+package org.springframework.boot.security.actuate.autoconfigure.reactive;
 
 import java.time.Duration;
 import java.util.Base64;

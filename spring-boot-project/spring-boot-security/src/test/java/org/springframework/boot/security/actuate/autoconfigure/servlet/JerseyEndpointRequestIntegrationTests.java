@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security.servlet;
+package org.springframework.boot.security.actuate.autoconfigure.servlet;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;

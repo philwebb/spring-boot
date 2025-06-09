@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security.servlet;
+package org.springframework.boot.security.actuate.autoconfigure.servlet;
+
+import java.util.function.Function;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * Interface that can be used to provide a {@link RequestMatcher} that can be used with
- * Spring Security.
+ * {@link RequestMatcherProvider} that provides an {@link PathPatternRequestMatcher}.
  *
  * @author Madhura Bhave
  * @author Chris Bono
- * @since 3.5.0
  */
-@FunctionalInterface
-public interface RequestMatcherProvider {
+class PathPatternRequestMatcherProvider implements RequestMatcherProvider {
 
-	/**
-	 * Return the {@link RequestMatcher} to be used for the specified pattern and http
-	 * method.
-	 * @param pattern the request pattern
-	 * @param httpMethod the http method
-	 * @return a request matcher
-	 */
-	RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod);
+	private final Function<String, String> pathFactory;
+
+	PathPatternRequestMatcherProvider(Function<String, String> pathFactory) {
+		this.pathFactory = pathFactory;
+	}
+
+	@Override
+	public RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod) {
+		return PathPatternRequestMatcher.withDefaults().matcher(httpMethod, this.pathFactory.apply(pattern));
+	}
 
 }

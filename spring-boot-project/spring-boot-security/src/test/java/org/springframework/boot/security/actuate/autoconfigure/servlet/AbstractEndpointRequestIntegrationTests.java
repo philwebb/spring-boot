@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security.servlet;
+package org.springframework.boot.security.actuate.autoconfigure.servlet;
 
 import java.io.IOException;
 import java.time.Duration;

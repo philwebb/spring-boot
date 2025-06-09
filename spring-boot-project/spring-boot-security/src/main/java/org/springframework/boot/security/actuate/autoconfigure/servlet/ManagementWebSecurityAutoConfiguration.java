@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security.servlet;
+package org.springframework.boot.security.actuate.autoconfigure.servlet;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -26,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -47,12 +46,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @author Hatef Palizgar
  * @since 2.1.0
  */
-@AutoConfiguration(beforeName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration",
-		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class },
-		afterName = {
-				"org.springframework.boot.security.oauth2.client.autoconfigure.servlet.OAuth2ClientWebSecurityAutoConfiguration",
-				"org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration",
-				"org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyAutoConfiguration" })
+@AutoConfiguration(before = SecurityAutoConfiguration.class,
+		afterName = { "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",
+				"org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration" })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(RequestMatcher.class)
 @ConditionalOnDefaultWebSecurity
