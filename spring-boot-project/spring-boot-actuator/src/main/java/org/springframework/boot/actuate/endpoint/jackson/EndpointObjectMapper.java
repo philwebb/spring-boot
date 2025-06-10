@@ -32,6 +32,8 @@ import org.springframework.boot.actuate.endpoint.OperationResponseBody;
  */
 public interface EndpointObjectMapper {
 
+	Set<Class<?>> DEFAULT_SUPPORTED_TYPES = Set.of(OperationResponseBody.class);
+
 	/**
 	 * Return the {@link ObjectMapper} that should be used to serialize
 	 * {@link OperationResponseBody} endpoint results.
@@ -45,7 +47,7 @@ public interface EndpointObjectMapper {
 	 * @since 4.0.0
 	 */
 	default Set<Class<?>> getSupportedTypes() {
-		return Set.of(OperationResponseBody.class);
+		return DEFAULT_SUPPORTED_TYPES;
 	}
 
 }

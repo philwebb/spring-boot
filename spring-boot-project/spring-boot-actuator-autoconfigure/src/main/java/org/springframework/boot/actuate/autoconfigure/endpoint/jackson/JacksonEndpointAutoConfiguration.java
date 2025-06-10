@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jackson;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
+import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
@@ -47,7 +51,22 @@ public class JacksonEndpointAutoConfiguration {
 					SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
 			.serializationInclusion(Include.NON_NULL)
 			.build();
-		return () -> objectMapper;
+		Set<Class<?>> supportedTypes = new HashSet<>(EndpointObjectMapper.DEFAULT_SUPPORTED_TYPES);
+		supportedTypes.add(HealthComponent.class);
+		return new EndpointObjectMapper() {
+
+			@Override
+			public ObjectMapper get() {
+				return objectMapper;
+			}
+
+			@Override
+			public Set<Class<?>> getSupportedTypes() {
+				return supportedTypes;
+			}
+
+		};
+
 	}
 
 }
