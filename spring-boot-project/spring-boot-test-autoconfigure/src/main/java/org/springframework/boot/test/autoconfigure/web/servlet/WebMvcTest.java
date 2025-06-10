@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -76,9 +77,8 @@ import org.springframework.test.web.servlet.MockMvc;
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation can be used.
  * <p>
  * Typically {@code @WebMvcTest} is used in combination with
- * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
- * {@link Import @Import} to create any collaborators required by your {@code @Controller}
- * beans.
+ * {@link MockitoBean @MockitoBean} or {@link Import @Import} to create any collaborators
+ * required by your {@code @Controller} beans.
  * <p>
  * If you are looking to load your full application configuration and use MockMVC, you
  * should consider {@link SpringBootTest @SpringBootTest} combined with

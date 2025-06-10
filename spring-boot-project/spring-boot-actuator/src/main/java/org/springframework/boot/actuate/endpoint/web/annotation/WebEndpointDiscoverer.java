@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,26 +58,6 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	private final List<AdditionalPathsMapper> additionalPathsMappers;
 
 	private final RequestPredicateFactory requestPredicateFactory;
-
-	/**
-	 * Create a new {@link WebEndpointDiscoverer} instance.
-	 * @param applicationContext the source application context
-	 * @param parameterValueMapper the parameter value mapper
-	 * @param endpointMediaTypes the endpoint media types
-	 * @param endpointPathMappers the endpoint path mappers
-	 * @param invokerAdvisors invoker advisors to apply
-	 * @param filters filters to apply
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #WebEndpointDiscoverer(ApplicationContext, ParameterValueMapper, EndpointMediaTypes, List, List, Collection, Collection, Collection)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
-			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
-			Collection<OperationInvokerAdvisor> invokerAdvisors,
-			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
-		this(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, Collections.emptyList(),
-				invokerAdvisors, filters, Collections.emptyList());
-	}
 
 	/**
 	 * Create a new {@link WebEndpointDiscoverer} instance.

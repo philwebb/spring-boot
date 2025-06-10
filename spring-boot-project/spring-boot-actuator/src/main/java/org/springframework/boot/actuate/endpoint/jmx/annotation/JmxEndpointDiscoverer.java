@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -47,22 +46,6 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 @ImportRuntimeHints(JmxEndpointDiscovererRuntimeHints.class)
 public class JmxEndpointDiscoverer extends EndpointDiscoverer<ExposableJmxEndpoint, JmxOperation>
 		implements JmxEndpointsSupplier {
-
-	/**
-	 * Create a new {@link JmxEndpointDiscoverer} instance.
-	 * @param applicationContext the source application context
-	 * @param parameterValueMapper the parameter value mapper
-	 * @param invokerAdvisors invoker advisors to apply
-	 * @param endpointFilters endpoint filters to apply
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 * {@link #JmxEndpointDiscoverer(ApplicationContext, ParameterValueMapper, Collection, Collection, Collection)}
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	public JmxEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
-			Collection<OperationInvokerAdvisor> invokerAdvisors,
-			Collection<EndpointFilter<ExposableJmxEndpoint>> endpointFilters) {
-		this(applicationContext, parameterValueMapper, invokerAdvisors, endpointFilters, Collections.emptyList());
-	}
 
 	/**
 	 * Create a new {@link JmxEndpointDiscoverer} instance.

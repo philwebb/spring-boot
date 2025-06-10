@@ -33,6 +33,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
@@ -51,7 +52,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * </ul>
  * <p>
  * Typically {@code WebServiceServerTest} is used in combination with
- * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
+ * {@link MockitoBean @MockitoBean} or
  * {@link org.springframework.context.annotation.Import @Import} to create any
  * collaborators required by your {@code Endpoint} beans.
  * <p>

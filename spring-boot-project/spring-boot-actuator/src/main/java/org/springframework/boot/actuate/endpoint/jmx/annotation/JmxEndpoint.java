@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,15 +47,6 @@ public @interface JmxEndpoint {
 	 */
 	@AliasFor(annotation = Endpoint.class)
 	String id() default "";
-
-	/**
-	 * If the endpoint should be enabled or disabled by default.
-	 * @return {@code true} if the endpoint is enabled by default
-	 * @deprecated since 3.4.0 for removal in 4.0.0 in favor of
-	 */
-	@Deprecated(since = "3.4.0", forRemoval = true)
-	@AliasFor(annotation = Endpoint.class)
-	boolean enableByDefault() default true;
 
 	/**
 	 * Level of access to the endpoint that is permitted by default.

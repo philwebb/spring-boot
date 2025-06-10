@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ import org.springframework.core.env.Environment;
  * endpoint is considered available if it is both enabled and exposed on the specified
  * technologies.
  * <p>
- * Matches enablement according to the endpoints specific {@link Environment} property,
- * falling back to {@code management.endpoints.enabled-by-default} or failing that
- * {@link Endpoint#enableByDefault()}.
+ * Matches access according to the endpoint's specific {@link Environment} property,
+ * falling back to {@code management.endpoints.default-access} or failing that
+ * {@link Endpoint#defaultAccess()}.
  * <p>
  * Matches exposure according to any of the {@code management.endpoints.web.exposure.<id>}
  * or {@code management.endpoints.jmx.exposure.<id>} specific properties or failing that

@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -68,9 +69,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} annotation can be used.
  * <p>
  * Typically {@code @WebFluxTest} is used in combination with
- * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
- * {@link Import @Import} to create any collaborators required by your {@code @Controller}
- * beans.
+ * {@link MockitoBean @MockitoBean} or {@link Import @Import} to create any collaborators
+ * required by your {@code @Controller} beans.
  * <p>
  * If you are looking to load your full application configuration and use WebTestClient,
  * you should consider {@link SpringBootTest @SpringBootTest} combined with
