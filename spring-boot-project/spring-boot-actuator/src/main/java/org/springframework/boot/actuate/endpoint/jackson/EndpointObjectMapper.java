@@ -16,13 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint.jackson;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 
 /**
  * Interface used to supply the {@link ObjectMapper} that should be used when serializing
- * {@link OperationResponseBody} endpoint results.
+ * endpoint results.
  *
  * @author Phillip Webb
  * @since 3.0.0
@@ -36,5 +38,14 @@ public interface EndpointObjectMapper {
 	 * @return the object mapper
 	 */
 	ObjectMapper get();
+
+	/**
+	 * Return the types that this endpoint mapper supports.
+	 * @return the supported types
+	 * @since 4.0.0
+	 */
+	default Set<Class<?>> getSupportedTypes() {
+		return Set.of(OperationResponseBody.class);
+	}
 
 }
