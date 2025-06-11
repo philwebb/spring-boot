@@ -26,9 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.springframework.util.Assert;
 
 /**
- * Carries information about the health of a component or subsystem. Extends
- * {@link HealthComponent} so that additional contextual details about the system can be
- * returned along with the {@link Status}.
+ * Carries information about the health of a component or subsystem.
  * <p>
  * {@link Health} instances can be created by using {@link Builder}'s fluent API. Typical
  * usage in a {@link HealthIndicator} would be:
@@ -49,7 +47,7 @@ import org.springframework.util.Assert;
  * @since 4.0.0
  */
 @JsonInclude(Include.NON_EMPTY)
-public final class Health extends HealthComponent {
+public final class Health {
 
 	private final Status status;
 
@@ -74,7 +72,6 @@ public final class Health extends HealthComponent {
 	 * Return the status of the health.
 	 * @return the status (never {@code null})
 	 */
-	@Override
 	public Status getStatus() {
 		return this.status;
 	}

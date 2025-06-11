@@ -19,8 +19,8 @@ package org.springframework.boot.health;
 import org.springframework.util.Assert;
 
 /**
- * Tagging interface for classes that contribute to {@link HealthComponent health
- * components}. A contributor must be either a {@link ReactiveHealthIndicator} or a
+ * Contributes health information for a reactive subsytem or component. A contributor must
+ * be either a {@link ReactiveHealthIndicator} or a
  * {@link CompositeReactiveHealthContributor}.
  *
  * @author Phillip Webb

@@ -33,7 +33,7 @@ import org.springframework.boot.health.Status;
  *
  * @author Phillip Webb
  */
-class ApiVersionedCompositeHealth extends CompositeHealth {
+class CompositeHealth extends CompositeHealth {
 
 	private final ApiVersion apiVersion;
 

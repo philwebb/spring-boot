@@ -17,9 +17,8 @@
 package org.springframework.boot.health;
 
 /**
- * Tagging interface for classes that contribute to {@link HealthComponent health
- * components}. A contributor must be either a {@link HealthIndicator} or a
- * {@link CompositeHealthContributor}.
+ * Contributes health information for a subsytem or component. A contributor must be
+ * either a {@link HealthIndicator} or a {@link CompositeHealthContributor}.
  *
  * @author Phillip Webb
  * @since 4.0.0

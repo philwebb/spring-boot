@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * @since 4.0.0
  * @see Health
  */
-public abstract sealed class HealthComponent permits Health, CompositeHealth {
+public interface HealthComponent permits Health, CompositeHealth {
 
 	HealthComponent() {
 	}
@@ -37,6 +37,6 @@ public abstract sealed class HealthComponent permits Health, CompositeHealth {
 	 * @return the component status
 	 */
 	@JsonUnwrapped
-	public abstract Status getStatus();
+	Status getStatus();
 
 }
