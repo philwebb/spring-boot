@@ -1,2 +1,2 @@
-org.springframework.boot.reactor.netty.actuate.autoconfigure.web.server.NettyReactiveManagementContextAutoConfiguration
+org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveManagementContextAutoConfiguration
 org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration
