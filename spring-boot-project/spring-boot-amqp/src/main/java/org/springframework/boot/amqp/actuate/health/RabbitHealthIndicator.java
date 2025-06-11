@@ -17,9 +17,9 @@
 package org.springframework.boot.amqp.actuate.health;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
 import org.springframework.util.Assert;
 
 /**

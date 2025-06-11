@@ -20,7 +20,7 @@ import org.neo4j.driver.summary.DatabaseInfo;
 import org.neo4j.driver.summary.ResultSummary;
 import org.neo4j.driver.summary.ServerInfo;
 
-import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.health.Health;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,10 +32,10 @@ class Neo4jHealthDetailsHandler {
 
 	/**
 	 * Add health details for the specified {@link ResultSummary} and {@code edition}.
-	 * @param builder the {@link Builder} to use
+	 * @param builder the builder to use
 	 * @param healthDetails the health details of the server
 	 */
-	void addHealthDetails(Builder builder, Neo4jHealthDetails healthDetails) {
+	void addHealthDetails(Health.Builder builder, Neo4jHealthDetails healthDetails) {
 		ResultSummary summary = healthDetails.getSummary();
 		ServerInfo serverInfo = summary.server();
 		builder.up()

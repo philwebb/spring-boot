@@ -27,9 +27,9 @@ import org.neo4j.driver.SessionConfig;
 import org.neo4j.driver.exceptions.SessionExpiredException;
 import org.neo4j.driver.summary.ResultSummary;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
 
 /**
  * {@link HealthIndicator} that tests the status of a Neo4j by executing a Cypher

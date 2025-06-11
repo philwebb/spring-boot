@@ -28,8 +28,8 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.Status;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.mongodb.core.MongoTemplate;
 

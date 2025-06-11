@@ -16,9 +16,9 @@
 
 package org.springframework.boot.data.redis.actuate.health;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
 import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

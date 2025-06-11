@@ -18,9 +18,9 @@ package org.springframework.boot.data.mongodb.actuate.health;
 
 import org.bson.Document;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.Assert;
 

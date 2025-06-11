@@ -28,9 +28,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.health.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.ReactiveHealthIndicator;
 
 /**
  * {@link ReactiveHealthIndicator} that tests the status of a Neo4j by executing a Cypher

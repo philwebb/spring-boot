@@ -16,9 +16,9 @@
 
 package org.springframework.boot.mail.actuate.health;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health.Builder;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.util.StringUtils;
 
@@ -39,7 +39,7 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Builder builder) throws Exception {
+	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		String host = this.mailSender.getHost();
 		int port = this.mailSender.getPort();
 		StringBuilder location = new StringBuilder((host != null) ? host : "");

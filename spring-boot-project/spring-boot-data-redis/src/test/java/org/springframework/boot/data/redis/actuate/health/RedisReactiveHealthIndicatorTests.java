@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.Status;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.connection.ClusterInfo;
 import org.springframework.data.redis.connection.ReactiveRedisClusterConnection;

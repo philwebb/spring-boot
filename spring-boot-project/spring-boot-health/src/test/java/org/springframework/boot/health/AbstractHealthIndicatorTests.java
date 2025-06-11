@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package org.springframework.boot.health;
 
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
@@ -38,7 +37,7 @@ class AbstractHealthIndicatorTests {
 
 	@Test
 	void healthCheckWhenUpDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
-		TestHealthIndicator indicator = new TestHealthIndicator("Test message", Builder::up);
+		TestHealthIndicator indicator = new TestHealthIndicator("Test message", Health.Builder::up);
 		Health heath = indicator.health();
 		assertThat(heath.getStatus()).isEqualTo(Status.UP);
 		assertThat(output).doesNotContain("Test message");
@@ -95,19 +94,19 @@ class AbstractHealthIndicatorTests {
 
 	static class TestHealthIndicator extends AbstractHealthIndicator {
 
-		private final Consumer<Builder> action;
+		private final Consumer<Health.Builder> action;
 
-		TestHealthIndicator(String message, Consumer<Builder> action) {
+		TestHealthIndicator(String message, Consumer<Health.Builder> action) {
 			super(message);
 			this.action = action;
 		}
 
-		TestHealthIndicator(Consumer<Builder> action) {
+		TestHealthIndicator(Consumer<Health.Builder> action) {
 			this.action = action;
 		}
 
 		@Override
-		protected void doHealthCheck(Builder builder) throws Exception {
+		protected void doHealthCheck(Health.Builder builder) throws Exception {
 			this.action.accept(builder);
 		}
 

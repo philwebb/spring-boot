@@ -24,6 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.health.CompositeHealthContributor;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.HealthContributor;
+import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.Status;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 

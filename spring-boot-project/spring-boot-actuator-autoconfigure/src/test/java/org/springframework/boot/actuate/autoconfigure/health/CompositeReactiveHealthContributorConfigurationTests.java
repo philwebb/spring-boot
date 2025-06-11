@@ -19,10 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfigurationTests.TestReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Health.Builder;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
+import org.springframework.boot.health.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.ReactiveHealthContributor;
 
 /**
  * Tests for {@link CompositeReactiveHealthContributorConfiguration}.
@@ -52,7 +51,7 @@ class CompositeReactiveHealthContributorConfigurationTests extends
 		}
 
 		@Override
-		protected Mono<Health> doHealthCheck(Builder builder) {
+		protected Mono<Health> doHealthCheck(Health.Builder builder) {
 			return Mono.just(builder.up().build());
 		}
 

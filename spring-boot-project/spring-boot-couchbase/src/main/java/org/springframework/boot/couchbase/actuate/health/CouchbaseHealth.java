@@ -24,7 +24,7 @@ import com.couchbase.client.core.diagnostics.ClusterState;
 import com.couchbase.client.core.diagnostics.DiagnosticsResult;
 import com.couchbase.client.core.diagnostics.EndpointDiagnostics;
 
-import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.health.Health;
 
 /**
  * Details of Couchbase's health.
@@ -39,7 +39,7 @@ class CouchbaseHealth {
 		this.diagnostics = diagnostics;
 	}
 
-	void applyTo(Builder builder) {
+	void applyTo(Health.Builder builder) {
 		builder = isCouchbaseUp(this.diagnostics) ? builder.up() : builder.down();
 		builder.withDetail("sdk", this.diagnostics.sdk());
 		builder.withDetail("endpoints",

@@ -18,8 +18,7 @@ package org.springframework.boot.data.redis.actuate.health;
 
 import java.util.Properties;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.health.Health;
 import org.springframework.data.redis.connection.ClusterInfo;
 
 /**
@@ -33,12 +32,12 @@ final class RedisHealth {
 	private RedisHealth() {
 	}
 
-	static Builder up(Health.Builder builder, Properties info) {
+	static Health.Builder up(Health.Builder builder, Properties info) {
 		builder.withDetail("version", info.getProperty("redis_version"));
 		return builder.up();
 	}
 
-	static Builder fromClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
+	static Health.Builder fromClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
 		builder.withDetail("cluster_size", clusterInfo.getClusterSize());
 		builder.withDetail("slots_up", clusterInfo.getSlotsOk());
 		builder.withDetail("slots_fail", clusterInfo.getSlotsFail());

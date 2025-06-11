@@ -26,9 +26,10 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.Status;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.util.StreamUtils;
@@ -73,12 +74,7 @@ public class ElasticsearchRestClientHealthIndicator extends AbstractHealthIndica
 	private void doHealthCheck(Health.Builder builder, String json) {
 		Map<String, Object> response = this.jsonParser.parseMap(json);
 		String status = (String) response.get("status");
-		if (RED_STATUS.equals(status)) {
-			builder.outOfService();
-		}
-		else {
-			builder.up();
-		}
+		builder.status((RED_STATUS.equals(status)) ? Status.OUT_OF_SERVICE : Status.UP);
 		builder.withDetails(response);
 	}
 

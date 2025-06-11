@@ -14,4 +14,6 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("io.projectreactor:reactor-test")
 }

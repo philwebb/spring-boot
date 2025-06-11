@@ -19,9 +19,9 @@ package org.springframework.boot.data.mongodb.actuate.health;
 import org.bson.Document;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.health.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.ReactiveHealthIndicator;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.util.Assert;
 

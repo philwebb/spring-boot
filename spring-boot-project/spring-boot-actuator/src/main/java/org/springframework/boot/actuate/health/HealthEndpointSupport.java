@@ -23,9 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -204,10 +201,7 @@ abstract class HealthEndpointSupport<C, T> {
 		Status status = statusAggregator
 			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
 		Map<String, HealthComponent> instances = showComponents ? components : null;
-		if (groupNames != null) {
-			return new SystemHealth(apiVersion, status, instances, groupNames);
-		}
-		return new ApiVersionedCompositeHealth(apiVersion, status, instances);
+		return new SystemHealth(status, instances, groupNames, apiVersion);
 	}
 
 	private Status getStatus(HealthComponent component) {
@@ -236,26 +230,6 @@ abstract class HealthEndpointSupport<C, T> {
 
 		HealthEndpointGroup getGroup() {
 			return this.group;
-		}
-
-	}
-
-	static class ApiVersion2CompositeHealth extends CompositeHealth {
-
-		public ApiVersion2CompositeHealth(org.springframework.boot.health.Status status,
-				Map<String, HealthComponent> components) {
-			super(status, components);
-		}
-
-		@Override
-		public Map<String, HealthComponent> getComponents() {
-			return null;
-		}
-
-		@JsonInclude(Include.NON_EMPTY)
-		@JsonProperty
-		public Map<String, HealthComponent> getDetails() {
-			return super.getComponents();
 		}
 
 	}

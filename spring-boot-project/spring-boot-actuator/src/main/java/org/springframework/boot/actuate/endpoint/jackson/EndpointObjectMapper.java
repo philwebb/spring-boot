@@ -32,6 +32,9 @@ import org.springframework.boot.actuate.endpoint.OperationResponseBody;
  */
 public interface EndpointObjectMapper {
 
+	/**
+	 * The default supported types.
+	 */
 	Set<Class<?>> DEFAULT_SUPPORTED_TYPES = Set.of(OperationResponseBody.class);
 
 	/**
