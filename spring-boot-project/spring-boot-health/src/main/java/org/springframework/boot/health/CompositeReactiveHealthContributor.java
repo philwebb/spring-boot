@@ -25,6 +25,7 @@ import java.util.function.Function;
  *
  * @author Phillip Webb
  * @since 4.0.0
+ * @see CompositeHealth
  * @see CompositeHealthContributor
  */
 public non-sealed interface CompositeReactiveHealthContributor

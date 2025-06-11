@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import org.springframework.boot.health.NamedContributor;
 import org.springframework.util.Assert;
 
 /**

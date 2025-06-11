@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,40 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.health.CompositeHealth;
 import org.springframework.boot.health.HealthComponent;
 import org.springframework.boot.health.Status;
 
 /**
- * A {@link HealthComponent} that represents the overall system health and the available
- * groups.
+ * {@link CompositeHealth} to that returns a different payload based on the
+ * {@link ApiVersion}.
  *
  * @author Phillip Webb
- * @since 2.2.0
  */
-public final class SystemHealth extends ApiVersionedCompositeHealth {
+class ApiVersionedCompositeHealth extends CompositeHealth {
 
-	private final Set<String> groups;
+	private final ApiVersion apiVersion;
 
-	SystemHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components, Set<String> groups) {
-		super(apiVersion, status, components);
-		this.groups = (groups != null) ? new TreeSet<>(groups) : null;
+	ApiVersionedCompositeHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components) {
+		super(status, components);
+		this.apiVersion = apiVersion;
+	}
+
+	@Override
+	public Map<String, HealthComponent> getComponents() {
+		return (this.apiVersion == ApiVersion.V3) ? super.getComponents() : null;
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
-	public Set<String> getGroups() {
-		return this.groups;
+	@JsonProperty
+	public Map<String, HealthComponent> getDetails() {
+		return (this.apiVersion == ApiVersion.V2) ? super.getComponents() : null;
 	}
 
 }

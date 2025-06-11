@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package org.springframework.boot.health;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.util.Assert;
 
 /**
@@ -33,25 +31,18 @@ import org.springframework.util.Assert;
  * connection.
  *
  * @author Phillip Webb
- * @since 2.2.0
+ * @since 4.0.0
  */
-public class CompositeHealth extends HealthComponent {
+public non-sealed class CompositeHealth extends HealthComponent {
 
 	private final Status status;
 
 	private final Map<String, HealthComponent> components;
 
-	private final Map<String, HealthComponent> details;
-
-	CompositeHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> components) {
+	public CompositeHealth(Status status, Map<String, HealthComponent> components) {
 		Assert.notNull(status, "'status' must not be null");
 		this.status = status;
-		this.components = (apiVersion != ApiVersion.V3) ? null : sort(components);
-		this.details = (apiVersion != ApiVersion.V2) ? null : sort(components);
-	}
-
-	private Map<String, HealthComponent> sort(Map<String, HealthComponent> components) {
-		return (components != null) ? new TreeMap<>(components) : components;
+		this.components = (components != null) ? new TreeMap<>(components) : components;
 	}
 
 	@Override
@@ -62,12 +53,6 @@ public class CompositeHealth extends HealthComponent {
 	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, HealthComponent> getComponents() {
 		return this.components;
-	}
-
-	@JsonInclude(Include.NON_EMPTY)
-	@JsonProperty
-	public Map<String, HealthComponent> getDetails() {
-		return this.details;
 	}
 
 }

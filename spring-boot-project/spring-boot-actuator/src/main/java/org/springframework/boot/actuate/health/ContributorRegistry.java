@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.boot.health.HealthContributor;
+import org.springframework.boot.health.NamedContributors;
+import org.springframework.boot.health.ReactiveHealthContributor;
+
 /**
  * A mutable registry of health endpoint contributors (either {@link HealthContributor} or
  * {@link ReactiveHealthContributor}).

@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +33,12 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.health.CompositeHealth;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.NamedContributor;
+import org.springframework.boot.health.NamedContributors;
+import org.springframework.boot.health.Status;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -198,7 +207,7 @@ abstract class HealthEndpointSupport<C, T> {
 		if (groupNames != null) {
 			return new SystemHealth(apiVersion, status, instances, groupNames);
 		}
-		return new CompositeHealth(apiVersion, status, instances);
+		return new ApiVersionedCompositeHealth(apiVersion, status, instances);
 	}
 
 	private Status getStatus(HealthComponent component) {
@@ -227,6 +236,26 @@ abstract class HealthEndpointSupport<C, T> {
 
 		HealthEndpointGroup getGroup() {
 			return this.group;
+		}
+
+	}
+
+	static class ApiVersion2CompositeHealth extends CompositeHealth {
+
+		public ApiVersion2CompositeHealth(org.springframework.boot.health.Status status,
+				Map<String, HealthComponent> components) {
+			super(status, components);
+		}
+
+		@Override
+		public Map<String, HealthComponent> getComponents() {
+			return null;
+		}
+
+		@JsonInclude(Include.NON_EMPTY)
+		@JsonProperty
+		public Map<String, HealthComponent> getDetails() {
+			return super.getComponents();
 		}
 
 	}

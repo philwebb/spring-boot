@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * @since 4.0.0
  * @see Health
  */
-public abstract class HealthComponent {
+public abstract sealed class HealthComponent permits Health, CompositeHealth {
 
 	HealthComponent() {
 	}
