@@ -30,6 +30,10 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -37,18 +41,17 @@ import org.springframework.util.StringUtils;
 /**
  * Base class for health endpoints and health endpoint extensions.
  *
- * @param <C> the contributor type
  * @param <T> the contributed health component type
  * @author Phillip Webb
  * @author Scott Frederick
  */
-abstract class HealthEndpointSupport<C, T> {
+abstract class HealthEndpointSupport<T> {
 
 	private static final Log logger = LogFactory.getLog(HealthEndpointSupport.class);
 
 	static final Health DEFAULT_HEALTH = Health.up().build();
 
-	private final ContributorRegistry<C> registry;
+	private final HealthEndpointContributor<T> root;
 
 	private final HealthEndpointGroups groups;
 
@@ -56,16 +59,16 @@ abstract class HealthEndpointSupport<C, T> {
 
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
-	 * @param registry the health contributor registry
+	 * @param root the root contributor
 	 * @param groups the health endpoint groups
 	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 */
-	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups,
+	HealthEndpointSupport(HealthEndpointContributor<T> root, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
-		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notNull(root, "'root' must not be null");
 		Assert.notNull(groups, "'groups' must not be null");
-		this.registry = registry;
+		this.root = root;
 		this.groups = groups;
 		this.slowIndicatorLoggingThreshold = slowIndicatorLoggingThreshold;
 	}
@@ -101,7 +104,7 @@ abstract class HealthEndpointSupport<C, T> {
 		if (!showComponents && !isRoot) {
 			return null;
 		}
-		Object contributor = getContributor(path, pathOffset);
+		HealthEndpointContributor<T> contributor = getContributor(path, pathOffset);
 		if (contributor == null) {
 			return null;
 		}
@@ -112,13 +115,13 @@ abstract class HealthEndpointSupport<C, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object getContributor(String[] path, int pathOffset) {
-		Object contributor = this.registry;
+	private HealthEndpointContributor<T> getContributor(String[] path, int pathOffset) {
+		HealthEndpointContributor<T> contributor = this.root;
 		while (pathOffset < path.length) {
-			if (!(contributor instanceof NamedContributors)) {
+			if (!contributor.isComposite()) {
 				return null;
 			}
-			contributor = ((NamedContributors<C>) contributor).getContributor(path[pathOffset]);
+			contributor = contributor.getChild(path[pathOffset]);
 			pathOffset++;
 		}
 		return contributor;
@@ -135,28 +138,29 @@ abstract class HealthEndpointSupport<C, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name, Object contributor,
-			boolean showComponents, boolean showDetails, Set<String> groupNames) {
-		if (contributor instanceof NamedContributors) {
-			return getAggregateContribution(apiVersion, group, name, (NamedContributors<C>) contributor, showComponents,
-					showDetails, groupNames);
+	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			HealthEndpointContributor<T> contributor, boolean showComponents, boolean showDetails,
+			Set<String> groupNames) {
+		if (contributor.isComposite()) {
+			return getAggregateContribution(apiVersion, group, name, contributor, showComponents, showDetails,
+					groupNames);
 		}
 		if (contributor != null && (name.isEmpty() || group.isMember(name))) {
-			return getLoggedHealth((C) contributor, name, showDetails);
+			return getLoggedHealth(contributor, name, showDetails);
 		}
 		return null;
 	}
 
 	private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
-			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails,
+			HealthEndpointContributor<T> contributor, boolean showComponents, boolean showDetails,
 			Set<String> groupNames) {
 		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
 		Map<String, T> contributions = new LinkedHashMap<>();
-		for (NamedContributor<C> child : namedContributors) {
-			T contribution = getContribution(apiVersion, group, prefix + child.getName(), child.getContributor(),
+		for (HealthEndpointContributor.Child<T> child : contributor) {
+			T contribution = getContribution(apiVersion, group, prefix + child.name(), child.contributor(),
 					showComponents, showDetails, null);
 			if (contribution != null) {
-				contributions.put(child.getName(), contribution);
+				contributions.put(child.name(), contribution);
 			}
 		}
 		if (contributions.isEmpty()) {
@@ -166,10 +170,10 @@ abstract class HealthEndpointSupport<C, T> {
 				groupNames);
 	}
 
-	private T getLoggedHealth(C contributor, String name, boolean showDetails) {
+	private T getLoggedHealth(HealthEndpointContributor<T> contributor, String name, boolean showDetails) {
 		Instant start = Instant.now();
 		try {
-			return getHealth(contributor, showDetails);
+			return contributor.getHealth(showDetails);
 		}
 		finally {
 			if (logger.isWarnEnabled() && this.slowIndicatorLoggingThreshold != null) {
@@ -185,23 +189,18 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 	}
 
-	protected abstract T getHealth(C contributor, boolean includeDetails);
-
 	protected abstract T aggregateContributions(ApiVersion apiVersion, Map<String, T> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames);
 
-	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, HealthComponent> components,
+	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, ContributedHealth> components,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
 		Status status = statusAggregator
 			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
-		Map<String, HealthComponent> instances = showComponents ? components : null;
-		if (groupNames != null) {
-			return new SystemHealth(apiVersion, status, instances, groupNames);
-		}
-		return new CompositeHealth(apiVersion, status, instances);
+		Map<String, ContributedHealth> instances = showComponents ? components : null;
+		return new SystemHealth(status, instances, groupNames, apiVersion);
 	}
 
-	private Status getStatus(HealthComponent component) {
+	private Status getStatus(ContributedHealth component) {
 		return (component != null) ? component.getStatus() : Status.UNKNOWN;
 	}
 

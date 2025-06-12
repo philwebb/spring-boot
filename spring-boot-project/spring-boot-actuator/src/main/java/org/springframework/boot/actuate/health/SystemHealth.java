@@ -22,23 +22,41 @@ import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Status;
 
 /**
- * A {@link HealthComponent} that represents the overall system health and the available
+ * A {@link CompositeHealth} that represents the overall system health and the available
  * groups.
  *
  * @author Phillip Webb
- * @since 2.2.0
+ * @since 4.0.0
  */
 public final class SystemHealth extends CompositeHealth {
 
+	private final ApiVersion apiVersion;
+
 	private final Set<String> groups;
 
-	SystemHealth(ApiVersion apiVersion, Status status, Map<String, HealthComponent> instances, Set<String> groups) {
-		super(apiVersion, status, instances);
+	SystemHealth(Status status, Map<String, ContributedHealth> components, Set<String> groups, ApiVersion apiVersion) {
+		super(status, components);
 		this.groups = (groups != null) ? new TreeSet<>(groups) : null;
+		this.apiVersion = apiVersion;
+	}
+
+	@Override
+	public Map<String, ContributedHealth> getComponents() {
+		return (this.apiVersion == ApiVersion.V3) ? super.getComponents() : null;
+	}
+
+	@JsonProperty
+	@JsonInclude(Include.NON_EMPTY)
+	public Map<String, ContributedHealth> getDetails() {
+		return (this.apiVersion == ApiVersion.V2) ? super.getComponents() : null;
 	}
 
 	@JsonInclude(Include.NON_EMPTY)

@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.health;
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.Health;
 
 /**
  * {@link RuntimeHintsRegistrar} used by {@link HealthEndpointWebExtension} and

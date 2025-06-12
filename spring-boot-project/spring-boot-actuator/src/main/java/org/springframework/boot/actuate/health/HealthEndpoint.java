@@ -27,6 +27,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
 
 /**
  * {@link Endpoint @Endpoint} to expose application health information.
@@ -39,7 +41,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
  * @since 2.0.0
  */
 @Endpoint(id = "health")
-public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, HealthComponent> {
+public class HealthEndpoint extends HealthEndpointSupport<ContributedHealth> {
 
 	/**
 	 * Health endpoint id.
@@ -54,37 +56,33 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	 * @param groups the health endpoint groups
 	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
-	 * @since 2.6.9
+	 * @since 4.0.0
 	 */
 	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
-		super(registry, groups, slowIndicatorLoggingThreshold);
+		super(new HealthEndpointContributor.Blocking(registry), groups, slowIndicatorLoggingThreshold);
 	}
 
 	@ReadOperation
-	public HealthComponent health() {
-		HealthComponent health = health(ApiVersion.V3, EMPTY_PATH);
+	public ContributedHealth health() {
+		ContributedHealth health = health(ApiVersion.V3, EMPTY_PATH);
 		return (health != null) ? health : DEFAULT_HEALTH;
 	}
 
 	@ReadOperation
-	public HealthComponent healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+	public ContributedHealth healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(ApiVersion.V3, path);
 	}
 
-	private HealthComponent health(ApiVersion apiVersion, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, null, SecurityContext.NONE, true, path);
+	private ContributedHealth health(ApiVersion apiVersion, String... path) {
+		HealthResult<ContributedHealth> result = getHealth(apiVersion, null, SecurityContext.NONE, true, path);
 		return (result != null) ? result.getHealth() : null;
 	}
 
 	@Override
-	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
-		return ((HealthIndicator) contributor).getHealth(includeDetails);
-	}
-
-	@Override
-	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
-			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+	protected ContributedHealth aggregateContributions(ApiVersion apiVersion,
+			Map<String, ContributedHealth> contributions, StatusAggregator statusAggregator, boolean showComponents,
+			Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 

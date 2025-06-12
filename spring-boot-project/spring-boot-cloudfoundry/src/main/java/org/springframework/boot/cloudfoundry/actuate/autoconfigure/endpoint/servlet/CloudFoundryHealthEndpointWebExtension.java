@@ -23,10 +23,10 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.EndpointCloudFoundryExtension;
+import org.springframework.boot.health.contributor.ContributedHealth;
 
 /**
  * {@link EndpointExtension @EndpointExtension} for the {@link HealthEndpoint} that always
@@ -45,12 +45,12 @@ public class CloudFoundryHealthEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion) {
+	public WebEndpointResponse<ContributedHealth> health(ApiVersion apiVersion) {
 		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion,
+	public WebEndpointResponse<ContributedHealth> health(ApiVersion apiVersion,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return this.delegate.health(apiVersion, null, SecurityContext.NONE, true, path);
 	}

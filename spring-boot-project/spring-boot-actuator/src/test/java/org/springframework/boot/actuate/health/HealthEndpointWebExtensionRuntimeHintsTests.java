@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.Health;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

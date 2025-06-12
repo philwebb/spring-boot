@@ -30,26 +30,29 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.CompositeHealthContributor;
-import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
-import org.springframework.boot.actuate.health.DefaultReactiveHealthContributorRegistry;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthComponent;
-import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
-import org.springframework.boot.actuate.health.NamedContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
-import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthContributors;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthContributors;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.Status;
+import org.springframework.boot.health.registry.DefaultHealthContributorRegistry;
+import org.springframework.boot.health.registry.DefaultReactiveHealthContributorRegistry;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -74,14 +77,14 @@ class HealthEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withUserConfiguration(HealthIndicatorsConfiguration.class)
-		.withConfiguration(
-				AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class,
+				HealthContributorRegistryAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 		.withUserConfiguration(HealthIndicatorsConfiguration.class)
-		.withConfiguration(
-				AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class,
+				HealthContributorRegistryAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
 
 	@Test
 	void runWhenHealthEndpointIsDisabledDoesNotCreateBeans() {
@@ -89,9 +92,7 @@ class HealthEndpointAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(StatusAggregator.class);
 			assertThat(context).doesNotHaveBean(HttpCodeStatusMapper.class);
 			assertThat(context).doesNotHaveBean(HealthEndpointGroups.class);
-			assertThat(context).doesNotHaveBean(HealthContributorRegistry.class);
 			assertThat(context).doesNotHaveBean(HealthEndpoint.class);
-			assertThat(context).doesNotHaveBean(ReactiveHealthContributorRegistry.class);
 			assertThat(context).doesNotHaveBean(HealthEndpointWebExtension.class);
 			assertThat(context).doesNotHaveBean(ReactiveHealthEndpointWebExtension.class);
 		});
@@ -192,7 +193,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthContributorRegistryContainingHealthBeans() {
 		this.contextRunner.run((context) -> {
 			HealthContributorRegistry registry = context.getBean(HealthContributorRegistry.class);
-			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
+			Object[] names = registry.stream().map(HealthContributors.Entry::name).toArray();
 			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "ping", "reactive");
 		});
 	}
@@ -202,7 +203,7 @@ class HealthEndpointAutoConfigurationTests {
 		ClassLoader classLoader = new FilteredClassLoader(Mono.class, Flux.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			HealthContributorRegistry registry = context.getBean(HealthContributorRegistry.class);
-			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
+			Object[] names = registry.stream().map(HealthContributors.Entry::name).toArray();
 			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "ping");
 		});
 	}
@@ -211,7 +212,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runWhenHasHealthContributorRegistryBeanDoesNotCreateAdditionalRegistry() {
 		this.contextRunner.withUserConfiguration(HealthContributorRegistryConfiguration.class).run((context) -> {
 			HealthContributorRegistry registry = context.getBean(HealthContributorRegistry.class);
-			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
+			Object[] names = registry.stream().map(HealthContributors.Entry::name).toArray();
 			assertThat(names).isEmpty();
 		});
 	}
@@ -237,7 +238,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesReactiveHealthContributorRegistryContainingAdaptedBeans() {
 		this.reactiveContextRunner.run((context) -> {
 			ReactiveHealthContributorRegistry registry = context.getBean(ReactiveHealthContributorRegistry.class);
-			Object[] names = registry.stream().map(NamedContributor::getName).toArray();
+			Object[] names = registry.stream().map(ReactiveHealthContributors.Entry::name).toArray();
 			assertThat(names).containsExactlyInAnyOrder("simple", "additional", "reactive", "ping");
 		});
 	}
@@ -247,7 +248,7 @@ class HealthEndpointAutoConfigurationTests {
 		this.reactiveContextRunner.withUserConfiguration(ReactiveHealthContributorRegistryConfiguration.class)
 			.run((context) -> {
 				ReactiveHealthContributorRegistry registry = context.getBean(ReactiveHealthContributorRegistry.class);
-				Object[] names = registry.stream().map(NamedContributor::getName).toArray();
+				Object[] names = registry.stream().map(ReactiveHealthContributors.Entry::name).toArray();
 				assertThat(names).isEmpty();
 			});
 	}
@@ -256,7 +257,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthEndpointWebExtension() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension webExtension = context.getBean(HealthEndpointWebExtension.class);
-			WebEndpointResponse<HealthComponent> response = webExtension.health(ApiVersion.V3,
+			WebEndpointResponse<ContributedHealth> response = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 			Health health = (Health) response.getBody();
 			assertThat(response.getStatus()).isEqualTo(200);
@@ -268,7 +269,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runWhenHasHealthEndpointWebExtensionBeanDoesNotCreateExtraHealthEndpointWebExtension() {
 		this.contextRunner.withUserConfiguration(HealthEndpointWebExtensionConfiguration.class).run((context) -> {
 			HealthEndpointWebExtension webExtension = context.getBean(HealthEndpointWebExtension.class);
-			WebEndpointResponse<HealthComponent> response = webExtension.health(ApiVersion.V3,
+			WebEndpointResponse<ContributedHealth> response = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 			assertThat(response).isNull();
 		});
@@ -278,7 +279,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesReactiveHealthEndpointWebExtension() {
 		this.reactiveContextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension webExtension = context.getBean(ReactiveHealthEndpointWebExtension.class);
-			Mono<WebEndpointResponse<? extends HealthComponent>> response = webExtension.health(ApiVersion.V3,
+			Mono<WebEndpointResponse<? extends ContributedHealth>> response = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 			Health health = (Health) (response.block().getBody());
 			assertThat(health.getDetails()).containsEntry("counter", 42);
@@ -291,7 +292,7 @@ class HealthEndpointAutoConfigurationTests {
 			.run((context) -> {
 				ReactiveHealthEndpointWebExtension webExtension = context
 					.getBean(ReactiveHealthEndpointWebExtension.class);
-				Mono<WebEndpointResponse<? extends HealthComponent>> response = webExtension.health(ApiVersion.V3,
+				Mono<WebEndpointResponse<? extends ContributedHealth>> response = webExtension.health(ApiVersion.V3,
 						WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 				assertThat(response).isNull();
 			});
@@ -312,12 +313,12 @@ class HealthEndpointAutoConfigurationTests {
 	void runWithIndicatorsInParentContextFindsIndicators() {
 		new ApplicationContextRunner().withUserConfiguration(HealthIndicatorsConfiguration.class)
 			.run((parent) -> new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-						HealthEndpointAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class,
+						HealthContributorRegistryAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 				.withParent(parent)
 				.run((context) -> {
-					HealthComponent health = context.getBean(HealthEndpoint.class).health();
-					Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
+					ContributedHealth health = context.getBean(HealthEndpoint.class).health();
+					Map<String, ContributedHealth> components = ((CompositeHealth) health).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
 	}
@@ -326,15 +327,22 @@ class HealthEndpointAutoConfigurationTests {
 	void runWithReactiveContextAndIndicatorsInParentContextFindsIndicators() {
 		new ApplicationContextRunner().withUserConfiguration(HealthIndicatorsConfiguration.class)
 			.run((parent) -> new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-						HealthEndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						EndpointAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(HealthEndpointAutoConfiguration.class,
+						HealthContributorRegistryAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+						WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class))
 				.withParent(parent)
 				.run((context) -> {
-					HealthComponent health = context.getBean(HealthEndpoint.class).health();
-					Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
+					ContributedHealth health = context.getBean(HealthEndpoint.class).health();
+					Map<String, ContributedHealth> components = ((CompositeHealth) health).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
+	}
+
+	@Test
+	void runWithClashingGroupNameThrowsException() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.group.ping.include=*")
+			.run((context) -> assertThat(context).getFailure()
+				.hasMessageContaining("HealthContributor with name \"ping\" clashes with group"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

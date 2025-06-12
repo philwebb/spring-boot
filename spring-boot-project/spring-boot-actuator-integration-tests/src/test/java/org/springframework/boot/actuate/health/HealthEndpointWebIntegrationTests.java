@@ -27,6 +27,18 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.health.autoconfigure.registry.HealthContributorNameGenerator;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.CompositeReactiveHealthContributor;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthContributor;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.boot.health.registry.DefaultHealthContributorRegistry;
+import org.springframework.boot.health.registry.DefaultReactiveHealthContributorRegistry;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -199,8 +211,7 @@ class HealthEndpointWebIntegrationTests {
 		}
 	}
 
-	private <R extends ContributorRegistry<?>> R getContributorRegistry(ApplicationContext context,
-			Class<R> registryType) {
+	private <R> R getContributorRegistry(ApplicationContext context, Class<R> registryType) {
 		return context.getBeanProvider(registryType).getIfAvailable();
 	}
 
@@ -242,7 +253,9 @@ class HealthEndpointWebIntegrationTests {
 
 		@Bean
 		HealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> healthContributorBeans) {
-			return new DefaultHealthContributorRegistry(healthContributorBeans);
+			return new DefaultHealthContributorRegistry(
+					HealthContributorNameGenerator.withoutStandardSuffixes().apply(healthContributorBeans),
+					Collections.emptyList());
 		}
 
 		@Bean
@@ -250,10 +263,14 @@ class HealthEndpointWebIntegrationTests {
 		ReactiveHealthContributorRegistry reactiveHealthContributorRegistry(
 				Map<String, HealthContributor> healthContributorBeans,
 				Map<String, ReactiveHealthContributor> reactiveHealthContributorBeans) {
-			Map<String, ReactiveHealthContributor> allIndicators = new LinkedHashMap<>(reactiveHealthContributorBeans);
-			healthContributorBeans.forEach((name, contributor) -> allIndicators.computeIfAbsent(name,
-					(key) -> ReactiveHealthContributor.adapt(contributor)));
-			return new DefaultReactiveHealthContributorRegistry(allIndicators);
+			HealthContributorNameGenerator nameGenerator = HealthContributorNameGenerator.withoutStandardSuffixes();
+			Map<String, ReactiveHealthContributor> contributors = new LinkedHashMap<>();
+			contributors.putAll(nameGenerator.apply(reactiveHealthContributorBeans));
+			healthContributorBeans.forEach((beanName, bean) -> {
+				String contributorName = nameGenerator.generateContributorName(beanName);
+				contributors.computeIfAbsent(contributorName, (key) -> ReactiveHealthContributor.adapt(bean));
+			});
+			return new DefaultReactiveHealthContributorRegistry(contributors, Collections.emptyList());
 		}
 
 		@Bean

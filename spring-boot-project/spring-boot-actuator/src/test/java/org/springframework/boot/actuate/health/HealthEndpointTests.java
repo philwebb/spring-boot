@@ -24,6 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthContributor;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.Status;
+import org.springframework.boot.health.registry.DefaultHealthContributorRegistry;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
@@ -38,37 +46,37 @@ import static org.mockito.Mockito.mock;
  */
 @ExtendWith(OutputCaptureExtension.class)
 class HealthEndpointTests extends
-		HealthEndpointSupportTests<HealthEndpoint, HealthContributorRegistry, HealthContributor, HealthComponent> {
+		HealthEndpointSupportTests<HealthEndpoint, HealthContributorRegistry, HealthContributor, ContributedHealth> {
 
 	@Test
 	void healthReturnsSystemHealth() {
-		this.registry.registerContributor("test", createContributor(this.up));
-		HealthComponent health = create(this.registry, this.groups).health();
+		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
+		HealthEndpoint endpoint = create(registry, this.groups);
+		ContributedHealth health = endpoint.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health).isInstanceOf(SystemHealth.class);
 	}
 
 	@Test
 	void healthWithNoContributorReturnsUp() {
-		assertThat(this.registry).isEmpty();
-		HealthComponent health = create(this.registry,
-				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap()))
-			.health();
+		HealthContributorRegistry registry = createRegistry(Collections.emptyMap());
+		HealthEndpointGroups groups = HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap());
+		ContributedHealth health = create(registry, groups).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health).isInstanceOf(Health.class);
 	}
 
 	@Test
 	void healthWhenPathDoesNotExistReturnsNull() {
-		this.registry.registerContributor("test", createContributor(this.up));
-		HealthComponent health = create(this.registry, this.groups).healthForPath("missing");
+		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
+		ContributedHealth health = create(registry, this.groups).healthForPath("missing");
 		assertThat(health).isNull();
 	}
 
 	@Test
 	void healthWhenPathExistsReturnsHealth() {
-		this.registry.registerContributor("test", createContributor(this.up));
-		HealthComponent health = create(this.registry, this.groups).healthForPath("test");
+		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
+		ContributedHealth health = create(registry, this.groups).healthForPath("test");
 		assertThat(health).isEqualTo(this.up);
 	}
 
@@ -83,11 +91,10 @@ class HealthEndpointTests extends
 			}
 			return this.up;
 		};
-		this.registry.registerContributor("test", indicator);
-		create(this.registry, this.groups, Duration.ofMillis(10)).health();
+		HealthContributorRegistry registry = createRegistry("test", indicator);
+		create(registry, this.groups, Duration.ofMillis(10)).health();
 		assertThat(output).contains("Health contributor");
 		assertThat(output).contains("to respond");
-
 	}
 
 	@Override
@@ -97,8 +104,8 @@ class HealthEndpointTests extends
 	}
 
 	@Override
-	protected HealthContributorRegistry createRegistry() {
-		return new DefaultHealthContributorRegistry();
+	protected HealthContributorRegistry createRegistry(Map<String, HealthContributor> contributors) {
+		return new DefaultHealthContributorRegistry(contributors, Collections.emptyList());
 	}
 
 	@Override
@@ -112,7 +119,7 @@ class HealthEndpointTests extends
 	}
 
 	@Override
-	protected HealthComponent getHealth(HealthResult<HealthComponent> result) {
+	protected ContributedHealth getHealth(HealthResult<ContributedHealth> result) {
 		return result.getHealth();
 	}
 
