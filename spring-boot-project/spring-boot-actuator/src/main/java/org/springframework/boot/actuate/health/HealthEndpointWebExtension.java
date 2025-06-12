@@ -29,6 +29,9 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.HealthContributor;
+import org.springframework.boot.health.HealthIndicator;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**

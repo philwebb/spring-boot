@@ -25,10 +25,10 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.EndpointCloudFoundryExtension;
+import org.springframework.boot.health.HealthComponent;
 
 /**
  * Reactive {@link EndpointExtension @EndpointExtension} for the {@link HealthEndpoint}

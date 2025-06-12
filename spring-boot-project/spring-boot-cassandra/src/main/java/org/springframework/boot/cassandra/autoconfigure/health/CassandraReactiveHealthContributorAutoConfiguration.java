@@ -23,9 +23,9 @@ import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnable
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.cassandra.actuate.health.CassandraDriverReactiveHealthIndicator;
 import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.cassandra.autoconfigure.health.CassandraHealthContributorConfigurations.CassandraReactiveDriverConfiguration;
+import org.springframework.boot.cassandra.health.CassandraDriverReactiveHealthIndicator;
 import org.springframework.context.annotation.Import;
 
 /**

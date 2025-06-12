@@ -16,6 +16,11 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.boot.health.AbstractHealthIndicator;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.Status;
+
 /**
  * Default implementation of {@link HealthIndicator} that returns {@link Status#UP}.
  *

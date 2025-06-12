@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.health.DefaultReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
+import org.springframework.boot.health.ReactiveHealthContributor;
 import org.springframework.util.Assert;
 
 /**

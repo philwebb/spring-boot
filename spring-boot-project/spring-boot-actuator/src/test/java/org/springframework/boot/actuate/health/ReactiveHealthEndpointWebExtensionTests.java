@@ -27,6 +27,12 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.health.CompositeReactiveHealthContributor;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.ReactiveHealthContributor;
+import org.springframework.boot.health.ReactiveHealthIndicator;
+import org.springframework.boot.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

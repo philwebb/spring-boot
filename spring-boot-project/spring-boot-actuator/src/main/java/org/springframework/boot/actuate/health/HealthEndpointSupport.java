@@ -30,6 +30,12 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.health.CompositeHealth;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.NamedContributor;
+import org.springframework.boot.health.NamedContributors;
+import org.springframework.boot.health.Status;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -195,10 +201,7 @@ abstract class HealthEndpointSupport<C, T> {
 		Status status = statusAggregator
 			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
 		Map<String, HealthComponent> instances = showComponents ? components : null;
-		if (groupNames != null) {
-			return new SystemHealth(apiVersion, status, instances, groupNames);
-		}
-		return new CompositeHealth(apiVersion, status, instances);
+		return new SystemHealth(status, instances, groupNames, apiVersion);
 	}
 
 	private Status getStatus(HealthComponent component) {

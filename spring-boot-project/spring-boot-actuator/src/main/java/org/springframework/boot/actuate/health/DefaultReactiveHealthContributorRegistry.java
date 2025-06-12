@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.boot.health.ReactiveHealthContributor;
+
 /**
  * Default {@link ReactiveHealthContributorRegistry} implementation.
  *

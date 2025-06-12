@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
-import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
+import org.springframework.boot.health.HealthContributor;
 import org.springframework.util.Assert;
 
 /**

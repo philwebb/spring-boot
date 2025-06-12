@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.health.NamedContributor;
-import org.springframework.boot.actuate.health.NamedContributors;
+import org.springframework.boot.health.NamedContributor;
+import org.springframework.boot.health.NamedContributors;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

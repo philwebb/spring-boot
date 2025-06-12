@@ -30,26 +30,26 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.DefaultReactiveHealthContributorRegistry;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributorRegistry;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
-import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
-import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.CompositeHealth;
+import org.springframework.boot.health.CompositeHealthContributor;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.NamedContributor;
+import org.springframework.boot.health.ReactiveHealthIndicator;
+import org.springframework.boot.health.Status;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -317,7 +317,7 @@ class HealthEndpointAutoConfigurationTests {
 				.withParent(parent)
 				.run((context) -> {
 					HealthComponent health = context.getBean(HealthEndpoint.class).health();
-					Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
+					Map<String, HealthComponent> components = ((CompositeHealth) health).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
 	}
@@ -332,7 +332,7 @@ class HealthEndpointAutoConfigurationTests {
 				.withParent(parent)
 				.run((context) -> {
 					HealthComponent health = context.getBean(HealthEndpoint.class).health();
-					Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
+					Map<String, HealthComponent> components = ((CompositeHealth) health).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
 	}

@@ -27,6 +27,9 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.HealthContributor;
+import org.springframework.boot.health.HealthIndicator;
 
 /**
  * {@link Endpoint @Endpoint} to expose application health information.

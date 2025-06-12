@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.health;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.health.CompositeHealth;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthContributor;
 
 /**
  * A logical grouping of {@link HealthContributor health contributors} that can be exposed

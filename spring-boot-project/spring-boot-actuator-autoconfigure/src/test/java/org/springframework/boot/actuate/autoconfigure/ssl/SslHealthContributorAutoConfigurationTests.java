@@ -22,12 +22,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.ssl.SslHealthContributorAutoConfigurationTests.CustomSslInfoConfiguration.CustomSslHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.ssl.SslHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.Status;
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.ssl.SslBundles;

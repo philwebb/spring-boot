@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.boot.health.HealthContributor;
+
 /**
  * {@link ContributorRegistry} for {@link HealthContributor HealthContributors}.
  *
