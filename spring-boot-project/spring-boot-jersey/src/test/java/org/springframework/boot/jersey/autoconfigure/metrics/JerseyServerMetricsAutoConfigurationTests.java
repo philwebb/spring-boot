@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration;
-import org.springframework.boot.jersey.autoconfigure.JerseyServerMetricsAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;

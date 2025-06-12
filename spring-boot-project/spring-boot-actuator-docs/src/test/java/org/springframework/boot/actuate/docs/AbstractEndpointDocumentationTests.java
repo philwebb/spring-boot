@@ -39,10 +39,10 @@ import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverte
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
-import org.springframework.boot.webflux.autoconfigure.actuate.WebFluxEndpointManagementContextConfiguration;
+import org.springframework.boot.webflux.autoconfigure.actuate.web.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
-import org.springframework.boot.webmvc.autoconfigure.actuate.WebMvcEndpointManagementContextConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.actuate.web.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

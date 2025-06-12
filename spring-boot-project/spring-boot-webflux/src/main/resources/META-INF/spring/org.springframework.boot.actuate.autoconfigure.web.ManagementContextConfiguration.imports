@@ -1,2 +1,2 @@
-org.springframework.boot.webflux.autoconfigure.actuate.WebFluxEndpointManagementContextConfiguration
-org.springframework.boot.webflux.autoconfigure.actuate.WebFluxManagementChildContextConfiguration
+org.springframework.boot.webflux.autoconfigure.actuate.web.WebFluxEndpointManagementContextConfiguration
+org.springframework.boot.webflux.autoconfigure.actuate.web.WebFluxManagementChildContextConfiguration

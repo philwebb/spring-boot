@@ -1,2 +1,2 @@
-org.springframework.boot.servlet.autoconfigure.actuate.ServletEndpointManagementContextConfiguration
-org.springframework.boot.servlet.autoconfigure.actuate.ServletManagementChildContextConfiguration
+org.springframework.boot.servlet.autoconfigure.actuate.web.ServletEndpointManagementContextConfiguration
+org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementChildContextConfiguration
