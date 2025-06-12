@@ -26,12 +26,12 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
-import org.springframework.boot.actuate.health.CompositeHealth;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthComponent;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.health.CompositeHealth;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.HealthIndicator;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;

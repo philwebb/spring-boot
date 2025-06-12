@@ -1,0 +1,19 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Health"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+
+	optional("io.projectreactor:reactor-core")
+	optional("com.fasterxml.jackson.core:jackson-annotations")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("io.projectreactor:reactor-test")
+}

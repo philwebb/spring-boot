@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.health.CompositeReactiveHealthContributor;
+import org.springframework.boot.health.ReactiveHealthContributor;
+import org.springframework.boot.health.ReactiveHealthIndicator;
 
 /**
  * Base class for health contributor configurations that can combine source beans into a

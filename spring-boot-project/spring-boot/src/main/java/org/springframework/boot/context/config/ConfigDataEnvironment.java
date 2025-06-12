@@ -188,7 +188,7 @@ class ConfigDataEnvironment {
 	protected ConfigDataEnvironmentContributors createContributors(
 			List<ConfigDataEnvironmentContributor> contributors) {
 		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapContext, contributors,
-				this.environment.getConversionService());
+				this.environment.getConversionService(), this.environmentUpdateListener);
 	}
 
 	ConfigDataEnvironmentContributors getContributors() {

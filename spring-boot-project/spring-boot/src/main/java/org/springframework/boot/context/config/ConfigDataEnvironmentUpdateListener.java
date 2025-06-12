@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.util.EventListener;
 
+import org.springframework.boot.context.config.ConfigData.Options;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
@@ -51,6 +52,11 @@ public interface ConfigDataEnvironmentUpdateListener extends EventListener {
 	 * @param profiles the profiles being set
 	 */
 	default void onSetProfiles(Profiles profiles) {
+	}
+
+	default ConfigData.Options onConfigDataOptions(ConfigData configData, PropertySource<?> propertySource,
+			Options options) {
+		return options;
 	}
 
 }

@@ -28,6 +28,10 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.health.CompositeHealth;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthComponent;
+import org.springframework.boot.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -202,7 +206,8 @@ abstract class HealthEndpointSupportTests<S extends HealthEndpointSupport<C, T>,
 		this.registry.registerContributor("atest", createContributor(this.up));
 		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, null, SecurityContext.NONE,
 				false, "alltheas");
-		assertThat(getHealth(result)).isNotInstanceOf(SystemHealth.class);
+		SystemHealth systemHealth = (SystemHealth) getHealth(result);
+		assertThat(systemHealth.getGroups()).isNull();
 	}
 
 	@Test

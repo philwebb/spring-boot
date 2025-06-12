@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docs.actuator.endpoints.health.writingcustomhealthindicators
 
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.HealthIndicator
+import org.springframework.boot.health.Health
+import org.springframework.boot.health.HealthIndicator
 import org.springframework.stereotype.Component
 
 @Component

@@ -19,8 +19,8 @@ package org.springframework.boot.amqp.autoconfigure.health;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.amqp.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
+import org.springframework.boot.amqp.health.RabbitHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

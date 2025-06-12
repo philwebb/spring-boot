@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.PingHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.health.HealthContributor;
 import org.springframework.context.annotation.Bean;
 
 /**

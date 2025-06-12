@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.health.Status;
 import org.springframework.util.CollectionUtils;
 
 /**

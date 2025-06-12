@@ -24,9 +24,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.Health;
+import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.Status;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
