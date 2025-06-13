@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ReactiveHealthContributor}.
@@ -55,13 +53,6 @@ class ReactiveHealthContributorTests {
 		assertThat(adapted).isInstanceOf(CompositeHealthContributorReactiveAdapter.class);
 		ReactiveHealthContributor contained = ((CompositeReactiveHealthContributor) adapted).getContributor("a");
 		assertThat(((ReactiveHealthIndicator) contained).health().block().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
-	}
-
-	@Test
-	void adaptWhenUnknownThrowsException() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> ReactiveHealthContributor.adapt(mock(HealthContributor.class)))
-			.withMessage("Unknown HealthContributor type");
 	}
 
 }

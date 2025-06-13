@@ -35,10 +35,7 @@ public sealed interface ReactiveHealthContributor permits ReactiveHealthIndicato
 		if (healthContributor instanceof HealthIndicator healthIndicator) {
 			return new HealthIndicatorReactiveAdapter(healthIndicator);
 		}
-		if (healthContributor instanceof CompositeHealthContributor compositeHealthContributor) {
-			return new CompositeHealthContributorReactiveAdapter(compositeHealthContributor);
-		}
-		throw new IllegalStateException("Unknown HealthContributor type");
+		return new CompositeHealthContributorReactiveAdapter((CompositeHealthContributor) healthContributor);
 	}
 
 }
