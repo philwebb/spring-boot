@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Status;
 
 /**
  * Strategy used to map a {@link Status health status} to an HTTP status code.

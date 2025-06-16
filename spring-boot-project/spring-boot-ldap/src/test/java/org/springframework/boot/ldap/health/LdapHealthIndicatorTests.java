@@ -18,8 +18,8 @@ package org.springframework.boot.ldap.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.ldap.CommunicationException;
 import org.springframework.ldap.core.ContextExecutor;
 import org.springframework.ldap.core.LdapTemplate;

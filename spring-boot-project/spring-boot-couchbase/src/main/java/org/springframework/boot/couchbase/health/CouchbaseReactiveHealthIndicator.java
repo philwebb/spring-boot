@@ -19,9 +19,9 @@ package org.springframework.boot.couchbase.health;
 import com.couchbase.client.java.Cluster;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.ReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
 
 /**
  * A {@link ReactiveHealthIndicator} for Couchbase.

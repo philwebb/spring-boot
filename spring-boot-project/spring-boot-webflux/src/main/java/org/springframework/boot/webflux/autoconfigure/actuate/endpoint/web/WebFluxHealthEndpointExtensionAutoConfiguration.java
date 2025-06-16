@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.webflux.actuate.endpoint.web.AdditionalHealthEndpointPathsWebFluxHandlerMapping;
 import org.springframework.context.annotation.Bean;
 
@@ -44,8 +45,8 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = Type.REACTIVE)
+@ConditionalOnClass({ HealthEndpoint.class, Health.class })
 @ConditionalOnBean({ WebEndpointsSupplier.class, HealthEndpointGroups.class })
-@ConditionalOnClass(HealthEndpoint.class)
 @ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 public class WebFluxHealthEndpointExtensionAutoConfiguration {
 

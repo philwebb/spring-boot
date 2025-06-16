@@ -18,7 +18,7 @@ package org.springframework.boot.data.redis.health;
 
 import java.util.Properties;
 
-import org.springframework.boot.health.Health;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.data.redis.connection.ClusterInfo;
 
 /**

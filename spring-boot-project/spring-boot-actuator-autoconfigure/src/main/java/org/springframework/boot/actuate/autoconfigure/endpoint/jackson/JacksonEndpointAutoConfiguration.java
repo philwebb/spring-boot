@@ -28,9 +28,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.health.HealthComponent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Endpoint Jackson support.
@@ -42,6 +42,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @SuppressWarnings("removal")
 public class JacksonEndpointAutoConfiguration {
 
+	private static final String CONTRIBUTED_HEALTH = "org.springframework.boot.health.contributor.ContributedHealth";
+
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
@@ -52,7 +54,9 @@ public class JacksonEndpointAutoConfiguration {
 			.serializationInclusion(Include.NON_NULL)
 			.build();
 		Set<Class<?>> supportedTypes = new HashSet<>(EndpointObjectMapper.DEFAULT_SUPPORTED_TYPES);
-		supportedTypes.add(HealthComponent.class);
+		if (ClassUtils.isPresent(CONTRIBUTED_HEALTH, null)) {
+			supportedTypes.add(ClassUtils.resolveClassName(CONTRIBUTED_HEALTH, null));
+		}
 		return new EndpointObjectMapper() {
 
 			@Override
