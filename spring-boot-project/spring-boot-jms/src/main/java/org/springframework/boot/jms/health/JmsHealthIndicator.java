@@ -25,9 +25,9 @@ import jakarta.jms.JMSException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.health.AbstractHealthIndicator;
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.contributor.AbstractHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 
 /**
  * {@link HealthIndicator} for a JMS {@link ConnectionFactory}.

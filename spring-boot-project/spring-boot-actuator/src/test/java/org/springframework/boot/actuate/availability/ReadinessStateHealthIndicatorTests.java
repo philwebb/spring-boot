@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.ReadinessState;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

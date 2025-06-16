@@ -30,8 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -23,8 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.health.Health;
+import org.springframework.boot.health.contributor.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 

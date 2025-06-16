@@ -19,8 +19,8 @@ package org.springframework.boot.jms.autoconfigure.health;
 import jakarta.jms.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.jms.health.JmsHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

@@ -27,8 +27,8 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -59,7 +59,8 @@ class ElasticsearchRestClientHealthIndicatorTests {
 		given(response.getStatusLine()).willReturn(statusLine);
 		given(response.getEntity()).willReturn(httpEntity);
 		given(this.restClient.performRequest(any(Request.class))).willReturn(response);
-		org.springframework.boot.health.Health health = this.elasticsearchRestClientHealthIndicator.health();
+		org.springframework.boot.health.contributor.Health health = this.elasticsearchRestClientHealthIndicator
+			.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "green");
 	}

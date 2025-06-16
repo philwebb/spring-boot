@@ -20,10 +20,10 @@ import co.elastic.clients.elasticsearch._types.HealthStatus;
 import co.elastic.clients.elasticsearch.cluster.HealthResponse;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.HealthIndicator;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.AbstractReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 
 /**

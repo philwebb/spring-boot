@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
-import org.springframework.boot.health.CompositeHealth;
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.HealthComponent;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +45,7 @@ class SystemHealthTests {
 
 	@Test
 	void serializeWithJacksonReturnsValidJson() throws Exception {
-		Map<String, HealthComponent> components = new LinkedHashMap<>();
+		Map<String, ContributedHealth> components = new LinkedHashMap<>();
 		components.put("db1", Health.up().build());
 		components.put("db2", Health.down().withDetail("a", "b").build());
 		Set<String> groups = new LinkedHashSet<>(Arrays.asList("liveness", "readiness"));
@@ -59,7 +59,7 @@ class SystemHealthTests {
 
 	@Test
 	void serializeWhenNoGroupsWithJacksonReturnsValidJson() throws Exception {
-		Map<String, HealthComponent> components = new LinkedHashMap<>();
+		Map<String, ContributedHealth> components = new LinkedHashMap<>();
 		components.put("db1", Health.up().build());
 		components.put("db2", Health.down().withDetail("a", "b").build());
 		CompositeHealth health = new SystemHealth(Status.UP, components, null, ApiVersion.V2);
@@ -71,7 +71,7 @@ class SystemHealthTests {
 
 	@Test // gh-26797
 	void serializeV2WithJacksonAndDisabledCanOverrideAccessModifiersReturnsValidJson() throws Exception {
-		Map<String, HealthComponent> components = new LinkedHashMap<>();
+		Map<String, ContributedHealth> components = new LinkedHashMap<>();
 		components.put("db1", Health.up().build());
 		components.put("db2", Health.down().withDetail("a", "b").build());
 		CompositeHealth health = new SystemHealth(Status.UP, components, Collections.emptySet(), ApiVersion.V2);

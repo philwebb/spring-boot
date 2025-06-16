@@ -25,10 +25,10 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.health.AbstractHealthIndicator;
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.HealthIndicator;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.AbstractHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.IncorrectResultSetColumnCountException;
 import org.springframework.jdbc.core.ConnectionCallback;

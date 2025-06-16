@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 
 /**
  * Strategy used to aggregate {@link Status} instances.

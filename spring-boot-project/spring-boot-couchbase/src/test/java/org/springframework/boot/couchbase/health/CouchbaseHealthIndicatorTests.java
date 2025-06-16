@@ -30,8 +30,8 @@ import com.couchbase.client.core.service.ServiceType;
 import com.couchbase.client.java.Cluster;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

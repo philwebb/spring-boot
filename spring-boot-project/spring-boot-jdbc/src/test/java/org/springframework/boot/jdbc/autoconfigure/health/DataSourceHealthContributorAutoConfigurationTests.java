@@ -29,12 +29,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.health.CompositeHealthContributor;
-import org.springframework.boot.health.NamedContributor;
+import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.DataSourcePoolMetadataProvidersConfiguration;
@@ -80,7 +80,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(CompositeHealthContributor.class);
 				CompositeHealthContributor contributor = context.getBean(CompositeHealthContributor.class);
-				String[] names = contributor.stream().map(NamedContributor::getName).toArray(String[]::new);
+				String[] names = contributor.stream().map(HealthContributors.Entry::name).toArray(String[]::new);
 				assertThat(names).containsExactlyInAnyOrder("dataSource", "standardDataSource", "nonDefaultDataSource");
 			});
 	}

@@ -19,9 +19,9 @@ package org.springframework.boot.ldap.health;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
-import org.springframework.boot.health.AbstractHealthIndicator;
-import org.springframework.boot.health.Health;
-import org.springframework.boot.health.HealthIndicator;
+import org.springframework.boot.health.contributor.AbstractHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.ldap.core.ContextExecutor;
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.util.Assert;

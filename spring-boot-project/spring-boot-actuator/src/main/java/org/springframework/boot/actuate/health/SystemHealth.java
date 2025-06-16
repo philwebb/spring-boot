@@ -25,9 +25,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
-import org.springframework.boot.health.CompositeHealth;
-import org.springframework.boot.health.HealthComponent;
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.CompositeHealth;
+import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Status;
 
 /**
  * A {@link CompositeHealth} that represents the overall system health and the available
@@ -42,20 +42,20 @@ public final class SystemHealth extends CompositeHealth {
 
 	private final Set<String> groups;
 
-	SystemHealth(Status status, Map<String, HealthComponent> components, Set<String> groups, ApiVersion apiVersion) {
+	SystemHealth(Status status, Map<String, ContributedHealth> components, Set<String> groups, ApiVersion apiVersion) {
 		super(status, components);
 		this.groups = (groups != null) ? new TreeSet<>(groups) : null;
 		this.apiVersion = apiVersion;
 	}
 
 	@Override
-	public Map<String, HealthComponent> getComponents() {
+	public Map<String, ContributedHealth> getComponents() {
 		return (this.apiVersion == ApiVersion.V3) ? super.getComponents() : null;
 	}
 
 	@JsonProperty
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, HealthComponent> getDetails() {
+	public Map<String, ContributedHealth> getDetails() {
 		return (this.apiVersion == ApiVersion.V2) ? super.getComponents() : null;
 	}
 

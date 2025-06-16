@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.health.Status;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
