@@ -2013,6 +2013,7 @@ bom {
 				"spring-boot-h2console",
 				"spring-boot-hateoas",
 				"spring-boot-hazelcast",
+				"spring-boot-hibernate",
 				"spring-boot-http",
 				"spring-boot-http-client",
 				"spring-boot-http-client-reactive",
