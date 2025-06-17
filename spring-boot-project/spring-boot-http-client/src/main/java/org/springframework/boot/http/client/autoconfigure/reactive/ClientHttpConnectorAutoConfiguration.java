@@ -99,7 +99,7 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(reactor.netty.http.client.HttpClient.class)
+	@ConditionalOnClass({ reactor.netty.http.client.HttpClient.class, ReactorNettyConfigurations.class })
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
 	static class ReactorNetty {
 
