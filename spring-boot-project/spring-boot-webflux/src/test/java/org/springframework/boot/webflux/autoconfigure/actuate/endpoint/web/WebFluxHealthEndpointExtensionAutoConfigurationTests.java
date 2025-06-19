@@ -67,6 +67,16 @@ class WebFluxHealthEndpointExtensionAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	@WithTestEndpointOutcomeExposureContributor
+	void backsOffWithoutWebEndpointInfrastructure() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.exclude=*",
+					"management.endpoints.test.exposure.include=*")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(AdditionalHealthEndpointPathsWebFluxHandlerMapping.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class HealthIndicatorsConfiguration {
 
