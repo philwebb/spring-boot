@@ -64,7 +64,7 @@ class Neo4jReactiveHealthIndicatorIntegrationTests {
 
 	@Test
 	void health() {
-		Health health = this.healthIndicator.getHealth(true).block(Duration.ofSeconds(20));
+		Health health = this.healthIndicator.health(true).block(Duration.ofSeconds(20));
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("edition", "community");
 	}

@@ -16,9 +16,7 @@
 
 package org.springframework.boot.health.autoconfigure.registry;
 
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Strategy used to create health contributor names from bean names.
@@ -35,18 +33,6 @@ public interface HealthContributorNameGenerator {
 	 * @return the health contributor name
 	 */
 	String generateContributorName(String beanName);
-
-	/**
-	 * Apply the name generator to a bean map.
-	 * @param <V> the bean type
-	 * @param beans the map of beans
-	 * @return a new map with the generated names
-	 */
-	default <V> Map<String, V> apply(Map<String, V> beans) {
-		Map<String, V> result = new LinkedHashMap<>();
-		beans.forEach((beanName, bean) -> result.put(generateContributorName(beanName), bean));
-		return result;
-	}
 
 	/**
 	 * Return a {@link HealthContributorNameGenerator} that removes standard suffixes.

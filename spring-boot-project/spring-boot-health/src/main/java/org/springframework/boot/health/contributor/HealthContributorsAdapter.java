@@ -16,33 +16,31 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
- * {@link CompositeHealthContributor} backed by a map with values adapted as necessary.
+ * Adapts {@link HealthContributors} to {@link ReactiveHealthContributors}.
  *
- * @param <V> the value type
  * @author Phillip Webb
+ * @see ReactiveHealthContributors#adapt(HealthContributors)
  */
-class CompositeReactiveHealthContributorMapAdapter<V>
-		extends AbstractMapAdapter<V, ReactiveHealthContributor, ReactiveHealthContributors.Entry>
-		implements CompositeReactiveHealthContributor {
+class HealthContributorsAdapter implements ReactiveHealthContributors {
 
-	CompositeReactiveHealthContributorMapAdapter(Map<String, V> map,
-			Function<V, ? extends ReactiveHealthContributor> valueAdapter) {
-		super(map, valueAdapter, ReactiveHealthContributors.Entry::new);
+	private final HealthContributors delegate;
+
+	HealthContributorsAdapter(HealthContributors delegate) {
+		this.delegate = delegate;
 	}
 
 	@Override
 	public ReactiveHealthContributor getContributor(String name) {
-		return super.getContributor(name);
+		return ReactiveHealthContributor.adapt(this.delegate.getContributor(name));
 	}
 
 	@Override
-	public Iterator<ReactiveHealthContributors.Entry> iterator() {
-		return super.iterator();
+	public Stream<Entry> stream() {
+		return this.delegate.stream()
+			.map((entry) -> new Entry(entry.name(), ReactiveHealthContributor.adapt(entry.contributor())));
 	}
 
 }

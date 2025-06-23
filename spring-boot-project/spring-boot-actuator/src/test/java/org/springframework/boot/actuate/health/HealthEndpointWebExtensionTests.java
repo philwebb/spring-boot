@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.health;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +28,8 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.actuate.health.HealthEndpointSupport.Result;
 import org.springframework.boot.health.contributor.CompositeHealthContributor;
-import org.springframework.boot.health.contributor.ContributedHealth;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -46,38 +47,38 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  */
 class HealthEndpointWebExtensionTests extends
-		HealthEndpointSupportTests<HealthEndpointWebExtension, HealthContributorRegistry, HealthContributor, ContributedHealth> {
+		HealthEndpointSupportTests<HealthEndpointWebExtension, Health, HealthDescriptor, HealthContributorRegistry, HealthContributor> {
 
 	@Test
 	void healthReturnsSystemHealth() {
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
 		HealthEndpointWebExtension endpoint = create(registry, this.groups);
-		WebEndpointResponse<ContributedHealth> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
+		WebEndpointResponse<HealthDescriptor> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
 				SecurityContext.NONE);
-		ContributedHealth health = response.getBody();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(SystemHealth.class);
+		HealthDescriptor descriptor = response.getBody();
+		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
+		assertThat(descriptor).isInstanceOf(SystemHealthDescriptor.class);
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
 	void healthWithNoContributorReturnsUp() {
-		HealthContributorRegistry registry = createRegistry(Collections.emptyMap());
+		HealthContributorRegistry registry = createRegistry(null);
 		HealthEndpointGroups groups = HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap());
 		HealthEndpointWebExtension endpoint = create(registry, groups);
-		WebEndpointResponse<ContributedHealth> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
+		WebEndpointResponse<HealthDescriptor> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
 				SecurityContext.NONE);
 		assertThat(response.getStatus()).isEqualTo(200);
-		ContributedHealth health = response.getBody();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(Health.class);
+		HealthDescriptor descriptor = response.getBody();
+		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
+		assertThat(descriptor).isInstanceOf(IndicatedHealthDescriptor.class);
 	}
 
 	@Test
 	void healthWhenPathDoesNotExistReturnsHttp404() {
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
 		HealthEndpointWebExtension endpoint = create(registry, this.groups);
-		WebEndpointResponse<ContributedHealth> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
+		WebEndpointResponse<HealthDescriptor> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
 				SecurityContext.NONE, "missing");
 		assertThat(response.getBody()).isNull();
 		assertThat(response.getStatus()).isEqualTo(404);
@@ -87,21 +88,24 @@ class HealthEndpointWebExtensionTests extends
 	void healthWhenPathExistsReturnsHealth() {
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
 		HealthEndpointWebExtension endpoint = create(registry, this.groups);
-		WebEndpointResponse<ContributedHealth> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
+		WebEndpointResponse<HealthDescriptor> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
 				SecurityContext.NONE, "test");
-		assertThat(response.getBody()).isEqualTo(this.up);
+		IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) response.getBody();
+		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
+		assertThat(descriptor.getDetails()).containsEntry("spring", "boot");
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Override
 	protected HealthEndpointWebExtension create(HealthContributorRegistry registry, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
-		return new HealthEndpointWebExtension(registry, groups, slowIndicatorLoggingThreshold);
+		return new HealthEndpointWebExtension(registry, null, groups, slowIndicatorLoggingThreshold);
 	}
 
 	@Override
-	protected HealthContributorRegistry createRegistry(Map<String, HealthContributor> contributors) {
-		return new DefaultHealthContributorRegistry(contributors, Collections.emptyList());
+	protected HealthContributorRegistry createRegistry(
+			Consumer<BiConsumer<String, HealthContributor>> intialRegistrations) {
+		return new DefaultHealthContributorRegistry(Collections.emptyList(), intialRegistrations);
 	}
 
 	@Override
@@ -115,8 +119,8 @@ class HealthEndpointWebExtensionTests extends
 	}
 
 	@Override
-	protected ContributedHealth getHealth(HealthResult<ContributedHealth> result) {
-		return result.getHealth();
+	protected HealthDescriptor getDescriptor(Result<HealthDescriptor> result) {
+		return result.descriptor();
 	}
 
 }

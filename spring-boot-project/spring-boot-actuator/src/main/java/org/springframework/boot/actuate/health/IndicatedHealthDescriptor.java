@@ -14,45 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.health.contributor;
+package org.springframework.boot.actuate.health;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import org.springframework.util.Assert;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.boot.health.contributor.Status;
 
 /**
- * A {@link ContributedHealth} that is composed of other {@link ContributedHealth}
- * instances. Used to provide a unified view of related components. For example, a
- * database health indicator may be a composite containing the {@link Health} of each
- * datasource connection.
+ * Description of health obtained from a {@link HealthIndicator} or
+ * {@link ReactiveHealthIndicator}.
  *
  * @author Phillip Webb
  * @since 4.0.0
  */
-public non-sealed class CompositeHealth extends ContributedHealth {
+public final class IndicatedHealthDescriptor extends HealthDescriptor {
 
-	private final Status status;
+	static final IndicatedHealthDescriptor UP = new IndicatedHealthDescriptor(Health.up().build());
 
-	private final Map<String, ContributedHealth> components;
+	private final Health health;
 
-	public CompositeHealth(Status status, Map<String, ContributedHealth> components) {
-		Assert.notNull(status, "'status' must not be null");
-		this.status = status;
-		this.components = (components != null) ? new TreeMap<>(components) : components;
+	IndicatedHealthDescriptor(Health health) {
+		this.health = health;
 	}
 
 	@Override
 	public Status getStatus() {
-		return this.status;
+		return this.health.getStatus();
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, ContributedHealth> getComponents() {
-		return this.components;
+	public Map<String, Object> getDetails() {
+		return this.health.getDetails();
 	}
 
 }

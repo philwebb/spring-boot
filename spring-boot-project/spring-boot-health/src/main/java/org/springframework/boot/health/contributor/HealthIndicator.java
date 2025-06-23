@@ -17,7 +17,7 @@
 package org.springframework.boot.health.contributor;
 
 /**
- * Contributes {@link Health} information for specific component or subsystem.
+ * Directly contributes {@link Health} information for specific component or subsystem.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -31,7 +31,7 @@ public non-sealed interface HealthIndicator extends HealthContributor {
 	 * @param includeDetails if details should be included or removed
 	 * @return the health
 	 */
-	default Health getHealth(boolean includeDetails) {
+	default Health health(boolean includeDetails) {
 		Health health = health();
 		return includeDetails ? health : health.withoutDetails();
 	}

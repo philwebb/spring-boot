@@ -16,31 +16,16 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.function.Function;
-
 /**
- * {@link CompositeHealthContributor} backed by a map with values adapted as necessary.
+ * Tests for {@link CompositeReactiveHealthContributorAdapter}.
  *
- * @param <V> the value type
  * @author Phillip Webb
  */
-class CompositeHealthContributorMapAdapter<V> extends AbstractMapAdapter<V, HealthContributor, HealthContributors.Entry>
-		implements CompositeHealthContributor {
-
-	CompositeHealthContributorMapAdapter(Map<String, V> map, Function<V, ? extends HealthContributor> valueAdapter) {
-		super(map, valueAdapter, HealthContributors.Entry::new);
-	}
+class CompositeReactiveHealthContributorAdapterTests extends ReactiveHealthContributorsAdapterTests {
 
 	@Override
-	public HealthContributor getContributor(String name) {
-		return super.getContributor(name);
-	}
-
-	@Override
-	public Iterator<Entry> iterator() {
-		return super.iterator();
+	protected CompositeReactiveHealthContributorAdapter createAdapter(CompositeReactiveHealthContributor delegate) {
+		return new CompositeReactiveHealthContributorAdapter(delegate);
 	}
 
 }

@@ -74,7 +74,7 @@ class MongoReactiveHealthIndicatorIntegrationTests {
 		MongoClient mongoClient = MongoClients.create(settings);
 		MongoReactiveHealthIndicator healthIndicator = new MongoReactiveHealthIndicator(
 				new ReactiveMongoTemplate(mongoClient, "db"));
-		return healthIndicator.getHealth(true).block(Duration.ofSeconds(30));
+		return healthIndicator.health(true).block(Duration.ofSeconds(30));
 	}
 
 }

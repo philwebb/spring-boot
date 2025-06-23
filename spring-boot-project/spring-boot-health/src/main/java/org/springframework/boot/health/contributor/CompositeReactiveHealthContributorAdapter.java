@@ -16,27 +16,18 @@
 
 package org.springframework.boot.health.contributor;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
 /**
- * A component that contributes a health {@link Status} as well as any additional
- * contextual details. Subclasses should expect to be serialized and presented to the
- * user, typically as JSON.
+ * Adapts a {@link CompositeReactiveHealthContributor} to a
+ * {@link CompositeHealthContributor}.
  *
  * @author Phillip Webb
- * @since 4.0.0
- * @see Health
+ * @see CompositeReactiveHealthContributor#asHealthContributor()
  */
-public abstract sealed class ContributedHealth permits Health, CompositeHealth {
+class CompositeReactiveHealthContributorAdapter extends ReactiveHealthContributorsAdapter
+		implements CompositeHealthContributor {
 
-	ContributedHealth() {
+	CompositeReactiveHealthContributorAdapter(ReactiveHealthContributors delegate) {
+		super(delegate);
 	}
-
-	/**
-	 * Return the status of the component.
-	 * @return the component status
-	 */
-	@JsonUnwrapped
-	public abstract Status getStatus();
 
 }

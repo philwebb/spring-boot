@@ -18,9 +18,9 @@ package org.springframework.boot.health.registry;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link AbstractHealthContributorRegistry}.
+ * Tests for {@link AbstractRegistry}.
  *
  * @param <C> the contributor type
  * @param <E> the entry type
@@ -42,17 +42,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 abstract class AbstractHealthContributorRegistryTests<C, E> {
 
-	private AbstractHealthContributorRegistry<C, E> registry;
+	private AbstractRegistry<C, E> registry;
 
 	@BeforeEach
 	void setUp() {
-		this.registry = createRegistry(Collections.emptyMap(), Collections.emptyList());
-	}
-
-	@Test
-	void createWhenContributorsIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> createRegistry(null, Collections.emptyList()))
-			.withMessage("'contributors' must not be null");
+		this.registry = createRegistry(Collections.emptyList(), null);
 	}
 
 	@Test
@@ -116,15 +110,15 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 	}
 
 	@Test
-	void iteratorIteratesContributors() {
+	void streamStreamsContributors() {
 		C c1 = mockHealthIndicator();
 		C c2 = mockHealthIndicator();
 		this.registry.registerContributor("one", c1);
 		this.registry.registerContributor("two", c2);
-		Iterator<E> iterator = this.registry.iterator();
-		E first = iterator.next();
-		E second = iterator.next();
-		assertThat(iterator.hasNext()).isFalse();
+		List<E> streamed = this.registry.stream().toList();
+		assertThat(streamed).hasSize(2);
+		E first = streamed.get(0);
+		E second = streamed.get(1);
 		assertThat(name(first)).isEqualTo("one");
 		assertThat(contributor(first)).isEqualTo(c1);
 		assertThat(name(second)).isEqualTo("two");
@@ -133,15 +127,15 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 
 	@Test
 	void nameValidatorsValidateMapKeys() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> createRegistry(Map.of("ok", mockHealthIndicator(), "fail", mockHealthIndicator()),
-					testValidator()))
-			.withMessage("Failed validation");
+		assertThatIllegalStateException().isThrownBy(() -> createRegistry(testValidator(), (intialRegistrations) -> {
+			intialRegistrations.accept("ok", mockHealthIndicator());
+			intialRegistrations.accept("fail", mockHealthIndicator());
+		})).withMessage("Failed validation");
 	}
 
 	@Test
 	void nameValidatorsValidateRegisteredName() {
-		AbstractHealthContributorRegistry<C, E> registry = createRegistry(Collections.emptyMap(), testValidator());
+		AbstractRegistry<C, E> registry = createRegistry(testValidator(), null);
 		registry.registerContributor("ok", mockHealthIndicator());
 		assertThatIllegalStateException().isThrownBy(() -> registry.registerContributor("fail", mockHealthIndicator()))
 			.withMessage("Failed validation");
@@ -151,8 +145,9 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 		return List.of((name) -> Assert.state(!"fail".equals(name), "Failed validation"));
 	}
 
-	protected abstract AbstractHealthContributorRegistry<C, E> createRegistry(Map<String, C> contributors,
-			Collection<? extends HealthContributorNameValidator> nameValidators);
+	protected abstract AbstractRegistry<C, E> createRegistry(
+			Collection<? extends HealthContributorNameValidator> nameValidators,
+			Consumer<BiConsumer<String, C>> intialRegistrations);
 
 	protected abstract C mockHealthIndicator();
 

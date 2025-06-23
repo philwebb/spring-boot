@@ -26,12 +26,13 @@ import org.springframework.util.Assert;
  * safely invoked in a reactive environment.
  *
  * @author Stephane Nicoll
+ * @see ReactiveHealthContributor#adapt(HealthContributor)
  */
-class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
+class HealthIndicatorAdapter implements ReactiveHealthIndicator {
 
 	private final HealthIndicator delegate;
 
-	HealthIndicatorReactiveAdapter(HealthIndicator delegate) {
+	HealthIndicatorAdapter(HealthIndicator delegate) {
 		Assert.notNull(delegate, "'delegate' must not be null");
 		this.delegate = delegate;
 	}

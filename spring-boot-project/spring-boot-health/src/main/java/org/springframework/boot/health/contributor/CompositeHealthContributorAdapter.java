@@ -17,14 +17,17 @@
 package org.springframework.boot.health.contributor;
 
 /**
- * Contributes health information, either directly ({@link HealthIndicator}) or via other
- * contributors ({@link CompositeHealthContributor}).
+ * Adapts a {@link CompositeHealthContributor} to a
+ * {@link CompositeReactiveHealthContributor}.
  *
  * @author Phillip Webb
- * @since 4.0.0
- * @see HealthIndicator
- * @see CompositeHealthContributor
+ * @see ReactiveHealthContributor#adapt(HealthContributor)
  */
-public sealed interface HealthContributor permits HealthIndicator, CompositeHealthContributor {
+class CompositeHealthContributorAdapter extends HealthContributorsAdapter
+		implements CompositeReactiveHealthContributor {
+
+	CompositeHealthContributorAdapter(HealthContributors delegate) {
+		super(delegate);
+	}
 
 }

@@ -21,7 +21,7 @@ package org.springframework.boot.health.contributor;
  *
  * @author Dave Syer
  * @author Christian Dupuis
- * @since 2.2.0
+ * @since 4.0.0
  * @see Status#UP
  */
 public class PingHealthIndicator extends AbstractHealthIndicator {

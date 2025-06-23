@@ -39,11 +39,11 @@ class CompositeReactiveHealthContributorTests {
 			.fromMap(reactiveContributors);
 		CompositeHealthContributor adapted = contributor.asHealthContributor();
 		HealthIndicator byName = (HealthIndicator) adapted.getContributor("test");
-		assertThat(byName.getHealth(true).getDetails()).containsEntry("spring", "boot");
+		assertThat(byName.health(true).getDetails()).containsEntry("spring", "boot");
 		HealthContributors.Entry entry = adapted.iterator().next();
 		assertThat(entry.name()).isEqualTo("test");
 		HealthIndicator byEntry = (HealthIndicator) entry.contributor();
-		assertThat(byEntry.getHealth(true).getDetails()).containsEntry("spring", "boot");
+		assertThat(byEntry.health(true).getDetails()).containsEntry("spring", "boot");
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class CompositeReactiveHealthContributorTests {
 		ReactiveHealthIndicator indicator = () -> Mono.just(Health.down().build());
 		map.put("test", indicator);
 		CompositeReactiveHealthContributor composite = CompositeReactiveHealthContributor.fromMap(map);
-		assertThat(composite).isInstanceOf(CompositeReactiveHealthContributorMapAdapter.class);
+		assertThat(composite).isInstanceOf(MapCompositeReactiveHealthContributor.class);
 		ReactiveHealthContributors.Entry entry = composite.iterator().next();
 		assertThat(entry.name()).isEqualTo("test");
 		assertThat(entry.contributor()).isSameAs(indicator);
@@ -66,7 +66,7 @@ class CompositeReactiveHealthContributorTests {
 		map.put("test", downIndicator);
 		CompositeReactiveHealthContributor composite = CompositeReactiveHealthContributor.fromMap(map,
 				(value) -> upIndicator);
-		assertThat(composite).isInstanceOf(CompositeReactiveHealthContributorMapAdapter.class);
+		assertThat(composite).isInstanceOf(MapCompositeReactiveHealthContributor.class);
 		ReactiveHealthContributors.Entry entry = composite.iterator().next();
 		assertThat(entry.name()).isEqualTo("test");
 		assertThat(entry.contributor()).isSameAs(upIndicator);

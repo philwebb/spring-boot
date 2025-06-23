@@ -21,7 +21,6 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ReactiveHealthContributor}.
@@ -32,16 +31,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ReactiveHealthContributorTests {
 
 	@Test
-	void adaptWhenNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> ReactiveHealthContributor.adapt(null))
-			.withMessage("'healthContributor' must not be null");
-	}
-
-	@Test
 	void adaptWhenHealthIndicatorReturnsHealthIndicatorReactiveAdapter() {
 		HealthIndicator indicator = () -> Health.outOfService().build();
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(indicator);
-		assertThat(adapted).isInstanceOf(HealthIndicatorReactiveAdapter.class);
+		assertThat(adapted).isInstanceOf(HealthIndicatorAdapter.class);
 		assertThat(((ReactiveHealthIndicator) adapted).health().block().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 
@@ -51,7 +44,7 @@ class ReactiveHealthContributorTests {
 		CompositeHealthContributor contributor = CompositeHealthContributor
 			.fromMap(Collections.singletonMap("a", indicator));
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(contributor);
-		assertThat(adapted).isInstanceOf(CompositeHealthContributorReactiveAdapter.class);
+		assertThat(adapted).isInstanceOf(CompositeHealthContributorAdapter.class);
 		ReactiveHealthContributor contained = ((CompositeReactiveHealthContributor) adapted).getContributor("a");
 		assertThat(((ReactiveHealthIndicator) contained).health().block().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -26,7 +25,6 @@ import java.util.function.Function;
  *
  * @author Phillip Webb
  * @since 4.0.0
- * @see CompositeHealth
  * @see CompositeHealthContributor
  */
 public non-sealed interface CompositeReactiveHealthContributor
@@ -34,22 +32,7 @@ public non-sealed interface CompositeReactiveHealthContributor
 
 	@Override
 	default CompositeHealthContributor asHealthContributor() {
-		return new CompositeHealthContributor() {
-
-			@Override
-			public Iterator<HealthContributors.Entry> iterator() {
-				return CompositeReactiveHealthContributor.this.stream()
-					.map((entry) -> new HealthContributors.Entry(entry.name(),
-							entry.contributor().asHealthContributor()))
-					.iterator();
-			}
-
-			@Override
-			public HealthContributor getContributor(String name) {
-				return CompositeReactiveHealthContributor.this.getContributor(name).asHealthContributor();
-			}
-
-		};
+		return new CompositeReactiveHealthContributorAdapter(this);
 	}
 
 	/**
@@ -72,7 +55,7 @@ public non-sealed interface CompositeReactiveHealthContributor
 	 */
 	static <V> CompositeReactiveHealthContributor fromMap(Map<String, V> map,
 			Function<V, ? extends ReactiveHealthContributor> valueAdapter) {
-		return new CompositeReactiveHealthContributorMapAdapter<>(map, valueAdapter);
+		return new MapCompositeReactiveHealthContributor<>(map, valueAdapter);
 	}
 
 }

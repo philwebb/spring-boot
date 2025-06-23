@@ -16,16 +16,17 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 
 import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link ReactiveHealthContributors}.
@@ -35,14 +36,14 @@ import static org.mockito.Mockito.mock;
 class ReactiveHealthContributorsTests {
 
 	@Test
-	void streamAdaptsIterator() {
+	void iteratorAdaptsStream() {
 		Entry e1 = new Entry("e1", mock(ReactiveHealthIndicator.class));
 		Entry e2 = new Entry("e2", mock(ReactiveHealthIndicator.class));
 		ReactiveHealthContributors contributors = new ReactiveHealthContributors() {
 
 			@Override
-			public Iterator<Entry> iterator() {
-				return List.of(e1, e2).iterator();
+			public Stream<Entry> stream() {
+				return Stream.of(e1, e2);
 			}
 
 			@Override
@@ -51,7 +52,31 @@ class ReactiveHealthContributorsTests {
 			}
 
 		};
-		assertThat(contributors.stream()).containsExactly(e1, e2);
+		assertThat(contributors).containsExactly(e1, e2);
+	}
+
+	@Test
+	void asHealthContributorsReturnsAdapter() {
+		ReactiveHealthContributors contributors = mock(ReactiveHealthContributors.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		assertThat(contributors.asHealthContributors()).isInstanceOf(ReactiveHealthContributorsAdapter.class);
+	}
+
+	@Test
+	void ofCreateComposite() {
+		ReactiveHealthContributors c = mock(ReactiveHealthContributors.class);
+		assertThat(ReactiveHealthContributors.of(c)).isInstanceOf(CompositeReactiveHealthContributors.class);
+	}
+
+	@Test
+	void adaptWhenNullReturnsNull() {
+		assertThat(ReactiveHealthContributors.adapt(null)).isNull();
+	}
+
+	@Test
+	void adaptReturnsAdapter() {
+		HealthContributors c = mock(HealthContributors.class);
+		assertThat(ReactiveHealthContributors.adapt(c)).isInstanceOf(HealthContributorsAdapter.class);
 	}
 
 	@Test

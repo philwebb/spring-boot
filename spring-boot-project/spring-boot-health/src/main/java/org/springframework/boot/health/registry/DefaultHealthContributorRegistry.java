@@ -18,11 +18,12 @@ package org.springframework.boot.health.registry;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.springframework.boot.health.contributor.HealthContributor;
-import org.springframework.boot.health.contributor.HealthContributors;
+import org.springframework.boot.health.contributor.HealthContributors.Entry;
 
 /**
  * Default {@link HealthContributorRegistry} implementation.
@@ -30,25 +31,24 @@ import org.springframework.boot.health.contributor.HealthContributors;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class DefaultHealthContributorRegistry
-		extends AbstractHealthContributorRegistry<HealthContributor, HealthContributors.Entry>
+public class DefaultHealthContributorRegistry extends AbstractRegistry<HealthContributor, Entry>
 		implements HealthContributorRegistry {
 
 	/**
 	 * Create a new empty {@link DefaultHealthContributorRegistry} instance.
 	 */
 	public DefaultHealthContributorRegistry() {
-		this(Collections.emptyMap(), Collections.emptyList());
+		this(Collections.emptyList(), null);
 	}
 
 	/**
 	 * Create a new {@link DefaultHealthContributorRegistry} instance.
-	 * @param contributors the initial set of health contributors
 	 * @param nameValidators the name validators to apply
+	 * @param intialRegistrations callback to setup any initial registrations
 	 */
-	public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors,
-			Collection<? extends HealthContributorNameValidator> nameValidators) {
-		super(contributors, nameValidators, HealthContributors.Entry::new);
+	public DefaultHealthContributorRegistry(Collection<? extends HealthContributorNameValidator> nameValidators,
+			Consumer<BiConsumer<String, HealthContributor>> intialRegistrations) {
+		super(Entry::new, nameValidators, intialRegistrations);
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class DefaultHealthContributorRegistry
 	}
 
 	@Override
-	public Iterator<HealthContributors.Entry> iterator() {
-		return super.iterator();
+	public Stream<Entry> stream() {
+		return super.stream();
 	}
 
 	@Override

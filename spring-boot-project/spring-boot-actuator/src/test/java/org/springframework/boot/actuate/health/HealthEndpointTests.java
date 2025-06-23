@@ -19,13 +19,14 @@ package org.springframework.boot.actuate.health;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+import org.springframework.boot.actuate.health.HealthEndpointSupport.Result;
 import org.springframework.boot.health.contributor.CompositeHealthContributor;
-import org.springframework.boot.health.contributor.ContributedHealth;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -46,38 +47,42 @@ import static org.mockito.Mockito.mock;
  */
 @ExtendWith(OutputCaptureExtension.class)
 class HealthEndpointTests extends
-		HealthEndpointSupportTests<HealthEndpoint, HealthContributorRegistry, HealthContributor, ContributedHealth> {
+		HealthEndpointSupportTests<HealthEndpoint, Health, HealthDescriptor, HealthContributorRegistry, HealthContributor> {
 
 	@Test
 	void healthReturnsSystemHealth() {
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
 		HealthEndpoint endpoint = create(registry, this.groups);
-		ContributedHealth health = endpoint.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(SystemHealth.class);
+		HealthDescriptor descriptor = endpoint.health();
+		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
+		assertThat(descriptor).isInstanceOf(SystemHealthDescriptor.class);
 	}
 
 	@Test
 	void healthWithNoContributorReturnsUp() {
-		HealthContributorRegistry registry = createRegistry(Collections.emptyMap());
+		HealthContributorRegistry registry = createRegistry(null);
 		HealthEndpointGroups groups = HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap());
-		ContributedHealth health = create(registry, groups).health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health).isInstanceOf(Health.class);
+		HealthEndpoint endpoint = create(registry, groups);
+		HealthDescriptor descriptor = endpoint.health();
+		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
+		assertThat(descriptor).isInstanceOf(IndicatedHealthDescriptor.class);
 	}
 
 	@Test
 	void healthWhenPathDoesNotExistReturnsNull() {
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
-		ContributedHealth health = create(registry, this.groups).healthForPath("missing");
-		assertThat(health).isNull();
+		HealthEndpoint endpoint = create(registry, this.groups);
+		HealthDescriptor descriptor = endpoint.healthForPath("missing");
+		assertThat(descriptor).isNull();
 	}
 
 	@Test
 	void healthWhenPathExistsReturnsHealth() {
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
-		ContributedHealth health = create(registry, this.groups).healthForPath("test");
-		assertThat(health).isEqualTo(this.up);
+		HealthEndpoint endpoint = create(registry, this.groups);
+		IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) endpoint.healthForPath("test");
+		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
+		assertThat(descriptor.getDetails()).containsEntry("spring", "boot");
 	}
 
 	@Test
@@ -92,20 +97,22 @@ class HealthEndpointTests extends
 			return this.up;
 		};
 		HealthContributorRegistry registry = createRegistry("test", indicator);
-		create(registry, this.groups, Duration.ofMillis(10)).health();
+		HealthEndpoint endpoint = create(registry, this.groups, Duration.ofMillis(10));
+		endpoint.health();
 		assertThat(output).contains("Health contributor");
 		assertThat(output).contains("to respond");
 	}
 
 	@Override
 	protected HealthEndpoint create(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			Duration slowIndicatorLoggingThreshold) {
-		return new HealthEndpoint(registry, groups, slowIndicatorLoggingThreshold);
+			Duration slowContributorLoggingThreshold) {
+		return new HealthEndpoint(registry, null, groups, slowContributorLoggingThreshold);
 	}
 
 	@Override
-	protected HealthContributorRegistry createRegistry(Map<String, HealthContributor> contributors) {
-		return new DefaultHealthContributorRegistry(contributors, Collections.emptyList());
+	protected HealthContributorRegistry createRegistry(
+			Consumer<BiConsumer<String, HealthContributor>> intialRegistrations) {
+		return new DefaultHealthContributorRegistry(Collections.emptyList(), intialRegistrations);
 	}
 
 	@Override
@@ -119,8 +126,8 @@ class HealthEndpointTests extends
 	}
 
 	@Override
-	protected ContributedHealth getHealth(HealthResult<ContributedHealth> result) {
-		return result.getHealth();
+	protected HealthDescriptor getDescriptor(Result<HealthDescriptor> result) {
+		return result.descriptor();
 	}
 
 }

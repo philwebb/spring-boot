@@ -25,12 +25,13 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.actuate.health.CompositeHealthDescriptor;
+import org.springframework.boot.actuate.health.HealthDescriptor;
+import org.springframework.boot.actuate.health.IndicatedHealthDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
-import org.springframework.boot.health.contributor.CompositeHealth;
-import org.springframework.boot.health.contributor.ContributedHealth;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
@@ -70,9 +71,13 @@ class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 		this.contextRunner.run((context) -> {
 			CloudFoundryReactiveHealthEndpointWebExtension extension = context
 				.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
-			ContributedHealth body = extension.health(ApiVersion.V3).block(Duration.ofSeconds(30)).getBody();
-			ContributedHealth health = ((CompositeHealth) body).getComponents().entrySet().iterator().next().getValue();
-			assertThat(((Health) health).getDetails()).containsEntry("spring", "boot");
+			HealthDescriptor descriptor = extension.health(ApiVersion.V3).block(Duration.ofSeconds(30)).getBody();
+			HealthDescriptor component = ((CompositeHealthDescriptor) descriptor).getComponents()
+				.entrySet()
+				.iterator()
+				.next()
+				.getValue();
+			assertThat(((IndicatedHealthDescriptor) component).getDetails()).containsEntry("spring", "boot");
 		});
 	}
 

@@ -16,8 +16,7 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,14 +34,14 @@ import static org.mockito.Mockito.mock;
 class HealthContributorsTests {
 
 	@Test
-	void streamAdaptsIterator() {
+	void iteratorAdaptsStream() {
 		Entry e1 = new Entry("e1", mock(HealthIndicator.class));
 		Entry e2 = new Entry("e2", mock(HealthIndicator.class));
 		HealthContributors contributors = new HealthContributors() {
 
 			@Override
-			public Iterator<Entry> iterator() {
-				return List.of(e1, e2).iterator();
+			public Stream<Entry> stream() {
+				return Stream.of(e1, e2);
 			}
 
 			@Override
@@ -51,7 +50,7 @@ class HealthContributorsTests {
 			}
 
 		};
-		assertThat(contributors.stream()).containsExactly(e1, e2);
+		assertThat(contributors).containsExactly(e1, e2);
 	}
 
 	@Test
@@ -64,6 +63,12 @@ class HealthContributorsTests {
 	void createEntryWhenContributorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Entry("test", null))
 			.withMessage("'contributor' must not be null");
+	}
+
+	@Test
+	void ofCreatesComposite() {
+		HealthContributors c = mock(HealthContributors.class);
+		assertThat(HealthContributors.of(c)).isInstanceOf(CompositeHealthContributors.class);
 	}
 
 }

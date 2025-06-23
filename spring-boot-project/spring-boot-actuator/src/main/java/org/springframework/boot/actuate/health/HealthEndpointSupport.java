@@ -30,9 +30,6 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.convert.DurationStyle;
-import org.springframework.boot.health.contributor.CompositeHealth;
-import org.springframework.boot.health.contributor.ContributedHealth;
-import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -41,61 +38,59 @@ import org.springframework.util.StringUtils;
 /**
  * Base class for health endpoints and health endpoint extensions.
  *
- * @param <T> the contributed health component type
+ * @param <H> the health type
+ * @param <D> the descriptor type
  * @author Phillip Webb
  * @author Scott Frederick
  */
-abstract class HealthEndpointSupport<T> {
+abstract class HealthEndpointSupport<H, D> {
+
+	static final String[] EMPTY_PATH = {};
 
 	private static final Log logger = LogFactory.getLog(HealthEndpointSupport.class);
 
-	static final Health DEFAULT_HEALTH = Health.up().build();
-
-	private final HealthEndpointContributor<T> root;
+	private final Contributor<H, D> rootContributor;
 
 	private final HealthEndpointGroups groups;
 
-	private final Duration slowIndicatorLoggingThreshold;
+	private final Duration slowContributorLoggingThreshold;
 
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
-	 * @param root the root contributor
+	 * @param rootContributor the health contributor registry
 	 * @param groups the health endpoint groups
-	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * @param slowContributorLoggingThreshold duration after which slow health contributor
 	 * logging should occur
 	 */
-	HealthEndpointSupport(HealthEndpointContributor<T> root, HealthEndpointGroups groups,
-			Duration slowIndicatorLoggingThreshold) {
-		Assert.notNull(root, "'root' must not be null");
+	HealthEndpointSupport(Contributor<H, D> rootContributor, HealthEndpointGroups groups,
+			Duration slowContributorLoggingThreshold) {
+		Assert.notNull(rootContributor, "'rootContributor' must not be null");
 		Assert.notNull(groups, "'groups' must not be null");
-		this.root = root;
+		this.rootContributor = rootContributor;
 		this.groups = groups;
-		this.slowIndicatorLoggingThreshold = slowIndicatorLoggingThreshold;
+		this.slowContributorLoggingThreshold = slowContributorLoggingThreshold;
 	}
 
-	HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
-			SecurityContext securityContext, boolean showAll, String... path) {
-		if (path.length > 0) {
-			HealthEndpointGroup group = getHealthGroup(serverNamespace, path);
-			if (group != null) {
-				return getHealth(apiVersion, group, securityContext, showAll, path, 1);
-			}
+	Result<D> getResult(ApiVersion apiVersion, WebServerNamespace serverNamespace, SecurityContext securityContext,
+			boolean showAll, String... path) {
+		HealthEndpointGroup group = (path.length > 0) ? getGroup(serverNamespace, path) : null;
+		if (group != null) {
+			return getResult(apiVersion, group, securityContext, showAll, path, 1);
 		}
-		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
+		return getResult(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
 	}
 
-	private HealthEndpointGroup getHealthGroup(WebServerNamespace serverNamespace, String... path) {
+	private HealthEndpointGroup getGroup(WebServerNamespace serverNamespace, String... path) {
 		if (this.groups.get(path[0]) != null) {
 			return this.groups.get(path[0]);
 		}
 		if (serverNamespace != null) {
-			AdditionalHealthEndpointPath additionalPath = AdditionalHealthEndpointPath.of(serverNamespace, path[0]);
-			return this.groups.get(additionalPath);
+			return this.groups.get(AdditionalHealthEndpointPath.of(serverNamespace, path[0]));
 		}
 		return null;
 	}
 
-	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
+	private Result<D> getResult(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
 			boolean showAll, String[] path, int pathOffset) {
 		boolean showComponents = showAll || group.showComponents(securityContext);
 		boolean showDetails = showAll || group.showDetails(securityContext);
@@ -104,19 +99,18 @@ abstract class HealthEndpointSupport<T> {
 		if (!showComponents && !isRoot) {
 			return null;
 		}
-		HealthEndpointContributor<T> contributor = getContributor(path, pathOffset);
+		Contributor<H, D> contributor = getContributor(path, pathOffset);
 		if (contributor == null) {
 			return null;
 		}
 		String name = getName(path, pathOffset);
-		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
-		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, groupNames);
-		return (health != null) ? new HealthResult<>(health, group) : null;
+		Set<String> groupNames = (!isSystemHealth) ? null : this.groups.getNames();
+		D descriptor = getDescriptor(apiVersion, group, name, contributor, showComponents, showDetails, groupNames);
+		return (descriptor != null) ? new Result<>(descriptor, group) : null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private HealthEndpointContributor<T> getContributor(String[] path, int pathOffset) {
-		HealthEndpointContributor<T> contributor = this.root;
+	private Contributor<H, D> getContributor(String[] path, int pathOffset) {
+		Contributor<H, D> contributor = this.rootContributor;
 		while (pathOffset < path.length) {
 			if (!contributor.isComposite()) {
 				return null;
@@ -137,96 +131,77 @@ abstract class HealthEndpointSupport<T> {
 		return name.toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
-			HealthEndpointContributor<T> contributor, boolean showComponents, boolean showDetails,
-			Set<String> groupNames) {
+	private D getDescriptor(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			Contributor<H, D> contributor, boolean showComponents, boolean showDetails, Set<String> groupNames) {
 		if (contributor.isComposite()) {
-			return getAggregateContribution(apiVersion, group, name, contributor, showComponents, showDetails,
+			return getAggregateDescriptor(apiVersion, group, name, contributor, showComponents, showDetails,
 					groupNames);
 		}
-		if (contributor != null && (name.isEmpty() || group.isMember(name))) {
-			return getLoggedHealth(contributor, name, showDetails);
+		if (name.isEmpty() || group.isMember(name)) {
+			return getDescriptorAndLogIfSlow(contributor, name, showDetails);
 		}
 		return null;
 	}
 
-	private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
-			HealthEndpointContributor<T> contributor, boolean showComponents, boolean showDetails,
-			Set<String> groupNames) {
+	private D getAggregateDescriptor(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			Contributor<H, D> contributor, boolean showComponents, boolean showDetails, Set<String> groupNames) {
 		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
-		Map<String, T> contributions = new LinkedHashMap<>();
-		for (HealthEndpointContributor.Child<T> child : contributor) {
-			T contribution = getContribution(apiVersion, group, prefix + child.name(), child.contributor(),
-					showComponents, showDetails, null);
-			if (contribution != null) {
-				contributions.put(child.name(), contribution);
+		Map<String, D> descriptors = new LinkedHashMap<>();
+		for (Contributor.Child<H, D> child : contributor) {
+			String childName = child.name();
+			D descriptor = getDescriptor(apiVersion, group, prefix + childName, child.contributor(), showComponents,
+					showDetails, null);
+			if (descriptor != null) {
+				descriptors.put(childName, descriptor);
 			}
 		}
-		if (contributions.isEmpty()) {
+		if (descriptors.isEmpty()) {
 			return null;
 		}
-		return aggregateContributions(apiVersion, contributions, group.getStatusAggregator(), showComponents,
-				groupNames);
+		return aggregateDescriptors(apiVersion, descriptors, group.getStatusAggregator(), showComponents, groupNames);
 	}
 
-	private T getLoggedHealth(HealthEndpointContributor<T> contributor, String name, boolean showDetails) {
+	private D getDescriptorAndLogIfSlow(Contributor<H, D> contributor, String name, boolean showDetails) {
 		Instant start = Instant.now();
 		try {
-			return contributor.getHealth(showDetails);
+			return contributor.getDescriptor(showDetails);
 		}
 		finally {
-			if (logger.isWarnEnabled() && this.slowIndicatorLoggingThreshold != null) {
+			if (logger.isWarnEnabled() && this.slowContributorLoggingThreshold != null) {
 				Duration duration = Duration.between(start, Instant.now());
-				if (duration.compareTo(this.slowIndicatorLoggingThreshold) > 0) {
-					String contributorClassName = contributor.getClass().getName();
-					Object contributorIdentifier = (!StringUtils.hasLength(name)) ? contributorClassName
-							: contributorClassName + " (" + name + ")";
-					logger.warn(LogMessage.format("Health contributor %s took %s to respond", contributorIdentifier,
-							DurationStyle.SIMPLE.print(duration)));
+				if (duration.compareTo(this.slowContributorLoggingThreshold) > 0) {
+					logger.warn(LogMessage.format("Health contributor %s took %s to respond",
+							contributor.getIdentifier(name), DurationStyle.SIMPLE.print(duration)));
 				}
 			}
 		}
 	}
 
-	protected abstract T aggregateContributions(ApiVersion apiVersion, Map<String, T> contributions,
+	abstract D aggregateDescriptors(ApiVersion apiVersion, Map<String, D> descriptors,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames);
 
-	protected final CompositeHealth getCompositeHealth(ApiVersion apiVersion, Map<String, ContributedHealth> components,
-			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+	final CompositeHealthDescriptor getCompositeDescriptor(ApiVersion apiVersion,
+			Map<String, HealthDescriptor> descriptors, StatusAggregator statusAggregator, boolean showComponents,
+			Set<String> groupNames) {
 		Status status = statusAggregator
-			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
-		Map<String, ContributedHealth> instances = showComponents ? components : null;
-		return new SystemHealth(status, instances, groupNames, apiVersion);
+			.getAggregateStatus(descriptors.values().stream().map(this::getStatus).collect(Collectors.toSet()));
+		descriptors = (!showComponents) ? null : descriptors;
+		return (groupNames != null) ? new SystemHealthDescriptor(apiVersion, status, descriptors, groupNames)
+				: new CompositeHealthDescriptor(apiVersion, status, descriptors);
 	}
 
-	private Status getStatus(ContributedHealth component) {
+	private Status getStatus(HealthDescriptor component) {
 		return (component != null) ? component.getStatus() : Status.UNKNOWN;
 	}
 
 	/**
-	 * A health result containing health and the group that created it.
+	 * A health result containing descriptor and the group that created it.
 	 *
-	 * @param <T> the contributed health component
+	 * @param descriptor the health descriptor
+	 * @param group the group used to create the health
+	 * @param <D> the details type
 	 */
-	static class HealthResult<T> {
-
-		private final T health;
-
-		private final HealthEndpointGroup group;
-
-		HealthResult(T health, HealthEndpointGroup group) {
-			this.health = health;
-			this.group = group;
-		}
-
-		T getHealth() {
-			return this.health;
-		}
-
-		HealthEndpointGroup getGroup() {
-			return this.group;
-		}
+	record Result<D>(D descriptor, HealthEndpointGroup group) {
 
 	}
 

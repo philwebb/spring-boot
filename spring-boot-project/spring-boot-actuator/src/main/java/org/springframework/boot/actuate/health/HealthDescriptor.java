@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.health.contributor;
+package org.springframework.boot.actuate.health;
+
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
+import org.springframework.boot.health.contributor.Status;
 
 /**
- * Contributes health information, either directly ({@link HealthIndicator}) or via other
- * contributors ({@link CompositeHealthContributor}).
+ * Description of health including a status.
  *
  * @author Phillip Webb
  * @since 4.0.0
- * @see HealthIndicator
- * @see CompositeHealthContributor
  */
-public sealed interface HealthContributor permits HealthIndicator, CompositeHealthContributor {
+public sealed abstract class HealthDescriptor implements OperationResponseBody
+		permits IndicatedHealthDescriptor, CompositeHealthDescriptor {
+
+	/**
+	 * Return the status of the component.
+	 * @return the component status
+	 */
+	@JsonUnwrapped
+	public abstract Status getStatus();
 
 }

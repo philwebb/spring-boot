@@ -128,7 +128,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 		HealthEndpoint healthEndpoint() {
 			HealthContributorRegistry registry = mock(HealthContributorRegistry.class);
 			HealthEndpointGroups groups = mock(HealthEndpointGroups.class);
-			return new HealthEndpoint(registry, groups, null);
+			return new HealthEndpoint(registry, null, groups, null);
 		}
 
 		@Bean

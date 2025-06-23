@@ -33,19 +33,19 @@ class ReactiveHealthIndicatorTests {
 	@Test
 	void asHealthContributor() {
 		HealthIndicator adapted = this.indicator.asHealthContributor();
-		assertThat(adapted.getHealth(true).getDetails()).containsEntry("spring", "boot");
+		assertThat(adapted.health(true).getDetails()).containsEntry("spring", "boot");
 	}
 
 	@Test
 	void getHealthWhenIncludeDetailsIsTrueReturnsHealthWithDetails() {
-		Health health = this.indicator.getHealth(true).block();
+		Health health = this.indicator.health(true).block();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("spring", "boot");
 	}
 
 	@Test
 	void getHealthWhenIncludeDetailsIsFalseReturnsHealthWithoutDetails() {
-		Health health = this.indicator.getHealth(false).block();
+		Health health = this.indicator.health(false).block();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).isEmpty();
 	}

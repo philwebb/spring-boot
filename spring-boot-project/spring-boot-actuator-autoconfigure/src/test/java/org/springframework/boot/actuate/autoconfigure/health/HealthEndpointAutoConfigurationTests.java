@@ -30,19 +30,20 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.health.CompositeHealthDescriptor;
+import org.springframework.boot.actuate.health.HealthDescriptor;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
+import org.springframework.boot.actuate.health.IndicatedHealthDescriptor;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
-import org.springframework.boot.health.contributor.CompositeHealth;
 import org.springframework.boot.health.contributor.CompositeHealthContributor;
-import org.springframework.boot.health.contributor.ContributedHealth;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -221,8 +222,8 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthEndpoint() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpoint endpoint = context.getBean(HealthEndpoint.class);
-			Health health = (Health) endpoint.healthForPath("simple");
-			assertThat(health.getDetails()).containsEntry("counter", 42);
+			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) endpoint.healthForPath("simple");
+			assertThat(descriptor.getDetails()).containsEntry("counter", 42);
 		});
 	}
 
@@ -257,11 +258,11 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesHealthEndpointWebExtension() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension webExtension = context.getBean(HealthEndpointWebExtension.class);
-			WebEndpointResponse<ContributedHealth> response = webExtension.health(ApiVersion.V3,
+			WebEndpointResponse<HealthDescriptor> response = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
-			Health health = (Health) response.getBody();
+			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) response.getBody();
 			assertThat(response.getStatus()).isEqualTo(200);
-			assertThat(health.getDetails()).containsEntry("counter", 42);
+			assertThat(descriptor.getDetails()).containsEntry("counter", 42);
 		});
 	}
 
@@ -269,7 +270,7 @@ class HealthEndpointAutoConfigurationTests {
 	void runWhenHasHealthEndpointWebExtensionBeanDoesNotCreateExtraHealthEndpointWebExtension() {
 		this.contextRunner.withUserConfiguration(HealthEndpointWebExtensionConfiguration.class).run((context) -> {
 			HealthEndpointWebExtension webExtension = context.getBean(HealthEndpointWebExtension.class);
-			WebEndpointResponse<ContributedHealth> response = webExtension.health(ApiVersion.V3,
+			WebEndpointResponse<HealthDescriptor> response = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 			assertThat(response).isNull();
 		});
@@ -279,10 +280,10 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesReactiveHealthEndpointWebExtension() {
 		this.reactiveContextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension webExtension = context.getBean(ReactiveHealthEndpointWebExtension.class);
-			Mono<WebEndpointResponse<? extends ContributedHealth>> response = webExtension.health(ApiVersion.V3,
+			Mono<WebEndpointResponse<? extends HealthDescriptor>> response = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
-			Health health = (Health) (response.block().getBody());
-			assertThat(health.getDetails()).containsEntry("counter", 42);
+			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) (response.block().getBody());
+			assertThat(descriptor.getDetails()).containsEntry("counter", 42);
 		});
 	}
 
@@ -292,7 +293,7 @@ class HealthEndpointAutoConfigurationTests {
 			.run((context) -> {
 				ReactiveHealthEndpointWebExtension webExtension = context
 					.getBean(ReactiveHealthEndpointWebExtension.class);
-				Mono<WebEndpointResponse<? extends ContributedHealth>> response = webExtension.health(ApiVersion.V3,
+				Mono<WebEndpointResponse<? extends HealthDescriptor>> response = webExtension.health(ApiVersion.V3,
 						WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 				assertThat(response).isNull();
 			});
@@ -317,8 +318,8 @@ class HealthEndpointAutoConfigurationTests {
 						HealthContributorRegistryAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 				.withParent(parent)
 				.run((context) -> {
-					ContributedHealth health = context.getBean(HealthEndpoint.class).health();
-					Map<String, ContributedHealth> components = ((CompositeHealth) health).getComponents();
+					HealthDescriptor descriptor = context.getBean(HealthEndpoint.class).health();
+					Map<String, HealthDescriptor> components = ((CompositeHealthDescriptor) descriptor).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
 	}
@@ -332,8 +333,8 @@ class HealthEndpointAutoConfigurationTests {
 						WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class))
 				.withParent(parent)
 				.run((context) -> {
-					ContributedHealth health = context.getBean(HealthEndpoint.class).health();
-					Map<String, ContributedHealth> components = ((CompositeHealth) health).getComponents();
+					HealthDescriptor descriptor = context.getBean(HealthEndpoint.class).health();
+					Map<String, HealthDescriptor> components = ((CompositeHealthDescriptor) descriptor).getComponents();
 					assertThat(components).containsKeys("additional", "ping", "simple");
 				}));
 	}

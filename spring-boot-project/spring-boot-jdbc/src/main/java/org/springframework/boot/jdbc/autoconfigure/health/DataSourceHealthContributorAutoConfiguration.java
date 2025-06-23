@@ -18,11 +18,11 @@ package org.springframework.boot.jdbc.autoconfigure.health;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -171,8 +171,8 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		}
 
 		@Override
-		public Iterator<HealthContributors.Entry> iterator() {
-			return this.delegate.iterator();
+		public Stream<HealthContributors.Entry> stream() {
+			return this.delegate.stream();
 		}
 
 	}

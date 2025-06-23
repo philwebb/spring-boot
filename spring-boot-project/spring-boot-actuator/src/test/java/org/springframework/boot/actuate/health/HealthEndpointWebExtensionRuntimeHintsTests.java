@@ -23,8 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.health.contributor.CompositeHealth;
-import org.springframework.boot.health.contributor.Health;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +37,8 @@ class HealthEndpointWebExtensionRuntimeHintsTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new HealthEndpointWebExtensionRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		Set<Class<?>> bindingTypes = Set.of(Health.class, SystemHealth.class, CompositeHealth.class);
+		Set<Class<?>> bindingTypes = Set.of(IndicatedHealthDescriptor.class, SystemHealthDescriptor.class,
+				CompositeHealthDescriptor.class);
 		for (Class<?> bindingType : bindingTypes) {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(bindingType)

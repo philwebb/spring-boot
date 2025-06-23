@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,9 +82,11 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpoint healthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			HealthEndpointProperties properties) {
-		return new HealthEndpoint(registry, groups, properties.getLogging().getSlowIndicatorThreshold());
+	HealthEndpoint healthEndpoint(HealthContributorRegistry halthContributorRegistry,
+			ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry,
+			HealthEndpointGroups groups, HealthEndpointProperties properties) {
+		return new HealthEndpoint(halthContributorRegistry, reactiveHealthContributorRegistry.getIfAvailable(), groups,
+				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
 	@Bean
