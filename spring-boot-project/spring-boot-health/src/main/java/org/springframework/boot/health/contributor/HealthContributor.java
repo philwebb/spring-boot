@@ -17,8 +17,8 @@
 package org.springframework.boot.health.contributor;
 
 /**
- * Contribute to {@link ContributedHealth health components}. A contributor must be either
- * a {@link HealthIndicator} or a {@link CompositeHealthContributor}.
+ * Contributes health information, either directly ({@link ReactiveHealthIndicator}) or
+ * via other contributors ({@link CompositeReactiveHealthContributor}).
  *
  * @author Phillip Webb
  * @since 4.0.0

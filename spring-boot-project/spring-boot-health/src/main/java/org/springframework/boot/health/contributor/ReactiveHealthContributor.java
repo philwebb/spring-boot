@@ -21,9 +21,8 @@ import reactor.core.scheduler.Schedulers;
 import org.springframework.util.Assert;
 
 /**
- * Tagging interface for classes that contribute to {@link ContributedHealth health
- * components}. A contributor must be either a {@link ReactiveHealthIndicator} or a
- * {@link CompositeReactiveHealthContributor}.
+ * Contributes health information, either directly ({@link ReactiveHealthIndicator}) or
+ * via other contributors ({@link CompositeReactiveHealthContributor}).
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

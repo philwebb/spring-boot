@@ -22,13 +22,14 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import org.springframework.util.Assert;
 
 /**
- * Carries information about the health of a component or subsystem. Extends
- * {@link ContributedHealth} so that additional contextual details about the system can be
- * returned along with the {@link Status}.
+ * The health of a component or subsystem in including its {@link Status} as well as any
+ * additional contextual details. Subclasses should expect to be serialized and presented
+ * to the user, typically as JSON.
  * <p>
  * {@link Health} instances can be created by using {@link Builder}'s fluent API. Typical
  * usage in a {@link HealthIndicator} would be:
@@ -49,7 +50,7 @@ import org.springframework.util.Assert;
  * @since 4.0.0
  */
 @JsonInclude(Include.NON_EMPTY)
-public final class Health extends ContributedHealth {
+public final class Health {
 
 	private final Status status;
 
@@ -74,7 +75,7 @@ public final class Health extends ContributedHealth {
 	 * Return the status of the health.
 	 * @return the status (never {@code null})
 	 */
-	@Override
+	@JsonUnwrapped
 	public Status getStatus() {
 		return this.status;
 	}
