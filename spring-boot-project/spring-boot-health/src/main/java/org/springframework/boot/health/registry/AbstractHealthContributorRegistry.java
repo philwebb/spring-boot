@@ -51,14 +51,14 @@ abstract class AbstractHealthContributorRegistry<C, E> {
 		this.nameValidators = List.copyOf(nameValidators);
 		this.entryAdapter = entryAdapter;
 		Assert.notNull(contributors, "'contributors' must not be null");
-		contributors.keySet().forEach(this::verifyName);
+		contributors.entrySet().forEach((entry) -> this.verifyName(entry.getKey(), entry.getValue()));
 		this.contributors = Collections.unmodifiableMap(new LinkedHashMap<>(contributors));
 	}
 
 	void registerContributor(String name, C contributor) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.notNull(contributor, "'contributor' must not be null");
-		verifyName(name);
+		verifyName(name, contributor);
 		synchronized (this.monitor) {
 			Assert.state(!this.contributors.containsKey(name),
 					() -> "A contributor named \"" + name + "\" has already been registered");
@@ -103,8 +103,9 @@ abstract class AbstractHealthContributorRegistry<C, E> {
 		};
 	}
 
-	private void verifyName(String name) {
-		Assert.state(StringUtils.hasText(name), "Contributor name must not be empty");
+	private void verifyName(String name, C contributor) {
+		Assert.state(StringUtils.hasText(name),
+				() -> "Name for contributor '%s' must not be empty".formatted(contributor));
 		if (!CollectionUtils.isEmpty(this.nameValidators)) {
 			this.nameValidators.forEach((nameValidator) -> nameValidator.validate(name));
 		}
