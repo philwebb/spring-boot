@@ -20,7 +20,7 @@ import java.util.Iterator;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -32,10 +32,11 @@ import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
  * Allows {@link HealthEndpointSupport} to access blocking or reactive contributors and
  * registries in a uniform way.
  *
- * @param <T> the contributed health component type
+ * @param <H> the health type
+ * @param <D> the descriptor type
  * @author Phillip Webb
  */
-interface HealthEndpointContributor<T> extends Iterable<HealthEndpointContributor.Child<T>> {
+interface HealthContributorSupport<H, D> extends Iterable<HealthContributorSupport.Child<H, D>> {
 
 	/**
 	 * Return if this contributor is a composite and may have children.
@@ -49,7 +50,7 @@ interface HealthEndpointContributor<T> extends Iterable<HealthEndpointContributo
 	 * @param name the child name
 	 * @return the child or {@code null}
 	 */
-	HealthEndpointContributor<T> getChild(String name);
+	HealthContributorSupport<H, D> getChild(String name);
 
 	/**
 	 * Get the health. Must only be called if {@link #isComposite()} returns
@@ -57,26 +58,27 @@ interface HealthEndpointContributor<T> extends Iterable<HealthEndpointContributo
 	 * @param includeDetails if details are to be included.
 	 * @return the health
 	 */
-	T getHealth(boolean includeDetails);
+	D getDescriptor(boolean includeDetails);
 
 	/**
 	 * A child consisting of a name and a contributor.
 	 *
-	 * @param <T> the contributed health component type
+	 * @param <H> the health type
+	 * @param <D> the descriptor type
 	 * @param name the child name
 	 * @param contributor the contributor
 	 */
-	record Child<T>(String name, HealthEndpointContributor<T> contributor) {
+	record Child<H, D>(String name, HealthContributorSupport<H, D> contributor) {
 
 	}
 
 	/**
-	 * {@link HealthEndpointContributor} to adapt the blocking {@link HealthContributor}
+	 * {@link HealthContributorSupport} to adapt the blocking {@link HealthContributor}
 	 * and {@link HealthContributors} types.
 	 *
 	 * @param contributor the underlying contributor
 	 */
-	record Blocking(Object contributor) implements HealthEndpointContributor<ContributedHealth> {
+	record Blocking(Object contributor) implements HealthContributorSupport<Health, HealthComponentDescriptor> {
 
 		@Override
 		public boolean isComposite() {
@@ -84,32 +86,34 @@ interface HealthEndpointContributor<T> extends Iterable<HealthEndpointContributo
 		}
 
 		@Override
-		public HealthEndpointContributor<ContributedHealth> getChild(String name) {
+		public Blocking getChild(String name) {
 			HealthContributor child = ((HealthContributors) contributor()).getContributor(name);
 			return (child != null) ? new Blocking(child) : null;
 		}
 
 		@Override
-		public Iterator<Child<ContributedHealth>> iterator() {
+		public Iterator<Child<Health, HealthComponentDescriptor>> iterator() {
 			return ((HealthContributors) contributor()).stream()
 				.map((entry) -> new Child<>(entry.name(), new Blocking(entry.contributor())))
 				.iterator();
 		}
 
 		@Override
-		public ContributedHealth getHealth(boolean includeDetails) {
-			return ((HealthIndicator) contributor()).getHealth(includeDetails);
+		public HealthComponentDescriptor getDescriptor(boolean includeDetails) {
+			return HealthDescriptor.of(((HealthIndicator) contributor()).getHealth(includeDetails));
 		}
 
 	}
 
 	/**
-	 * {@link HealthEndpointContributor} to adapt the reactive
+	 * {@link HealthContributorSupport} to adapt the reactive
 	 * {@link ReactiveHealthContributor} and {@link ReactiveHealthContributors} types.
 	 *
 	 * @param contributor the underlying contributor
 	 */
-	record Reactive(Object contributor) implements HealthEndpointContributor<Mono<? extends ContributedHealth>> {
+	record Reactive(Object contributor)
+			implements
+				HealthContributorSupport<Mono<? extends Health>, Mono<? extends HealthComponentDescriptor>> {
 
 		@Override
 		public boolean isComposite() {
@@ -117,21 +121,21 @@ interface HealthEndpointContributor<T> extends Iterable<HealthEndpointContributo
 		}
 
 		@Override
-		public HealthEndpointContributor<Mono<? extends ContributedHealth>> getChild(String name) {
+		public Reactive getChild(String name) {
 			ReactiveHealthContributor child = ((ReactiveHealthContributors) contributor()).getContributor(name);
 			return (child != null) ? new Reactive(child) : null;
 		}
 
 		@Override
-		public Iterator<Child<Mono<? extends ContributedHealth>>> iterator() {
+		public Iterator<Child<Mono<? extends Health>, Mono<? extends HealthComponentDescriptor>>> iterator() {
 			return ((ReactiveHealthContributors) contributor()).stream()
 				.map((entry) -> new Child<>(entry.name(), new Reactive(entry.contributor())))
 				.iterator();
 		}
 
 		@Override
-		public Mono<? extends ContributedHealth> getHealth(boolean includeDetails) {
-			return ((ReactiveHealthIndicator) this.contributor).getHealth(includeDetails);
+		public Mono<? extends HealthComponentDescriptor> getDescriptor(boolean includeDetails) {
+			return ((ReactiveHealthIndicator) this.contributor).getHealth(includeDetails).map(HealthDescriptor::of);
 		}
 
 	}

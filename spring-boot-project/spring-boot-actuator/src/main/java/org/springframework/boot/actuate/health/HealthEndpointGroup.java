@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.health;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.health.contributor.CompositeHealth;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
 
@@ -39,8 +38,8 @@ public interface HealthEndpointGroup {
 	boolean isMember(String name);
 
 	/**
-	 * Returns if {@link CompositeHealth#getComponents() health components} should be
-	 * shown in the response.
+	 * Returns if {@link CompositeHealthDetails#getComponents() health components} should
+	 * be shown in the response.
 	 * @param securityContext the endpoint security context
 	 * @return {@code true} to shown details or {@code false} to hide them
 	 */

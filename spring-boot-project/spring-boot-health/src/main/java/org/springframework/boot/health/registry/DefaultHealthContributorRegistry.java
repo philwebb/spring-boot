@@ -19,7 +19,8 @@ package org.springframework.boot.health.registry;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthContributors;
@@ -38,17 +39,17 @@ public class DefaultHealthContributorRegistry
 	 * Create a new empty {@link DefaultHealthContributorRegistry} instance.
 	 */
 	public DefaultHealthContributorRegistry() {
-		this(Collections.emptyMap(), Collections.emptyList());
+		this(Collections.emptyList(), null);
 	}
 
 	/**
 	 * Create a new {@link DefaultHealthContributorRegistry} instance.
-	 * @param contributors the initial set of health contributors
 	 * @param nameValidators the name validators to apply
+	 * @param intialRegistrations callback to setup any initial registrations
 	 */
-	public DefaultHealthContributorRegistry(Map<String, HealthContributor> contributors,
-			Collection<? extends HealthContributorNameValidator> nameValidators) {
-		super(contributors, nameValidators, HealthContributors.Entry::new);
+	public DefaultHealthContributorRegistry(Collection<? extends HealthContributorNameValidator> nameValidators,
+			Consumer<BiConsumer<String, HealthContributor>> intialRegistrations) {
+		super(HealthContributors.Entry::new, nameValidators, intialRegistrations);
 	}
 
 	@Override

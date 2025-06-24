@@ -16,13 +16,16 @@
 
 package org.springframework.boot.health.autoconfigure.registry;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+
+import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.ReactiveHealthContributor;
@@ -31,9 +34,7 @@ import org.springframework.boot.health.registry.DefaultReactiveHealthContributor
 import org.springframework.boot.health.registry.HealthContributorNameValidator;
 import org.springframework.boot.health.registry.HealthContributorRegistry;
 import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -48,54 +49,42 @@ public class HealthContributorRegistryAutoConfiguration {
 	HealthContributorRegistryAutoConfiguration() {
 	}
 
-	@Bean
-	@ConditionalOnMissingBean(HealthContributorRegistry.class)
-	DefaultHealthContributorRegistry healthContributorRegistry(ApplicationContext applicationContext,
-			Map<String, HealthContributor> contributorBeans,
-			Map<String, ReactiveHealthContributor> reactiveContributorBeans,
-			ObjectProvider<HealthContributorNameGenerator> nameGeneratorProvider,
-			List<HealthContributorNameValidator> nameValidators) {
-		HealthContributorNameGenerator nameGenerator = nameGeneratorProvider
-			.getIfAvailable(HealthContributorNameGenerator::withoutStandardSuffixes);
-		Map<String, HealthContributor> contributors = new LinkedHashMap<>();
-		contributorBeans.forEach((beanName, bean) -> {
+	private static <C> void registerInitialContributors(BiConsumer<String, C> registration,
+			Map<String, C> contributorBeans, HealthContributorNameGenerator nameGenerator) {
+		contributorBeans.forEach((beanName, contributorBean) -> {
 			String contributorName = nameGenerator.generateContributorName(beanName);
-			contributors.put(contributorName, bean);
+			try {
+				registration.accept(contributorName, contributorBean);
+			}
+			catch (RuntimeException ex) {
+				throw new IllegalStateException("Unable to register contributor named '%s' of type %s from bean '%s'"
+					.formatted(contributorName, contributorBean.getClass(), beanName), ex);
+			}
 		});
-		if (ClassUtils.isPresent("reactor.core.publisher.Flux", applicationContext.getClassLoader())) {
-			reactiveContributorBeans.forEach((beanName, bean) -> {
-				String contributorName = nameGenerator.generateContributorName(beanName);
-				contributors.put(contributorName, bean.asHealthContributor());
-			});
-		}
-		return new DefaultHealthContributorRegistry(contributors, nameValidators);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(HealthContributorRegistry.class)
+	DefaultHealthContributorRegistry healthContributorRegistry(Map<String, HealthContributor> contributorBeans,
+			ObjectProvider<HealthContributorNameGenerator> nameGenerator,
+			List<HealthContributorNameValidator> nameValidators) {
+		return new DefaultHealthContributorRegistry(nameValidators,
+				(registration) -> registerInitialContributors(registration, contributorBeans,
+						nameGenerator.getIfAvailable(HealthContributorNameGenerator::withoutStandardSuffixes)));
+	}
+
+	@ConditionalOnClass(Flux.class)
 	static class ReactiveHealthContributorRegistryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ReactiveHealthContributorRegistry.class)
 		DefaultReactiveHealthContributorRegistry reactiveHealthContributorRegistry(
-				Map<String, ReactiveHealthContributor> reactiveContributorBeans,
-				Map<String, HealthContributor> contributorBeans,
-				ObjectProvider<HealthContributorNameGenerator> nameGeneratorProvider,
+				Map<String, ReactiveHealthContributor> contributorBeans,
+				ObjectProvider<HealthContributorNameGenerator> nameGenerator,
 				List<HealthContributorNameValidator> nameValidators) {
-			HealthContributorNameGenerator nameGenerator = nameGeneratorProvider
-				.getIfAvailable(HealthContributorNameGenerator::withoutStandardSuffixes);
-			Map<String, ReactiveHealthContributor> contributors = new LinkedHashMap<>();
-			reactiveContributorBeans.forEach((beanName, bean) -> {
-				String contributorName = nameGenerator.generateContributorName(beanName);
-				contributors.put(contributorName, bean);
-			});
-			reactiveContributorBeans.forEach((beanName, bean) -> {
-				String contributorName = nameGenerator.generateContributorName(beanName);
-				contributors.put(contributorName, bean);
-			});
-			contributorBeans.forEach((beanName, bean) -> {
-				String contributorName = nameGenerator.generateContributorName(beanName);
-				contributors.computeIfAbsent(contributorName, (key) -> ReactiveHealthContributor.adapt(bean));
-			});
-			return new DefaultReactiveHealthContributorRegistry(contributors, nameValidators);
+			return new DefaultReactiveHealthContributorRegistry(nameValidators,
+					(registration) -> registerInitialContributors(registration, contributorBeans,
+							nameGenerator.getIfAvailable(HealthContributorNameGenerator::withoutStandardSuffixes)));
 		}
 
 	}

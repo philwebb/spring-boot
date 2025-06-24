@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
@@ -47,7 +48,8 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 @ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
-public class ReactiveHealthEndpointWebExtension extends HealthEndpointSupport<Mono<? extends ContributedHealth>> {
+public class ReactiveHealthEndpointWebExtension extends
+		HealthEndpointSupport<Mono<? extends Health>, Mono<WebEndpointResponse<? extends HealthComponentDescriptor>>> {
 
 	private static final String[] NO_PATH = {};
 
@@ -61,33 +63,33 @@ public class ReactiveHealthEndpointWebExtension extends HealthEndpointSupport<Mo
 	 */
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
-		super(new HealthEndpointContributor.Reactive(registry), groups, slowIndicatorLoggingThreshold);
+		super(new HealthContributorSupport.Reactive(registry), groups, slowIndicatorLoggingThreshold);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<? extends ContributedHealth>> health(ApiVersion apiVersion,
+	public Mono<WebEndpointResponse<? extends HealthComponentDescriptor>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<? extends ContributedHealth>> health(ApiVersion apiVersion,
+	public Mono<WebEndpointResponse<? extends HealthComponentDescriptor>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public Mono<WebEndpointResponse<? extends ContributedHealth>> health(ApiVersion apiVersion,
+	public Mono<WebEndpointResponse<? extends HealthComponentDescriptor>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
-		HealthResult<Mono<? extends ContributedHealth>> result = getHealth(apiVersion, serverNamespace, securityContext,
-				showAll, path);
+		HealthResult<Mono<? extends Health>> result = getHealth(apiVersion, serverNamespace, securityContext, showAll,
+				path);
 		if (result == null) {
 			return (Arrays.equals(path, NO_PATH))
-					? Mono.just(new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK))
+					? Mono.just(new WebEndpointResponse<>(HealthDescriptor.UP, WebEndpointResponse.STATUS_OK))
 					: Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
 		}
-		HealthEndpointGroup group = result.getGroup();
-		return result.getHealth().map((health) -> {
+		HealthEndpointGroup group = result.group();
+		return result.health().map((health) -> {
 			int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 			return new WebEndpointResponse<>(health, statusCode);
 		});

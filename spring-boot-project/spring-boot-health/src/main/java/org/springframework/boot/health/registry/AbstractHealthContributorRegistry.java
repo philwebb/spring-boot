@@ -22,7 +22,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -45,27 +47,32 @@ abstract class AbstractHealthContributorRegistry<C, E> {
 
 	private final Object monitor = new Object();
 
-	AbstractHealthContributorRegistry(Map<String, C> contributors,
+	AbstractHealthContributorRegistry(BiFunction<String, C, E> entryAdapter,
 			Collection<? extends HealthContributorNameValidator> nameValidators,
-			BiFunction<String, C, E> entryAdapter) {
+			Consumer<BiConsumer<String, C>> intialRegistrations) {
 		this.nameValidators = List.copyOf(nameValidators);
 		this.entryAdapter = entryAdapter;
-		Assert.notNull(contributors, "'contributors' must not be null");
-		contributors.keySet().forEach(this::verifyName);
-		this.contributors = Collections.unmodifiableMap(new LinkedHashMap<>(contributors));
+		Map<String, C> contributors = new LinkedHashMap<>(this.contributors);
+		if (intialRegistrations != null) {
+			intialRegistrations.accept((name, contributor) -> registerContributor(contributors, name, contributor));
+		}
+		this.contributors = Collections.unmodifiableMap(contributors);
 	}
 
 	void registerContributor(String name, C contributor) {
+		synchronized (this.monitor) {
+			Map<String, C> contributors = new LinkedHashMap<>(this.contributors);
+			registerContributor(contributors, name, contributor);
+			this.contributors = Collections.unmodifiableMap(contributors);
+		}
+	}
+
+	private void registerContributor(Map<String, C> contributors, String name, C contributor) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.notNull(contributor, "'contributor' must not be null");
 		verifyName(name);
-		synchronized (this.monitor) {
-			Assert.state(!this.contributors.containsKey(name),
-					() -> "A contributor named \"" + name + "\" has already been registered");
-			Map<String, C> contributors = new LinkedHashMap<>(this.contributors);
-			contributors.put(name, contributor);
-			this.contributors = Collections.unmodifiableMap(contributors);
-		}
+		Assert.state(!this.contributors.containsKey(name),
+				() -> "A contributor named \"" + name + "\" has already been registered");
 	}
 
 	C unregisterContributor(String name) {

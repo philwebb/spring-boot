@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
-import org.springframework.boot.health.contributor.ContributedHealth;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.registry.HealthContributorRegistry;
 
 /**
@@ -41,7 +41,7 @@ import org.springframework.boot.health.registry.HealthContributorRegistry;
  * @since 2.0.0
  */
 @Endpoint(id = "health")
-public class HealthEndpoint extends HealthEndpointSupport<ContributedHealth> {
+public class HealthEndpoint extends HealthEndpointSupport<Health, HealthComponentDescriptor> {
 
 	/**
 	 * Health endpoint id.
@@ -60,29 +60,30 @@ public class HealthEndpoint extends HealthEndpointSupport<ContributedHealth> {
 	 */
 	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
 			Duration slowIndicatorLoggingThreshold) {
-		super(new HealthEndpointContributor.Blocking(registry), groups, slowIndicatorLoggingThreshold);
+		super(new HealthContributorSupport.Blocking(registry), groups, slowIndicatorLoggingThreshold);
 	}
 
 	@ReadOperation
-	public ContributedHealth health() {
-		ContributedHealth health = health(ApiVersion.V3, EMPTY_PATH);
-		return (health != null) ? health : DEFAULT_HEALTH;
+	public HealthComponentDescriptor health() {
+		HealthComponentDescriptor health = health(ApiVersion.V3, EMPTY_PATH);
+		return (health != null) ? health : HealthDescriptor.UP;
 	}
 
 	@ReadOperation
-	public ContributedHealth healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+	public HealthComponentDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(ApiVersion.V3, path);
 	}
 
-	private ContributedHealth health(ApiVersion apiVersion, String... path) {
-		HealthResult<ContributedHealth> result = getHealth(apiVersion, null, SecurityContext.NONE, true, path);
-		return (result != null) ? result.getHealth() : null;
+	private HealthComponentDescriptor health(ApiVersion apiVersion, String... path) {
+		DescriptorAndGroup<HealthComponentDescriptor> descriptorAndGroup = getHealth(apiVersion, null,
+				SecurityContext.NONE, true, path);
+		return (descriptorAndGroup != null) ? descriptorAndGroup.descriptor() : null;
 	}
 
 	@Override
-	protected ContributedHealth aggregateContributions(ApiVersion apiVersion,
-			Map<String, ContributedHealth> contributions, StatusAggregator statusAggregator, boolean showComponents,
-			Set<String> groupNames) {
+	protected HealthComponentDescriptor aggregateContributions(ApiVersion apiVersion,
+			Map<String, HealthComponentDescriptor> contributions, StatusAggregator statusAggregator,
+			boolean showComponents, Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 

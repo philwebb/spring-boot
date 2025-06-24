@@ -49,7 +49,6 @@ import org.springframework.util.Assert;
  * @author Michael Pratt
  * @since 4.0.0
  */
-@JsonInclude(Include.NON_EMPTY)
 public final class Health {
 
 	private final Status status;
