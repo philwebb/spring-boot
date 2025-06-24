@@ -41,7 +41,7 @@ import org.springframework.boot.health.registry.HealthContributorRegistry;
  * @since 2.0.0
  */
 @Endpoint(id = "health")
-public class HealthEndpoint extends HealthEndpointSupport<Health, HealthComponentDescriptor> {
+public class HealthEndpoint extends HealthEndpointSupport<Health, AbstractHealthDescriptor> {
 
 	/**
 	 * Health endpoint id.
@@ -64,25 +64,25 @@ public class HealthEndpoint extends HealthEndpointSupport<Health, HealthComponen
 	}
 
 	@ReadOperation
-	public HealthComponentDescriptor health() {
-		HealthComponentDescriptor health = health(ApiVersion.V3, EMPTY_PATH);
+	public AbstractHealthDescriptor health() {
+		AbstractHealthDescriptor health = health(ApiVersion.V3, EMPTY_PATH);
 		return (health != null) ? health : HealthDescriptor.UP;
 	}
 
 	@ReadOperation
-	public HealthComponentDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+	public AbstractHealthDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(ApiVersion.V3, path);
 	}
 
-	private HealthComponentDescriptor health(ApiVersion apiVersion, String... path) {
-		DescriptorAndGroup<HealthComponentDescriptor> descriptorAndGroup = getHealth(apiVersion, null,
+	private AbstractHealthDescriptor health(ApiVersion apiVersion, String... path) {
+		DescriptorAndGroup<AbstractHealthDescriptor> descriptorAndGroup = getHealth(apiVersion, null,
 				SecurityContext.NONE, true, path);
 		return (descriptorAndGroup != null) ? descriptorAndGroup.descriptor() : null;
 	}
 
 	@Override
-	protected HealthComponentDescriptor aggregateContributions(ApiVersion apiVersion,
-			Map<String, HealthComponentDescriptor> contributions, StatusAggregator statusAggregator,
+	protected AbstractHealthDescriptor aggregateContributions(ApiVersion apiVersion,
+			Map<String, AbstractHealthDescriptor> contributions, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}

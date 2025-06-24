@@ -30,7 +30,7 @@ import org.springframework.boot.health.contributor.Status;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class HealthDescriptor extends HealthComponentDescriptor {
+public final class HealthDescriptor extends AbstractHealthDescriptor {
 
 	static final HealthDescriptor UP = HealthDescriptor.of(Health.up().build());
 

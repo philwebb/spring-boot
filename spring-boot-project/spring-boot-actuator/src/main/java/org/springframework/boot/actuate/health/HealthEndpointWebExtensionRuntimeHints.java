@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.health;
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.boot.health.contributor.CompositeHealth;
-import org.springframework.boot.health.contributor.Health;
 
 /**
  * {@link RuntimeHintsRegistrar} used by {@link HealthEndpointWebExtension} and
@@ -34,8 +32,8 @@ class HealthEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		this.bindingRegistrar.registerReflectionHints(hints.reflection(), Health.class, SystemHealth.class,
-				CompositeHealth.class);
+		this.bindingRegistrar.registerReflectionHints(hints.reflection(), HealthDescriptor.class,
+				CompositeHealthDescriptor.class, SystemHealthDescriptor.class);
 	}
 
 }

@@ -16,32 +16,25 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.health.contributor.Status;
 
 /**
+ * Base class for health descriptions.
+ *
  * @author Phillip Webb
  * @since 4.0.0
  */
-public final class SystemHealthDetails extends CompositeHealthDetails {
+public sealed abstract class AbstractHealthDescriptor implements OperationResponseBody
+		permits HealthDescriptor, CompositeHealthDescriptor {
 
-	private final Set<String> groups;
-
-	SystemHealthDetails(ApiVersion apiVersion, Status status, Map<String, HealthComponentDescriptor> components,
-			Set<String> groups) {
-		super(apiVersion, status, components);
-		this.groups = groups;
-	}
-
-	@JsonInclude(Include.NON_EMPTY)
-	public Set<String> getGroups() {
-		return this.groups;
-	}
+	/**
+	 * Return the status of the component.
+	 * @return the component status
+	 */
+	@JsonUnwrapped
+	public abstract Status getStatus();
 
 }

@@ -33,15 +33,15 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class CompositeHealthDetails extends HealthComponentDescriptor {
+public sealed class CompositeHealthDescriptor extends AbstractHealthDescriptor permits SystemHealthDescriptor {
 
 	private final ApiVersion apiVersion;
 
 	private final Status status;
 
-	private final Map<String, HealthComponentDescriptor> components;
+	private final Map<String, AbstractHealthDescriptor> components;
 
-	CompositeHealthDetails(ApiVersion apiVersion, Status status, Map<String, HealthComponentDescriptor> components) {
+	CompositeHealthDescriptor(ApiVersion apiVersion, Status status, Map<String, AbstractHealthDescriptor> components) {
 		Assert.notNull(status, "'status' must not be null");
 		this.apiVersion = apiVersion;
 		this.status = status;
@@ -54,13 +54,13 @@ public class CompositeHealthDetails extends HealthComponentDescriptor {
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, HealthComponentDescriptor> getComponents() {
+	public Map<String, AbstractHealthDescriptor> getComponents() {
 		return (this.apiVersion == ApiVersion.V3) ? this.components : null;
 	}
 
 	@JsonProperty
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, HealthComponentDescriptor> getDetails() {
+	public Map<String, AbstractHealthDescriptor> getDetails() {
 		return (this.apiVersion == ApiVersion.V2) ? this.components : null;
 	}
 

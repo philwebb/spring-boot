@@ -32,7 +32,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.boot.health.contributor.ContributedHealth;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -48,8 +47,8 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 @ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
-public class ReactiveHealthEndpointWebExtension extends
-		HealthEndpointSupport<Mono<? extends Health>, Mono<WebEndpointResponse<? extends HealthComponentDescriptor>>> {
+public class ReactiveHealthEndpointWebExtension
+		extends HealthEndpointSupport<Mono<? extends Health>, Mono<? extends AbstractHealthDescriptor>> {
 
 	private static final String[] NO_PATH = {};
 
@@ -67,37 +66,37 @@ public class ReactiveHealthEndpointWebExtension extends
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<? extends HealthComponentDescriptor>> health(ApiVersion apiVersion,
+	public Mono<WebEndpointResponse<? extends AbstractHealthDescriptor>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<? extends HealthComponentDescriptor>> health(ApiVersion apiVersion,
+	public Mono<WebEndpointResponse<? extends AbstractHealthDescriptor>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public Mono<WebEndpointResponse<? extends HealthComponentDescriptor>> health(ApiVersion apiVersion,
+	private Mono<WebEndpointResponse<? extends AbstractHealthDescriptor>> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
-		HealthResult<Mono<? extends Health>> result = getHealth(apiVersion, serverNamespace, securityContext, showAll,
-				path);
+		DescriptorAndGroup<Mono<? extends AbstractHealthDescriptor>> result = getHealth(apiVersion, serverNamespace,
+				securityContext, showAll, path);
 		if (result == null) {
 			return (Arrays.equals(path, NO_PATH))
 					? Mono.just(new WebEndpointResponse<>(HealthDescriptor.UP, WebEndpointResponse.STATUS_OK))
 					: Mono.just(new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND));
 		}
 		HealthEndpointGroup group = result.group();
-		return result.health().map((health) -> {
+		return result.descriptor().map((health) -> {
 			int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 			return new WebEndpointResponse<>(health, statusCode);
 		});
 	}
 
 	@Override
-	protected Mono<? extends ContributedHealth> aggregateContributions(ApiVersion apiVersion,
-			Map<String, Mono<? extends ContributedHealth>> contributions, StatusAggregator statusAggregator,
+	protected Mono<? extends AbstractHealthDescriptor> aggregateContributions(ApiVersion apiVersion,
+			Map<String, Mono<? extends AbstractHealthDescriptor>> contributions, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
 		return Flux.fromIterable(contributions.entrySet())
 			.flatMap(NamedHealthComponent::create)
@@ -107,30 +106,30 @@ public class ReactiveHealthEndpointWebExtension extends
 	}
 
 	/**
-	 * A named {@link ContributedHealth}.
+	 * A named {@link AbstractHealthDescriptor}.
 	 */
 	private static final class NamedHealthComponent {
 
 		private final String name;
 
-		private final ContributedHealth health;
+		private final AbstractHealthDescriptor health;
 
 		private NamedHealthComponent(Object... pair) {
 			this.name = (String) pair[0];
-			this.health = (ContributedHealth) pair[1];
+			this.health = (AbstractHealthDescriptor) pair[1];
 		}
 
 		String getName() {
 			return this.name;
 		}
 
-		ContributedHealth getHealth() {
+		AbstractHealthDescriptor getHealth() {
 			return this.health;
 		}
 
-		static Mono<NamedHealthComponent> create(Map.Entry<String, Mono<? extends ContributedHealth>> entry) {
+		static Mono<NamedHealthComponent> create(Map.Entry<String, Mono<? extends AbstractHealthDescriptor>> entry) {
 			Mono<String> name = Mono.just(entry.getKey());
-			Mono<? extends ContributedHealth> health = entry.getValue();
+			Mono<? extends AbstractHealthDescriptor> health = entry.getValue();
 			return Mono.zip(NamedHealthComponent::new, name, health);
 		}
 

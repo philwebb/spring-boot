@@ -48,7 +48,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 @ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
-public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, HealthComponentDescriptor> {
+public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, AbstractHealthDescriptor> {
 
 	private static final String[] NO_PATH = {};
 
@@ -66,36 +66,36 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, He
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponentDescriptor> health(ApiVersion apiVersion,
+	public WebEndpointResponse<AbstractHealthDescriptor> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponentDescriptor> health(ApiVersion apiVersion,
+	public WebEndpointResponse<AbstractHealthDescriptor> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public WebEndpointResponse<HealthComponentDescriptor> health(ApiVersion apiVersion,
+	public WebEndpointResponse<AbstractHealthDescriptor> health(ApiVersion apiVersion,
 			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
-		DescriptorAndGroup<HealthComponentDescriptor> result = getHealth(apiVersion, serverNamespace, securityContext,
+		DescriptorAndGroup<AbstractHealthDescriptor> result = getHealth(apiVersion, serverNamespace, securityContext,
 				showAll, path);
 		if (result == null) {
 			return (Arrays.equals(path, NO_PATH))
 					? new WebEndpointResponse<>(HealthDescriptor.UP, WebEndpointResponse.STATUS_OK)
 					: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
-		HealthComponentDescriptor health = result.descriptor();
+		AbstractHealthDescriptor health = result.descriptor();
 		HealthEndpointGroup group = result.group();
 		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 		return new WebEndpointResponse<>(health, statusCode);
 	}
 
 	@Override
-	protected HealthComponentDescriptor aggregateContributions(ApiVersion apiVersion,
-			Map<String, HealthComponentDescriptor> contributions, StatusAggregator statusAggregator,
+	protected AbstractHealthDescriptor aggregateContributions(ApiVersion apiVersion,
+			Map<String, AbstractHealthDescriptor> contributions, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
 		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}

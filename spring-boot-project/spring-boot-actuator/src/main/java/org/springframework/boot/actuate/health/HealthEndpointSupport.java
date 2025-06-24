@@ -185,17 +185,17 @@ abstract class HealthEndpointSupport<H, D> {
 	protected abstract D aggregateContributions(ApiVersion apiVersion, Map<String, D> contributions,
 			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames);
 
-	protected final CompositeHealthDetails getCompositeHealth(ApiVersion apiVersion,
-			Map<String, HealthComponentDescriptor> components, StatusAggregator statusAggregator,
+	protected final CompositeHealthDescriptor getCompositeHealth(ApiVersion apiVersion,
+			Map<String, AbstractHealthDescriptor> components, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
 		Status status = statusAggregator
 			.getAggregateStatus(components.values().stream().map(this::getStatus).collect(Collectors.toSet()));
 		components = (!showComponents) ? null : components;
-		return (groupNames != null) ? new SystemHealthDetails(apiVersion, status, components, groupNames)
-				: new CompositeHealthDetails(apiVersion, status, components);
+		return (groupNames != null) ? new SystemHealthDescriptor(apiVersion, status, components, groupNames)
+				: new CompositeHealthDescriptor(apiVersion, status, components);
 	}
 
-	private Status getStatus(HealthComponentDescriptor component) {
+	private Status getStatus(AbstractHealthDescriptor component) {
 		return (component != null) ? component.getStatus() : Status.UNKNOWN;
 	}
 

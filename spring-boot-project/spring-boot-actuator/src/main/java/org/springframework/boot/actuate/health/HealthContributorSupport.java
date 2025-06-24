@@ -78,7 +78,7 @@ interface HealthContributorSupport<H, D> extends Iterable<HealthContributorSuppo
 	 *
 	 * @param contributor the underlying contributor
 	 */
-	record Blocking(Object contributor) implements HealthContributorSupport<Health, HealthComponentDescriptor> {
+	record Blocking(Object contributor) implements HealthContributorSupport<Health, AbstractHealthDescriptor> {
 
 		@Override
 		public boolean isComposite() {
@@ -92,14 +92,14 @@ interface HealthContributorSupport<H, D> extends Iterable<HealthContributorSuppo
 		}
 
 		@Override
-		public Iterator<Child<Health, HealthComponentDescriptor>> iterator() {
+		public Iterator<Child<Health, AbstractHealthDescriptor>> iterator() {
 			return ((HealthContributors) contributor()).stream()
 				.map((entry) -> new Child<>(entry.name(), new Blocking(entry.contributor())))
 				.iterator();
 		}
 
 		@Override
-		public HealthComponentDescriptor getDescriptor(boolean includeDetails) {
+		public AbstractHealthDescriptor getDescriptor(boolean includeDetails) {
 			return HealthDescriptor.of(((HealthIndicator) contributor()).getHealth(includeDetails));
 		}
 
@@ -113,7 +113,7 @@ interface HealthContributorSupport<H, D> extends Iterable<HealthContributorSuppo
 	 */
 	record Reactive(Object contributor)
 			implements
-				HealthContributorSupport<Mono<? extends Health>, Mono<? extends HealthComponentDescriptor>> {
+				HealthContributorSupport<Mono<? extends Health>, Mono<? extends AbstractHealthDescriptor>> {
 
 		@Override
 		public boolean isComposite() {
@@ -127,14 +127,14 @@ interface HealthContributorSupport<H, D> extends Iterable<HealthContributorSuppo
 		}
 
 		@Override
-		public Iterator<Child<Mono<? extends Health>, Mono<? extends HealthComponentDescriptor>>> iterator() {
+		public Iterator<Child<Mono<? extends Health>, Mono<? extends AbstractHealthDescriptor>>> iterator() {
 			return ((ReactiveHealthContributors) contributor()).stream()
 				.map((entry) -> new Child<>(entry.name(), new Reactive(entry.contributor())))
 				.iterator();
 		}
 
 		@Override
-		public Mono<? extends HealthComponentDescriptor> getDescriptor(boolean includeDetails) {
+		public Mono<? extends AbstractHealthDescriptor> getDescriptor(boolean includeDetails) {
 			return ((ReactiveHealthIndicator) this.contributor).getHealth(includeDetails).map(HealthDescriptor::of);
 		}
 
