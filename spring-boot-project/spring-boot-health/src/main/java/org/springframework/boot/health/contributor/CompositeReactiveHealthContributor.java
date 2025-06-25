@@ -18,7 +18,6 @@ package org.springframework.boot.health.contributor;
 
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * A {@link ReactiveHealthContributor} that is composed of other
@@ -33,21 +32,7 @@ public non-sealed interface CompositeReactiveHealthContributor
 
 	@Override
 	default CompositeHealthContributor asHealthContributor() {
-		return new CompositeHealthContributor() {
-
-			@Override
-			public Stream<HealthContributors.Entry> stream() {
-				return CompositeReactiveHealthContributor.this.stream()
-					.map((entry) -> new HealthContributors.Entry(entry.name(),
-							entry.contributor().asHealthContributor()));
-			}
-
-			@Override
-			public HealthContributor getContributor(String name) {
-				return CompositeReactiveHealthContributor.this.getContributor(name).asHealthContributor();
-			}
-
-		};
+		return new CompositeHealthContributorAdapter(this);
 	}
 
 	/**
@@ -70,7 +55,7 @@ public non-sealed interface CompositeReactiveHealthContributor
 	 */
 	static <V> CompositeReactiveHealthContributor fromMap(Map<String, V> map,
 			Function<V, ? extends ReactiveHealthContributor> valueAdapter) {
-		return new CompositeReactiveHealthContributorMapAdapter<>(map, valueAdapter);
+		return new MapCompositeReactiveHealthContributor<>(map, valueAdapter);
 	}
 
 }

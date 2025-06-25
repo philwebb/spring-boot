@@ -19,6 +19,8 @@ package org.springframework.boot.health.contributor;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import reactor.core.scheduler.Schedulers;
+
 import org.springframework.util.Assert;
 
 /**
@@ -48,16 +50,29 @@ public interface ReactiveHealthContributors extends Iterable<ReactiveHealthContr
 	Stream<ReactiveHealthContributors.Entry> stream();
 
 	default HealthContributors asHealthContributors() {
-		return null; // FIXME
+		return new HealthContributorsAdapter(this);
 	}
 
+	/**
+	 * Factory method to create a new {@link ReactiveHealthContributors} instance composed
+	 * of the given contributors.
+	 * @param contributors the source contributors in the order they should be combined
+	 * @return a new {@link ReactiveHealthContributors} instance
+	 */
 	static ReactiveHealthContributors of(ReactiveHealthContributors... contributors) {
 		return new CompositeReactiveHealthContributors(contributors);
 	}
 
-	static ReactiveHealthContributors adapt(HealthContributors healthContributors) {
-		Assert.notNull(healthContributors, "'healthContributors' must not be null");
-		return new HealthContributorsReactiveAdapter(healthContributors);
+	/**
+	 * Adapts the given {@link HealthContributors} into a
+	 * {@link ReactiveHealthContributors} by scheduling blocking calls to
+	 * {@link Schedulers#boundedElastic()}.
+	 * @param contributors the contributors to adapt or {@code null}
+	 * @return the adapted contributor
+	 * @see ReactiveHealthContributor#adapt(HealthContributor)
+	 */
+	static ReactiveHealthContributors adapt(HealthContributors contributors) {
+		return (contributors != null) ? new HealthContributorsReactiveAdapter(contributors) : null;
 	}
 
 	/**

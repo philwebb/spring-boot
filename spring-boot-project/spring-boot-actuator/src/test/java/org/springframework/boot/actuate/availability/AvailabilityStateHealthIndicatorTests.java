@@ -82,7 +82,7 @@ class AvailabilityStateHealthIndicatorTests {
 					statusMappings.add(LivenessState.BROKEN, Status.DOWN);
 				});
 		given(this.applicationAvailability.getState(LivenessState.class)).willReturn(LivenessState.BROKEN);
-		assertThat(indicator.getHealth(false).getStatus()).isEqualTo(Status.DOWN);
+		assertThat(indicator.health(false).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class AvailabilityStateHealthIndicatorTests {
 					statusMappings.addDefaultStatus(Status.UNKNOWN);
 				});
 		given(this.applicationAvailability.getState(LivenessState.class)).willReturn(LivenessState.BROKEN);
-		assertThat(indicator.getHealth(false).getStatus()).isEqualTo(Status.UNKNOWN);
+		assertThat(indicator.health(false).getStatus()).isEqualTo(Status.UNKNOWN);
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class AvailabilityStateHealthIndicatorTests {
 					statusMappings.addDefaultStatus(Status.DOWN);
 				});
 		given(this.applicationAvailability.getState(TestAvailabilityState.class)).willReturn(TestAvailabilityState.TWO);
-		assertThat(indicator.getHealth(false).getStatus()).isEqualTo(Status.DOWN);
+		assertThat(indicator.health(false).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	static class TestAvailabilityState implements AvailabilityState {

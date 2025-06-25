@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -53,15 +52,14 @@ public class HealthEndpoint extends HealthEndpointSupport<Health, HealthDescript
 	/**
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param registry the health contributor registry
-	 * @param fallbackRegistry a provider for any fallback reactive registry
+	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @param groups the health endpoint groups
 	 * @param slowContributorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 * @since 4.0.0
 	 */
-	public HealthEndpoint(HealthContributorRegistry registry,
-			ObjectProvider<ReactiveHealthContributorRegistry> fallbackRegistry, HealthEndpointGroups groups,
-			Duration slowContributorLoggingThreshold) {
+	public HealthEndpoint(HealthContributorRegistry registry, ReactiveHealthContributorRegistry fallbackRegistry,
+			HealthEndpointGroups groups, Duration slowContributorLoggingThreshold) {
 		super(Contributor.blocking(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}
 

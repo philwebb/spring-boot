@@ -50,8 +50,9 @@ class HealthEndpointReactiveWebExtensionConfiguration {
 			ReactiveHealthContributorRegistry reactiveHealthContributorRegistry,
 			ObjectProvider<HealthContributorRegistry> healthContributorRegistry, HealthEndpointGroups groups,
 			HealthEndpointProperties properties) {
-		return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry, healthContributorRegistry,
-				groups, properties.getLogging().getSlowIndicatorThreshold());
+		return new ReactiveHealthEndpointWebExtension(reactiveHealthContributorRegistry,
+				healthContributorRegistry.getIfAvailable(), groups,
+				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
 }

@@ -34,19 +34,7 @@ public non-sealed interface ReactiveHealthIndicator extends ReactiveHealthContri
 
 	@Override
 	default HealthIndicator asHealthContributor() {
-		return new HealthIndicator() {
-
-			@Override
-			public Health getHealth(boolean includeDetails) {
-				return ReactiveHealthIndicator.this.getHealth(includeDetails).block();
-			}
-
-			@Override
-			public Health health() {
-				return ReactiveHealthIndicator.this.health().block();
-			}
-
-		};
+		return new HealthIndicatorAdapter(this);
 	}
 
 	/**
@@ -54,7 +42,7 @@ public non-sealed interface ReactiveHealthIndicator extends ReactiveHealthContri
 	 * @param includeDetails if details should be included or removed
 	 * @return a {@link Mono} that provides the {@link Health}
 	 */
-	default Mono<Health> getHealth(boolean includeDetails) {
+	default Mono<Health> health(boolean includeDetails) {
 		Mono<Health> health = health();
 		return includeDetails ? health : health.map(Health::withoutDetails);
 	}

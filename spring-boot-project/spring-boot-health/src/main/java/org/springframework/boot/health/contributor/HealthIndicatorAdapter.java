@@ -16,30 +16,27 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.stream.Stream;
-
 /**
- * Adapts {@link HealthContributors} to {@link ReactiveHealthContributors}.
+ * Adapts a {@link ReactiveHealthIndicator} to a {@link HealthIndicator}.
  *
  * @author Phillip Webb
  */
-class HealthContributorsReactiveAdapter implements ReactiveHealthContributors {
+class HealthIndicatorAdapter implements HealthIndicator {
 
-	private final HealthContributors healthContributors;
+	private final ReactiveHealthIndicator indicator;
 
-	HealthContributorsReactiveAdapter(HealthContributors healthContributors) {
-		this.healthContributors = healthContributors;
+	HealthIndicatorAdapter(ReactiveHealthIndicator indicator) {
+		this.indicator = indicator;
 	}
 
 	@Override
-	public ReactiveHealthContributor getContributor(String name) {
-		return ReactiveHealthContributor.adapt(this.healthContributors.getContributor(name));
+	public Health health(boolean includeDetails) {
+		return this.indicator.health(includeDetails).block();
 	}
 
 	@Override
-	public Stream<Entry> stream() {
-		return this.healthContributors.stream()
-			.map((entry) -> new Entry(entry.name(), ReactiveHealthContributor.adapt(entry.contributor())));
+	public Health health() {
+		return this.indicator.health().block();
 	}
 
 }

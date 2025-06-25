@@ -17,7 +17,8 @@
 package org.springframework.boot.health.registry;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthContributors;
@@ -36,9 +37,9 @@ class DefaultHealthContributorRegistryTests
 
 	@Override
 	protected AbstractRegistry<HealthContributor, Entry> createRegistry(
-			Map<String, HealthContributor> contributors,
-			Collection<? extends HealthContributorNameValidator> nameValidators) {
-		return new DefaultHealthContributorRegistry(contributors, nameValidators);
+			Collection<? extends HealthContributorNameValidator> nameValidators,
+			Consumer<BiConsumer<String, HealthContributor>> intialRegistrations) {
+		return new DefaultHealthContributorRegistry(nameValidators, intialRegistrations);
 	}
 
 	@Override

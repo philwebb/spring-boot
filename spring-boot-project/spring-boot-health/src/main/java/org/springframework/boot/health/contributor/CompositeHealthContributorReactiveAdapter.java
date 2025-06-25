@@ -18,12 +18,9 @@ package org.springframework.boot.health.contributor;
 
 import java.util.stream.Stream;
 
-import org.springframework.util.Assert;
-
 /**
  * Adapts a {@link CompositeHealthContributor} to a
- * {@link CompositeReactiveHealthContributor} so that it can be safely invoked in a
- * reactive environment.
+ * {@link CompositeReactiveHealthContributor}.
  *
  * @author Phillip Webb
  * @see ReactiveHealthContributor#adapt(HealthContributor)
@@ -33,21 +30,18 @@ class CompositeHealthContributorReactiveAdapter implements CompositeReactiveHeal
 	private final CompositeHealthContributor delegate;
 
 	CompositeHealthContributorReactiveAdapter(CompositeHealthContributor delegate) {
-		Assert.notNull(delegate, "'delegate' must not be null");
 		this.delegate = delegate;
 	}
 
 	@Override
-	public Stream<ReactiveHealthContributors.Entry> stream() {
-		return this.delegate.stream()
-			.map((entry) -> new ReactiveHealthContributors.Entry(entry.name(),
-					ReactiveHealthContributor.adapt(entry.contributor())));
+	public ReactiveHealthContributor getContributor(String name) {
+		return ReactiveHealthContributor.adapt(this.delegate.getContributor(name));
 	}
 
 	@Override
-	public ReactiveHealthContributor getContributor(String name) {
-		HealthContributor contributor = this.delegate.getContributor(name);
-		return (contributor != null) ? ReactiveHealthContributor.adapt(contributor) : null;
+	public Stream<Entry> stream() {
+		return this.delegate.stream()
+			.map((entry) -> new Entry(entry.name(), ReactiveHealthContributor.adapt(entry.contributor())));
 	}
 
 }

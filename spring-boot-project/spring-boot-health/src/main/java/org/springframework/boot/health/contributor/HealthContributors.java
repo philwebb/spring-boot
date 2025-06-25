@@ -47,6 +47,12 @@ public interface HealthContributors extends Iterable<HealthContributors.Entry> {
 	 */
 	Stream<HealthContributors.Entry> stream();
 
+	/**
+	 * Factory method to create a new {@link HealthContributors} instance composed of the
+	 * given contributors.
+	 * @param contributors the source contributors in the order they should be combined
+	 * @return a new {@link HealthContributors} instance
+	 */
 	static HealthContributors of(HealthContributors... contributors) {
 		return new CompositeHealthContributors(contributors);
 	}

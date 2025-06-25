@@ -30,15 +30,15 @@ import java.util.stream.Stream;
  */
 class CompositeReactiveHealthContributors implements ReactiveHealthContributors {
 
-	private final List<ReactiveHealthContributors> reactiveContributors;
+	private final List<ReactiveHealthContributors> contributors;
 
-	CompositeReactiveHealthContributors(ReactiveHealthContributors... reactiveContributors) {
-		this.reactiveContributors = List.of(reactiveContributors);
+	CompositeReactiveHealthContributors(ReactiveHealthContributors... contributors) {
+		this.contributors = List.of(contributors);
 	}
 
 	@Override
 	public ReactiveHealthContributor getContributor(String name) {
-		return this.reactiveContributors.stream()
+		return this.contributors.stream()
 			.map((reactiveContributors) -> reactiveContributors.getContributor(name))
 			.filter(Objects::nonNull)
 			.findFirst()
@@ -48,7 +48,7 @@ class CompositeReactiveHealthContributors implements ReactiveHealthContributors 
 	@Override
 	public Stream<Entry> stream() {
 		Set<String> seen = new HashSet<>();
-		return this.reactiveContributors.stream()
+		return this.contributors.stream()
 			.flatMap(ReactiveHealthContributors::stream)
 			.filter((element) -> seen.add(element.name()));
 	}

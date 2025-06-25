@@ -18,8 +18,6 @@ package org.springframework.boot.health.contributor;
 
 import reactor.core.scheduler.Schedulers;
 
-import org.springframework.util.Assert;
-
 /**
  * Contributes health information, either directly ({@link ReactiveHealthIndicator}) or
  * via other contributors ({@link CompositeReactiveHealthContributor}).
@@ -41,18 +39,20 @@ public sealed interface ReactiveHealthContributor permits ReactiveHealthIndicato
 	/**
 	 * Adapts the given {@link HealthContributor} into a {@link ReactiveHealthContributor}
 	 * by scheduling blocking calls to {@link Schedulers#boundedElastic()}.
-	 * @param healthContributor the contributor to adapt
+	 * @param contributor the contributor to adapt or {@code null}
 	 * @return the adapted contributor
 	 */
-	static ReactiveHealthContributor adapt(HealthContributor healthContributor) {
-		Assert.notNull(healthContributor, "'healthContributor' must not be null");
-		if (healthContributor instanceof HealthIndicator healthIndicator) {
-			return new HealthIndicatorReactiveAdapter(healthIndicator);
+	static ReactiveHealthContributor adapt(HealthContributor contributor) {
+		if (contributor == null) {
+			return null;
 		}
-		if (healthContributor instanceof CompositeHealthContributor compositeHealthContributor) {
+		if (contributor instanceof HealthIndicator healthIndicator) {
+			return new ReactiveHealthIndicatorAdapter(healthIndicator);
+		}
+		if (contributor instanceof CompositeHealthContributor compositeHealthContributor) {
 			return new CompositeHealthContributorReactiveAdapter(compositeHealthContributor);
 		}
-		throw new IllegalStateException("Unknown HealthContributor type");
+		throw new IllegalStateException("Unknown 'contributor' type");
 	}
 
 }

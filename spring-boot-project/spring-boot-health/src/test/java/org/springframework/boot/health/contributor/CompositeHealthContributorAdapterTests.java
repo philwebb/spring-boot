@@ -16,29 +16,18 @@
 
 package org.springframework.boot.health.contributor;
 
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.util.Assert;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Adapts a {@link HealthIndicator} to a {@link ReactiveHealthIndicator} so that it can be
- * safely invoked in a reactive environment.
- *
- * @author Stephane Nicoll
+ * @author pwebb
  */
-class HealthIndicatorReactiveAdapter implements ReactiveHealthIndicator {
+class CompositeHealthContributorAdapterTests {
 
-	private final HealthIndicator delegate;
-
-	HealthIndicatorReactiveAdapter(HealthIndicator delegate) {
-		Assert.notNull(delegate, "'delegate' must not be null");
-		this.delegate = delegate;
-	}
-
-	@Override
-	public Mono<Health> health() {
-		return Mono.fromCallable(this.delegate::health).subscribeOn(Schedulers.boundedElastic());
+	@Test
+	void test() {
+		fail("Not yet implemented");
 	}
 
 }

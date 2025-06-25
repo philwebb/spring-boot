@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -55,14 +54,14 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, He
 	/**
 	 * Create a new {@link HealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
-	 * @param fallbackRegistry a provider for any fallback reactive registry
+	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @param groups the health endpoint groups
 	 * @param slowContributorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 * @since 4.0.0
 	 */
 	public HealthEndpointWebExtension(HealthContributorRegistry registry,
-			ObjectProvider<ReactiveHealthContributorRegistry> fallbackRegistry, HealthEndpointGroups groups,
+			ReactiveHealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
 			Duration slowContributorLoggingThreshold) {
 		super(Contributor.blocking(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}

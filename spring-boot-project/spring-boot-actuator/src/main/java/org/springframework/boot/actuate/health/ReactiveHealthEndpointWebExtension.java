@@ -24,7 +24,6 @@ import java.util.Set;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -55,14 +54,14 @@ public class ReactiveHealthEndpointWebExtension
 	/**
 	 * Create a new {@link ReactiveHealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
-	 * @param fallbackRegistry a provider for any fallback blocking registry
+	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @param groups the health endpoint groups
 	 * @param slowContributorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 * @since 4.0.0
 	 */
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry,
-			ObjectProvider<HealthContributorRegistry> fallbackRegistry, HealthEndpointGroups groups,
+			HealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
 			Duration slowContributorLoggingThreshold) {
 		super(Contributor.reactive(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}

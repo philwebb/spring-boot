@@ -50,7 +50,7 @@ public non-sealed interface CompositeHealthContributor extends HealthContributor
 	 */
 	static <V> CompositeHealthContributor fromMap(Map<String, V> map,
 			Function<V, ? extends HealthContributor> valueAdapter) {
-		return new CompositeHealthContributorMapAdapter<>(map, valueAdapter);
+		return new MapCompositeHealthContributor<>(map, valueAdapter);
 	}
 
 }

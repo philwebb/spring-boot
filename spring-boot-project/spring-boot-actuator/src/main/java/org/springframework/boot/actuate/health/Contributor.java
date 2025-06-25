@@ -20,7 +20,6 @@ import java.util.Iterator;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthContributors;
@@ -83,29 +82,24 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 	/**
 	 * Factory method to create a blocking {@link Contributor} from the given registries.
 	 * @param registry the source registry
-	 * @param fallbackRegistry a provider for any fallback reactive registry
+	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @return a new {@link Contributor}
 	 */
 	static Blocking blocking(HealthContributorRegistry registry, ReactiveHealthContributorRegistry fallbackRegistry) {
-		if (fallbackRegistry != null) {
-			// new Blocking(HealthContributors.of(registry, fallbackRegistry.))
-		}
-
-		ReactiveHealthContributor x = null;
-		x.asHealthContributor();
-		return new Blocking(registry);
+		return new Blocking((fallbackRegistry != null)
+				? HealthContributors.of(registry, fallbackRegistry.asHealthContributors()) : registry);
 	}
 
 	/**
 	 * Factory method to create a reactive {@link Contributor} from the given registries.
 	 * @param registry the registry
-	 * @param fallbackRegistry a provider for any fallback blocking registry
+	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @return a new {@link Contributor}
 	 */
-	static Reactive reactive(ReactiveHealthContributorRegistry registry,
-			ObjectProvider<HealthContributorRegistry> fallbackRegistry) {
-		ReactiveHealthContributor.adapt(null);
-		return new Reactive(registry);
+	static Reactive reactive(ReactiveHealthContributorRegistry registry, HealthContributorRegistry fallbackRegistry) {
+		return new Reactive((fallbackRegistry != null)
+				? ReactiveHealthContributors.of(registry, ReactiveHealthContributors.adapt(fallbackRegistry))
+				: registry);
 	}
 
 	/**
@@ -148,7 +142,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 
 		@Override
 		public HealthDescriptor getDescriptor(boolean includeDetails) {
-			return IndicatedHealthDescriptor.of(((HealthIndicator) contributor()).getHealth(includeDetails));
+			return IndicatedHealthDescriptor.of(((HealthIndicator) contributor()).health(includeDetails));
 		}
 
 		@Override
@@ -187,7 +181,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 
 		@Override
 		public Mono<? extends HealthDescriptor> getDescriptor(boolean includeDetails) {
-			return ((ReactiveHealthIndicator) this.contributor).getHealth(includeDetails)
+			return ((ReactiveHealthIndicator) this.contributor).health(includeDetails)
 				.map(IndicatedHealthDescriptor::of);
 		}
 

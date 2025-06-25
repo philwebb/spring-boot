@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.health.contributor;
+package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

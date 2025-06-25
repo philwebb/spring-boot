@@ -19,31 +19,29 @@ package org.springframework.boot.health.contributor;
 import java.util.stream.Stream;
 
 /**
- * Adapts {@link ReactiveHealthContributors} to {@link HealthContributors}.
+ * Adapts a {@link CompositeReactiveHealthContributor} to a
+ * {@link CompositeHealthContributor}.
  *
  * @author Phillip Webb
  */
-class ReactiveHealthContributorsBlockingAdapter implements HealthContributors {
+class CompositeHealthContributorAdapter implements CompositeHealthContributor {
 
-	private final ReactiveHealthContributors reactiveHealthContributors;
+	private final CompositeReactiveHealthContributor delegate;
 
-	ReactiveHealthContributorsBlockingAdapter(ReactiveHealthContributors reactiveHealthContributors) {
-		this.reactiveHealthContributors = reactiveHealthContributors;
+	CompositeHealthContributorAdapter(CompositeReactiveHealthContributor delegate) {
+		this.delegate = delegate;
 	}
 
 	@Override
 	public HealthContributor getContributor(String name) {
-		return adapt(this.reactiveHealthContributors.getContributor(name));
+		ReactiveHealthContributor contributor = this.delegate.getContributor(name);
+		return (contributor != null) ? contributor.asHealthContributor() : null;
 	}
 
 	@Override
 	public Stream<Entry> stream() {
-		return this.reactiveHealthContributors.stream()
-			.map((entry) -> new Entry(entry.name(), adapt(entry.contributor())));
-	}
-
-	private HealthContributor adapt(ReactiveHealthContributor contributor) {
-		return (contributor != null) ? contributor.asHealthContributor() : null;
+		return this.delegate.stream()
+			.map((entry) -> new Entry(entry.name(), entry.contributor().asHealthContributor()));
 	}
 
 }

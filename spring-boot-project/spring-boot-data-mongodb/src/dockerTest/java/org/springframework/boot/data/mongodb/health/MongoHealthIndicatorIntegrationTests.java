@@ -71,7 +71,7 @@ class MongoHealthIndicatorIntegrationTests {
 		MongoClientSettings settings = settingsBuilder.build();
 		MongoClient mongoClient = MongoClients.create(settings);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(new MongoTemplate(mongoClient, "db"));
-		return healthIndicator.getHealth(true);
+		return healthIndicator.health(true);
 	}
 
 }

@@ -16,31 +16,33 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * {@link CompositeHealthContributor} backed by a map with values adapted as necessary.
+ * Adapts {@link ReactiveHealthContributors} to {@link HealthContributors}.
  *
- * @param <V> the value type
  * @author Phillip Webb
  */
-class CompositeHealthContributorMapAdapter<V> extends MapAdapter<V, HealthContributor, HealthContributors.Entry>
-		implements CompositeHealthContributor {
+class HealthContributorsAdapter implements HealthContributors {
 
-	CompositeHealthContributorMapAdapter(Map<String, V> map, Function<V, ? extends HealthContributor> valueAdapter) {
-		super(map, valueAdapter, HealthContributors.Entry::new);
+	private final ReactiveHealthContributors delegate;
+
+	HealthContributorsAdapter(ReactiveHealthContributors delegate) {
+		this.delegate = delegate;
 	}
 
 	@Override
 	public HealthContributor getContributor(String name) {
-		return super.getContributor(name);
+		return adapt(this.delegate.getContributor(name));
 	}
 
 	@Override
 	public Stream<Entry> stream() {
-		return super.stream();
+		return this.delegate.stream().map((entry) -> new Entry(entry.name(), adapt(entry.contributor())));
+	}
+
+	private HealthContributor adapt(ReactiveHealthContributor contributor) {
+		return (contributor != null) ? contributor.asHealthContributor() : null;
 	}
 
 }

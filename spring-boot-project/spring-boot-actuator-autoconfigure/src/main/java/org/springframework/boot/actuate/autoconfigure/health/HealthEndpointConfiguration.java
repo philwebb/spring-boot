@@ -85,7 +85,7 @@ class HealthEndpointConfiguration {
 	HealthEndpoint healthEndpoint(HealthContributorRegistry halthContributorRegistry,
 			ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry,
 			HealthEndpointGroups groups, HealthEndpointProperties properties) {
-		return new HealthEndpoint(halthContributorRegistry, reactiveHealthContributorRegistry, groups,
+		return new HealthEndpoint(halthContributorRegistry, reactiveHealthContributorRegistry.getIfAvailable(), groups,
 				properties.getLogging().getSlowIndicatorThreshold());
 	}
 

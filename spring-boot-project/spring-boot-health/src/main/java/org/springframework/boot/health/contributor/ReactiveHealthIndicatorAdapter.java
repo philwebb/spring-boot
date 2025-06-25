@@ -16,30 +16,29 @@
 
 package org.springframework.boot.health.contributor;
 
-/**
- * Directly contributes {@link Health} information for specific component or subsystem.
- *
- * @author Dave Syer
- * @author Phillip Webb
- * @since 4.0.0
- */
-@FunctionalInterface
-public non-sealed interface HealthIndicator extends HealthContributor {
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-	/**
-	 * Return an indication of health.
-	 * @param includeDetails if details should be included or removed
-	 * @return the health
-	 */
-	default Health health(boolean includeDetails) {
-		Health health = health();
-		return includeDetails ? health : health.withoutDetails();
+import org.springframework.util.Assert;
+
+/**
+ * Adapts a {@link HealthIndicator} to a {@link ReactiveHealthIndicator} so that it can be
+ * safely invoked in a reactive environment.
+ *
+ * @author Stephane Nicoll
+ */
+class ReactiveHealthIndicatorAdapter implements ReactiveHealthIndicator {
+
+	private final HealthIndicator delegate;
+
+	ReactiveHealthIndicatorAdapter(HealthIndicator delegate) {
+		Assert.notNull(delegate, "'delegate' must not be null");
+		this.delegate = delegate;
 	}
 
-	/**
-	 * Return an indication of health.
-	 * @return the health
-	 */
-	Health health();
+	@Override
+	public Mono<Health> health() {
+		return Mono.fromCallable(this.delegate::health).subscribeOn(Schedulers.boundedElastic());
+	}
 
 }

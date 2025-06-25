@@ -18,29 +18,16 @@ package org.springframework.boot.health.contributor;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for {@link HealthIndicator}.
- *
- * @author Phillip Webb
+ * @author pwebb
  */
-class HealthIndicatorTests {
-
-	private final HealthIndicator indicator = () -> Health.up().withDetail("spring", "boot").build();
+class CompositeHealthContributorsTests {
 
 	@Test
-	void getHealthWhenIncludeDetailsIsTrueReturnsHealthWithDetails() {
-		Health health = this.indicator.health(true);
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsEntry("spring", "boot");
-	}
-
-	@Test
-	void getHealthWhenIncludeDetailsIsFalseReturnsHealthWithoutDetails() {
-		Health health = this.indicator.health(false);
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).isEmpty();
+	void test() {
+		fail("Not yet implemented");
 	}
 
 }
