@@ -17,7 +17,7 @@
 package org.springframework.boot.health.contributor;
 
 /**
- * Contributes {@link Health} information for specific component or subsystem.
+ * Directly contributes {@link Health} information for specific component or subsystem.
  *
  * @author Dave Syer
  * @author Phillip Webb

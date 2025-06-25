@@ -19,7 +19,8 @@ package org.springframework.boot.health.contributor;
 import reactor.core.publisher.Mono;
 
 /**
- * Contributes {@link Health} information for specific reactive component or subsystem.
+ * Directly contributes {@link Health} information for specific reactive component or
+ * subsystem.
  * <p>
  * This is non-blocking contract that is meant to be used in a reactive application. See
  * {@link HealthIndicator} for the traditional contract.

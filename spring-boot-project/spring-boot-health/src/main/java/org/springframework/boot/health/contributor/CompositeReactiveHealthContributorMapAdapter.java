@@ -16,23 +16,25 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
 
 /**
- * {@link CompositeHealthContributor} backed by a map with values adapted as necessary.
+ * {@link CompositeReactiveHealthContributor} backed by a map with values adapted as
+ * necessary.
  *
  * @param <V> the value type
  * @author Phillip Webb
  */
-class CompositeReactiveHealthContributorMapAdapter<V>
-		extends AbstractMapAdapter<V, ReactiveHealthContributor, ReactiveHealthContributors.Entry>
+class CompositeReactiveHealthContributorMapAdapter<V> extends AbstractMapAdapter<V, ReactiveHealthContributor, Entry>
 		implements CompositeReactiveHealthContributor {
 
 	CompositeReactiveHealthContributorMapAdapter(Map<String, V> map,
 			Function<V, ? extends ReactiveHealthContributor> valueAdapter) {
-		super(map, valueAdapter, ReactiveHealthContributors.Entry::new);
+		super(map, valueAdapter, Entry::new);
 	}
 
 	@Override
@@ -41,8 +43,8 @@ class CompositeReactiveHealthContributorMapAdapter<V>
 	}
 
 	@Override
-	public Iterator<ReactiveHealthContributors.Entry> iterator() {
-		return super.iterator();
+	public Stream<Entry> stream() {
+		return super.stream();
 	}
 
 }

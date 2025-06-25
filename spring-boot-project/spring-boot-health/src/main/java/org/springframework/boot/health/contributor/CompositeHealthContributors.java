@@ -16,21 +16,23 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Map;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.springframework.boot.health.contributor.HealthContributors.Entry;
+
 /**
- * {@link CompositeHealthContributor} backed by a map with values adapted as necessary.
+ * {@link HealthContributors} composed of other {@link HealthContributors}.
  *
- * @param <V> the value type
  * @author Phillip Webb
  */
-class CompositeHealthContributorMapAdapter<V> extends AbstractMapAdapter<V, HealthContributor, HealthContributors.Entry>
-		implements CompositeHealthContributor {
+class CompositeHealthContributors extends AbstractComposite<HealthContributors, Entry, HealthContributor, Entry>
+		implements HealthContributors {
 
-	CompositeHealthContributorMapAdapter(Map<String, V> map, Function<V, ? extends HealthContributor> valueAdapter) {
-		super(map, valueAdapter, HealthContributors.Entry::new);
+	CompositeHealthContributors(HealthContributors... contributors) {
+		super(Arrays.asList(contributors), HealthContributors::getContributor, HealthContributors::stream, Entry::name,
+				Function.identity());
 	}
 
 	@Override

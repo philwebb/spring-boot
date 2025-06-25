@@ -17,8 +17,8 @@
 package org.springframework.boot.health.contributor;
 
 /**
- * Contributes health information, either directly ({@link ReactiveHealthIndicator}) or
- * via other contributors ({@link CompositeReactiveHealthContributor}).
+ * Contributes health information, either directly ({@link HealthIndicator}) or via other
+ * contributors ({@link CompositeHealthContributor}).
  *
  * @author Phillip Webb
  * @since 4.0.0

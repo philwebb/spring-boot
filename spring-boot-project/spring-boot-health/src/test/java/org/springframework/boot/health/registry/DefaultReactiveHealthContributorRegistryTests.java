@@ -35,7 +35,7 @@ class DefaultReactiveHealthContributorRegistryTests
 		extends AbstractHealthContributorRegistryTests<ReactiveHealthContributor, ReactiveHealthContributors.Entry> {
 
 	@Override
-	protected AbstractHealthContributorRegistry<ReactiveHealthContributor, Entry> createRegistry(
+	protected AbstractRegistry<ReactiveHealthContributor, Entry> createRegistry(
 			Map<String, ReactiveHealthContributor> contributors,
 			Collection<? extends HealthContributorNameValidator> nameValidators) {
 		return new DefaultReactiveHealthContributorRegistry(contributors, nameValidators);

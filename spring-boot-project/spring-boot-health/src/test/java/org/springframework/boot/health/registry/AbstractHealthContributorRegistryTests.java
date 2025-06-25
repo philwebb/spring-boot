@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link AbstractHealthContributorRegistry}.
+ * Tests for {@link AbstractRegistry}.
  *
  * @param <C> the contributor type
  * @param <E> the entry type
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 abstract class AbstractHealthContributorRegistryTests<C, E> {
 
-	private AbstractHealthContributorRegistry<C, E> registry;
+	private AbstractRegistry<C, E> registry;
 
 	@BeforeEach
 	void setUp() {
@@ -141,7 +141,7 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 
 	@Test
 	void nameValidatorsValidateRegisteredName() {
-		AbstractHealthContributorRegistry<C, E> registry = createRegistry(Collections.emptyMap(), testValidator());
+		AbstractRegistry<C, E> registry = createRegistry(Collections.emptyMap(), testValidator());
 		registry.registerContributor("ok", mockHealthIndicator());
 		assertThatIllegalStateException().isThrownBy(() -> registry.registerContributor("fail", mockHealthIndicator()))
 			.withMessage("Failed validation");
@@ -151,7 +151,7 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 		return List.of((name) -> Assert.state(!"fail".equals(name), "Failed validation"));
 	}
 
-	protected abstract AbstractHealthContributorRegistry<C, E> createRegistry(Map<String, C> contributors,
+	protected abstract AbstractRegistry<C, E> createRegistry(Map<String, C> contributors,
 			Collection<? extends HealthContributorNameValidator> nameValidators);
 
 	protected abstract C mockHealthIndicator();

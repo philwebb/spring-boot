@@ -17,11 +17,11 @@
 package org.springframework.boot.health.contributor;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 
@@ -68,11 +68,8 @@ abstract class AbstractMapAdapter<V, C, E> {
 		return this.map.get(name);
 	}
 
-	Iterator<E> iterator() {
-		return this.map.entrySet()
-			.stream()
-			.map((entry) -> this.entryAdapter.apply(entry.getKey(), entry.getValue()))
-			.iterator();
+	Stream<E> stream() {
+		return this.map.entrySet().stream().map((entry) -> this.entryAdapter.apply(entry.getKey(), entry.getValue()));
 	}
 
 }

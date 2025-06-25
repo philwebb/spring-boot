@@ -18,12 +18,12 @@ package org.springframework.boot.health.registry;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.springframework.boot.health.contributor.ReactiveHealthContributor;
-import org.springframework.boot.health.contributor.ReactiveHealthContributors;
+import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
 
 /**
  * Default {@link ReactiveHealthContributorRegistry} implementation.
@@ -31,8 +31,7 @@ import org.springframework.boot.health.contributor.ReactiveHealthContributors;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class DefaultReactiveHealthContributorRegistry
-		extends AbstractHealthContributorRegistry<ReactiveHealthContributor, ReactiveHealthContributors.Entry>
+public class DefaultReactiveHealthContributorRegistry extends AbstractRegistry<ReactiveHealthContributor, Entry>
 		implements ReactiveHealthContributorRegistry {
 
 	/**
@@ -49,7 +48,7 @@ public class DefaultReactiveHealthContributorRegistry
 	 */
 	public DefaultReactiveHealthContributorRegistry(Collection<? extends HealthContributorNameValidator> nameValidators,
 			Consumer<BiConsumer<String, ReactiveHealthContributor>> intialRegistrations) {
-		super(ReactiveHealthContributors.Entry::new, nameValidators, intialRegistrations);
+		super(Entry::new, nameValidators, intialRegistrations);
 	}
 
 	@Override
@@ -58,8 +57,8 @@ public class DefaultReactiveHealthContributorRegistry
 	}
 
 	@Override
-	public Iterator<ReactiveHealthContributors.Entry> iterator() {
-		return super.iterator();
+	public Stream<Entry> stream() {
+		return super.stream();
 	}
 
 	@Override

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 
@@ -38,11 +38,10 @@ class CompositeHealthContributorReactiveAdapter implements CompositeReactiveHeal
 	}
 
 	@Override
-	public Iterator<ReactiveHealthContributors.Entry> iterator() {
+	public Stream<ReactiveHealthContributors.Entry> stream() {
 		return this.delegate.stream()
 			.map((entry) -> new ReactiveHealthContributors.Entry(entry.name(),
-					ReactiveHealthContributor.adapt(entry.contributor())))
-			.iterator();
+					ReactiveHealthContributor.adapt(entry.contributor())));
 	}
 
 	@Override

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.health.contributor;
 
+import java.util.Iterator;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.util.Assert;
 
@@ -36,12 +36,19 @@ public interface HealthContributors extends Iterable<HealthContributors.Entry> {
 	 */
 	HealthContributor getContributor(String name);
 
+	@Override
+	default Iterator<Entry> iterator() {
+		return stream().iterator();
+	}
+
 	/**
 	 * Return a stream of the contributor entries.
 	 * @return the stream of named contributors
 	 */
-	default Stream<HealthContributors.Entry> stream() {
-		return StreamSupport.stream(spliterator(), false);
+	Stream<HealthContributors.Entry> stream();
+
+	static HealthContributors of(HealthContributors... contributors) {
+		return new CompositeHealthContributors(contributors);
 	}
 
 	/**

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * A {@link ReactiveHealthContributor} that is composed of other
@@ -36,11 +36,10 @@ public non-sealed interface CompositeReactiveHealthContributor
 		return new CompositeHealthContributor() {
 
 			@Override
-			public Iterator<HealthContributors.Entry> iterator() {
+			public Stream<HealthContributors.Entry> stream() {
 				return CompositeReactiveHealthContributor.this.stream()
 					.map((entry) -> new HealthContributors.Entry(entry.name(),
-							entry.contributor().asHealthContributor()))
-					.iterator();
+							entry.contributor().asHealthContributor()));
 			}
 
 			@Override

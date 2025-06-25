@@ -18,26 +18,26 @@ package org.springframework.boot.health.registry;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Internal base class for health contributor registries.
+ * Internal base class for health registries.
  *
  * @param <C> the contributor type
  * @param <E> the entry type
  * @author Phillip Webb
  */
-abstract class AbstractHealthContributorRegistry<C, E> {
+abstract class AbstractRegistry<C, E> {
 
 	private final Collection<HealthContributorNameValidator> nameValidators;
 
@@ -47,7 +47,7 @@ abstract class AbstractHealthContributorRegistry<C, E> {
 
 	private final Object monitor = new Object();
 
-	AbstractHealthContributorRegistry(BiFunction<String, C, E> entryAdapter,
+	AbstractRegistry(BiFunction<String, C, E> entryAdapter,
 			Collection<? extends HealthContributorNameValidator> nameValidators,
 			Consumer<BiConsumer<String, C>> intialRegistrations) {
 		this.nameValidators = List.copyOf(nameValidators);
@@ -92,22 +92,10 @@ abstract class AbstractHealthContributorRegistry<C, E> {
 		return this.contributors.get(name);
 	}
 
-	Iterator<E> iterator() {
-		Iterator<Map.Entry<String, C>> iterator = this.contributors.entrySet().iterator();
-		return new Iterator<>() {
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public E next() {
-				Map.Entry<String, C> entry = iterator.next();
-				return AbstractHealthContributorRegistry.this.entryAdapter.apply(entry.getKey(), entry.getValue());
-			}
-
-		};
+	Stream<E> stream() {
+		return this.contributors.entrySet()
+			.stream()
+			.map((entry) -> this.entryAdapter.apply(entry.getKey(), entry.getValue()));
 	}
 
 	private void verifyName(String name) {
