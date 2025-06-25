@@ -16,42 +16,25 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.health.contributor.Status;
 
 /**
- * Health description.
+ * Description of health including a status.
  *
  * @author Phillip Webb
  * @since 4.0.0
  */
-public final class HealthDescriptor extends AbstractHealthDescriptor {
+public sealed abstract class HealthDescriptor implements OperationResponseBody
+		permits IndicatedHealthDescriptor, CompositeHealthDescriptor {
 
-	static final HealthDescriptor UP = HealthDescriptor.of(Health.up().build());
-
-	private final Health health;
-
-	private HealthDescriptor(Health health) {
-		this.health = health;
-	}
-
-	@Override
-	public Status getStatus() {
-		return this.health.getStatus();
-	}
-
-	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, Object> getDetails() {
-		return this.health.getDetails();
-	}
-
-	static HealthDescriptor of(Health health) {
-		return (health != null) ? new HealthDescriptor(health) : null;
-	}
+	/**
+	 * Return the status of the component.
+	 * @return the component status
+	 */
+	@JsonUnwrapped
+	public abstract Status getStatus();
 
 }

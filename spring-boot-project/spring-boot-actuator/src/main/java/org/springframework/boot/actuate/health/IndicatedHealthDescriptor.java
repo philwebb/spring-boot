@@ -17,33 +17,44 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
 import org.springframework.boot.health.contributor.Status;
 
 /**
- * Description of overall system health.
+ * Description of health obtained from a {@link HealthIndicator} or
+ * {@link ReactiveHealthIndicator}.
  *
  * @author Phillip Webb
  * @since 4.0.0
  */
-public final class SystemHealthDescriptor extends CompositeHealthDescriptor {
+public final class IndicatedHealthDescriptor extends HealthDescriptor {
 
-	private final Set<String> groups;
+	static final IndicatedHealthDescriptor UP = IndicatedHealthDescriptor.of(Health.up().build());
 
-	SystemHealthDescriptor(ApiVersion apiVersion, Status status, Map<String, HealthDescriptor> components,
-			Set<String> groups) {
-		super(apiVersion, status, components);
-		this.groups = groups;
+	private final Health health;
+
+	private IndicatedHealthDescriptor(Health health) {
+		this.health = health;
+	}
+
+	@Override
+	public Status getStatus() {
+		return this.health.getStatus();
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
-	public Set<String> getGroups() {
-		return this.groups;
+	public Map<String, Object> getDetails() {
+		return this.health.getDetails();
+	}
+
+	static IndicatedHealthDescriptor of(Health health) {
+		return (health != null) ? new IndicatedHealthDescriptor(health) : null;
 	}
 
 }

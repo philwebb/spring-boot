@@ -116,7 +116,7 @@ class HealthEndpointWebExtensionTests extends
 
 	@Override
 	protected ContributedHealth getHealth(HealthResult<ContributedHealth> result) {
-		return result.getHealth();
+		return result.getResult();
 	}
 
 }

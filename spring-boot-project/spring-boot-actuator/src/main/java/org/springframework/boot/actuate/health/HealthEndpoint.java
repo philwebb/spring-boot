@@ -41,50 +41,46 @@ import org.springframework.boot.health.registry.HealthContributorRegistry;
  * @since 2.0.0
  */
 @Endpoint(id = "health")
-public class HealthEndpoint extends HealthEndpointSupport<Health, AbstractHealthDescriptor> {
+public class HealthEndpoint extends HealthEndpointSupport<Health, HealthDescriptor> {
 
 	/**
 	 * Health endpoint id.
 	 */
 	public static final EndpointId ID = EndpointId.of("health");
 
-	private static final String[] EMPTY_PATH = {};
-
 	/**
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
-	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * @param slowContributorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 * @since 4.0.0
 	 */
 	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			Duration slowIndicatorLoggingThreshold) {
-		super(new HealthContributorSupport.Blocking(registry), groups, slowIndicatorLoggingThreshold);
+			Duration slowContributorLoggingThreshold) {
+		super(new Contributor.Blocking(registry), groups, slowContributorLoggingThreshold);
 	}
 
 	@ReadOperation
-	public AbstractHealthDescriptor health() {
-		AbstractHealthDescriptor health = health(ApiVersion.V3, EMPTY_PATH);
-		return (health != null) ? health : HealthDescriptor.UP;
+	public HealthDescriptor health() {
+		HealthDescriptor health = health(ApiVersion.V3, EMPTY_PATH);
+		return (health != null) ? health : IndicatedHealthDescriptor.UP;
 	}
 
 	@ReadOperation
-	public AbstractHealthDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+	public HealthDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(ApiVersion.V3, path);
 	}
 
-	private AbstractHealthDescriptor health(ApiVersion apiVersion, String... path) {
-		DescriptorAndGroup<AbstractHealthDescriptor> descriptorAndGroup = getHealth(apiVersion, null,
-				SecurityContext.NONE, true, path);
-		return (descriptorAndGroup != null) ? descriptorAndGroup.descriptor() : null;
+	private HealthDescriptor health(ApiVersion apiVersion, String... path) {
+		Result<HealthDescriptor> result = getResult(apiVersion, null, SecurityContext.NONE, true, path);
+		return (result != null) ? result.descriptor() : null;
 	}
 
 	@Override
-	protected AbstractHealthDescriptor aggregateContributions(ApiVersion apiVersion,
-			Map<String, AbstractHealthDescriptor> contributions, StatusAggregator statusAggregator,
-			boolean showComponents, Set<String> groupNames) {
-		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
+	protected HealthDescriptor aggregateDescriptors(ApiVersion apiVersion, Map<String, HealthDescriptor> contributions,
+			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+		return getCompositeDescriptor(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 
 }

@@ -121,7 +121,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 
 	@Override
 	protected ContributedHealth getHealth(HealthResult<Mono<? extends ContributedHealth>> result) {
-		return result.getHealth().block();
+		return result.getResult().block();
 	}
 
 }

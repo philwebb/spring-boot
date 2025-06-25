@@ -32,7 +32,7 @@ class HealthEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		this.bindingRegistrar.registerReflectionHints(hints.reflection(), HealthDescriptor.class,
+		this.bindingRegistrar.registerReflectionHints(hints.reflection(), IndicatedHealthDescriptor.class,
 				CompositeHealthDescriptor.class, SystemHealthDescriptor.class);
 	}
 

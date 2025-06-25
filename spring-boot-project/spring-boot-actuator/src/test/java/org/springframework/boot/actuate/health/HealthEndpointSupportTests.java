@@ -71,7 +71,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 	void getHealthWhenPathIsNotGroupReturnsResultFromPrimaryGroup() {
 		R registry = createRegistry("test", createContributor(this.up));
 		E endpoint = create(registry, this.groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
 		assertThat(result.getGroup()).isEqualTo(this.primaryGroup);
 		assertThat(getHealth(result)).isEqualTo(this.up);
 	}
@@ -92,7 +92,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		C compositeContributor = createCompositeContributor(Map.of("spring", contributor));
 		R registry = createRegistry("test", compositeContributor);
 		E endpoint = create(registry, this.groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
 		CompositeHealth health = (CompositeHealth) getHealth(result);
 		assertThat(health.getComponents()).containsKey("spring");
 	}
@@ -104,9 +104,9 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		C compositeContributor = createCompositeContributor(Map.of("spring", contributor));
 		R registry = createRegistry("test", compositeContributor);
 		HealthEndpointSupport<T> endpoint = create(registry, this.groups);
-		HealthResult<T> rootResult = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false);
+		HealthResult<T> rootResult = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false);
 		assertThat(((CompositeHealth) getHealth(rootResult)).getComponents()).isNullOrEmpty();
-		HealthResult<T> componentResult = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
+		HealthResult<T> componentResult = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
 		assertThat(componentResult).isNull();
 	}
 
@@ -117,9 +117,9 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		C compositeContributor = createCompositeContributor(Map.of("spring", contributor));
 		R registry = createRegistry("test", compositeContributor);
 		HealthEndpointSupport<T> endpoint = create(registry, this.groups);
-		HealthResult<T> rootResult = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false);
+		HealthResult<T> rootResult = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false);
 		assertThat(((CompositeHealth) getHealth(rootResult)).getComponents()).containsKey("test");
-		HealthResult<T> componentResult = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
+		HealthResult<T> componentResult = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
 		assertThat(((CompositeHealth) getHealth(componentResult)).getComponents()).containsKey("spring");
 	}
 
@@ -127,7 +127,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 	void getHealthWhenAlwaysShowIsFalseAndGroupIsTrueShowsDetails() {
 		R registry = createRegistry("test", createContributor(this.up));
 		E endpoint = create(registry, this.groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
 		assertThat(((Health) getHealth(result)).getDetails()).containsEntry("spring", "boot");
 	}
 
@@ -136,8 +136,8 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		this.primaryGroup.setShowDetails(false);
 		R registry = createRegistry("test", createContributor(this.up));
 		HealthEndpointSupport<T> endpoint = create(registry, this.groups);
-		HealthResult<T> rootResult = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false);
-		HealthResult<T> componentResult = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
+		HealthResult<T> rootResult = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false);
+		HealthResult<T> componentResult = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "test");
 		assertThat(((CompositeHealth) getHealth(rootResult)).getStatus()).isEqualTo(Status.UP);
 		assertThat(componentResult).isNull();
 	}
@@ -147,7 +147,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		this.primaryGroup.setShowDetails(false);
 		R registry = createRegistry("test", createContributor(this.up));
 		E endpoint = create(registry, this.groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, true, "test");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, true, "test");
 		assertThat(((Health) getHealth(result)).getDetails()).containsEntry("spring", "boot");
 	}
 
@@ -169,7 +169,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 	@Test
 	void getHealthWhenPathDoesNotExistReturnsNull() {
 		R registry = createRegistry("test", createCompositeContributor(Collections.emptyMap()));
-		HealthResult<T> result = create(registry, this.groups).getHealth(ApiVersion.V3, null, SecurityContext.NONE,
+		HealthResult<T> result = create(registry, this.groups).getResult(ApiVersion.V3, null, SecurityContext.NONE,
 				false, "missing");
 		assertThat(result).isNull();
 	}
@@ -186,7 +186,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 	void getHealthWhenPathIsGroupDoesNotIncludesGroups() {
 		R registry = createRegistry("atest", createContributor(this.up));
 		E endpoint = create(registry, this.groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "alltheas");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "alltheas");
 		SystemHealth systemHealth = (SystemHealth) getHealth(result);
 		assertThat(systemHealth.getGroups()).isNull();
 	}
@@ -207,7 +207,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup((name) -> name.startsWith("test"));
 		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup, Map.of("testGroup", testGroup));
 		E endpoint = create(registry, groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "testGroup");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "testGroup");
 		CompositeHealth health = (CompositeHealth) getHealth(result);
 		assertThat(health.getComponents()).containsKey("test");
 	}
@@ -285,7 +285,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup(memberPredicate);
 		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup, Map.of("testGroup", testGroup));
 		E endpoint = create(registry, groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, null, SecurityContext.NONE, false, "testGroup");
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, null, SecurityContext.NONE, false, "testGroup");
 		return (CompositeHealth) getHealth(result);
 	}
 
@@ -304,7 +304,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		testGroup.setAdditionalPath(AdditionalHealthEndpointPath.from("server:/healthz"));
 		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup, Map.of("testGroup", testGroup));
 		E endpoint = create(registry, groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, WebServerNamespace.SERVER, SecurityContext.NONE,
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, WebServerNamespace.SERVER, SecurityContext.NONE,
 				false, "healthz");
 		CompositeHealth health = (CompositeHealth) getHealth(result);
 		assertThat(health.getComponents()).containsKey("test");
@@ -318,7 +318,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<T>, R,
 		testGroup.setShowComponents(false);
 		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup, Map.of("testGroup", testGroup));
 		E endpoint = create(registry, groups);
-		HealthResult<T> result = endpoint.getHealth(ApiVersion.V3, WebServerNamespace.SERVER, SecurityContext.NONE,
+		HealthResult<T> result = endpoint.getResult(ApiVersion.V3, WebServerNamespace.SERVER, SecurityContext.NONE,
 				false, "healthz");
 		CompositeHealth health = (CompositeHealth) getHealth(result);
 		assertThat(health.getStatus().getCode()).isEqualTo("UP");

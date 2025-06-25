@@ -28,20 +28,21 @@ import org.springframework.boot.health.contributor.Status;
 import org.springframework.util.Assert;
 
 /**
- * Composite health description.
+ * Description of health that is composed of other {@link HealthDescriptor health
+ * descriptors}.
  *
  * @author Phillip Webb
  * @since 4.0.0
  */
-public sealed class CompositeHealthDescriptor extends AbstractHealthDescriptor permits SystemHealthDescriptor {
+public sealed class CompositeHealthDescriptor extends HealthDescriptor permits SystemHealthDescriptor {
 
 	private final ApiVersion apiVersion;
 
 	private final Status status;
 
-	private final Map<String, AbstractHealthDescriptor> components;
+	private final Map<String, HealthDescriptor> components;
 
-	CompositeHealthDescriptor(ApiVersion apiVersion, Status status, Map<String, AbstractHealthDescriptor> components) {
+	CompositeHealthDescriptor(ApiVersion apiVersion, Status status, Map<String, HealthDescriptor> components) {
 		Assert.notNull(status, "'status' must not be null");
 		this.apiVersion = apiVersion;
 		this.status = status;
@@ -54,13 +55,13 @@ public sealed class CompositeHealthDescriptor extends AbstractHealthDescriptor p
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, AbstractHealthDescriptor> getComponents() {
+	public Map<String, HealthDescriptor> getComponents() {
 		return (this.apiVersion == ApiVersion.V3) ? this.components : null;
 	}
 
 	@JsonProperty
 	@JsonInclude(Include.NON_EMPTY)
-	public Map<String, AbstractHealthDescriptor> getDetails() {
+	public Map<String, HealthDescriptor> getDetails() {
 		return (this.apiVersion == ApiVersion.V2) ? this.components : null;
 	}
 

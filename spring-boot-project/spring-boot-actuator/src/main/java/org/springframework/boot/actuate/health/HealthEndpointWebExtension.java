@@ -48,56 +48,51 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 @ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
-public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, AbstractHealthDescriptor> {
-
-	private static final String[] NO_PATH = {};
+public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, HealthDescriptor> {
 
 	/**
 	 * Create a new {@link HealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
-	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * @param slowContributorLoggingThreshold duration after which slow health indicator
 	 * logging should occur
 	 * @since 4.0.0
 	 */
 	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			Duration slowIndicatorLoggingThreshold) {
-		super(new HealthContributorSupport.Blocking(registry), groups, slowIndicatorLoggingThreshold);
+			Duration slowContributorLoggingThreshold) {
+		super(new Contributor.Blocking(registry), groups, slowContributorLoggingThreshold);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<AbstractHealthDescriptor> health(ApiVersion apiVersion,
-			WebServerNamespace serverNamespace, SecurityContext securityContext) {
-		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
+	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+			SecurityContext securityContext) {
+		return health(apiVersion, serverNamespace, securityContext, false, EMPTY_PATH);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<AbstractHealthDescriptor> health(ApiVersion apiVersion,
-			WebServerNamespace serverNamespace, SecurityContext securityContext,
-			@Selector(match = Match.ALL_REMAINING) String... path) {
+	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+			SecurityContext securityContext, @Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public WebEndpointResponse<AbstractHealthDescriptor> health(ApiVersion apiVersion,
-			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
-		DescriptorAndGroup<AbstractHealthDescriptor> result = getHealth(apiVersion, serverNamespace, securityContext,
-				showAll, path);
+	private WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+			SecurityContext securityContext, boolean showAll, String... path) {
+		Result<HealthDescriptor> result = getResult(apiVersion, serverNamespace, securityContext, showAll, path);
 		if (result == null) {
-			return (Arrays.equals(path, NO_PATH))
-					? new WebEndpointResponse<>(HealthDescriptor.UP, WebEndpointResponse.STATUS_OK)
+			return (Arrays.equals(path, EMPTY_PATH))
+					? new WebEndpointResponse<>(IndicatedHealthDescriptor.UP, WebEndpointResponse.STATUS_OK)
 					: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 		}
-		AbstractHealthDescriptor health = result.descriptor();
+		HealthDescriptor descriptor = result.descriptor();
 		HealthEndpointGroup group = result.group();
-		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
-		return new WebEndpointResponse<>(health, statusCode);
+		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(descriptor.getStatus());
+		return new WebEndpointResponse<>(descriptor, statusCode);
 	}
 
 	@Override
-	protected AbstractHealthDescriptor aggregateContributions(ApiVersion apiVersion,
-			Map<String, AbstractHealthDescriptor> contributions, StatusAggregator statusAggregator,
-			boolean showComponents, Set<String> groupNames) {
-		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
+	protected HealthDescriptor aggregateDescriptors(ApiVersion apiVersion, Map<String, HealthDescriptor> contributions,
+			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+		return getCompositeDescriptor(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 
 }
