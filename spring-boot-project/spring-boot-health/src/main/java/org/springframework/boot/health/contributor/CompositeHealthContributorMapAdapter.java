@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  * @param <V> the value type
  * @author Phillip Webb
  */
-class CompositeHealthContributorMapAdapter<V> extends AbstractMapAdapter<V, HealthContributor, HealthContributors.Entry>
+class CompositeHealthContributorMapAdapter<V> extends MapAdapter<V, HealthContributor, HealthContributors.Entry>
 		implements CompositeHealthContributor {
 
 	CompositeHealthContributorMapAdapter(Map<String, V> map, Function<V, ? extends HealthContributor> valueAdapter) {

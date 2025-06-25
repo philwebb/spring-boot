@@ -29,7 +29,7 @@ import org.springframework.boot.health.contributor.ReactiveHealthContributors.En
  * @author Phillip Webb
  */
 class CompositeReactiveHealthContributors
-		extends AbstractComposite<ReactiveHealthContributors, Entry, ReactiveHealthContributor, Entry>
+		extends Adapter<ReactiveHealthContributors, Entry, ReactiveHealthContributor, Entry>
 		implements ReactiveHealthContributors {
 
 	CompositeReactiveHealthContributors(ReactiveHealthContributors... contributors) {

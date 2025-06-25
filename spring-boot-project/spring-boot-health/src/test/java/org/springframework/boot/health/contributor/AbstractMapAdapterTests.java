@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * Tests for {@link AbstractMapAdapter}.
+ * Tests for {@link MapAdapter}.
  *
  * @author Phillip Webb
  * @author Guirong Hu
@@ -132,7 +132,7 @@ class AbstractMapAdapterTests {
 		return new StringBuilder(charSequence).reverse().toString();
 	}
 
-	static class TestNamedContributorsMapAdapter<V> extends AbstractMapAdapter<V, String, Map.Entry<String, String>> {
+	static class TestNamedContributorsMapAdapter<V> extends MapAdapter<V, String, Map.Entry<String, String>> {
 
 		TestNamedContributorsMapAdapter(Map<String, V> map, Function<V, String> valueAdapter) {
 			super(map, valueAdapter, Map::entry);

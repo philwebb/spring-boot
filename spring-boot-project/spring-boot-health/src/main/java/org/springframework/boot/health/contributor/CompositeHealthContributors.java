@@ -27,7 +27,7 @@ import org.springframework.boot.health.contributor.HealthContributors.Entry;
  *
  * @author Phillip Webb
  */
-class CompositeHealthContributors extends AbstractComposite<HealthContributors, Entry, HealthContributor, Entry>
+class CompositeHealthContributors extends Adapter<HealthContributors, Entry, HealthContributor, Entry>
 		implements HealthContributors {
 
 	CompositeHealthContributors(HealthContributors... contributors) {

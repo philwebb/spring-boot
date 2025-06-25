@@ -34,13 +34,13 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Guirong Hu
  */
-abstract class AbstractMapAdapter<V, C, E> {
+abstract class MapAdapter<V, C, E> {
 
 	private final Map<String, C> map;
 
 	private final BiFunction<String, C, E> entryAdapter;
 
-	AbstractMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter,
+	MapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter,
 			BiFunction<String, C, E> entryAdapter) {
 		Assert.notNull(map, "'map' must not be null");
 		Assert.notNull(valueAdapter, "'valueAdapter' must not be null");

@@ -29,7 +29,7 @@ import org.springframework.boot.health.contributor.ReactiveHealthContributors.En
  * @param <V> the value type
  * @author Phillip Webb
  */
-class CompositeReactiveHealthContributorMapAdapter<V> extends AbstractMapAdapter<V, ReactiveHealthContributor, Entry>
+class CompositeReactiveHealthContributorMapAdapter<V> extends MapAdapter<V, ReactiveHealthContributor, Entry>
 		implements CompositeReactiveHealthContributor {
 
 	CompositeReactiveHealthContributorMapAdapter(Map<String, V> map,

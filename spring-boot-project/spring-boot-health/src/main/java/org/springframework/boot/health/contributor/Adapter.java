@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Internal base class for composites.
+ * Internal base class for adapters.
  *
  * @author Phillip Webb
  * @param <S> the source providing the contributors
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  * @param <C> the contributor type
  * @param <E> the entry type
  */
-class AbstractComposite<S, T, C, E> {
+class Adapter<S, T, C, E> {
 
 	private final Collection<S> sources;
 
@@ -45,7 +45,7 @@ class AbstractComposite<S, T, C, E> {
 
 	private final Function<T, E> entryProvider;
 
-	AbstractComposite(Collection<S> sources, BiFunction<S, String, C> contributorProvider,
+	Adapter(Collection<S> sources, BiFunction<S, String, C> contributorProvider,
 			Function<S, Stream<T>> elementStreamProvider, Function<T, String> nameProvider,
 			Function<T, E> entryProvider) {
 		this.sources = sources;

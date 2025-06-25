@@ -47,8 +47,17 @@ public interface ReactiveHealthContributors extends Iterable<ReactiveHealthContr
 	 */
 	Stream<ReactiveHealthContributors.Entry> stream();
 
+	default HealthContributors asHealthContributors() {
+		return null; // FIXME
+	}
+
 	static ReactiveHealthContributors of(ReactiveHealthContributors... contributors) {
 		return new CompositeReactiveHealthContributors(contributors);
+	}
+
+	static ReactiveHealthContributors adapt(HealthContributors healthContributors) {
+		Assert.notNull(healthContributors, "'healthContributors' must not be null");
+		return new HealthContributorsReactiveAdapter(healthContributors);
 	}
 
 	/**
