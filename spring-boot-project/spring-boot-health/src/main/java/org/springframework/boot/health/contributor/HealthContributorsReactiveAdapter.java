@@ -16,10 +16,7 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Collections;
 import java.util.stream.Stream;
-
-import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
 
 /**
  * Adapts {@link HealthContributors} to {@link ReactiveHealthContributors} so that they
@@ -27,36 +24,26 @@ import org.springframework.boot.health.contributor.ReactiveHealthContributors.En
  *
  * @author Phillip Webb
  */
-class HealthContributorsReactiveAdapter
-		extends Adapter<HealthContributors, HealthContributors.Entry, ReactiveHealthContributor, Entry>
-		implements ReactiveHealthContributors {
+class HealthContributorsReactiveAdapter implements ReactiveHealthContributors {
+
+	private final HealthContributors healthContributors;
 
 	HealthContributorsReactiveAdapter(HealthContributors healthContributors) {
-		super(Collections.singleton(healthContributors), HealthContributorsReactiveAdapter::getAdapted,
-				HealthContributors::stream, HealthContributors.Entry::name,
-				HealthContributorsReactiveAdapter::adaptEntry);
-	}
-
-	private static ReactiveHealthContributor getAdapted(HealthContributors healthContributors, String name) {
-		return adaptContributor(healthContributors.getContributor(name));
-	}
-
-	private static Entry adaptEntry(HealthContributors.Entry entry) {
-		return new Entry(entry.name(), adaptContributor(entry.contributor()));
-	}
-
-	private static ReactiveHealthContributor adaptContributor(HealthContributor contributor) {
-		return (contributor != null) ? ReactiveHealthContributor.adapt(contributor) : null;
+		this.healthContributors = healthContributors;
 	}
 
 	@Override
 	public ReactiveHealthContributor getContributor(String name) {
-		return super.getContributor(name);
+		return adapt(this.healthContributors.getContributor(name));
 	}
 
 	@Override
 	public Stream<Entry> stream() {
-		return super.stream();
+		return this.healthContributors.stream().map((entry) -> new Entry(entry.name(), adapt(entry.contributor())));
+	}
+
+	private ReactiveHealthContributor adapt(HealthContributor contributor) {
+		return (contributor != null) ? ReactiveHealthContributor.adapt(contributor) : null;
 	}
 
 }

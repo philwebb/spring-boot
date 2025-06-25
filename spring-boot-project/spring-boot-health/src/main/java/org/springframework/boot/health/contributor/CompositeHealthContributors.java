@@ -16,33 +16,40 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Arrays;
-import java.util.function.Function;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import org.springframework.boot.health.contributor.HealthContributors.Entry;
 
 /**
  * {@link HealthContributors} composed of other {@link HealthContributors}.
  *
  * @author Phillip Webb
  */
-class CompositeHealthContributors extends Adapter<HealthContributors, Entry, HealthContributor, Entry>
-		implements HealthContributors {
+class CompositeHealthContributors implements HealthContributors {
+
+	private final List<HealthContributors> contributors;
 
 	CompositeHealthContributors(HealthContributors... contributors) {
-		super(Arrays.asList(contributors), HealthContributors::getContributor, HealthContributors::stream, Entry::name,
-				Function.identity());
+		this.contributors = List.of(contributors);
 	}
 
 	@Override
 	public HealthContributor getContributor(String name) {
-		return super.getContributor(name);
+		return this.contributors.stream()
+			.map((contributors) -> contributors.getContributor(name))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Override
 	public Stream<Entry> stream() {
-		return super.stream();
+		Set<String> seen = new HashSet<>();
+		return this.contributors.stream()
+			.flatMap(HealthContributors::stream)
+			.filter((element) -> seen.add(element.name()));
 	}
 
 }

@@ -16,11 +16,11 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Arrays;
-import java.util.function.Function;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
 
 /**
  * {@link ReactiveHealthContributors} composed of other
@@ -28,23 +28,29 @@ import org.springframework.boot.health.contributor.ReactiveHealthContributors.En
  *
  * @author Phillip Webb
  */
-class CompositeReactiveHealthContributors
-		extends Adapter<ReactiveHealthContributors, Entry, ReactiveHealthContributor, Entry>
-		implements ReactiveHealthContributors {
+class CompositeReactiveHealthContributors implements ReactiveHealthContributors {
 
-	CompositeReactiveHealthContributors(ReactiveHealthContributors... contributors) {
-		super(Arrays.asList(contributors), ReactiveHealthContributors::getContributor,
-				ReactiveHealthContributors::stream, Entry::name, Function.identity());
+	private final List<ReactiveHealthContributors> reactiveContributors;
+
+	CompositeReactiveHealthContributors(ReactiveHealthContributors... reactiveContributors) {
+		this.reactiveContributors = List.of(reactiveContributors);
 	}
 
 	@Override
 	public ReactiveHealthContributor getContributor(String name) {
-		return super.getContributor(name);
+		return this.reactiveContributors.stream()
+			.map((reactiveContributors) -> reactiveContributors.getContributor(name))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Override
 	public Stream<Entry> stream() {
-		return super.stream();
+		Set<String> seen = new HashSet<>();
+		return this.reactiveContributors.stream()
+			.flatMap(ReactiveHealthContributors::stream)
+			.filter((element) -> seen.add(element.name()));
 	}
 
 }

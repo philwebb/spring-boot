@@ -16,46 +16,34 @@
 
 package org.springframework.boot.health.contributor;
 
-import java.util.Collections;
 import java.util.stream.Stream;
-
-import org.springframework.boot.health.contributor.HealthContributors.Entry;
 
 /**
  * Adapts {@link ReactiveHealthContributors} to {@link HealthContributors}.
  *
  * @author Phillip Webb
  */
-class ReactiveHealthContributorsBlockingAdapter extends
-		Adapter<ReactiveHealthContributors, ReactiveHealthContributors.Entry, HealthContributor, Entry>
-		implements HealthContributors {
+class ReactiveHealthContributorsBlockingAdapter implements HealthContributors {
+
+	private final ReactiveHealthContributors reactiveHealthContributors;
 
 	ReactiveHealthContributorsBlockingAdapter(ReactiveHealthContributors reactiveHealthContributors) {
-		super(Collections.singleton(reactiveHealthContributors), ReactiveHealthContributorsBlockingAdapter::getAdapted,
-				ReactiveHealthContributors::stream, ReactiveHealthContributors.Entry::name,
-				ReactiveHealthContributorsBlockingAdapter::adaptEntry);
-	}
-
-	private static HealthContributor getAdapted(ReactiveHealthContributors healthContributors, String name) {
-		return adaptContributor(healthContributors.getContributor(name));
-	}
-
-	private static Entry adaptEntry(ReactiveHealthContributors.Entry entry) {
-		return new Entry(entry.name(), adaptContributor(entry.contributor()));
-	}
-
-	private static HealthContributor adaptContributor(ReactiveHealthContributor contributor) {
-		return (contributor != null) ? contributor.asHealthContributor() : null;
+		this.reactiveHealthContributors = reactiveHealthContributors;
 	}
 
 	@Override
 	public HealthContributor getContributor(String name) {
-		return super.getContributor(name);
+		return adapt(this.reactiveHealthContributors.getContributor(name));
 	}
 
 	@Override
 	public Stream<Entry> stream() {
-		return super.stream();
+		return this.reactiveHealthContributors.stream()
+			.map((entry) -> new Entry(entry.name(), adapt(entry.contributor())));
+	}
+
+	private HealthContributor adapt(ReactiveHealthContributor contributor) {
+		return (contributor != null) ? contributor.asHealthContributor() : null;
 	}
 
 }
