@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
 import org.springframework.boot.health.contributor.HealthContributors;
@@ -27,6 +28,8 @@ import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.health.contributor.ReactiveHealthContributor;
 import org.springframework.boot.health.contributor.ReactiveHealthContributors;
 import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.boot.health.registry.HealthContributorRegistry;
+import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.util.StringUtils;
 
 /**
@@ -76,6 +79,34 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 	 * @return the contributor class name
 	 */
 	String getContributorClassName();
+
+	/**
+	 * Factory method to create a blocking {@link Contributor} from the given registries.
+	 * @param registry the source registry
+	 * @param fallbackRegistry a provider for any fallback reactive registry
+	 * @return a new {@link Contributor}
+	 */
+	static Blocking blocking(HealthContributorRegistry registry, ReactiveHealthContributorRegistry fallbackRegistry) {
+		if (fallbackRegistry != null) {
+			// new Blocking(HealthContributors.of(registry, fallbackRegistry.))
+		}
+
+		ReactiveHealthContributor x = null;
+		x.asHealthContributor();
+		return new Blocking(registry);
+	}
+
+	/**
+	 * Factory method to create a reactive {@link Contributor} from the given registries.
+	 * @param registry the registry
+	 * @param fallbackRegistry a provider for any fallback blocking registry
+	 * @return a new {@link Contributor}
+	 */
+	static Reactive reactive(ReactiveHealthContributorRegistry registry,
+			ObjectProvider<HealthContributorRegistry> fallbackRegistry) {
+		ReactiveHealthContributor.adapt(null);
+		return new Reactive(registry);
+	}
 
 	/**
 	 * A child consisting of a name and a contributor.

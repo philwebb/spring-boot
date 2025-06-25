@@ -49,7 +49,7 @@ abstract class HealthEndpointSupport<H, D> {
 
 	private static final Log logger = LogFactory.getLog(HealthEndpointSupport.class);
 
-	private final Contributor<H, D> registry;
+	private final Contributor<H, D> rootContributor;
 
 	private final HealthEndpointGroups groups;
 
@@ -57,16 +57,16 @@ abstract class HealthEndpointSupport<H, D> {
 
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
-	 * @param registry the health contributor registry
+	 * @param rootContributor the health contributor registry
 	 * @param groups the health endpoint groups
 	 * @param slowContributorLoggingThreshold duration after which slow health contributor
 	 * logging should occur
 	 */
-	HealthEndpointSupport(Contributor<H, D> registry, HealthEndpointGroups groups,
+	HealthEndpointSupport(Contributor<H, D> rootContributor, HealthEndpointGroups groups,
 			Duration slowContributorLoggingThreshold) {
-		Assert.notNull(registry, "'registry' must not be null");
+		Assert.notNull(rootContributor, "'rootContributor' must not be null");
 		Assert.notNull(groups, "'groups' must not be null");
-		this.registry = registry;
+		this.rootContributor = rootContributor;
 		this.groups = groups;
 		this.slowContributorLoggingThreshold = slowContributorLoggingThreshold;
 	}
@@ -110,7 +110,7 @@ abstract class HealthEndpointSupport<H, D> {
 	}
 
 	private Contributor<H, D> getContributor(String[] path, int pathOffset) {
-		Contributor<H, D> contributor = this.registry;
+		Contributor<H, D> contributor = this.rootContributor;
 		while (pathOffset < path.length) {
 			if (!contributor.isComposite()) {
 				return null;
