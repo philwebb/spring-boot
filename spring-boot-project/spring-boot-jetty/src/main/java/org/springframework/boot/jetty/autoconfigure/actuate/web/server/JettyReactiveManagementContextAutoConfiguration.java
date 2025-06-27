@@ -14,38 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reactor.netty.autoconfigure.actuate.web;
+package org.springframework.boot.jetty.autoconfigure.actuate.web.server;
 
-import reactor.netty.http.server.HttpServer;
+import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
+import org.springframework.boot.jetty.autoconfigure.reactive.JettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for a Netty-based reactive management context.
+ * Auto-configuration for a Jetty-based reactive management context.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ HttpServer.class, ManagementContextFactory.class })
+@ConditionalOnClass({ Server.class, ManagementContextFactory.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class NettyReactiveManagementContextAutoConfiguration {
+public class JettyReactiveManagementContextAutoConfiguration {
 
 	@Bean
 	static ManagementContextFactory reactiveWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
-				NettyReactiveWebServerAutoConfiguration.class);
+				JettyReactiveWebServerAutoConfiguration.class);
 	}
 
 }

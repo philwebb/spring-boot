@@ -14,38 +14,39 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.undertow.autoconfigure.actuate.web;
+package org.springframework.boot.tomcat.autoconfigure.actuate.web.server;
 
-import io.undertow.Undertow;
+import org.apache.catalina.startup.Tomcat;
 
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.undertow.autoconfigure.servlet.UndertowServletWebServerAutoConfiguration;
-import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
+import org.springframework.boot.tomcat.autoconfigure.TomcatWebServerConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.reactive.TomcatReactiveWebServerAutoConfiguration;
+import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for an Undertow-based servlet management context.
+ * Auto-configuration for a Tomcat-based reactive management context.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ Undertow.class, ManagementContextFactory.class })
-@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnClass({ Tomcat.class, ManagementContextFactory.class })
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class UndertowServletManagementContextAutoConfiguration {
+public class TomcatReactiveManagementContextAutoConfiguration {
 
 	@Bean
-	static ManagementContextFactory servletWebChildContextFactory() {
-		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
-				UndertowServletWebServerAutoConfiguration.class);
+	static ManagementContextFactory reactiveWebChildContextFactory() {
+		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
+				TomcatReactiveWebServerAutoConfiguration.class, TomcatWebServerConfiguration.class);
 	}
 
 }

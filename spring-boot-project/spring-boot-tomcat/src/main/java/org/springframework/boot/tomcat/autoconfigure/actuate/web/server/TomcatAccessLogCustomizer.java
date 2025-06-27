@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.autoconfigure.actuate.web;
+package org.springframework.boot.tomcat.autoconfigure.actuate.web.server;
 
 import java.util.Collection;
 import java.util.function.Function;

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jetty.autoconfigure.actuate.web;
+package org.springframework.boot.tomcat.autoconfigure.actuate.web.server;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties for a Jetty-based management server.
+ * Properties for a Tomcat-based management server.
  *
  * @author Moritz Halbritter
  * @since 4.0.0
  */
-@ConfigurationProperties("management.server.jetty")
-public class JettyManagementServerProperties {
+@ConfigurationProperties("management.server.tomcat")
+public class TomcatManagementServerProperties {
 
 	private final Accesslog accesslog = new Accesslog();
 

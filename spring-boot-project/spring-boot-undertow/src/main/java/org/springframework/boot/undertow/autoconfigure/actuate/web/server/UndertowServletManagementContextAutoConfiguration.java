@@ -14,38 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jetty.autoconfigure.actuate.web;
+package org.springframework.boot.undertow.autoconfigure.actuate.web.server;
 
-import org.eclipse.jetty.server.Server;
+import io.undertow.Undertow;
 
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.jetty.autoconfigure.reactive.JettyReactiveWebServerAutoConfiguration;
-import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
+import org.springframework.boot.undertow.autoconfigure.servlet.UndertowServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for a Jetty-based reactive management context.
+ * Auto-configuration for an Undertow-based servlet management context.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ Server.class, ManagementContextFactory.class })
-@ConditionalOnWebApplication(type = Type.REACTIVE)
+@ConditionalOnClass({ Undertow.class, ManagementContextFactory.class })
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class JettyReactiveManagementContextAutoConfiguration {
+public class UndertowServletManagementContextAutoConfiguration {
 
 	@Bean
-	static ManagementContextFactory reactiveWebChildContextFactory() {
-		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
-				JettyReactiveWebServerAutoConfiguration.class);
+	static ManagementContextFactory servletWebChildContextFactory() {
+		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
+				UndertowServletWebServerAutoConfiguration.class);
 	}
 
 }

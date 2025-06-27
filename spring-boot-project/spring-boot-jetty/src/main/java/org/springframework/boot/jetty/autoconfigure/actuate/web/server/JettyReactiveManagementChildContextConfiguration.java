@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.undertow.autoconfigure.actuate.web;
+package org.springframework.boot.jetty.autoconfigure.actuate.web.server;
 
-import io.undertow.Undertow;
+import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -24,26 +24,24 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link ManagementContextConfiguration @ManagementContextConfiguration} for
- * Undertow-based servlet web endpoint infrastructure when a separate management context
- * running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Jetty-based
+ * reactive web endpoint infrastructure when a separate management context running on a
+ * different port is required.
  *
  * @author Andy Wilkinson
  */
-@ConditionalOnClass(Undertow.class)
-@ConditionalOnWebApplication(type = Type.SERVLET)
-@EnableConfigurationProperties(UndertowManagementServerProperties.class)
+@ConditionalOnClass(Server.class)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
+@EnableConfigurationProperties(JettyManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
-class UndertowServletManagementChildContextConfiguration {
+class JettyReactiveManagementChildContextConfiguration {
 
 	@Bean
-	UndertowAccessLogCustomizer<UndertowServletWebServerFactory> undertowManagementAccessLogCustomizer(
-			UndertowManagementServerProperties properties) {
-		return new UndertowAccessLogCustomizer<>(properties, UndertowServletWebServerFactory::getAccessLogPrefix);
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(JettyManagementServerProperties properties) {
+		return new JettyAccessLogCustomizer(properties);
 	}
 
 }

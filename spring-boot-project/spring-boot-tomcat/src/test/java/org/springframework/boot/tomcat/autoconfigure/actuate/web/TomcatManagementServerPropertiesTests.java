@@ -18,6 +18,8 @@ package org.springframework.boot.tomcat.autoconfigure.actuate.web;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatManagementServerProperties;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

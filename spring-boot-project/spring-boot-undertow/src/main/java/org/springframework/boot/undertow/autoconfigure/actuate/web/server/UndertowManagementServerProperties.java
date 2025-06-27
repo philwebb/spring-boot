@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.autoconfigure.actuate.web;
+package org.springframework.boot.undertow.autoconfigure.actuate.web.server;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties for a Tomcat-based management server.
+ * Properties for an Undertow-based management server.
  *
  * @author Moritz Halbritter
  * @since 4.0.0
  */
-@ConfigurationProperties("management.server.tomcat")
-public class TomcatManagementServerProperties {
+@ConfigurationProperties("management.server.undertow")
+public class UndertowManagementServerProperties {
 
 	private final Accesslog accesslog = new Accesslog();
 

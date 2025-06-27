@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Reactor Netty actuator web concerns.
  */
-package org.springframework.boot.reactor.netty.autoconfigure.actuate.web;
+package org.springframework.boot.reactor.netty.autoconfigure.actuate.web.server;

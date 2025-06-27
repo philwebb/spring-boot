@@ -29,7 +29,7 @@ import org.springframework.boot.health.autoconfigure.registry.HealthContributorR
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
-import org.springframework.boot.reactor.netty.autoconfigure.actuate.web.NettyReactiveManagementContextAutoConfiguration;
+import org.springframework.boot.reactor.netty.autoconfigure.actuate.web.server.NettyReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebApplicationContext;

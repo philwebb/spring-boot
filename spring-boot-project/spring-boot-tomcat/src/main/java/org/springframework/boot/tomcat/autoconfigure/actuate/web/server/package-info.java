@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Tomcat actuator web concerns.
  */
-package org.springframework.boot.tomcat.autoconfigure.actuate.web;
+package org.springframework.boot.tomcat.autoconfigure.actuate.web.server;

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.undertow.autoconfigure.actuate.web;
+package org.springframework.boot.jetty.autoconfigure.actuate.web.server;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties for an Undertow-based management server.
+ * Properties for a Jetty-based management server.
  *
  * @author Moritz Halbritter
  * @since 4.0.0
  */
-@ConfigurationProperties("management.server.undertow")
-public class UndertowManagementServerProperties {
+@ConfigurationProperties("management.server.jetty")
+public class JettyManagementServerProperties {
 
 	private final Accesslog accesslog = new Accesslog();
 

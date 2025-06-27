@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat.autoconfigure.actuate.web;
+package org.springframework.boot.tomcat.autoconfigure.actuate.web.server;
 
 import org.apache.catalina.startup.Tomcat;
 

@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.tomcat.autoconfigure.actuate.web.TomcatServletManagementContextAutoConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.util.StringUtils;

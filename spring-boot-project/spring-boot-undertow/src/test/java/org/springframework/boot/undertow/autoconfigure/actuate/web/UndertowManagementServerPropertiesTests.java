@@ -18,6 +18,8 @@ package org.springframework.boot.undertow.autoconfigure.actuate.web;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.undertow.autoconfigure.actuate.web.server.UndertowManagementServerProperties;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

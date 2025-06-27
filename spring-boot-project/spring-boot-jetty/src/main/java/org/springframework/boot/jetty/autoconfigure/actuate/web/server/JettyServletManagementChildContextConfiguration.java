@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jetty.autoconfigure.actuate.web;
+package org.springframework.boot.jetty.autoconfigure.actuate.web.server;
 
 import org.eclipse.jetty.server.Server;
 

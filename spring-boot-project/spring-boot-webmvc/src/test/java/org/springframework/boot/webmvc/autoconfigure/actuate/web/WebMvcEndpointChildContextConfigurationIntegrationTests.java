@@ -41,7 +41,7 @@ import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagem
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.tomcat.autoconfigure.actuate.web.TomcatServletManagementContextAutoConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.actuate.web.server.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;

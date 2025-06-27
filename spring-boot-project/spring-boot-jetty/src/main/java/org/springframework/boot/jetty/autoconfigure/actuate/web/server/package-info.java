@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Jetty actuator web concerns.
  */
-package org.springframework.boot.jetty.autoconfigure.actuate.web;
+package org.springframework.boot.jetty.autoconfigure.actuate.web.server;

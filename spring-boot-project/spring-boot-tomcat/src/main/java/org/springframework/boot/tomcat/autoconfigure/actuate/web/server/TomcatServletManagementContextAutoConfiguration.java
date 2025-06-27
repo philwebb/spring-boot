@@ -14,38 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jetty.autoconfigure.actuate.web;
-
-import org.eclipse.jetty.server.Server;
+package org.springframework.boot.tomcat.autoconfigure.actuate.web.server;
 
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.jetty.autoconfigure.servlet.JettyServletWebServerAutoConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.TomcatWebServerConfiguration;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Auto-configuration for a Jetty-based servlet management context.
+ * Auto-configuration for a Tomcat-based servlet management context.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass({ Server.class, ManagementContextFactory.class })
+@ConditionalOnClass(ManagementContextFactory.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class JettyServletManagementContextAutoConfiguration {
+public class TomcatServletManagementContextAutoConfiguration {
 
 	@Bean
 	static ManagementContextFactory servletWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
-				JettyServletWebServerAutoConfiguration.class);
+				TomcatWebServerConfiguration.class, TomcatServletWebServerAutoConfiguration.class);
 	}
 
 }
