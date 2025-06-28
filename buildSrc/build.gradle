@@ -115,6 +115,10 @@ gradlePlugin {
 			id = "org.springframework.boot.conventions"
 			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
 		}
+		dependenciesGraphvizPlugin {
+			id = "org.springframework.boot.dependencies-graphviz"
+			implementationClass = "org.springframework.boot.build.dependencygraph.DependenciesGraphvizPlugin"
+		}
 		deployedPlugin {
 			id = "org.springframework.boot.deployed"
 			implementationClass = "org.springframework.boot.build.DeployedPlugin"

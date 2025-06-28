@@ -17,6 +17,7 @@
 plugins {
 	id "base"
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
+	id "org.springframework.boot.dependencies-graphviz"
 }
 
 description = "Spring Boot Build"
