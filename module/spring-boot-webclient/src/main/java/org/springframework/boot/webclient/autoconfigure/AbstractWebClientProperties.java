@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webclient.autoconfigure.service;
+package org.springframework.boot.webclient.autoconfigure;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.http.client.autoconfigure.ApiVersionProperties;
 import org.springframework.boot.http.client.autoconfigure.reactive.AbstractClientHttpConnectorProperties;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link AbstractClientHttpConnectorProperties} for reactive HTTP Service clients.
+ * {@link AbstractClientHttpConnectorProperties} for properties to configure technologies
+ * built on {@link WebClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
  * @author Phillip Webb
  * @since 4.0.0
  */
-public abstract class AbstractHttpReactiveClientServiceProperties extends AbstractClientHttpConnectorProperties {
+public abstract class AbstractWebClientProperties extends AbstractClientHttpConnectorProperties {
 
 	/**
 	 * Base url to set in the underlying HTTP client group. By default, set to
@@ -43,6 +47,12 @@ public abstract class AbstractHttpReactiveClientServiceProperties extends Abstra
 	 * {@link Map}.
 	 */
 	private Map<String, List<String>> defaultHeader = new LinkedHashMap<>();
+
+	/**
+	 * API version properties.
+	 */
+	@NestedConfigurationProperty
+	private ApiVersionProperties apiVersion = new ApiVersionProperties();
 
 	public String getBaseUrl() {
 		return this.baseUrl;
@@ -58,6 +68,14 @@ public abstract class AbstractHttpReactiveClientServiceProperties extends Abstra
 
 	public void setDefaultHeader(Map<String, List<String>> defaultHeaders) {
 		this.defaultHeader = defaultHeaders;
+	}
+
+	public ApiVersionProperties getApiVersion() {
+		return this.apiVersion;
+	}
+
+	public void setApiVersion(ApiVersionProperties apiVersion) {
+		this.apiVersion = apiVersion;
 	}
 
 }

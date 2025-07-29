@@ -31,8 +31,6 @@ import org.springframework.web.service.registry.HttpServiceGroup;
  */
 class RestClientCustomizerHttpServiceGroupConfigurer implements RestClientHttpServiceGroupConfigurer {
 
-	// FIXME use RCBC?
-
 	/**
 	 * Allow user defined configurers to apply before / after ours.
 	 */
