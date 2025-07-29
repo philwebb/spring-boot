@@ -16,6 +16,7 @@
 
 package org.springframework.boot.restclient.autoconfigure;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
@@ -43,6 +44,8 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
@@ -316,6 +319,48 @@ class RestClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
 	}
 
+	@Test
+	void whenHasApiVersionProperties() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withPropertyValues("spring.http.client.restclient.apiversion.default=123",
+					"spring.http.client.restclient.apiversion.insert.query-parameter=version")
+			.run((context) -> {
+				RestClient restClient = context.getBean(RestClient.Builder.class).build();
+				assertThat(restClient).extracting("defaultApiVersion").isEqualTo("123");
+				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(restClient,
+						"apiVersionInserter");
+				assertThat(apiVersionInserter.insertVersion("123", new URI("http://example.com")))
+					.hasToString("http://example.com?version=123");
+			});
+	}
+
+	@Test
+	void whenHasCustomApiVersionInserter() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withUserConfiguration(ApiVersionInserterConfig.class)
+			.run((context) -> {
+				RestClient restClient = context.getBean(RestClient.Builder.class).build();
+				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(restClient,
+						"apiVersionInserter");
+				assertThat(apiVersionInserter.insertVersion("123", new URI("http://example.com")))
+					.hasToString("http://example.com?version=123");
+			});
+	}
+
+	@Test
+	void whenHasCustomApiVersionFormatter() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withPropertyValues("spring.http.client.restclient.apiversion.insert.query-parameter=version")
+			.withUserConfiguration(ApiVersionFormatterConfig.class)
+			.run((context) -> {
+				RestClient restClient = context.getBean(RestClient.Builder.class).build();
+				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(restClient,
+						"apiVersionInserter");
+				assertThat(apiVersionInserter.insertVersion("best", new URI("http://example.com")))
+					.hasToString("http://example.com?version=BEST");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class RestClientCustomizerConfig {
 
@@ -351,6 +396,26 @@ class RestClientAutoConfigurationTests {
 	}
 
 	static class CustomHttpMessageConverter extends StringHttpMessageConverter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApiVersionInserterConfig {
+
+		@Bean
+		ApiVersionInserter apiVersionInserter() {
+			return ApiVersionInserter.useQueryParam("version");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApiVersionFormatterConfig {
+
+		@Bean
+		ApiVersionFormatter apiVersionFormatter() {
+			return (version) -> String.valueOf(version).toUpperCase();
+		}
 
 	}
 
