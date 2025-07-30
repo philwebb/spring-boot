@@ -51,6 +51,7 @@ public class ApiVersionProperties {
 		return this.insert;
 	}
 
+	@ConfigurationPropertiesSource
 	public static class Insert {
 
 		/**
