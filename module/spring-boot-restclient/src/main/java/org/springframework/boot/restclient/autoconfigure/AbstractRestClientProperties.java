@@ -52,7 +52,7 @@ public abstract class AbstractRestClientProperties extends AbstractHttpRequestFa
 	 * API version properties.
 	 */
 	@NestedConfigurationProperty
-	private final ApiVersionProperties apiVersion = new ApiVersionProperties();
+	private final ApiVersionProperties apiversion = new ApiVersionProperties();
 
 	public String getBaseUrl() {
 		return this.baseUrl;
@@ -70,8 +70,8 @@ public abstract class AbstractRestClientProperties extends AbstractHttpRequestFa
 		this.defaultHeader = defaultHeaders;
 	}
 
-	public ApiVersionProperties getApiVersion() {
-		return this.apiVersion;
+	public ApiVersionProperties getApiversion() {
+		return this.apiversion;
 	}
 
 }

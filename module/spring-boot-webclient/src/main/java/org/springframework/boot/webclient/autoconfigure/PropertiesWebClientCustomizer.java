@@ -50,7 +50,7 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 	}
 
 	private ApiVersionProperties getApiVersion(AbstractWebClientProperties properties) {
-		return (properties != null) ? properties.getApiVersion() : null;
+		return (properties != null) ? properties.getApiversion() : null;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 			if (properties != null) {
 				map.from(properties::getBaseUrl).whenHasText().to(builder::baseUrl);
 				map.from(properties::getDefaultHeader).as(this::putAllHeaders).to(builder::defaultHeaders);
-				map.from(properties.getApiVersion())
+				map.from(properties.getApiversion())
 					.as(ApiVersionProperties::getDefault)
 					.to(builder::defaultApiVersion);
 			}

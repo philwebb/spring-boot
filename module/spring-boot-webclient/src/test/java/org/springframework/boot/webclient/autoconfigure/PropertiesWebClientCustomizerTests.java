@@ -44,12 +44,12 @@ class PropertiesWebClientCustomizerTests {
 		TestWebClientProperties properties1 = new TestWebClientProperties();
 		properties1.setBaseUrl("http://example.com/b1");
 		properties1.getDefaultHeader().put("x-h1", List.of("v1"));
-		properties1.getApiVersion().setDefault("dv1");
-		properties1.getApiVersion().getInsert().setQueryParameter("p1");
+		properties1.getApiversion().setDefault("dv1");
+		properties1.getApiversion().getInsert().setQueryParameter("p1");
 		TestWebClientProperties properties2 = new TestWebClientProperties();
 		properties2.setBaseUrl("http://example.com/b2");
 		properties1.getDefaultHeader().put("x-h2", List.of("v2"));
-		properties2.getApiVersion().setDefault("dv2");
+		properties2.getApiversion().setDefault("dv2");
 		PropertiesWebClientCustomizer customizer = new PropertiesWebClientCustomizer(delegateApiVersionInserter,
 				apiVersionFormatter, properties1, properties2);
 		WebClient.Builder builder = WebClient.builder();
