@@ -34,7 +34,7 @@ import org.springframework.web.client.ApiVersionInserter;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class PropertiesApiVersionInserter implements ApiVersionInserter {
+public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 
 	private final List<ApiVersionInserter> inserters;
 
@@ -109,7 +109,7 @@ public class PropertiesApiVersionInserter implements ApiVersionInserter {
 	/**
 	 * Internal counter used to track if properties were applied.
 	 */
-	private static class Counter {
+	private static final class Counter {
 
 		private boolean empty = true;
 

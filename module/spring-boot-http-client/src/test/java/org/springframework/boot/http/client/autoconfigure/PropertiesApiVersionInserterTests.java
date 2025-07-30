@@ -17,6 +17,7 @@
 package org.springframework.boot.http.client.autoconfigure;
 
 import java.net.URI;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -47,8 +48,8 @@ class PropertiesApiVersionInserterTests {
 	@Test
 	void getWhenNoPropertiesAndDelegateUsesDelegate() throws Exception {
 		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(ApiVersionInserter.useQueryParam("v"), null);
-		URI uri = new URI("http://example.com");
-		assertThat(inserter.insertVersion("123", uri)).hasToString("http://example.com?v=123");
+		URI uri = new URI("https://example.com");
+		assertThat(inserter.insertVersion("123", uri)).hasToString("https://example.com?v=123");
 	}
 
 	@Test
@@ -60,8 +61,8 @@ class PropertiesApiVersionInserterTests {
 		properties2.getInsert().setQueryParameter("v2");
 		properties2.getInsert().setPathSegment(1);
 		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(null, null, properties1, properties2);
-		URI uri = new URI("http://example.com/foo/bar");
-		assertThat(inserter.insertVersion("123", uri)).hasToString("http://example.com/foo/123/bar?v1=123&v2=123");
+		URI uri = new URI("https://example.com/foo/bar");
+		assertThat(inserter.insertVersion("123", uri)).hasToString("https://example.com/foo/123/bar?v1=123&v2=123");
 		HttpHeaders headers = new HttpHeaders();
 		inserter.insertVersion("123", headers);
 		assertThat(headers.get("x-test")).containsExactly("123");
@@ -73,18 +74,18 @@ class PropertiesApiVersionInserterTests {
 		ApiVersionProperties properties = new ApiVersionProperties();
 		properties.getInsert().setQueryParameter("v");
 		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(delegate, null, properties);
-		assertThat(inserter.insertVersion("123", new URI("http://example.com")))
-			.hasToString("http://example.com?d=123&v=123");
+		assertThat(inserter.insertVersion("123", new URI("https://example.com")))
+			.hasToString("https://example.com?d=123&v=123");
 	}
 
 	@Test
 	void getWhenHasFormatterAppliesToProperties() throws Exception {
 		ApiVersionProperties properties1 = new ApiVersionProperties();
 		properties1.getInsert().setQueryParameter("v");
-		ApiVersionFormatter formatter = (version) -> String.valueOf(version).toUpperCase();
+		ApiVersionFormatter formatter = (version) -> String.valueOf(version).toUpperCase(Locale.ROOT);
 		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(null, formatter, properties1);
-		URI uri = new URI("http://example.com");
-		assertThat(inserter.insertVersion("latest", uri)).hasToString("http://example.com?v=LATEST");
+		URI uri = new URI("https://example.com");
+		assertThat(inserter.insertVersion("latest", uri)).hasToString("https://example.com?v=LATEST");
 	}
 
 }

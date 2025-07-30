@@ -18,6 +18,7 @@ package org.springframework.boot.restclient.autoconfigure;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ class PropertiesRestClientCustomizerTests {
 	@Test
 	void customizeAppliesPropertiesInOrder() throws Exception {
 		ApiVersionInserter delegateApiVersionInserter = ApiVersionInserter.useQueryParam("v");
-		ApiVersionFormatter apiVersionFormatter = (version) -> String.valueOf(version).toUpperCase();
+		ApiVersionFormatter apiVersionFormatter = (version) -> String.valueOf(version).toUpperCase(Locale.ROOT);
 		TestRestClientProperties properties1 = new TestRestClientProperties();
 		properties1.setBaseUrl("http://example.com/b1");
 		properties1.getDefaultHeader().put("x-h1", List.of("v1"));

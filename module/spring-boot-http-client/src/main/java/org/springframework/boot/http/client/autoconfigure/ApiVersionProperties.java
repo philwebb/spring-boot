@@ -16,14 +16,16 @@
 
 package org.springframework.boot.http.client.autoconfigure;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.context.properties.bind.Name;
 
 /**
  * API Version properties for reactive and blocking HTTP Clients.
  *
  * @author Phillip Webb
- * @sine 4.0.0
+ * @since 4.0.0
  */
+@ConfigurationPropertiesSource
 public class ApiVersionProperties {
 
 	/**

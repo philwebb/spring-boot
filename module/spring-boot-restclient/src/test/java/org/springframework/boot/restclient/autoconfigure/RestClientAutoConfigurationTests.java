@@ -19,6 +19,7 @@ package org.springframework.boot.restclient.autoconfigure;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -414,7 +415,7 @@ class RestClientAutoConfigurationTests {
 
 		@Bean
 		ApiVersionFormatter apiVersionFormatter() {
-			return (version) -> String.valueOf(version).toUpperCase();
+			return (version) -> String.valueOf(version).toUpperCase(Locale.ROOT);
 		}
 
 	}
