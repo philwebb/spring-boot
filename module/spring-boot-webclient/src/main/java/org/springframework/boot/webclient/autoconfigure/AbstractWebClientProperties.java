@@ -52,7 +52,7 @@ public abstract class AbstractWebClientProperties extends AbstractClientHttpConn
 	 * API version properties.
 	 */
 	@NestedConfigurationProperty
-	private ApiVersionProperties apiVersion = new ApiVersionProperties();
+	private final ApiVersionProperties apiVersion = new ApiVersionProperties();
 
 	public String getBaseUrl() {
 		return this.baseUrl;
@@ -72,10 +72,6 @@ public abstract class AbstractWebClientProperties extends AbstractClientHttpConn
 
 	public ApiVersionProperties getApiVersion() {
 		return this.apiVersion;
-	}
-
-	public void setApiVersion(ApiVersionProperties apiVersion) {
-		this.apiVersion = apiVersion;
 	}
 
 }

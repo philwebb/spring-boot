@@ -35,7 +35,7 @@ public class ApiVersionProperties {
 	/**
 	 * How version details should be inserted into requests.
 	 */
-	private Insert insert = new Insert();
+	private final Insert insert = new Insert();
 
 	public String getDefault() {
 		return this.defaultVersion;
@@ -47,10 +47,6 @@ public class ApiVersionProperties {
 
 	public Insert getInsert() {
 		return this.insert;
-	}
-
-	public void setInsert(Insert insert) {
-		this.insert = insert;
 	}
 
 	public static class Insert {
