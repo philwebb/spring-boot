@@ -184,7 +184,7 @@ public final class HttpComponentsHttpClientBuilder {
 
 	private SocketConfig createSocketConfig(HttpClientSettings settings) {
 		SocketConfig.Builder builder = SocketConfig.custom();
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::readTimeout)
 			.asInt(Duration::toMillis)
 			.to((timeout) -> builder.setSoTimeout(timeout, TimeUnit.MILLISECONDS));

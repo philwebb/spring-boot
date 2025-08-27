@@ -72,7 +72,7 @@ public final class SessionAutoConfiguration {
 				ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(cookie::getName).to(cookieSerializer::setCookieName);
 			map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
 			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
@@ -87,7 +87,7 @@ public final class SessionAutoConfiguration {
 
 		@SuppressWarnings("NullAway") // Lambda isn't detected with the correct
 										// nullability
-		private void setSameSite(PropertyMapper.NoNulls map, Cookie cookie, DefaultCookieSerializer cookieSerializer) {
+		private void setSameSite(PropertyMapper map, Cookie cookie, DefaultCookieSerializer cookieSerializer) {
 			map.from(cookie::getSameSite).as(SameSite::attributeValue).to(cookieSerializer::setSameSite);
 		}
 

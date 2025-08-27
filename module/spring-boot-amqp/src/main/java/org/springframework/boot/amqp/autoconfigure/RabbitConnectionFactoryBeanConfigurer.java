@@ -115,7 +115,6 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 * though.
 	 * @param factory the {@link RabbitConnectionFactoryBean} instance to configure
 	 */
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public void configure(RabbitConnectionFactoryBean factory) {
 		Assert.notNull(factory, "'factory' must not be null");
 		factory.setResourceLoader(this.resourceLoader);

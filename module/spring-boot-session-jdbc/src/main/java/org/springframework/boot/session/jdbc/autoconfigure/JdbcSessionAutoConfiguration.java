@@ -79,7 +79,7 @@ public final class JdbcSessionAutoConfiguration {
 			SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
 			ServerProperties serverProperties) {
 		return (sessionRepository) -> {
-			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 				.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(jdbcSessionProperties::getTableName).to(sessionRepository::setTableName);

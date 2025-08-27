@@ -242,9 +242,8 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @see #build()
 	 * @see #build(Class)
 	 */
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public <T extends SimpleAsyncTaskExecutor> T configure(T taskExecutor) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.virtualThreads).to(taskExecutor::setVirtualThreads);
 		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);
 		map.from(this.rejectTasksWhenLimitReached).to(taskExecutor::setRejectTasksWhenLimitReached);

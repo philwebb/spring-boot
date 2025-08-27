@@ -208,9 +208,8 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 * @return the task scheduler instance
 	 * @see #build()
 	 */
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public <T extends ThreadPoolTaskScheduler> T configure(T taskScheduler) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.poolSize).to(taskScheduler::setPoolSize);
 		map.from(this.awaitTermination).to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
 		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskScheduler::setAwaitTerminationSeconds);

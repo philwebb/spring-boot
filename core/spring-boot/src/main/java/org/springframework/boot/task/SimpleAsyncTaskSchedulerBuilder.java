@@ -200,9 +200,8 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	 * @return the task scheduler instance
 	 * @see #build()
 	 */
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public <T extends SimpleAsyncTaskScheduler> T configure(T taskScheduler) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
 		map.from(this.concurrencyLimit).to(taskScheduler::setConcurrencyLimit);
 		map.from(this.virtualThreads).to(taskScheduler::setVirtualThreads);

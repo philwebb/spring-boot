@@ -172,10 +172,9 @@ public final class CassandraAutoConfiguration {
 		}
 	}
 
-	@SuppressWarnings("NullAway") // Generic inference failure
 	private Config mapConfig(CassandraConnectionDetails connectionDetails) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.properties.getSessionName())
 			.whenHasText()
 			.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
@@ -197,7 +196,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapConnectionOptions(CassandraDriverOptions options) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Connection connectionProperties = this.properties.getConnection();
 		map.from(connectionProperties::getConnectTimeout)
 			.asInt(Duration::toMillis)
@@ -208,7 +207,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapPoolingOptions(CassandraDriverOptions options) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		CassandraProperties.Pool poolProperties = this.properties.getPool();
 		map.from(poolProperties::getIdleTimeout)
 			.asInt(Duration::toMillis)
@@ -219,7 +218,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapRequestOptions(CassandraDriverOptions options) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Request requestProperties = this.properties.getRequest();
 		map.from(requestProperties::getTimeout)
 			.asInt(Duration::toMillis)
@@ -248,7 +247,7 @@ public final class CassandraAutoConfiguration {
 	}
 
 	private void mapControlConnectionOptions(CassandraDriverOptions options) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Controlconnection controlProperties = this.properties.getControlconnection();
 		map.from(controlProperties::getTimeout)
 			.asInt(Duration::toMillis)

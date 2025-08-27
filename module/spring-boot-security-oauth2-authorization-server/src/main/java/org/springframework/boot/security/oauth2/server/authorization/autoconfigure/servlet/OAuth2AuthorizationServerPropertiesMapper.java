@@ -49,7 +49,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 	}
 
 	AuthorizationServerSettings asAuthorizationServerSettings() {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		OAuth2AuthorizationServerProperties.Endpoint endpoint = this.properties.getEndpoint();
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
 		AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
@@ -78,7 +78,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 
 	private RegisteredClient getRegisteredClient(String registrationId, Client client) {
 		Registration registration = client.getRegistration();
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		RegisteredClient.Builder builder = RegisteredClient.withId(registrationId);
 		map.from(registration::getClientId).to(builder::clientId);
 		map.from(registration::getClientSecret).to(builder::clientSecret);
@@ -100,7 +100,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return builder.build();
 	}
 
-	private ClientSettings getClientSettings(Client client, PropertyMapper.NoNulls map) {
+	private ClientSettings getClientSettings(Client client, PropertyMapper map) {
 		ClientSettings.Builder builder = ClientSettings.builder();
 		map.from(client::isRequireProofKey).to(builder::requireProofKey);
 		map.from(client::isRequireAuthorizationConsent).to(builder::requireAuthorizationConsent);
@@ -111,7 +111,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		return builder.build();
 	}
 
-	private TokenSettings getTokenSettings(Client client, PropertyMapper.NoNulls map) {
+	private TokenSettings getTokenSettings(Client client, PropertyMapper map) {
 		OAuth2AuthorizationServerProperties.Token token = client.getToken();
 		TokenSettings.Builder builder = TokenSettings.builder();
 		map.from(token::getAuthorizationCodeTimeToLive).to(builder::authorizationCodeTimeToLive);

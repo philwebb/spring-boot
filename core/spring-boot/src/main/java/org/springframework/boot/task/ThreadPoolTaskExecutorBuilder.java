@@ -323,9 +323,8 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @see #build()
 	 * @see #build(Class)
 	 */
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public <T extends ThreadPoolTaskExecutor> T configure(T taskExecutor) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.queueCapacity).to(taskExecutor::setQueueCapacity);
 		map.from(this.corePoolSize).to(taskExecutor::setCorePoolSize);
 		map.from(this.maxPoolSize).to(taskExecutor::setMaxPoolSize);

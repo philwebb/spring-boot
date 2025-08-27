@@ -79,7 +79,6 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * Configures the given {@code connectionFactory} with sensible defaults.
 	 * @param connectionFactory connection factory to configure
 	 */
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public final void configure(T connectionFactory) {
 		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		PropertyMapper map = PropertyMapper.get();

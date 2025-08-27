@@ -58,9 +58,8 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Generic inference failure
 	public void customize(WebClient.Builder builder) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.apiVersionInserter).to(builder::apiVersionInserter);
 		for (int i = this.orderedProperties.length - 1; i >= 0; i--) {
 			AbstractWebClientProperties properties = this.orderedProperties[i];
@@ -73,8 +72,7 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 	}
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private void setDefaultApiVersion(Builder builder, PropertyMapper.NoNulls map,
-			AbstractWebClientProperties properties) {
+	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractWebClientProperties properties) {
 		map.from(properties.getApiversion())
 			.as(ApiversionProperties::getDefaultVersion)
 			.whenNonNull()

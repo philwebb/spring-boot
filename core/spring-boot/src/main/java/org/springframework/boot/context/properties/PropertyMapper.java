@@ -24,7 +24,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
@@ -57,12 +56,11 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Chris Bono
- * @author Moritz Halbritter
  * @since 2.0.0
  */
 public final class PropertyMapper {
 
-	private static final Predicate<? extends @Nullable Object> ALWAYS = (t) -> true;
+	private static final Predicate<?> ALWAYS = (t) -> true;
 
 	private static final PropertyMapper INSTANCE = new PropertyMapper(null, null);
 
@@ -80,8 +78,12 @@ public final class PropertyMapper {
 	 * {@link Source#whenNonNull() whenNonNull} to every source.
 	 * @return a new property mapper instance
 	 */
-	public PropertyMapper.NoNulls alwaysApplyingWhenNonNull() {
-		return new PropertyMapper.NoNulls(alwaysApplying(Source::whenNonNull));
+	public PropertyMapper alwaysApplyingWhenNonNull() {
+		return alwaysApplying(this::whenNonNull);
+	}
+
+	private <T> Source<T> whenNonNull(Source<T> source) {
+		return source.whenNonNull();
 	}
 
 	/**
@@ -103,7 +105,7 @@ public final class PropertyMapper {
 	 * @return a {@link Source} that can be used to complete the mapping
 	 * @see #from(Object)
 	 */
-	public <T extends @Nullable Object> Source<T> from(Supplier<T> supplier) {
+	public <T> Source<T> from(Supplier<T> supplier) {
 		Assert.notNull(supplier, "'supplier' must not be null");
 		Source<T> source = getSource(supplier);
 		if (this.sourceOperator != null) {
@@ -119,20 +121,16 @@ public final class PropertyMapper {
 	 * @param value the value
 	 * @return a {@link Source} that can be used to complete the mapping
 	 */
-	public <T extends @Nullable Object> Source<T> from(T value) {
+	public <T> Source<T> from(@Nullable T value) {
 		return from(() -> value);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends @Nullable Object> Source<T> getSource(Supplier<T> supplier) {
+	private <T> Source<T> getSource(Supplier<T> supplier) {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
 		}
-		return new Source<T>(getSingletonSupplier(supplier), (Predicate<T>) ALWAYS);
-	}
-
-	private <T extends @Nullable Object> Supplier<T> getSingletonSupplier(Supplier<T> supplier) {
-		return SingletonSupplier.of(supplier);
+		return new Source<>(SingletonSupplier.of(supplier), (Predicate<T>) ALWAYS);
 	}
 
 	/**
@@ -141,57 +139,6 @@ public final class PropertyMapper {
 	 */
 	public static PropertyMapper get() {
 		return INSTANCE;
-	}
-
-	/**
-	 * Mapper which has been constructed from
-	 * {@link PropertyMapper#alwaysApplyingWhenNonNull()}.
-	 *
-	 * @since 4.0.0
-	 */
-	// We can't extend from PropertyMapper, because this confuses the null checkers and
-	// Kotlin
-	public static final class NoNulls {
-
-		private final PropertyMapper parent;
-
-		NoNulls(PropertyMapper parent) {
-			this.parent = parent;
-		}
-
-		/**
-		 * Return a new {@link Source} from the specified value supplier that can be used
-		 * to perform the mapping.
-		 * @param <T> the source type
-		 * @param supplier the value supplier
-		 * @return a {@link Source} that can be used to complete the mapping
-		 * @see #from(Object)
-		 */
-		public <T extends @Nullable Object> Source<@NonNull T> from(Supplier<T> supplier) {
-			return this.parent.from(supplier);
-		}
-
-		/**
-		 * Return a new {@link Source} from the specified value that can be used to
-		 * perform the mapping.
-		 * @param <T> the source type
-		 * @param value the value
-		 * @return a {@link Source} that can be used to complete the mapping
-		 */
-		public <T extends @Nullable Object> Source<@NonNull T> from(T value) {
-			return this.parent.from(value);
-		}
-
-		/**
-		 * Return a new {@link PropertyMapper} instance that applies the given
-		 * {@link SourceOperator} to every source.
-		 * @param operator the source operator to apply
-		 * @return a new property mapper instance
-		 */
-		public PropertyMapper.NoNulls alwaysApplying(SourceOperator operator) {
-			return new PropertyMapper.NoNulls(this.parent.alwaysApplying(operator));
-		}
-
 	}
 
 	/**
@@ -206,7 +153,7 @@ public final class PropertyMapper {
 		 * @param source the source to operate on
 		 * @return the updated source
 		 */
-		<T extends @Nullable Object> Source<T> apply(Source<T> source);
+		<T> Source<T> apply(Source<T> source);
 
 	}
 
@@ -215,7 +162,7 @@ public final class PropertyMapper {
 	 *
 	 * @param <T> the source type
 	 */
-	public static final class Source<T extends @Nullable Object> {
+	public static final class Source<T> {
 
 		private final Supplier<T> supplier;
 
@@ -244,7 +191,7 @@ public final class PropertyMapper {
 		 * @param adapter the adapter to apply
 		 * @return a new adapted source instance
 		 */
-		public <R extends @Nullable Object> Source<R> as(Function<T, R> adapter) {
+		public <R> Source<R> as(Function<T, R> adapter) {
 			Assert.notNull(adapter, "'adapter' must not be null");
 			Supplier<Boolean> test = () -> this.predicate.test(this.supplier.get());
 			Predicate<R> predicate = (t) -> test.get();
@@ -262,7 +209,7 @@ public final class PropertyMapper {
 		 * suppliers that throw a {@link NullPointerException}.
 		 * @return a new filtered source instance
 		 */
-		public Source<@NonNull T> whenNonNull() {
+		public Source<T> whenNonNull() {
 			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier), Objects::nonNull);
 		}
 
@@ -271,7 +218,7 @@ public final class PropertyMapper {
 		 * {@code true}.
 		 * @return a new filtered source instance
 		 */
-		public Source<@NonNull T> whenTrue() {
+		public Source<T> whenTrue() {
 			return when(Boolean.TRUE::equals);
 		}
 
@@ -280,7 +227,7 @@ public final class PropertyMapper {
 		 * {@code false}.
 		 * @return a new filtered source instance
 		 */
-		public Source<@NonNull T> whenFalse() {
+		public Source<T> whenFalse() {
 			return when(Boolean.FALSE::equals);
 		}
 
@@ -289,7 +236,7 @@ public final class PropertyMapper {
 		 * {@code toString()} containing actual text.
 		 * @return a new filtered source instance
 		 */
-		public Source<@NonNull T> whenHasText() {
+		public Source<T> whenHasText() {
 			return when((value) -> StringUtils.hasText(Objects.toString(value, null)));
 		}
 
@@ -299,7 +246,7 @@ public final class PropertyMapper {
 		 * @param object the object to match
 		 * @return a new filtered source instance
 		 */
-		public Source<@NonNull T> whenEqualTo(Object object) {
+		public Source<T> whenEqualTo(Object object) {
 			return when(object::equals);
 		}
 
@@ -310,7 +257,7 @@ public final class PropertyMapper {
 		 * @param target the target type to match
 		 * @return a new filtered source instance
 		 */
-		public <R extends T> Source<@NonNull R> whenInstanceOf(Class<R> target) {
+		public <R extends T> Source<R> whenInstanceOf(Class<R> target) {
 			return when(target::isInstance).as(target::cast);
 		}
 
@@ -333,7 +280,7 @@ public final class PropertyMapper {
 		 */
 		public Source<T> when(Predicate<T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
-			return new Source<>(this.supplier, this.predicate.and(predicate));
+			return new Source<>(this.supplier, (this.predicate != null) ? this.predicate.and(predicate) : predicate);
 		}
 
 		/**
@@ -375,7 +322,7 @@ public final class PropertyMapper {
 		 * @return the instance
 		 * @throws NoSuchElementException if the value has been filtered
 		 */
-		public <R extends @Nullable Object> R toInstance(Function<T, R> factory) {
+		public <R> R toInstance(Function<T, R> factory) {
 			Assert.notNull(factory, "'factory' must not be null");
 			T value = this.supplier.get();
 			if (!this.predicate.test(value)) {
@@ -402,7 +349,7 @@ public final class PropertyMapper {
 	/**
 	 * Supplier that will catch and ignore any {@link NullPointerException}.
 	 */
-	private static class NullPointerExceptionSafeSupplier<T extends @Nullable Object> implements Supplier<T> {
+	private static class NullPointerExceptionSafeSupplier<T> implements Supplier<T> {
 
 		private final Supplier<T> supplier;
 

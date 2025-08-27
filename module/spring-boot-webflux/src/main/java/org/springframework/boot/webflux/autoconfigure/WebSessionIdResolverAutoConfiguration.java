@@ -69,7 +69,7 @@ public final class WebSessionIdResolverAutoConfiguration {
 
 	private void initializeCookie(ResponseCookieBuilder builder) {
 		Cookie cookie = this.serverProperties.getReactive().getSession().getCookie();
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(cookie::getDomain).to(builder::domain);
 		map.from(cookie::getPath).to(builder::path);
 		map.from(cookie::getHttpOnly).to(builder::httpOnly);
@@ -80,7 +80,7 @@ public final class WebSessionIdResolverAutoConfiguration {
 	}
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private void setSameSite(ResponseCookieBuilder builder, PropertyMapper.NoNulls map, Cookie cookie) {
+	private void setSameSite(ResponseCookieBuilder builder, PropertyMapper map, Cookie cookie) {
 		map.from(cookie::getSameSite).as(SameSite::attributeValue).to(builder::sameSite);
 	}
 

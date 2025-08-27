@@ -100,11 +100,10 @@ public final class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaTemplate.class)
-	@SuppressWarnings("NullAway") // Generic inference failure
 	KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);
@@ -229,7 +228,7 @@ public final class KafkaAutoConfiguration {
 	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Backoff retryTopicBackoff) {
 		long delay = (retryTopicBackoff.getDelay() != null) ? retryTopicBackoff.getDelay().toMillis() : 0;
 		if (delay > 0) {
-			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			BackOffPolicyBuilder backOffPolicy = BackOffPolicyBuilder.newBuilder();
 			map.from(delay).to(backOffPolicy::delay);
 			map.from(retryTopicBackoff.getMaxDelay()).as(Duration::toMillis).to(backOffPolicy::maxDelay);

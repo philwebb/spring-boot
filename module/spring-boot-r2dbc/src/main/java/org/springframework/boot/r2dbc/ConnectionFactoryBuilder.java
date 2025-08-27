@@ -259,11 +259,11 @@ public final class ConnectionFactoryBuilder {
 				.build();
 		}
 
-		@SuppressWarnings({ "unchecked", "NullAway" }) // Generic inference failure
+		@SuppressWarnings("unchecked")
 		ConnectionPoolConfiguration connectionPoolConfiguration(ConnectionFactoryOptions options,
 				ConnectionFactory connectionFactory) {
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
-			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(options.getValue(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL))
 				.as(this::toDuration)
 				.to(builder::backgroundEvictionInterval);

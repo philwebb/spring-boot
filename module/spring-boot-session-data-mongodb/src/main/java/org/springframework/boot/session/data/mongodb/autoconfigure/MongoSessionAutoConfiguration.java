@@ -77,7 +77,7 @@ public final class MongoSessionAutoConfiguration {
 		SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 				SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
 				ServerProperties serverProperties) {
-			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			return (sessionRepository) -> {
 				map.from(sessionProperties
 					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
@@ -100,7 +100,7 @@ public final class MongoSessionAutoConfiguration {
 				SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
 				ServerProperties serverProperties) {
 			return (sessionRepository) -> {
-				PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(sessionProperties
 					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);

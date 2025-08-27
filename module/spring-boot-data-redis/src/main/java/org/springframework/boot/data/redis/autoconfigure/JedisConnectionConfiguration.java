@@ -122,16 +122,14 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return builder.build();
 	}
 
-	@SuppressWarnings("NullAway") // Generic inference failure
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
 		return builder;
 	}
 
-	@SuppressWarnings("NullAway") // Generic inference failure
 	private void applySslIfNeeded(JedisClientConfigurationBuilder builder) {
 		SslBundle sslBundle = getSslBundle();
 		if (sslBundle == null) {
@@ -141,7 +139,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
 		SslOptions sslOptions = sslBundle.getOptions();
 		SSLParameters sslParameters = new SSLParameters();
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
 		map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
 		sslBuilder.sslParameters(sslParameters);

@@ -85,10 +85,9 @@ public final class RSocketServerAutoConfiguration {
 					customizeWebsocketServerSpec(properties.getServer().getSpec()), customizers.orderedStream());
 		}
 
-		@SuppressWarnings("NullAway") // Generic inference failure
 		private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {
 			return (builder) -> {
-				PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(spec.getProtocols()).to(builder::protocols);
 				map.from(spec.getMaxFramePayloadLength()).asInt(DataSize::toBytes).to(builder::maxFramePayloadLength);
 				map.from(spec.isHandlePing()).to(builder::handlePing);
@@ -106,13 +105,12 @@ public final class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("NullAway") // Generic inference failure
 		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
 				ObjectProvider<RSocketServerCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			factory.setTransport(properties.getServer().getTransport());
-			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);

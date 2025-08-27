@@ -166,9 +166,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return new NettyRSocketServer(starter, this.lifecycleTimeout);
 	}
 
-	@SuppressWarnings("NullAway") // Generic inference failure
 	private void configureServer(io.rsocket.core.RSocketServer server) {
-		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.fragmentSize).asInt(DataSize::toBytes).to(server::fragment);
 		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
 	}
