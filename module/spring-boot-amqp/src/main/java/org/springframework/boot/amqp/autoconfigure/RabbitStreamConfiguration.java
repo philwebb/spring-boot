@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -128,7 +129,7 @@ class RabbitStreamConfiguration {
 		return builder;
 	}
 
-	private static Function<String, String> withFallback(Supplier<String> fallback) {
+	private static Function<@Nullable String, @Nullable String> withFallback(Supplier<@Nullable String> fallback) {
 		return (value) -> (value != null) ? value : fallback.get();
 	}
 
