@@ -58,8 +58,9 @@ public class PropertiesRestClientCustomizer implements RestClientCustomizer {
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // Generic inference failure
 	public void customize(RestClient.Builder builder) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.apiVersionInserter).to(builder::apiVersionInserter);
 		for (int i = this.orderedProperties.length - 1; i >= 0; i--) {
 			AbstractRestClientProperties properties = this.orderedProperties[i];
@@ -72,7 +73,8 @@ public class PropertiesRestClientCustomizer implements RestClientCustomizer {
 	}
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractRestClientProperties properties) {
+	private void setDefaultApiVersion(Builder builder, PropertyMapper.NoNulls map,
+			AbstractRestClientProperties properties) {
 		map.from(properties.getApiversion())
 			.as(ApiversionProperties::getDefaultVersion)
 			.whenNonNull()

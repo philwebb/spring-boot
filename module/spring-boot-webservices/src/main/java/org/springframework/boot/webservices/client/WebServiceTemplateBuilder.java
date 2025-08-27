@@ -479,10 +479,11 @@ public class WebServiceTemplateBuilder {
 	 * @see #build()
 	 * @see #build(Class)
 	 */
+	@SuppressWarnings("NullAway") // Generic inference failure
 	public <T extends WebServiceTemplate> T configure(T webServiceTemplate) {
 		Assert.notNull(webServiceTemplate, "'webServiceTemplate' must not be null");
 		configureMessageSenders(webServiceTemplate);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		applyCustomizers(webServiceTemplate, this.internalCustomizers);
 		map.from(this.marshaller).to(webServiceTemplate::setMarshaller);
 		map.from(this.unmarshaller).to(webServiceTemplate::setUnmarshaller);

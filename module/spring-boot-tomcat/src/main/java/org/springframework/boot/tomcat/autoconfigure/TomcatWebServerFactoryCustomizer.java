@@ -92,7 +92,7 @@ public class TomcatWebServerFactoryCustomizer
 	@Override
 	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.tomcatProperties::getBasedir).to(factory::setBaseDirectory);
 		map.from(this.tomcatProperties::getBackgroundProcessorDelay)
 			.as(Duration::getSeconds)
@@ -352,6 +352,7 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
+	@SuppressWarnings("NullAway") // Generic inference failure
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
 		AccessLogValve valve = new AccessLogValve();
 		PropertyMapper map = PropertyMapper.get();

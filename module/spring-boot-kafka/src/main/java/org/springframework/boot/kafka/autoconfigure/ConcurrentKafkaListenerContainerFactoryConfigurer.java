@@ -200,8 +200,9 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		configureContainer(listenerFactory.getContainerProperties());
 	}
 
+	@SuppressWarnings("NullAway") // Generic inference failure
 	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Assert.state(this.properties != null, "'properties' must not be null");
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
@@ -221,8 +222,9 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getChangeConsumerThreadName).to(factory::setChangeConsumerThreadName);
 	}
 
+	@SuppressWarnings("NullAway") // Generic inference failure
 	private void configureContainer(ContainerProperties container) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Assert.state(this.properties != null, "'properties' must not be null");
 		Listener properties = this.properties.getListener();
 		map.from(properties::getAckMode).to(container::setAckMode);

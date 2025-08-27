@@ -190,9 +190,10 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		@Bean
+		@SuppressWarnings("NullAway") // Generic inference failure
 		ReactiveJwtAuthenticationConverter reactiveJwtAuthenticationConverter() {
 			JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this.properties.getAuthorityPrefix()).to(grantedAuthoritiesConverter::setAuthorityPrefix);
 			map.from(this.properties.getAuthoritiesClaimDelimiter())
 				.to(grantedAuthoritiesConverter::setAuthoritiesClaimDelimiter);

@@ -91,6 +91,7 @@ public final class CodecsAutoConfiguration {
 			}
 
 			@Override
+			@SuppressWarnings("NullAway") // Generic inference failure
 			public void customize(CodecConfigurer configurer) {
 				PropertyMapper map = PropertyMapper.get();
 				CodecConfigurer.DefaultCodecs defaultCodecs = configurer.defaultCodecs();

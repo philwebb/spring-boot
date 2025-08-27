@@ -84,13 +84,14 @@ public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 	 * @return an {@link ApiVersionInserter} or {@code null} if no API version should be
 	 * inserted
 	 */
+	@SuppressWarnings("NullAway") // Generic inference failure
 	public static @Nullable ApiVersionInserter get(@Nullable ApiVersionInserter apiVersionInserter,
 			@Nullable ApiVersionFormatter apiVersionFormatter, Stream<ApiversionProperties> propertiesStream) {
 		List<ApiVersionInserter> inserters = new ArrayList<>();
 		if (apiVersionInserter != null) {
 			inserters.add(apiVersionInserter);
 		}
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertiesStream.forEach((properties) -> {
 			if (properties != null && properties.getInsert() != null) {
 				Insert insert = properties.getInsert();

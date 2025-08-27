@@ -81,7 +81,7 @@ abstract class JmsClientConfigurations {
 		}
 
 		private void mapTemplateProperties(Template properties, JmsTemplate template) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getSession().getAcknowledgeMode()::getMode).to(template::setSessionAcknowledgeMode);
 			map.from(properties.getSession()::isTransacted).to(template::setSessionTransacted);
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
@@ -109,7 +109,7 @@ abstract class JmsClientConfigurations {
 		}
 
 		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
 		}
 

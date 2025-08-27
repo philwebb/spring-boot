@@ -57,9 +57,10 @@ class MongoDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("NullAway") // Generic inference failure
 	MongoMappingContext mongoMappingContext(MongoProperties properties, MongoCustomConversions conversions,
 			MongoManagedTypes managedTypes) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		MongoMappingContext context = new MongoMappingContext();
 		map.from(properties.isAutoIndexCreation()).to(context::setAutoIndexCreation);
 		context.setManagedTypes(managedTypes);

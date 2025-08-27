@@ -60,11 +60,12 @@ public final class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("NullAway") // Generic inference failure
 	LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
 		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
-		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
 		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
@@ -93,7 +94,7 @@ public final class LdapAutoConfiguration {
 	LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource,
 			ObjectDirectoryMapper objectDirectoryMapper) {
 		Template template = properties.getTemplate();
-		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		ldapTemplate.setObjectDirectoryMapper(objectDirectoryMapper);
 		propertyMapper.from(template.isIgnorePartialResultException())

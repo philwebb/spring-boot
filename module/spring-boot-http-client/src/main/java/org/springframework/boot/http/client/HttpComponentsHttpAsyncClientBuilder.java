@@ -165,7 +165,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 	private PoolingAsyncClientConnectionManager createConnectionManager(HttpClientSettings settings) {
 		PoolingAsyncClientConnectionManagerBuilder builder = PoolingAsyncClientConnectionManagerBuilder.create()
 			.useSystemProperties();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		builder.setDefaultConnectionConfig(createConnectionConfig(settings));
 		setTlsStrategy(settings, map, builder);
 		this.connectionManagerCustomizer.accept(builder);
@@ -173,14 +173,14 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 	}
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private void setTlsStrategy(HttpClientSettings settings, PropertyMapper map,
+	private void setTlsStrategy(HttpClientSettings settings, PropertyMapper.NoNulls map,
 			PoolingAsyncClientConnectionManagerBuilder builder) {
 		map.from(settings::sslBundle).as(this.tlsStrategyFactory).to(builder::setTlsStrategy);
 	}
 
 	private ConnectionConfig createConnectionConfig(HttpClientSettings settings) {
 		ConnectionConfig.Builder builder = ConnectionConfig.custom();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout)
 			.as(Duration::toMillis)
 			.to((timeout) -> builder.setConnectTimeout(timeout, TimeUnit.MILLISECONDS));

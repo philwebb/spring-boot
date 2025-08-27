@@ -147,9 +147,10 @@ public class MultipartProperties {
 	 * Create a new {@link MultipartConfigElement} using the properties.
 	 * @return a new {@link MultipartConfigElement} configured using there properties
 	 */
+	@SuppressWarnings("NullAway") // Generic inference failure
 	public MultipartConfigElement createMultipartConfig() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.fileSizeThreshold).to(factory::setFileSizeThreshold);
 		map.from(this.location).whenHasText().to(factory::setLocation);
 		map.from(this.maxRequestSize).to(factory::setMaxRequestSize);

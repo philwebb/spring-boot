@@ -117,6 +117,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * @param factory the {@link DefaultJmsListenerContainerFactory} instance to configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
+	@SuppressWarnings("NullAway") // Generic inference failure
 	public void configure(DefaultJmsListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		Assert.notNull(factory, "'factory' must not be null");
 		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
@@ -124,7 +125,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		factory.setConnectionFactory(connectionFactory);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.jmsProperties::isPubSubDomain).to(factory::setPubSubDomain);
 		map.from(this.jmsProperties::isSubscriptionDurable).to(factory::setSubscriptionDurable);
 		map.from(this.jmsProperties::getClientId).to(factory::setClientId);

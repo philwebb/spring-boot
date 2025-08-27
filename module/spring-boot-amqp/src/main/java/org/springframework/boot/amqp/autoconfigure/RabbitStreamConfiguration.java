@@ -106,6 +106,7 @@ class RabbitStreamConfiguration {
 		return configure(builder, properties.getStream(), connectionDetails);
 	}
 
+	@SuppressWarnings("NullAway") // Generic inference failure
 	private static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties.Stream stream,
 			RabbitConnectionDetails connectionDetails) {
 		builder.lazyInitialization(true);

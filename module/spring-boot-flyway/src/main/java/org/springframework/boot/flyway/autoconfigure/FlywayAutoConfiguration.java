@@ -225,11 +225,11 @@ public final class FlywayAutoConfiguration {
 		 * @param configuration the configuration
 		 * @param properties the properties
 		 */
-		@SuppressWarnings("removal")
+		@SuppressWarnings({ "removal", "NullAway" }) // Generic inference failure
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			// NOTE: Using method references in the mapper methods can break
 			// back-compatibility (see gh-38164)
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 				.resolveLocations(properties.getLocations())
 				.toArray(new String[0]);
@@ -328,7 +328,7 @@ public final class FlywayAutoConfiguration {
 		}
 
 		private void configureExecuteInTransaction(FluentConfiguration configuration, FlywayProperties properties,
-				PropertyMapper map) {
+				PropertyMapper.NoNulls map) {
 			try {
 				map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
 			}
@@ -512,7 +512,7 @@ public final class FlywayAutoConfiguration {
 			Extension<OracleConfigurationExtension> extension = new Extension<>(configuration,
 					OracleConfigurationExtension.class, "Oracle");
 			Oracle properties = this.properties.getOracle();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getSqlplus).to(extension.via((ext, sqlplus) -> ext.setSqlplus(sqlplus)));
 			map.from(properties::getSqlplusWarn)
 				.to(extension.via((ext, sqlplusWarn) -> ext.setSqlplusWarn(sqlplusWarn)));
@@ -538,7 +538,7 @@ public final class FlywayAutoConfiguration {
 			Extension<PostgreSQLConfigurationExtension> extension = new Extension<>(configuration,
 					PostgreSQLConfigurationExtension.class, "PostgreSQL");
 			Postgresql properties = this.properties.getPostgresql();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getTransactionalLock)
 				.to(extension.via((ext, transactionalLock) -> ext.setTransactionalLock(transactionalLock)));
 		}
@@ -559,7 +559,7 @@ public final class FlywayAutoConfiguration {
 			Extension<SQLServerConfigurationExtension> extension = new Extension<>(configuration,
 					SQLServerConfigurationExtension.class, "SQL Server");
 			Sqlserver properties = this.properties.getSqlserver();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getKerberosLoginFile).to(extension.via(this::setKerberosLoginFile));
 		}
 

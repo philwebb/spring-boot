@@ -96,6 +96,7 @@ abstract class ConnectionFactoryConfigurations {
 		static class PooledConnectionFactoryConfiguration {
 
 			@Bean(destroyMethod = "dispose")
+			@SuppressWarnings("NullAway") // Generic inference failure
 			ConnectionPool connectionFactory(R2dbcProperties properties,
 					ObjectProvider<R2dbcConnectionDetails> connectionDetails, ResourceLoader resourceLoader,
 					ObjectProvider<ConnectionFactoryOptionsBuilderCustomizer> customizers,
@@ -104,7 +105,7 @@ abstract class ConnectionFactoryConfigurations {
 						connectionDetails.getIfAvailable(), resourceLoader.getClassLoader(),
 						customizers.orderedStream().toList(), decorators.orderedStream().toList());
 				R2dbcProperties.Pool pool = properties.getPool();
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				PropertyMapper.NoNulls map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
 				map.from(pool.getMaxIdleTime()).to(builder::maxIdleTime);
 				map.from(pool.getMaxLifeTime()).to(builder::maxLifeTime);
