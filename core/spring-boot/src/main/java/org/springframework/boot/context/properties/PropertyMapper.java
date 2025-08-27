@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
@@ -60,7 +61,7 @@ import org.springframework.util.function.SingletonSupplier;
  */
 public final class PropertyMapper {
 
-	private static final Predicate<?> ALWAYS = (t) -> true;
+	private static final Predicate<?> ALWAYS = (value) -> true;
 
 	private static final PropertyMapper INSTANCE = new PropertyMapper(null, null);
 
@@ -105,7 +106,7 @@ public final class PropertyMapper {
 	 * @return a {@link Source} that can be used to complete the mapping
 	 * @see #from(Object)
 	 */
-	public <T> Source<T> from(Supplier<T> supplier) {
+	public <T extends @Nullable Object> Source<T> from(Supplier<T> supplier) {
 		Assert.notNull(supplier, "'supplier' must not be null");
 		Source<T> source = getSource(supplier);
 		if (this.sourceOperator != null) {
@@ -126,7 +127,7 @@ public final class PropertyMapper {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Source<T> getSource(Supplier<T> supplier) {
+	private <T extends @Nullable Object> Source<T> getSource(Supplier<T> supplier) {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
 		}
@@ -162,7 +163,7 @@ public final class PropertyMapper {
 	 *
 	 * @param <T> the source type
 	 */
-	public static final class Source<T> {
+	public static final class Source<T extends @Nullable Object> {
 
 		private final Supplier<T> supplier;
 
@@ -175,12 +176,28 @@ public final class PropertyMapper {
 		}
 
 		/**
+		 * Return a source that will use the given supplier to obtain a fallback value to
+		 * use in place of {@code null}.
+		 * @param fallback the fallback supplier
+		 * @return a new {@link Source} instance
+		 * @since 4.0.0
+		 */
+		public Source<T> orFrom(Supplier<T> fallback) {
+			Assert.notNull(fallback, "'fallback' must not be null");
+			Supplier<T> supplier = () -> {
+				T value = this.supplier.get();
+				return (value != null) ? value : fallback.get();
+			};
+			return new Source<>(supplier, this.predicate);
+		}
+
+		/**
 		 * Return an adapted version of the source with {@link Integer} type.
 		 * @param <R> the resulting type
 		 * @param adapter an adapter to convert the current value to a number.
 		 * @return a new adapted source instance
 		 */
-		public <R extends Number> Source<Integer> asInt(Function<T, R> adapter) {
+		public <R extends @Nullable Number> Source<Integer> asInt(Function<T, R> adapter) {
 			return as(adapter).as(Number::intValue);
 		}
 
@@ -191,13 +208,14 @@ public final class PropertyMapper {
 		 * @param adapter the adapter to apply
 		 * @return a new adapted source instance
 		 */
-		public <R> Source<R> as(Function<T, R> adapter) {
+		public <R extends @Nullable Object> Source<R> as(Function<@NonNull T, R> adapter) {
 			Assert.notNull(adapter, "'adapter' must not be null");
 			Supplier<Boolean> test = () -> this.predicate.test(this.supplier.get());
-			Predicate<R> predicate = (t) -> test.get();
+			Predicate<R> predicate = (value) -> test.get();
 			Supplier<R> supplier = () -> {
 				if (test.get()) {
-					return adapter.apply(this.supplier.get());
+					T value = this.supplier.get();
+					return (value != null) ? adapter.apply(value) : null;
 				}
 				return null;
 			};
@@ -210,7 +228,7 @@ public final class PropertyMapper {
 		 * @return a new filtered source instance
 		 */
 		public Source<T> whenNonNull() {
-			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier), Objects::nonNull);
+			return when(new NullPointerExceptionSafeSupplier<>(this.supplier), Objects::nonNull);
 		}
 
 		/**
@@ -279,8 +297,12 @@ public final class PropertyMapper {
 		 * @return a new filtered source instance
 		 */
 		public Source<T> when(Predicate<T> predicate) {
+			return when(this.supplier, predicate);
+		}
+
+		private Source<T> when(Supplier<T> supplier, Predicate<T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
-			return new Source<>(this.supplier, (this.predicate != null) ? this.predicate.and(predicate) : predicate);
+			return new Source<>(supplier, (this.predicate != null) ? this.predicate.and(predicate) : predicate);
 		}
 
 		/**

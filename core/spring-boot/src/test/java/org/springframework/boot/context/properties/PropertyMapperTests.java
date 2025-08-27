@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
@@ -64,6 +65,17 @@ class PropertyMapperTests {
 	void fromWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.map.from((Supplier<?>) null))
 			.withMessageContaining("'supplier' must not be null");
+	}
+
+	@Test
+	void orFromWhenSuppliedWithNull() {
+		assertThat(this.map.from("value").orFrom(() -> "fallback").toInstance(Function.identity())).isEqualTo("value");
+	}
+
+	@Test
+	void orFromWhenSuppliedWithNonNull() {
+		assertThat(this.map.from((String) null).orFrom(() -> "fallback").toInstance(Function.identity()))
+			.isEqualTo("fallback");
 	}
 
 	@Test

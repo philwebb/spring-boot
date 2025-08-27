@@ -16,12 +16,8 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
-import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -110,26 +106,13 @@ class RabbitStreamConfiguration {
 	private static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties.Stream stream,
 			RabbitConnectionDetails connectionDetails) {
 		builder.lazyInitialization(true);
-		PropertyMapper map = PropertyMapper.get();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(stream.getHost()).to(builder::host);
 		map.from(stream.getPort()).to(builder::port);
-		map.from(stream.getVirtualHost())
-			.as(withFallback(connectionDetails::getVirtualHost))
-			.whenNonNull()
-			.to(builder::virtualHost);
-		map.from(stream.getUsername())
-			.as(withFallback(connectionDetails::getUsername))
-			.whenNonNull()
-			.to(builder::username);
-		map.from(stream.getPassword())
-			.as(withFallback(connectionDetails::getPassword))
-			.whenNonNull()
-			.to(builder::password);
+		map.from(stream.getVirtualHost()).orFrom(connectionDetails::getVirtualHost).to(builder::virtualHost);
+		map.from(stream.getUsername()).orFrom(connectionDetails::getUsername).to(builder::username);
+		map.from(stream.getPassword()).orFrom(connectionDetails::getPassword).to(builder::password);
 		return builder;
-	}
-
-	private static Function<@Nullable String, @Nullable String> withFallback(Supplier<@Nullable String> fallback) {
-		return (value) -> (value != null) ? value : fallback.get();
 	}
 
 }
