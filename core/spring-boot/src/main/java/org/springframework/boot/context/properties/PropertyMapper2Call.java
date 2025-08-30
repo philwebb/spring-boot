@@ -26,13 +26,13 @@ public class PropertyMapper2Call {
 	public static void main(String[] args) {
 		PropertyMapper2 map = PropertyMapper2.get();
 		Foo foo = new Foo();
-		map.from("123").as(Integer::valueOf).to(foo::notNull);
-		map.from("123").as(Integer::valueOf).withNulls().to(foo::notNull);
+		map.from("123").as(Integer::valueOf).to(foo::test);
+		map.from("123").as(Integer::valueOf).withNulls().to(foo::test);
 	}
 
 	static class Foo {
 
-		void notNull(@Nullable Integer value) {
+		void test(@Nullable Integer value) {
 		}
 
 	}

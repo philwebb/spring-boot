@@ -159,7 +159,7 @@ public final class PropertyMapper2 {
 
 		private final Predicate<T> predicate;
 
-		private Source(Supplier<T> supplier, Predicate<T> predicate) {
+		private Source(Supplier<T> supplier, Predicate<@NonNull T> predicate) {
 			Assert.notNull(predicate, "'predicate' must not be null");
 			this.supplier = supplier;
 			this.predicate = predicate;
@@ -297,10 +297,10 @@ public final class PropertyMapper2 {
 		 * @param consumer the consumer that should accept the value if it's not been
 		 * filtered
 		 */
-		public void to(Consumer<@NonNull T> consumer) {
+		public void to(Consumer<? super @NonNull T> consumer) {
 			Assert.notNull(consumer, "'consumer' must not be null");
 			T value = getValue();
-			if (value != null && this.predicate.test(value)) {
+			if (value != null && test(value)) {
 				consumer.accept(value);
 			}
 		}
@@ -316,11 +316,11 @@ public final class PropertyMapper2 {
 		 * @return a new mapped instance or the original instance
 		 * @since 3.0.0
 		 */
-		public <R> R to(R instance, BiFunction<R, @NonNull T, R> mapper) {
+		public <R> R to(R instance, BiFunction<R, ? super @NonNull T, R> mapper) {
 			Assert.notNull(instance, "'instance' must not be null");
 			Assert.notNull(mapper, "'mapper' must not be null");
 			T value = getValue();
-			if (value != null && this.predicate.test(value)) {
+			if (value != null && test(value)) {
 				return mapper.apply(instance, value);
 			}
 			return instance;
@@ -333,10 +333,10 @@ public final class PropertyMapper2 {
 		 * @return the instance
 		 * @throws NoSuchElementException if the value has been filtered
 		 */
-		public <R> R toInstance(Function<@NonNull T, R> factory) {
+		public <R> R toInstance(Function<? super @NonNull T, R> factory) {
 			Assert.notNull(factory, "'factory' must not be null");
 			T value = getValue();
-			if (value != null && this.predicate.test(value)) {
+			if (value != null && test(value)) {
 				return factory.apply(value);
 			}
 			throw new NoSuchElementException("No value present");
@@ -350,7 +350,7 @@ public final class PropertyMapper2 {
 		public void toCall(Runnable runnable) {
 			Assert.notNull(runnable, "'runnable' must not be null");
 			T value = getValue();
-			if (value != null && this.predicate.test(value)) {
+			if (value != null && test(value)) {
 				runnable.run();
 			}
 		}
@@ -362,6 +362,10 @@ public final class PropertyMapper2 {
 			catch (NullPointerException ex) {
 				return null;
 			}
+		}
+
+		boolean test(T t) {
+			return this.predicate.test(t);
 		}
 
 		public static class WithNulls<T extends @Nullable Object> {
@@ -378,12 +382,12 @@ public final class PropertyMapper2 {
 			 * @param consumer the consumer that should accept the value if it's not been
 			 * filtered
 			 */
-			public void to(Consumer<@Nullable T> consumer) {
+			public void to(Consumer<? super @Nullable T> consumer) {
 				Assert.notNull(consumer, "'consumer' must not be null");
-				// T value = getValue();
-				// if (value == null || Source.this.predicate.test(value)) {
-				// consumer.accept(value);
-				// }
+				T value = getValue();
+				if (value == null || test(value)) {
+					consumer.accept(value);
+				}
 			}
 
 			/**
@@ -396,13 +400,14 @@ public final class PropertyMapper2 {
 			 * @param mapper the mapping function
 			 * @return a new mapped instance or the original instance
 			 */
-			public <R extends @Nullable Object> R to(R instance, BiFunction<R, T, R> mapper) {
+			public <R extends @Nullable Object> R to(R instance,
+					BiFunction<@NonNull R, @Nullable ? super T, R> mapper) {
 				Assert.notNull(instance, "'instance' must not be null");
 				Assert.notNull(mapper, "'mapper' must not be null");
-				// T value = getValue();
-				// if (value == null || Source.this.predicate.test(value)) {
-				// return mapper.apply(instance, value);
-				// }
+				T value = getValue();
+				if (value == null || test(value)) {
+					return mapper.apply(instance, value);
+				}
 				return instance;
 			}
 
@@ -414,12 +419,12 @@ public final class PropertyMapper2 {
 			 * @return the instance
 			 * @throws NoSuchElementException if the value has been filtered
 			 */
-			public <R extends @Nullable Object> R toInstance(Function<T, R> factory) {
+			public <R extends @Nullable Object> R toInstance(Function<@Nullable ? super T, R> factory) {
 				Assert.notNull(factory, "'factory' must not be null");
-				// T value = getValue();
-				// if (value == null || Source.this.predicate.test(value)) {
-				// return factory.apply(value);
-				// }
+				T value = getValue();
+				if (value == null || test(value)) {
+					return factory.apply(value);
+				}
 				throw new NoSuchElementException("No value present");
 			}
 
@@ -430,10 +435,18 @@ public final class PropertyMapper2 {
 			 */
 			public void toCall(Runnable runnable) {
 				Assert.notNull(runnable, "'runnable' must not be null");
-				// T value = getValue();
-				// if (value == null || Source.this.predicate.test(value)) {
-				// runnable.run();
-				// }
+				T value = getValue();
+				if (value == null || test(value)) {
+					runnable.run();
+				}
+			}
+
+			@Nullable T getValue() {
+				return this.source.getValue();
+			}
+
+			boolean test(T t) {
+				return this.source.test(t);
 			}
 
 		}
