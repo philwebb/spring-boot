@@ -148,7 +148,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			ClientHttpRequestFactorySettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withConnectTimeout(null)));
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(factory::setConnectTimeout);
 		return factory;
 	}

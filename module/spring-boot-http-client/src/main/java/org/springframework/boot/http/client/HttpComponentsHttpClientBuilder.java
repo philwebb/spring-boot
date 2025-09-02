@@ -171,20 +171,17 @@ public final class HttpComponentsHttpClientBuilder {
 			.useSystemProperties();
 		PropertyMapper map = PropertyMapper.get();
 		builder.setDefaultSocketConfig(createSocketConfig(settings));
-		setTlsSocketStrategy(settings, map, builder);
+		map.from(settings::sslBundle)
+			.always()
+			.as(this.tlsSocketStrategyFactory::apply)
+			.to(builder::setTlsSocketStrategy);
 		this.connectionManagerCustomizer.accept(builder);
 		return builder.build();
 	}
 
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private void setTlsSocketStrategy(HttpClientSettings settings, PropertyMapper map,
-			PoolingHttpClientConnectionManagerBuilder builder) {
-		map.from(settings::sslBundle).as(this.tlsSocketStrategyFactory).whenNonNull().to(builder::setTlsSocketStrategy);
-	}
-
 	private SocketConfig createSocketConfig(HttpClientSettings settings) {
 		SocketConfig.Builder builder = SocketConfig.custom();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::readTimeout)
 			.asInt(Duration::toMillis)
 			.to((timeout) -> builder.setSoTimeout(timeout, TimeUnit.MILLISECONDS));

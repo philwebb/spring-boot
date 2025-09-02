@@ -101,7 +101,7 @@ public final class IntegrationAutoConfiguration {
 	static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties.getChannel().isAutoCreate()).to(integrationProperties::setChannelsAutoCreate);
 		map.from(properties.getChannel().getMaxUnicastSubscribers())
 			.to(integrationProperties::setChannelsMaxUnicastSubscribers);
@@ -143,7 +143,7 @@ public final class IntegrationAutoConfiguration {
 				entries.put("spring.integration.poller.fixed-rate", poller.getFixedRate());
 			});
 			PollerMetadata pollerMetadata = new PollerMetadata();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
 			setTrigger(map, poller, pollerMetadata);
