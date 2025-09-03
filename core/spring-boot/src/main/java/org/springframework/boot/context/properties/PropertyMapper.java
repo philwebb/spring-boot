@@ -119,7 +119,7 @@ public final class PropertyMapper {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
 		}
-		return new Source<>(SingletonSupplier.of(supplier), (valie) -> true);
+		return new Source<>(SingletonSupplier.of(supplier), (value) -> true);
 	}
 
 	/**
@@ -353,7 +353,7 @@ public final class PropertyMapper {
 			return new Always<>(this::getValue, this::test);
 		}
 
-		@Nullable T getValue() {
+		private @Nullable T getValue() {
 			try {
 				return this.supplier.get();
 			}
@@ -362,13 +362,13 @@ public final class PropertyMapper {
 			}
 		}
 
-		boolean test(T value) {
+		private boolean test(T value) {
 			Assert.state(value != null, "'value' must not be null");
 			return this.predicate.test(value);
 		}
 
 		/**
-		 * Allow source mapping to completed using methods that accept nulls.
+		 * Allow source mapping to complete using methods that accept nulls.
 		 *
 		 * @param <T> the source type
 		 */
@@ -376,9 +376,9 @@ public final class PropertyMapper {
 
 			private final Supplier<T> supplier;
 
-			private final Predicate<T> predicate;
+			private final Predicate<@NonNull T> predicate;
 
-			Always(Supplier<T> supplier, Predicate<T> predicate) {
+			Always(Supplier<T> supplier, Predicate<@NonNull T> predicate) {
 				this.supplier = supplier;
 				this.predicate = predicate;
 			}
@@ -394,11 +394,11 @@ public final class PropertyMapper {
 				Assert.notNull(adapter, "'adapter' must not be null");
 				Supplier<R> supplier = () -> {
 					T value = getValue();
-					return (value == null || this.predicate.test(value)) ? adapter.apply(value) : null;
+					return (value == null || test(value)) ? adapter.apply(value) : null;
 				};
 				Predicate<R> predicate = (adaptedValue) -> {
 					T value = getValue();
-					return value == null || this.predicate.test(value);
+					return value == null || test(value);
 				};
 				return new Always<>(supplier, predicate);
 			}
@@ -467,11 +467,12 @@ public final class PropertyMapper {
 				}
 			}
 
-			@Nullable T getValue() {
+			private @Nullable T getValue() {
 				return this.supplier.get();
 			}
 
-			boolean test(T value) {
+			private boolean test(T value) {
+				Assert.state(value != null, "'value' must not be null");
 				return this.predicate.test(value);
 			}
 
@@ -526,7 +527,7 @@ public final class PropertyMapper {
 	@FunctionalInterface
 	public interface Adapter<T, R extends @Nullable Object> {
 
-		@Nullable R apply(@NonNull T value);
+		R apply(T value);
 
 	}
 
