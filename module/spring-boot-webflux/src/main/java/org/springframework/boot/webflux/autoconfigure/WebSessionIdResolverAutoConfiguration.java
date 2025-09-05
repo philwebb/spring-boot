@@ -16,7 +16,6 @@
 
 package org.springframework.boot.webflux.autoconfigure;
 
-import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -77,7 +76,7 @@ public final class WebSessionIdResolverAutoConfiguration {
 		map.from(cookie::getSecure).to(builder::secure);
 		map.from(cookie::getMaxAge).to(builder::maxAge);
 		map.from(cookie::getPartitioned).to(builder::partitioned);
-		map.from(cookie::getSameSite).<@Nullable String>as(SameSite::attributeValue).always().to(builder::sameSite);
+		map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(builder::sameSite);
 	}
 
 }

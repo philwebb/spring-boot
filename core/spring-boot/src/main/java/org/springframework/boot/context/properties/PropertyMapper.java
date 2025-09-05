@@ -88,23 +88,6 @@ public final class PropertyMapper {
 	}
 
 	/**
-	 * Return a new {@link Source} from the specified value supplier that can be used to
-	 * perform the mapping.
-	 * @param <T> the source type
-	 * @param supplier the value supplier
-	 * @return a {@link Source} that can be used to complete the mapping
-	 * @see #from(Object)
-	 */
-	public <T extends @Nullable Object> Source<T> from(Supplier<T> supplier) {
-		Assert.notNull(supplier, "'supplier' must not be null");
-		Source<T> source = getSource(supplier);
-		if (this.sourceOperator != null) {
-			source = this.sourceOperator.apply(source);
-		}
-		return source;
-	}
-
-	/**
 	 * Return a new {@link Source} from the specified value that can be used to perform
 	 * the mapping.
 	 * @param <T> the source type
@@ -113,6 +96,23 @@ public final class PropertyMapper {
 	 */
 	public <T extends @Nullable Object> Source<T> from(@Nullable T value) {
 		return from(() -> value);
+	}
+
+	/**
+	 * Return a new {@link Source} from the specified value supplier that can be used to
+	 * perform the mapping.
+	 * @param <T> the source type
+	 * @param supplier the value supplier
+	 * @return a {@link Source} that can be used to complete the mapping
+	 * @see #from(Object)
+	 */
+	public <T extends @Nullable Object> Source<T> from(Supplier<? extends @Nullable T> supplier) {
+		Assert.notNull(supplier, "'supplier' must not be null");
+		Source<T> source = getSource(supplier::get);
+		if (this.sourceOperator != null) {
+			source = this.sourceOperator.apply(source);
+		}
+		return source;
 	}
 
 	private <T extends @Nullable Object> Source<T> getSource(Supplier<T> supplier) {
@@ -170,7 +170,7 @@ public final class PropertyMapper {
 		 * @return a new {@link Source} instance
 		 * @since 4.0.0
 		 */
-		public Source<T> orFrom(Supplier<T> fallback) {
+		public Source<T> orFrom(Supplier<? extends @Nullable T> fallback) {
 			Assert.notNull(fallback, "'fallback' must not be null");
 			Supplier<T> supplier = () -> {
 				T value = getValue();
@@ -185,7 +185,7 @@ public final class PropertyMapper {
 		 * @param adapter an adapter to convert the current value to a number.
 		 * @return a new adapted source instance
 		 */
-		public <R extends @Nullable Number> Source<Integer> asInt(Adapter<@NonNull T, R> adapter) {
+		public <R extends @Nullable Number> Source<Integer> asInt(Adapter<? super T, ? extends R> adapter) {
 			return as(adapter).as(Number::intValue);
 		}
 
@@ -196,11 +196,11 @@ public final class PropertyMapper {
 		 * @param adapter the adapter to apply
 		 * @return a new adapted source instance
 		 */
-		public <R extends @Nullable Object> Source<R> as(Adapter<@NonNull T, R> adapter) {
+		public <R extends @Nullable Object> Source<R> as(Adapter<? super T, ? extends R> adapter) {
 			Assert.notNull(adapter, "'adapter' must not be null");
 			Supplier<R> supplier = () -> {
 				T value = getValue();
-				return (value != null && this.predicate.test(value)) ? adapter.apply(value) : null;
+				return (value != null && this.predicate.test(value)) ? adapter.adapt(value) : null;
 			};
 			Predicate<R> predicate = (adaptedValue) -> {
 				T value = getValue();
@@ -368,6 +368,24 @@ public final class PropertyMapper {
 		}
 
 		/**
+		 * Adapter used to adapt a value and possibly return a {@code null} result.
+		 *
+		 * @param <T> the source type
+		 * @param <R> the result type
+		 */
+		@FunctionalInterface
+		public interface Adapter<T, R extends @Nullable Object> {
+
+			/**
+			 * Adapt the given value
+			 * @param value the value to adapt
+			 * @return an adapted value or {@code null}
+			 */
+			@Nullable R adapt(T value);
+
+		}
+
+		/**
 		 * Allow source mapping to complete using methods that accept nulls.
 		 *
 		 * @param <T> the source type
@@ -390,11 +408,11 @@ public final class PropertyMapper {
 			 * @param adapter the adapter to apply
 			 * @return a new adapted source instance
 			 */
-			public <R extends @Nullable Object> Always<R> as(Function<@Nullable ? super @Nullable T, R> adapter) {
+			public <R extends @Nullable Object> Always<R> as(Adapter<@Nullable ? super T, ? extends R> adapter) {
 				Assert.notNull(adapter, "'adapter' must not be null");
 				Supplier<R> supplier = () -> {
 					T value = getValue();
-					return (value == null || test(value)) ? adapter.apply(value) : null;
+					return (value == null || test(value)) ? adapter.adapt(value) : null;
 				};
 				Predicate<R> predicate = (adaptedValue) -> {
 					T value = getValue();
@@ -409,7 +427,7 @@ public final class PropertyMapper {
 			 * @param consumer the consumer that should accept the value if it's not been
 			 * filtered
 			 */
-			public void to(Consumer<? super @Nullable T> consumer) {
+			public void to(Consumer<@Nullable ? super T> consumer) {
 				Assert.notNull(consumer, "'consumer' must not be null");
 				T value = getValue();
 				if (value == null || test(value)) {
@@ -445,11 +463,11 @@ public final class PropertyMapper {
 			 * @return the instance
 			 * @throws NoSuchElementException if the value has been filtered
 			 */
-			public <R extends @Nullable Object> R toInstance(Factory<? super T, R> factory) {
+			public <R extends @Nullable Object> R toInstance(Function<@Nullable ? super T, ? extends R> factory) {
 				Assert.notNull(factory, "'factory' must not be null");
 				T value = getValue();
 				if (value == null || test(value)) {
-					return factory.create(value);
+					return factory.apply(value);
 				}
 				throw new NoSuchElementException("No value present");
 			}
@@ -474,6 +492,24 @@ public final class PropertyMapper {
 			private boolean test(T value) {
 				Assert.state(value != null, "'value' must not be null");
 				return this.predicate.test(value);
+			}
+
+			/**
+			 * Adapter that support nullable values.
+			 *
+			 * @param <T> the source type
+			 * @param <R> the result type
+			 */
+			@FunctionalInterface
+			public interface Adapter<T extends @Nullable Object, R extends @Nullable Object> {
+
+				/**
+				 * Adapt the given value
+				 * @param value the value to adapt
+				 * @return an adapted value or {@code null}
+				 */
+				@Nullable R adapt(T value);
+
 			}
 
 			/**
@@ -515,19 +551,6 @@ public final class PropertyMapper {
 			}
 
 		}
-
-	}
-
-	/**
-	 * Adapter used to adapt a value.
-	 *
-	 * @param <T> the source type
-	 * @param <R> the result type
-	 */
-	@FunctionalInterface
-	public interface Adapter<T, R extends @Nullable Object> {
-
-		R apply(T value);
 
 	}
 

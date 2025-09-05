@@ -18,8 +18,6 @@ package org.springframework.boot.session.autoconfigure;
 
 import java.time.Duration;
 
-import org.jspecify.annotations.Nullable;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -81,10 +79,7 @@ public final class SessionAutoConfiguration {
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
-			map.from(cookie::getSameSite)
-				.<@Nullable String>as(SameSite::attributeValue)
-				.always()
-				.to(cookieSerializer::setSameSite);
+			map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(cookieSerializer::setSameSite);
 			map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
