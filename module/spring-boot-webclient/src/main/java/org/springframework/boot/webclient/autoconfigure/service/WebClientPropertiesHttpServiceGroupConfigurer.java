@@ -23,9 +23,11 @@ import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpCon
 import org.springframework.boot.http.client.autoconfigure.reactive.HttpReactiveClientProperties;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
+import org.springframework.boot.http.client.service.HttpServiceClientScanRegistrar;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webclient.autoconfigure.PropertiesWebClientCustomizer;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
@@ -33,6 +35,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
@@ -46,6 +49,8 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	private final ClassLoader classLoader;
 
+	private final Environment environment;
+
 	private final ObjectProvider<SslBundles> sslBundles;
 
 	private final ReactiveHttpClientServiceProperties serviceProperties;
@@ -58,13 +63,14 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	private final @Nullable ApiVersionFormatter apiVersionFormatter;
 
-	WebClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, ObjectProvider<SslBundles> sslBundles,
-			ReactiveHttpClientServiceProperties serviceProperties,
+	WebClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, Environment environment,
+			ObjectProvider<SslBundles> sslBundles, ReactiveHttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder,
 			ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings,
 			ObjectProvider<ApiVersionInserter> apiVersionInserter,
 			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
 		this.classLoader = classLoader;
+		this.environment = environment;
 		this.sslBundles = sslBundles;
 		this.serviceProperties = serviceProperties;
 		this.clientConnectorBuilder = clientConnectorBuilder;
@@ -80,13 +86,15 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	@Override
 	public void configureGroups(Groups<WebClient.Builder> groups) {
-		groups.forEachClient(this::configureClient);
+		groups.forEachGroup(this::configureGroup);
 	}
 
-	private void configureClient(HttpServiceGroup group, WebClient.Builder builder) {
+	private void configureGroup(HttpServiceGroup group, WebClient.Builder clientBuilder,
+			HttpServiceProxyFactory.Builder proxyFactoryBuilder) {
 		ReactiveHttpClientServiceProperties.Group groupProperties = this.serviceProperties.getGroup().get(group.name());
-		builder.clientConnector(getClientConnector(groupProperties));
-		getPropertiesWebClientCustomizer(groupProperties).customize(builder);
+		clientBuilder.clientConnector(getClientConnector(groupProperties));
+		getPropertiesWebClientCustomizer(groupProperties).customize(clientBuilder);
+		proxyFactoryBuilder.embeddedValueResolver((value) -> resolveEmbeddedValue(value, group));
 	}
 
 	private PropertiesWebClientCustomizer getPropertiesWebClientCustomizer(
@@ -103,6 +111,11 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 		ClientHttpConnectorBuilder<?> builder = connectors.builder(this.classLoader);
 		ClientHttpConnectorSettings settings = connectors.settings();
 		return builder.build(settings);
+	}
+
+	private String resolveEmbeddedValue(String value, HttpServiceGroup group) {
+		value = this.environment.resolvePlaceholders(value);
+		return (value != null && value.startsWith(HttpServiceClientScanRegistrar.GROUP_SCHEME)) ? "" : value;
 	}
 
 }

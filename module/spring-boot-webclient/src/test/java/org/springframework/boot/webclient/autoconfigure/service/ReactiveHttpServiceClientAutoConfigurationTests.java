@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.aop.Advisor;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.webclient.WebClientCustomizer;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.webclient.autoconfigure.service.scan.TestHttpServiceClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -45,9 +47,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
 import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
-import org.springframework.web.service.registry.HttpServiceGroupConfigurer.ClientCallback;
+import org.springframework.web.service.registry.HttpServiceGroupConfigurer.GroupCallback;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
@@ -107,22 +110,23 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 					.getBean(WebClientPropertiesHttpServiceGroupConfigurer.class);
 				Groups<WebClient.Builder> groups = mock();
 				configurer.configureGroups(groups);
-				ArgumentCaptor<ClientCallback<WebClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
-				then(groups).should().forEachClient(callbackCaptor.capture());
-				ClientCallback<WebClient.Builder> callback = callbackCaptor.getValue();
+				ArgumentCaptor<GroupCallback<WebClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
+				then(groups).should().forEachGroup(callbackCaptor.capture());
+				GroupCallback<WebClient.Builder> callback = callbackCaptor.getValue();
 				assertConnectTimeout(callback, "one", Duration.ofSeconds(5));
 				assertConnectTimeout(callback, "two", Duration.ofSeconds(10));
 			});
 	}
 
-	private void assertConnectTimeout(ClientCallback<WebClient.Builder> callback, String name,
+	private void assertConnectTimeout(GroupCallback<WebClient.Builder> callback, String name,
 			Duration expectedReadTimeout) {
 		HttpServiceGroup group = mock();
 		given(group.name()).willReturn(name);
-		WebClient.Builder builder = mock();
-		callback.withClient(group, builder);
+		WebClient.Builder clientBuilder = mock();
+		HttpServiceProxyFactory.Builder factoryBuilder = mock();
+		callback.withGroup(group, clientBuilder, factoryBuilder);
 		ArgumentCaptor<ClientHttpConnector> connectorCaptor = ArgumentCaptor.captor();
-		then(builder).should().clientConnector(connectorCaptor.capture());
+		then(clientBuilder).should().clientConnector(connectorCaptor.capture());
 		ClientHttpConnector client = connectorCaptor.getValue();
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(client, "httpClient");
 		assertThat(httpClient.connectTimeout()).contains(expectedReadTimeout);
@@ -178,6 +182,18 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 	void whenHasNoHttpServiceProxyRegistryBean() {
 		this.contextRunner.withPropertyValues("spring.http.client.reactiveclient.base-url=https://example.com")
 			.run((context) -> assertThat(context).doesNotHaveBean(HttpServiceProxyRegistry.class));
+	}
+
+	@Test
+	void registerHttpServiceAnnotatedInterfacesInPackages() {
+		this.contextRunner.withUserConfiguration(ScanConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(TestHttpServiceClient.class));
+	}
+
+	@Test
+	void whenHasImportAnnotationDoesNotRegisterHttpServiceAnnotatedInterfacesInPackages() {
+		this.contextRunner.withUserConfiguration(ScanConfiguration.class, HttpClientConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(TestHttpServiceClient.class));
 	}
 
 	private HttpClient getJdkHttpClient(Object proxy) {
@@ -246,6 +262,12 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 			return (groups) -> groups.filterByName("one")
 				.forEachClient((group, builder) -> builder.defaultHeader("customizedgroup", "true"));
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@AutoConfigurationPackage(basePackageClasses = TestHttpServiceClient.class)
+	static class ScanConfiguration {
 
 	}
 

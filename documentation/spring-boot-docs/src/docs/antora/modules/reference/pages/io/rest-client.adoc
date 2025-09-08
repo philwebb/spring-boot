@@ -306,3 +306,184 @@ You can also define javadoc:org.springframework.web.client.ApiVersionInserter[] 
 
 TIP: API versioning is also supported on the server-side.
 See the xref:web/servlet.adoc#web.servlet.spring-mvc.api-versioning[Spring MVC] and xref:web/reactive.adoc#web.reactive.webflux.api-versioning[Spring WebFlux] sections for details.
+
+
+
+[[io.rest-client.httpservice]]
+== HTTP Service Interface Clients
+
+Instead of directly using a javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.reactive.function.client.WebClient[] to call an HTTP service, it's also possible to define an HTTP Service using an annotated Java interface.
+
+HTTP Service interfaces defines the service contract using methods that are annotated with javadoc:org.springframework.web.service.annotation.HttpExchange[format=annotation], or more typically the method specific variants (javadoc:org.springframework.web.service.annotation.GetExchange[format=annotation], javadoc:org.springframework.web.service.annotation.PostExchange[format=annotation], javadoc:org.springframework.web.service.annotation.DeleteExchange[format=annotation], etc).
+
+
+For example, the following code defines an HTTP Service for an an "`echo`" API that will return a JSON object containing an echo of the request.
+
+include-code::EchoService[]
+
+More details about how to develop HTTP Service interface clients can be found in the {url-spring-framework-docs}/integration/rest-clients.html#rest-http-interface[Spring Framework reference documentation].
+
+
+
+[[io.rest-client.httpservice.autoconfigured]]
+=== Auto-configured Interface Clients
+
+By default, Spring Boot will scan for HTTP Service interfaces in all xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] and create beans for all interfaces that are annotated with javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation].
+
+Our `EchoService` example above would be auto-configured as a client since it is annotated with javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation].
+
+
+[TIP]
+====
+HTTP Service interfaces can be used to define a contract that can be used on both the client and the server.
+To use these dual-purpose interfaces as clients, you will need to replace auto-configuration scanning with explicit javadoc:org.springframework.web.service.registry.ImportHttpServices[format=annotation] or javadoc:org.springframework.web.service.registry.AbstractHttpServiceRegistrar[] configuration.
+
+See xref:io/rest-client.adoc#io.rest-client.httpservice.advanced-configuration[the "`Advanced Configuration`" section below] for more details.
+====
+
+
+
+[[io.rest-client.httpservice.groups]]
+=== Service Client Groups
+
+Hard-coding absolute URLs in javadoc:org.springframework.web.service.annotation.HttpExchange[format=annotation] annotations is often not ideal in production applications.
+Instead, you will typically want to give the HTTP Service client a logical name in your code, and then lookup a URL from a property based on that name.
+
+HTTP Service clients allow you to do this by registering them into named groups.
+An HTTP Service group is a collection of HTTP Service interfaces that all share common features.
+
+For example, we may want to define an "`echo`" group to use for HTTP Service clients that call `\https://echo.zuplo.io`.
+
+NOTE: HTTP Service groups can be used to define more than just URLs.
+For example, your group could define connection timeouts and SSL settings.
+You can also associate client customization logic to a group, such as adding code to insert required auth headers.
+
+To directly associate an HTTP Service interface with a group, you can use the `group` or `value` attribute of javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation].
+You can also specify a group when using javadoc:org.springframework.web.service.registry.ImportHttpServices[format=annotation] or javadoc:org.springframework.web.service.registry.AbstractHttpServiceRegistrar[].
+
+To update our `EchoService` to use a group, we can write:
+
+include-code::EchoService[]
+
+We can then use a `base-url` property to link the `echo` group to an actual URL.
+
+For a `RestClient` backed HTTP Service client this would be:
+
+[configprops,yaml]
+----
+spring:
+  http:
+    client:
+      service:
+        group:
+          echo:
+            base-url: "https://echo.zuplo.io"
+----
+
+For a `WebClient` backed HTTP Service client, we'd use the reactive variant:
+
+[configprops,yaml]
+----
+spring:
+  http:
+    reactiveclient:
+      service:
+        group:
+          echo:
+            base-url: "https://echo.zuplo.io"
+----
+
+TIP: HTTP Service clients will be associated with a group named "`default`" if you don't specify a group.
+
+
+
+[[io.rest-client.httpservice.properties]]
+=== Configuration Properties
+
+Configuration properties for HTTP Services can be specified under `spring.http.client.service` for `RestClient` backed clients and `spring.http.reactiveclient.service` for `WebClient` backed clients.
+
+You can use properties to configure aspects such as:
+
+* The base URL.
+* Any default default headers that should be sent.
+* API versioning configuration.
+* Redirect settings.
+* Connection and read timeouts.
+* SSL bundles to use.
+
+Properties are hierarchical and can be specified per-group, or for all HTTP Service clients.
+Some properties can also be specified as xref:/io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global client configuration], so that they are considered for both HTTP Service clients and direct use of `RestClient` or `WebClient`.
+
+For example, the properties below will:
+
+* Configure all HTTP Service client and `RestClient` beans to use a one second connect timeout (unless otherwise overridden).
+* Configure all HTTP Service clients to use a two second read timeout (unless otherwise overridden).
+* Configure HTTP Service clients in the "`echo`" group to use a specific base URL.
+
+[configprops,yaml]
+----
+spring:
+  http:
+    client:
+      connect-timeout: 1s
+      service:
+        read-timeout: 2s;
+        group:
+          echo:
+            base-url: "https://echo.zuplo.io"
+----
+
+
+
+[[io.rest-client.httpservice.customization]]
+=== Customization
+
+If you need to customize HTTP Service clients beyond basic properties, you can use an HTTP Service group configurer.
+For `RestClient` backed HTTP Service clients, you can declare a bean that implements javadoc:org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer[].
+For `WebClient` backed HTTP Service clients you can declare a bean that implements javadoc:org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer[].
+
+Both work in the same way and will be automatically applied by Spring Boot's auto-configuraiton.
+
+For example, the following configuration would add a group customizer that adds an HTTP header to each outgoing request containing the group name:
+
+include-code::MyHttpServiceGroupConfiguration[]
+
+
+
+[[io.rest-client.httpservice.advanced-configuration]]
+=== Advanced Configuration
+
+Spring Boot's javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation] auto-configuration may not be suitable for all applications.
+For example, you may want to associate the same Java interface with multiple HTTP Service groups.
+Or you might published shared HTTP Service interfaces for use across multiple applications, making it impossible to know in advance which group they should be associated with.
+
+For these situations you can:
+
+* Use the javadoc:org.springframework.web.service.registry.ImportHttpServices[format=annotation] annotation.
+* javadoc:org.springframework.context.annotation.Import[format=annotation] your own javadoc:org.springframework.web.service.registry.AbstractHttpServiceRegistrar[] implementation.
+
+For more details, see {url-spring-framework-docs}/integration/rest-clients.html#rest-http-interface-group-config[Spring Framework's reference documenation].
+
+As soon as you start to define your own HTTP Service client configuration, Spring Boot will no longer auto-configure scanning for javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation] annotated interfaces.
+If you want to scan for javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation] annotated interfaces in addition to other HTTP Service client configuration, you can use the javadoc:org.springframework.boot.http.client.service.HttpServiceClientScan[format=annotation] annotation.
+
+[NOTE]
+====
+You should not use javadoc:org.springframework.boot.http.client.service.HttpServiceClient[format=annotation] on HTTP Service interfaces that you directly import or register.
+Doing so may cause an javadoc:org.springframework.boot.http.client.service.HttpServiceClientGroupMismatchException[] exception to be thrown.
+
+This is due to the fact that Spring has no clear signal as to which group should be used when there is a clash.
+
+For example, given the following HTTP Service client interface:
+
+include-code::MyHttpService[]
+
+The following configuration is ambiguous:
+
+include-code::MyHttpServiceConfiguration[]
+
+Here, the `@HttpServiceClient` annotation is indicating that that the `greeting` group should be used.
+Where as the `@ImportHttpService` is indicating that the `default` group should be used.
+
+The `@ImportHttpService` group is particularly easy to miss, since `default` is used when no explicit `group` attribute is declared.
+====
