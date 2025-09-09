@@ -46,8 +46,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
-import org.springframework.web.service.registry.HttpServiceGroupConfigurer.ClientCallback;
+import org.springframework.web.service.registry.HttpServiceGroupConfigurer.GroupCallback;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
@@ -113,22 +114,23 @@ class HttpServiceClientAutoConfigurationTests {
 					.getBean(RestClientPropertiesHttpServiceGroupConfigurer.class);
 				Groups<RestClient.Builder> groups = mock();
 				configurer.configureGroups(groups);
-				ArgumentCaptor<ClientCallback<RestClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
-				then(groups).should().forEachClient(callbackCaptor.capture());
-				ClientCallback<RestClient.Builder> callback = callbackCaptor.getValue();
+				ArgumentCaptor<GroupCallback<RestClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
+				then(groups).should().forEachGroup(callbackCaptor.capture());
+				GroupCallback<RestClient.Builder> callback = callbackCaptor.getValue();
 				assertConnectTimeout(callback, "one", 5000);
 				assertConnectTimeout(callback, "two", 10000);
 			});
 	}
 
-	private void assertConnectTimeout(ClientCallback<RestClient.Builder> callback, String name,
+	private void assertConnectTimeout(GroupCallback<RestClient.Builder> callback, String name,
 			long expectedReadTimeout) {
 		HttpServiceGroup group = mock();
 		given(group.name()).willReturn(name);
-		RestClient.Builder builder = mock();
-		callback.withClient(group, builder);
+		RestClient.Builder clientBuilder = mock();
+		HttpServiceProxyFactory.Builder proxyFactoryBuilder = mock();
+		callback.withGroup(group, clientBuilder, proxyFactoryBuilder);
 		ArgumentCaptor<ClientHttpRequestFactory> requestFactoryCaptor = ArgumentCaptor.captor();
-		then(builder).should().requestFactory(requestFactoryCaptor.capture());
+		then(clientBuilder).should().requestFactory(requestFactoryCaptor.capture());
 		ClientHttpRequestFactory client = requestFactoryCaptor.getValue();
 		assertThat(client).extracting("connectTimeout").isEqualTo(expectedReadTimeout);
 	}

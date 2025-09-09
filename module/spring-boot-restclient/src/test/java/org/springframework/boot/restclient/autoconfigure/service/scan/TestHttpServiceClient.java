@@ -17,14 +17,14 @@
 package org.springframework.boot.restclient.autoconfigure.service.scan;
 
 import org.springframework.web.service.annotation.GetExchange;
-import org.springframework.web.service.registry.HttpServiceClient;
+import org.springframework.web.service.annotation.HttpExchange;
 
 /**
  * Test HTTP service used with scanning.
  *
  * @author Phillip Webb
  */
-@HttpServiceClient("test")
+@HttpExchange("group://test")
 public interface TestHttpServiceClient {
 
 	@GetExchange("/hello")

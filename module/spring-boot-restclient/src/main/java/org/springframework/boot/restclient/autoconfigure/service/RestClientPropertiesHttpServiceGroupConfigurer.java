@@ -23,14 +23,17 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.autoconfigure.ClientHttpRequestFactories;
 import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
+import org.springframework.boot.http.client.autoconfigure.HttpExchangeUrlsGroupProvider;
 import org.springframework.boot.restclient.autoconfigure.PropertiesRestClientCustomizer;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
@@ -44,6 +47,8 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	private final ClassLoader classLoader;
 
+	private final Environment environment;
+
 	private final ObjectProvider<SslBundles> sslBundles;
 
 	private final HttpClientServiceProperties serviceProperties;
@@ -56,13 +61,14 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	private final @Nullable ApiVersionFormatter apiVersionFormatter;
 
-	RestClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, ObjectProvider<SslBundles> sslBundles,
-			HttpClientServiceProperties serviceProperties,
+	RestClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, Environment environment,
+			ObjectProvider<SslBundles> sslBundles, HttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> requestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> requestFactorySettings,
 			ObjectProvider<ApiVersionInserter> apiVersionInserter,
 			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
 		this.classLoader = classLoader;
+		this.environment = environment;
 		this.sslBundles = sslBundles;
 		this.serviceProperties = serviceProperties;
 		this.requestFactoryBuilder = requestFactoryBuilder;
@@ -78,13 +84,15 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	@Override
 	public void configureGroups(Groups<RestClient.Builder> groups) {
-		groups.forEachClient(this::configureClient);
+		groups.forEachGroup(this::configureGroup);
 	}
 
-	private void configureClient(HttpServiceGroup group, RestClient.Builder builder) {
+	private void configureGroup(HttpServiceGroup group, RestClient.Builder clientBuilder,
+			HttpServiceProxyFactory.Builder proxyFactoryBuilder) {
 		HttpClientServiceProperties.Group groupProperties = this.serviceProperties.getGroup().get(group.name());
-		builder.requestFactory(getRequestFactory(groupProperties));
-		getPropertiesRestClientCustomizer(groupProperties).customize(builder);
+		clientBuilder.requestFactory(getRequestFactory(groupProperties));
+		getPropertiesRestClientCustomizer(groupProperties).customize(clientBuilder);
+		proxyFactoryBuilder.embeddedValueResolver((value) -> resolveEmbeddedValue(value, group));
 	}
 
 	private PropertiesRestClientCustomizer getPropertiesRestClientCustomizer(
@@ -100,6 +108,11 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 		ClientHttpRequestFactoryBuilder<?> builder = factories.builder(this.classLoader);
 		ClientHttpRequestFactorySettings settings = factories.settings();
 		return builder.build(settings);
+	}
+
+	private String resolveEmbeddedValue(String value, HttpServiceGroup group) {
+		value = this.environment.resolvePlaceholders(value);
+		return (value != null && value.startsWith(HttpExchangeUrlsGroupProvider.GROUP_SCHEME)) ? "" : value;
 	}
 
 }

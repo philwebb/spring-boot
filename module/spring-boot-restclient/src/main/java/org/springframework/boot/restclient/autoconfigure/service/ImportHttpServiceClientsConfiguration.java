@@ -18,43 +18,51 @@ package org.springframework.boot.restclient.autoconfigure.service;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.http.client.autoconfigure.HttpExchangeUrlsGroupProvider;
 import org.springframework.boot.http.client.autoconfigure.service.ConditionalOnMissingHttpServiceProxyBean;
-import org.springframework.boot.restclient.autoconfigure.service.ImportHttpServiceClientsConfiguration.ImportHttpServiceClients;
+import org.springframework.boot.restclient.autoconfigure.service.ImportHttpServiceClientsConfiguration.Registrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.web.service.registry.AbstractClientHttpServiceRegistrar;
-import org.springframework.web.service.registry.HttpServiceClient;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.registry.AbstractHttpServiceRegistrar;
+import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
+import org.springframework.web.service.registry.ImportHttpServiceRegistrar;
+import org.springframework.web.service.registry.ImportHttpServices.GroupProvider;
 
 /**
- * {@link Configuration @Configuration} to import {@link ImportHttpServiceClients} when no
+ * {@link Configuration @Configuration} to import HTTP Service clients when no
  * user-defined HTTP service client beans are found.
  *
  * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingHttpServiceProxyBean
-@Import(ImportHttpServiceClients.class)
+@Import(Registrar.class)
 class ImportHttpServiceClientsConfiguration {
 
 	/**
-	 * {@link AbstractClientHttpServiceRegistrar} to import
-	 * {@link HttpServiceClient @HttpServiceClient} annotated classes from
-	 * {@link AutoConfigurationPackages}.
+	 * {@link AbstractHttpServiceRegistrar} to import {@link HttpExchange @HttpExchange}
+	 * annotated classes with a URL from {@link AutoConfigurationPackages}.
 	 */
-	static class ImportHttpServiceClients extends AbstractClientHttpServiceRegistrar {
+	static class Registrar extends ImportHttpServiceRegistrar {
 
 		private final BeanFactory beanFactory;
 
-		ImportHttpServiceClients(BeanFactory beanFactory) {
+		Registrar(BeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
 		}
 
 		@Override
 		protected void registerHttpServices(GroupRegistry registry, AnnotationMetadata importingClassMetadata) {
 			if (AutoConfigurationPackages.has(this.beanFactory)) {
-				findAndRegisterHttpServiceClients(registry, AutoConfigurationPackages.get(this.beanFactory));
+				registerHttpServices(registry, AutoConfigurationPackages.get(this.beanFactory).toArray(String[]::new));
 			}
+		}
+
+		private void registerHttpServices(GroupRegistry registry, String[] basePackages) {
+			GroupProvider groupProvider = new HttpExchangeUrlsGroupProvider();
+			registerHttpServices(registry, groupProvider, ClientType.REST_CLIENT, NO_CLASSES, NO_CLASSES, basePackages);
 		}
 
 	}
