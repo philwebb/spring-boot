@@ -74,4 +74,10 @@ final class WebClientHttpServiceClientConfiguration implements BeanClassLoaderAw
 		return new WebClientHttpServiceClientGroupVerifier();
 	}
 
+	@Bean
+	RestClientHttpServiceClientGroupVerifier restClientHttpServiceClientGroupVerifier() {
+		// Also verify RestClient in case ClientType.UNSPECIFIED is accidentally used
+		return new RestClientHttpServiceClientGroupVerifier();
+	}
+
 }

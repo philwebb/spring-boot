@@ -205,6 +205,13 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 				.hasCauseInstanceOf(HttpServiceClientGroupMismatchException.class));
 	}
 
+	@Test
+	void whenHasGroupMismatchWithRestThrowsException() {
+		this.contextRunner.withUserConfiguration(GroupMismatchWithRestConfiguration.class)
+			.run((context) -> assertThat(context).getFailure()
+				.hasCauseInstanceOf(HttpServiceClientGroupMismatchException.class));
+	}
+
 	private HttpClient getJdkHttpClient(Object proxy) {
 		return (HttpClient) Extractors.byName("builder.connector.httpClient").apply(getWebClient(proxy));
 	}
@@ -284,6 +291,13 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 	@HttpServiceClientScan(basePackageClasses = TestHttpServiceClient.class, clientType = ClientType.WEB_CLIENT)
 	@ImportHttpServices(types = TestHttpServiceClient.class, clientType = ClientType.WEB_CLIENT)
 	static class GroupMismatchConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@HttpServiceClientScan(basePackageClasses = TestHttpServiceClient.class, clientType = ClientType.WEB_CLIENT)
+	@ImportHttpServices(types = TestHttpServiceClient.class)
+	static class GroupMismatchWithRestConfiguration {
 
 	}
 

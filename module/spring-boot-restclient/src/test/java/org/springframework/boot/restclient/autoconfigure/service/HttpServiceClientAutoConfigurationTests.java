@@ -50,7 +50,6 @@ import org.springframework.web.client.support.RestClientHttpServiceGroupConfigur
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
-import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.GroupCallback;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
@@ -309,7 +308,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@HttpServiceClientScan(basePackageClasses = TestHttpServiceClient.class)
-	@ImportHttpServices(clientType = ClientType.WEB_CLIENT, types = TestHttpServiceClient.class)
+	@ImportHttpServices(TestHttpServiceClient.class)
 	static class GroupMismatchConfiguration {
 
 	}
