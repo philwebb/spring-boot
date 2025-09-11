@@ -30,6 +30,7 @@ import org.springframework.web.service.registry.HttpServiceGroupConfigurer;
  * @param <C> the client builder type
  * @author Phillip Webb
  * @since 4.0.0
+ * @see HttpServiceClientGroupMismatchException
  */
 public abstract class HttpServiceClientGroupVerifier<C> implements HttpServiceGroupConfigurer<C> {
 

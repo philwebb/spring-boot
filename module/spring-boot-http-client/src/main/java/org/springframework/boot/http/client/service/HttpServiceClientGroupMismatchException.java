@@ -33,7 +33,7 @@ public final class HttpServiceClientGroupMismatchException extends IllegalStateE
 
 	private final String actualGroup;
 
-	private HttpServiceClientGroupMismatchException(Class<?> serviceType, String requestedGroup, String actualGroup) {
+	HttpServiceClientGroupMismatchException(Class<?> serviceType, String requestedGroup, String actualGroup) {
 		super(buildMessage(serviceType, requestedGroup, actualGroup));
 		this.serviceType = serviceType;
 		this.requestedGroup = requestedGroup;
@@ -66,9 +66,8 @@ public final class HttpServiceClientGroupMismatchException extends IllegalStateE
 	}
 
 	private static String buildMessage(Class<?> serviceType, String requestedGroup, String actualGroup) {
-		return String.format("@HttpServiceClient group mismatch for %s (requested '%s' "
-				+ "but was registered with '%s'). Classes annoated with @HttpServiceClient "
-				+ "should not be directly registered.", serviceType, requestedGroup, actualGroup);
+		return "@HttpServiceClient group mismatch for %s (requested '%s' but was registered with '%s')"
+			.formatted(serviceType, requestedGroup, actualGroup);
 	}
 
 	static void throwOnMismatch(Class<?> serviceType, String requestedGroup, String actualGroup) {

@@ -119,7 +119,9 @@ public class HttpServiceClientScanRegistrar extends AbstractHttpServiceRegistrar
 	private record Processor(GroupRegistry registry, AnnotationMetadata metadata, Scanner scanner) {
 
 		void process(ClientType clientType, List<String> basePackages) {
-			basePackages.forEach(this::processPackage);
+			for (String basePackge : basePackages) {
+				processPackage(clientType, basePackge);
+			}
 		}
 
 		void process(Stream<MergedAnnotation<HttpServiceClientScan>> annotations) {
@@ -135,23 +137,24 @@ public class HttpServiceClientScanRegistrar extends AbstractHttpServiceRegistrar
 		private void process(MergedAnnotation<?> annotation) {
 			String[] basePackages = annotation.getStringArray("basePackages");
 			Class<?>[] basePackageClasses = annotation.getClassArray("basePackageClasses");
+			ClientType clientType = annotation.getEnum("clientType", ClientType.class);
 			if (ObjectUtils.isEmpty(basePackages) && ObjectUtils.isEmpty(basePackageClasses)) {
 				basePackages = new String[] { ClassUtils.getPackageName(metadata().getClassName()) };
 			}
 			for (String basePackage : basePackages) {
-				processPackage(basePackage);
+				processPackage(clientType, basePackage);
 			}
 			for (Class<?> basePackage : basePackageClasses) {
-				processPackage(basePackage.getPackageName());
+				processPackage(clientType, basePackage.getPackageName());
 			}
 		}
 
-		private void processPackage(String basePackage) {
+		private void processPackage(ClientType clientType, String basePackage) {
 			for (BeanDefinition definition : this.scanner.findCandidateComponents(basePackage)) {
 				AnnotationMetadata beanMetadata = ((AnnotatedBeanDefinition) definition).getMetadata();
 				MergedAnnotation<?> annotation = beanMetadata.getAnnotations().get(HttpServiceClient.class);
 				String group = scanner().getEnvironment().resolvePlaceholders(annotation.getString("group"));
-				registry().forGroup(group).registerTypeNames(beanMetadata.getClassName());
+				registry().forGroup(group, clientType).registerTypeNames(beanMetadata.getClassName());
 			}
 		}
 

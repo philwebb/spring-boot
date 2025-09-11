@@ -36,10 +36,13 @@ import org.springframework.web.service.registry.ImportHttpServices;
  * <p>
  * This interface can be used as an alternative to
  * {@link ImportHttpServices @ImportHttpServices} when the
- * {@link HttpExchange @HttpExchange} interface is only designed for client use.
+ * {@link HttpExchange @HttpExchange} interface is <em>only</em> designed for client use.
  * <p>
- * Discovered HTTP Services will be registered with {@link ClientType#UNSPECIFIED} under
- * the group specified in the {@link HttpServiceClient @HttpServiceClient} annotation.
+ * Discovered HTTP Services will be registered under the group specified in the
+ * {@link HttpServiceClient @HttpServiceClient} annotation.
+ * <p>
+ * HTTP Service clients imported by this annotation should <b>not</b> be also be
+ * registered directly.
  *
  * @author Phillip Webb
  * @see ImportHttpServices
@@ -84,6 +87,14 @@ public @interface HttpServiceClientScan {
 	 * @return the base package classes
 	 */
 	Class<?>[] basePackageClasses() default {};
+
+	/**
+	 * Specify the type of client to use for the group.
+	 * <p>
+	 * By default, this is {@link ClientType#UNSPECIFIED}.
+	 * @return the client type
+	 */
+	ClientType clientType() default ClientType.UNSPECIFIED;
 
 	/**
 	 * Container annotation that is necessary for the repeatable

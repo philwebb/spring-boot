@@ -34,6 +34,8 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
+import org.springframework.boot.http.client.service.HttpServiceClientGroupMismatchException;
+import org.springframework.boot.http.client.service.HttpServiceClientScan;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.service.scan.TestHttpServiceClient;
@@ -48,6 +50,7 @@ import org.springframework.web.client.support.RestClientHttpServiceGroupConfigur
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
+import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.GroupCallback;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
@@ -209,6 +212,13 @@ class HttpServiceClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(TestHttpServiceClient.class));
 	}
 
+	@Test
+	void whenHasGroupMismatchThrowsException() {
+		this.contextRunner.withUserConfiguration(GroupMismatchConfiguration.class)
+			.run((context) -> assertThat(context).getFailure()
+				.hasCauseInstanceOf(HttpServiceClientGroupMismatchException.class));
+	}
+
 	private HttpClient getJdkHttpClient(Object proxy) {
 		return (HttpClient) Extractors.byName("clientRequestFactory.httpClient").apply(getRestClient(proxy));
 	}
@@ -294,6 +304,13 @@ class HttpServiceClientAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@AutoConfigurationPackage(basePackageClasses = TestHttpServiceClient.class)
 	static class ScanConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@HttpServiceClientScan(basePackageClasses = TestHttpServiceClient.class)
+	@ImportHttpServices(clientType = ClientType.WEB_CLIENT, types = TestHttpServiceClient.class)
+	static class GroupMismatchConfiguration {
 
 	}
 
