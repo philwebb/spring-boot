@@ -312,9 +312,9 @@ See the xref:web/servlet.adoc#web.servlet.spring-mvc.api-versioning[Spring MVC] 
 [[io.rest-client.httpservice]]
 == HTTP Service Interface Clients
 
-Instead of directly using a javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.reactive.function.client.WebClient[] to call an HTTP service, it's also possible to define an HTTP Service using an annotated Java interface.
+Instead of directly using a javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.reactive.function.client.WebClient[] to call an HTTP service, it's also possible to call them using annotated Java interfaces.
 
-HTTP Service interfaces defines the service contract using methods that are annotated with javadoc:org.springframework.web.service.annotation.HttpExchange[format=annotation], or more typically the method specific variants (javadoc:org.springframework.web.service.annotation.GetExchange[format=annotation], javadoc:org.springframework.web.service.annotation.PostExchange[format=annotation], javadoc:org.springframework.web.service.annotation.DeleteExchange[format=annotation], etc).
+HTTP Service interfaces defines a service contract by using methods that are annotated with javadoc:org.springframework.web.service.annotation.HttpExchange[format=annotation], or more typically the method specific variants (javadoc:org.springframework.web.service.annotation.GetExchange[format=annotation], javadoc:org.springframework.web.service.annotation.PostExchange[format=annotation], javadoc:org.springframework.web.service.annotation.DeleteExchange[format=annotation], etc).
 
 
 For example, the following code defines an HTTP Service for an an "`echo`" API that will return a JSON object containing an echo of the request.
