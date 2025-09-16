@@ -13,8 +13,11 @@
 	<!-- Allow other imports -->
 	<allow pkg=".*" regex="true" />
 
-	<!-- Keep foundation packages away from SpringApplication package -->
+	<!-- Keep foundation packages away from 'org.springframework.boot' package -->
 	<subpackage name="ssl">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
+	<subpackage name="bootstrap">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
 
