@@ -21,6 +21,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.PropertySourceInfo;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
@@ -80,7 +81,7 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	 * {@link SystemEnvironmentPropertySource} that also tracks {@link Origin}.
 	 */
 	protected static class OriginAwareSystemEnvironmentPropertySource extends SystemEnvironmentPropertySource
-			implements OriginLookup<String> {
+			implements PropertySourceInfo, OriginLookup<String> {
 
 		private final @Nullable String prefix;
 
