@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.application;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * create the {@link EnvironmentPostProcessor} instances.
  *
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface EnvironmentPostProcessorsFactory {

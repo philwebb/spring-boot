@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.application;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +54,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Artsiom Yudovin
- * @since 1.3.0
+ * @since 4.0.0
  */
 public class SpringApplicationJsonEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 

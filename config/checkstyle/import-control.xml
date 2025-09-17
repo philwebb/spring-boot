@@ -20,6 +20,9 @@
 	<subpackage name="bootstrap">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
+	<subpackage name="env">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
 
 	<!-- Open direct use of micrometer to specific subpackages  -->
 	<subpackage name="metrics">

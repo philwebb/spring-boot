@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.application;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +57,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 2.4.0
+ * @since 4.0.0
  */
 public class EnvironmentPostProcessorApplicationListener implements SmartApplicationListener, Ordered {
 

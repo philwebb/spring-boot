@@ -22,6 +22,8 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.application.EnvironmentPostProcessor;
+import org.springframework.boot.application.EnvironmentPostProcessorsFactory;
 import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.OverridingClassLoader;

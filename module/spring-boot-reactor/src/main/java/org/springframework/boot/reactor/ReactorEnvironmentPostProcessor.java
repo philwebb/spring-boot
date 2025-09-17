@@ -17,7 +17,7 @@
 package org.springframework.boot.reactor;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.application.EnvironmentPostProcessor;
 import org.springframework.boot.thread.Threading;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;

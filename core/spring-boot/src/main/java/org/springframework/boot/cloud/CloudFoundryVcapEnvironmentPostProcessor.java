@@ -26,8 +26,8 @@ import org.apache.commons.logging.Log;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.application.EnvironmentPostProcessor;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.logging.DeferredLogFactory;

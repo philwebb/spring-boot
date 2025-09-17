@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.application;
 
 import java.util.Map;
 
@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * {@link SystemEnvironmentOrigin} for every system environment property.
  *
  * @author Madhura Bhave
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 

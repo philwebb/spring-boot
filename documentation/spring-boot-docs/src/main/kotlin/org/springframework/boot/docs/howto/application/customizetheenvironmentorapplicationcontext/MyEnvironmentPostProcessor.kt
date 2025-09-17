@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.howto.application.customizetheenvironmentorapplicationcontext
 
 import org.springframework.boot.SpringApplication
-import org.springframework.boot.env.EnvironmentPostProcessor
+import org.springframework.boot.application.EnvironmentPostProcessor
 import org.springframework.boot.env.YamlPropertySourceLoader
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.PropertySource
