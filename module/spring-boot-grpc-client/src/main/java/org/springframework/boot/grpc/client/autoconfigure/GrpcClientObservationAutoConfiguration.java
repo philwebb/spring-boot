@@ -36,6 +36,8 @@ import org.springframework.grpc.client.GlobalClientInterceptor;
 
 public final class GrpcClientObservationAutoConfiguration {
 
+	// FIXME PW: Should grpc know about observation or should we flip it?
+
 	@Bean
 	@GlobalClientInterceptor
 	@ConditionalOnMissingBean

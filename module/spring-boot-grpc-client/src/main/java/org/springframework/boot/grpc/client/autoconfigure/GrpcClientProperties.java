@@ -39,6 +39,9 @@ import org.springframework.util.unit.DataSize;
 @ConfigurationProperties(prefix = "spring.grpc.client")
 public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
+	// FIXME PW: Properties should be anemic. No implemented EnvironmentAware or
+	// VirtualTargets
+
 	/**
 	 * The default channel configuration to use for new channels.
 	 */
@@ -53,6 +56,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 	 * Default stub factory to use for all channels.
 	 */
 	private Class<? extends StubFactory<?>> defaultStubFactory = BlockingStubFactory.class;
+
+	// FIXME PW: Unusual to have class names in properties. Should we do this another way?
 
 	private Environment environment;
 
@@ -90,6 +95,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 	 * default channel as a template
 	 */
 	public ChannelConfig getChannel(String name) {
+		// FIXME PW: Unusual logic for properties class
+		// FIXME PW: Check callers of this method. What's name mean?
 		if ("default".equals(name)) {
 			return this.defaultChannel;
 		}
@@ -97,6 +104,7 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		if (channel != null) {
 			return channel;
 		}
+		// FIXME PW: Looks like convention. Move somewhere else?
 		channel = this.defaultChannel.copy();
 		String address = name;
 		if (!name.contains(":/") && !name.startsWith("unix:")) {
@@ -133,6 +141,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		 * The target address uri to connect to.
 		 */
 		private String address = "static://localhost:9090";
+
+		// FIXME PW: All privates at top then getter / setters
 
 		public String getAddress() {
 			return this.address;
@@ -351,6 +361,7 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		 * @return a copy of the channel instance.
 		 */
 		public ChannelConfig copy() {
+			// FIXME PW: What's this for? Pretty unusual in a properties class
 			ChannelConfig copy = new ChannelConfig();
 			copy.address = this.address;
 			copy.defaultLoadBalancingPolicy = this.defaultLoadBalancingPolicy;
@@ -407,6 +418,7 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			 */
 			private @Nullable String bundle;
 
+			// FIXME PW: Anemic getters / getter
 			public boolean isEnabled() {
 				return (this.enabled != null) ? this.enabled : this.bundle != null;
 			}
@@ -433,6 +445,8 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			}
 
 		}
+
+		// FIXME PW: Review how heath works.
 
 		public static class Health {
 

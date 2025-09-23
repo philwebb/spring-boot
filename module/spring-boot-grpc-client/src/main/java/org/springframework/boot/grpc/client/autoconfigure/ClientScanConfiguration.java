@@ -44,6 +44,10 @@ import org.springframework.util.Assert;
 @Import(DefaultGrpcClientRegistrations.class)
 public class ClientScanConfiguration {
 
+	// FIXME PW: Package private?
+
+	// FIXME PW: Why inner class? AbstractGrpcClientRegistrar protection perhaps?
+	// FIXME PW: Swith from Import to Bean method?
 	static class DefaultGrpcClientRegistrations extends AbstractGrpcClientRegistrar
 			implements EnvironmentAware, BeanFactoryAware {
 
@@ -66,6 +70,7 @@ public class ClientScanConfiguration {
 			Assert.notNull(this.environment, "Environment must not be null");
 			Assert.notNull(this.beanFactory, "BeanFactory must not be null");
 			Binder binder = Binder.get(this.environment);
+			// FIXME PW: Why direct binding and not properties injection?
 			boolean hasDefaultChannel = binder.bind("spring.grpc.client.default-channel", ChannelConfig.class)
 				.isBound();
 			if (hasDefaultChannel) {

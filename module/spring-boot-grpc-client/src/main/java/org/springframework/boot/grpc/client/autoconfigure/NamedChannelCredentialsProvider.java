@@ -38,6 +38,8 @@ import org.springframework.util.Assert;
  */
 public class NamedChannelCredentialsProvider implements ChannelCredentialsProvider {
 
+	// FIXME PW: Package private?
+
 	private final SslBundles bundles;
 
 	private final GrpcClientProperties properties;

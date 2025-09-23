@@ -62,6 +62,7 @@ class GrpcChannelFactoryConfigurations {
 				ChannelCredentialsProvider credentials) {
 			List<GrpcChannelBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder>> builderCustomizers = List
 				.of(channelBuilderCustomizers::customize);
+			// FIXME PW: sweep for
 			var factory = new ShadedNettyGrpcChannelFactory(builderCustomizers, interceptorsConfigurer);
 			factory.setCredentialsProvider(credentials);
 			factory.setVirtualTargets(properties);

@@ -42,4 +42,6 @@ import org.springframework.context.annotation.Conditional;
 @ConditionalOnProperty(prefix = "spring.grpc.client", name = "enabled", matchIfMissing = true)
 public @interface ConditionalOnGrpcClientEnabled {
 
+	// FIXME PW: package private?
+
 }

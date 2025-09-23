@@ -20,6 +20,9 @@ import org.springframework.grpc.client.GrpcChannelFactory;
 
 public interface GrpcChannelFactoryCustomizer {
 
+	// FIXME PW: Doc comment
+	// FIXME PW: Function interface?
+
 	/**
 	 * Customize the given {@link GrpcChannelFactory}.
 	 * @param factory the factory to customize

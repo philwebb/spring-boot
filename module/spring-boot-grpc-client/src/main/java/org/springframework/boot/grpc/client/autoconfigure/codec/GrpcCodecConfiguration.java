@@ -41,6 +41,8 @@ public class GrpcCodecConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	CompressorRegistry compressorRegistry(ObjectProvider<Compressor> compressors) {
+		// FIXME PW: @ExperimentalApi ??
+		// FIXME PW: getDefaultInstance() is a static. Is that what we want?
 		CompressorRegistry registry = CompressorRegistry.getDefaultInstance();
 		compressors.orderedStream().forEachOrdered(registry::register);
 		return registry;

@@ -34,6 +34,8 @@ import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
  */
 public class ChannelBuilderCustomizers {
 
+	// FIXME PW: Make package private?
+
 	private final List<GrpcChannelBuilderCustomizer<?>> customizers;
 
 	ChannelBuilderCustomizers(List<? extends GrpcChannelBuilderCustomizer<?>> customizers) {

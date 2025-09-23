@@ -31,6 +31,8 @@ import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 @Configuration(proxyBeanMethods = false)
 public class ClientInterceptorsConfiguration {
 
+	// FIXME PW: Make package private?
+
 	@Bean
 	@ConditionalOnMissingBean
 	ClientInterceptorsConfigurer clientInterceptorsConfigurer(ApplicationContext applicationContext) {
