@@ -34,8 +34,10 @@ dependencies {
 	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
+	dockerTestImplementation(project(":core:spring-boot-docker-compose"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation("com.h2database:h2")
 	dockerTestImplementation("com.zaxxer:HikariCP")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
@@ -45,7 +47,7 @@ dependencies {
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(project(":module:spring-boot-tx"))
-	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))	
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
