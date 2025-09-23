@@ -108,12 +108,12 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Elasticsearch 8.
 	 */
-	ELASTICSEARCH_8("elasticsearch", "8.17.1"),
+	ELASTICSEARCH_8("elasticsearch", "8.19.4"),
 
 	/**
 	 * A container image suitable for testing Elasticsearch 9.
 	 */
-	ELASTICSEARCH_9("elasticsearch", "9.0.2"),
+	ELASTICSEARCH_9("elasticsearch", "9.1.4"),
 
 	/**
 	 * A container image suitable for testing Grafana OTel LGTM.
