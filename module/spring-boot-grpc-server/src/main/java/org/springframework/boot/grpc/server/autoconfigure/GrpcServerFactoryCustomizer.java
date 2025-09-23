@@ -20,6 +20,9 @@ import org.springframework.grpc.server.GrpcServerFactory;
 
 public interface GrpcServerFactoryCustomizer {
 
+	// FIXME PW: Doc comment
+	// FIXME PW: Functional interface?
+
 	/**
 	 * Customize the given {@link GrpcServerFactory}.
 	 * @param serverFactory the server factory to customize

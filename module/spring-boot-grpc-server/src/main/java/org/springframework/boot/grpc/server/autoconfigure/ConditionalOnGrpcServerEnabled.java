@@ -42,4 +42,6 @@ import org.springframework.context.annotation.Conditional;
 @ConditionalOnProperty(prefix = "spring.grpc.server", name = "enabled", matchIfMissing = true)
 public @interface ConditionalOnGrpcServerEnabled {
 
+	// FIXME PW: rename? Not just enabled.
+
 }

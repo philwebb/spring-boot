@@ -42,6 +42,8 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
  */
 public class GrpcDisableCsrfHttpConfigurer extends AbstractHttpConfigurer<GrpcDisableCsrfHttpConfigurer, HttpSecurity> {
 
+	// FIXME PW: is this used?
+
 	@Override
 	public void init(HttpSecurity http) throws Exception {
 		ApplicationContext context = http.getSharedObject(ApplicationContext.class);

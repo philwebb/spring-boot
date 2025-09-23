@@ -36,7 +36,9 @@ import org.springframework.util.unit.DataSize;
  */
 class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 
-	final GrpcServerProperties properties;
+	// FIXME PW: Might be able to simplify to reduce number of subclasses
+
+	final GrpcServerProperties properties; // FIXME PW private?
 
 	DefaultServerFactoryPropertyMapper(GrpcServerProperties properties) {
 		this.properties = properties;
@@ -58,7 +60,9 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 	 * @param mapper the property mapper
 	 */
 	void customizeKeepAlive(T serverBuilder, PropertyMapper mapper) {
+		// FIXME PW: private?
 		GrpcServerProperties.KeepAlive keepAliveProps = this.properties.getKeepAlive();
+		// FIXME PW: nit - mapper -> map
 		mapper.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::keepAliveTime));
 		mapper.from(keepAliveProps.getTimeout()).to(durationProperty(serverBuilder::keepAliveTimeout));
 		mapper.from(keepAliveProps.getMaxIdle()).to(durationProperty(serverBuilder::maxConnectionIdle));
@@ -74,6 +78,7 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 	 * @param mapper the property mapper
 	 */
 	void customizeInboundLimits(T serverBuilder, PropertyMapper mapper) {
+		// FIXME PW: private?
 		mapper.from(this.properties.getMaxInboundMessageSize())
 			.asInt(DataSize::toBytes)
 			.to(serverBuilder::maxInboundMessageSize);

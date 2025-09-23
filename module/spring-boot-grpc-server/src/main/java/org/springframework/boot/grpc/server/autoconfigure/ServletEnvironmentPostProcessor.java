@@ -26,6 +26,9 @@ import org.springframework.util.ClassUtils;
 
 public class ServletEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
+	// FIXME PW: Package private
+	// FIXME PW: Unusual EPP. Not sure if there's a better way?
+
 	private static final boolean SERVLET_AVAILABLE = ClassUtils.isPresent("io.grpc.servlet.jakarta.GrpcServlet", null);
 
 	@Override

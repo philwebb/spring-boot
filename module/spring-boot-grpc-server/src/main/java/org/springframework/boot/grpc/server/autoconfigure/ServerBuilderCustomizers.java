@@ -34,6 +34,8 @@ import org.springframework.grpc.server.ServerBuilderCustomizer;
  */
 public class ServerBuilderCustomizers {
 
+	// FIXME PW: Package private?
+
 	private final List<ServerBuilderCustomizer<?>> customizers;
 
 	ServerBuilderCustomizers(List<? extends ServerBuilderCustomizer<?>> customizers) {

@@ -40,6 +40,8 @@ import org.springframework.util.Assert;
  */
 public class ActuatorHealthAdapter {
 
+	// FIXME PW: review actuator integration
+
 	private static final String INVALID_INDICATOR_MSG = "Unable to determine health for '%s' - check that your configured health-indicator-paths point to available indicators";
 
 	private final LogAccessor logger = new LogAccessor(getClass());

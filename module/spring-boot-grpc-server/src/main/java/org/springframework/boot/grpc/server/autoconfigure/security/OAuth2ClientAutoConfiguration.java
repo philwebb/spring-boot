@@ -50,6 +50,9 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 public final class OAuth2ClientAutoConfiguration {
 
+	// FIXME PW: Needs more review? "All copied from Spring Boot"?
+	// FIXME PW: Need to take care with security config
+
 	@Bean
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 	InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {

@@ -20,6 +20,9 @@ import java.util.concurrent.Executor;
 
 public interface GrpcServerExecutorProvider {
 
+	// FIXME PW: Doc comment
+	// FIXME PW: Functional interface?
+
 	/**
 	 * Returns a {@link Executor} for the gRPC server, if it needs tio be customized.
 	 * @return the executor to use for the gRPC server

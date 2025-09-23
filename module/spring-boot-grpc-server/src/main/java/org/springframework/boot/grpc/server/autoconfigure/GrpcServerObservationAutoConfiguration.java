@@ -47,6 +47,8 @@ import org.springframework.grpc.server.GrpcServerFactory;
 @ConditionalOnProperty(name = "spring.grpc.server.observation.enabled", havingValue = "true", matchIfMissing = true)
 public final class GrpcServerObservationAutoConfiguration {
 
+	// FIXME PW: Observation direction (same as client)
+
 	@Bean
 	@Order(0)
 	@GlobalServerInterceptor

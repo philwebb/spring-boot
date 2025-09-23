@@ -125,6 +125,7 @@ class GrpcServerFactoryConfigurations {
 			KeyManagerFactory keyManager = null;
 			TrustManagerFactory trustManager = null;
 			if (properties.getSsl().isEnabled()) {
+				// FIXME PW: looks similar to code above. Extract?
 				String bundleName = properties.getSsl().getBundle();
 				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
 				SslBundle bundle = bundles.getBundle(bundleName);

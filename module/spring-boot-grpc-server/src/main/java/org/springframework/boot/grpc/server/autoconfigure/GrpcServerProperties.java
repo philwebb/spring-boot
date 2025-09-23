@@ -50,6 +50,8 @@ public class GrpcServerProperties {
 	 */
 	private int port = GrpcUtils.DEFAULT_PORT;
 
+	// FIXME PW: check that metadata works for defaults
+
 	/**
 	 * Maximum time to wait for the server to gracefully shutdown. When the value is
 	 * negative, the server waits forever. When the value is 0, the server will force
@@ -70,6 +72,8 @@ public class GrpcServerProperties {
 	@DataSizeUnit(DataUnit.BYTES)
 	private DataSize maxInboundMetadataSize = DataSize.ofBytes(8192);
 
+	// FIXME PW: nit drop default in doc comment.
+
 	private final Health health = new Health();
 
 	private final KeepAlive keepAlive = new KeepAlive();
@@ -82,13 +86,18 @@ public class GrpcServerProperties {
 	 */
 	@Nullable private String address;
 
+	// FIXME PW: private @Nullable (sweep code)
+
 	public String getAddress() {
+		// FIXME PW: make anemic
 		return (this.address != null) ? this.address : this.host + ":" + this.port;
 	}
 
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+	// FIXME PW: all privates to top
 
 	private final Ssl ssl = new Ssl();
 
@@ -101,6 +110,8 @@ public class GrpcServerProperties {
 	}
 
 	public void setHost(String host) {
+		// FIXME PW: should probably check when accessing not settings
+		// FIXME PW: nit use Assert.state
 		if (this.address != null) {
 			throw new IllegalStateException("Cannot set host when address is already set");
 		}
@@ -108,6 +119,7 @@ public class GrpcServerProperties {
 	}
 
 	public int getPort() {
+		// FIXME PW: make anemic
 		if (this.address != null) {
 			return GrpcUtils.getPort(this.address);
 		}
@@ -115,6 +127,8 @@ public class GrpcServerProperties {
 	}
 
 	public void setPort(int port) {
+		// FIXME PW: should probably check when accessing not settings
+		// FIXME PW: nit use Assert.state
 		if (this.address != null) {
 			throw new IllegalStateException("Cannot set port when address is already set");
 		}
@@ -180,6 +194,9 @@ public class GrpcServerProperties {
 
 	}
 
+	// FIXME PW: nit, rename to Actuator move under Health
+	// FIXME PW: need to review actuator integration
+
 	public static class ActuatorAdapt {
 
 		/**
@@ -187,11 +204,15 @@ public class GrpcServerProperties {
 		 */
 		private Boolean enabled = true;
 
+		// FIXME PW: Boolean or boolean?
+
 		/**
 		 * Whether to update the overall gRPC server health (the '' service) with the
 		 * aggregate status of the configured health indicators.
 		 */
 		private Boolean updateOverallHealth = true;
+
+		// FIXME PW: Boolean or boolean?
 
 		/**
 		 * How often to update the health status.
@@ -273,6 +294,8 @@ public class GrpcServerProperties {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private @Nullable Duration maxIdle = null;
 
+		// FIXME PW: nit, not '= null' (sweep code)
+
 		/**
 		 * Maximum time a connection may exist before being gracefully terminated (default
 		 * infinite).
@@ -297,6 +320,8 @@ public class GrpcServerProperties {
 		 * outstanding RPCs on the connection (default false).
 		 */
 		private boolean permitWithoutCalls = false;
+
+		// FIXME PW: nit not = false
 
 		public @Nullable Duration getTime() {
 			return this.time;
@@ -364,6 +389,8 @@ public class GrpcServerProperties {
 		 */
 		private @Nullable Boolean enabled;
 
+		// FIXME PW: Check how enabled is used? Is enabled without bundle possible?
+
 		/**
 		 * Client authentication mode.
 		 */
@@ -381,10 +408,12 @@ public class GrpcServerProperties {
 		private boolean secure = true;
 
 		public boolean isEnabled() {
+			// FIXME PW: Make anemic
 			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
 		public void copyDefaultsFrom(Ssl config) {
+			// FIXME PW: Check where used. Move out somewhere else?
 			if (this.enabled == null) {
 				this.enabled = config.enabled;
 			}
@@ -436,6 +465,8 @@ public class GrpcServerProperties {
 		 * available. When the value is true no other server factory will be configured.
 		 */
 		private @Nullable Boolean exclusive;
+
+		// FIXME PW: Boolean or boolean?
 
 		public @Nullable String getName() {
 			return this.name;

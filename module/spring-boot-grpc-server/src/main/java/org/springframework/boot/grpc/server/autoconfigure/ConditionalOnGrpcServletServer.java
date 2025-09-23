@@ -47,4 +47,7 @@ import org.springframework.context.annotation.Conditional;
 		matchIfMissing = true)
 public @interface ConditionalOnGrpcServletServer {
 
+	// FIXME PW: Can we merge ConditionalOnGrpcNativeServer,
+	// ConditionalOnGrpcServerEnabled and this with an enum attribute?
+
 }

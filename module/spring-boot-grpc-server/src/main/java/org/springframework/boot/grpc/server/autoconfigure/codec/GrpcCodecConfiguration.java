@@ -38,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(Codec.class)
 public class GrpcCodecConfiguration {
 
+	// FIXME any point in the codec package? Move and make package private?
+
 	@Bean
 	@ConditionalOnMissingBean
 	CompressorRegistry compressorRegistry(ObjectProvider<Compressor> compressors) {
