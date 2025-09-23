@@ -40,6 +40,7 @@ dependencies {
 	dockerTestImplementation("io.projectreactor:reactor-core")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.mongodb:mongodb-driver-reactivestreams")
 	dockerTestImplementation("org.mongodb:mongodb-driver-sync")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
