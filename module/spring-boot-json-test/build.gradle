@@ -25,7 +25,7 @@ plugins {
 description = "Spring Boot JSON Test"
 
 dependencies {
-	implementation(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-test"))
 
 	optional(project(":module:spring-boot-gson"))
 	optional(project(":module:spring-boot-jackson"))

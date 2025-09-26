@@ -41,6 +41,7 @@ dependencies {
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("org.springframework.data:spring-data-jdbc")
 
+	testRuntimeOnly(project(":module:spring-boot-web-server"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")

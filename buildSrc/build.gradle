@@ -129,6 +129,10 @@ gradlePlugin {
 			id = "org.springframework.boot.docker-test"
 			implementationClass = "org.springframework.boot.build.test.DockerTestPlugin"
 		}
+		expectedDependenciesPlugin {
+			id = "org.springframework.boot.expected-dependencies"
+			implementationClass = "org.springframework.boot.build.dependencies.ExpectedDependenciesPlugin"
+		}
 		integrationTestPlugin {
 			id = "org.springframework.boot.integration-test"
 			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
@@ -143,7 +147,7 @@ gradlePlugin {
 		}
 		optionalDependenciesPlugin {
 			id = "org.springframework.boot.optional-dependencies"
-			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
+			implementationClass = "org.springframework.boot.build.dependencies.OptionalDependenciesPlugin"
 		}
 		starterPlugin {
 			id = "org.springframework.boot.starter"

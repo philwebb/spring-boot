@@ -18,6 +18,7 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
 }
@@ -25,9 +26,9 @@ plugins {
 description = "Spring Boot Data Neo4j Test"
 
 dependencies {
-	api(project(":module:spring-boot-data-neo4j"))
+	api(project(":core:spring-boot-test"))
 
-	implementation(project(":core:spring-boot-test"))
+	expected(project(":module:spring-boot-data-neo4j"))
 
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-test-autoconfigure"))

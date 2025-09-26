@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.optional;
+package org.springframework.boot.build.dependencies;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -25,9 +25,10 @@ import org.gradle.api.tasks.SourceSetContainer;
 
 /**
  * A {@code Plugin} that adds support for Maven-style optional dependencies. Creates a new
- * {@code optional} configuration. The {@code optional} configuration is part of the
- * project's compile and runtime classpaths but does not affect the classpath of dependent
- * projects.
+ * {@code optional} configuration.
+ * <p>
+ * The {@code optional} configuration is part of the project's compile and runtime
+ * classpaths but does not affect the classpath of dependent projects.
  *
  * @author Andy Wilkinson
  */
@@ -40,7 +41,7 @@ public class OptionalDependenciesPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		Configuration optional = project.getConfigurations().create("optional");
+		Configuration optional = project.getConfigurations().create(OPTIONAL_CONFIGURATION_NAME);
 		optional.setCanBeConsumed(false);
 		optional.setCanBeResolved(false);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {

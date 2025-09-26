@@ -18,6 +18,7 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
 }
@@ -25,10 +26,10 @@ plugins {
 description = "Spring Boot Web Services Test"
 
 dependencies {
-	api(project(":module:spring-boot-webservices"))
+	api(project(":core:spring-boot-test"))
 	api("org.springframework.ws:spring-ws-test")
 
-	implementation(project(":core:spring-boot-test"))
+	expected(project(":module:spring-boot-webservices"))
 
 	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")

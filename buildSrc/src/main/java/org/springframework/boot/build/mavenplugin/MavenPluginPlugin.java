@@ -87,7 +87,7 @@ import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.bom.ResolvedBom;
 import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
-import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
+import org.springframework.boot.build.dependencies.OptionalDependenciesPlugin;
 import org.springframework.boot.build.test.DockerTestPlugin;
 import org.springframework.boot.build.test.IntegrationTestPlugin;
 import org.springframework.core.CollectionFactory;
@@ -124,6 +124,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				.withPathSensitivity(PathSensitivity.RELATIVE)
 				.withPropertyName("versionProperties"));
 		publishOptionalDependenciesInPom(project);
+		removeDependencyManagementFromPom(project);
 		project.getTasks().withType(GenerateModuleMetadata.class).configureEach((task) -> task.setEnabled(false));
 	}
 
@@ -136,6 +137,9 @@ public class MavenPluginPlugin implements Plugin<Project> {
 						ConfigurationVariantDetails::mapToOptional);
 			}
 		});
+	}
+
+	private void removeDependencyManagementFromPom(Project project) {
 		MavenPublication publication = (MavenPublication) project.getExtensions()
 			.getByType(PublishingExtension.class)
 			.getPublications()

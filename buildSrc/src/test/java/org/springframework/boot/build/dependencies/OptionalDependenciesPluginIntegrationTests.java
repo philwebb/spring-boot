@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.optional;
+package org.springframework.boot.build.dependencies;
 
 import java.io.File;
 import java.io.FileWriter;

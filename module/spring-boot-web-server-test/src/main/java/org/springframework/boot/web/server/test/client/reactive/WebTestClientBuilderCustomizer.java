@@ -33,6 +33,6 @@ public interface WebTestClientBuilderCustomizer {
 	 * Customize the given {@code builder}.
 	 * @param builder the builder
 	 */
-	void customize(Builder builder);
+	void customize(WebTestClient.Builder builder);
 
 }

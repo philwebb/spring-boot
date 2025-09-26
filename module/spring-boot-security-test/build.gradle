@@ -17,6 +17,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-auto-configuration"
 }
@@ -24,16 +25,21 @@ plugins {
 description = "Spring Boot Security Test"
 
 dependencies {
-	api(project(":module:spring-boot-security"))
+	api(project(":core:spring-boot-test"))
 	api("org.springframework.security:spring-security-test")
 
+	expected(project(":module:spring-boot-security"))
+
+	implementation(project(":module:spring-boot-webflux-test"))
+	implementation(project(":module:spring-boot-webmvc-test"))
+
 	optional(project(":module:spring-boot-test-autoconfigure"))
-	optional(project(":module:spring-boot-webflux-test"))
-	optional(project(":module:spring-boot-webmvc-test"))
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 
+	testImplementation(project(":module:spring-boot-webflux"))
+	testImplementation(project(":module:spring-boot-webmvc"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
 

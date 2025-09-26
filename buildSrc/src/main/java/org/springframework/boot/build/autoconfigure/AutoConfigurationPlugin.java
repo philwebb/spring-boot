@@ -36,7 +36,8 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.DeployedPlugin;
-import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
+import org.springframework.boot.build.dependencies.ExpectedDependenciesPlugin;
+import org.springframework.boot.build.dependencies.OptionalDependenciesPlugin;
 
 /**
  * {@link Plugin} for projects that define auto-configuration. When applied, the plugin
@@ -105,6 +106,10 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 				.withType(OptionalDependenciesPlugin.class,
 						(plugin) -> configureCheckAutoConfigurationClassesForOptionalDependencies(configurations,
 								checkAutoConfigurationClasses));
+			this.project.getPlugins()
+				.withType(ExpectedDependenciesPlugin.class,
+						(plugin) -> configureCheckAutoConfigurationClassesForExpectedDependencies(configurations,
+								checkAutoConfigurationClasses));
 			this.project.getTasks()
 				.getByName(JavaBasePlugin.CHECK_TASK_NAME)
 				.dependsOn(checkAutoConfigurationImports, checkAutoConfigurationClasses);
@@ -149,6 +154,16 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 			checkAutoConfigurationClasses.configure((check) -> {
 				Configuration optionalClasspath = configurations.create("autoConfigurationOptionalClassPath")
 					.extendsFrom(configurations.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME));
+				check.setOptionalDependencies(optionalClasspath);
+			});
+		}
+
+		private void configureCheckAutoConfigurationClassesForExpectedDependencies(
+				ConfigurationContainer configurations,
+				TaskProvider<CheckAutoConfigurationClasses> checkAutoConfigurationClasses) {
+			checkAutoConfigurationClasses.configure((check) -> {
+				Configuration optionalClasspath = configurations.create("autoConfigurationOptionalClassPath")
+					.extendsFrom(configurations.getByName(ExpectedDependenciesPlugin.EXPECTED_CONFIGURATION_NAME));
 				check.setOptionalDependencies(optionalClasspath);
 			});
 		}

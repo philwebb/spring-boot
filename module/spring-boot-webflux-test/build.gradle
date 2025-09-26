@@ -17,6 +17,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
 }
@@ -24,16 +25,17 @@ plugins {
 description = "Spring Boot WebFlux Test"
 
 dependencies {
-	api(project(":module:spring-boot-webflux"))
+	api(project(":core:spring-boot-test"))
 
-	implementation(project(":core:spring-boot-test"))
+	expected(project(":module:spring-boot-webflux"))
+
+	implementation(project(":module:spring-boot-web-server-test"))
+	implementation(project(":module:spring-boot-json-test"))
 
 	optional(project(":module:spring-boot-http-codec"))
 	optional(project(":module:spring-boot-jackson"))
-	optional(project(":module:spring-boot-json-test"))
 	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-validation"))
-	optional(project(":module:spring-boot-web-server-test"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

@@ -56,7 +56,8 @@ import org.gradle.external.javadoc.CoreJavadocOptions;
 
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
-import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
+import org.springframework.boot.build.dependencies.ExpectedDependenciesPlugin;
+import org.springframework.boot.build.dependencies.OptionalDependenciesPlugin;
 import org.springframework.boot.build.springframework.CheckAotFactories;
 import org.springframework.boot.build.springframework.CheckSpringFactories;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
@@ -288,6 +289,11 @@ class JavaConventions {
 			.withType(OptionalDependenciesPlugin.class,
 					(optionalDependencies) -> configurations
 						.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME)
+						.extendsFrom(dependencyManagement));
+		project.getPlugins()
+			.withType(ExpectedDependenciesPlugin.class,
+					(expectedDependencies) -> configurations
+						.getByName(ExpectedDependenciesPlugin.EXPECTED_CONFIGURATION_NAME)
 						.extendsFrom(dependencyManagement));
 	}
 

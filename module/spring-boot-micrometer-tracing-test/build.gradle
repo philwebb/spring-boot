@@ -17,6 +17,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
 }
@@ -24,9 +25,9 @@ plugins {
 description = "Spring Boot Micrometer Tracing Test"
 
 dependencies {
-	api(project(":module:spring-boot-micrometer-tracing"))
+	api(project(":core:spring-boot-test"))
 
-	implementation(project(":core:spring-boot-test"))
+	expected(project(":module:spring-boot-micrometer-tracing"))
 
 	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")

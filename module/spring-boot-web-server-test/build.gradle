@@ -19,6 +19,7 @@ plugins {
 	id "java-library"
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-auto-configuration"
 }
@@ -26,14 +27,13 @@ plugins {
 description = "Spring Boot Web Server Test"
 
 dependencies {
-	api(project(":core:spring-boot"))
+	api(project(":core:spring-boot-test"))
 
-	implementation(project(":core:spring-boot-test"))
+	expected(project(":module:spring-boot-web-server"))
 
 	optional(project(":module:spring-boot-http-codec"))
 	optional(project(":module:spring-boot-restclient"))
 	optional(project(":module:spring-boot-test-autoconfigure"))
-	optional(project(":module:spring-boot-web-server"))
 	optional(project(":module:spring-boot-webclient"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.apache.httpcomponents.client5:httpclient5")
@@ -49,7 +49,6 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.security:spring-security-test")
 
-	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("io.mockk:mockk")

@@ -18,6 +18,7 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.expected-dependencies"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
 }
@@ -25,17 +26,18 @@ plugins {
 description = "Spring Boot Web MVC Test"
 
 dependencies {
-	api(project(":module:spring-boot-webmvc"))
+	api(project(":core:spring-boot-test"))
 
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
-	implementation(project(":core:spring-boot-test"))
-	implementation(project(":module:spring-boot-http-converter"))
-	implementation(project(":module:spring-boot-web-server"))
-	implementation(project(":module:spring-boot-web-server-test"))
+	expected(project(":module:spring-boot-http-converter"))
+	expected(project(":module:spring-boot-webmvc"))
 
+	implementation(project(":module:spring-boot-web-server-test"))
+	implementation(project(":module:spring-boot-json-test"))
+
+	optional(project(":module:spring-boot-web-server"))
 	optional(project(":module:spring-boot-jackson"))
-	optional(project(":module:spring-boot-json-test"))
 	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-webflux"))
