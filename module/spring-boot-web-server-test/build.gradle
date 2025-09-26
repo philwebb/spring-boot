@@ -27,13 +27,12 @@ plugins {
 description = "Spring Boot Web Server Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 
 	expected(project(":module:spring-boot-web-server"))
 
 	optional(project(":module:spring-boot-http-codec"))
 	optional(project(":module:spring-boot-restclient"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-webclient"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.apache.httpcomponents.client5:httpclient5")

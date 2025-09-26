@@ -16,7 +16,7 @@
 
 package org.springframework.boot.webflux.test.autoconfigure;
 
-import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
+import org.springframework.boot.autoconfigure.test.TestSliceTestContextBootstrapper;
 import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;

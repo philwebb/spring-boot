@@ -52,6 +52,7 @@ def dependenciesOf(String version) {
 			"spring-boot-amqp",
 			"spring-boot-artemis",
 			"spring-boot-autoconfigure",
+			"spring-boot-autoconfigure-test",
 			"spring-boot-batch",
 			"spring-boot-cache",
 			"spring-boot-cassandra",
@@ -119,7 +120,6 @@ def dependenciesOf(String version) {
 			"spring-boot-session-hazelcast",
 			"spring-boot-session-jdbc",
 			"spring-boot-sql",
-			"spring-boot-test-autoconfigure",
 			"spring-boot-testcontainers",
 			"spring-boot-thymeleaf",
 			"spring-boot-tomcat",
@@ -158,8 +158,8 @@ def dependenciesOf(String version) {
 		"spring-boot-actuator",
 		"spring-boot-actuator-autoconfigure",
 		"spring-boot-autoconfigure",
+		"spring-boot-autoconfigure-test",
 		"spring-boot-devtools",
-		"spring-boot-test-autoconfigure"
 	]
 }
 

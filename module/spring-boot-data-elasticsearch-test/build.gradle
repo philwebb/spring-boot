@@ -26,14 +26,13 @@ plugins {
 description = "Spring Boot Data Elasticsearch Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 
 	expected(project(":module:spring-boot-data-elasticsearch"))
 
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-jsonb"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jdbc.test.autoconfigure;
 
-import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
+import org.springframework.boot.autoconfigure.test.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**

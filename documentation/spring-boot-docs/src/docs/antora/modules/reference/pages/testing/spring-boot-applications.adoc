@@ -260,7 +260,7 @@ Spring Boot's auto-configuration system works well for applications but can some
 It often helps to load only the parts of the configuration that are required to test a "`slice`" of your application.
 For example, you might want to test that Spring MVC controllers are mapping URLs correctly, and you do not want to involve database calls in those tests, or you might want to test JPA entities, and you are not interested in the web layer when those tests run.
 
-When combined with `spring-boot-test-autoconfigure`, Spring Boot's xref:reference:testing/test-modules.adoc[test modules] include a number of annotations that can be used to automatically configure such "`slices`".
+When combined with `spring-boot-autoconfigure-test`, Spring Boot's xref:reference:testing/test-modules.adoc[test modules] include a number of annotations that can be used to automatically configure such "`slices`".
 Each of them works in a similar way, providing a `@...Test` annotation that loads the javadoc:org.springframework.context.ApplicationContext[] and one or more `@AutoConfigure...` annotations that can be used to customize auto-configuration settings.
 
 NOTE: Each slice restricts component scan to appropriate components and loads a very restricted set of auto-configuration classes.

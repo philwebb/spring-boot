@@ -26,12 +26,11 @@ plugins {
 description = "Spring Boot Web Services Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 	api("org.springframework.ws:spring-ws-test")
 
 	expected(project(":module:spring-boot-webservices"))
 
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

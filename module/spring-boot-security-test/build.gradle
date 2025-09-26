@@ -25,7 +25,7 @@ plugins {
 description = "Spring Boot Security Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 	api("org.springframework.security:spring-security-test")
 
 	expected(project(":module:spring-boot-security"))
@@ -33,7 +33,6 @@ dependencies {
 	implementation(project(":module:spring-boot-webflux-test"))
 	implementation(project(":module:spring-boot-webmvc-test"))
 
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}

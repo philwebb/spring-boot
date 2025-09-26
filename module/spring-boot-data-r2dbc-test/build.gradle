@@ -25,14 +25,13 @@ plugins {
 description = "Spring Boot Data R2DBC Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 
 	expected(project(":module:spring-boot-data-r2dbc"))
 
 	implementation(project(":module:spring-boot-jdbc-test"))
 
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

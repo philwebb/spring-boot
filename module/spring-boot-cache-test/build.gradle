@@ -25,11 +25,9 @@ plugins {
 description = "Spring Boot Cache Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 
 	expected(project(":module:spring-boot-cache"))
-
-	optional(project(":module:spring-boot-test-autoconfigure"))
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 

@@ -26,12 +26,11 @@ plugins {
 description = "Spring Boot Data LDAP Test"
 
 dependencies {
-	api(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-autoconfigure-test"))
 
 	expected(project(":module:spring-boot-data-ldap"))
 
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))

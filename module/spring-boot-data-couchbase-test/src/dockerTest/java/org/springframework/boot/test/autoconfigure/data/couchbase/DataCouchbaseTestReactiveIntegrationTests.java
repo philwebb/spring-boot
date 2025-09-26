@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.couchbase;
+package org.springframework.boot.autoconfigure.test.data.couchbase;
 
 import java.time.Duration;
 

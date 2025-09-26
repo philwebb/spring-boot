@@ -33,7 +33,6 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 
-	testImplementation(project(":module:spring-boot-test-autoconfigure"))
 	testImplementation(project(":module:spring-boot-webmvc"))
 	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.graphql.test.autoconfigure;
 
-import org.springframework.boot.test.autoconfigure.TestSliceTestContextBootstrapper;
+import org.springframework.boot.autoconfigure.test.TestSliceTestContextBootstrapper;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
