@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.server;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.Builder;
 
 /**
  * A customizer that can be implemented by beans wishing to customize the {@link Builder}
  * to fine-tine its auto-configuration before a {@link WebTestClient} is created.
+ * Implementations can be registered in the {@link ApplicationContext} or
+ * {@code spring.factories}.
  *
  * @author Andy Wilkinson
- * @since 4.0.0
+ * @since 2.2.0
  */
 @FunctionalInterface
 public interface WebTestClientBuilderCustomizer {

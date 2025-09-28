@@ -14,54 +14,48 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.server;
+
+import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient.Builder;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 
 /**
- * Integration test for {@link WebTestClientContextCustomizer}.
+ * Tests for {@link WebTestClientContextCustomizer} with a custom base path for a reactive
+ * web application.
  *
- * @author Phillip Webb
+ * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
-@DirtiesContext
-class WebTestClientContextCustomizerIntegrationTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = "spring.main.web-application-type=reactive")
+@TestPropertySource(properties = "spring.webflux.base-path=/test")
+class WebTestClientContextCustomizerWithCustomBasePathTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
 
-	@Autowired
-	private WebTestClientBuilderCustomizer clientBuilderCustomizer;
-
 	@Test
 	void test() {
-		then(this.clientBuilderCustomizer).should().customize(any(Builder.class));
-		this.webTestClient.get().uri("/").exchange().expectBody(String.class).isEqualTo("hello");
+		this.webTestClient.get().uri("/hello").exchange().expectBody(String.class).isEqualTo("hello world");
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ TestHandler.class, NoWebTestClientBeanChecker.class })
 	static class TestConfig {
 
 		@Bean
@@ -70,8 +64,10 @@ class WebTestClientContextCustomizerIntegrationTests {
 		}
 
 		@Bean
-		WebTestClientBuilderCustomizer clientBuilderCustomizer() {
-			return mock(WebTestClientBuilderCustomizer.class);
+		HttpHandler httpHandler() {
+			TestHandler httpHandler = new TestHandler();
+			Map<String, HttpHandler> handlersMap = Collections.singletonMap("/test", httpHandler);
+			return new ContextPathCompositeHandler(handlersMap);
 		}
 
 	}
@@ -83,7 +79,7 @@ class WebTestClientContextCustomizerIntegrationTests {
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			response.setStatusCode(HttpStatus.OK);
-			return response.writeWith(Mono.just(factory.wrap("hello".getBytes())));
+			return response.writeWith(Mono.just(factory.wrap("hello world".getBytes())));
 		}
 
 	}

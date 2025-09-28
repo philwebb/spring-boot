@@ -11,3 +11,7 @@ org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInit
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.web.server.PortInUseFailureAnalyzer,\
 org.springframework.boot.web.server.context.MissingWebServerFactoryBeanFailureAnalyzer
+
+# WebTestClient Builder Customizers
+org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer=\
+org.springframework.boot.web.server.client.BasePathWebTestClientBuilderCustomizer
