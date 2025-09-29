@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client;
+package org.springframework.boot.restclient.test;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.restclient.test.TestRestTemplateContextCustomizer.TestRestTemplateRegistrar;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.web.server.test.client.TestRestTemplateContextCustomizer.TestRestTemplateRegistrar;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;

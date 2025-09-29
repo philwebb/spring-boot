@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client;
+package org.springframework.boot.restclient.test;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.GenericServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,38 +30,47 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link TestRestTemplateContextCustomizer} to ensure
- * early-initialization of factory beans doesn't occur.
+ * Integration tests for {@link TestRestTemplateContextCustomizer}.
  *
- * @author Madhura Bhave
+ * @author Phillip Webb
  */
-@SpringBootTest(classes = TestRestTemplateContextCustomizerWithFactoryBeanTests.TestClassWithFactoryBean.class,
-		webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-class TestRestTemplateContextCustomizerWithFactoryBeanTests {
+class TestRestTemplateContextCustomizerIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
 	void test() {
-		assertThat(this.restTemplate).isNotNull();
+		assertThat(this.restTemplate.getForObject("/", String.class)).contains("hello");
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ComponentScan("org.springframework.boot.test.web.client.scan")
-	static class TestClassWithFactoryBean {
+	@Import({ TestServlet.class, NoTestRestTemplateBeanChecker.class })
+	static class TestConfig {
 
 		@Bean
 		TomcatServletWebServerFactory webServerFactory() {
 			return new TomcatServletWebServerFactory(0);
+		}
+
+	}
+
+	static class TestServlet extends GenericServlet {
+
+		@Override
+		public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+			try (PrintWriter writer = response.getWriter()) {
+				writer.println("hello");
+			}
 		}
 
 	}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client
+package org.springframework.boot.restclient.test
 
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity

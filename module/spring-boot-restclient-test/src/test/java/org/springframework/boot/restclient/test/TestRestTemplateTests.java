@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client;
+package org.springframework.boot.restclient.test;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -36,7 +36,8 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.web.server.test.client.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.restclient.test.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.test.http.server.BaseUrl;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,7 +49,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -116,16 +116,6 @@ class TestRestTemplateTests {
 		String rootUri = "https://example.com";
 		RestTemplateBuilder delegate = new RestTemplateBuilder().rootUri(rootUri);
 		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
-	}
-
-	@Test
-	void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
-		String rootUri = "https://example.com";
-		TestRestTemplate template = new TestRestTemplate();
-		LocalHostUriTemplateHandler templateHandler = mock(LocalHostUriTemplateHandler.class);
-		given(templateHandler.getRootUri()).willReturn(rootUri);
-		template.setUriTemplateHandler(templateHandler);
-		assertThat(template.getRootUri()).isEqualTo(rootUri);
 	}
 
 	@Test
@@ -348,8 +338,7 @@ class TestRestTemplateTests {
 		URI absoluteUri = URI.create("http://localhost:8080/a/b/c.txt");
 		given(requestFactory.createRequest(eq(absoluteUri), eq(HttpMethod.GET))).willReturn(request);
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(new MockEnvironment());
-		template.setUriTemplateHandler(uriTemplateHandler);
+		template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(BaseUrl.of(false, () -> "http://localhost:8080")));
 		template.exchange(entity, String.class);
 		then(requestFactory).should().createRequest(eq(absoluteUri), eq(HttpMethod.GET));
 	}
@@ -464,8 +453,7 @@ class TestRestTemplateTests {
 		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class))).willReturn(request);
 		TestRestTemplate template = new TestRestTemplate();
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(new MockEnvironment());
-		template.setUriTemplateHandler(uriTemplateHandler);
+		template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(BaseUrl.of(false, () -> "http://localhost:8080")));
 		callback.doWithTestRestTemplate(template, URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
 		then(requestFactory).should().createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}

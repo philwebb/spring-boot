@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client;
+package org.springframework.boot.restclient.test;
+
+import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
@@ -32,14 +34,17 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.test.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
-import org.springframework.boot.web.server.test.client.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
@@ -120,7 +125,6 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 				registry.registerBeanDefinition(TestRestTemplate.class.getName(),
 						new RootBeanDefinition(TestRestTemplateFactory.class));
 			}
-
 		}
 
 		@Override
@@ -144,24 +148,10 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
-			boolean sslEnabled = isSslEnabled(applicationContext);
-			TestRestTemplate template = new TestRestTemplate(builder, null, null,
-					sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
-			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(applicationContext.getEnvironment(),
-					sslEnabled ? "https" : "http");
-			template.setUriTemplateHandler(handler);
-			this.template = template;
-		}
-
-		private boolean isSslEnabled(ApplicationContext context) {
-			try {
-				AbstractConfigurableWebServerFactory webServerFactory = context
-					.getBean(AbstractConfigurableWebServerFactory.class);
-				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				return false;
-			}
+			BaseUrl baseUrl = getBaseUrl(applicationContext);
+			boolean sslEnabled = baseUrl != null && baseUrl.isHttps();
+			this.template = new TestRestTemplate(builder, null, null, sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
+			this.template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(baseUrl));
 		}
 
 		private RestTemplateBuilder getRestTemplateBuilder(ApplicationContext applicationContext) {
@@ -171,6 +161,16 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 			catch (NoSuchBeanDefinitionException ex) {
 				return new RestTemplateBuilder();
 			}
+		}
+
+		private @Nullable BaseUrl getBaseUrl(ApplicationContext context) {
+			return SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
+				.load(BaseUrlProvider.class, ArgumentResolver.of(ApplicationContext.class, context))
+				.stream()
+				.map(BaseUrlProvider::getBaseUrl)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
 		}
 
 		@Override
