@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.web.reactive.server;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -33,6 +34,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -119,7 +122,6 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 				registry.registerBeanDefinition(WebTestClient.class.getName(),
 						new RootBeanDefinition(WebTestClientFactory.class));
 			}
-
 		}
 
 		@Override
@@ -164,16 +166,34 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		private WebTestClient createWebTestClient() {
 			WebTestClient.Builder builder = WebTestClient.bindToServer();
 			customizeWebTestClientBuilder(builder, this.applicationContext);
+			BaseUrl baseUrl = getBaseUrl();
+			if (baseUrl != null) {
+				builder.baseUrl(baseUrl.resolve());
+			}
 			return builder.build();
+		}
+
+		private @Nullable BaseUrl getBaseUrl() {
+			return factoriesLoader().load(BaseUrlProvider.class, getArgumentResolver())
+				.stream()
+				.map(BaseUrlProvider::getBaseUrl)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
 		}
 
 		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
 			Consumer<WebTestClientBuilderCustomizer> customize = (customizer) -> customizer.customize(clientBuilder);
-			ArgumentResolver argumentResolver = ArgumentResolver.of(ApplicationContext.class, this.applicationContext);
-			SpringFactoriesLoader.forDefaultResourceLocation(this.applicationContext.getClassLoader())
-				.load(WebTestClientBuilderCustomizer.class, argumentResolver)
-				.forEach(customize);
+			factoriesLoader().load(WebTestClientBuilderCustomizer.class, getArgumentResolver()).forEach(customize);
 			context.getBeansOfType(WebTestClientBuilderCustomizer.class).values().forEach(customize);
+		}
+
+		private SpringFactoriesLoader factoriesLoader() {
+			return SpringFactoriesLoader.forDefaultResourceLocation(this.applicationContext.getClassLoader());
+		}
+
+		private ArgumentResolver getArgumentResolver() {
+			return ArgumentResolver.of(ApplicationContext.class, this.applicationContext);
 		}
 
 	}

@@ -15,9 +15,9 @@
  */
 
 /**
- * Reactive web server client support.
+ * Support for HTTP server testing.
  */
 @NullMarked
-package org.springframework.boot.web.server.client;
+package org.springframework.boot.test.http.server;
 
 import org.jspecify.annotations.NullMarked;
