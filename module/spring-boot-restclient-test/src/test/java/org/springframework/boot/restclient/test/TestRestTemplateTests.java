@@ -338,7 +338,7 @@ class TestRestTemplateTests {
 		URI absoluteUri = URI.create("http://localhost:8080/a/b/c.txt");
 		given(requestFactory.createRequest(eq(absoluteUri), eq(HttpMethod.GET))).willReturn(request);
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(BaseUrl.of(false, () -> "http://localhost:8080")));
+		template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(BaseUrl.of("http://localhost:8080")));
 		template.exchange(entity, String.class);
 		then(requestFactory).should().createRequest(eq(absoluteUri), eq(HttpMethod.GET));
 	}
@@ -453,7 +453,7 @@ class TestRestTemplateTests {
 		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class))).willReturn(request);
 		TestRestTemplate template = new TestRestTemplate();
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(BaseUrl.of(false, () -> "http://localhost:8080")));
+		template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(BaseUrl.of("http://localhost:8080")));
 		callback.doWithTestRestTemplate(template, URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
 		then(requestFactory).should().createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}

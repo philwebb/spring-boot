@@ -16,8 +16,6 @@
 
 package org.springframework.boot.restclient.test;
 
-import java.util.Objects;
-
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
@@ -37,14 +35,12 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.test.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.boot.test.http.server.BaseUrlProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
@@ -148,7 +144,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
-			BaseUrl baseUrl = getBaseUrl(applicationContext);
+			BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrlOrDefault();
 			boolean sslEnabled = baseUrl != null && baseUrl.isHttps();
 			this.template = new TestRestTemplate(builder, null, null, sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
 			this.template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(baseUrl));
@@ -161,16 +157,6 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 			catch (NoSuchBeanDefinitionException ex) {
 				return new RestTemplateBuilder();
 			}
-		}
-
-		private @Nullable BaseUrl getBaseUrl(ApplicationContext context) {
-			return SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
-				.load(BaseUrlProvider.class, ArgumentResolver.of(ApplicationContext.class, context))
-				.stream()
-				.map(BaseUrlProvider::getBaseUrl)
-				.filter(Objects::nonNull)
-				.findFirst()
-				.orElse(null);
 		}
 
 		@Override

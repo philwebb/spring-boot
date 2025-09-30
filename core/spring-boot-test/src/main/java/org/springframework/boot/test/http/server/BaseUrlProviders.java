@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -51,8 +52,7 @@ public class BaseUrlProviders {
 	 * @return the base URL
 	 */
 	public BaseUrl getBaseUrlOrDefault() {
-		BaseUrl baseUrl = getBaseUrl();
-		return (baseUrl != null) ? baseUrl : BaseUrl.DEFAULT;
+		return getBaseUrl(BaseUrl.DEFAULT);
 	}
 
 	/**
@@ -68,6 +68,7 @@ public class BaseUrlProviders {
 	 * @param fallback the fallback
 	 * @return the base URL or the fallback
 	 */
+	@Contract("!null -> !null")
 	public @Nullable BaseUrl getBaseUrl(@Nullable BaseUrl fallback) {
 		return this.providers.stream()
 			.map(BaseUrlProvider::getBaseUrl)
