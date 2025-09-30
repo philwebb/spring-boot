@@ -146,8 +146,9 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
 			BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrlOrDefault();
 			boolean sslEnabled = baseUrl != null && baseUrl.isHttps();
+			BaseUrlUriTemplateHandler uriTemplateHandler = new BaseUrlUriTemplateHandler(baseUrl);
 			this.template = new TestRestTemplate(builder, null, null, sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
-			this.template.setUriTemplateHandler(new BaseUrlUriTemplateHandler(baseUrl));
+			this.template.setUriTemplateHandler(uriTemplateHandler);
 		}
 
 		private RestTemplateBuilder getRestTemplateBuilder(ApplicationContext applicationContext) {

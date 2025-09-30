@@ -27,12 +27,17 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
  * {@link RootUriTemplateHandler} based by a {@link BaseUrl}.
  *
  * @author Phillip Webb
+ * @since 4.5.0
  */
-class BaseUrlUriTemplateHandler extends RootUriTemplateHandler {
+public class BaseUrlUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final @Nullable BaseUrl baseUrl;
 
-	protected BaseUrlUriTemplateHandler(@Nullable BaseUrl baseUrl) {
+	/**
+	 * Create a new {@link BaseUrlUriTemplateHandler} instance.
+	 * @param baseUrl the base URL to use
+	 */
+	public BaseUrlUriTemplateHandler(@Nullable BaseUrl baseUrl) {
 		super(new DefaultUriBuilderFactory());
 		this.baseUrl = baseUrl;
 	}
