@@ -22,4 +22,5 @@ description = "Starter for testing Liquibase database migrations"
 
 dependencies {
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-jdbc-test"))
 }

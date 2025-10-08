@@ -2095,6 +2095,8 @@ bom {
 				"spring-boot-starter-aspectj",
 				"spring-boot-starter-aspectj-test",
 				"spring-boot-starter-batch",
+				"spring-boot-starter-batch-jdbc",
+				"spring-boot-starter-batch-jdbc-test",
 				"spring-boot-starter-batch-test",
 				"spring-boot-starter-cache",
 				"spring-boot-starter-cache-test",

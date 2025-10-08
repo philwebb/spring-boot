@@ -22,6 +22,7 @@ description = "Starter for testing Spring Web Services"
 
 dependencies {
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webmvc-test"))
 
 	api(project(":module:spring-boot-webservices-test"))
 }
