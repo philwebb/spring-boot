@@ -23,4 +23,5 @@ description = "Starter testing Spring's reactive HTTP clients (WebClient and HTT
 dependencies {
 	api(project(":starter:spring-boot-starter-jackson-test"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webclient"))
 }
