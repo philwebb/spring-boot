@@ -101,7 +101,7 @@ public final class Jackson2AutoConfiguration {
 	}
 
 	@Bean
-	JsonComponentModule jsonComponentModule() {
+	JsonComponentModule jackson2JsonComponentModule() {
 		return new JsonComponentModule();
 	}
 
@@ -109,14 +109,14 @@ public final class Jackson2AutoConfiguration {
 	static class JacksonMixinConfiguration {
 
 		@Bean
-		static JsonMixinModuleEntries jsonMixinModuleEntries(ApplicationContext context) {
+		static JsonMixinModuleEntries jackson2JsonMixinModuleEntries(ApplicationContext context) {
 			List<String> packages = AutoConfigurationPackages.has(context) ? AutoConfigurationPackages.get(context)
 					: Collections.emptyList();
 			return JsonMixinModuleEntries.scan(context, packages);
 		}
 
 		@Bean
-		JsonMixinModule jsonMixinModule(ApplicationContext context, JsonMixinModuleEntries entries) {
+		JsonMixinModule jackson2JsonMixinModule(ApplicationContext context, JsonMixinModuleEntries entries) {
 			JsonMixinModule jsonMixinModule = new JsonMixinModule();
 			jsonMixinModule.registerEntries(entries, context.getClassLoader());
 			return jsonMixinModule;
@@ -131,7 +131,7 @@ public final class Jackson2AutoConfiguration {
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean
-		ObjectMapper jacksonObjectMapper(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
+		ObjectMapper jackson2ObjectMapper(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
 			return builder.createXmlMapper(false).build();
 		}
 
@@ -143,7 +143,7 @@ public final class Jackson2AutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		ParameterNamesModule parameterNamesModule() {
+		ParameterNamesModule jackson2ParameterNamesModule() {
 			return new ParameterNamesModule(JsonCreator.Mode.DEFAULT);
 		}
 
@@ -156,7 +156,7 @@ public final class Jackson2AutoConfiguration {
 		@Bean
 		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnMissingBean
-		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(
+		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder(
 				ApplicationContext applicationContext, List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
 			org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder = new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
 			builder.applicationContext(applicationContext);
@@ -179,7 +179,7 @@ public final class Jackson2AutoConfiguration {
 	static class Jackson2ObjectMapperBuilderCustomizerConfiguration {
 
 		@Bean
-		StandardJackson2ObjectMapperBuilderCustomizer standardJacksonObjectMapperBuilderCustomizer(
+		StandardJackson2ObjectMapperBuilderCustomizer standardJackson2ObjectMapperBuilderCustomizer(
 				Jackson2Properties jacksonProperties, ObjectProvider<Module> modules) {
 			return new StandardJackson2ObjectMapperBuilderCustomizer(jacksonProperties, modules.stream().toList());
 		}
