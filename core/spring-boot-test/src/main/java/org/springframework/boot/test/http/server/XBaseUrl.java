@@ -31,7 +31,7 @@ import org.springframework.web.util.UriBuilderFactory;
  * @author Stephane Nicoll
  * @since 4.0.0
  */
-public final class BaseUrl {
+public final class XBaseUrl {
 
 	/**
 	 * {@link BaseUrl} that resolves to {@code http://localhost}.
@@ -42,7 +42,7 @@ public final class BaseUrl {
 
 	private final Supplier<String> resolver;
 
-	private BaseUrl(boolean https, Supplier<String> resolver) {
+	private XBaseUrl(boolean https, Supplier<String> resolver) {
 		this.https = https;
 		this.resolver = SingletonSupplier.of(resolver);
 	}

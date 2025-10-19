@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContext;
  * @since 4.0.0
  */
 @FunctionalInterface
-public interface BaseUrlProvider {
+public interface XBaseUrlProvider {
 
 	/**
 	 * Return the base URL that can be used to connect to the running server.

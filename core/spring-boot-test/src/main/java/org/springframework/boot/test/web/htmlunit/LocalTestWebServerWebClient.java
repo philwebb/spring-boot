@@ -23,30 +23,30 @@ import org.htmlunit.Page;
 import org.htmlunit.WebClient;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 
 /**
- * HTML Unit {@link WebClient} that will automatically prefix relative URLs with a
- * {@link BaseUrlProvider provided} {@link BaseUrl}.
+ * HTML Unit {@link WebClient} optionally backed by a {@link LocalTestWebServer}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 4.0.0
  */
-public class BaseUrlWebClient extends WebClient {
+public class LocalTestWebServerWebClient extends WebClient {
 
-	private @Nullable BaseUrl baseUrl;
+	private @Nullable LocalTestWebServer localTestWebServer;
 
-	public BaseUrlWebClient(@Nullable BaseUrl baseUrl) {
-		this.baseUrl = baseUrl;
+	public LocalTestWebServerWebClient(@Nullable LocalTestWebServer localTestWebServer) {
+		this.localTestWebServer = localTestWebServer;
 	}
 
 	@Override
 	public <P extends Page> P getPage(String url) throws IOException, FailingHttpStatusCodeException {
-		if (this.baseUrl != null) {
-			url = this.baseUrl.getUriBuilderFactory().uriString(url).toUriString();
-		}
-		return super.getPage(url);
+		return super.getPage(resolve(url));
+	}
+
+	private String resolve(String url) {
+		return (this.localTestWebServer != null) ? this.localTestWebServer.uriBuilder(url).toString() : url;
 	}
 
 }

@@ -33,17 +33,17 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class BaseUrlProviders {
+public class XBaseUrlProviders {
 
 	private List<BaseUrlProvider> providers;
 
-	public BaseUrlProviders(ApplicationContext applicationContext) {
+	public XBaseUrlProviders(ApplicationContext applicationContext) {
 		Assert.notNull(applicationContext, "'applicationContext' must not be null");
 		this.providers = SpringFactoriesLoader.forDefaultResourceLocation(applicationContext.getClassLoader())
 			.load(BaseUrlProvider.class, ArgumentResolver.of(ApplicationContext.class, applicationContext));
 	}
 
-	BaseUrlProviders(List<BaseUrlProvider> providers) {
+	XBaseUrlProviders(List<BaseUrlProvider> providers) {
 		this.providers = providers;
 	}
 
