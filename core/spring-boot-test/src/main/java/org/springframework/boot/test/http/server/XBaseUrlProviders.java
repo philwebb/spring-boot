@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public class XBaseUrlProviders {
+public class ' {
 
 	private List<BaseUrlProvider> providers;
 
