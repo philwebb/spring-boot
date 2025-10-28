@@ -17,6 +17,7 @@
 package org.springframework.boot.grpc.server.autoconfigure.health;
 
 import java.util.Arrays;
+import java.util.List;
 
 import io.grpc.BindableService;
 import io.grpc.protobuf.services.HealthStatusManager;
@@ -155,15 +156,17 @@ class GrpcServerHealthAutoConfigurationTests {
 
 	private void assertThatBeanDefinitionsContainInOrder(ConfigurableApplicationContext context,
 			Class<?>... configClasses) {
-		var configBeanDefNames = Arrays.stream(configClasses).map(this::beanDefinitionNameForConfigClass).toList();
-		var filteredBeanDefNames = Arrays.stream(context.getBeanDefinitionNames())
+		List<String> configBeanDefNames = Arrays.stream(configClasses)
+			.map(this::beanDefinitionNameForConfigClass)
+			.toList();
+		List<String> filteredBeanDefNames = Arrays.stream(context.getBeanDefinitionNames())
 			.filter(configBeanDefNames::contains)
 			.toList();
 		assertThat(filteredBeanDefNames).containsExactlyElementsOf(configBeanDefNames);
 	}
 
 	private String beanDefinitionNameForConfigClass(Class<?> configClass) {
-		var fullName = configClass.getName();
+		String fullName = configClass.getName();
 		return StringUtils.uncapitalize(fullName);
 	}
 

@@ -60,6 +60,7 @@ public final class GrpcServerFactoryAutoConfiguration {
 	@ConditionalOnGrpcNativeServer
 	static class GrpcServerFactoryConfiguration {
 
+		// FIXME double nested
 		@Configuration(proxyBeanMethods = false)
 		@Import({ GrpcServerFactoryConfigurations.ShadedNettyServerFactoryConfiguration.class,
 				GrpcServerFactoryConfigurations.NettyServerFactoryConfiguration.class,
@@ -104,6 +105,8 @@ public final class GrpcServerFactoryAutoConfiguration {
 		@Configuration(proxyBeanMethods = false)
 		@Import(GrpcServerFactoryConfigurations.InProcessServerFactoryConfiguration.class)
 		static class InProcessConfiguration {
+
+			// FIXME Why nest?
 
 		}
 

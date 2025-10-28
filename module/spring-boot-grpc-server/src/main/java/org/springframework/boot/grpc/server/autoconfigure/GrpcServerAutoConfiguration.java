@@ -65,33 +65,33 @@ public final class GrpcServerAutoConfiguration {
 		return new ServerBuilderCustomizers(customizers.orderedStream().toList());
 	}
 
-	@ConditionalOnMissingBean(GrpcServiceConfigurer.class)
 	@Bean
+	@ConditionalOnMissingBean(GrpcServiceConfigurer.class)
 	DefaultGrpcServiceConfigurer grpcServiceConfigurer(ApplicationContext applicationContext) {
 		return new DefaultGrpcServiceConfigurer(applicationContext);
 	}
 
-	@ConditionalOnMissingBean(GrpcServiceDiscoverer.class)
 	@Bean
+	@ConditionalOnMissingBean(GrpcServiceDiscoverer.class)
 	DefaultGrpcServiceDiscoverer grpcServiceDiscoverer(ApplicationContext applicationContext) {
 		return new DefaultGrpcServiceDiscoverer(applicationContext);
 	}
 
-	@ConditionalOnBean(CompressorRegistry.class)
 	@Bean
+	@ConditionalOnBean(CompressorRegistry.class)
 	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> compressionServerConfigurer(CompressorRegistry registry) {
 		return (builder) -> builder.compressorRegistry(registry);
 	}
 
-	@ConditionalOnBean(DecompressorRegistry.class)
 	@Bean
+	@ConditionalOnBean(DecompressorRegistry.class)
 	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> decompressionServerConfigurer(
 			DecompressorRegistry registry) {
 		return (builder) -> builder.decompressorRegistry(registry);
 	}
 
-	@ConditionalOnBean(GrpcServerExecutorProvider.class)
 	@Bean
+	@ConditionalOnBean(GrpcServerExecutorProvider.class)
 	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> executorServerConfigurer(
 			GrpcServerExecutorProvider provider) {
 		return new ServerBuilderCustomizerImplementation<>(provider);

@@ -64,16 +64,16 @@ class ActuatorHealthAdapterTests {
 	@Disabled("TODO figure out how to mock HealthDescriptor")
 	@Test
 	void whenIndicatorPathsFoundStatusIsUpdated() {
-		var service1 = "check1";
-		var service2 = "component2/check2";
-		var service3 = "component3a/component3b/check3";
+		String service1 = "check1";
+		String service2 = "component2/check2";
+		String service3 = "component3a/component3b/check3";
 		given(this.mockHealthEndpoint.healthForPath("check1")).willReturn(healthOf(Status.UP));
 		given(this.mockHealthEndpoint.healthForPath("component2", "check2")).willReturn(healthOf(Status.DOWN));
 		given(this.mockHealthEndpoint.healthForPath("component3a", "component3b", "check3"))
 			.willReturn(healthOf(Status.UNKNOWN));
 		given(this.mockStatusAggregator.getAggregateStatus(anySet())).willReturn(Status.UNKNOWN);
-		var healthAdapter = new ActuatorHealthAdapter(this.mockHealthStatusManager, this.mockHealthEndpoint,
-				this.mockStatusAggregator, true, List.of(service1, service2, service3));
+		ActuatorHealthAdapter healthAdapter = new ActuatorHealthAdapter(this.mockHealthStatusManager,
+				this.mockHealthEndpoint, this.mockStatusAggregator, true, List.of(service1, service2, service3));
 		healthAdapter.updateHealthStatus();
 		then(this.mockHealthStatusManager).should().setStatus(service1, ServingStatus.SERVING);
 		then(this.mockHealthStatusManager).should().setStatus(service2, ServingStatus.NOT_SERVING);
@@ -88,10 +88,10 @@ class ActuatorHealthAdapterTests {
 	@Disabled("TODO figure out how to mock HealthDescriptor")
 	@Test
 	void whenOverallHealthIsFalseOverallStatusIsNotUpdated() {
-		var service1 = "check1";
+		String service1 = "check1";
 		given(this.mockHealthEndpoint.healthForPath("check1")).willReturn(healthOf(Status.UP));
-		var healthAdapter = new ActuatorHealthAdapter(this.mockHealthStatusManager, this.mockHealthEndpoint,
-				this.mockStatusAggregator, false, List.of(service1));
+		ActuatorHealthAdapter healthAdapter = new ActuatorHealthAdapter(this.mockHealthStatusManager,
+				this.mockHealthEndpoint, this.mockStatusAggregator, false, List.of(service1));
 		healthAdapter.updateHealthStatus();
 		then(this.mockStatusAggregator).shouldHaveNoInteractions();
 		then(this.mockHealthStatusManager).should(never()).setStatus(eq(""), any(ServingStatus.class));
@@ -100,8 +100,8 @@ class ActuatorHealthAdapterTests {
 	@Disabled("TODO figure out how to mock HealthDescriptor")
 	@Test
 	void whenIndicatorPathNotFoundStatusIsNotUpdated() {
-		var healthAdapter = new ActuatorHealthAdapter(this.mockHealthStatusManager, this.mockHealthEndpoint,
-				this.mockStatusAggregator, false, List.of("check1"));
+		ActuatorHealthAdapter healthAdapter = new ActuatorHealthAdapter(this.mockHealthStatusManager,
+				this.mockHealthEndpoint, this.mockStatusAggregator, false, List.of("check1"));
 		healthAdapter.updateHealthStatus();
 		then(this.mockHealthStatusManager).shouldHaveNoInteractions();
 	}

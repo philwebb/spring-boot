@@ -166,7 +166,7 @@ class GrpcServerFactoryConfigurations {
 				ObjectProvider<ServerInterceptorFilter> interceptorFilter,
 				ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			var mapper = new InProcessServerFactoryPropertyMapper(properties);
+			InProcessServerFactoryPropertyMapper mapper = new InProcessServerFactoryPropertyMapper(properties);
 			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),

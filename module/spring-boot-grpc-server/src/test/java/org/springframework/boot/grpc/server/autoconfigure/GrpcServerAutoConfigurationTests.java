@@ -421,8 +421,9 @@ class GrpcServerAutoConfigurationTests {
 		void compressionCustomizerAutoConfiguredAsExpected() {
 			GrpcServerAutoConfigurationTests.this.contextRunner().run((context) -> {
 				assertThat(context).getBean("compressionServerConfigurer", ServerBuilderCustomizer.class).isNotNull();
-				var customizer = context.getBean("compressionServerConfigurer", ServerBuilderCustomizer.class);
-				var compressorRegistry = context.getBean(CompressorRegistry.class);
+				ServerBuilderCustomizer customizer = context.getBean("compressionServerConfigurer",
+						ServerBuilderCustomizer.class);
+				CompressorRegistry compressorRegistry = context.getBean(CompressorRegistry.class);
 				ServerBuilder<?> builder = mock();
 				customizer.customize(builder);
 				then(builder).should().compressorRegistry(compressorRegistry);
@@ -445,8 +446,9 @@ class GrpcServerAutoConfigurationTests {
 		void decompressionCustomizerAutoConfiguredAsExpected() {
 			GrpcServerAutoConfigurationTests.this.contextRunner().run((context) -> {
 				assertThat(context).getBean("decompressionServerConfigurer", ServerBuilderCustomizer.class).isNotNull();
-				var customizer = context.getBean("decompressionServerConfigurer", ServerBuilderCustomizer.class);
-				var decompressorRegistry = context.getBean(DecompressorRegistry.class);
+				ServerBuilderCustomizer customizer = context.getBean("decompressionServerConfigurer",
+						ServerBuilderCustomizer.class);
+				DecompressorRegistry decompressorRegistry = context.getBean(DecompressorRegistry.class);
 				ServerBuilder<?> builder = mock();
 				customizer.customize(builder);
 				then(builder).should().decompressorRegistry(decompressorRegistry);

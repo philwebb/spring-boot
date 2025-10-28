@@ -23,6 +23,7 @@ import java.util.Set;
 import io.grpc.health.v1.HealthCheckResponse.ServingStatus;
 import io.grpc.protobuf.services.HealthStatusManager;
 
+import org.springframework.boot.health.actuate.endpoint.HealthDescriptor;
 import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -65,7 +66,7 @@ public class ActuatorHealthAdapter {
 	}
 
 	protected void updateHealthStatus() {
-		var individualStatuses = this.updateIndicatorsHealthStatus();
+		Set<Status> individualStatuses = this.updateIndicatorsHealthStatus();
 		if (this.updateOverallHealth) {
 			this.updateOverallHealthStatus(individualStatuses);
 		}
@@ -74,15 +75,15 @@ public class ActuatorHealthAdapter {
 	protected Set<Status> updateIndicatorsHealthStatus() {
 		Set<Status> statuses = new HashSet<>();
 		this.healthIndicatorPaths.forEach((healthIndicatorPath) -> {
-			var healthComponent = this.healthEndpoint.healthForPath(healthIndicatorPath.split("/"));
+			HealthDescriptor healthComponent = this.healthEndpoint.healthForPath(healthIndicatorPath.split("/"));
 			if (healthComponent == null) {
 				this.logger.warn(() -> INVALID_INDICATOR_MSG.formatted(healthIndicatorPath));
 			}
 			else {
 				this.logger.trace(() -> "Actuator returned '%s' for indicator '%s'".formatted(healthComponent,
 						healthIndicatorPath));
-				var actuatorStatus = healthComponent.getStatus();
-				var grpcStatus = toServingStatus(actuatorStatus.getCode());
+				Status actuatorStatus = healthComponent.getStatus();
+				ServingStatus grpcStatus = toServingStatus(actuatorStatus.getCode());
 				this.healthStatusManager.setStatus(healthIndicatorPath, grpcStatus);
 				this.logger.trace(() -> "Updated gRPC health status to '%s' for service '%s'".formatted(grpcStatus,
 						healthIndicatorPath));
@@ -93,8 +94,8 @@ public class ActuatorHealthAdapter {
 	}
 
 	protected void updateOverallHealthStatus(Set<Status> individualStatuses) {
-		var overallActuatorStatus = this.statusAggregator.getAggregateStatus(individualStatuses);
-		var overallGrpcStatus = toServingStatus(overallActuatorStatus.getCode());
+		Status overallActuatorStatus = this.statusAggregator.getAggregateStatus(individualStatuses);
+		ServingStatus overallGrpcStatus = toServingStatus(overallActuatorStatus.getCode());
 		this.logger.trace(() -> "Actuator aggregate status '%s' for overall health".formatted(overallActuatorStatus));
 		this.healthStatusManager.setStatus("", overallGrpcStatus);
 		this.logger.trace(() -> "Updated overall gRPC health status to '%s'".formatted(overallGrpcStatus));

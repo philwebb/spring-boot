@@ -36,6 +36,7 @@ class ServletEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+		// FIXME too magic?
 		if (SERVLET_AVAILABLE) {
 			environment.getPropertySources()
 				.addFirst(new MapPropertySource("grpc-servlet", Map.of("server.http2.enabled", "true")));
