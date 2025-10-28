@@ -34,12 +34,11 @@ import org.springframework.context.annotation.Conditional;
  *
  * @author Freeman Freeman
  * @author Chris Bono
- * @since 4.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @ConditionalOnClass(AbstractStub.class)
-@ConditionalOnProperty(prefix = "spring.grpc.client", name = "enabled", matchIfMissing = true)
-public @interface ConditionalOnGrpcClientEnabled {
+@ConditionalOnProperty(name = "spring.grpc.client.enabled", matchIfMissing = true)
+@interface ConditionalOnGrpcClientEnabled {
 
 }

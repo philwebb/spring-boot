@@ -16,12 +16,11 @@
 
 package org.springframework.boot.grpc.client.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.grpc.ManagedChannelBuilder;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 
@@ -33,27 +32,21 @@ import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
  */
 class ChannelBuilderCustomizers {
 
-	private final List<GrpcChannelBuilderCustomizer<?>> customizers;
+	private ObjectProvider<GrpcChannelBuilderCustomizer<?>> customizers;
 
-	ChannelBuilderCustomizers(List<? extends GrpcChannelBuilderCustomizer<?>> customizers) {
-		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
+	ChannelBuilderCustomizers(ObjectProvider<GrpcChannelBuilderCustomizer<?>> customizers) {
+		this.customizers = customizers;
 	}
 
-	/**
-	 * Customize the specified {@link ManagedChannelBuilder}. Locates all
-	 * {@link GrpcChannelBuilderCustomizer} beans able to handle the specified instance
-	 * and invoke {@link GrpcChannelBuilderCustomizer#customize} on them.
-	 * @param <T> the type of channel builder
-	 * @param authority the target authority of the channel
-	 * @param channelBuilder the builder to customize
-	 * @return the customized builder
-	 */
+	<T extends ManagedChannelBuilder<T>> List<GrpcChannelBuilderCustomizer<T>> forFactory() {
+		return List.of(this::customize);
+	}
+
 	@SuppressWarnings("unchecked")
-	<T extends ManagedChannelBuilder<?>> T customize(String authority, T channelBuilder) {
-		LambdaSafe.callbacks(GrpcChannelBuilderCustomizer.class, this.customizers, channelBuilder)
+	<T extends ManagedChannelBuilder<T>> void customize(String target, T builder) {
+		LambdaSafe.callbacks(GrpcChannelBuilderCustomizer.class, this.customizers.orderedStream().toList(), builder)
 			.withLogger(ChannelBuilderCustomizers.class)
-			.invoke((customizer) -> customizer.customize(authority, channelBuilder));
-		return channelBuilder;
+			.invoke((customizer) -> customizer.customize(target, builder));
 	}
 
 }

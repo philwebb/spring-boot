@@ -23,9 +23,11 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.NettyChannelBuilder;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -36,18 +38,11 @@ import static org.mockito.Mockito.mock;
  */
 class ChannelBuilderCustomizersTests {
 
-	private static final String DEFAULT_TARGET = "localhost";
-
-	@Test
-	void customizeWithNullCustomizersShouldDoNothing() {
-		ManagedChannelBuilder<?> channelBuilder = mock(ManagedChannelBuilder.class);
-		new ChannelBuilderCustomizers(null).customize(DEFAULT_TARGET, channelBuilder);
-		then(channelBuilder).shouldHaveNoInteractions();
-	}
+	private static final String DEFAULT_TARGET = "target";
 
 	@Test
 	void customizeSimpleChannelBuilder() {
-		ChannelBuilderCustomizers customizers = new ChannelBuilderCustomizers(
+		ChannelBuilderCustomizers customizers = createChannelBuilderCustomizers(
 				List.of(new SimpleChannelBuilderCustomizer()));
 		NettyChannelBuilder channelBuilder = mock(NettyChannelBuilder.class);
 		customizers.customize(DEFAULT_TARGET, channelBuilder);
@@ -55,27 +50,32 @@ class ChannelBuilderCustomizersTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void customizeShouldCheckGeneric() {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestNettyChannelBuilderCustomizer());
 		list.add(new TestShadedNettyChannelBuilderCustomizer());
-		ChannelBuilderCustomizers customizers = new ChannelBuilderCustomizers(list);
-
+		ChannelBuilderCustomizers customizers = createChannelBuilderCustomizers(list);
 		customizers.customize(DEFAULT_TARGET, mock(ManagedChannelBuilder.class));
 		assertThat(list.get(0).getCount()).isOne();
 		assertThat(list.get(1).getCount()).isZero();
 		assertThat(list.get(2).getCount()).isZero();
-
 		customizers.customize(DEFAULT_TARGET, mock(NettyChannelBuilder.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);
 		assertThat(list.get(1).getCount()).isOne();
 		assertThat(list.get(2).getCount()).isZero();
-
 		customizers.customize(DEFAULT_TARGET, mock(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class));
 		assertThat(list.get(0).getCount()).isEqualTo(3);
 		assertThat(list.get(1).getCount()).isOne();
 		assertThat(list.get(2).getCount()).isOne();
+	}
+
+	private ChannelBuilderCustomizers createChannelBuilderCustomizers(
+			List<? extends GrpcChannelBuilderCustomizer<?>> beans) {
+		ObjectProvider<GrpcChannelBuilderCustomizer<?>> objectProvider = mock();
+		given(objectProvider.orderedStream()).willAnswer((invocation) -> beans.stream());
+		return new ChannelBuilderCustomizers(objectProvider);
 	}
 
 	static class SimpleChannelBuilderCustomizer implements GrpcChannelBuilderCustomizer<NettyChannelBuilder> {
@@ -89,13 +89,15 @@ class ChannelBuilderCustomizersTests {
 
 	/**
 	 * Test customizer that will match any {@link GrpcChannelBuilderCustomizer}.
+	 *
+	 * @param <T> the builder type
 	 */
 	static class TestCustomizer<T extends ManagedChannelBuilder<T>> implements GrpcChannelBuilderCustomizer<T> {
 
 		private int count;
 
 		@Override
-		public void customize(String target, T channelBuilder) {
+		public void customize(String targetOrChannelName, T channelBuilder) {
 			this.count++;
 		}
 

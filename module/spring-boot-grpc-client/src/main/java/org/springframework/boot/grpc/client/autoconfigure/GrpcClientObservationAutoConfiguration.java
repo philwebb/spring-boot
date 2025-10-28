@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.binder.grpc.ObservationGrpcClientIntercepto
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,13 +28,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.client.GlobalClientInterceptor;
 
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} for gRPC client observation.
+ *
+ * @author Chris Bono
+ * @since 4.0.0
+ */
 @AutoConfiguration(
 		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnGrpcClientEnabled
 @ConditionalOnClass({ ObservationRegistry.class, ObservationGrpcClientInterceptor.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnProperty(name = "spring.grpc.client.observation.enabled", havingValue = "true", matchIfMissing = true)
-
 public final class GrpcClientObservationAutoConfiguration {
 
 	@Bean

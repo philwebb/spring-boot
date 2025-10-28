@@ -16,7 +16,6 @@
 
 package org.springframework.boot.grpc.client.autoconfigure;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -33,9 +32,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration.ClientScanConfiguration;
+import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration.GrpcClientCoroutineStubConfiguration;
+import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration.GrpcClientScanConfiguration;
+import org.springframework.boot.grpc.client.autoconfigure.test.scan.DummyBlockingGrpc;
+import org.springframework.boot.grpc.client.autoconfigure.test.scan.DummyBlockingGrpc.DummyBlockingStub;
+import org.springframework.boot.grpc.client.autoconfigure.test.scan.DummyBlockingV2Grpc.DummyBlockingV2Stub;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -61,57 +65,62 @@ import static org.mockito.Mockito.never;
  * Tests for {@link GrpcClientAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Phillip Webb
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class GrpcClientAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner() {
-		return new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(GrpcClientAutoConfiguration.class, SslAutoConfiguration.class));
-	}
+	private static final String CUSTOM_CHANNEL_FACTORY_BEAN = "customChannelFactory";
 
-	private ApplicationContextRunner contextRunnerWithoutInProcessChannelFactory() {
-		return this.contextRunner().withPropertyValues("spring.grpc.client.inprocess.enabled=false");
-	}
+	private static final String NETTY_CHANNEL_FACTORY_BEAN = "nettyGrpcChannelFactory";
+
+	private static final String SHADED_NETTY_CHANNEL_FACTORY_BEAN = "shadedNettyGrpcChannelFactory";
+
+	private static final String IN_PROCESS_CHANNEL_FACTORY_BEAN = "inProcessGrpcChannelFactory";
+
+	private static final String COMPRESSION_CUSTOMIZER_BEAN = "grpcCompressionChannelBuilderCustomizer";
+
+	private static final String DECOMPRESSION_CUSTOMIZER_BEAN = "grpcDecompressionChannelBuilderCustomizer";
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(GrpcClientAutoConfiguration.class, SslAutoConfiguration.class));
+
+	private final ApplicationContextRunner contextRunnerWithoutInProcessChannelFactory = this.contextRunner
+		.withPropertyValues("spring.grpc.client.inprocess.enabled=false");
 
 	@Test
 	void whenGrpcStubNotOnClasspathThenAutoConfigurationIsSkipped() {
-		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(AbstractStub.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(AbstractStub.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcClientAutoConfiguration.class));
 	}
 
 	@Test
 	void whenGrpcKotlinIsNotOnClasspathThenAutoConfigurationIsSkipped() {
-		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(AbstractCoroutineStub.class))
-			.run((context) -> assertThat(context)
-				.doesNotHaveBean(GrpcClientAutoConfiguration.GrpcClientCoroutineStubConfiguration.class));
+		this.contextRunner.withClassLoader(new FilteredClassLoader(AbstractCoroutineStub.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcClientCoroutineStubConfiguration.class));
 	}
 
 	@Test
 	void whenClientEnabledPropertySetFalseThenAutoConfigurationIsSkipped() {
-		this.contextRunner()
-			.withPropertyValues("spring.grpc.client.enabled=false")
+		this.contextRunner.withPropertyValues("spring.grpc.client.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcClientAutoConfiguration.class));
 	}
 
 	@Test
 	void whenClientEnabledPropertyNotSetThenAutoConfigurationIsNotSkipped() {
-		this.contextRunner().run((context) -> assertThat(context).hasSingleBean(GrpcClientAutoConfiguration.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GrpcClientAutoConfiguration.class));
 	}
 
 	@Test
 	void whenClientEnabledPropertySetTrueThenAutoConfigurationIsNotSkipped() {
-		this.contextRunner()
-			.withPropertyValues("spring.grpc.client.enabled=true")
+		this.contextRunner.withPropertyValues("spring.grpc.client.enabled=true")
 			.run((context) -> assertThat(context).hasSingleBean(GrpcClientAutoConfiguration.class));
 	}
 
 	@Test
 	void whenHasUserDefinedCredentialsProviderDoesNotAutoConfigureBean() {
 		ChannelCredentialsProvider customCredentialsProvider = mock(ChannelCredentialsProvider.class);
-		this.contextRunner()
+		this.contextRunner
 			.withBean("customCredentialsProvider", ChannelCredentialsProvider.class, () -> customCredentialsProvider)
 			.run((context) -> assertThat(context).getBean(ChannelCredentialsProvider.class)
 				.isSameAs(customCredentialsProvider));
@@ -119,32 +128,29 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void credentialsProviderAutoConfiguredAsExpected() {
-		this.contextRunner()
-			.run((context) -> assertThat(context).getBean(NamedChannelCredentialsProvider.class)
-				.hasFieldOrPropertyWithValue("properties", context.getBean(GrpcClientProperties.class))
-				.extracting("bundles")
-				.isInstanceOf(SslBundles.class));
+		this.contextRunner.run((context) -> assertThat(context).getBean(PropertiesChannelCredentialsProvider.class)
+			.hasFieldOrPropertyWithValue("properties", context.getBean(GrpcClientProperties.class))
+			.extracting("bundles")
+			.isInstanceOf(SslBundles.class));
 	}
 
 	@Test
 	void clientPropertiesAutoConfiguredResolvesPlaceholders() {
-		this.contextRunner()
-			.withPropertyValues("spring.grpc.client.channels.c1.address=my-server-${channelName}:8888",
-					"channelName=foo")
+		this.contextRunner
+			.withPropertyValues("spring.grpc.client.channel.c1.target=my-server-${channelName}:8888", "channelName=foo")
 			.run((context) -> assertThat(context).getBean(GrpcClientProperties.class)
-				.satisfies((properties) -> assertThat(properties.getTarget("c1")).isEqualTo("my-server-foo:8888")));
+				.satisfies((properties) -> assertThat(properties.getChannel().get("c1").getTarget())
+					.isEqualTo("my-server-foo:8888")));
 	}
 
 	@Test
 	void clientPropertiesChannelCustomizerAutoConfiguredWithHealthAsExpected() {
-		this.contextRunner()
-			.withPropertyValues("spring.grpc.client.channels.test.health.enabled=true",
-					"spring.grpc.client.channels.test.health.service-name=my-service")
+		this.contextRunner
+			.withPropertyValues("spring.grpc.client.channel.test.health.enabled=true",
+					"spring.grpc.client.channel.test.health.service-name=my-service")
 			.run((context) -> {
-				assertThat(context).getBean("clientPropertiesChannelCustomizer", GrpcChannelBuilderCustomizer.class)
-					.isNotNull();
-				var customizer = context.getBean("clientPropertiesChannelCustomizer",
-						GrpcChannelBuilderCustomizer.class);
+				DefaultServicesChannelBuilderCustomizer customizer = context
+					.getBean(DefaultServicesChannelBuilderCustomizer.class);
 				ManagedChannelBuilder<?> builder = Mockito.mock();
 				customizer.customize("test", builder);
 				Map<String, ?> healthCheckConfig = Map.of("healthCheckConfig", Map.of("serviceName", "my-service"));
@@ -154,10 +160,9 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void clientPropertiesChannelCustomizerAutoConfiguredWithoutHealthAsExpected() {
-		this.contextRunner().run((context) -> {
-			assertThat(context).getBean("clientPropertiesChannelCustomizer", GrpcChannelBuilderCustomizer.class)
-				.isNotNull();
-			var customizer = context.getBean("clientPropertiesChannelCustomizer", GrpcChannelBuilderCustomizer.class);
+		this.contextRunner.run((context) -> {
+			DefaultServicesChannelBuilderCustomizer customizer = context
+				.getBean(DefaultServicesChannelBuilderCustomizer.class);
 			ManagedChannelBuilder<?> builder = Mockito.mock();
 			customizer.customize("test", builder);
 			then(builder).should(never()).defaultServiceConfig(anyMap());
@@ -166,10 +171,10 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void compressionCustomizerAutoConfiguredAsExpected() {
-		this.contextRunner().run((context) -> {
-			assertThat(context).getBean("compressionClientCustomizer", GrpcChannelBuilderCustomizer.class).isNotNull();
-			var customizer = context.getBean("compressionClientCustomizer", GrpcChannelBuilderCustomizer.class);
-			var compressorRegistry = context.getBean(CompressorRegistry.class);
+		this.contextRunner.run((context) -> {
+			GrpcChannelBuilderCustomizer customizer = context.getBean(COMPRESSION_CUSTOMIZER_BEAN,
+					GrpcChannelBuilderCustomizer.class);
+			CompressorRegistry compressorRegistry = context.getBean(CompressorRegistry.class);
 			ManagedChannelBuilder<?> builder = Mockito.mock();
 			customizer.customize("testChannel", builder);
 			then(builder).should().compressorRegistry(compressorRegistry);
@@ -177,23 +182,20 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Test
-	void whenNoCompressorRegistryThenCompressionCustomizerIsNotConfigured() {
-		// Codec class guards the imported GrpcCodecConfiguration which provides the
-		// registry
-		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(Codec.class))
+	void compressionCustomizerWhenNoRegistrry() {
+		// Codec class guards the imported GrpcCodecConfiguration to hide registry
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Codec.class))
 			.run((context) -> assertThat(context)
-				.getBean("compressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
+				.getBean(COMPRESSION_CUSTOMIZER_BEAN, GrpcChannelBuilderCustomizer.class)
 				.isNull());
 	}
 
 	@Test
 	void decompressionCustomizerAutoConfiguredAsExpected() {
-		this.contextRunner().run((context) -> {
-			assertThat(context).getBean("decompressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
-				.isNotNull();
-			var customizer = context.getBean("decompressionClientCustomizer", GrpcChannelBuilderCustomizer.class);
-			var decompressorRegistry = context.getBean(DecompressorRegistry.class);
+		this.contextRunner.run((context) -> {
+			GrpcChannelBuilderCustomizer customizer = context.getBean(DECOMPRESSION_CUSTOMIZER_BEAN,
+					GrpcChannelBuilderCustomizer.class);
+			DecompressorRegistry decompressorRegistry = context.getBean(DecompressorRegistry.class);
 			ManagedChannelBuilder<?> builder = Mockito.mock();
 			customizer.customize("testChannel", builder);
 			then(builder).should().decompressorRegistry(decompressorRegistry);
@@ -202,121 +204,94 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void whenNoDecompressorRegistryThenDecompressionCustomizerIsNotConfigured() {
-		// Codec class guards the imported GrpcCodecConfiguration which provides the
-		// registry
-		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(Codec.class))
+		// Codec class guards the imported GrpcCodecConfiguration to hide registry
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Codec.class))
 			.run((context) -> assertThat(context)
-				.getBean("decompressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
+				.getBean(DECOMPRESSION_CUSTOMIZER_BEAN, GrpcChannelBuilderCustomizer.class)
 				.isNull());
 	}
 
 	@Test
-	void whenHasUserDefinedChannelBuilderCustomizersDoesNotAutoConfigureBean() {
-		ChannelBuilderCustomizers customCustomizers = mock();
-		this.contextRunner()
-			.withBean("customCustomizers", ChannelBuilderCustomizers.class, () -> customCustomizers)
-			.run((context) -> assertThat(context).getBean(ChannelBuilderCustomizers.class).isSameAs(customCustomizers));
-	}
-
-	@Test
-	void channelBuilderCustomizersAutoConfiguredAsExpected() {
-		this.contextRunner()
-			.withUserConfiguration(ChannelBuilderCustomizersConfig.class)
-			.run((context) -> assertThat(context).getBean(ChannelBuilderCustomizers.class)
-				.extracting("customizers", InstanceOfAssertFactories.list(GrpcChannelBuilderCustomizer.class))
-				.contains(ChannelBuilderCustomizersConfig.CUSTOMIZER_BAR,
-						ChannelBuilderCustomizersConfig.CUSTOMIZER_FOO));
-	}
-
-	@Test
 	void clientScanConfigurationAutoConfiguredAsExpected() {
-		this.contextRunner().run((context) -> assertThat(context).hasSingleBean(ClientScanConfiguration.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GrpcClientScanConfiguration.class));
 	}
 
 	@Test
 	void whenHasUserDefinedClientFactoryDoesNotAutoConfigureClientScanConfiguration() {
 		GrpcClientFactory clientFactory = mock();
-		this.contextRunner()
-			.withBean("customClientFactory", GrpcClientFactory.class, () -> clientFactory)
-			.run((context) -> assertThat(context).doesNotHaveBean(ClientScanConfiguration.class));
+		this.contextRunner.withBean("customClientFactory", GrpcClientFactory.class, () -> clientFactory)
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcClientScanConfiguration.class));
 	}
 
 	@Test
 	void whenInProcessEnabledPropNotSetDoesAutoconfigureInProcess() {
-		this.contextRunner()
-			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.containsKey("inProcessGrpcChannelFactory"));
+		this.contextRunner.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+			.containsKey(IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenInProcessEnabledPropSetToTrueDoesAutoconfigureInProcess() {
-		this.contextRunner()
-			.withPropertyValues("spring.grpc.client.inprocess.enabled=true")
+		this.contextRunner.withPropertyValues("spring.grpc.client.inprocess.enabled=true")
 			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.containsKey("inProcessGrpcChannelFactory"));
+				.containsKey(IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenInProcessEnabledPropSetToFalseDoesNotAutoconfigureInProcess() {
-		this.contextRunner()
-			.withPropertyValues("spring.grpc.client.inprocess.enabled=false")
+		this.contextRunner.withPropertyValues("spring.grpc.client.inprocess.enabled=false")
 			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.doesNotContainKey("inProcessGrpcChannelFactory"));
+				.doesNotContainKey(IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenInProcessIsNotOnClasspathDoesNotAutoconfigureInProcess() {
-		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(InProcessChannelBuilder.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(InProcessChannelBuilder.class))
 			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.doesNotContainKey("inProcessGrpcChannelFactory"));
+				.doesNotContainKey(IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenHasUserDefinedInProcessChannelFactoryDoesNotAutoConfigureBean() {
 		InProcessGrpcChannelFactory customChannelFactory = mock();
-		this.contextRunner()
+		this.contextRunner
 			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
 					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
-			.withBean("customChannelFactory", InProcessGrpcChannelFactory.class, () -> customChannelFactory)
+			.withBean(CUSTOM_CHANNEL_FACTORY_BEAN, InProcessGrpcChannelFactory.class, () -> customChannelFactory)
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class).isSameAs(customChannelFactory));
 	}
 
 	@Test
 	void whenHasUserDefinedChannelFactoryDoesNotAutoConfigureNettyOrShadedNetty() {
 		GrpcChannelFactory customChannelFactory = mock();
-		this.contextRunnerWithoutInProcessChannelFactory()
-			.withBean("customChannelFactory", GrpcChannelFactory.class, () -> customChannelFactory)
+		this.contextRunnerWithoutInProcessChannelFactory
+			.withBean(CUSTOM_CHANNEL_FACTORY_BEAN, GrpcChannelFactory.class, () -> customChannelFactory)
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class).isSameAs(customChannelFactory));
 	}
 
 	@Test
 	void userDefinedChannelFactoryWithInProcessChannelFactory() {
 		GrpcChannelFactory customChannelFactory = mock();
-		this.contextRunner()
-			.withBean("customChannelFactory", GrpcChannelFactory.class, () -> customChannelFactory)
+		this.contextRunner.withBean(CUSTOM_CHANNEL_FACTORY_BEAN, GrpcChannelFactory.class, () -> customChannelFactory)
 			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.containsOnlyKeys("customChannelFactory", "inProcessGrpcChannelFactory"));
+				.containsOnlyKeys(CUSTOM_CHANNEL_FACTORY_BEAN, IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenShadedAndNonShadedNettyOnClasspathShadedNettyFactoryIsAutoConfigured() {
-		this.contextRunnerWithoutInProcessChannelFactory()
+		this.contextRunnerWithoutInProcessChannelFactory
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(ShadedNettyGrpcChannelFactory.class));
 	}
 
 	@Test
 	void shadedNettyWithInProcessChannelFactory() {
-		this.contextRunner()
-			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.containsOnlyKeys("shadedNettyGrpcChannelFactory", "inProcessGrpcChannelFactory"));
+		this.contextRunner.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
+			.containsOnlyKeys(SHADED_NETTY_CHANNEL_FACTORY_BEAN, IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenOnlyNonShadedNettyOnClasspathNonShadedNettyFactoryIsAutoConfigured() {
-		this.contextRunnerWithoutInProcessChannelFactory()
+		this.contextRunnerWithoutInProcessChannelFactory
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(NettyGrpcChannelFactory.class));
@@ -324,15 +299,15 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void nonShadedNettyWithInProcessChannelFactory() {
-		this.contextRunner()
+		this.contextRunner
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).getBeans(GrpcChannelFactory.class)
-				.containsOnlyKeys("nettyGrpcChannelFactory", "inProcessGrpcChannelFactory"));
+				.containsOnlyKeys(NETTY_CHANNEL_FACTORY_BEAN, IN_PROCESS_CHANNEL_FACTORY_BEAN));
 	}
 
 	@Test
 	void whenShadedNettyAndNettyNotOnClasspathNoChannelFactoryIsAutoConfigured() {
-		this.contextRunnerWithoutInProcessChannelFactory()
+		this.contextRunnerWithoutInProcessChannelFactory
 			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
 					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcChannelFactory.class));
@@ -340,7 +315,7 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void noChannelFactoryWithInProcessChannelFactory() {
-		this.contextRunner()
+		this.contextRunner
 			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
 					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
@@ -349,30 +324,28 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void shadedNettyChannelFactoryAutoConfiguredAsExpected() {
-		this.contextRunnerWithoutInProcessChannelFactory()
-			.withPropertyValues("spring.grpc.server.port=0")
+		this.contextRunnerWithoutInProcessChannelFactory
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(ShadedNettyGrpcChannelFactory.class)
-				.hasFieldOrPropertyWithValue("credentials", context.getBean(NamedChannelCredentialsProvider.class))
+				.hasFieldOrPropertyWithValue("credentials", context.getBean(PropertiesChannelCredentialsProvider.class))
 				.extracting("targets")
-				.isInstanceOf(GrpcClientProperties.class));
+				.isInstanceOf(PropertiesVirtualTargets.class));
 	}
 
 	@Test
 	void nettyChannelFactoryAutoConfiguredAsExpected() {
-		this.contextRunnerWithoutInProcessChannelFactory()
+		this.contextRunnerWithoutInProcessChannelFactory
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
-			.withPropertyValues("spring.grpc.server.port=0")
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(NettyGrpcChannelFactory.class)
-				.hasFieldOrPropertyWithValue("credentials", context.getBean(NamedChannelCredentialsProvider.class))
+				.hasFieldOrPropertyWithValue("credentials", context.getBean(PropertiesChannelCredentialsProvider.class))
 				.extracting("targets")
-				.isInstanceOf(GrpcClientProperties.class));
+				.isInstanceOf(PropertiesVirtualTargets.class));
 	}
 
 	@Test
 	void inProcessChannelFactoryAutoConfiguredAsExpected() {
-		this.contextRunner()
+		this.contextRunner
 			.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
 					io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class))
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
@@ -384,15 +357,16 @@ class GrpcClientAutoConfigurationTests {
 	@Test
 	void shadedNettyChannelFactoryAutoConfiguredWithCustomizers() {
 		io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder builder = mock();
-		channelFactoryAutoConfiguredWithCustomizers(this.contextRunnerWithoutInProcessChannelFactory(), builder,
+		channelFactoryAutoConfiguredWithCustomizers(this.contextRunnerWithoutInProcessChannelFactory, builder,
 				ShadedNettyGrpcChannelFactory.class);
 	}
 
 	@Test
 	void nettyChannelFactoryAutoConfiguredWithCustomizers() {
 		NettyChannelBuilder builder = mock();
-		channelFactoryAutoConfiguredWithCustomizers(this.contextRunnerWithoutInProcessChannelFactory()
-			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
+		channelFactoryAutoConfiguredWithCustomizers(
+				this.contextRunnerWithoutInProcessChannelFactory.withClassLoader(
+						new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
 				builder, NettyGrpcChannelFactory.class);
 	}
 
@@ -400,21 +374,36 @@ class GrpcClientAutoConfigurationTests {
 	void inProcessChannelFactoryAutoConfiguredWithCustomizers() {
 		InProcessChannelBuilder builder = mock();
 		channelFactoryAutoConfiguredWithCustomizers(
-				this.contextRunner()
-					.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
-							io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
+				this.contextRunner.withClassLoader(new FilteredClassLoader(NettyChannelBuilder.class,
+						io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class)),
 				builder, InProcessGrpcChannelFactory.class);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Test
+	void scanningDefaultStubFactory() {
+		this.contextRunner.withPropertyValues("spring.grpc.client.inprocess.enabled=false")
+			.withUserConfiguration(AutoConfigurePackagesConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DummyBlockingStub.class);
+				assertThat(context).doesNotHaveBean(DummyBlockingV2Stub.class);
+			});
+	}
+
+	@Test
+	void scanningWithCustomStubFactory() {
+		this.contextRunner.withPropertyValues("spring.grpc.client.inprocess.enabled=false",
+				"spring.grpc.client.autoconfigure.stub-factory=org.springframework.grpc.client.BlockingV2StubFactory")
+			.withUserConfiguration(AutoConfigurePackagesConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DummyBlockingV2Stub.class);
+				assertThat(context).doesNotHaveBean(DummyBlockingStub.class);
+			});
+	}
+
 	private <T extends ManagedChannelBuilder<T>> void channelFactoryAutoConfiguredWithCustomizers(
 			ApplicationContextRunner contextRunner, ManagedChannelBuilder<T> mockChannelBuilder,
 			Class<?> expectedChannelFactoryType) {
-		GrpcChannelBuilderCustomizer<T> customizer1 = (__, b) -> b.keepAliveTime(40L, TimeUnit.SECONDS);
-		GrpcChannelBuilderCustomizer<T> customizer2 = (__, b) -> b.keepAliveTime(50L, TimeUnit.SECONDS);
-		ChannelBuilderCustomizers customizers = new ChannelBuilderCustomizers(List.of(customizer1, customizer2));
-		contextRunner.withPropertyValues("spring.grpc.server.port=0")
-			.withBean("channelBuilderCustomizers", ChannelBuilderCustomizers.class, () -> customizers)
+		contextRunner.withUserConfiguration(ChannelBuilderCustomizersConfig.class)
 			.run((context) -> assertThat(context).getBean(GrpcChannelFactory.class)
 				.isInstanceOf(expectedChannelFactoryType)
 				.extracting("globalCustomizers", InstanceOfAssertFactories.list(GrpcChannelBuilderCustomizer.class))
@@ -427,22 +416,24 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@AutoConfigurationPackage(basePackageClasses = DummyBlockingGrpc.class)
+	static class AutoConfigurePackagesConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class ChannelBuilderCustomizersConfig {
-
-		static GrpcChannelBuilderCustomizer<?> CUSTOMIZER_FOO = mock();
-
-		static GrpcChannelBuilderCustomizer<?> CUSTOMIZER_BAR = mock();
-
-		@Bean
-		@Order(200)
-		GrpcChannelBuilderCustomizer<?> customizerFoo() {
-			return CUSTOMIZER_FOO;
-		}
 
 		@Bean
 		@Order(100)
-		GrpcChannelBuilderCustomizer<?> customizerBar() {
-			return CUSTOMIZER_BAR;
+		<T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> customizerOne() {
+			return (target, builder) -> builder.keepAliveTime(40L, TimeUnit.SECONDS);
+		}
+
+		@Bean
+		@Order(200)
+		<T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> customizerTwo() {
+			return (target, builder) -> builder.keepAliveTime(50L, TimeUnit.SECONDS);
 		}
 
 	}

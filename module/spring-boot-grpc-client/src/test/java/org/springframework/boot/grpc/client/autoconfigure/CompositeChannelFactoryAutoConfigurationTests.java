@@ -39,7 +39,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Chris Bono
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 class CompositeChannelFactoryAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunnerWithoutChannelFactories() {
@@ -106,7 +105,7 @@ class CompositeChannelFactoryAutoConfigurationTests {
 				.extracting("channelFactories")
 				.asInstanceOf(InstanceOfAssertFactories.list(GrpcChannelFactory.class))
 				.containsExactly(MultipleFactoriesTestConfig.CHANNEL_FACTORY_BAR,
-						MultipleFactoriesTestConfig.CHANNEL_FACTORY_ZAA,
+						MultipleFactoriesTestConfig.CHANNEL_FACTORY_BAZ,
 						MultipleFactoriesTestConfig.CHANNEL_FACTORY_FOO));
 
 	}
@@ -116,7 +115,7 @@ class CompositeChannelFactoryAutoConfigurationTests {
 
 		static GrpcChannelFactory CHANNEL_FACTORY_FOO = mock();
 		static GrpcChannelFactory CHANNEL_FACTORY_BAR = mock();
-		static GrpcChannelFactory CHANNEL_FACTORY_ZAA = mock();
+		static GrpcChannelFactory CHANNEL_FACTORY_BAZ = mock();
 
 		@Bean
 		@Order(3)
@@ -132,8 +131,8 @@ class CompositeChannelFactoryAutoConfigurationTests {
 
 		@Bean
 		@Order(2)
-		GrpcChannelFactory channelFactoryZaa() {
-			return CHANNEL_FACTORY_ZAA;
+		GrpcChannelFactory channelFactoryBaz() {
+			return CHANNEL_FACTORY_BAZ;
 		}
 
 	}

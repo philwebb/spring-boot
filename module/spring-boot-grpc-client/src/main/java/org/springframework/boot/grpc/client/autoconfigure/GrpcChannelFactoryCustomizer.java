@@ -26,6 +26,7 @@ import org.springframework.grpc.client.GrpcChannelFactory;
  * @author Chris Bono
  * @since 4.0.0
  */
+@FunctionalInterface
 public interface GrpcChannelFactoryCustomizer {
 
 	/**

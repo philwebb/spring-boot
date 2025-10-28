@@ -18,320 +18,97 @@ package org.springframework.boot.grpc.client.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
-import io.grpc.ManagedChannel;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.grpc.client.BlockingStubFactory;
-import org.springframework.grpc.client.NegotiationType;
 import org.springframework.grpc.client.StubFactory;
-import org.springframework.grpc.client.VirtualTargets;
 import org.springframework.util.unit.DataSize;
 
+/**
+ * Configuration properties for gRPC clients.
+ *
+ * @author Chris Bono
+ * @author Phillip Webb
+ */
 @ConfigurationProperties(prefix = "spring.grpc.client")
-public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
+public class GrpcClientProperties {
+
+	private Autoconfigure autoconfigure = new Autoconfigure();
 
 	/**
-	 * Map of channels configured by name.
+	 * Map of channel configured by name.
 	 */
-	private final Map<String, ChannelConfig> channels = new HashMap<>();
+	private final Map<String, Channel> channel = new LinkedHashMap<>();
 
-	/**
-	 * The default channel configuration to use for new channels.
-	 */
-	private final ChannelConfig defaultChannel = new ChannelConfig();
-
-	/**
-	 * Default stub factory to use for all channels.
-	 */
-	private Class<? extends StubFactory<?>> defaultStubFactory = BlockingStubFactory.class;
-
-	private Environment environment;
-
-	GrpcClientProperties() {
-		this.defaultChannel.setAddress("static://localhost:9090");
-		this.environment = new StandardEnvironment();
+	public Autoconfigure getAutoconfigure() {
+		return this.autoconfigure;
 	}
 
-	public Map<String, ChannelConfig> getChannels() {
-		return this.channels;
+	public Map<String, Channel> getChannel() {
+		return this.channel;
 	}
 
-	public ChannelConfig getDefaultChannel() {
-		return this.defaultChannel;
-	}
+	public static class Autoconfigure {
 
-	public Class<? extends StubFactory<?>> getDefaultStubFactory() {
-		return this.defaultStubFactory;
-	}
+		/**
+		 * The stub factory to use for auto-configured client beans.
+		 */
+		private @Nullable Class<? extends StubFactory<?>> stubFactory;
 
-	public void setDefaultStubFactory(Class<? extends StubFactory<?>> defaultStubFactory) {
-		this.defaultStubFactory = defaultStubFactory;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	/**
-	 * Gets the configured channel with the given name. If no channel is configured for
-	 * the specified name then one is created using the default channel as a template.
-	 * @param name the name of the channel
-	 * @return the configured channel if found, or a newly created channel using the
-	 * default channel as a template
-	 */
-	public ChannelConfig getChannel(String name) {
-		if ("default".equals(name)) {
-			return this.defaultChannel;
+		public @Nullable Class<? extends StubFactory<?>> getStubFactory() {
+			return this.stubFactory;
 		}
-		ChannelConfig channel = this.channels.get(name);
-		if (channel != null) {
-			return channel;
+
+		public void setStubFactory(@Nullable Class<? extends StubFactory<?>> stubFactory) {
+			this.stubFactory = stubFactory;
 		}
-		channel = this.defaultChannel.copy();
-		String address = name;
-		if (!name.contains(":/") && !name.startsWith("unix:")) {
-			if (name.contains(":")) {
-				address = "static://" + name;
-			}
-			else {
-				address = this.defaultChannel.getAddress();
-				if (!address.contains(":/")) {
-					address = "static://" + address;
-				}
-			}
-		}
-		channel.setAddress(address);
-		return channel;
+
 	}
 
-	@Override
-	public String getTarget(String authority) {
-		ChannelConfig channel = this.getChannel(authority);
-		String address = channel.getAddress();
-		if (address.startsWith("static:") || address.startsWith("tcp:")) {
-			address = address.substring(address.indexOf(":") + 1).replaceFirst("/*", "");
-		}
-		return this.environment.resolvePlaceholders(address);
-	}
+	public static class Channel {
 
-	/**
-	 * Represents the configuration for a {@link ManagedChannel gRPC channel}.
-	 */
-	public static class ChannelConfig {
+		static final String DEFAULT_TARGET = "static://localhost:9090";
 
 		/**
-		 * The target address uri to connect to.
+		 * The channel target address.
 		 */
-		private String address = "static://localhost:9090";
-
-		/**
-		 * The default deadline for RPCs performed on this channel.
-		 */
-		private @Nullable Duration defaultDeadline;
-
-		/**
-		 * The load balancing policy the channel should use.
-		 */
-		private String defaultLoadBalancingPolicy = "round_robin";
-
-		/**
-		 * Whether keep alive is enabled on the channel.
-		 */
-		private boolean enableKeepAlive;
-
-		private final Health health = new Health();
-
-		/**
-		 * The duration without ongoing RPCs before going to idle mode.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration idleTimeout = Duration.ofSeconds(20);
-
-		/**
-		 * The delay before sending a keepAlive. Note that shorter intervals increase the
-		 * network burden for the server and this value can not be lower than
-		 * 'permitKeepAliveTime' on the server.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration keepAliveTime = Duration.ofMinutes(5);
-
-		/**
-		 * The default timeout for a keepAlives ping request.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration keepAliveTimeout = Duration.ofSeconds(20);
-
-		/**
-		 * Whether a keepAlive will be performed when there are no outstanding RPC on a
-		 * connection.
-		 */
-		private boolean keepAliveWithoutCalls;
-
-		/**
-		 * Maximum message size allowed to be received by the channel (default 4MiB). Set
-		 * to '-1' to use the highest possible limit (not recommended).
-		 */
-		private DataSize maxInboundMessageSize = DataSize.ofBytes(4194304);
-
-		/**
-		 * Maximum metadata size allowed to be received by the channel (default 8KiB). Set
-		 * to '-1' to use the highest possible limit (not recommended).
-		 */
-		private DataSize maxInboundMetadataSize = DataSize.ofBytes(8192);
-
-		/**
-		 * The negotiation type for the channel.
-		 */
-		private NegotiationType negotiationType = NegotiationType.PLAINTEXT;
-
-		/**
-		 * Flag to say that strict SSL checks are not enabled (so the remote certificate
-		 * could be anonymous).
-		 */
-		private boolean secure = true;
-
-		/**
-		 * Map representation of the service config to use for the channel.
-		 */
-		private final Map<String, Object> serviceConfig = new HashMap<>();
-
-		private final Ssl ssl = new Ssl();
+		private String target = DEFAULT_TARGET;
 
 		/**
 		 * The custom User-Agent for the channel.
 		 */
 		private @Nullable String userAgent;
 
-		public String getAddress() {
-			return this.address;
+		/**
+		 * Bypass certificate validation for easier testing (so the remote certificate
+		 * could be anonymous). Should not be set in production.
+		 */
+		private boolean bypassCertificateValidation;
+
+		private final Inbound inbound = new Inbound();
+
+		@Name("default")
+		private final Default defaultProperties = new Default();
+
+		private final Idle idle = new Idle();
+
+		private final Keepalive keepalive = new Keepalive();
+
+		private final Ssl ssl = new Ssl();
+
+		private final Health health = new Health();
+
+		public String getTarget() {
+			return this.target;
 		}
 
-		public void setAddress(final String address) {
-			this.address = address;
-		}
-
-		public @Nullable Duration getDefaultDeadline() {
-			return this.defaultDeadline;
-		}
-
-		public void setDefaultDeadline(@Nullable Duration defaultDeadline) {
-			this.defaultDeadline = defaultDeadline;
-		}
-
-		public String getDefaultLoadBalancingPolicy() {
-			return this.defaultLoadBalancingPolicy;
-		}
-
-		public void setDefaultLoadBalancingPolicy(final String defaultLoadBalancingPolicy) {
-			this.defaultLoadBalancingPolicy = defaultLoadBalancingPolicy;
-		}
-
-		public boolean isEnableKeepAlive() {
-			return this.enableKeepAlive;
-		}
-
-		public void setEnableKeepAlive(boolean enableKeepAlive) {
-			this.enableKeepAlive = enableKeepAlive;
-		}
-
-		public Health getHealth() {
-			return this.health;
-		}
-
-		public Duration getIdleTimeout() {
-			return this.idleTimeout;
-		}
-
-		public void setIdleTimeout(Duration idleTimeout) {
-			this.idleTimeout = idleTimeout;
-		}
-
-		public Duration getKeepAliveTime() {
-			return this.keepAliveTime;
-		}
-
-		public void setKeepAliveTime(Duration keepAliveTime) {
-			this.keepAliveTime = keepAliveTime;
-		}
-
-		public Duration getKeepAliveTimeout() {
-			return this.keepAliveTimeout;
-		}
-
-		public void setKeepAliveTimeout(Duration keepAliveTimeout) {
-			this.keepAliveTimeout = keepAliveTimeout;
-		}
-
-		public boolean isKeepAliveWithoutCalls() {
-			return this.keepAliveWithoutCalls;
-		}
-
-		public void setKeepAliveWithoutCalls(boolean keepAliveWithoutCalls) {
-			this.keepAliveWithoutCalls = keepAliveWithoutCalls;
-		}
-
-		public DataSize getMaxInboundMessageSize() {
-			return this.maxInboundMessageSize;
-		}
-
-		public void setMaxInboundMessageSize(final DataSize maxInboundMessageSize) {
-			this.setMaxInboundSize(maxInboundMessageSize, (s) -> this.maxInboundMessageSize = s,
-					"maxInboundMessageSize");
-		}
-
-		public DataSize getMaxInboundMetadataSize() {
-			return this.maxInboundMetadataSize;
-		}
-
-		public void setMaxInboundMetadataSize(DataSize maxInboundMetadataSize) {
-			this.setMaxInboundSize(maxInboundMetadataSize, (s) -> this.maxInboundMetadataSize = s,
-					"maxInboundMetadataSize");
-		}
-
-		private void setMaxInboundSize(DataSize maxSize, Consumer<DataSize> setter, String propertyName) {
-			if (maxSize != null && maxSize.toBytes() >= 0) {
-				setter.accept(maxSize);
-			}
-			else if (maxSize != null && maxSize.toBytes() == -1) {
-				setter.accept(DataSize.ofBytes(Integer.MAX_VALUE));
-			}
-			else {
-				throw new IllegalArgumentException("Unsupported %s: %s".formatted(propertyName, maxSize));
-			}
-		}
-
-		public NegotiationType getNegotiationType() {
-			return this.negotiationType;
-		}
-
-		public void setNegotiationType(NegotiationType negotiationType) {
-			this.negotiationType = negotiationType;
-		}
-
-		public boolean isSecure() {
-			return this.secure;
-		}
-
-		public void setSecure(boolean secure) {
-			this.secure = secure;
-		}
-
-		public Map<String, Object> getServiceConfig() {
-			return this.serviceConfig;
-		}
-
-		public Ssl getSsl() {
-			return this.ssl;
+		public void setTarget(String target) {
+			this.target = target;
 		}
 
 		public @Nullable String getUserAgent() {
@@ -342,38 +119,184 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			this.userAgent = userAgent;
 		}
 
-		/**
-		 * Provide a copy of the channel instance.
-		 * @return a copy of the channel instance.
-		 */
-		ChannelConfig copy() {
-			ChannelConfig copy = new ChannelConfig();
-			copy.address = this.address;
-			copy.defaultLoadBalancingPolicy = this.defaultLoadBalancingPolicy;
-			copy.negotiationType = this.negotiationType;
-			copy.enableKeepAlive = this.enableKeepAlive;
-			copy.idleTimeout = this.idleTimeout;
-			copy.keepAliveTime = this.keepAliveTime;
-			copy.keepAliveTimeout = this.keepAliveTimeout;
-			copy.keepAliveWithoutCalls = this.keepAliveWithoutCalls;
-			copy.maxInboundMessageSize = this.maxInboundMessageSize;
-			copy.maxInboundMetadataSize = this.maxInboundMetadataSize;
-			copy.userAgent = this.userAgent;
-			copy.defaultDeadline = this.defaultDeadline;
-			copy.health.copyValuesFrom(this.getHealth());
-			copy.ssl.copyValuesFrom(this.getSsl());
-			copy.serviceConfig.putAll(this.serviceConfig);
-			return copy;
+		public boolean isBypassCertificateValidation() {
+			return this.bypassCertificateValidation;
 		}
 
-		/**
-		 * Extracts the service configuration from the client properties, respecting the
-		 * yaml lists (e.g. `retryPolicy`).
-		 * @return the map for the `serviceConfig` property
-		 */
-		@SuppressWarnings("NullAway")
-		public Map<String, Object> extractServiceConfig() {
-			return ConfigurationPropertiesMapUtils.convertIntegerKeyedMapsToLists(getServiceConfig());
+		public void setBypassCertificateValidation(boolean bypassCertificateValidation) {
+			this.bypassCertificateValidation = bypassCertificateValidation;
+		}
+
+		public Inbound getInbound() {
+			return this.inbound;
+		}
+
+		public Default getDefault() {
+			return this.defaultProperties;
+		}
+
+		public Idle getIdle() {
+			return this.idle;
+		}
+
+		public Keepalive getKeepalive() {
+			return this.keepalive;
+		}
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
+
+		public Health getHealth() {
+			return this.health;
+		}
+
+		public static class Inbound {
+
+			private final Message message = new Message();
+
+			private final Metadata metadata = new Metadata();
+
+			public Message getMessage() {
+				return this.message;
+			}
+
+			public Metadata getMetadata() {
+				return this.metadata;
+			}
+
+			public static class Message {
+
+				/**
+				 * Maximum message size allowed to be received by the channel. Set to '-1'
+				 * to use the highest possible limit (not recommended).
+				 */
+				private DataSize maxSize = DataSize.ofBytes(4194304);
+
+				public DataSize getMaxSize() {
+					return this.maxSize;
+				}
+
+				public void setMaxSize(DataSize maxSize) {
+					this.maxSize = maxSize;
+				}
+
+			}
+
+			public static class Metadata {
+
+				/**
+				 * Maximum metadata size allowed to be received by the channel. Set to
+				 * '-1' to use the highest possible limit (not recommended).
+				 */
+				private DataSize maxSize = DataSize.ofBytes(8192);
+
+				public DataSize getMaxSize() {
+					return this.maxSize;
+				}
+
+				public void setMaxSize(DataSize maxSize) {
+					this.maxSize = maxSize;
+				}
+
+			}
+
+		}
+
+		public static class Default {
+
+			/**
+			 * The default deadline for RPCs performed on this channel.
+			 */
+			private @Nullable Duration deadline;
+
+			/**
+			 * The load balancing policy the channel should use.
+			 */
+			private String loadBalancingPolicy = "round_robin";
+
+			public @Nullable Duration getDeadline() {
+				return this.deadline;
+			}
+
+			public void setDeadline(@Nullable Duration deadline) {
+				this.deadline = deadline;
+			}
+
+			public String getLoadBalancingPolicy() {
+				return this.loadBalancingPolicy;
+			}
+
+			public void setLoadBalancingPolicy(String loadBalancingPolicy) {
+				this.loadBalancingPolicy = loadBalancingPolicy;
+			}
+
+		}
+
+		public static class Idle {
+
+			/**
+			 * The duration without ongoing RPCs before going to idle mode.
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private Duration timeout = Duration.ofSeconds(20);
+
+			public Duration getTimeout() {
+				return this.timeout;
+			}
+
+			public void setTimeout(Duration timeout) {
+				this.timeout = timeout;
+			}
+
+		}
+
+		public static class Keepalive {
+
+			/**
+			 * The delay before sending a keepAlive. Note that shorter intervals increase
+			 * the network burden for the server and this value can not be lower than
+			 * 'permitKeepAliveTime' on the server.
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private Duration time = Duration.ofMinutes(5);
+
+			/**
+			 * The default timeout for a keepAlives ping request.
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private Duration timeout = Duration.ofSeconds(20);
+
+			/**
+			 * Whether a keepAlive will be performed when there are no outstanding RPC on
+			 * a connection.
+			 */
+			private boolean withoutCalls;
+
+			public Duration getTime() {
+				return this.time;
+			}
+
+			public void setTime(Duration time) {
+				this.time = time;
+			}
+
+			public Duration getTimeout() {
+				return this.timeout;
+			}
+
+			public void setTimeout(Duration timeout) {
+				this.timeout = timeout;
+			}
+
+			public boolean isWithoutCalls() {
+				return this.withoutCalls;
+			}
+
+			public void setWithoutCalls(boolean withoutCalls) {
+				this.withoutCalls = withoutCalls;
+			}
+
 		}
 
 		public static class Health {
@@ -428,16 +351,12 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			 */
 			private @Nullable String bundle;
 
-			public @Nullable Boolean isEnabled() {
+			public @Nullable Boolean getEnabled() {
 				return this.enabled;
 			}
 
 			public void setEnabled(@Nullable Boolean enabled) {
 				this.enabled = enabled;
-			}
-
-			public boolean determineEnabled() {
-				return (this.enabled != null) ? this.enabled : this.bundle != null;
 			}
 
 			public @Nullable String getBundle() {
@@ -446,15 +365,6 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
 			public void setBundle(@Nullable String bundle) {
 				this.bundle = bundle;
-			}
-
-			/**
-			 * Copies the values from another instance.
-			 * @param other instance to copy values from
-			 */
-			void copyValuesFrom(Ssl other) {
-				this.enabled = other.enabled;
-				this.bundle = other.bundle;
 			}
 
 		}

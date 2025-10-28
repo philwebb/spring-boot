@@ -15,7 +15,7 @@
  */
 
 /**
- * Auto-configuration for gRPC client.
+ * Auto-configuration for gRPC clients.
  */
 @NullMarked
 package org.springframework.boot.grpc.client.autoconfigure;

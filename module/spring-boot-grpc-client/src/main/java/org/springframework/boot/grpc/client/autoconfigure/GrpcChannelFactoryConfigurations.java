@@ -16,8 +16,6 @@
 
 package org.springframework.boot.grpc.client.autoconfigure;
 
-import java.util.List;
-
 import io.grpc.Channel;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.netty.NettyChannelBuilder;
@@ -26,13 +24,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.ClientInterceptorFilter;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
-import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.client.NettyGrpcChannelFactory;
@@ -42,6 +39,7 @@ import org.springframework.grpc.client.ShadedNettyGrpcChannelFactory;
  * Configurations for {@link GrpcChannelFactory gRPC channel factories}.
  *
  * @author Chris Bono
+ * @author Phillip Webb
  */
 class GrpcChannelFactoryConfigurations {
 
@@ -49,23 +47,20 @@ class GrpcChannelFactoryConfigurations {
 	@ConditionalOnClass({ io.grpc.netty.shaded.io.netty.channel.Channel.class,
 			io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder.class })
 	@ConditionalOnMissingBean(value = GrpcChannelFactory.class, ignored = InProcessGrpcChannelFactory.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.client.inprocess.", name = "exclusive", havingValue = "false",
+	@ConditionalOnProperty(name = "spring.grpc.client.inprocess.exclusive", havingValue = "false",
 			matchIfMissing = true)
-	@EnableConfigurationProperties(GrpcClientProperties.class)
 	static class ShadedNettyChannelFactoryConfiguration {
 
 		@Bean
-		ShadedNettyGrpcChannelFactory shadedNettyGrpcChannelFactory(GrpcClientProperties properties,
-				ChannelBuilderCustomizers channelBuilderCustomizers,
+		ShadedNettyGrpcChannelFactory shadedNettyGrpcChannelFactory(Environment environment,
+				GrpcClientProperties properties, ChannelBuilderCustomizers channelBuilderCustomizers,
 				ClientInterceptorsConfigurer interceptorsConfigurer,
 				ObjectProvider<GrpcChannelFactoryCustomizer> channelFactoryCustomizers,
 				ChannelCredentialsProvider credentials) {
-			List<GrpcChannelBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder>> builderCustomizers = List
-				.of(channelBuilderCustomizers::customize);
-			ShadedNettyGrpcChannelFactory factory = new ShadedNettyGrpcChannelFactory(builderCustomizers,
-					interceptorsConfigurer);
+			ShadedNettyGrpcChannelFactory factory = new ShadedNettyGrpcChannelFactory(
+					channelBuilderCustomizers.forFactory(), interceptorsConfigurer);
 			factory.setCredentialsProvider(credentials);
-			factory.setVirtualTargets(properties);
+			factory.setVirtualTargets(new PropertiesVirtualTargets(environment, properties));
 			channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 			return factory;
 		}
@@ -75,22 +70,20 @@ class GrpcChannelFactoryConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Channel.class, NettyChannelBuilder.class })
 	@ConditionalOnMissingBean(value = GrpcChannelFactory.class, ignored = InProcessGrpcChannelFactory.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.client.inprocess.", name = "exclusive", havingValue = "false",
+	@ConditionalOnProperty(name = "spring.grpc.client.inprocess.exclusive", havingValue = "false",
 			matchIfMissing = true)
-	@EnableConfigurationProperties(GrpcClientProperties.class)
 	static class NettyChannelFactoryConfiguration {
 
 		@Bean
-		NettyGrpcChannelFactory nettyGrpcChannelFactory(GrpcClientProperties properties,
+		NettyGrpcChannelFactory nettyGrpcChannelFactory(Environment environment, GrpcClientProperties properties,
 				ChannelBuilderCustomizers channelBuilderCustomizers,
 				ClientInterceptorsConfigurer interceptorsConfigurer,
 				ObjectProvider<GrpcChannelFactoryCustomizer> channelFactoryCustomizers,
 				ChannelCredentialsProvider credentials) {
-			List<GrpcChannelBuilderCustomizer<NettyChannelBuilder>> builderCustomizers = List
-				.of(channelBuilderCustomizers::customize);
-			NettyGrpcChannelFactory factory = new NettyGrpcChannelFactory(builderCustomizers, interceptorsConfigurer);
+			NettyGrpcChannelFactory factory = new NettyGrpcChannelFactory(channelBuilderCustomizers.forFactory(),
+					interceptorsConfigurer);
 			factory.setCredentialsProvider(credentials);
-			factory.setVirtualTargets(properties);
+			factory.setVirtualTargets(new PropertiesVirtualTargets(environment, properties));
 			channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 			return factory;
 		}
@@ -100,8 +93,7 @@ class GrpcChannelFactoryConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(InProcessChannelBuilder.class)
 	@ConditionalOnMissingBean(InProcessGrpcChannelFactory.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.client.inprocess", name = "enabled", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.grpc.client.inprocess.enabled", havingValue = "true", matchIfMissing = true)
 	static class InProcessChannelFactoryConfiguration {
 
 		@Bean
@@ -109,13 +101,9 @@ class GrpcChannelFactoryConfigurations {
 				ClientInterceptorsConfigurer interceptorsConfigurer,
 				ObjectProvider<ClientInterceptorFilter> interceptorFilter,
 				ObjectProvider<GrpcChannelFactoryCustomizer> channelFactoryCustomizers) {
-			List<GrpcChannelBuilderCustomizer<InProcessChannelBuilder>> inProcessBuilderCustomizers = List
-				.of(channelBuilderCustomizers::customize);
-			InProcessGrpcChannelFactory factory = new InProcessGrpcChannelFactory(inProcessBuilderCustomizers,
-					interceptorsConfigurer);
-			if (interceptorFilter != null) {
-				factory.setInterceptorFilter(interceptorFilter.getIfAvailable(() -> null));
-			}
+			InProcessGrpcChannelFactory factory = new InProcessGrpcChannelFactory(
+					channelBuilderCustomizers.forFactory(), interceptorsConfigurer);
+			interceptorFilter.ifAvailable(factory::setInterceptorFilter);
 			channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 			return factory;
 		}
