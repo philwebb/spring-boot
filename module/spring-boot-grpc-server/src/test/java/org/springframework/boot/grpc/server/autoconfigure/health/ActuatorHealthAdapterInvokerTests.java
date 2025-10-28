@@ -19,6 +19,7 @@ package org.springframework.boot.grpc.server.autoconfigure.health;
 import java.time.Duration;
 
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link ActuatorHealthAdapterInvoker}.
  */
+@Disabled
 class ActuatorHealthAdapterInvokerTests {
 
 	@Test

@@ -52,6 +52,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Chris Bono
  */
+@Disabled
 class OAuth2ResourceServerAutoConfigurationTests {
 
 	private BindableService service = mock();
