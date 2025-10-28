@@ -107,7 +107,7 @@ public final class InProcessTestAutoConfiguration {
 	/**
 	 * Specialization of {@link InProcessGrpcServerFactory}.
 	 */
-	public static class TestInProcessGrpcServerFactory extends InProcessGrpcServerFactory {
+	static class TestInProcessGrpcServerFactory extends InProcessGrpcServerFactory {
 
 		public TestInProcessGrpcServerFactory(String address,
 				List<ServerBuilderCustomizer<InProcessServerBuilder>> serverBuilderCustomizers,
@@ -122,7 +122,7 @@ public final class InProcessTestAutoConfiguration {
 	 * Specialization of {@link InProcessGrpcChannelFactory} that allows the channel
 	 * factory to support all targets, not just those that start with 'in-process:'.
 	 */
-	public static class TestInProcessGrpcChannelFactory extends InProcessGrpcChannelFactory {
+	static class TestInProcessGrpcChannelFactory extends InProcessGrpcChannelFactory {
 
 		TestInProcessGrpcChannelFactory(String address, ClientInterceptorsConfigurer interceptorsConfigurer) {
 			super(Collections.emptyList(), interceptorsConfigurer);

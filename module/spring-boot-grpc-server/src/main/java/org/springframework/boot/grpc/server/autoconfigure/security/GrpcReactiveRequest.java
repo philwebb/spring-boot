@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.grpc.server.autoconfigure.security.GrpcServletRequest.GrpcServletRequestMatcher;
-import org.springframework.boot.security.reactive.ApplicationContextServerWebExchangeMatcher;
+import org.springframework.boot.security.web.reactive.ApplicationContextServerWebExchangeMatcher;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;

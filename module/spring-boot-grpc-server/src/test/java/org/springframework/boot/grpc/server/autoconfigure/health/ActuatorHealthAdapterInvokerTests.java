@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 
-import static org.mockito.BDDMockito.atLeast;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 
 /**

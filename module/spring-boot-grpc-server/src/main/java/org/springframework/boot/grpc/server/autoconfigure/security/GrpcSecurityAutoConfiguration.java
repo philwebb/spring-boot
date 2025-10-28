@@ -82,7 +82,7 @@ public final class GrpcSecurityAutoConfiguration {
 
 		@Bean
 		GrpcSecurity grpcSecurity(ObjectPostProcessor<Object> objectPostProcessor,
-				AuthenticationConfiguration authenticationConfiguration, ApplicationContext context) throws Exception {
+				AuthenticationConfiguration authenticationConfiguration, ApplicationContext context) {
 			AuthenticationManagerBuilder authenticationManagerBuilder = authenticationConfiguration
 				.authenticationManagerBuilder(objectPostProcessor, context);
 			authenticationManagerBuilder
@@ -104,7 +104,7 @@ public final class GrpcSecurityAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(GrpcServerExecutorProvider.class)
+		@ConditionalOnMissingBean
 		GrpcServerExecutorProvider grpcServerExecutorProvider() {
 			return () -> new DelegatingSecurityContextExecutor(GrpcUtil.SHARED_CHANNEL_EXECUTOR.create());
 		}

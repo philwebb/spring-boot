@@ -35,13 +35,12 @@ dependencies {
 	testImplementation("io.grpc:grpc-inprocess")
 }
 
-
-architectureCheck {
-	nullMarked = false
-}
-
 tasks.withType(io.spring.javaformat.gradle.tasks.CheckFormat) {
 	exclude "smoketest/grpc/proto"
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }
 
 // FIXME get from 'protobuf-java-version' from dep mgmt

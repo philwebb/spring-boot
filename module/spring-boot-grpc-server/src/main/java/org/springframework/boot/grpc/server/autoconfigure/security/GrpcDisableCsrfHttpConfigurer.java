@@ -43,7 +43,7 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 public class GrpcDisableCsrfHttpConfigurer extends AbstractHttpConfigurer<GrpcDisableCsrfHttpConfigurer, HttpSecurity> {
 
 	@Override
-	public void init(HttpSecurity http) throws Exception {
+	public void init(HttpSecurity http) {
 		ApplicationContext context = http.getSharedObject(ApplicationContext.class);
 		if (context != null && context.getBeanNamesForType(GrpcServiceDiscoverer.class).length == 1
 				&& isServletEnabledAndCsrfDisabled(context) && isCsrfConfigurerPresent(http)) {

@@ -28,7 +28,8 @@ dependencies {
 
 	implementation(project(":core:spring-boot-test"))
 
-	optional(project(":module:spring-boot-test-autoconfigure"))
+	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional("io.grpc:grpc-inprocess")
 	optional("io.grpc:grpc-stub")
 	optional("org.junit.jupiter:junit-jupiter-api")
