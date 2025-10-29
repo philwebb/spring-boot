@@ -73,7 +73,8 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			ShadedNettyServerFactoryPropertyMapper mapper = new ShadedNettyServerFactoryPropertyMapper(properties);
+			DefaultServerFactoryPropertyMapper<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder> mapper = new DefaultServerFactoryPropertyMapper<>(
+					properties);
 			List<ServerBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			KeyManagerFactory keyManager = null;
@@ -119,7 +120,8 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			NettyServerFactoryPropertyMapper mapper = new NettyServerFactoryPropertyMapper(properties);
+			DefaultServerFactoryPropertyMapper<NettyServerBuilder> mapper = new DefaultServerFactoryPropertyMapper<>(
+					properties);
 			List<ServerBuilderCustomizer<NettyServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			KeyManagerFactory keyManager = null;
@@ -166,9 +168,10 @@ class GrpcServerFactoryConfigurations {
 				ObjectProvider<ServerInterceptorFilter> interceptorFilter,
 				ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			InProcessServerFactoryPropertyMapper mapper = new InProcessServerFactoryPropertyMapper(properties);
+			DefaultServerFactoryPropertyMapper<InProcessServerBuilder> mapper = new DefaultServerFactoryPropertyMapper<>(
+					properties);
 			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List
-				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
+				.of(mapper::customizeServerJustInboundLimitsBuilder, serverBuilderCustomizers::customize);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
 					builderCustomizers);
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());

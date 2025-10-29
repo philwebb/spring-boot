@@ -51,12 +51,17 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 		customizeInboundLimits(serverBuilder, map);
 	}
 
+	void customizeServerJustInboundLimitsBuilder(T serverBuilder) {
+		PropertyMapper mapper = PropertyMapper.get();
+		customizeInboundLimits(serverBuilder, mapper);
+	}
+
 	/**
 	 * Map the keep-alive properties to the server factory's server builder.
 	 * @param serverBuilder the builder
 	 * @param map the property mapper
 	 */
-	void customizeKeepAlive(T serverBuilder, PropertyMapper map) {
+	private void customizeKeepAlive(T serverBuilder, PropertyMapper map) {
 		GrpcServerProperties.Keepalive keepAliveProps = this.properties.getKeepAlive();
 		// map.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::keepAliveTime));
 		// map.from(keepAliveProps.getTimeout()).to(durationProperty(serverBuilder::keepAliveTimeout));
@@ -72,7 +77,7 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 	 * @param serverBuilder the builder
 	 * @param map the property mapper
 	 */
-	void customizeInboundLimits(T serverBuilder, PropertyMapper map) {
+	private void customizeInboundLimits(T serverBuilder, PropertyMapper map) {
 		// map.from(this.properties.getMaxInboundMessageSize())
 		// .asInt(DataSize::toBytes)
 		// .to(serverBuilder::maxInboundMessageSize);
@@ -81,7 +86,7 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 		// .to(serverBuilder::maxInboundMetadataSize);
 	}
 
-	Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {
+	private Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {
 		return (duration) -> setter.accept(duration.toNanos(), TimeUnit.NANOSECONDS);
 	}
 
