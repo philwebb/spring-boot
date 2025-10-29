@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties.Inbound;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -93,8 +92,8 @@ public final class GrpcServerFactoryAutoConfiguration {
 				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, null))
 				.forEach(servletServerBuilder::addService);
 			PropertyMapper mapper = PropertyMapper.get();
-			properties.getInbound();
-			mapper.from(Inbound.getMessage().getMaxSize())
+			// FIXME why here and not in mapper
+			mapper.from(properties.getInbound().getMessage().getMaxSize())
 				.asInt(DataSize::toBytes)
 				.to(servletServerBuilder::maxInboundMessageSize);
 			serverBuilderCustomizers.customize(servletServerBuilder);

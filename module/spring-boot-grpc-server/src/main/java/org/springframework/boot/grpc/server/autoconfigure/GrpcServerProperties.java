@@ -105,16 +105,16 @@ public class GrpcServerProperties {
 
 	public static class Inbound {
 
-		private static final Message message = new Message();
+		private final Message message = new Message();
 
-		private static final Metadata metadata = new Metadata();
+		private final Metadata metadata = new Metadata();
 
-		public static Message getMessage() {
-			return message;
+		public Message getMessage() {
+			return this.message;
 		}
 
-		public static Metadata getMetadata() {
-			return metadata;
+		public Metadata getMetadata() {
+			return this.metadata;
 		}
 
 		public static class Message {
@@ -283,7 +283,7 @@ public class GrpcServerProperties {
 
 		private final Permit permit = new Permit();
 
-		private final Max max = new Max();
+		private final Connection connection = new Connection();
 
 		public @Nullable Duration getTime() {
 			return this.time;
@@ -305,8 +305,8 @@ public class GrpcServerProperties {
 			return this.permit;
 		}
 
-		public Max getMax() {
-			return this.max;
+		public Connection getConnection() {
+			return this.connection;
 		}
 
 		public static class Permit {
@@ -341,52 +341,50 @@ public class GrpcServerProperties {
 
 		}
 
-		public static class Max {
+		public static class Connection {
 
 			/**
 			 * Maximum time a connection can remain idle before being gracefully
 			 * terminated (default infinite).
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
-			private @Nullable Duration idle;
+			private @Nullable Duration maxIdleTime;
 
 			/**
 			 * Maximum time a connection may exist before being gracefully terminated
 			 * (default infinite).
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
-			private @Nullable Duration age;
+			private @Nullable Duration maxAge;
 
 			/**
 			 * Maximum time for graceful connection termination (default infinite).
 			 */
 			@DurationUnit(ChronoUnit.SECONDS)
-			private @Nullable Duration grace;
+			private @Nullable Duration gracePeriod = Duration.ofSeconds(30);
 
-			// FIXME difference with this and shutdown.grace-period
-
-			public @Nullable Duration getIdle() {
-				return this.idle;
+			public @Nullable Duration getMaxIdleTime() {
+				return this.maxIdleTime;
 			}
 
-			public void setIdle(@Nullable Duration idle) {
-				this.idle = idle;
+			public void setMaxIdleTime(@Nullable Duration maxIdleTime) {
+				this.maxIdleTime = maxIdleTime;
 			}
 
-			public @Nullable Duration getAge() {
-				return this.age;
+			public @Nullable Duration getMaxAge() {
+				return this.maxAge;
 			}
 
-			public void setAge(@Nullable Duration age) {
-				this.age = age;
+			public void setMaxAge(@Nullable Duration maxAge) {
+				this.maxAge = maxAge;
 			}
 
-			public @Nullable Duration getGrace() {
-				return this.grace;
+			public @Nullable Duration getGracePeriod() {
+				return this.gracePeriod;
 			}
 
-			public void setGrace(@Nullable Duration grace) {
-				this.grace = grace;
+			public void setGracePeriod(@Nullable Duration gracePeriod) {
+				this.gracePeriod = gracePeriod;
 			}
 
 		}

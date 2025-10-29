@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.grpc.server.autoconfigure.PropertiesServerBuilderCustomizer.Scope;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationEventPublisher;
@@ -54,6 +55,7 @@ import org.springframework.util.Assert;
  * Configurations for {@link GrpcServerFactory gRPC server factories}.
  *
  * @author Chris Bono
+ * @author Phillip Webb
  */
 class GrpcServerFactoryConfigurations {
 
@@ -79,10 +81,8 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			DefaultServerFactoryPropertyMapper<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder> mapper = new DefaultServerFactoryPropertyMapper<>(
-					properties);
 			List<ServerBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder>> builderCustomizers = List
-				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
+				.of(new PropertiesServerBuilderCustomizer<>(properties), serverBuilderCustomizers::customize);
 			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles,
 					io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE);
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
@@ -115,10 +115,8 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			DefaultServerFactoryPropertyMapper<NettyServerBuilder> mapper = new DefaultServerFactoryPropertyMapper<>(
-					properties);
 			List<ServerBuilderCustomizer<NettyServerBuilder>> builderCustomizers = List
-				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
+				.of(new PropertiesServerBuilderCustomizer<>(properties), serverBuilderCustomizers::customize);
 			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles, InsecureTrustManagerFactory.INSTANCE);
 			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
 					dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(), dunnoSslStuff.clientAuth());
@@ -150,10 +148,9 @@ class GrpcServerFactoryConfigurations {
 				ObjectProvider<ServerInterceptorFilter> interceptorFilter,
 				ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			DefaultServerFactoryPropertyMapper<InProcessServerBuilder> mapper = new DefaultServerFactoryPropertyMapper<>(
-					properties);
-			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List
-				.of(mapper::customizeServerJustInboundLimitsBuilder, serverBuilderCustomizers::customize);
+			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List.of(
+					new PropertiesServerBuilderCustomizer<>(properties, Scope.INBOUND_ONLY),
+					serverBuilderCustomizers::customize);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
 					builderCustomizers);
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
