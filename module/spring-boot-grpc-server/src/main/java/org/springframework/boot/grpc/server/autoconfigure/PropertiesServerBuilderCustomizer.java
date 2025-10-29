@@ -42,6 +42,8 @@ import org.springframework.util.unit.DataSize;
  */
 class PropertiesServerBuilderCustomizer<T extends ServerBuilder<T>> implements ServerBuilderCustomizer<T> {
 
+	// FIXME make record and the client one?
+
 	private final GrpcServerProperties properties;
 
 	PropertiesServerBuilderCustomizer(GrpcServerProperties properties) {

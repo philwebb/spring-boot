@@ -16,8 +16,6 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import java.util.List;
-
 import io.grpc.BindableService;
 import io.grpc.servlet.jakarta.GrpcServlet;
 import io.grpc.servlet.jakarta.ServletServerBuilder;
@@ -82,8 +80,8 @@ public final class GrpcServerFactoryAutoConfiguration {
 		ServletRegistrationBean<GrpcServlet> grpcServlet(GrpcServerProperties properties,
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers) {
-			List<String> serviceNames = serviceDiscoverer.listServiceNames();
-			serviceNames.forEach(this::logServiceName);
+			GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
+			services.names().forEach(this::logRegisteringServiceMessage);
 			ServletServerBuilder builder = new ServletServerBuilder();
 			serviceDiscoverer.findServices()
 				.stream()
@@ -92,11 +90,11 @@ public final class GrpcServerFactoryAutoConfiguration {
 			serverBuilderCustomizers.customize(builder);
 			GrpcServlet servlet = builder.buildServlet();
 			ServletRegistrationBean<GrpcServlet> registration = new ServletRegistrationBean<>(servlet);
-			registration.setUrlMappings(serviceNames.stream().map(this::servicePath).toList());
+			registration.setUrlMappings(services.names().map(this::servicePath).toList());
 			return registration;
 		}
 
-		private void logServiceName(String serviceName) {
+		private void logRegisteringServiceMessage(String serviceName) {
 			logger.info(LogMessage.format("Registering gRPC service: %s", serviceName));
 		}
 

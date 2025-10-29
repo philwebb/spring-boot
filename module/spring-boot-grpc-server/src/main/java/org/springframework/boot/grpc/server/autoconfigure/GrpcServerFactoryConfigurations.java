@@ -28,7 +28,6 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.grpc.server.DefaultGrpcServerFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
@@ -47,16 +46,6 @@ import org.springframework.grpc.server.service.ServerInterceptorFilter;
  */
 class GrpcServerFactoryConfigurations {
 
-	private static void configureFactory(DefaultGrpcServerFactory<?> factory,
-			ObjectProvider<GrpcServerFactoryCustomizer> customizers, GrpcServiceDiscoverer serviceDiscoverer,
-			GrpcServiceConfigurer serviceConfigurer) {
-		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
-		serviceDiscoverer.findServices()
-			.stream()
-			.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, factory))
-			.forEach(factory::addService);
-	}
-
 	// FIXME create PropertiesServerBuilderCustomizer bean
 
 	@Configuration(proxyBeanMethods = false)
@@ -71,12 +60,14 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
+			GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 			ServerCredentials serverCredentials = ServerCredentials.get(properties, bundles,
 					io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE);
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
 					serverBuilderCustomizers.forFactory(), serverCredentials.keyManager(),
 					serverCredentials.trustManager(), serverCredentials.clientAuth());
-			configureFactory(factory, customizers, serviceDiscoverer, serviceConfigurer);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
+			services.addToServerFactory(factory);
 			return factory;
 		}
 
@@ -102,12 +93,14 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
+			GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 			ServerCredentials serverCredentials = ServerCredentials.get(properties, bundles,
 					InsecureTrustManagerFactory.INSTANCE);
 			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(),
 					serverBuilderCustomizers.forFactory(), serverCredentials.keyManager(),
 					serverCredentials.trustManager(), serverCredentials.clientAuth());
-			configureFactory(factory, customizers, serviceDiscoverer, serviceConfigurer);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
+			services.addToServerFactory(factory);
 			return factory;
 		}
 
@@ -134,11 +127,13 @@ class GrpcServerFactoryConfigurations {
 				ObjectProvider<ServerInterceptorFilter> interceptorFilter,
 				ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
+			GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
 					serverBuilderCustomizers.forFactory());
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 			factory.setServiceFilter(serviceFilter.getIfAvailable());
-			configureFactory(factory, customizers, serviceDiscoverer, serviceConfigurer);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
+			services.addToServerFactory(factory);
 			return factory;
 		}
 
