@@ -17,6 +17,7 @@
 package org.springframework.boot.grpc.server.autoconfigure;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -28,6 +29,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties.Inbound;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties.Keepalive;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -42,26 +44,25 @@ class PropertiesServerBuilderCustomizer<T extends ServerBuilder<T>> implements S
 
 	private final GrpcServerProperties properties;
 
-	private final Scope scope;
-
 	PropertiesServerBuilderCustomizer(GrpcServerProperties properties) {
-		this(properties, Scope.ALL);
-	}
-
-	PropertiesServerBuilderCustomizer(GrpcServerProperties properties, Scope scope) {
 		this.properties = properties;
-		this.scope = scope;
 	}
 
 	@Override
 	public void customize(T builder) {
-		if (this.scope == Scope.ALL) {
-			mapKeepalive(this.properties.getKeepAlive(), builder);
+		mapInboundProperties(this.properties.getInbound(), builder);
+		if (BuilderType.get(builder) == BuilderType.STANDARD) {
+			mapKeepaliveProperties(this.properties.getKeepalive(), builder);
 		}
-		mapInbound(this.properties.getInbound(), builder);
 	}
 
-	private void mapKeepalive(Keepalive properties, T builder) {
+	private void mapInboundProperties(Inbound properties, T builder) {
+		PropertyMapper map = PropertyMapper.get();
+		map.from(properties.getMessage()::getMaxSize).asInt(DataSize::toBytes).to(builder::maxInboundMessageSize);
+		map.from(properties.getMetadata()::getMaxSize).asInt(DataSize::toBytes).to(builder::maxInboundMetadataSize);
+	}
+
+	private void mapKeepaliveProperties(Keepalive properties, T builder) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getTime).to(durationProperty(builder::keepAliveTime));
 		map.from(properties::getTimeout).to(durationProperty(builder::keepAliveTimeout));
@@ -72,30 +73,50 @@ class PropertiesServerBuilderCustomizer<T extends ServerBuilder<T>> implements S
 		map.from(properties.getPermit()::isWithoutCalls).to(builder::permitKeepAliveWithoutCalls);
 	}
 
-	private void mapInbound(Inbound properties, T builder) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(properties.getMessage()::getMaxSize).asInt(DataSize::toBytes).to(builder::maxInboundMessageSize);
-		map.from(properties.getMetadata()::getMaxSize).asInt(DataSize::toBytes).to(builder::maxInboundMetadataSize);
-	}
-
 	private Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {
 		return (duration) -> setter.accept(duration.toNanos(), TimeUnit.NANOSECONDS);
 	}
 
-	/**
-	 * The scope of the mapping to apply.
-	 */
-	enum Scope {
+	private enum BuilderType {
 
 		/**
-		 * Map all supported properties.
+		 * An in-process server builder where only a subset of properties are mapped.
 		 */
-		ALL,
+		IN_PROCESS("io.grpc.inprocess.InProcessServerBuilder"),
 
 		/**
-		 * Map only inbound properties.
+		 * A servlet server builder where only a subset of properties are mapped.
 		 */
-		INBOUND_ONLY
+		SERVLET("io.grpc.servlet.jakarta.ServletServerBuilder"),
+
+		/**
+		 * A standard server builder where all properties can be mapped.
+		 */
+		STANDARD(null);
+
+		private final String builderClassName;
+
+		BuilderType(String builderClassName) {
+			this.builderClassName = builderClassName;
+		}
+
+		boolean supports(Object builder) {
+			try {
+				ClassLoader classLoader = builder.getClass().getClassLoader();
+				return (this.builderClassName != null)
+						&& ClassUtils.forName(this.builderClassName, classLoader).isInstance(builder);
+			}
+			catch (ClassNotFoundException | LinkageError ex) {
+				return false;
+			}
+		}
+
+		static BuilderType get(Object builder) {
+			return Arrays.stream(values())
+				.filter((candidate) -> candidate.supports(builder))
+				.findFirst()
+				.orElse(STANDARD);
+		}
 
 	}
 

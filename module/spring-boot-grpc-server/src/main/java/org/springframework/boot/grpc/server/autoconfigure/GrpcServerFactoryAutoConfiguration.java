@@ -28,15 +28,14 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.core.log.LogMessage;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
-import org.springframework.util.unit.DataSize;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for gRPC server factories.
@@ -77,30 +76,32 @@ public final class GrpcServerFactoryAutoConfiguration {
 
 		private static Log logger = LogFactory.getLog(GrpcServletConfiguration.class);
 
+		// FIXME need PropertiesServerBuilderCustomizer
+
 		@Bean
 		ServletRegistrationBean<GrpcServlet> grpcServlet(GrpcServerProperties properties,
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers) {
 			List<String> serviceNames = serviceDiscoverer.listServiceNames();
-			if (logger.isInfoEnabled()) {
-				serviceNames.forEach((service) -> logger.info("Registering gRPC service: " + service));
-			}
-			List<String> paths = serviceNames.stream().map((service) -> "/" + service + "/*").toList();
-			ServletServerBuilder servletServerBuilder = new ServletServerBuilder();
+			serviceNames.forEach(this::logServiceName);
+			ServletServerBuilder builder = new ServletServerBuilder();
 			serviceDiscoverer.findServices()
 				.stream()
 				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, null))
-				.forEach(servletServerBuilder::addService);
-			PropertyMapper mapper = PropertyMapper.get();
-			// FIXME why here and not in mapper
-			mapper.from(properties.getInbound().getMessage().getMaxSize())
-				.asInt(DataSize::toBytes)
-				.to(servletServerBuilder::maxInboundMessageSize);
-			serverBuilderCustomizers.customize(servletServerBuilder);
-			ServletRegistrationBean<GrpcServlet> servlet = new ServletRegistrationBean<>(
-					servletServerBuilder.buildServlet());
-			servlet.setUrlMappings(paths);
-			return servlet;
+				.forEach(builder::addService);
+			serverBuilderCustomizers.customize(builder);
+			GrpcServlet servlet = builder.buildServlet();
+			ServletRegistrationBean<GrpcServlet> registration = new ServletRegistrationBean<>(servlet);
+			registration.setUrlMappings(serviceNames.stream().map(this::servicePath).toList());
+			return registration;
+		}
+
+		private void logServiceName(String serviceName) {
+			logger.info(LogMessage.format("Registering gRPC service: %s", serviceName));
+		}
+
+		private String servicePath(String serviceName) {
+			return "/" + serviceName + "/*";
 		}
 
 		@Configuration(proxyBeanMethods = false)

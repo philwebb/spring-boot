@@ -59,10 +59,10 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 @Import({ GrpcCodecConfiguration.class })
 public final class GrpcServerAutoConfiguration {
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	ServerBuilderCustomizers serverBuilderCustomizers(ObjectProvider<ServerBuilderCustomizer<?>> customizers) {
-		return new ServerBuilderCustomizers(customizers.orderedStream().toList());
+		return new ServerBuilderCustomizers(customizers);
 	}
 
 	@Bean

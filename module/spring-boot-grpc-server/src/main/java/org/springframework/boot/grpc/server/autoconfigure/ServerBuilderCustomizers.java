@@ -16,12 +16,11 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.grpc.ServerBuilder;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 
@@ -30,30 +29,26 @@ import org.springframework.grpc.server.ServerBuilderCustomizer;
  * given {@link ServerBuilder}.
  *
  * @author Chris Bono
+ * @author Phillip Webb
  */
 class ServerBuilderCustomizers {
 
-	private final List<ServerBuilderCustomizer<?>> customizers;
+	private final ObjectProvider<ServerBuilderCustomizer<?>> customizers;
 
-	// FIXME Make OP
-	ServerBuilderCustomizers(List<? extends ServerBuilderCustomizer<?>> customizers) {
-		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
+	ServerBuilderCustomizers(ObjectProvider<ServerBuilderCustomizer<?>> customizers) {
+		this.customizers = customizers;
 	}
 
-	/**
-	 * Customize the specified {@link ServerBuilder}. Locates all
-	 * {@link ServerBuilderCustomizer} beans able to handle the specified instance and
-	 * invoke {@link ServerBuilderCustomizer#customize} on them.
-	 * @param <T> the type of server builder
-	 * @param serverBuilder the builder to customize
-	 * @return the customized builder
-	 */
+	<T extends ServerBuilder<T>> List<ServerBuilderCustomizer<T>> forFactory() {
+		return List.of(this::customize);
+	}
+
 	@SuppressWarnings("unchecked")
-	<T extends ServerBuilder<?>> T customize(T serverBuilder) {
-		LambdaSafe.callbacks(ServerBuilderCustomizer.class, this.customizers, serverBuilder)
+	<T extends ServerBuilder<?>> T customize(T builder) {
+		LambdaSafe.callbacks(ServerBuilderCustomizer.class, this.customizers.orderedStream().toList(), builder)
 			.withLogger(ServerBuilderCustomizers.class)
-			.invoke((customizer) -> customizer.customize(serverBuilder));
-		return serverBuilder;
+			.invoke((customizer) -> customizer.customize(builder));
+		return builder;
 	}
 
 }

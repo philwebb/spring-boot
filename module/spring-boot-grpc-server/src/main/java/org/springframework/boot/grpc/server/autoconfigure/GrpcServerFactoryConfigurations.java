@@ -16,13 +16,6 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import java.util.List;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
-
-import io.grpc.TlsServerCredentials.ClientAuth;
-import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.netty.NettyServerBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
@@ -31,9 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.grpc.server.autoconfigure.PropertiesServerBuilderCustomizer.Scope;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -42,14 +32,12 @@ import org.springframework.grpc.server.DefaultGrpcServerFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
-import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.ServerServiceDefinitionFilter;
 import org.springframework.grpc.server.ShadedNettyGrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.grpc.server.service.ServerInterceptorFilter;
-import org.springframework.util.Assert;
 
 /**
  * Configurations for {@link GrpcServerFactory gRPC server factories}.
@@ -59,8 +47,9 @@ import org.springframework.util.Assert;
  */
 class GrpcServerFactoryConfigurations {
 
-	private static void dunno(GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
-			ObjectProvider<GrpcServerFactoryCustomizer> customizers, DefaultGrpcServerFactory<?> factory) {
+	private static void configureFactory(DefaultGrpcServerFactory<?> factory,
+			ObjectProvider<GrpcServerFactoryCustomizer> customizers, GrpcServiceDiscoverer serviceDiscoverer,
+			GrpcServiceConfigurer serviceConfigurer) {
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		serviceDiscoverer.findServices()
 			.stream()
@@ -68,12 +57,13 @@ class GrpcServerFactoryConfigurations {
 			.forEach(factory::addService);
 	}
 
+	// FIXME create PropertiesServerBuilderCustomizer bean
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class)
 	@ConditionalOnMissingBean(value = GrpcServerFactory.class, ignored = InProcessGrpcServerFactory.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.server.inprocess.", name = "exclusive", havingValue = "false",
+	@ConditionalOnProperty(name = "spring.grpc.server.inprocess.exclusive", havingValue = "false",
 			matchIfMissing = true)
-	@EnableConfigurationProperties(GrpcServerProperties.class)
 	static class ShadedNettyServerFactoryConfiguration {
 
 		@Bean
@@ -81,14 +71,12 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			List<ServerBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder>> builderCustomizers = List
-				.of(new PropertiesServerBuilderCustomizer<>(properties), serverBuilderCustomizers::customize);
-			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles,
+			ServerCredentials serverCredentials = ServerCredentials.get(properties, bundles,
 					io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE);
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
-					builderCustomizers, dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(),
-					dunnoSslStuff.clientAuth());
-			dunno(serviceDiscoverer, serviceConfigurer, customizers, factory);
+					serverBuilderCustomizers.forFactory(), serverCredentials.keyManager(),
+					serverCredentials.trustManager(), serverCredentials.clientAuth());
+			configureFactory(factory, customizers, serviceDiscoverer, serviceConfigurer);
 			return factory;
 		}
 
@@ -105,9 +93,8 @@ class GrpcServerFactoryConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(NettyServerBuilder.class)
 	@ConditionalOnMissingBean(value = GrpcServerFactory.class, ignored = InProcessGrpcServerFactory.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.server.inprocess.", name = "exclusive", havingValue = "false",
+	@ConditionalOnProperty(name = "spring.grpc.server.inprocess.exclusive", havingValue = "false",
 			matchIfMissing = true)
-	@EnableConfigurationProperties(GrpcServerProperties.class)
 	static class NettyServerFactoryConfiguration {
 
 		@Bean
@@ -115,12 +102,12 @@ class GrpcServerFactoryConfigurations {
 				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 				ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			List<ServerBuilderCustomizer<NettyServerBuilder>> builderCustomizers = List
-				.of(new PropertiesServerBuilderCustomizer<>(properties), serverBuilderCustomizers::customize);
-			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles, InsecureTrustManagerFactory.INSTANCE);
-			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
-					dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(), dunnoSslStuff.clientAuth());
-			dunno(serviceDiscoverer, serviceConfigurer, customizers, factory);
+			ServerCredentials serverCredentials = ServerCredentials.get(properties, bundles,
+					InsecureTrustManagerFactory.INSTANCE);
+			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(),
+					serverBuilderCustomizers.forFactory(), serverCredentials.keyManager(),
+					serverCredentials.trustManager(), serverCredentials.clientAuth());
+			configureFactory(factory, customizers, serviceDiscoverer, serviceConfigurer);
 			return factory;
 		}
 
@@ -137,8 +124,7 @@ class GrpcServerFactoryConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(InProcessGrpcServerFactory.class)
 	@ConditionalOnMissingBean(InProcessGrpcServerFactory.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.server.inprocess", name = "name")
-	@EnableConfigurationProperties(GrpcServerProperties.class)
+	@ConditionalOnProperty("spring.grpc.server.inprocess.name")
 	static class InProcessServerFactoryConfiguration {
 
 		@Bean
@@ -148,43 +134,20 @@ class GrpcServerFactoryConfigurations {
 				ObjectProvider<ServerInterceptorFilter> interceptorFilter,
 				ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 				ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
-			List<ServerBuilderCustomizer<InProcessServerBuilder>> builderCustomizers = List.of(
-					new PropertiesServerBuilderCustomizer<>(properties, Scope.INBOUND_ONLY),
-					serverBuilderCustomizers::customize);
 			InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
-					builderCustomizers);
+					serverBuilderCustomizers.forFactory());
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 			factory.setServiceFilter(serviceFilter.getIfAvailable());
-			dunno(serviceDiscoverer, serviceConfigurer, customizers, factory);
+			configureFactory(factory, customizers, serviceDiscoverer, serviceConfigurer);
 			return factory;
 		}
 
+		@Bean
 		@ConditionalOnBean(InProcessGrpcServerFactory.class)
 		@ConditionalOnMissingBean(name = "inProcessGrpcServerLifecycle")
-		@Bean
 		GrpcServerLifecycle inProcessGrpcServerLifecycle(InProcessGrpcServerFactory factory,
 				GrpcServerProperties properties, ApplicationEventPublisher eventPublisher) {
 			return new GrpcServerLifecycle(factory, properties.getShutdown().getGracePeriod(), eventPublisher);
-		}
-
-	}
-
-	private record SslStuff(KeyManagerFactory keyManager, TrustManagerFactory trustManager, ClientAuth clientAuth) {
-
-		private static SslStuff get(GrpcServerProperties properties, SslBundles bundles, TrustManagerFactory instance) {
-			KeyManagerFactory keyManager = null;
-			TrustManagerFactory trustManager = null;
-			if (properties.getSsl().determineEnabled()) {
-				String bundleName = properties.getSsl().getBundle();
-				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
-				SslBundle bundle = bundles.getBundle(bundleName);
-				keyManager = bundle.getManagers().getKeyManagerFactory();
-				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
-						: instance;
-			}
-			ClientAuth clientAuth = properties.getSsl().getClientAuth();
-			SslStuff dunnoSslStuff = new SslStuff(keyManager, trustManager, clientAuth);
-			return dunnoSslStuff;
 		}
 
 	}

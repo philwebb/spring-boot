@@ -75,7 +75,7 @@ public class GrpcServerProperties {
 		return this.inprocess;
 	}
 
-	public Keepalive getKeepAlive() {
+	public Keepalive getKeepalive() {
 		return this.keepalive;
 	}
 
