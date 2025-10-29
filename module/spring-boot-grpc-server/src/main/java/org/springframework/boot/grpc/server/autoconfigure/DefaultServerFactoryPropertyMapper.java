@@ -25,7 +25,6 @@ import io.grpc.ServerBuilder;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.grpc.server.DefaultGrpcServerFactory;
-import org.springframework.util.unit.DataSize;
 
 /**
  * Helper class used to map {@link GrpcServerProperties} to
@@ -58,14 +57,14 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 	 * @param map the property mapper
 	 */
 	void customizeKeepAlive(T serverBuilder, PropertyMapper map) {
-		GrpcServerProperties.KeepAlive keepAliveProps = this.properties.getKeepAlive();
-		map.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::keepAliveTime));
-		map.from(keepAliveProps.getTimeout()).to(durationProperty(serverBuilder::keepAliveTimeout));
-		map.from(keepAliveProps.getMaxIdle()).to(durationProperty(serverBuilder::maxConnectionIdle));
-		map.from(keepAliveProps.getMaxAge()).to(durationProperty(serverBuilder::maxConnectionAge));
-		map.from(keepAliveProps.getMaxAgeGrace()).to(durationProperty(serverBuilder::maxConnectionAgeGrace));
-		map.from(keepAliveProps.getPermitTime()).to(durationProperty(serverBuilder::permitKeepAliveTime));
-		map.from(keepAliveProps.isPermitWithoutCalls()).to(serverBuilder::permitKeepAliveWithoutCalls);
+		GrpcServerProperties.Keepalive keepAliveProps = this.properties.getKeepAlive();
+		// map.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::keepAliveTime));
+		// map.from(keepAliveProps.getTimeout()).to(durationProperty(serverBuilder::keepAliveTimeout));
+		// map.from(keepAliveProps.getIdle()).to(durationProperty(serverBuilder::maxConnectionIdle));
+		// map.from(keepAliveProps.getAge()).to(durationProperty(serverBuilder::maxConnectionAge));
+		// map.from(keepAliveProps.getGrace()).to(durationProperty(serverBuilder::maxConnectionAgeGrace));
+		// map.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::permitKeepAliveTime));
+		// map.from(keepAliveProps.isWithoutCalls()).to(serverBuilder::permitKeepAliveWithoutCalls);
 	}
 
 	/**
@@ -74,12 +73,12 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 	 * @param map the property mapper
 	 */
 	void customizeInboundLimits(T serverBuilder, PropertyMapper map) {
-		map.from(this.properties.getMaxInboundMessageSize())
-			.asInt(DataSize::toBytes)
-			.to(serverBuilder::maxInboundMessageSize);
-		map.from(this.properties.getMaxInboundMetadataSize())
-			.asInt(DataSize::toBytes)
-			.to(serverBuilder::maxInboundMetadataSize);
+		// map.from(this.properties.getMaxInboundMessageSize())
+		// .asInt(DataSize::toBytes)
+		// .to(serverBuilder::maxInboundMessageSize);
+		// map.from(this.properties.getMaxInboundMetadataSize())
+		// .asInt(DataSize::toBytes)
+		// .to(serverBuilder::maxInboundMetadataSize);
 	}
 
 	Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {

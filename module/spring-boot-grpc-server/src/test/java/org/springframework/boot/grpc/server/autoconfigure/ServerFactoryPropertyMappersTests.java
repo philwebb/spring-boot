@@ -61,11 +61,11 @@ class ServerFactoryPropertyMappersTests {
 		GrpcServerProperties properties = new GrpcServerProperties();
 		properties.getKeepAlive().setTime(Duration.ofHours(1));
 		properties.getKeepAlive().setTimeout(Duration.ofSeconds(10));
-		properties.getKeepAlive().setMaxIdle(Duration.ofHours(2));
-		properties.getKeepAlive().setMaxAge(Duration.ofHours(3));
-		properties.getKeepAlive().setMaxAgeGrace(Duration.ofSeconds(45));
-		properties.getKeepAlive().setPermitTime(Duration.ofMinutes(7));
-		properties.getKeepAlive().setPermitWithoutCalls(true);
+		properties.getKeepAlive().setIdle(Duration.ofHours(2));
+		properties.getKeepAlive().setAge(Duration.ofHours(3));
+		properties.getKeepAlive().setGrace(Duration.ofSeconds(45));
+		properties.getKeepAlive().setTime(Duration.ofMinutes(7));
+		properties.getKeepAlive().setWithoutCalls(true);
 		properties.setMaxInboundMessageSize(DataSize.ofMegabytes(333));
 		properties.setMaxInboundMetadataSize(DataSize.ofKilobytes(111));
 		X mapper = mapperFactory.apply(properties);

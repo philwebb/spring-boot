@@ -86,7 +86,7 @@ class GrpcServerFactoryConfigurations {
 				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
 						: io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE;
 			}
-			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.determineAddress(),
+			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
 					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
 			applyServerFactoryCustomizers(customizers, factory);
 			serviceDiscoverer.findServices()
@@ -101,7 +101,7 @@ class GrpcServerFactoryConfigurations {
 		@Bean
 		GrpcServerLifecycle shadedNettyGrpcServerLifecycle(ShadedNettyGrpcServerFactory factory,
 				GrpcServerProperties properties, ApplicationEventPublisher eventPublisher) {
-			return new GrpcServerLifecycle(factory, properties.getShutdownGracePeriod(), eventPublisher);
+			return new GrpcServerLifecycle(factory, properties.getShutdown().getGracePeriod(), eventPublisher);
 		}
 
 	}
@@ -132,8 +132,8 @@ class GrpcServerFactoryConfigurations {
 				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
 						: InsecureTrustManagerFactory.INSTANCE;
 			}
-			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.determineAddress(),
-					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
+			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
+					keyManager, trustManager, properties.getSsl().getClientAuth());
 			applyServerFactoryCustomizers(customizers, factory);
 			serviceDiscoverer.findServices()
 				.stream()
@@ -147,7 +147,7 @@ class GrpcServerFactoryConfigurations {
 		@Bean
 		GrpcServerLifecycle nettyGrpcServerLifecycle(NettyGrpcServerFactory factory, GrpcServerProperties properties,
 				ApplicationEventPublisher eventPublisher) {
-			return new GrpcServerLifecycle(factory, properties.getShutdownGracePeriod(), eventPublisher);
+			return new GrpcServerLifecycle(factory, properties.getShutdown().getGracePeriod(), eventPublisher);
 		}
 
 	}
@@ -186,7 +186,7 @@ class GrpcServerFactoryConfigurations {
 		@Bean
 		GrpcServerLifecycle inProcessGrpcServerLifecycle(InProcessGrpcServerFactory factory,
 				GrpcServerProperties properties, ApplicationEventPublisher eventPublisher) {
-			return new GrpcServerLifecycle(factory, properties.getShutdownGracePeriod(), eventPublisher);
+			return new GrpcServerLifecycle(factory, properties.getShutdown().getGracePeriod(), eventPublisher);
 		}
 
 	}

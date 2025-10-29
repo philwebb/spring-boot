@@ -56,7 +56,7 @@ class GrpcServerPropertiesTests {
 			assertThat(properties.getPort()).isEqualTo(3130);
 			assertThat(properties.getAddress()).isNull();
 			assertThat(properties.determineAddress()).isEqualTo("my-server-ip:3130");
-			assertThat(properties.getShutdownGracePeriod()).isEqualTo(Duration.ofSeconds(15));
+			assertThat(properties.getGracePeriod()).isEqualTo(Duration.ofSeconds(15));
 		}
 
 	}
@@ -110,7 +110,7 @@ class GrpcServerPropertiesTests {
 			map.put("spring.grpc.server.keep-alive.max-age-grace", "21s");
 			map.put("spring.grpc.server.keep-alive.permit-time", "33s");
 			map.put("spring.grpc.server.keep-alive.permit-without-calls", "true");
-			GrpcServerProperties.KeepAlive properties = bindProperties(map).getKeepAlive();
+			GrpcServerProperties.Keepalive properties = bindProperties(map).getKeepAlive();
 			assertThatPropertiesSetAsExpected(properties);
 		}
 
@@ -124,18 +124,18 @@ class GrpcServerPropertiesTests {
 			map.put("spring.grpc.server.keep-alive.max-age-grace", "21");
 			map.put("spring.grpc.server.keep-alive.permit-time", "33");
 			map.put("spring.grpc.server.keep-alive.permit-without-calls", "true");
-			GrpcServerProperties.KeepAlive properties = bindProperties(map).getKeepAlive();
+			GrpcServerProperties.Keepalive properties = bindProperties(map).getKeepAlive();
 			assertThatPropertiesSetAsExpected(properties);
 		}
 
-		private void assertThatPropertiesSetAsExpected(GrpcServerProperties.KeepAlive properties) {
+		private void assertThatPropertiesSetAsExpected(GrpcServerProperties.Keepalive properties) {
 			assertThat(properties.getTime()).isEqualTo(Duration.ofMinutes(45));
 			assertThat(properties.getTimeout()).isEqualTo(Duration.ofSeconds(40));
-			assertThat(properties.getMaxIdle()).isEqualTo(Duration.ofHours(1));
-			assertThat(properties.getMaxAge()).isEqualTo(Duration.ofHours(3));
-			assertThat(properties.getMaxAgeGrace()).isEqualTo(Duration.ofSeconds(21));
-			assertThat(properties.getPermitTime()).isEqualTo(Duration.ofSeconds(33));
-			assertThat(properties.isPermitWithoutCalls()).isTrue();
+			assertThat(properties.getIdle()).isEqualTo(Duration.ofHours(1));
+			assertThat(properties.getAge()).isEqualTo(Duration.ofHours(3));
+			assertThat(properties.getGrace()).isEqualTo(Duration.ofSeconds(21));
+			assertThat(properties.getTime()).isEqualTo(Duration.ofSeconds(33));
+			assertThat(properties.isWithoutCalls()).isTrue();
 		}
 
 	}

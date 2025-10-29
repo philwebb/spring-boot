@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.grpc.internal.GrpcUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -35,52 +34,20 @@ import org.springframework.util.unit.DataUnit;
 public class GrpcServerProperties {
 
 	/**
-	 * Server should listen to any IPv4 and IPv6 address.
-	 */
-	public static final String ANY_IP_ADDRESS = "*";
-
-	/**
 	 * The address to bind to in the form 'host:port' or a pseudo URL like
-	 * 'static://host:port'. When the address is set it takes precedence over any
-	 * configured host/port values.
+	 * 'static://host:port'.
 	 */
 	private @Nullable String address;
 
-	/**
-	 * Server host to bind to. The default is any IP address ('*').
-	 */
-	private String host = ANY_IP_ADDRESS;
+	private final Shutdown shutdown = new Shutdown();
 
-	/**
-	 * Server port to listen on. When the value is 0, a random available port is selected.
-	 */
-	private int port = GrpcUtils.DEFAULT_PORT;
-
-	/**
-	 * Maximum message size allowed to be received by the server (default 4MiB).
-	 */
-	@DataSizeUnit(DataUnit.BYTES)
-	private DataSize maxInboundMessageSize = DataSize.ofBytes(4194304);
-
-	/**
-	 * Maximum metadata size allowed to be received by the server (default 8KiB).
-	 */
-	@DataSizeUnit(DataUnit.BYTES)
-	private DataSize maxInboundMetadataSize = DataSize.ofBytes(8192);
-
-	/**
-	 * Maximum time to wait for the server to gracefully shutdown. When the value is
-	 * negative, the server waits forever. When the value is 0, the server will force
-	 * shutdown immediately. The default is 30 seconds.
-	 */
-	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration shutdownGracePeriod = Duration.ofSeconds(30);
+	private final Inbound inbound = new Inbound();
 
 	private final Health health = new Health();
 
 	private final Inprocess inprocess = new Inprocess();
 
-	private final KeepAlive keepAlive = new KeepAlive();
+	private final Keepalive keepalive = new Keepalive();
 
 	private final Ssl ssl = new Ssl();
 
@@ -92,53 +59,12 @@ public class GrpcServerProperties {
 		this.address = address;
 	}
 
-	/**
-	 * Returns the configured address or an address created from the configured host and
-	 * port if no address has been set.
-	 * @return the address to bind to
-	 */
-	public String determineAddress() {
-		return (this.address != null) ? this.address : this.host + ":" + this.port;
+	public Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
-	public String getHost() {
-		return this.host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public int getPort() {
-		return this.port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public DataSize getMaxInboundMessageSize() {
-		return this.maxInboundMessageSize;
-	}
-
-	public void setMaxInboundMessageSize(DataSize maxInboundMessageSize) {
-		this.maxInboundMessageSize = maxInboundMessageSize;
-	}
-
-	public DataSize getMaxInboundMetadataSize() {
-		return this.maxInboundMetadataSize;
-	}
-
-	public void setMaxInboundMetadataSize(DataSize maxInboundMetadataSize) {
-		this.maxInboundMetadataSize = maxInboundMetadataSize;
-	}
-
-	public Duration getShutdownGracePeriod() {
-		return this.shutdownGracePeriod;
-	}
-
-	public void setShutdownGracePeriod(Duration shutdownGracePeriod) {
-		this.shutdownGracePeriod = shutdownGracePeriod;
+	public Inbound getInbound() {
+		return this.inbound;
 	}
 
 	public Health getHealth() {
@@ -149,12 +75,84 @@ public class GrpcServerProperties {
 		return this.inprocess;
 	}
 
-	public KeepAlive getKeepAlive() {
-		return this.keepAlive;
+	public Keepalive getKeepAlive() {
+		return this.keepalive;
 	}
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public static class Shutdown {
+
+		/**
+		 * Maximum time to wait for the server to gracefully shutdown. When the value is
+		 * negative, the server waits forever. When the value is 0, the server will force
+		 * shutdown immediately. The default is 30 seconds.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration gracePeriod = Duration.ofSeconds(30);
+
+		public Duration getGracePeriod() {
+			return this.gracePeriod;
+		}
+
+		public void setGracePeriod(Duration gracePeriod) {
+			this.gracePeriod = gracePeriod;
+		}
+
+	}
+
+	public static class Inbound {
+
+		private static final Message message = new Message();
+
+		private static final Metadata metadata = new Metadata();
+
+		public static Message getMessage() {
+			return message;
+		}
+
+		public static Metadata getMetadata() {
+			return metadata;
+		}
+
+		public static class Message {
+
+			/**
+			 * Maximum message size allowed to be received by the server (default 4MiB).
+			 */
+			@DataSizeUnit(DataUnit.BYTES)
+			private DataSize maxSize = DataSize.ofBytes(4194304);
+
+			public DataSize getMaxSize() {
+				return this.maxSize;
+			}
+
+			public void setMaxSize(DataSize maxSize) {
+				this.maxSize = maxSize;
+			}
+
+		}
+
+		public static class Metadata {
+
+			/**
+			 * Maximum metadata size allowed to be received by the server (default 8KiB).
+			 */
+			@DataSizeUnit(DataUnit.BYTES)
+			private DataSize maxSize = DataSize.ofBytes(8192);
+
+			public DataSize getMaxSize() {
+				return this.maxSize;
+			}
+
+			public void setMaxSize(DataSize maxSize) {
+				this.maxSize = maxSize;
+			}
+
+		}
+
 	}
 
 	public static class Health {
@@ -178,74 +176,74 @@ public class GrpcServerProperties {
 			return this.actuator;
 		}
 
-	}
+		public static class Actuator {
 
-	public static class Actuator {
+			/**
+			 * Whether to adapt Actuator health indicators into gRPC health checks.
+			 */
+			private boolean enabled = true;
 
-		/**
-		 * Whether to adapt Actuator health indicators into gRPC health checks.
-		 */
-		private boolean enabled = true;
+			/**
+			 * Whether to update the overall gRPC server health (the '' service) with the
+			 * aggregate status of the configured health indicators.
+			 */
+			private boolean updateOverallHealth = true;
 
-		/**
-		 * Whether to update the overall gRPC server health (the '' service) with the
-		 * aggregate status of the configured health indicators.
-		 */
-		private boolean updateOverallHealth = true;
+			/**
+			 * How often to update the health status.
+			 */
+			private Duration updateRate = Duration.ofSeconds(5);
 
-		/**
-		 * How often to update the health status.
-		 */
-		private Duration updateRate = Duration.ofSeconds(5);
+			/**
+			 * The initial delay before updating the health status the very first time.
+			 */
+			private Duration updateInitialDelay = Duration.ofSeconds(5);
 
-		/**
-		 * The initial delay before updating the health status the very first time.
-		 */
-		private Duration updateInitialDelay = Duration.ofSeconds(5);
+			/**
+			 * List of Actuator health indicator paths to adapt into gRPC health checks.
+			 */
+			private List<String> healthIndicatorPaths = new ArrayList<>();
 
-		/**
-		 * List of Actuator health indicator paths to adapt into gRPC health checks.
-		 */
-		private List<String> healthIndicatorPaths = new ArrayList<>();
+			public boolean getEnabled() {
+				return this.enabled;
+			}
 
-		public boolean getEnabled() {
-			return this.enabled;
-		}
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
+			public boolean getUpdateOverallHealth() {
+				return this.updateOverallHealth;
+			}
 
-		public boolean getUpdateOverallHealth() {
-			return this.updateOverallHealth;
-		}
+			public void setUpdateOverallHealth(boolean updateOverallHealth) {
+				this.updateOverallHealth = updateOverallHealth;
+			}
 
-		public void setUpdateOverallHealth(boolean updateOverallHealth) {
-			this.updateOverallHealth = updateOverallHealth;
-		}
+			public Duration getUpdateRate() {
+				return this.updateRate;
+			}
 
-		public Duration getUpdateRate() {
-			return this.updateRate;
-		}
+			public void setUpdateRate(Duration updateRate) {
+				this.updateRate = updateRate;
+			}
 
-		public void setUpdateRate(Duration updateRate) {
-			this.updateRate = updateRate;
-		}
+			public Duration getUpdateInitialDelay() {
+				return this.updateInitialDelay;
+			}
 
-		public Duration getUpdateInitialDelay() {
-			return this.updateInitialDelay;
-		}
+			public void setUpdateInitialDelay(Duration updateInitialDelay) {
+				this.updateInitialDelay = updateInitialDelay;
+			}
 
-		public void setUpdateInitialDelay(Duration updateInitialDelay) {
-			this.updateInitialDelay = updateInitialDelay;
-		}
+			public List<String> getHealthIndicatorPaths() {
+				return this.healthIndicatorPaths;
+			}
 
-		public List<String> getHealthIndicatorPaths() {
-			return this.healthIndicatorPaths;
-		}
+			public void setHealthIndicatorPaths(List<String> healthIndicatorPaths) {
+				this.healthIndicatorPaths = healthIndicatorPaths;
+			}
 
-		public void setHealthIndicatorPaths(List<String> healthIndicatorPaths) {
-			this.healthIndicatorPaths = healthIndicatorPaths;
 		}
 
 	}
@@ -267,7 +265,7 @@ public class GrpcServerProperties {
 
 	}
 
-	public static class KeepAlive {
+	public static class Keepalive {
 
 		/**
 		 * Duration without read activity before sending a keep alive ping (default 2h).
@@ -283,37 +281,9 @@ public class GrpcServerProperties {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private @Nullable Duration timeout = Duration.ofSeconds(20);
 
-		/**
-		 * Maximum time a connection can remain idle before being gracefully terminated
-		 * (default infinite).
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration maxIdle;
+		private final Permit permit = new Permit();
 
-		/**
-		 * Maximum time a connection may exist before being gracefully terminated (default
-		 * infinite).
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration maxAge;
-
-		/**
-		 * Maximum time for graceful connection termination (default infinite).
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration maxAgeGrace;
-
-		/**
-		 * Maximum keep-alive time clients are permitted to configure (default 5m).
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration permitTime = Duration.ofMinutes(5);
-
-		/**
-		 * Whether clients are permitted to send keep alive pings when there are no
-		 * outstanding RPCs on the connection (default false).
-		 */
-		private boolean permitWithoutCalls;
+		private final Max max = new Max();
 
 		public @Nullable Duration getTime() {
 			return this.time;
@@ -331,44 +301,94 @@ public class GrpcServerProperties {
 			this.timeout = timeout;
 		}
 
-		public @Nullable Duration getMaxIdle() {
-			return this.maxIdle;
+		public Permit getPermit() {
+			return this.permit;
 		}
 
-		public void setMaxIdle(@Nullable Duration maxIdle) {
-			this.maxIdle = maxIdle;
+		public Max getMax() {
+			return this.max;
 		}
 
-		public @Nullable Duration getMaxAge() {
-			return this.maxAge;
+		public static class Permit {
+
+			/**
+			 * Maximum keep-alive time clients are permitted to configure (default 5m).
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private @Nullable Duration time = Duration.ofMinutes(5);
+
+			/**
+			 * Whether clients are permitted to send keep alive pings when there are no
+			 * outstanding RPCs on the connection (default false).
+			 */
+			private boolean withoutCalls;
+
+			public @Nullable Duration getTime() {
+				return this.time;
+			}
+
+			public void setTime(@Nullable Duration time) {
+				this.time = time;
+			}
+
+			public boolean isWithoutCalls() {
+				return this.withoutCalls;
+			}
+
+			public void setWithoutCalls(boolean withoutCalls) {
+				this.withoutCalls = withoutCalls;
+			}
+
 		}
 
-		public void setMaxAge(@Nullable Duration maxAge) {
-			this.maxAge = maxAge;
-		}
+		public static class Max {
 
-		public @Nullable Duration getMaxAgeGrace() {
-			return this.maxAgeGrace;
-		}
+			/**
+			 * Maximum time a connection can remain idle before being gracefully
+			 * terminated (default infinite).
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private @Nullable Duration idle;
 
-		public void setMaxAgeGrace(@Nullable Duration maxAgeGrace) {
-			this.maxAgeGrace = maxAgeGrace;
-		}
+			/**
+			 * Maximum time a connection may exist before being gracefully terminated
+			 * (default infinite).
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private @Nullable Duration age;
 
-		public @Nullable Duration getPermitTime() {
-			return this.permitTime;
-		}
+			/**
+			 * Maximum time for graceful connection termination (default infinite).
+			 */
+			@DurationUnit(ChronoUnit.SECONDS)
+			private @Nullable Duration grace;
 
-		public void setPermitTime(@Nullable Duration permitTime) {
-			this.permitTime = permitTime;
-		}
+			// FIXME difference with this and shutdown.grace-period
 
-		public boolean isPermitWithoutCalls() {
-			return this.permitWithoutCalls;
-		}
+			public @Nullable Duration getIdle() {
+				return this.idle;
+			}
 
-		public void setPermitWithoutCalls(boolean permitWithoutCalls) {
-			this.permitWithoutCalls = permitWithoutCalls;
+			public void setIdle(@Nullable Duration idle) {
+				this.idle = idle;
+			}
+
+			public @Nullable Duration getAge() {
+				return this.age;
+			}
+
+			public void setAge(@Nullable Duration age) {
+				this.age = age;
+			}
+
+			public @Nullable Duration getGrace() {
+				return this.grace;
+			}
+
+			public void setGrace(@Nullable Duration grace) {
+				this.grace = grace;
+			}
+
 		}
 
 	}
