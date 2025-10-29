@@ -21,6 +21,7 @@ import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import io.grpc.TlsServerCredentials.ClientAuth;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.netty.NettyServerBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -77,18 +78,11 @@ class GrpcServerFactoryConfigurations {
 					properties);
 			List<ServerBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
-			KeyManagerFactory keyManager = null;
-			TrustManagerFactory trustManager = null;
-			if (properties.getSsl().determineEnabled()) {
-				String bundleName = properties.getSsl().getBundle();
-				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
-				SslBundle bundle = bundles.getBundle(bundleName);
-				keyManager = bundle.getManagers().getKeyManagerFactory();
-				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
-						: io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE;
-			}
+			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles,
+					io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE);
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
-					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
+					builderCustomizers, dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(),
+					dunnoSslStuff.clientAuth());
 			applyServerFactoryCustomizers(customizers, factory);
 			serviceDiscoverer.findServices()
 				.stream()
@@ -124,18 +118,9 @@ class GrpcServerFactoryConfigurations {
 					properties);
 			List<ServerBuilderCustomizer<NettyServerBuilder>> builderCustomizers = List
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
-			KeyManagerFactory keyManager = null;
-			TrustManagerFactory trustManager = null;
-			if (properties.getSsl().determineEnabled()) {
-				String bundleName = properties.getSsl().getBundle();
-				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
-				SslBundle bundle = bundles.getBundle(bundleName);
-				keyManager = bundle.getManagers().getKeyManagerFactory();
-				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
-						: InsecureTrustManagerFactory.INSTANCE;
-			}
+			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles, InsecureTrustManagerFactory.INSTANCE);
 			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
-					keyManager, trustManager, properties.getSsl().getClientAuth());
+					dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(), dunnoSslStuff.clientAuth());
 			applyServerFactoryCustomizers(customizers, factory);
 			serviceDiscoverer.findServices()
 				.stream()
@@ -190,6 +175,26 @@ class GrpcServerFactoryConfigurations {
 		GrpcServerLifecycle inProcessGrpcServerLifecycle(InProcessGrpcServerFactory factory,
 				GrpcServerProperties properties, ApplicationEventPublisher eventPublisher) {
 			return new GrpcServerLifecycle(factory, properties.getShutdown().getGracePeriod(), eventPublisher);
+		}
+
+	}
+
+	private record SslStuff(KeyManagerFactory keyManager, TrustManagerFactory trustManager, ClientAuth clientAuth) {
+
+		private static SslStuff get(GrpcServerProperties properties, SslBundles bundles, TrustManagerFactory instance) {
+			KeyManagerFactory keyManager = null;
+			TrustManagerFactory trustManager = null;
+			if (properties.getSsl().determineEnabled()) {
+				String bundleName = properties.getSsl().getBundle();
+				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
+				SslBundle bundle = bundles.getBundle(bundleName);
+				keyManager = bundle.getManagers().getKeyManagerFactory();
+				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
+						: instance;
+			}
+			ClientAuth clientAuth = properties.getSsl().getClientAuth();
+			SslStuff dunnoSslStuff = new SslStuff(keyManager, trustManager, clientAuth);
+			return dunnoSslStuff;
 		}
 
 	}
