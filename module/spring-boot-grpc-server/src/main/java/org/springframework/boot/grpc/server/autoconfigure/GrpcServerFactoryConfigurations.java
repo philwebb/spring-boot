@@ -37,6 +37,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.grpc.server.DefaultGrpcServerFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
@@ -56,9 +57,13 @@ import org.springframework.util.Assert;
  */
 class GrpcServerFactoryConfigurations {
 
-	private static void applyServerFactoryCustomizers(ObjectProvider<GrpcServerFactoryCustomizer> customizers,
-			GrpcServerFactory factory) {
+	private static void dunno(GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
+			ObjectProvider<GrpcServerFactoryCustomizer> customizers, DefaultGrpcServerFactory<?> factory) {
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
+		serviceDiscoverer.findServices()
+			.stream()
+			.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, factory))
+			.forEach(factory::addService);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -83,11 +88,7 @@ class GrpcServerFactoryConfigurations {
 			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
 					builderCustomizers, dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(),
 					dunnoSslStuff.clientAuth());
-			applyServerFactoryCustomizers(customizers, factory);
-			serviceDiscoverer.findServices()
-				.stream()
-				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, factory))
-				.forEach(factory::addService);
+			dunno(serviceDiscoverer, serviceConfigurer, customizers, factory);
 			return factory;
 		}
 
@@ -121,11 +122,7 @@ class GrpcServerFactoryConfigurations {
 			SslStuff dunnoSslStuff = SslStuff.get(properties, bundles, InsecureTrustManagerFactory.INSTANCE);
 			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
 					dunnoSslStuff.keyManager(), dunnoSslStuff.trustManager(), dunnoSslStuff.clientAuth());
-			applyServerFactoryCustomizers(customizers, factory);
-			serviceDiscoverer.findServices()
-				.stream()
-				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, factory))
-				.forEach(factory::addService);
+			dunno(serviceDiscoverer, serviceConfigurer, customizers, factory);
 			return factory;
 		}
 
@@ -161,11 +158,7 @@ class GrpcServerFactoryConfigurations {
 					builderCustomizers);
 			factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 			factory.setServiceFilter(serviceFilter.getIfAvailable());
-			applyServerFactoryCustomizers(customizers, factory);
-			serviceDiscoverer.findServices()
-				.stream()
-				.map((serviceSpec) -> serviceConfigurer.configure(serviceSpec, factory))
-				.forEach(factory::addService);
+			dunno(serviceDiscoverer, serviceConfigurer, customizers, factory);
 			return factory;
 		}
 
