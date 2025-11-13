@@ -55,6 +55,7 @@ dependencies {
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.graphql:spring-graphql-test")
+	optional("org.testcontainers:testcontainers")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.mockk:mockk")
