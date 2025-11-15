@@ -98,6 +98,7 @@ public final class GrpcServerHealthAutoConfiguration {
 		@Bean
 		ActuatorHealthAdapterInvoker healthAdapterInvoker(ActuatorHealthAdapter healthAdapter,
 				SimpleAsyncTaskSchedulerBuilder schedulerBuilder, GrpcServerProperties serverProperties) {
+			// Do we want more plug options
 			return new ActuatorHealthAdapterInvoker(healthAdapter, schedulerBuilder,
 					serverProperties.getHealth().getActuator().getUpdateInitialDelay(),
 					serverProperties.getHealth().getActuator().getUpdateRate());

@@ -49,6 +49,8 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 public final class OAuth2ClientAutoConfiguration {
 
+	// FIXME address 15877 first
+
 	@Bean
 	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
 	InMemoryClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {

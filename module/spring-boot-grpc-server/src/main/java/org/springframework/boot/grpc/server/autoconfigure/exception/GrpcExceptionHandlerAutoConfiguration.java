@@ -44,8 +44,10 @@ import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor
 @ConditionalOnMissingBean(GrpcExceptionHandlerInterceptor.class)
 public final class GrpcExceptionHandlerAutoConfiguration {
 
-	@GlobalServerInterceptor
+	// FIXME own package?
+
 	@Bean
+	@GlobalServerInterceptor
 	GrpcExceptionHandlerInterceptor globalExceptionHandlerInterceptor(
 			ObjectProvider<GrpcExceptionHandler> exceptionHandler) {
 		return new GrpcExceptionHandlerInterceptor(new CompositeGrpcExceptionHandler(

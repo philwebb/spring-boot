@@ -42,6 +42,10 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
  */
 public class GrpcDisableCsrfHttpConfigurer extends AbstractHttpConfigurer<GrpcDisableCsrfHttpConfigurer, HttpSecurity> {
 
+	// FIXME Perhaps we should offer a way to plug in requireCsrfProtectionMatcher
+	// customization
+	// in the regular security config. We've generally avoided AbstractHttpConfigurer AC
+
 	@Override
 	public void init(HttpSecurity http) {
 		ApplicationContext context = http.getSharedObject(ApplicationContext.class);

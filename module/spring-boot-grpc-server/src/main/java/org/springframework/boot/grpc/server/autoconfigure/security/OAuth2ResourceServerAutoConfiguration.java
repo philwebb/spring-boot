@@ -98,6 +98,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		Oauth2ResourceServerConfiguration.OpaqueTokenConfiguration.class })
 public final class OAuth2ResourceServerAutoConfiguration {
 
+	// FIXME Address 43978 first
+
 	@Configuration(proxyBeanMethods = false)
 	static class Oauth2ResourceServerConfiguration {
 

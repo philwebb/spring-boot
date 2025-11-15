@@ -75,7 +75,14 @@ public class ActuatorHealthAdapter {
 	protected Set<Status> updateIndicatorsHealthStatus() {
 		Set<Status> statuses = new HashSet<>();
 		this.healthIndicatorPaths.forEach((healthIndicatorPath) -> {
+			// FIXME Using the path feel a bit odd, perhaps the group would be better?
+			// Seems like https://grpc.io/docs/guides/health-checking/ implies service
+			// name is
+			// fairly simple (unlike our paths where you can do /<group>/indicator
 			HealthDescriptor healthComponent = this.healthEndpoint.healthForPath(healthIndicatorPath.split("/"));
+			// FIXME I think we need a simpler way to get the health, the Endpoint does
+			// a lot and the descriptor isn't even used. Perhaps we shouldn't even use
+			// the endpoint and we should instead directly operator on the indicators?
 			if (healthComponent == null) {
 				this.logger.warn(() -> INVALID_INDICATOR_MSG.formatted(healthIndicatorPath));
 			}
@@ -101,6 +108,9 @@ public class ActuatorHealthAdapter {
 		this.logger.trace(() -> "Updated overall gRPC health status to '%s'".formatted(overallGrpcStatus));
 	}
 
+	// FIXME Status mapper strategy? A bit like HttpCodeStatusMapper
+	// Properties as well? Like management.endpoint.health.status.http-mapping ?
+	// Do we need per group mapping?
 	protected ServingStatus toServingStatus(String actuatorHealthStatusCode) {
 		return switch (actuatorHealthStatusCode) {
 			case "UP" -> ServingStatus.SERVING;

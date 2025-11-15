@@ -68,6 +68,13 @@ public final class GrpcSecurityAutoConfiguration {
 	@Import(AuthenticationConfiguration.class)
 	static class ExceptionHandlerConfiguration {
 
+		// FIXME Not sure we should to the @Import
+		// We already have
+		// org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration.EnableWebSecurityConfiguration
+
+		// FIXME Can we just plug this in if AuthenticationException classes are
+		// available?
+
 		@Bean
 		GrpcExceptionHandler accessExceptionHandler() {
 			return new SecurityGrpcExceptionHandler();
@@ -83,6 +90,7 @@ public final class GrpcSecurityAutoConfiguration {
 		@Bean
 		GrpcSecurity grpcSecurity(ObjectPostProcessor<Object> objectPostProcessor,
 				AuthenticationConfiguration authenticationConfiguration, ApplicationContext context) {
+			// FIXME Review shared objects being created
 			AuthenticationManagerBuilder authenticationManagerBuilder = authenticationConfiguration
 				.authenticationManagerBuilder(objectPostProcessor, context);
 			authenticationManagerBuilder
