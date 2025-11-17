@@ -41,6 +41,8 @@ import org.springframework.util.Assert;
  */
 public class ActuatorHealthAdapter {
 
+	// FIXME is this even health? Liveness / Readiness???
+
 	private static final String INVALID_INDICATOR_MSG = "Unable to determine health for '%s' - check that your configured health-indicator-paths point to available indicators";
 
 	private final LogAccessor logger = new LogAccessor(getClass());
@@ -83,6 +85,7 @@ public class ActuatorHealthAdapter {
 			// FIXME I think we need a simpler way to get the health, the Endpoint does
 			// a lot and the descriptor isn't even used. Perhaps we shouldn't even use
 			// the endpoint and we should instead directly operator on the indicators?
+			// This might not even be an actuator feature now we've modularized things
 			if (healthComponent == null) {
 				this.logger.warn(() -> INVALID_INDICATOR_MSG.formatted(healthIndicatorPath));
 			}
