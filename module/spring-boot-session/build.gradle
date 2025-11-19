@@ -54,6 +54,9 @@ dependencies {
 	testImplementation(testFixtures(project(":module:spring-boot-web-server")))
 	testImplementation("net.minidev:json-smart")
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

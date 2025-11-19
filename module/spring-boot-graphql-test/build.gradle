@@ -43,6 +43,9 @@ dependencies {
 
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	testImplementation("org.springframework:spring-webflux")
 	testImplementation("org.springframework:spring-webmvc")
 

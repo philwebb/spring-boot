@@ -38,6 +38,15 @@ dependencies {
 	testImplementation(project(":module:spring-boot-jetty"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
+	testImplementation("org.eclipse.jetty.ee11:jetty-ee11-servlets") {
+		exclude group: "org.slf4j",  module: "slf4j-api"
+	}
+	testImplementation("org.eclipse.jetty.ee11:jetty-ee11-webapp") {
+		exclude group: "org.slf4j",  module: "slf4j-api"
+	}
 	testImplementation("org.springframework:spring-webmvc")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

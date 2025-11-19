@@ -57,6 +57,9 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":module:spring-boot-actuator-autoconfigure")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	testImplementation("org.springframework:spring-webflux")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

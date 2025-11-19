@@ -43,7 +43,7 @@ If you use Maven, the following example marks the servlet runtime (Tomcat, in th
 	<!-- ... -->
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-tomcat-runtime</artifactId>
+		<artifactId>spring-boot-starter-tomcat-runtime</artifactId>
 		<scope>provided</scope>
 	</dependency>
 	<!-- ... -->
@@ -56,7 +56,7 @@ If you use Gradle, the following example marks the servlet runtime (Tomcat, in t
 ----
 dependencies {
 	// ...
-	providedRuntime 'org.springframework.boot:spring-boot-tomcat-runtime'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
 	// ...
 }
 ----

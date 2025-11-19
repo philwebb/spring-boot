@@ -34,8 +34,10 @@ dependencies {
 	testImplementation(project(":module:spring-boot-webtestclient"))
 	testImplementation(project(":module:spring-boot-web-server"))
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	testImplementation("org.springframework:spring-webmvc")
 	testImplementation("org.springframework:spring-webflux")
-
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

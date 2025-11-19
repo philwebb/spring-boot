@@ -19,9 +19,10 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
-description = "Spring Boot Jetty Runtime"
+description = "Starter for Jetty runtime"
 
 dependencies {
+	api(project(":module:spring-boot-jetty"))
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.eclipse.jetty.compression:jetty-compression-gzip") {
 		exclude group: "org.slf4j",  module: "slf4j-api"

@@ -40,6 +40,9 @@ dependencies {
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("io.micrometer:micrometer-observation-test")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")

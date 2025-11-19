@@ -65,6 +65,9 @@ dependencies {
 	testImplementation(testFixtures(project(":module:spring-boot-jersey")))
 	testImplementation(testFixtures(project(":module:spring-boot-webmvc")))
 	testImplementation(testFixtures(project(":module:spring-boot-webflux")))
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 
 	testCompileOnly("com.google.code.findbugs:jsr305")
 

@@ -68,6 +68,9 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("net.minidev:json-smart")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 
 	testRuntimeOnly(project(":module:spring-boot-http-codec"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")

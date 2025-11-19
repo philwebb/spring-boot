@@ -42,6 +42,9 @@ dependencies {
 	testImplementation(project(":module:spring-boot-webmvc"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	testImplementation("tools.jackson.core:jackson-databind")
 
 	testCompileOnly("com.google.code.findbugs:jsr305")

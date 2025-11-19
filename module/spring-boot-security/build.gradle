@@ -59,6 +59,9 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	testImplementation("org.springframework.security:spring-security-oauth2-client")
 	testImplementation("org.springframework.security:spring-security-oauth2-jose")
 	testImplementation("org.springframework.security:spring-security-oauth2-resource-server")

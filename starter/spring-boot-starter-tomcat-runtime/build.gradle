@@ -19,9 +19,10 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
-description = "Spring Boot Tomcat Runtime"
+description = "Starter for Tomcat runtime"
 
 dependencies {
+	api(project(":module:spring-boot-tomcat"))
 	api("org.apache.tomcat.embed:tomcat-embed-core") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}

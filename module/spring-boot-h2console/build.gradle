@@ -35,6 +35,9 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(project(":module:spring-boot-jdbc"))
 	testImplementation(project(":module:spring-boot-tomcat"))
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 	testImplementation("org.springframework:spring-web")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
