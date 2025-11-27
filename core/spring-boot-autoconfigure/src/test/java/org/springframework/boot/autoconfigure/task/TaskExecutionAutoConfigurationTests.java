@@ -50,6 +50,7 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.support.CompositeTaskDecorator;
+import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -251,6 +252,31 @@ class TaskExecutionAutoConfigurationTests {
 			SimpleAsyncTaskExecutorBuilder builder = context.getBean(SimpleAsyncTaskExecutorBuilder.class);
 			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", true);
 		});
+	}
+
+	@Test
+	void asyncTaskExecutorShouldNotNotRegisterContextPropagatingTaskDecoratorByDefault() {
+		this.contextRunner.withUserConfiguration(AsyncConfiguration.class, TestBean.class).run((context) -> {
+			assertThat(context).doesNotHaveBean(ContextPropagatingTaskDecorator.class);
+			TestBean bean = context.getBean(TestBean.class);
+			TestBean.context.set("test");
+			String text = bean.echoContext().get();
+			assertThat(text).contains("task-").endsWith("null");
+		});
+
+	}
+
+	@Test
+	void asyncTaskExecutorWhenContextPropagationIsEnabledShouldRegisterBean() {
+		this.contextRunner.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.withPropertyValues("spring.task.execution.propagate-context=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ContextPropagatingTaskDecorator.class);
+				TestBean bean = context.getBean(TestBean.class);
+				TestBean.context.set("test");
+				String text = bean.echoContext().get();
+				assertThat(text).contains("task-").endsWith("test");
+			});
 	}
 
 	@Test
@@ -617,9 +643,16 @@ class TaskExecutionAutoConfigurationTests {
 
 	static class TestBean {
 
+		private static final ThreadLocal<String> context = new ThreadLocal<>();
+
 		@Async
 		Future<String> echo(String text) {
 			return CompletableFuture.completedFuture(Thread.currentThread().getName() + " " + text);
+		}
+
+		@Async
+		Future<String> echoContext() {
+			return CompletableFuture.completedFuture(Thread.currentThread().getName() + " " + context.get());
 		}
 
 	}
