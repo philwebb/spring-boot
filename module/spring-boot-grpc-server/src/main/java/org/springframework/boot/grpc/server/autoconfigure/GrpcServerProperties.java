@@ -18,8 +18,6 @@ package org.springframework.boot.grpc.server.autoconfigure;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 import io.grpc.TlsServerCredentials.ClientAuth;
 import org.jspecify.annotations.Nullable;
@@ -43,8 +41,6 @@ public class GrpcServerProperties {
 
 	private final Inbound inbound = new Inbound();
 
-	private final Health health = new Health();
-
 	private final Inprocess inprocess = new Inprocess();
 
 	private final Keepalive keepalive = new Keepalive();
@@ -65,10 +61,6 @@ public class GrpcServerProperties {
 
 	public Inbound getInbound() {
 		return this.inbound;
-	}
-
-	public Health getHealth() {
-		return this.health;
 	}
 
 	public Inprocess getInprocess() {
@@ -149,99 +141,6 @@ public class GrpcServerProperties {
 
 			public void setMaxSize(DataSize maxSize) {
 				this.maxSize = maxSize;
-			}
-
-		}
-
-	}
-
-	public static class Health {
-
-		/**
-		 * Whether to auto-configure Health feature on the gRPC server.
-		 */
-		private boolean enabled = true;
-
-		private final Actuator actuator = new Actuator();
-
-		public boolean getEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public Actuator getActuator() {
-			return this.actuator;
-		}
-
-		public static class Actuator {
-
-			/**
-			 * Whether to adapt Actuator health indicators into gRPC health checks.
-			 */
-			private boolean enabled = true;
-
-			/**
-			 * Whether to update the overall gRPC server health (the '' service) with the
-			 * aggregate status of the configured health indicators.
-			 */
-			private boolean updateOverallHealth = true;
-
-			/**
-			 * How often to update the health status.
-			 */
-			private Duration updateRate = Duration.ofSeconds(5);
-
-			/**
-			 * The initial delay before updating the health status the very first time.
-			 */
-			private Duration updateInitialDelay = Duration.ofSeconds(5);
-
-			/**
-			 * List of Actuator health indicator paths to adapt into gRPC health checks.
-			 */
-			private List<String> healthIndicatorPaths = new ArrayList<>();
-
-			public boolean getEnabled() {
-				return this.enabled;
-			}
-
-			public void setEnabled(boolean enabled) {
-				this.enabled = enabled;
-			}
-
-			public boolean getUpdateOverallHealth() {
-				return this.updateOverallHealth;
-			}
-
-			public void setUpdateOverallHealth(boolean updateOverallHealth) {
-				this.updateOverallHealth = updateOverallHealth;
-			}
-
-			public Duration getUpdateRate() {
-				return this.updateRate;
-			}
-
-			public void setUpdateRate(Duration updateRate) {
-				this.updateRate = updateRate;
-			}
-
-			public Duration getUpdateInitialDelay() {
-				return this.updateInitialDelay;
-			}
-
-			public void setUpdateInitialDelay(Duration updateInitialDelay) {
-				this.updateInitialDelay = updateInitialDelay;
-			}
-
-			public List<String> getHealthIndicatorPaths() {
-				return this.healthIndicatorPaths;
-			}
-
-			public void setHealthIndicatorPaths(List<String> healthIndicatorPaths) {
-				this.healthIndicatorPaths = healthIndicatorPaths;
 			}
 
 		}
