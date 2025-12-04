@@ -36,7 +36,6 @@ import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnSpringGrpc
 @ConditionalOnGrpcServerEnabled("exception-handler")
 @ConditionalOnBean(GrpcExceptionHandler.class)
 @ConditionalOnMissingBean(GrpcExceptionHandlerInterceptor.class)

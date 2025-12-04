@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration;
-import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
+import org.springframework.boot.grpc.server.autoconfigure.XGrpcServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.server.GrpcServerFactory;
@@ -53,7 +53,7 @@ class InProcessTestAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner() {
 		return new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(InProcessTestAutoConfiguration.class,
-					GrpcServerAutoConfiguration.class, GrpcServerFactoryAutoConfiguration.class,
+					GrpcServerAutoConfiguration.class, XGrpcServerFactoryAutoConfiguration.class,
 					SslAutoConfiguration.class, GrpcClientAutoConfiguration.class))
 			.withBean(BindableService.class, () -> this.service);
 	}

@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration.GrpcServletConfiguration;
+import org.springframework.boot.grpc.server.autoconfigure.XGrpcServerFactoryAutoConfiguration.GrpcServletConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -54,7 +54,7 @@ class GrpcServletAutoConfigurationTests {
 		given(service.bindService()).willReturn(serviceDefinition);
 		// NOTE: we use noop server lifecycle to avoid startup
 		return new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(SslAutoConfiguration.class,
-				GrpcServerAutoConfiguration.class, GrpcServerFactoryAutoConfiguration.class))
+				GrpcServerAutoConfiguration.class, XGrpcServerFactoryAutoConfiguration.class))
 			.withBean(BindableService.class, () -> service);
 	}
 

@@ -40,6 +40,10 @@ import org.springframework.context.annotation.Conditional;
  */
 class OnGrpcNativeServerCondition extends AnyNestedCondition {
 
+	// FIXME is this really about order of server preference?
+
+	//
+
 	OnGrpcNativeServerCondition() {
 		super(ConfigurationPhase.PARSE_CONFIGURATION);
 	}
@@ -56,13 +60,16 @@ class OnGrpcNativeServerCondition extends AnyNestedCondition {
 
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	@ConditionalOnClass(GrpcServlet.class)
-	@ConditionalOnProperty(prefix = "spring.grpc.server", name = "servlet.enabled", havingValue = "false")
+	@ConditionalOnProperty(name = "spring.grpc.server.servlet.enabled", havingValue = "false")
 	static class OnExplicitlyDisabledServlet {
 
 	}
 
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnProperty(name = "spring.grpc.server.reactive.enabled", havingValue = "false")
 	static class OnExplicitlyDisabledWebflux {
+
+		// FIXME Why?
 
 	}
 

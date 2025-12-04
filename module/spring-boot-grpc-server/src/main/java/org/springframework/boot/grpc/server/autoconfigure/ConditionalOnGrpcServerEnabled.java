@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Conditional(OnEnabledGrpcServerCondition.class)
-public @interface ConditionalOnGrpcServerEnabled {
+@interface ConditionalOnGrpcServerEnabled {
 
 	/**
 	 * Name of the gRPC service.

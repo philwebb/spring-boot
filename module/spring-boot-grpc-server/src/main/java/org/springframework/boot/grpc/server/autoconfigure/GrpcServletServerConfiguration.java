@@ -16,34 +16,35 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import io.grpc.servlet.jakarta.GrpcServlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.boot.grpc.server.GrpcServletRegistration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.grpc.server.service.GrpcServiceConfigurer;
+import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 
 /**
- * {@link Conditional @Conditional} that determines if the Servlet container should be
- * used to run the gRPC server. The condition matches only when the app is a servlet web
- * application and the {@code io.grpc.servlet.jakarta.GrpcServlet} class is on the
- * classpath and the {@code spring.grpc.server.servlet.enabled} property is not explicitly
- * set to {@code false}.
- *
+ * @author David Syer
  * @author Chris Bono
- * @author Dave Syer
+ * @author Toshiaki Maki
+ * @author Phillip Webb
  * @since 4.0.0
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(GrpcServlet.class)
-@ConditionalOnProperty(name = "spring.grpc.server.servlet.enabled", havingValue = "true", matchIfMissing = true)
-@interface ConditionalOnGrpcServletServer {
+@ConditionalOnProperty(name = "spring.grpc.server.servlet.enabled", matchIfMissing = true)
+@ConditionalOnMissingGrpcServer
+class GrpcServletServerConfiguration {
+
+	@Bean
+	GrpcServletRegistration grpcServletRegistration(GrpcServiceDiscoverer serviceDiscoverer,
+			GrpcServiceConfigurer serviceConfigurer, ServerBuilderCustomizers serverBuilderCustomizers) {
+		return new GrpcServletRegistration(serviceDiscoverer, serviceConfigurer, serverBuilderCustomizers::customize);
+	}
 
 }

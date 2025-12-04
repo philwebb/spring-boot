@@ -48,21 +48,19 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@ConditionalOnSpringGrpc
 @ConditionalOnGrpcServerEnabled
 @ConditionalOnBean(BindableService.class)
-public final class GrpcServerFactoryAutoConfiguration {
+public final class XGrpcServerFactoryAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnGrpcNativeServer
+	@ConditionalOnGrpcNativeServer // Use this if no servlet one?
 	static class GrpcServerFactoryConfiguration {
 
-		// FIXME double nested
+		// FIXME double nested?because of the condition?
 		@Configuration(proxyBeanMethods = false)
-		@Import({ GrpcServerFactoryConfigurations.ShadedNettyServerFactoryConfiguration.class,
-				GrpcServerFactoryConfigurations.NettyServerFactoryConfiguration.class,
-				GrpcServerFactoryConfigurations.InProcessServerFactoryConfiguration.class })
-		static class NettyServerFactoryConfiguration {
+		@Import({ GrpcShadedNettyServerConfiguration.class, GrpcNettyServerConfiguration.class,
+				GrpcInProcessServerConfiguration.class })
+		static class XNettyServerFactoryConfiguration {
 
 		}
 
@@ -77,9 +75,8 @@ public final class GrpcServerFactoryAutoConfiguration {
 		// FIXME need PropertiesServerBuilderCustomizer
 
 		@Bean
-		ServletRegistrationBean<GrpcServlet> grpcServlet(GrpcServerProperties properties,
-				GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
-				ServerBuilderCustomizers serverBuilderCustomizers) {
+		ServletRegistrationBean<GrpcServlet> grpcServlet(GrpcServiceDiscoverer serviceDiscoverer,
+				GrpcServiceConfigurer serviceConfigurer, ServerBuilderCustomizers serverBuilderCustomizers) {
 			GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 			services.names().forEach(this::logRegisteringServiceMessage);
 			ServletServerBuilder builder = new ServletServerBuilder();
@@ -95,7 +92,7 @@ public final class GrpcServerFactoryAutoConfiguration {
 		}
 
 		private void logRegisteringServiceMessage(String serviceName) {
-			logger.info(LogMessage.format("Registering gRPC service: %s", serviceName));
+			logger.info(LogMessage.format("Registering servlet gRPC service: %s", serviceName));
 		}
 
 		private String servicePath(String serviceName) {
@@ -103,7 +100,7 @@ public final class GrpcServerFactoryAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		@Import(GrpcServerFactoryConfigurations.InProcessServerFactoryConfiguration.class)
+		@Import(GrpcInProcessServerConfiguration.class)
 		static class InProcessConfiguration {
 
 			// FIXME Why nest?

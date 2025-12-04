@@ -39,7 +39,6 @@ import org.springframework.grpc.server.GlobalServerInterceptor;
  */
 @AutoConfiguration(
 		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
-@ConditionalOnSpringGrpc
 @ConditionalOnClass({ ObservationRegistry.class, ObservationGrpcServerInterceptor.class })
 @ConditionalOnGrpcServerEnabled("observation")
 @ConditionalOnBean(ObservationRegistry.class)

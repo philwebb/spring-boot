@@ -36,6 +36,6 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Conditional(OnGrpcNativeServerCondition.class)
-public @interface ConditionalOnGrpcNativeServer {
+@interface ConditionalOnGrpcNativeServer {
 
 }

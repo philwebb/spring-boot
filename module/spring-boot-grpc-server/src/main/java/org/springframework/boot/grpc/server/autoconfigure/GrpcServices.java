@@ -16,6 +16,7 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import io.grpc.ServerServiceDefinition;
@@ -49,8 +50,8 @@ class GrpcServices {
 		return this.discoverer.findServices().stream().map((spec) -> this.configurer.configure(spec, serverFactory));
 	}
 
-	Stream<String> names() {
-		return this.discoverer.listServiceNames().stream();
+	private List<String> names() {
+		return this.discoverer.listServiceNames();
 	}
 
 }

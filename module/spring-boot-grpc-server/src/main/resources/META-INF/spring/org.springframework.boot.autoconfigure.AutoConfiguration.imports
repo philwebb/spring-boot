@@ -1,5 +1,5 @@
 org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration
-org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.XGrpcServerFactoryAutoConfiguration
 org.springframework.boot.grpc.server.autoconfigure.GrpcServerObservationAutoConfiguration
 org.springframework.boot.grpc.server.autoconfigure.GrpcServerReflectionAutoConfiguration
 org.springframework.boot.grpc.server.autoconfigure.exception.GrpcExceptionHandlerAutoConfiguration

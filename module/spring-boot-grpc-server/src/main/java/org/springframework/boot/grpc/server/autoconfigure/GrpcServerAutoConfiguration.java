@@ -16,113 +16,17 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import io.grpc.BindableService;
-import io.grpc.CompressorRegistry;
-import io.grpc.DecompressorRegistry;
-import io.grpc.ServerBuilder;
-
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
-import org.springframework.grpc.server.ServerBuilderCustomizer;
-import org.springframework.grpc.server.exception.ReactiveStubBeanDefinitionRegistrar;
-import org.springframework.grpc.server.service.DefaultGrpcServiceConfigurer;
-import org.springframework.grpc.server.service.DefaultGrpcServiceDiscoverer;
-import org.springframework.grpc.server.service.GrpcServiceConfigurer;
-import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring gRPC server-side
- * components.
- * <p>
- * Spring gRPC must be on the classpath and at least one {@link BindableService} bean
- * registered in the context in order for the auto-configuration to execute.
- *
  * @author David Syer
  * @author Chris Bono
+ * @author Toshiaki Maki
+ * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = GrpcServerFactoryAutoConfiguration.class)
-@ConditionalOnSpringGrpc
-@ConditionalOnGrpcServerEnabled
-@ConditionalOnBean(BindableService.class)
-@EnableConfigurationProperties(GrpcServerProperties.class)
-@Import({ GrpcCodecConfiguration.class })
+@Import({ GrpcServletServerConfiguration.class, GrpcShadedNettyServerConfiguration.class,
+		GrpcNettyServerConfiguration.class, GrpcInProcessServerConfiguration.class })
 public final class GrpcServerAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean
-	ServerBuilderCustomizers serverBuilderCustomizers(ObjectProvider<ServerBuilderCustomizer<?>> customizers) {
-		return new ServerBuilderCustomizers(customizers);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(GrpcServiceConfigurer.class)
-	DefaultGrpcServiceConfigurer grpcServiceConfigurer(ApplicationContext applicationContext) {
-		return new DefaultGrpcServiceConfigurer(applicationContext);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(GrpcServiceDiscoverer.class)
-	DefaultGrpcServiceDiscoverer grpcServiceDiscoverer(ApplicationContext applicationContext) {
-		return new DefaultGrpcServiceDiscoverer(applicationContext);
-	}
-
-	@Bean
-	@ConditionalOnBean(CompressorRegistry.class)
-	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> compressionServerConfigurer(CompressorRegistry registry) {
-		return (builder) -> builder.compressorRegistry(registry);
-	}
-
-	@Bean
-	@ConditionalOnBean(DecompressorRegistry.class)
-	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> decompressionServerConfigurer(
-			DecompressorRegistry registry) {
-		return (builder) -> builder.decompressorRegistry(registry);
-	}
-
-	@Bean
-	@ConditionalOnBean(GrpcServerExecutorProvider.class)
-	<T extends ServerBuilder<T>> ServerBuilderCustomizer<T> executorServerConfigurer(
-			GrpcServerExecutorProvider provider) {
-		return new ServerBuilderCustomizerImplementation<>(provider);
-	}
-
-	private final class ServerBuilderCustomizerImplementation<T extends ServerBuilder<T>>
-			implements ServerBuilderCustomizer<T>, Ordered {
-
-		private final GrpcServerExecutorProvider provider;
-
-		private ServerBuilderCustomizerImplementation(GrpcServerExecutorProvider provider) {
-			this.provider = provider;
-		}
-
-		@Override
-		public int getOrder() {
-			return 0;
-		}
-
-		@Override
-		public void customize(T builder) {
-			builder.executor(this.provider.getExecutor());
-		}
-
-	}
-
-	@ConditionalOnClass(name = "com.salesforce.reactivegrpc.common.Function")
-	@Configuration
-	@Import(ReactiveStubBeanDefinitionRegistrar.class)
-	static class ReactiveStubConfiguration {
-
-	}
 
 }

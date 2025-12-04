@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration;
-import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
+import org.springframework.boot.grpc.server.autoconfigure.XGrpcServerFactoryAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -59,7 +59,7 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
  * @since 4.0.0
  * @see AutoConfigureInProcessTransport
  */
-@AutoConfiguration(before = { GrpcServerFactoryAutoConfiguration.class, GrpcClientAutoConfiguration.class })
+@AutoConfiguration(before = { XGrpcServerFactoryAutoConfiguration.class, GrpcClientAutoConfiguration.class })
 @ConditionalOnClass({ InProcessServerBuilder.class, InProcessChannelBuilder.class, InProcessGrpcServerFactory.class,
 		InProcessGrpcChannelFactory.class })
 @ConditionalOnBooleanProperty("spring.test.grpc.inprocess.enabled")

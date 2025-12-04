@@ -37,8 +37,7 @@ import org.springframework.context.annotation.Bean;
  * @author Andrey Litvitski
  * @since 4.0.0
  */
-@AutoConfiguration(before = GrpcServerFactoryAutoConfiguration.class)
-@ConditionalOnSpringGrpc
+@AutoConfiguration(before = XGrpcServerFactoryAutoConfiguration.class)
 @ConditionalOnClass({ ProtoReflectionServiceV1.class })
 @ConditionalOnGrpcServerEnabled("reflection")
 @ConditionalOnBean(BindableService.class)

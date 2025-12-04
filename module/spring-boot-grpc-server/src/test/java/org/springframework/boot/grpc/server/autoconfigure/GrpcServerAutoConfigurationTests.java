@@ -95,7 +95,7 @@ class GrpcServerAutoConfigurationTests {
 	private ApplicationContextRunner contextRunner(ApplicationContextRunner runner) {
 		return runner
 			.withConfiguration(AutoConfigurations.of(GrpcServerAutoConfiguration.class,
-					GrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
+					XGrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
 			.withBean("shadedNettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
 			.withBean("nettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
 			.withBean("inProcessGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
@@ -105,7 +105,7 @@ class GrpcServerAutoConfigurationTests {
 	private WebApplicationContextRunner webContextRunner(WebApplicationContextRunner runner) {
 		return runner
 			.withConfiguration(AutoConfigurations.of(GrpcServerAutoConfiguration.class,
-					GrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
+					XGrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
 			.withBean("shadedNettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
 			.withBean("nettyGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
 			.withBean("inProcessGrpcServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
@@ -116,7 +116,7 @@ class GrpcServerAutoConfigurationTests {
 		// NOTE: we use noop server lifecycle to avoid startup
 		return new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GrpcServerAutoConfiguration.class,
-					GrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
+					XGrpcServerFactoryAutoConfiguration.class, SslAutoConfiguration.class))
 			.withBean(BindableService.class, () -> this.service);
 	}
 

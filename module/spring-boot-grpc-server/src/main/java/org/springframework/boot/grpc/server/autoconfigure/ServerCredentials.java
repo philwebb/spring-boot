@@ -40,8 +40,7 @@ record ServerCredentials(KeyManagerFactory keyManager, TrustManagerFactory trust
 					: insecureTrustManager;
 		}
 		ClientAuth clientAuth = properties.getSsl().getClientAuth();
-		ServerCredentials dunnoSslStuff = new ServerCredentials(keyManager, trustManager, clientAuth);
-		return dunnoSslStuff;
+		return new ServerCredentials(keyManager, trustManager, clientAuth);
 	}
 
 }

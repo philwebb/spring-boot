@@ -16,7 +16,6 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import io.grpc.Codec;
 import io.grpc.Compressor;
 import io.grpc.CompressorRegistry;
 import io.grpc.Decompressor;
@@ -24,7 +23,6 @@ import io.grpc.DecompressorRegistry;
 import io.grpc.ServerBuilder;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +33,9 @@ import org.springframework.context.annotation.Configuration;
  * @author Andrei Lisa
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Codec.class)
 class GrpcCodecConfiguration {
+
+	// FIXME no need for distinct config? No need for condition
 
 	/**
 	 * The compressor registry that is set on the
