@@ -1,0 +1,4 @@
+sample:
+  valueobject:
+    dotyaml:
+      name: {}

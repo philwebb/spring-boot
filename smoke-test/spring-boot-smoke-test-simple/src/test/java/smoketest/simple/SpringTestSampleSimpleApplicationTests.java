@@ -17,6 +17,9 @@
 package smoketest.simple;
 
 import org.junit.jupiter.api.Test;
+import smoketest.simple.SampleValueObjectConfigurationProperties.Dotproperties;
+import smoketest.simple.SampleValueObjectConfigurationProperties.Dotyaml;
+import smoketest.simple.SampleValueObjectConfigurationProperties.Name;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +43,20 @@ class SpringTestSampleSimpleApplicationTests {
 		assertThat(this.ctx).isNotNull();
 		assertThat(this.ctx.containsBean("helloWorldService")).isTrue();
 		assertThat(this.ctx.containsBean("sampleSimpleApplication")).isTrue();
+	}
+
+	@Test
+	void bindPropertiesWithDefaultValueFromYaml() {
+		Dotproperties properties = this.ctx.getBean(SampleValueObjectConfigurationProperties.class).dotproperties();
+		assertThat(properties.name()).isEqualTo(new Name(null, "-"));
+		assertThat(properties.other()).isNull();
+	}
+
+	@Test
+	void bindPropertiesWithDefaultValueFromProperties() {
+		Dotyaml yaml = this.ctx.getBean(SampleValueObjectConfigurationProperties.class).dotyaml();
+		assertThat(yaml.name()).isEqualTo(new Name(null, "-"));
+		assertThat(yaml.other()).isNull();
 	}
 
 }

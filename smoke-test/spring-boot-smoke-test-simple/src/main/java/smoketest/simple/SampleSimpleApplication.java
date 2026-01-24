@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(SampleConfigurationProperties.class)
+@EnableConfigurationProperties({ SampleConfigurationProperties.class, SampleValueObjectConfigurationProperties.class })
 public class SampleSimpleApplication implements CommandLineRunner {
 
 	// Simple example shows how a command line spring application can execute an

@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.constructorbinding.nonnull
+package smoketest.simple;
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.DefaultValue
-import java.net.InetAddress
+import org.jspecify.annotations.Nullable;
 
-@ConfigurationProperties("my.service")
-// tag::code[]
-class MyProperties(val enabled: Boolean, val remoteAddress: InetAddress,
-		@DefaultValue val security: Security) {
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
-	class Security(val username: String?, val password: String?,
-			@param:DefaultValue("USER") val roles: List<String>)
+@ConfigurationProperties("sample.valueobject")
+public record SampleValueObjectConfigurationProperties(Dotproperties dotproperties, Dotyaml dotyaml) {
+
+	public record Dotproperties(Name name, @Nullable Name other) {
+
+	}
+
+	public record Dotyaml(Name name, @Nullable Name other) {
+
+	}
+
+	public record Name(String first, @DefaultValue("-") String last) {
+
+	}
 
 }
-// end::code[]
-
