@@ -75,6 +75,7 @@ def dependenciesOf(String version) {
 			"spring-boot-flyway",
 			"spring-boot-freemarker",
 			"spring-boot-graphql",
+			"spring-boot-grpc-server",
 			"spring-boot-groovy-templates",
 			"spring-boot-gson",
 			"spring-boot-h2console",
