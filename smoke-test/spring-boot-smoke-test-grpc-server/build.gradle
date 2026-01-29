@@ -16,11 +16,14 @@
 
 plugins {
 	id "java"
+	id "com.google.protobuf" version "${protobufGradlePluginVersion}"
 }
 
 description = "Spring Boot gRPC server smoke test"
 
 dependencies {
+	implementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
+
 	implementation(project(":starter:spring-boot-starter-grpc-server"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
@@ -28,4 +31,30 @@ dependencies {
 
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
+}
+
+nullability {
+	requireExplicitNullMarking = false
+}
+
+// FIXME get versions from dep mgmt
+def protobufJavaVersion = "4.33.4"
+def grpcVersion = "1.78.0"
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:${protobufJavaVersion}"
+	}
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {
+				option '@generated=omit'
+			}
+		}
+	}
 }
