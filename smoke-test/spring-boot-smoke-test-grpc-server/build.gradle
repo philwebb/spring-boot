@@ -22,8 +22,6 @@ plugins {
 description = "Spring Boot gRPC server smoke test"
 
 dependencies {
-	implementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
-
 	implementation(project(":starter:spring-boot-starter-grpc-server"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
@@ -37,7 +35,7 @@ nullability {
 	requireExplicitNullMarking = false
 }
 
-configurations.named { it.startsWith "protobufToolsLocator_" }.all {
+configurations.named { it.startsWith("protobufToolsLocator_") || it.equals("compileProtoPath") || it.equals("testCompileProtoPath") }.all {
 	extendsFrom(configurations.dependencyManagement)
 }
 
