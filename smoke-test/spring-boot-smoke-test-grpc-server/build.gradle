@@ -37,17 +37,17 @@ nullability {
 	requireExplicitNullMarking = false
 }
 
-// FIXME get versions from dep mgmt
-def protobufJavaVersion = "4.33.4"
-def grpcVersion = "1.78.0"
+configurations.named { it.startsWith "protobufToolsLocator_" }.all {
+	extendsFrom(configurations.dependencyManagement)
+}
 
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc:${protobufJavaVersion}"
+		artifact = "com.google.protobuf:protoc"
 	}
 	plugins {
 		grpc {
-			artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+			artifact = "io.grpc:protoc-gen-grpc-java"
 		}
 	}
 	generateProtoTasks {
