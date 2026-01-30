@@ -27,6 +27,13 @@ dependencies {
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }
 
+def dependenciesBom = project(":platform:spring-boot-dependencies").extensions.getByName("bom")
+def grpcJava = dependenciesBom.getLibrary("Grpc Java")
+def protobufJava = dependenciesBom.getLibrary("Protobuf Java")
+
+println protobufJava
+println protobufJava.version
+
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
 }
@@ -41,11 +48,11 @@ configurations.named { it.startsWith("protobufToolsLocator_") || it.equals("comp
 
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc"
+		artifact = "com.google.protobuf:protoc:${protobufJava.version}"
 	}
 	plugins {
 		grpc {
-			artifact = "io.grpc:protoc-gen-grpc-java"
+			artifact = "io.grpc:protoc-gen-grpc-java:${grpcJava.version}"
 		}
 	}
 	generateProtoTasks {
