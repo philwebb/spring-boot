@@ -31,9 +31,6 @@ def dependenciesBom = project(":platform:spring-boot-dependencies").extensions.g
 def grpcJava = dependenciesBom.getLibrary("Grpc Java")
 def protobufJava = dependenciesBom.getLibrary("Protobuf Java")
 
-println protobufJava
-println protobufJava.version
-
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
 }
