@@ -1856,9 +1856,6 @@ bom {
 	library("Protobuf Java", "4.33.4") {
 		group("com.google.protobuf") {
 			bom("protobuf-bom")
-			modules = [
-				"protoc"
-			]
 		}
 		links {
 			site("https://protobuf.dev")
