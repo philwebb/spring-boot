@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.grpc.internal.GrpcUtils;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +51,12 @@ class GrpcServerPropertiesTests {
 		map.put("spring.grpc.server.address", "my-server-ip:3130");
 		GrpcServerProperties properties = bindProperties(map);
 		assertThat(properties.getAddress()).isEqualTo("my-server-ip:3130");
+	}
+
+	@Test
+	void defaultAddressMatchesGrpcUtils() {
+		assertThat(new GrpcServerProperties().getAddress())
+			.isEqualTo(GrpcUtils.ANY_IP_ADDRESS + ":" + GrpcUtils.DEFAULT_PORT);
 	}
 
 	@Nested

@@ -44,8 +44,8 @@ class ServletGrpcServerConfiguration {
 
 	@Bean
 	GrpcServletRegistration grpcServletRegistration(GrpcServiceDiscoverer serviceDiscoverer,
-			GrpcServiceConfigurer serviceConfigurer, ServerBuilderCustomizers serverBuilderCustomizers) {
-		return new GrpcServletRegistration(serviceDiscoverer, serviceConfigurer, serverBuilderCustomizers::customize);
+			GrpcServiceConfigurer serviceConfigurer, GrpcServerBuilderCustomizers grpcServerBuilderCustomizers) {
+		return new GrpcServletRegistration(serviceDiscoverer, serviceConfigurer, grpcServerBuilderCustomizers::apply);
 	}
 
 }

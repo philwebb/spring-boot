@@ -42,7 +42,7 @@ public class GrpcServerProperties {
 	 * The address to bind to in the form 'host:port' or a pseudo URL like
 	 * 'static://host:port'.
 	 */
-	private @Nullable String address;
+	private String address = "*:9090";
 
 	private final Shutdown shutdown = new Shutdown();
 

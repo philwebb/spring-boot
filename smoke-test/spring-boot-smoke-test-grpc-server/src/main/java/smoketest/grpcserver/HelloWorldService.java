@@ -23,6 +23,9 @@ import smoketest.grpcserver.proto.HelloReply;
 import smoketest.grpcserver.proto.HelloRequest;
 import smoketest.grpcserver.proto.HelloWorldGrpc;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
 
 	private static Log logger = LogFactory.getLog(HelloWorldService.class);

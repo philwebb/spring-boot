@@ -47,13 +47,13 @@ class NettyGrpcServerConfiguration {
 	@Bean
 	NettyGrpcServerFactory nettyGrpcServerFactory(GrpcServerProperties properties,
 			GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
-			ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
+			GrpcServerBuilderCustomizers grpcServerBuilderCustomizers, SslBundles bundles,
 			ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
 		GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 		ServerCredentials credentials = ServerCredentials.get(properties.getSsl(), bundles,
 				InsecureTrustManagerFactory.INSTANCE);
 		NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(),
-				serverBuilderCustomizers.forFactory(), credentials.keyManagerFactory(),
+				grpcServerBuilderCustomizers.forFactory(), credentials.keyManagerFactory(),
 				credentials.trustManagerFactory(), credentials.clientAuth());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		services.addToServerFactory(factory);

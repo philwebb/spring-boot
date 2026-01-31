@@ -47,13 +47,13 @@ class ShadedNettyGrpcServerConfiguration {
 	@Bean
 	ShadedNettyGrpcServerFactory shadedNettyGrpcServerFactory(GrpcServerProperties properties,
 			GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
-			ServerBuilderCustomizers serverBuilderCustomizers, SslBundles bundles,
+			GrpcServerBuilderCustomizers grpcServerBuilderCustomizers, SslBundles bundles,
 			ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
 		GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 		ServerCredentials serverCredentials = ServerCredentials.get(properties.getSsl(), bundles,
 				InsecureTrustManagerFactory.INSTANCE);
 		ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
-				serverBuilderCustomizers.forFactory(), serverCredentials.keyManagerFactory(),
+				grpcServerBuilderCustomizers.forFactory(), serverCredentials.keyManagerFactory(),
 				serverCredentials.trustManagerFactory(), serverCredentials.clientAuth());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		services.addToServerFactory(factory);

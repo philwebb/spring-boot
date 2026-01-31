@@ -48,7 +48,7 @@ import org.springframework.grpc.server.InProcessGrpcServerFactory;
 
 	static class Condition extends AllNestedConditions {
 
-		Condition(ConfigurationPhase configurationPhase) {
+		Condition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 

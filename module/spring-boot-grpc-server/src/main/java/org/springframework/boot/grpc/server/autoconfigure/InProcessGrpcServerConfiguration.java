@@ -46,13 +46,13 @@ class InProcessGrpcServerConfiguration {
 	@Bean
 	InProcessGrpcServerFactory inProcessGrpcServerFactory(GrpcServerProperties properties,
 			GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
-			ServerBuilderCustomizers serverBuilderCustomizers,
+			GrpcServerBuilderCustomizers grpcServerBuilderCustomizers,
 			ObjectProvider<ServerInterceptorFilter> interceptorFilter,
 			ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 			ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
 		GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
 		InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
-				serverBuilderCustomizers.forFactory());
+				grpcServerBuilderCustomizers.forFactory());
 		factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 		factory.setServiceFilter(serviceFilter.getIfAvailable());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
