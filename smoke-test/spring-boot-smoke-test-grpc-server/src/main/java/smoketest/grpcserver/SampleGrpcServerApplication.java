@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-plugins {
-	id "java-library"
-	id "org.springframework.boot.auto-configuration"
-	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.optional-dependencies"
-}
+package smoketest.grpcserver;
 
-description = "Spring Boot gRPC Server"
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-dependencies {
-	api(project(":core:spring-boot"))
-	api("org.springframework.grpc:spring-grpc-core")
+@SpringBootApplication
+public class SampleGrpcServerApplication {
 
-	optional(project(":core:spring-boot-autoconfigure"))
+	public static void main(String[] args) {
+		SpringApplication.run(SampleGrpcServerApplication.class, args);
+	}
 
-	testImplementation(project(":core:spring-boot-test"))
 }

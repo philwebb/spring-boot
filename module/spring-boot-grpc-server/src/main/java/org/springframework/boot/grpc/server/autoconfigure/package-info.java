@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-plugins {
-	id "java-library"
-	id "org.springframework.boot.auto-configuration"
-	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.optional-dependencies"
-}
+/**
+ * Auto-configuration for gRPC server.
+ */
 
-description = "Spring Boot gRPC Server"
+@NullMarked
+package org.springframework.boot.grpc.server.autoconfigure;
 
-dependencies {
-	api(project(":core:spring-boot"))
-	api("org.springframework.grpc:spring-grpc-core")
-
-	optional(project(":core:spring-boot-autoconfigure"))
-
-	testImplementation(project(":core:spring-boot-test"))
-}
+import org.jspecify.annotations.NullMarked;
