@@ -29,6 +29,19 @@ dependencies {
 	api("org.springframework.grpc:spring-grpc-core")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional("io.grpc:grpc-servlet-jakarta")
+	optional("io.grpc:grpc-services")
+	optional("io.grpc:grpc-netty")
+	optional("io.grpc:grpc-netty-shaded")
+	optional("io.grpc:grpc-inprocess")
+	optional("io.grpc:grpc-kotlin-stub") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+	optional("jakarta.servlet:jakarta.servlet-api")
 
 	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

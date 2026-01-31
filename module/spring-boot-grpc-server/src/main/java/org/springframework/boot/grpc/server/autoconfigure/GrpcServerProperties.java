@@ -28,6 +28,13 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
+/**
+ * {@link ConfigurationProperties Properties} for Spring gRPC servers.
+ *
+ * @author Chris Bono
+ * @author Phillip Webb
+ * @since 4.1.0
+ */
 @ConfigurationProperties("spring.grpc.server")
 public class GrpcServerProperties {
 
@@ -319,16 +326,6 @@ public class GrpcServerProperties {
 
 		public void setEnabled(@Nullable Boolean enabled) {
 			this.enabled = enabled;
-		}
-
-		/**
-		 * Determine whether to enable SSL support. When the {@code enabled} property is
-		 * specified it determines enablement. Otherwise, the support is enabled if the
-		 * {@code bundle} is provided.
-		 * @return whether to enable SSL support
-		 */
-		public boolean determineEnabled() {
-			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
 		public @Nullable String getBundle() {

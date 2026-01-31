@@ -16,9 +16,15 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
+import io.grpc.BindableService;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
 import org.springframework.grpc.server.GrpcServerFactory;
 
 /**
@@ -28,10 +34,20 @@ import org.springframework.grpc.server.GrpcServerFactory;
  * @author Chris Bono
  * @author Toshiaki Maki
  * @author Phillip Webb
+ * @author Andrei Lisa
  * @since 4.1.0
  */
 @AutoConfiguration
 @ConditionalOnClass(GrpcServerFactory.class)
+@ConditionalOnBean(BindableService.class)
+@ConditionalOnBooleanProperty(name = "spring.grpc.server.enabled", matchIfMissing = true)
+@EnableConfigurationProperties(GrpcServerProperties.class)
+@Import({ GrpcCodecConfiguration.class, ServletGrpcServerConfiguration.class, ShadedNettyGrpcServerConfiguration.class,
+		NettyGrpcServerConfiguration.class })
 public final class GrpcServerAutoConfiguration {
+
+	// FIXME GrpcExceptionHandlerAutoConfiguration
+	// FIXME GrpcServerReflectionAutoConfiguration
+	// FIXME XGrpcServerAutoConfiguration
 
 }

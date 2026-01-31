@@ -1,0 +1,73 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.grpc.server.autoconfigure;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.grpc.server.GrpcServletRegistration;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.grpc.server.GrpcServerFactory;
+import org.springframework.grpc.server.InProcessGrpcServerFactory;
+
+/**
+ * {@link Conditional @Conditional} that matches when a network accessible gRPC server is
+ * needed. Concretely:
+ * <ul>
+ * <li>There are no {@link GrpcServletRegistration} beans.</li>
+ * <li>There are no {@link GrpcServerFactory} beans (ignoring
+ * {@link InProcessGrpcServerFactory} beans)</li>
+ * <li>{@code spring.grpc.server.inprocess.exclusive} has not been set to true</li>
+ * </ul>
+ *
+ * @author Phillip Webb
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Conditional(ConditionalOnNeedingNetworkGrpcServer.Condition.class)
+@interface ConditionalOnNeedingNetworkGrpcServer {
+
+	static class Condition extends AllNestedConditions {
+
+		Condition(ConfigurationPhase configurationPhase) {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnMissingBean(GrpcServletRegistration.class)
+		static class MissingGrpcServletRegistrationBean {
+
+		}
+
+		@ConditionalOnMissingBean(value = GrpcServerFactory.class, ignored = InProcessGrpcServerFactory.class)
+		static class MissingGrpcFactoryBean {
+
+		}
+
+		@ConditionalOnBooleanProperty(name = "spring.grpc.server.inprocess.exclusive", havingValue = false,
+				matchIfMissing = true)
+		static class NotExclusivelyUsingInProcessGrpc {
+
+		}
+
+	}
+
+}
