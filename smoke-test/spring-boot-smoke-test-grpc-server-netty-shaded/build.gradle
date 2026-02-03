@@ -17,6 +17,7 @@
 plugins {
 	id "java"
 	id "com.google.protobuf" version "${protobufGradlePluginVersion}"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot gRPC server netty shaded smoke test"
@@ -26,6 +27,8 @@ dependencies {
 		exclude(group: "io.grpc", module: "grpc-netty-shaded")
 	}
 	implementation("io.grpc:grpc-netty-shaded")
+
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

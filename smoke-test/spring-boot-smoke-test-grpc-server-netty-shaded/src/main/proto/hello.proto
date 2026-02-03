@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "smoketest.grpcserver.proto";
+option java_package = "smoketest.grpcservernettyshaded.proto";
 option java_multiple_files = true;
 
 service HelloWorld {

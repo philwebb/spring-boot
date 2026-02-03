@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package smoketest.grpcserver;
+package smoketest.grpcservernettyshaded;
 
 import io.grpc.stub.StreamObserver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import smoketest.grpcserver.proto.HelloReply;
-import smoketest.grpcserver.proto.HelloRequest;
-import smoketest.grpcserver.proto.HelloWorldGrpc;
+import smoketest.grpcservernettyshaded.proto.HelloReply;
+import smoketest.grpcservernettyshaded.proto.HelloRequest;
+import smoketest.grpcservernettyshaded.proto.HelloWorldGrpc;
 
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,8 @@ public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
 		if (name.startsWith("internal")) {
 			throw new RuntimeException();
 		}
-		HelloReply reply = HelloReply.newBuilder().setMessage("Hello ==> " + name).build();
+		String message = "Hello '%s'".formatted(name);
+		HelloReply reply = HelloReply.newBuilder().setMessage(message).build();
 		responseObserver.onNext(reply);
 		responseObserver.onCompleted();
 	}
@@ -51,7 +52,8 @@ public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
 		logger.info("streamHello " + name);
 		int count = 0;
 		while (count < 10) {
-			HelloReply reply = HelloReply.newBuilder().setMessage("Hello(" + count + ") ==> " + name).build();
+			String message = "Hello(" + count + ") '%s'".formatted(name);
+			HelloReply reply = HelloReply.newBuilder().setMessage(message).build();
 			responseObserver.onNext(reply);
 			count++;
 			try {

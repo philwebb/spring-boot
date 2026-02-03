@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.grpcserver;
+@NullMarked
+package smoketest.grpcservernettyshaded;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class SampleGrpcServerApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SampleGrpcServerApplication.class, args);
-	}
-
-}
+import org.jspecify.annotations.NullMarked;

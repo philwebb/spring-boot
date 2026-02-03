@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-@NullMarked
-package smoketest.grpcserver;
+package smoketest.grpcserverservlet;
 
-import org.jspecify.annotations.NullMarked;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SampleGrpcServerServletApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleGrpcServerServletApplication.class, args);
+	}
+
+}

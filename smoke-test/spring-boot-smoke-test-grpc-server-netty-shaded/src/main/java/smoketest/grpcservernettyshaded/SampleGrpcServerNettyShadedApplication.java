@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package smoketest.grpcserver;
+package smoketest.grpcservernettyshaded;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SampleGrpcServerApplication {
+public class SampleGrpcServerNettyShadedApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleGrpcServerApplication.class, args);
+		SpringApplication.run(SampleGrpcServerNettyShadedApplication.class, args);
 	}
 
 }

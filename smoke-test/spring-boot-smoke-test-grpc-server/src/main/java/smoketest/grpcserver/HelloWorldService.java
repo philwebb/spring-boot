@@ -40,7 +40,8 @@ public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
 		if (name.startsWith("internal")) {
 			throw new RuntimeException();
 		}
-		HelloReply reply = HelloReply.newBuilder().setMessage("Hello ==> " + name).build();
+		String message = "Hello '%s'".formatted(name);
+		HelloReply reply = HelloReply.newBuilder().setMessage(message).build();
 		responseObserver.onNext(reply);
 		responseObserver.onCompleted();
 	}
@@ -51,7 +52,8 @@ public class HelloWorldService extends HelloWorldGrpc.HelloWorldImplBase {
 		logger.info("streamHello " + name);
 		int count = 0;
 		while (count < 10) {
-			HelloReply reply = HelloReply.newBuilder().setMessage("Hello(" + count + ") ==> " + name).build();
+			String message = "Hello(" + count + ") '%s'".formatted(name);
+			HelloReply reply = HelloReply.newBuilder().setMessage(message).build();
 			responseObserver.onNext(reply);
 			count++;
 			try {

@@ -17,6 +17,7 @@
 plugins {
 	id "java"
 	id "com.google.protobuf" version "${protobufGradlePluginVersion}"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot gRPC server servlet smoke test"
@@ -28,6 +29,8 @@ dependencies {
 	}
 	implementation(project(":starter:spring-boot-starter-tomcat"))
 	implementation("io.grpc:grpc-servlet-jakarta")
+
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

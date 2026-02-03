@@ -15,6 +15,6 @@
  */
 
 @NullMarked
-package smoketest.grpcserver;
+package smoketest.grpcserverservlet;
 
 import org.jspecify.annotations.NullMarked;
