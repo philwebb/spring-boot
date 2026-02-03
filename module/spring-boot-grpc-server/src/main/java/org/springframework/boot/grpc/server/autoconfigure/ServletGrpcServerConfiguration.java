@@ -41,6 +41,7 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 @ConditionalOnClass(GrpcServlet.class)
 @Conditional(OnMissingNetworkGrpcServerCondition.class)
 @ConditionalOnBooleanProperty(name = "spring.grpc.server.servlet.enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.grpc.server.inprocess.exclusive", havingValue = false)
 class ServletGrpcServerConfiguration {
 
 	@Bean

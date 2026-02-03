@@ -44,7 +44,7 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(NettyServerBuilder.class)
 @Conditional(OnMissingNetworkGrpcServerCondition.class)
-@ConditionalOnBooleanProperty(name = "spring.grpc.server.netty.enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.grpc.server.inprocess.exclusive", havingValue = false)
 class ShadedNettyGrpcServerConfiguration {
 
 	@Bean

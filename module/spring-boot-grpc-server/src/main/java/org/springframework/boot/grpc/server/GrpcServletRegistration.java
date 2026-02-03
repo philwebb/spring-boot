@@ -67,9 +67,9 @@ public class GrpcServletRegistration extends DynamicRegistrationBean<Dynamic> {
 		List<String> urlMappings = new ArrayList<>();
 		for (GrpcServiceSpec spec : serviceDiscoverer.findServices()) {
 			ServiceDescriptor descriptor = spec.service().bindService().getServiceDescriptor();
-			ServerServiceDefinition definition = serviceConfigurer.configure(spec, null);
 			logger.info(LogMessage.format("Registering servlet gRPC service: %s", descriptor.getName()));
 			urlMappings.add("/" + descriptor.getName() + "/*");
+			ServerServiceDefinition definition = serviceConfigurer.configure(spec, null);
 			builder.addService(definition);
 		}
 		if (serverBuilderCustomizer != null) {
