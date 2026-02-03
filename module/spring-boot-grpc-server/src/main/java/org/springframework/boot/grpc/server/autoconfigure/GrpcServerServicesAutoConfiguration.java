@@ -21,6 +21,7 @@ import io.grpc.protobuf.services.ProtoReflectionServiceV1;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
@@ -41,11 +42,12 @@ public final class GrpcServerServicesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ProtoReflectionServiceV1.class)
+	@ConditionalOnBean(BindableService.class)
 	@ConditionalOnBooleanProperty(name = "spring.grpc.server.reflection.enabled", matchIfMissing = true)
 	static class GrpcServerReflectionServiceConfiguration {
 
 		@Bean
-		BindableService serverReflection() {
+		BindableService grpcServerReflectionService() {
 			return ProtoReflectionServiceV1.newInstance();
 		}
 
