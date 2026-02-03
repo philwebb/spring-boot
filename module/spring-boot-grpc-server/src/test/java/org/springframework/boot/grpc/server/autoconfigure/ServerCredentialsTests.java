@@ -53,7 +53,7 @@ class ServerCredentialsTests {
 
 	private final KeyManagerFactory bundleKeyManagerFactory = mock();
 
-	public ServerCredentialsTests() {
+	ServerCredentialsTests() {
 		SslBundle bundle = mock();
 		SslManagerBundle managers = mock();
 		given(this.bundles.getBundle("test")).willReturn(bundle);

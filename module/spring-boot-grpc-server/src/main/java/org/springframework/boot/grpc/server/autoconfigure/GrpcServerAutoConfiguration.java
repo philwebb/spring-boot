@@ -16,6 +16,8 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
+import java.util.List;
+
 import io.grpc.BindableService;
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
@@ -32,8 +34,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
+import org.springframework.grpc.server.exception.CompositeGrpcExceptionHandler;
+import org.springframework.grpc.server.exception.GrpcExceptionHandler;
+import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor;
 import org.springframework.grpc.server.exception.ReactiveStubBeanDefinitionRegistrar;
 import org.springframework.grpc.server.service.DefaultGrpcServiceConfigurer;
 import org.springframework.grpc.server.service.DefaultGrpcServiceDiscoverer;
@@ -58,9 +64,6 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 		NettyGrpcServerConfiguration.class })
 public final class GrpcServerAutoConfiguration {
 
-	// FIXME GrpcExceptionHandlerAutoConfiguration
-	// FIXME GrpcServerReflectionAutoConfiguration
-
 	@Bean
 	@ConditionalOnMissingBean
 	GrpcServerBuilderCustomizers grpcServerBuilderCustomizers(ObjectProvider<CompressorRegistry> compressorRegistry,
@@ -81,6 +84,17 @@ public final class GrpcServerAutoConfiguration {
 	@ConditionalOnMissingBean(GrpcServiceDiscoverer.class)
 	DefaultGrpcServiceDiscoverer grpcServiceDiscoverer(ApplicationContext applicationContext) {
 		return new DefaultGrpcServiceDiscoverer(applicationContext);
+	}
+
+	@Bean
+	@GlobalServerInterceptor
+	@ConditionalOnBean(GrpcExceptionHandler.class)
+	@ConditionalOnMissingBean
+	@ConditionalOnBooleanProperty(name = "spring.grpc.server.reflection.enabled", matchIfMissing = true)
+	GrpcExceptionHandlerInterceptor globalExceptionHandlerInterceptor(List<GrpcExceptionHandler> exceptionHandlers) {
+		CompositeGrpcExceptionHandler compositeHandler = new CompositeGrpcExceptionHandler(
+				exceptionHandlers.toArray(GrpcExceptionHandler[]::new));
+		return new GrpcExceptionHandlerInterceptor(compositeHandler);
 	}
 
 	@Configuration(proxyBeanMethods = false)

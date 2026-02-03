@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.grpc.server.GrpcServletRegistration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
@@ -38,7 +39,7 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(GrpcServlet.class)
-@ConditionalOnNeedingNetworkGrpcServer
+@Conditional(OnMissingNetworkGrpcServerCondition.class)
 @ConditionalOnBooleanProperty(name = "spring.grpc.server.servlet.enabled", matchIfMissing = true)
 class ServletGrpcServerConfiguration {
 

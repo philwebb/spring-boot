@@ -29,6 +29,7 @@ import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.grpc.server.service.ServerInterceptorFilter;
+import org.springframework.util.Assert;
 
 /**
  * {@link Configuration @Configuration} for in-process gRPC.
@@ -51,7 +52,9 @@ class InProcessGrpcServerConfiguration {
 			ObjectProvider<ServerServiceDefinitionFilter> serviceFilter,
 			ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
 		GrpcServices services = new GrpcServices(serviceDiscoverer, serviceConfigurer);
-		InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(properties.getInprocess().getName(),
+		String inProcessName = properties.getInprocess().getName();
+		Assert.state(inProcessName != null, "No inprocess name provided");
+		InProcessGrpcServerFactory factory = new InProcessGrpcServerFactory(inProcessName,
 				grpcServerBuilderCustomizers.forFactory());
 		factory.setInterceptorFilter(interceptorFilter.getIfAvailable());
 		factory.setServiceFilter(serviceFilter.getIfAvailable());

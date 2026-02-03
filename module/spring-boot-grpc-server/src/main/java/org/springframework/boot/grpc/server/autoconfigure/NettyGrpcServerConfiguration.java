@@ -20,11 +20,13 @@ import io.grpc.netty.NettyServerBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.grpc.server.NettyGrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
@@ -41,7 +43,8 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(NettyServerBuilder.class)
-@ConditionalOnNeedingNetworkGrpcServer
+@Conditional(OnMissingNetworkGrpcServerCondition.class)
+@ConditionalOnBooleanProperty(name = "spring.grpc.server.netty.enabled", matchIfMissing = true)
 class NettyGrpcServerConfiguration {
 
 	@Bean

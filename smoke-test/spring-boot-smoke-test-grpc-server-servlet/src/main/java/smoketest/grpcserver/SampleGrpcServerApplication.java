@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Spring gRPC server support classes.
- */
-@NullMarked
-package org.springframework.boot.grpc.server;
+package smoketest.grpcserver;
 
-import org.jspecify.annotations.NullMarked;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SampleGrpcServerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleGrpcServerApplication.class, args);
+	}
+
+}

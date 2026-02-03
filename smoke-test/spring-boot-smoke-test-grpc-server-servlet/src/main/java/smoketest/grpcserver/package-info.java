@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Spring gRPC server support classes.
- */
 @NullMarked
-package org.springframework.boot.grpc.server;
+package smoketest.grpcserver;
 
 import org.jspecify.annotations.NullMarked;

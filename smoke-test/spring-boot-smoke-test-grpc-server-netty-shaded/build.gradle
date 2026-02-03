@@ -16,16 +16,50 @@
 
 plugins {
 	id "java"
+	id "com.google.protobuf" version "${protobufGradlePluginVersion}"
 }
 
 description = "Spring Boot gRPC server netty shaded smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-grpc-server"))
+	implementation(project(":starter:spring-boot-starter-grpc-server")) {
+		exclude(group: "io.grpc", module: "grpc-netty-shaded")
+	}
+	implementation("io.grpc:grpc-netty-shaded")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }
 
+def dependenciesBom = project(":platform:spring-boot-dependencies").extensions.getByName("bom")
+def grpcJava = dependenciesBom.getLibrary("Grpc Java")
+def protobufJava = dependenciesBom.getLibrary("Protobuf Java")
+
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
+}
+
+nullability {
+	requireExplicitNullMarking = false
+}
+
+configurations.named { it.startsWith("protobufToolsLocator_") || it.equals("compileProtoPath") || it.equals("testCompileProtoPath") }.all {
+	extendsFrom(configurations.dependencyManagement)
+}
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:${protobufJava.version}"
+	}
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${grpcJava.version}"
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {
+				option '@generated=omit'
+			}
+		}
+	}
 }

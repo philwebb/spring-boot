@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.grpc.server;
+package smoketest.grpcserver;
 
-import org.junit.jupiter.api.Test;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import static org.junit.jupiter.api.Assertions.*;
+@SpringBootApplication
+public class SampleGrpcServerApplication {
 
-/**
- * @author pwebb
- */
-class GrpcServletRegistrationTests {
-
-	@Test
-	void test() {
-		fail("Not yet implemented");
+	public static void main(String[] args) {
+		SpringApplication.run(SampleGrpcServerApplication.class, args);
 	}
 
 }

@@ -25,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -54,11 +55,12 @@ public class GrpcServerProperties {
 
 	private final Ssl ssl = new Ssl();
 
-	public @Nullable String getAddress() {
+	public String getAddress() {
 		return this.address;
 	}
 
-	public void setAddress(@Nullable String address) {
+	public void setAddress(String address) {
+		Assert.notNull(address, "'address' must not be null");
 		this.address = address;
 	}
 

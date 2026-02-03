@@ -16,57 +16,37 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.grpc.server.GrpcServletRegistration;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Condition;
 import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.InProcessGrpcServerFactory;
 
 /**
- * {@link Conditional @Conditional} that matches when a network accessible gRPC server is
- * needed. Concretely:
+ * {@link Condition} that matches when a network accessible gRPC server is needed.
+ * Concretely:
  * <ul>
  * <li>There are no {@link GrpcServletRegistration} beans.</li>
  * <li>There are no {@link GrpcServerFactory} beans (ignoring
  * {@link InProcessGrpcServerFactory} beans)</li>
- * <li>{@code spring.grpc.server.inprocess.exclusive} has not been set to true</li>
  * </ul>
  *
  * @author Phillip Webb
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@Conditional(ConditionalOnNeedingNetworkGrpcServer.Condition.class)
-@interface ConditionalOnNeedingNetworkGrpcServer {
+class OnMissingNetworkGrpcServerCondition extends AllNestedConditions {
 
-	static class Condition extends AllNestedConditions {
+	OnMissingNetworkGrpcServerCondition() {
+		super(ConfigurationPhase.REGISTER_BEAN);
+	}
 
-		Condition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
-		}
+	@ConditionalOnMissingBean(GrpcServletRegistration.class)
+	static class MissingGrpcServletRegistrationBean {
 
-		@ConditionalOnMissingBean(GrpcServletRegistration.class)
-		static class MissingGrpcServletRegistrationBean {
+	}
 
-		}
-
-		@ConditionalOnMissingBean(value = GrpcServerFactory.class, ignored = InProcessGrpcServerFactory.class)
-		static class MissingGrpcFactoryBean {
-
-		}
-
-		@ConditionalOnBooleanProperty(name = "spring.grpc.server.inprocess.exclusive", havingValue = false,
-				matchIfMissing = true)
-		static class NotExclusivelyUsingInProcessGrpc {
-
-		}
+	@ConditionalOnMissingBean(value = GrpcServerFactory.class, ignored = InProcessGrpcServerFactory.class)
+	static class MissingGrpcFactoryBean {
 
 	}
 
