@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;
 import io.grpc.ServerBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.util.LambdaSafe;
@@ -42,20 +43,27 @@ class GrpcServerBuilderCustomizers {
 			ObjectProvider<DecompressorRegistry> decompressorRegistry,
 			ObjectProvider<GrpcServerExecutorProvider> executorProvider,
 			ObjectProvider<ServerBuilderCustomizer<?>> customizers) {
+		this(compressorRegistry.getIfAvailable(), decompressorRegistry.getIfAvailable(),
+				executorProvider.getIfAvailable(), customizers.orderedStream().toList());
+	}
+
+	GrpcServerBuilderCustomizers(@Nullable CompressorRegistry compressorRegistry,
+			@Nullable DecompressorRegistry decompressorRegistry, @Nullable GrpcServerExecutorProvider executorProvider,
+			List<? extends ServerBuilderCustomizer<?>> customizers) {
 		List<ServerBuilderCustomizer<?>> all = new ArrayList<>();
 		addCustomizer(all, compressorRegistry, ServerBuilder::compressorRegistry);
 		addCustomizer(all, decompressorRegistry, ServerBuilder::decompressorRegistry);
 		addCustomizer(all, executorProvider, (builder, bean) -> builder.executor(bean.getExecutor()));
-		all.addAll(customizers.orderedStream().toList());
+		all.addAll(customizers);
 		this.customizers = List.copyOf(all);
 	}
 
 	private static <B extends ServerBuilder<B>, T> void addCustomizer(List<ServerBuilderCustomizer<?>> customizers,
-			ObjectProvider<T> objectProvider, BiConsumer<B, T> action) {
-		objectProvider.ifAvailable((bean) -> {
+			@Nullable T bean, BiConsumer<B, T> action) {
+		if (bean != null) {
 			ServerBuilderCustomizer<B> customizer = (builder) -> action.accept(builder, bean);
 			customizers.add(customizer);
-		});
+		}
 	}
 
 	<T extends ServerBuilder<T>> List<ServerBuilderCustomizer<T>> forFactory() {

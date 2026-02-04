@@ -16,18 +16,11 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @author pwebb
  */
 class GrpcServerAutoConfigurationTests {
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
+	// FIXME Copy GrpcServletAutoConfigurationTests
 
 }
