@@ -29,6 +29,7 @@ dependencies {
 	api("org.springframework.grpc:spring-grpc-core")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("io.grpc:grpc-stub")
 	optional("io.grpc:grpc-netty")
 	optional("io.grpc:grpc-netty-shaded")
@@ -36,6 +37,7 @@ dependencies {
 	optional("io.grpc:grpc-kotlin-stub") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 	}
+	optional("io.micrometer:micrometer-core")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
