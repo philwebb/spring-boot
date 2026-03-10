@@ -219,7 +219,7 @@ bom {
 			]
 		}
 	}
-	library("Protobuf Gradle Plugin", "0.9.6") {
+	library("Protobuf Gradle Plugin", "${protobufGradlePluginVersion}") {
 		group("com.google.protobuf") {
 			modules = [
 				"protobuf-gradle-plugin"
