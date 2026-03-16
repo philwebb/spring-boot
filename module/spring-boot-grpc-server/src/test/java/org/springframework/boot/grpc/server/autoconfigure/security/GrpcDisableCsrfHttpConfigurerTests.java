@@ -59,7 +59,7 @@ class GrpcDisableCsrfHttpConfigurerTests {
 		addGrpcServletRegistration(applicationContext);
 		CsrfConfigurer<?> csrf = addCsrf(http);
 		this.configurer.init(http);
-		ArgumentCaptor<RequestMatcher> matcher = captor();
+		ArgumentCaptor<RequestMatcher> matcher = ArgumentCaptor.captor();
 		then(csrf).should().requireCsrfProtectionMatcher(matcher.capture());
 		assertThat(matcher.getValue()).isSameAs(GrpcCsrfRequestMatcher.INSTANCE);
 	}
@@ -75,6 +75,7 @@ class GrpcDisableCsrfHttpConfigurerTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void initWhenNoCsrfConfigurerDoesNothing() {
 		ObjectPostProcessor<Object> objectPostProcessor = ObjectPostProcessor.identity();
 		AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder(objectPostProcessor);
@@ -83,7 +84,8 @@ class GrpcDisableCsrfHttpConfigurerTests {
 		addServiceDiscover(applicationContext);
 		addGrpcServletRegistration(applicationContext);
 		this.configurer.init(http);
-		assertThat(http.getConfigurer(CsrfConfigurer.class)).isNull();
+		CsrfConfigurer<?> csrfConfigurer = http.getConfigurer(CsrfConfigurer.class);
+		assertThat(csrfConfigurer).isNull();
 	}
 
 	@Test

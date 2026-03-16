@@ -39,6 +39,12 @@ import org.springframework.util.unit.DataUnit;
 @ConfigurationProperties("spring.grpc.server")
 public class GrpcServerProperties {
 
+	// spring.grpc.server.address (as server properties)
+	// spring.grpc.server.port (as server properties)
+
+	// spring.grpc.server.netty.transport = TCP / DOMAIN_DOCKET
+	// spring.grpc.server.netty.domain-socket-path =
+
 	/**
 	 * The address to bind to in the form 'host:port' or a pseudo URL like
 	 * 'static://host:port'.
