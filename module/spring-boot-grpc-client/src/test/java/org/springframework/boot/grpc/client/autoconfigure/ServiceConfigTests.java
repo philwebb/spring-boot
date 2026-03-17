@@ -77,6 +77,23 @@ class ServiceConfigTests {
 		assertThat(loadBalancingPolicySelection.getConfig()).extracting("shuffleAddressList").isEqualTo(Boolean.TRUE);
 	}
 
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - roundrobin: {}
+			""")
+	void roundRobinLoadBalancing() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(1);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("round_robin");
+		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
+		assertThat(loadBalancingPolicySelection.toString()).contains("PickFirstLoadBalancer");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("shuffleAddressList").isNull();
+	}
+
 	private PolicySelection getLoadBalancingPolicySelection(List<Map<String, ?>> rawConfigs) {
 		List<LbConfig> unwrappedConfigs = ServiceConfigUtil.unwrapLoadBalancingConfigList(rawConfigs);
 		LoadBalancerRegistry registry = LoadBalancerRegistry.getDefaultRegistry();

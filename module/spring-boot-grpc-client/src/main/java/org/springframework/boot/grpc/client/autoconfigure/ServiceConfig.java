@@ -17,6 +17,7 @@
 package org.springframework.boot.grpc.client.autoconfigure;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +43,17 @@ import org.springframework.util.unit.DataUnit;
  * by {@code grpc-java}.
  *
  * @author Phillip Webb
+ * @since 4.1.0
  * @see GrpcClientDefaultServiceConfigCustomizer
  * @see io.grpc.internal.ServiceConfigUtil
  */
 public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, List<MethodConfig> method,
 		RetryThrottlingPolicy retrythrottling, HealthcheckConfig healthcheck) {
 
+	/**
+	 * Apply this service config to the given gRPC Java config Map.
+	 * @param grpcJavaConfig the gRPC Java config map
+	 */
 	public void applyTo(Map<String, Object> grpcJavaConfig) {
 		applyTo(new GrpcJavaConfig(grpcJavaConfig));
 	}
@@ -70,14 +76,15 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 			map.from(this::pickfirst)
 				.as(PickFirstLoadBalancingConfig::grpcJavaConfig)
 				.to((loadBalancingConfig) -> grpcJavaConfig.put("pick_first", loadBalancingConfig));
+			map.from(this::roundrobin)
+				.as(RoundRobinLoadBalancingConfig::grpcJavaConfig)
+				.to((loadBalancingConfig) -> grpcJavaConfig.put("round_robin", loadBalancingConfig));
 			return grpcJavaConfig;
 		}
 
 		static @Nullable List<Map<String, Object>> grpcJavaConfigs(List<LoadBalancingConfig> loadBalancingConfigs) {
-			if (CollectionUtils.isEmpty(loadBalancingConfigs)) {
-				return null;
-			}
-			return loadBalancingConfigs.stream().map(LoadBalancingConfig::grpcJavaConfig).toList();
+			return (!CollectionUtils.isEmpty(loadBalancingConfigs))
+					? loadBalancingConfigs.stream().map(LoadBalancingConfig::grpcJavaConfig).toList() : null;
 		}
 
 	}
@@ -97,6 +104,10 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 
 	// SecretRoundRobinLoadBalancerProvider
 	public record RoundRobinLoadBalancingConfig() {
+
+		Map<String, Object> grpcJavaConfig() {
+			return Collections.emptyMap();
+		}
 	}
 
 	// WeightedRoundRobinLoadBalancerProvider
