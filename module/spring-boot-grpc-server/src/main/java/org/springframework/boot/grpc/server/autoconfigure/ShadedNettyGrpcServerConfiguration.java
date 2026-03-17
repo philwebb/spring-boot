@@ -50,9 +50,10 @@ class ShadedNettyGrpcServerConfiguration {
 			GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 			GrpcServerBuilderCustomizers grpcServerBuilderCustomizers, SslBundles bundles,
 			ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
+		NettyAddress address = NettyAddress.fromProperties(properties);
 		ServerCredentials serverCredentials = ServerCredentials.get(properties.getSsl(), bundles,
 				InsecureTrustManagerFactory.INSTANCE);
-		ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
+		ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(address.toString(),
 				grpcServerBuilderCustomizers.forFactory(), serverCredentials.keyManagerFactory(),
 				serverCredentials.trustManagerFactory(), serverCredentials.clientAuth());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));

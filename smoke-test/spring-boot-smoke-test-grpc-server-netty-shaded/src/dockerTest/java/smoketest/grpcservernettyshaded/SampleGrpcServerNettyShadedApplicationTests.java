@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@SpringBootTest(properties = "spring.grpc.server.address=*:0")
+@SpringBootTest(properties = "spring.grpc.server.port=0")
 @Testcontainers(disabledWithoutDocker = true)
 @Import(GrpcServerStartedEventListener.class)
 class SampleGrpcServerNettyShadedApplicationTests {

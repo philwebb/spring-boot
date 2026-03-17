@@ -297,16 +297,17 @@ class GrpcServerAutoConfigurationTests {
 
 	@Test
 	void shadedNettyServerFactoryAutoConfiguredAsExpected() {
-		this.contextRunner.withPropertyValues("spring.grpc.server.address=myhost:6160")
-			.run(assertThatServerIsConfigured(ShadedNettyGrpcServerFactory.class, "myhost:6160",
+		this.contextRunner.withPropertyValues("spring.grpc.server.address=192.168.0.1", "spring.grpc.server.port=6160")
+			.run(assertThatServerIsConfigured(ShadedNettyGrpcServerFactory.class, "192.168.0.1:6160",
 					"shadedNettyGrpcServerLifecycle"));
 	}
 
 	@Test
 	void nettyServerFactoryAutoConfiguredAsExpected() {
-		this.contextRunner.withPropertyValues("spring.grpc.server.address=myhost:6160")
+		this.contextRunner.withPropertyValues("spring.grpc.server.address=192.168.0.1", "spring.grpc.server.port=6160")
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class))
-			.run(assertThatServerIsConfigured(NettyGrpcServerFactory.class, "myhost:6160", "nettyGrpcServerLifecycle"));
+			.run(assertThatServerIsConfigured(NettyGrpcServerFactory.class, "192.168.0.1:6160",
+					"nettyGrpcServerLifecycle"));
 	}
 
 	@Test
@@ -314,9 +315,10 @@ class GrpcServerAutoConfigurationTests {
 		new WebApplicationContextRunner().withConfiguration(autoConfigurations)
 			.with(this::noOpLifecycleBeans)
 			.with(this::serviceBean)
-			.withPropertyValues("spring.grpc.server.address=myhost:6160")
+			.withPropertyValues("spring.grpc.server.address=192.168.0.1")
+			.withPropertyValues("spring.grpc.server.port=6160")
 			.withPropertyValues("spring.grpc.server.servlet.enabled=false")
-			.run(assertThatServerIsConfigured(ShadedNettyGrpcServerFactory.class, "myhost:6160",
+			.run(assertThatServerIsConfigured(ShadedNettyGrpcServerFactory.class, "192.168.0.1:6160",
 					"shadedNettyGrpcServerLifecycle"));
 	}
 
@@ -330,13 +332,14 @@ class GrpcServerAutoConfigurationTests {
 
 	@Test
 	void nettyServerFactoryAutoConfiguredWithSsl() {
-		this.contextRunner.withPropertyValues("spring.grpc.server.address=myhost:6160",
+		this.contextRunner.withPropertyValues("spring.grpc.server.address=192.168.0.1", "spring.grpc.server.port=6160",
 				"spring.grpc.server.ssl.bundle=ssltest",
 				"spring.ssl.bundle.jks.ssltest.keystore.location=classpath:org/springframework/boot/grpc/server/autoconfigure/test.jks",
 				"spring.ssl.bundle.jks.ssltest.keystore.password=secret",
 				"spring.ssl.bundle.jks.ssltest.key.password=password")
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class))
-			.run(assertThatServerIsConfigured(NettyGrpcServerFactory.class, "myhost:6160", "nettyGrpcServerLifecycle"));
+			.run(assertThatServerIsConfigured(NettyGrpcServerFactory.class, "192.168.0.1:6160",
+					"nettyGrpcServerLifecycle"));
 	}
 
 	private ContextConsumer<? super ApplicationContextAssertProvider<?>> assertThatServerIsConfigured(

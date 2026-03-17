@@ -16,6 +16,7 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -25,7 +26,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -39,17 +39,15 @@ import org.springframework.util.unit.DataUnit;
 @ConfigurationProperties("spring.grpc.server")
 public class GrpcServerProperties {
 
-	// spring.grpc.server.address (as server properties)
-	// spring.grpc.server.port (as server properties)
-
-	// spring.grpc.server.netty.transport = TCP / DOMAIN_DOCKET
-	// spring.grpc.server.netty.domain-socket-path =
+	/**
+	 * Port on which the gRPC server should listen. Use '0' to bind to a dynamic port.
+	 */
+	private @Nullable Integer port;
 
 	/**
-	 * The address to bind to in the form 'host:port' or a pseudo URL like
-	 * 'static://host:port'.
+	 * Network address to which the gRPC server should bind.
 	 */
-	private String address = "*:9090";
+	private @Nullable InetAddress address;
 
 	private final Shutdown shutdown = new Shutdown();
 
@@ -61,14 +59,23 @@ public class GrpcServerProperties {
 
 	private final Ssl ssl = new Ssl();
 
+	private final Netty netty = new Netty();
+
 	private final Servlet servlet = new Servlet();
 
-	public String getAddress() {
+	public @Nullable Integer getPort() {
+		return this.port;
+	}
+
+	public void setPort(@Nullable Integer port) {
+		this.port = port;
+	}
+
+	public @Nullable InetAddress getAddress() {
 		return this.address;
 	}
 
-	public void setAddress(String address) {
-		Assert.notNull(address, "'address' must not be null");
+	public void setAddress(@Nullable InetAddress address) {
 		this.address = address;
 	}
 
@@ -90,6 +97,10 @@ public class GrpcServerProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public Netty getNetty() {
+		return this.netty;
 	}
 
 	public Servlet getServlet() {
@@ -364,6 +375,52 @@ public class GrpcServerProperties {
 
 		public boolean isSecure() {
 			return this.secure;
+		}
+
+	}
+
+	public static class Netty {
+
+		/**
+		 * Transport mechanism used for Netty and Netty Shaded servers. If not specified
+		 * will the appropriate transport will be picked based on the
+		 * 'deomain-socket-path' or 'address/port'.
+		 */
+		private @Nullable Transport transport;
+
+		/**
+		 * Path of the domain socket that should be used.
+		 */
+		private @Nullable String domainSocketPath;
+
+		public @Nullable Transport getTransport() {
+			return this.transport;
+		}
+
+		public void setTransport(@Nullable Transport transport) {
+			this.transport = transport;
+		}
+
+		public @Nullable String getDomainSocketPath() {
+			return this.domainSocketPath;
+		}
+
+		public void setDomainSocketPath(@Nullable String domainSocketPath) {
+			this.domainSocketPath = domainSocketPath;
+		}
+
+		public enum Transport {
+
+			/**
+			 * TCP transport.
+			 */
+			TCP,
+
+			/**
+			 * Domain socket transport.
+			 */
+			DOMAIN_SOCKET
+
 		}
 
 	}

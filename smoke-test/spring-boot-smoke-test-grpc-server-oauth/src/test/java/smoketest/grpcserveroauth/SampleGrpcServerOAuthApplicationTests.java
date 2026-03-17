@@ -64,7 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.grpc.server.address=*:0",
+		properties = { "spring.grpc.server.port=0",
 				"spring.grpc.client.channel.default.target=static://localhost:${local.grpc.server.port}",
 				"spring.grpc.client.channel.oauth.target=static://localhost:${local.grpc.server.port}" })
 @DirtiesContext

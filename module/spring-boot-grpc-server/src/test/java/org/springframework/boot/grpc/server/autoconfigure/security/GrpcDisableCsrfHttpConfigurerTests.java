@@ -34,7 +34,6 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -137,7 +136,7 @@ class GrpcDisableCsrfHttpConfigurerTests {
 		addGrpcServletRegistration(applicationContext);
 		CsrfConfigurer<?> csrf = addCsrf(http);
 		this.configurer.init(http);
-		ArgumentCaptor<RequestMatcher> matcher = captor();
+		ArgumentCaptor<RequestMatcher> matcher = ArgumentCaptor.captor();
 		then(csrf).should().requireCsrfProtectionMatcher(matcher.capture());
 		assertThat(matcher.getValue()).isSameAs(GrpcCsrfRequestMatcher.INSTANCE);
 	}

@@ -50,9 +50,10 @@ class NettyGrpcServerConfiguration {
 			GrpcServiceDiscoverer serviceDiscoverer, GrpcServiceConfigurer serviceConfigurer,
 			GrpcServerBuilderCustomizers grpcServerBuilderCustomizers, SslBundles bundles,
 			ObjectProvider<GrpcServerFactoryCustomizer> customizers) {
+		NettyAddress address = NettyAddress.fromProperties(properties);
 		ServerCredentials credentials = ServerCredentials.get(properties.getSsl(), bundles,
 				InsecureTrustManagerFactory.INSTANCE);
-		NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(),
+		NettyGrpcServerFactory factory = new NettyGrpcServerFactory(address.toString(),
 				grpcServerBuilderCustomizers.forFactory(), credentials.keyManagerFactory(),
 				credentials.trustManagerFactory(), credentials.clientAuth());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));

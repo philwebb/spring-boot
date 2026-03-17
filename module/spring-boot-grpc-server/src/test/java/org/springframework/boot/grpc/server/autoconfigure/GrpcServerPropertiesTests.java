@@ -16,6 +16,7 @@
 
 package org.springframework.boot.grpc.server.autoconfigure;
 
+import java.net.InetAddress;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
-import org.springframework.grpc.internal.GrpcUtils;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,17 +46,16 @@ class GrpcServerPropertiesTests {
 	}
 
 	@Test
-	void bind() {
+	void bind() throws Exception {
 		Map<String, String> map = new HashMap<>();
-		map.put("spring.grpc.server.address", "my-server-ip:3130");
+		map.put("spring.grpc.server.address", "192.168.0.1");
 		GrpcServerProperties properties = bindProperties(map);
-		assertThat(properties.getAddress()).isEqualTo("my-server-ip:3130");
+		assertThat(properties.getAddress()).isEqualTo(InetAddress.getByName("192.168.0.1"));
 	}
 
 	@Test
-	void defaultAddressMatchesGrpcUtils() {
-		assertThat(new GrpcServerProperties().getAddress())
-			.isEqualTo(GrpcUtils.ANY_IP_ADDRESS + ":" + GrpcUtils.DEFAULT_PORT);
+	void defaultAddressIsNull() {
+		assertThat(new GrpcServerProperties().getAddress()).isNull();
 	}
 
 	@Nested

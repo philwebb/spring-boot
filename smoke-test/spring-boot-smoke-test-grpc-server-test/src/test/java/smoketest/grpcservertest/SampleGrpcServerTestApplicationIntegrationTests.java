@@ -29,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = "spring.grpc.server.address=*:0")
+@SpringBootTest(properties = "spring.grpc.server.port=0")
 class SampleGrpcServerTestApplicationIntegrationTests {
 
 	@LocalGrpcServerPort
