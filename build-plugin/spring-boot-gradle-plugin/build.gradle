@@ -69,6 +69,8 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.tomlj:tomlj:1.0.0")
 	testImplementation("tools.jackson.core:jackson-databind")
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
 
 repositories {

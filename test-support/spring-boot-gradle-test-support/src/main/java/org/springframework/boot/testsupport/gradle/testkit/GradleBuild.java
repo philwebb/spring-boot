@@ -181,6 +181,7 @@ public class GradleBuild {
 			FileSystemUtils.copyRecursively(repository, new File(this.projectDir, "repository"));
 		}
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir);
+		gradleRunner.forwardOutput();
 		if (!this.configurationCache) {
 			// See https://github.com/gradle/gradle/issues/14125
 			gradleRunner.withDebug(true);
