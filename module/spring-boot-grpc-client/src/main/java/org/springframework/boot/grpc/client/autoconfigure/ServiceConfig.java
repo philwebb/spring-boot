@@ -17,40 +17,98 @@
 package org.springframework.boot.grpc.client.autoconfigure;
 
 import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import io.grpc.Status;
-import io.grpc.internal.ServiceConfigUtil;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.unit.DataUnit;
 
 /**
- * @author pwebb
- * @see ServiceConfigUtil
- * @see https://github.com/grpc/grpc-proto/blob/master/grpc/service_config/service_config.proto
+ * Bindable service configuration for gRPC channel. Allows type safe binding of common
+ * service configuration options which can ultimately be applied to the {@link Map}
+ * provided by a {@link GrpcClientDefaultServiceConfigCustomizer}.
+ * <p>
+ * The configuration provided here is a subset of the canonical <a href=
+ * "https://github.com/grpc/grpc-proto/blob/master/grpc/service_config/service_config.proto">service_config.proto</a>
+ * protocol definition. For advanced or experimental service configurations, use the
+ * {@link GrpcClientDefaultServiceConfigCustomizer} to directly add any entries supported
+ * by {@code grpc-java}.
+ *
+ * @author Phillip Webb
+ * @see GrpcClientDefaultServiceConfigCustomizer
+ * @see io.grpc.internal.ServiceConfigUtil
  */
-public record ServiceConfig(List<LoadBalancingConfig> loadBalancing, List<MethodConfig> method,
-		RetryThrottlingPolicy retryThrottling, HealthCheckConfig healthCheck) {
+public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, List<MethodConfig> method,
+		RetryThrottlingPolicy retrythrottling, HealthcheckConfig healthcheck) {
 
-	public record LoadBalancingConfig(Xds xds, RoundRobin roundRobin) {
-		// FIXME Too complex
+	public void applyTo(Map<String, Object> grpcJavaConfig) {
+		applyTo(new GrpcJavaConfig(grpcJavaConfig));
+	}
 
-		/*
-		 * In Java there's a Map of "name" -> "config"
-		 * io.grpc.LoadBalancerRegistry.getProvider(String) gets the policy
-		 *
-		 *
-		 *
-		 */
+	private void applyTo(GrpcJavaConfig grpcJavaConfig) {
+		PropertyMapper map = PropertyMapper.get();
+		map.from(this::loadbalancing)
+			.as(LoadBalancingConfig::grpcJavaConfigs)
+			.to(grpcJavaConfig.in("loadBalancingConfig"));
+	}
 
-		public record Xds() {
+	// ServiceConfigUtil
 
+	public record LoadBalancingConfig(PickFirstLoadBalancingConfig pickfirst, RoundRobinLoadBalancingConfig roundrobin,
+			WeightedRoundRobinLoadBalancingConfig weightedroundrobin) {
+
+		Map<String, Object> grpcJavaConfig() {
+			LinkedHashMap<String, Object> grpcJavaConfig = new LinkedHashMap<>();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this::pickfirst)
+				.as(PickFirstLoadBalancingConfig::grpcJavaConfig)
+				.to((loadBalancingConfig) -> grpcJavaConfig.put("pick_first", loadBalancingConfig));
+			return grpcJavaConfig;
 		}
 
-		public record RoundRobin() {
-
+		static @Nullable List<Map<String, Object>> grpcJavaConfigs(List<LoadBalancingConfig> loadBalancingConfigs) {
+			if (CollectionUtils.isEmpty(loadBalancingConfigs)) {
+				return null;
+			}
+			return loadBalancingConfigs.stream().map(LoadBalancingConfig::grpcJavaConfig).toList();
 		}
+
+	}
+
+	// PickFirstLoadBalancerProvider
+	// PickFirstLoadBalancerConfig + shuffleAddressList
+	public record PickFirstLoadBalancingConfig(Boolean shuffleAddressList) {
+
+		Map<String, Object> grpcJavaConfig() {
+			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this::shuffleAddressList).to(grpcJavaConfig.in("shuffleAddressList"));
+			return grpcJavaConfig.getMap();
+		}
+
+	}
+
+	// SecretRoundRobinLoadBalancerProvider
+	public record RoundRobinLoadBalancingConfig() {
+	}
+
+	// WeightedRoundRobinLoadBalancerProvider
+	public record WeightedRoundRobinLoadBalancingConfig(Duration blackoutPeriod, Duration weightExpirationPeriod,
+			Duration outOfBandReportingPeriod, Boolean enableOutOfBandLoadReport, Duration weightUpdatePeriod,
+			Float errorUtilizationPenalty) {
+
+	}
+
+	// GrpclbLoadBalancerProvider
+	public record GrpcLoadBalancingConfig(LoadBalancingConfig childPolicy, String serviceName,
+			Duration initialFallbackTimeout) {
 
 	}
 
@@ -75,7 +133,29 @@ public record ServiceConfig(List<LoadBalancingConfig> loadBalancing, List<Method
 
 	}
 
-	public record HealthCheckConfig(String serviceName) {
+	public record HealthcheckConfig(String serviceName) {
+
+	}
+
+	static class GrpcJavaConfig {
+
+		private final Map<String, Object> map;
+
+		GrpcJavaConfig() {
+			this(new LinkedHashMap<>());
+		}
+
+		GrpcJavaConfig(Map<String, Object> map) {
+			this.map = map;
+		}
+
+		<T> Consumer<T> in(String key) {
+			return (value) -> this.map.put(key, value);
+		}
+
+		Map<String, Object> getMap() {
+			return this.map;
+		}
 
 	}
 
