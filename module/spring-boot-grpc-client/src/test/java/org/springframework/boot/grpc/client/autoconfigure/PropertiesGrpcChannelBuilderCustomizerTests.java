@@ -90,9 +90,8 @@ class PropertiesGrpcChannelBuilderCustomizerTests {
 
 	@Test
 	<T extends ManagedChannelBuilder<T>> void customizeWhenTargetDoesNotSupportLoadBalancingDoesNotMapDefaultLoadBalancer() {
-		GrpcChannelBuilderCustomizer<?> customizer = getCustomizer((channelProperties) -> {
-			channelProperties.setTarget("static://localhost:1234");
-		});
+		GrpcChannelBuilderCustomizer<?> customizer = getCustomizer(
+				(channelProperties) -> channelProperties.setTarget("static://localhost:1234"));
 		assertNoLoadBalancerMappedBasedOnTarget(customizer, "unix:test");
 		assertNoLoadBalancerMappedBasedOnTarget(customizer, "in-process:test");
 	}
