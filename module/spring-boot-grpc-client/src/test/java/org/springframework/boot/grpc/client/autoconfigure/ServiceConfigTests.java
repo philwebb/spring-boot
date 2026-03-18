@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.grpc.LoadBalancerRegistry;
+import io.grpc.NameResolver.ConfigOrError;
 import io.grpc.internal.ServiceConfigUtil;
 import io.grpc.internal.ServiceConfigUtil.LbConfig;
 import io.grpc.internal.ServiceConfigUtil.PolicySelection;
@@ -245,12 +246,18 @@ class ServiceConfigTests {
 	void methodConfig() throws Exception {
 		Map<String, Object> map = bindAndGetAsMap();
 		assertThat(map).containsKey("methodConfig");
+		System.out.println(map);
+		// FIXME
 	}
 
 	private PolicySelection getLoadBalancingPolicySelection(List<Map<String, ?>> rawConfigs) {
 		List<LbConfig> unwrappedConfigs = ServiceConfigUtil.unwrapLoadBalancingConfigList(rawConfigs);
 		LoadBalancerRegistry registry = LoadBalancerRegistry.getDefaultRegistry();
-		return (PolicySelection) ServiceConfigUtil.selectLbPolicyFromList(unwrappedConfigs, registry).getConfig();
+		ConfigOrError selected = ServiceConfigUtil.selectLbPolicyFromList(unwrappedConfigs, registry);
+		assertThat(selected).isNotNull();
+		PolicySelection policySelection = (PolicySelection) selected.getConfig();
+		assertThat(policySelection).isNotNull();
+		return policySelection;
 	}
 
 	private Map<String, Object> bindAndGetAsMap() throws Exception {

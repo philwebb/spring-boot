@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -59,7 +60,7 @@ import org.springframework.util.unit.DataSize;
  * @see io.grpc.internal.ServiceConfigUtil
  */
 public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @Nullable List<MethodConfig> method,
-		@Nullable RetryThrottlingPolicy retrythrottling, @Nullable HealthcheckConfig healthcheck) {
+		@Nullable RetryThrottlingPolicy retrythrottling, @Nullable HealthCheckConfig healthcheck) {
 
 	/**
 	 * Apply this service config to the given gRPC Java config Map.
@@ -69,15 +70,19 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		applyTo(new GrpcJavaConfig(grpcJavaConfig));
 	}
 
-	private void applyTo(GrpcJavaConfig grpcJavaConfig) {
+	private void applyTo(GrpcJavaConfig config) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this::loadbalancing)
-			.as(list(LoadBalancingConfig::grpcJavaConfig))
-			.to(grpcJavaConfig.in("loadBalancingConfig"));
-		map.from(this::method).as(list(MethodConfig::grpcJavaConfig)).to(grpcJavaConfig.in("methodConfig"));
+			.as(listOf(LoadBalancingConfig::grpcJavaConfig))
+			.to(config.in("loadBalancingConfig"));
+		map.from(this::method).as(listOf(MethodConfig::grpcJavaConfig)).to(config.in("methodConfig"));
+		map.from(this::retrythrottling)
+			.as(RetryThrottlingPolicy::grpcJavaConfig)
+			.to(config.in("retryThrottlingPolicy"));
+		map.from(this::healthcheck).as(HealthCheckConfig::grpcJavaConfig).to(config.in("healthCheckConfig"));
 	}
 
-	static <T> Adapter<List<T>, @Nullable List<Map<String, Object>>> list(Function<T, Map<String, Object>> adapter) {
+	static <T> Adapter<List<T>, @Nullable List<Map<String, Object>>> listOf(Function<T, Map<String, Object>> adapter) {
 		return (list) -> (!CollectionUtils.isEmpty(list)) ? list.stream().map(adapter).toList() : null;
 	}
 
@@ -102,9 +107,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 			@Nullable WeightedRoundRobinLoadBalancingConfig weightedroundrobin,
 			@Nullable GrpcLoadBalancingConfig grpc) {
 
-		public LoadBalancingConfig
-
-		{
+		public LoadBalancingConfig {
 			if (pickfirst == null && roundrobin == null && weightedroundrobin == null && grpc == null) {
 				throw new InvalidConfigurationPropertyValueException("loadbalancing", null,
 						"Missing load balancing strategy");
@@ -234,9 +237,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		public record GrpcLoadBalancingConfig(List<LoadBalancingConfig> child, String serviceName,
 				Duration initialFallbackTimeout) {
 
-			public GrpcLoadBalancingConfig
-
-			{
+			public GrpcLoadBalancingConfig {
 				child.forEach(this::assertChild);
 			}
 
@@ -256,7 +257,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 				GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 				PropertyMapper map = PropertyMapper.get();
 				map.from(this::child)
-					.as(list(LoadBalancingConfig::grpcJavaConfig))
+					.as(listOf(LoadBalancingConfig::grpcJavaConfig))
 					.to(grpcJavaConfig.in("childPolicy"));
 				map.from(this::serviceName).to(grpcJavaConfig.in("serviceName"));
 				map.from(this::initialFallbackTimeout)
@@ -271,6 +272,14 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 
 	/**
 	 * Method configuration.
+	 *
+	 * @param name FIXME
+	 * @param waitForReady FIXME
+	 * @param maxRequestMessage FIXME
+	 * @param maxResponseMessage FIXME
+	 * @param timeout FIXME
+	 * @param retry FIXME
+	 * @param hedging FIXME
 	 */
 	public record MethodConfig(List<Name> name, Boolean waitForReady, DataSize maxRequestMessage,
 			DataSize maxResponseMessage, Duration timeout, RetryPolicy retry, HedgingPolicy hedging) {
@@ -281,13 +290,13 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		}
 
 		/**
-		 * Return the gRPC java config
+		 * Return the gRPC java config.
 		 * @return the config
 		 */
 		Map<String, Object> grpcJavaConfig() {
 			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 			PropertyMapper map = PropertyMapper.get();
-			map.from(this::name).to(grpcJavaConfig.in("name"));
+			map.from(this::name).as(listOf(Name::grpcJavaConfig)).to(grpcJavaConfig.in("name"));
 			map.from(this::waitForReady).to(grpcJavaConfig.in("waitForReady"));
 			map.from(this::maxRequestMessage)
 				.as(ServiceConfig::bytesString)
@@ -302,30 +311,62 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		}
 
 		public record Name(String service, String method) {
-		}
 
-		public record RetryPolicy(Integer maxAttempts, Duration initialBackoff, Duration maxBackoff,
-				Double backoffMultiplier, Duration perAttemptReceiveTimeout, Set<Status.Code> retryableStatusCodes) {
 			/**
-			 * Return the gRPC java config
+			 * Return the gRPC java config.
 			 * @return the config
 			 */
 			Map<String, Object> grpcJavaConfig() {
 				GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 				PropertyMapper map = PropertyMapper.get();
+				map.from(this::service).to(grpcJavaConfig.in("service"));
+				map.from(this::method).to(grpcJavaConfig.in("method"));
+				return grpcJavaConfig.asMap();
+			}
+
+		}
+
+		public record RetryPolicy(Integer maxAttempts, Duration initialBackoff, Duration maxBackoff,
+				Double backoffMultiplier, Duration perAttemptReceiveTimeout, Set<Status.Code> retryableStatusCodes) {
+
+			/**
+			 * Return the gRPC java config.
+			 * @return the config
+			 */
+			Map<String, Object> grpcJavaConfig() {
+				GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
+				PropertyMapper map = PropertyMapper.get();
+				map.from(this::maxAttempts).as(Objects::toString).to(grpcJavaConfig.in("maxAttempts"));
+				map.from(this::initialBackoff)
+					.as(ServiceConfig::durationString)
+					.to(grpcJavaConfig.in("initialBackoff"));
+				map.from(this::maxBackoff).as(ServiceConfig::durationString).to(grpcJavaConfig.in("maxBackoff"));
+				map.from(this::backoffMultiplier).to(grpcJavaConfig.in("backoffMultiplier"));
+				map.from(this::perAttemptReceiveTimeout)
+					.as(ServiceConfig::durationString)
+					.to(grpcJavaConfig.in("perAttemptReceiveTimeout"));
+				map.from(this::retryableStatusCodes)
+					.as((codes) -> codes.stream().map(Objects::toString).toList())
+					.to(grpcJavaConfig.in("retryableStatusCodes"));
 				return grpcJavaConfig.asMap();
 			}
 
 		}
 
 		public record HedgingPolicy(Integer maxAttempts, Duration delay, Set<Status.Code> nonFatalStatusCodes) {
+
 			/**
-			 * Return the gRPC java config
+			 * Return the gRPC java config.
 			 * @return the config
 			 */
 			Map<String, Object> grpcJavaConfig() {
 				GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 				PropertyMapper map = PropertyMapper.get();
+				map.from(this::maxAttempts).as(Objects::toString).to(grpcJavaConfig.in("maxAttempts"));
+				map.from(this::delay).as(ServiceConfig::durationString).to(grpcJavaConfig.in("delay"));
+				map.from(this::nonFatalStatusCodes)
+					.as((codes) -> codes.stream().map(Objects::toString).toList())
+					.to(grpcJavaConfig.in("nonFatalStatusCodes"));
 				return grpcJavaConfig.asMap();
 			}
 
@@ -334,16 +375,41 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 
 	public record RetryThrottlingPolicy(Float maxTokens, Float tokenRation) {
 
+		/**
+		 * Return the gRPC java config.
+		 * @return the config
+		 */
+		Map<String, Object> grpcJavaConfig() {
+			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this::maxTokens).to(grpcJavaConfig.in("maxTokens"));
+			map.from(this::tokenRation).to(grpcJavaConfig.in("tokenRation"));
+			return grpcJavaConfig.asMap();
+		}
+
 	}
 
-	public record HealthcheckConfig(String serviceName) {
+	public record HealthCheckConfig(String serviceName) {
+
+		/**
+		 * Return the gRPC java config.
+		 * @return the config
+		 */
+		Map<String, Object> grpcJavaConfig() {
+			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this::serviceName).to(grpcJavaConfig.in("serviceName"));
+			return grpcJavaConfig.asMap();
+		}
 
 	}
 
 	/**
 	 * Internal helper to collection gRPC java config.
+	 *
+	 * @param asMap the underling data as a map
 	 */
-	static record GrpcJavaConfig(Map<String, Object> asMap) {
+	record GrpcJavaConfig(Map<String, Object> asMap) {
 
 		GrpcJavaConfig() {
 			this(new LinkedHashMap<>());
