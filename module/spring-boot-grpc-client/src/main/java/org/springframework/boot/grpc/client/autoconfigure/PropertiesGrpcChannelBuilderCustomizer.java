@@ -59,7 +59,7 @@ record PropertiesGrpcChannelBuilderCustomizer<T extends ManagedChannelBuilder<T>
 			.as(DefaultDeadlineSetupClientInterceptor::new)
 			.to(builder::intercept);
 		map.from(channel.getDefault()::getLoadBalancingPolicy)
-			.when((policy) -> supportsLoadBalancing(target))
+			.when((policy) -> supportsLoadBalancing(target, channel))
 			.to(builder::defaultLoadBalancingPolicy);
 		map.from(channel.getIdle()::getTimeout).to(durationProperty(builder::idleTimeout));
 		map.from(channel.getKeepalive()::getTime).to(durationProperty(builder::keepAliveTime));
@@ -73,8 +73,12 @@ record PropertiesGrpcChannelBuilderCustomizer<T extends ManagedChannelBuilder<T>
 		return (channel != null) ? channel : STOCK_DEFAULT_CHANNEL;
 	}
 
-	private boolean supportsLoadBalancing(String target) {
-		return !target.startsWith("unix:") && !target.startsWith("in-process:");
+	private boolean supportsLoadBalancing(String target, Channel channel) {
+		return !(isUnixOrInProcessTarget(target) || isUnixOrInProcessTarget(channel.getTarget()));
+	}
+
+	private boolean isUnixOrInProcessTarget(String target) {
+		return target.startsWith("unix:") || target.startsWith("in-process:");
 	}
 
 	Consumer<Duration> durationProperty(BiConsumer<Long, TimeUnit> setter) {

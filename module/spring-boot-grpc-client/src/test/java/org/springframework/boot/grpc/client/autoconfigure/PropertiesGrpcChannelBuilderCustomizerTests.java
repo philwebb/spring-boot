@@ -75,16 +75,32 @@ class PropertiesGrpcChannelBuilderCustomizerTests {
 	}
 
 	@Test
-	<T extends ManagedChannelBuilder<T>> void customizeWhenDoesNotSupportLoadBalancingDoesNotMapDefaultLoadBalancer() {
-		assertNoLoadBalancerMapped("unix:test");
-		assertNoLoadBalancerMapped("in-process:test");
+	<T extends ManagedChannelBuilder<T>> void customizeWhenChannelDoesNotSupportLoadBalancingDoesNotMapDefaultLoadBalancer() {
+		assertNoLoadBalancerMappedBasedOnChannel("unix:test");
+		assertNoLoadBalancerMappedBasedOnChannel("in-process:test");
 	}
 
-	private <T extends ManagedChannelBuilder<T>> void assertNoLoadBalancerMapped(String target) {
+	private <T extends ManagedChannelBuilder<T>> void assertNoLoadBalancerMappedBasedOnChannel(String target) {
 		T builder = getBuilder((channelProperties) -> {
 			channelProperties.setTarget(target);
 			channelProperties.getDefault().setLoadBalancingPolicy("testlbp");
 		});
+		then(builder).should(never()).defaultLoadBalancingPolicy(any());
+	}
+
+	@Test
+	<T extends ManagedChannelBuilder<T>> void customizeWhenTargetDoesNotSupportLoadBalancingDoesNotMapDefaultLoadBalancer() {
+		GrpcChannelBuilderCustomizer<?> customizer = getCustomizer((channelProperties) -> {
+			channelProperties.setTarget("static://localhost:1234");
+		});
+		assertNoLoadBalancerMappedBasedOnTarget(customizer, "unix:test");
+		assertNoLoadBalancerMappedBasedOnTarget(customizer, "in-process:test");
+	}
+
+	private <T extends ManagedChannelBuilder<T>> void assertNoLoadBalancerMappedBasedOnTarget(
+			GrpcChannelBuilderCustomizer<T> customizer, String target) {
+		T builder = mock();
+		customizer.customize(target, builder);
 		then(builder).should(never()).defaultLoadBalancingPolicy(any());
 	}
 
@@ -133,14 +149,20 @@ class PropertiesGrpcChannelBuilderCustomizerTests {
 	}
 
 	private <T extends ManagedChannelBuilder<T>> T getBuilder(Consumer<Channel> setup) {
+		GrpcChannelBuilderCustomizer<T> customizer = getCustomizer(setup);
+		T builder = mock();
+		customizer.customize("test", builder);
+		return builder;
+	}
+
+	private <T extends ManagedChannelBuilder<T>> GrpcChannelBuilderCustomizer<T> getCustomizer(
+			Consumer<Channel> setup) {
 		GrpcClientProperties properties = new GrpcClientProperties();
 		Channel channelProperties = new Channel();
 		setup.accept(channelProperties);
 		properties.getChannel().put("test", channelProperties);
 		GrpcChannelBuilderCustomizer<T> customizer = new PropertiesGrpcChannelBuilderCustomizer<>(properties);
-		T builder = mock();
-		customizer.customize("test", builder);
-		return builder;
+		return customizer;
 	}
 
 	private Channel createTestChannelProperties() {
