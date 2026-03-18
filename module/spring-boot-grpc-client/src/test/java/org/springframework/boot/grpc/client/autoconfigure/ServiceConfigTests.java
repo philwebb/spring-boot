@@ -27,7 +27,10 @@ import io.grpc.internal.ServiceConfigUtil.LbConfig;
 import io.grpc.internal.ServiceConfigUtil.PolicySelection;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.PropertySource;
@@ -35,6 +38,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ServiceConfig}.
@@ -141,6 +145,106 @@ class ServiceConfigTests {
 		assertThat(loadBalancingPolicySelection.getConfig()).extracting("weightUpdatePeriodNanos")
 			.isEqualTo(Duration.ofSeconds(2).toNanos());
 		assertThat(loadBalancingPolicySelection.getConfig()).extracting("errorUtilizationPenalty").isEqualTo(0.5f);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - grpc:
+			      child:
+			      - roundrobin: {}
+			      - pickfirst: {}
+			      service-name: test
+			      initial-fallback-timeout: 10s
+			""")
+	void grpcLoadBalancingWithProperties() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(1);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("grpclb");
+		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
+		assertThat(loadBalancingPolicySelection.toString()).contains("GrpclbLoadBalancerProvider");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("mode").hasToString("ROUND_ROBIN");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("serviceName").isEqualTo("test");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("fallbackTimeoutMs")
+			.isEqualTo(Duration.ofSeconds(10).toMillis());
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - pickfirst: {}
+			  - weightedroundrobin: {}
+			""")
+	void multipleLoadBalancerPolicies() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(2);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("pick_first");
+		assertThat(loadBalancingConfigs.get(1)).containsKey("weighted_round_robin");
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - pickfirst: {}
+			    weightedroundrobin: {}
+			""")
+	void whenMultileLoadBalancingPoliciesInListItemThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindAndGetAsMap())
+			.havingRootCause()
+			.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - {}
+			""")
+	void whenNoLoadBalancingPoliciesInListItemThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindAndGetAsMap())
+			.havingRootCause()
+			.isInstanceOf(InvalidConfigurationPropertyValueException.class);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  method:
+			  - name:
+			    - service: s-one
+			      method: m-one
+			    - service: s-two
+			      method: m-two
+			    wait-for-ready: true
+			    max-request-message: 10KB
+			    max-response-message: 20KB
+			    timeout: 30s
+			    retry:
+			      max-attempts: 2
+			      initial-backoff: 1m
+			      max-backoff: 1h
+			      backoff-multiplier: 2.5
+			      per-attempt-receive-timeout: 2s
+			      retryable-status-codes:
+			      - cancelled
+			      - already-exists
+			    hedging:
+			      max-attempts: 4
+			      delay: 6s
+			      non-fatal-status-codes:
+			      - invalid-argument
+			      - deadline-exceeded
+			""")
+	void methodConfig() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("methodConfig");
 	}
 
 	private PolicySelection getLoadBalancingPolicySelection(List<Map<String, ?>> rawConfigs) {
