@@ -65,7 +65,9 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 			.to(grpcJavaConfig.in("loadBalancingConfig"));
 	}
 
-	// ServiceConfigUtil
+	static String durationString(Duration duration) {
+		return duration.getSeconds() + "." + duration.getNano() + "s";
+	}
 
 	public record LoadBalancingConfig(PickFirstLoadBalancingConfig pickfirst, RoundRobinLoadBalancingConfig roundrobin,
 			WeightedRoundRobinLoadBalancingConfig weightedroundrobin) {
@@ -79,6 +81,9 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 			map.from(this::roundrobin)
 				.as(RoundRobinLoadBalancingConfig::grpcJavaConfig)
 				.to((loadBalancingConfig) -> grpcJavaConfig.put("round_robin", loadBalancingConfig));
+			map.from(this::weightedroundrobin)
+				.as(WeightedRoundRobinLoadBalancingConfig::grpcJavaConfig)
+				.to((loadBalancingConfig) -> grpcJavaConfig.put("weighted_round_robin", loadBalancingConfig));
 			return grpcJavaConfig;
 		}
 
@@ -90,14 +95,13 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 	}
 
 	// PickFirstLoadBalancerProvider
-	// PickFirstLoadBalancerConfig + shuffleAddressList
 	public record PickFirstLoadBalancingConfig(Boolean shuffleAddressList) {
 
 		Map<String, Object> grpcJavaConfig() {
 			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 			PropertyMapper map = PropertyMapper.get();
 			map.from(this::shuffleAddressList).to(grpcJavaConfig.in("shuffleAddressList"));
-			return grpcJavaConfig.getMap();
+			return grpcJavaConfig.asMap();
 		}
 
 	}
@@ -108,12 +112,31 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 		Map<String, Object> grpcJavaConfig() {
 			return Collections.emptyMap();
 		}
+
 	}
 
 	// WeightedRoundRobinLoadBalancerProvider
 	public record WeightedRoundRobinLoadBalancingConfig(Duration blackoutPeriod, Duration weightExpirationPeriod,
 			Duration outOfBandReportingPeriod, Boolean enableOutOfBandLoadReport, Duration weightUpdatePeriod,
 			Float errorUtilizationPenalty) {
+
+		Map<String, Object> grpcJavaConfig() {
+			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
+			PropertyMapper map = PropertyMapper.get();
+			map.from(this::blackoutPeriod).as(ServiceConfig::durationString).to(grpcJavaConfig.in("blackoutPeriod"));
+			map.from(this::weightExpirationPeriod)
+				.as(ServiceConfig::durationString)
+				.to(grpcJavaConfig.in("weightExpirationPeriod"));
+			map.from(this::outOfBandReportingPeriod)
+				.as(ServiceConfig::durationString)
+				.to(grpcJavaConfig.in("oobReportingPeriod"));
+			map.from(this::enableOutOfBandLoadReport).to(grpcJavaConfig.in("enableOobLoadReport"));
+			map.from(this::weightUpdatePeriod)
+				.as(ServiceConfig::durationString)
+				.to(grpcJavaConfig.in("weightUpdatePeriod"));
+			map.from(this::errorUtilizationPenalty).to(grpcJavaConfig.in("errorUtilizationPenalty"));
+			return grpcJavaConfig.asMap();
+		}
 
 	}
 
@@ -148,24 +171,14 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, L
 
 	}
 
-	static class GrpcJavaConfig {
-
-		private final Map<String, Object> map;
+	static record GrpcJavaConfig(Map<String, Object> asMap) {
 
 		GrpcJavaConfig() {
 			this(new LinkedHashMap<>());
 		}
 
-		GrpcJavaConfig(Map<String, Object> map) {
-			this.map = map;
-		}
-
 		<T> Consumer<T> in(String key) {
-			return (value) -> this.map.put(key, value);
-		}
-
-		Map<String, Object> getMap() {
-			return this.map;
+			return (value) -> this.asMap.put(key, value);
 		}
 
 	}

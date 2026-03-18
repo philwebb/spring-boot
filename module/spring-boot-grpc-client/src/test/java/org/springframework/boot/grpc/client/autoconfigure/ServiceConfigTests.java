@@ -16,6 +16,7 @@
 
 package org.springframework.boot.grpc.client.autoconfigure;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +91,56 @@ class ServiceConfigTests {
 		assertThat(loadBalancingConfigs).hasSize(1);
 		assertThat(loadBalancingConfigs.get(0)).containsKey("round_robin");
 		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
-		assertThat(loadBalancingPolicySelection.toString()).contains("PickFirstLoadBalancer");
-		assertThat(loadBalancingPolicySelection.getConfig()).extracting("shuffleAddressList").isNull();
+		assertThat(loadBalancingPolicySelection.toString()).contains("policy=round_robin")
+			.contains("no service config");
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - weightedroundrobin: {}
+			""")
+	void weightedRoundRobinLoadBalancing() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(1);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("weighted_round_robin");
+		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
+		assertThat(loadBalancingPolicySelection.toString()).contains("WeightedRoundRobinLoadBalancerProvider");
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  load-balancing:
+			  - weightedroundrobin:
+			      blackout-period: 1m
+			      weight-expiration-period: 500ms
+			      out-of-band-reporting-period: 1s
+			      enable-out-of-band-load-report: true
+			      weight-update-period: 2s
+			      error-utilization-penalty: 0.5
+			""")
+	void weightedRoundRobinLoadBalancingWithProperties() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("loadBalancingConfig");
+		List<Map<String, ?>> loadBalancingConfigs = ServiceConfigUtil.getLoadBalancingConfigsFromServiceConfig(map);
+		assertThat(loadBalancingConfigs).hasSize(1);
+		assertThat(loadBalancingConfigs.get(0)).containsKey("weighted_round_robin");
+		PolicySelection loadBalancingPolicySelection = getLoadBalancingPolicySelection(loadBalancingConfigs);
+		assertThat(loadBalancingPolicySelection.toString()).contains("WeightedRoundRobinLoadBalancerProvider");
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("blackoutPeriodNanos")
+			.isEqualTo(Duration.ofMinutes(1).toNanos());
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("weightExpirationPeriodNanos")
+			.isEqualTo(Duration.ofMillis(500).toNanos());
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("enableOobLoadReport").isEqualTo(true);
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("oobReportingPeriodNanos")
+			.isEqualTo(Duration.ofSeconds(1).toNanos());
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("weightUpdatePeriodNanos")
+			.isEqualTo(Duration.ofSeconds(2).toNanos());
+		assertThat(loadBalancingPolicySelection.getConfig()).extracting("errorUtilizationPenalty").isEqualTo(0.5f);
 	}
 
 	private PolicySelection getLoadBalancingPolicySelection(List<Map<String, ?>> rawConfigs) {
