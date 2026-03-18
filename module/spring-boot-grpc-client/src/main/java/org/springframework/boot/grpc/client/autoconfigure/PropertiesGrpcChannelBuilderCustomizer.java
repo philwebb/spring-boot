@@ -59,7 +59,7 @@ record PropertiesGrpcChannelBuilderCustomizer<T extends ManagedChannelBuilder<T>
 			.as(DefaultDeadlineSetupClientInterceptor::new)
 			.to(builder::intercept);
 		map.from(channel.getDefault()::getLoadBalancingPolicy)
-			.when((policy) -> supportsLoadBalancing(channel.getTarget()))
+			.when((policy) -> supportsLoadBalancing(target))
 			.to(builder::defaultLoadBalancingPolicy);
 		map.from(channel.getIdle()::getTimeout).to(durationProperty(builder::idleTimeout));
 		map.from(channel.getKeepalive()::getTime).to(durationProperty(builder::keepAliveTime));
