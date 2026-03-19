@@ -23,9 +23,13 @@ import java.util.Map;
 
 import io.grpc.LoadBalancerRegistry;
 import io.grpc.NameResolver.ConfigOrError;
+import io.grpc.Status.Code;
+import io.grpc.internal.AutoConfiguredLoadBalancerFactory;
+import io.grpc.internal.ScParser;
 import io.grpc.internal.ServiceConfigUtil;
 import io.grpc.internal.ServiceConfigUtil.LbConfig;
 import io.grpc.internal.ServiceConfigUtil.PolicySelection;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
@@ -37,6 +41,7 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -227,6 +232,29 @@ class ServiceConfigTests {
 			    max-request-message: 10KB
 			    max-response-message: 20KB
 			    timeout: 30s
+			""")
+	@SuppressWarnings("unchecked")
+	void methodConfig() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("methodConfig");
+		ScParser scParser = new ScParser(false, 0, 0, new AutoConfiguredLoadBalancerFactory("pick_first"));
+		Object config = scParser.parseServiceConfig(map).getConfig();
+		Map<String, ?> serviceMethodMap = (Map<String, ?>) ReflectionTestUtils.getField(config, "serviceMethodMap");
+		assertThat(serviceMethodMap).containsOnlyKeys("s-one/m-one", "s-two/m-two");
+		Object methodInfo = serviceMethodMap.get("s-one/m-one");
+		assertThat(methodInfo).extracting("timeoutNanos").isEqualTo(Duration.ofSeconds(30).toNanos());
+		assertThat(methodInfo).extracting("waitForReady").isEqualTo(Boolean.TRUE);
+		assertThat(methodInfo).extracting("maxOutboundMessageSize").isEqualTo(10240);
+		assertThat(methodInfo).extracting("maxInboundMessageSize").isEqualTo(20480);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  method:
+			  - name:
+			    - service: s-one
+			      method: m-one
 			    retry:
 			      max-attempts: 2
 			      initial-backoff: 1m
@@ -236,6 +264,29 @@ class ServiceConfigTests {
 			      retryable-status-codes:
 			      - cancelled
 			      - already-exists
+			""")
+	void methodConfigRetryPolicy() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		Map<String, ?> serviceMethodMap = getServiceMethodMap(map);
+		Object methodInfo = serviceMethodMap.get("s-one/m-one");
+		assertThat(methodInfo).extracting("retryPolicy.maxAttempts").isEqualTo(2);
+		assertThat(methodInfo).extracting("retryPolicy.initialBackoffNanos").isEqualTo(Duration.ofMinutes(1).toNanos());
+		assertThat(methodInfo).extracting("retryPolicy.maxBackoffNanos").isEqualTo(Duration.ofHours(1).toNanos());
+		assertThat(methodInfo).extracting("retryPolicy.backoffMultiplier").isEqualTo(2.5);
+		assertThat(methodInfo).extracting("retryPolicy.perAttemptRecvTimeoutNanos")
+			.isEqualTo(Duration.ofSeconds(2).toNanos());
+		assertThat(methodInfo).extracting("retryPolicy.retryableStatusCodes")
+			.asInstanceOf(InstanceOfAssertFactories.SET)
+			.containsExactlyInAnyOrder(Code.CANCELLED, Code.ALREADY_EXISTS);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  method:
+			  - name:
+			    - service: s-one
+			      method: m-one
 			    hedging:
 			      max-attempts: 4
 			      delay: 6s
@@ -243,11 +294,31 @@ class ServiceConfigTests {
 			      - invalid-argument
 			      - deadline-exceeded
 			""")
-	void methodConfig() throws Exception {
+	void methodConfigHedgingPolicy() throws Exception {
 		Map<String, Object> map = bindAndGetAsMap();
-		assertThat(map).containsKey("methodConfig");
-		System.out.println(map);
-		// FIXME
+		Map<String, ?> serviceMethodMap = getServiceMethodMap(map);
+		Object methodInfo = serviceMethodMap.get("s-one/m-one");
+		assertThat(methodInfo).extracting("hedgingPolicy.maxAttempts").isEqualTo(4);
+		assertThat(methodInfo).extracting("hedgingPolicy.hedgingDelayNanos").isEqualTo(Duration.ofSeconds(6).toNanos());
+		assertThat(methodInfo).extracting("retryPolicy.nonFatalStatusCodes")
+			.asInstanceOf(InstanceOfAssertFactories.SET)
+			.containsExactlyInAnyOrder(Code.INVALID_ARGUMENT, Code.DEADLINE_EXCEEDED);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  method:
+			  - name:
+			    - service: s-one
+			      method: m-one
+			    retry: {}
+			    hedging: {}
+			""")
+	void whenMultiplePoliciesInMethodConfigThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindAndGetAsMap())
+			.havingRootCause()
+			.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
 	}
 
 	private PolicySelection getLoadBalancingPolicySelection(List<Map<String, ?>> rawConfigs) {
@@ -258,6 +329,13 @@ class ServiceConfigTests {
 		PolicySelection policySelection = (PolicySelection) selected.getConfig();
 		assertThat(policySelection).isNotNull();
 		return policySelection;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, ?> getServiceMethodMap(Map<String, Object> map) {
+		ScParser scParser = new ScParser(true, 100, 100, new AutoConfiguredLoadBalancerFactory("pick_first"));
+		Object config = scParser.parseServiceConfig(map).getConfig();
+		return (Map<String, ?>) ReflectionTestUtils.getField(config, "serviceMethodMap");
 	}
 
 	private Map<String, Object> bindAndGetAsMap() throws Exception {
