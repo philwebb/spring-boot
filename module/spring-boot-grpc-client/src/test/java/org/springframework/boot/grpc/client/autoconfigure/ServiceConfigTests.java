@@ -362,7 +362,10 @@ class ServiceConfigTests {
 	private Map<String, ?> getServiceMethodMap(Map<String, Object> map, boolean retryEnabled) {
 		ScParser scParser = new ScParser(retryEnabled, 100, 100, new AutoConfiguredLoadBalancerFactory("pick_first"));
 		Object config = scParser.parseServiceConfig(map).getConfig();
-		return (Map<String, ?>) ReflectionTestUtils.getField(config, "serviceMethodMap");
+		assertThat(config).isNotNull();
+		Object serviceMethodMap = ReflectionTestUtils.getField(config, "serviceMethodMap");
+		assertThat(serviceMethodMap).isNotNull();
+		return (Map<String, ?>) serviceMethodMap;
 	}
 
 	private Map<String, Object> bindAndGetAsMap() throws Exception {
