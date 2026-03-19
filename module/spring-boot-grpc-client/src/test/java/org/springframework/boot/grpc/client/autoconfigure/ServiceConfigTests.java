@@ -237,9 +237,7 @@ class ServiceConfigTests {
 	void methodConfig() throws Exception {
 		Map<String, Object> map = bindAndGetAsMap();
 		assertThat(map).containsKey("methodConfig");
-		ScParser scParser = new ScParser(false, 0, 0, new AutoConfiguredLoadBalancerFactory("pick_first"));
-		Object config = scParser.parseServiceConfig(map).getConfig();
-		Map<String, ?> serviceMethodMap = (Map<String, ?>) ReflectionTestUtils.getField(config, "serviceMethodMap");
+		Map<String, ?> serviceMethodMap = getServiceMethodMap(map, false);
 		assertThat(serviceMethodMap).containsOnlyKeys("s-one/m-one", "s-two/m-two");
 		Object methodInfo = serviceMethodMap.get("s-one/m-one");
 		assertThat(methodInfo).extracting("timeoutNanos").isEqualTo(Duration.ofSeconds(30).toNanos());
@@ -267,7 +265,7 @@ class ServiceConfigTests {
 			""")
 	void methodConfigRetryPolicy() throws Exception {
 		Map<String, Object> map = bindAndGetAsMap();
-		Map<String, ?> serviceMethodMap = getServiceMethodMap(map);
+		Map<String, ?> serviceMethodMap = getServiceMethodMap(map, true);
 		Object methodInfo = serviceMethodMap.get("s-one/m-one");
 		assertThat(methodInfo).extracting("retryPolicy.maxAttempts").isEqualTo(2);
 		assertThat(methodInfo).extracting("retryPolicy.initialBackoffNanos").isEqualTo(Duration.ofMinutes(1).toNanos());
@@ -296,11 +294,11 @@ class ServiceConfigTests {
 			""")
 	void methodConfigHedgingPolicy() throws Exception {
 		Map<String, Object> map = bindAndGetAsMap();
-		Map<String, ?> serviceMethodMap = getServiceMethodMap(map);
+		Map<String, ?> serviceMethodMap = getServiceMethodMap(map, true);
 		Object methodInfo = serviceMethodMap.get("s-one/m-one");
 		assertThat(methodInfo).extracting("hedgingPolicy.maxAttempts").isEqualTo(4);
 		assertThat(methodInfo).extracting("hedgingPolicy.hedgingDelayNanos").isEqualTo(Duration.ofSeconds(6).toNanos());
-		assertThat(methodInfo).extracting("retryPolicy.nonFatalStatusCodes")
+		assertThat(methodInfo).extracting("hedgingPolicy.nonFatalStatusCodes")
 			.asInstanceOf(InstanceOfAssertFactories.SET)
 			.containsExactlyInAnyOrder(Code.INVALID_ARGUMENT, Code.DEADLINE_EXCEEDED);
 	}
@@ -321,6 +319,35 @@ class ServiceConfigTests {
 			.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
 	}
 
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  retrythrottling:
+			    max-tokens: 2.5
+			    token-ratio: 1.5
+			""")
+	void retryThrottling() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("retryThrottling");
+		Object throttle = ReflectionTestUtils.invokeMethod(ServiceConfigUtil.class, "getThrottlePolicy", map);
+		assertThat(throttle).extracting("maxTokens").isEqualTo(2500);
+		assertThat(throttle).extracting("tokenRatio").isEqualTo(1500);
+	}
+
+	@Test
+	@WithResource(name = "config.yaml", content = """
+			config:
+			  healthcheck:
+			    service-name: test
+			""")
+	@SuppressWarnings("unchecked")
+	void healthCheck() throws Exception {
+		Map<String, Object> map = bindAndGetAsMap();
+		assertThat(map).containsKey("healthCheckConfig");
+		Map<String, Object> healthCheckedService = (Map<String, Object>) ServiceConfigUtil.getHealthCheckedService(map);
+		assertThat(healthCheckedService).hasSize(1).containsEntry("serviceName", "test");
+	}
+
 	private PolicySelection getLoadBalancingPolicySelection(List<Map<String, ?>> rawConfigs) {
 		List<LbConfig> unwrappedConfigs = ServiceConfigUtil.unwrapLoadBalancingConfigList(rawConfigs);
 		LoadBalancerRegistry registry = LoadBalancerRegistry.getDefaultRegistry();
@@ -332,8 +359,8 @@ class ServiceConfigTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, ?> getServiceMethodMap(Map<String, Object> map) {
-		ScParser scParser = new ScParser(true, 100, 100, new AutoConfiguredLoadBalancerFactory("pick_first"));
+	private Map<String, ?> getServiceMethodMap(Map<String, Object> map, boolean retryEnabled) {
+		ScParser scParser = new ScParser(retryEnabled, 100, 100, new AutoConfiguredLoadBalancerFactory("pick_first"));
 		Object config = scParser.parseServiceConfig(map).getConfig();
 		return (Map<String, ?>) ReflectionTestUtils.getField(config, "serviceMethodMap");
 	}

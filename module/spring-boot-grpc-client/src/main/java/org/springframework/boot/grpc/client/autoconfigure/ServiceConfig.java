@@ -74,9 +74,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 			.as(listOf(LoadBalancingConfig::grpcJavaConfig))
 			.to(config.in("loadBalancingConfig"));
 		map.from(this::method).as(listOf(MethodConfig::grpcJavaConfig)).to(config.in("methodConfig"));
-		map.from(this::retrythrottling)
-			.as(RetryThrottlingPolicy::grpcJavaConfig)
-			.to(config.in("retryThrottlingPolicy"));
+		map.from(this::retrythrottling).as(RetryThrottlingPolicy::grpcJavaConfig).to(config.in("retryThrottling"));
 		map.from(this::healthcheck).as(HealthCheckConfig::grpcJavaConfig).to(config.in("healthCheckConfig"));
 	}
 
@@ -364,7 +362,7 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 				GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 				PropertyMapper map = PropertyMapper.get();
 				map.from(this::maxAttempts).as(Objects::toString).to(grpcJavaConfig.in("maxAttempts"));
-				map.from(this::delay).as(ServiceConfig::durationString).to(grpcJavaConfig.in("delay"));
+				map.from(this::delay).as(ServiceConfig::durationString).to(grpcJavaConfig.in("hedgingDelay"));
 				map.from(this::nonFatalStatusCodes)
 					.as((codes) -> codes.stream().map(Objects::toString).toList())
 					.to(grpcJavaConfig.in("nonFatalStatusCodes"));
@@ -374,18 +372,29 @@ public record ServiceConfig(@Nullable List<LoadBalancingConfig> loadbalancing, @
 		}
 	}
 
-	public record RetryThrottlingPolicy(Float maxTokens, Float tokenRation) {
+	/**
+	 * Retry throttling policy.
+	 *
+	 * @param maxTokens maximum number of tokens
+	 * @param tokenRatio the token ratio
+	 */
+	public record RetryThrottlingPolicy(Float maxTokens, Float tokenRatio) {
 
 		Map<String, Object> grpcJavaConfig() {
 			GrpcJavaConfig grpcJavaConfig = new GrpcJavaConfig();
 			PropertyMapper map = PropertyMapper.get();
-			map.from(this::maxTokens).to(grpcJavaConfig.in("maxTokens"));
-			map.from(this::tokenRation).to(grpcJavaConfig.in("tokenRation"));
+			map.from(this::maxTokens).as(Objects::toString).to(grpcJavaConfig.in("maxTokens"));
+			map.from(this::tokenRatio).as(Objects::toString).to(grpcJavaConfig.in("tokenRatio"));
 			return grpcJavaConfig.asMap();
 		}
 
 	}
 
+	/**
+	 * Health check configuration.
+	 *
+	 * @param serviceName service name to use in the health-checking request.
+	 */
 	public record HealthCheckConfig(String serviceName) {
 
 		Map<String, Object> grpcJavaConfig() {
