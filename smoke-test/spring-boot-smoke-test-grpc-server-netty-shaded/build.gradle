@@ -24,7 +24,7 @@ description = "Spring Boot gRPC server netty shaded smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-grpc-server")) {
-		exclude(group: "io.grpc", module: "grpc-netty-shaded")
+		exclude(group: "io.grpc", module: "grpc-netty")
 	}
 	implementation("io.grpc:grpc-netty-shaded")
 

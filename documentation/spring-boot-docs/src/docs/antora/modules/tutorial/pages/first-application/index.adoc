@@ -155,7 +155,7 @@ Open your favorite text editor and add the following:
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version-spring-boot}'
-    id 'io.spring.dependency-management' version '{version-dependency-management-plugin}'
+	id 'io.spring.dependency-management' version '{version-dependency-management-plugin}'
 }
 
 group = 'com.example'
@@ -170,7 +170,7 @@ java {
 repositories {
 	mavenCentral()
 ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
-    // you don't need this if you are using a release version
+	// you don't need this if you are using a release version
 	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
 }

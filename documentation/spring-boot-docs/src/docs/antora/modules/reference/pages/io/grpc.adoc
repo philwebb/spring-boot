@@ -1,0 +1,422 @@
+[[io.grpc]]
+= gRPC
+
+Google Remote Procedure Call (gRPC) is a high-performance RPC framework that enables client-server communication using binary messages.
+Spring Boot include support for developing and testing both client and server gRPC applications.
+
+gRPC uses Protocol Buffers as the underling message format which allows messages to be created and consumed by a wide variety of programming languages.
+
+
+
+[[io.grpc.servicedefinitions]]
+== Service Definitions
+
+To develop a gRPC application you first need a Protocol Buffers service definition file.
+A `.proto` file defines the services and messages that your application can consume or provide.
+
+Here's an example of a typical `.proto` file that uses https://protobuf.dev/programming-guides/proto3/[the `proto3` revision] of the protocol buffers language:
+
+[,proto]
+----
+syntax = "proto3";
+
+option java_package = "com.example.grpc.proto";
+option java_multiple_files = true;
+
+service HelloWorld {
+    rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloReply {
+    string message = 1;
+}
+----
+
+This file defines a `HelloWorld` service with a single method that accepts a `HelloReqest` message and return a `HelloReply` message.
+The `HelloReqest` message contains a `name` string field.
+The `HelloReply` message contains a `message` string field.
+
+With the exception of a the `java_package` and `java_multiple_files` options, there is nothing in the `.proto` file that is specific to the Java programming langage.
+
+
+
+[[io.grpc.servicedefinitions.generatingjavacode]]
+=== Generating Java Code
+
+Since `.proto` files are language agnostic, we need a process to convert them into usable Java code.
+We can then use the generated code to either make a remote procedure call to running service, or implement the service ourselves so that others may call it.
+
+The exact process you use to generate code will depend on your build system.
+Spring Boot supports for both Maven and Gradle protobuf plugins, but you are free to use whatever solution works best for you.
+
+
+
+[[io.grpc.servicedefinitions.generatingjavacode.maven]]
+==== Using the Maven Plugin
+
+Spring Boot include dependency management for the `io.github.ascopes:protobuf-maven-plugin` Maven plugin.
+If you are using the the `spring-boot-starter-parent` POM, you'll also get sensible out-of-the-box configuration.
+
+The following shows a typical Maven POM file that uses the plugin:
+
+[source,xml,subs="verbatim,attributes"]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>{version-spring-boot}</version>
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>myproject</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.github.ascopes</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
+    <!-- you don't need this if you are using a release version -->
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+endif::[]
+</project>
+----
+
+Since POM above extends `spring-boot-starter-parent`, you'll get the following:
+
+* Configuration of the `protoc` version.
+* Configuration of the `binary-maven` plugin.
+* Execution configuration for the `generate` goal.
+
+The `.proto` files should be added to `src/main/proto`.
+
+TIP: If you don't use `spring-boot-starter-parent`, or you want to configure the plugin directly, refer to the https://ascopes.github.io/protobuf-maven-plugin[protobuf-maven-plugin documentation].
+If you use Spring Boot's dependency management the `${protobuf-java.version}` and `${grpc-java.version}` properties will be useful.
+
+
+
+[[io.grpc.servicedefinitions.generatingjavacode.gradle]]
+==== Using the Gradle Plugin
+
+Spring Boot include dependency management for the `com.google.protobuf:protobuf-gradle-plugin` Gradle plugin.
+In addition, the `spring-boot-gradle-plugin` will react to the presence of the protobuf plugin and configure it appropriately.
+
+The following shows a typical Gradle file that uses the plugin:
+
+[source,gradle,subs="verbatim,attributes"]
+----
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+	id 'io.spring.dependency-management' version '{version-dependency-management-plugin}'
+	id 'com.google.protobuf' version '{version-protobuf-gradle-plugin}'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
+	// you don't need this if you are using a release version
+	maven { url 'https://repo.spring.io/snapshot' }
+endif::[]
+}
+----
+
+Since the Gradle file uses both the `org.springframework.boot` and `com.google.protobuf` plugins, you'll get the following:
+
+* Configuration of the `protoc` version.
+* Configuration of the `protoc-gen-grpc-java` version.
+
+The `.proto` files should be added to `src/main/proto`.
+
+TIP: If you don't use `org.springframework.boot` plugin, or you want to configure the plugin directly, refer to the https://github.com/google/protobuf-gradle-plugin[protobuf-gradle-plugin documentation].
+If you use Spring Boot's dependency management the `protobuf-java.version` and `grpc-java.version` properties will be useful.
+
+
+
+== Writing a gRPC Server Application
+
+Spring Boot provides a `spring-boot-grpc-server` module and a `spring-boot-starter-grpc-server` starter POM that you can use for server applications.
+
+In order to write the actual server code, you'll need to extended one or more of base classes generated from your `.proto` file and expose them as Spring beans.
+Spring gRPC will automatically expose any bean that implements javadoc:io.grpc.BindableService[] as a gRPC server.
+Since all `.proto` generated classes implement javadoc:io.grpc.BindableService[], adding them as beans is enough to expose them over gRPC.
+
+TIP: For more details see ...
+
+The following example shows how the `HelloWorld` service from the `.proto` file above could be implemented.
+In this example, we're using the javadoc:[format=annotation] annotation and assuming that the code is in a package that will be picked up by component scanning:
+
+...
+
+If the application makes used of `spring-boot-starter-grpc-server` then Netty will be used as the server implementation listening on port `9090`.
+
+
+
+=== Switching to a Netty Shaded Server
+
+If you find that the version of Netty provided by the `spring-boot-starter-grpc-server` starer POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
+
+To switch, you can excluded `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
+For example:
+
+...
+
+
+
+=== Switching to a Servlet Container
+
+It's possible to expose gRPC services using a regular Servlet Container such as Tomcat rather than using Netty.
+To do so, your Servlet Container must be configured to support HTTP/2.
+
+To switch to the Servlet gRPC implements, you can exclude `io.grpc:grpc-netty` and include `io.grpc:grpc-servlet-jakarta`.
+For example:
+
+...
+
+TIP: Remember to include a Servlet Container dependency, for example with `spring-boot-starter-tomcat`, and to set `server.http2.enabled` to `true`.
+
+NOTE: When using a servlet container, certain gRPC server configuration properties are not relevant and will be ignored.
+For example, configprop:spring.grpc.server.port[]] is ignored since configprop:server.port[] used used to set a web server port.
+
+
+=== SSL Support
+
+SSL can be configured for both `grpc-netty` and `grpc-netty-shaded` servers using SSL bundles.
+See the SSL core features documentation for details on how to declare an SSL bundle.
+
+FIXME https://docs.spring.io/spring-boot/reference/features/ssl.html#page-title
+
+One your bundle has been defined, you can use the following properties to use it:
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    server:
+      ssl:
+        bundle: mysslbundle
+----
+
+Client authentication levels are also supported when configprop:spring.grpc.server.ssl.client-auth[] is set to `optional` or `require`.
+
+TIP: To temporarily disable SSL support, for example to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
+
+
+
+=== Using an In-Process Server
+
+You can run an in-process server by including the `io.grpc:grpc-inprocess` dependency on your classpath and specifying the configprop:spring.grpc.server.inprocess.name[] property.
+In this mode, the in-process server factory is auto-configured in addition to the regular server factory.
+
+The name you provide can be used as a client channel target using the form `in-process:<in-process-name>`.
+
+
+
+=== Reflection
+
+When it's available, Spring Boot will auto-configure https://grpc.io/docs/guides/reflection/[gRPC Reflection service].
+This allows clients to browse the metadata of your services and download their `.proto` files.
+
+The reflection service resides in the `io.grpc:grpc-services` library which is an optional dependency.
+You will need to add the dependency to your project in order for auto-configuration to apply.
+
+TIP: If you have the `io.grpc:grpc-services` library but prefer that it isn't auto-configured you can set configprop:spring.grpc.server.reflection.enabled[] to `false`.
+
+
+
+=== Server Health
+
+A gRPC server can use provide health information using a standard service API (https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto[health/v1]).
+This allows clients to check on the health of your server a route traffic appropriately.
+
+Spring Boot provides a bridge between its own `spring-boot-health` module and the standard gRPC health service.
+Health information is provided whenever the `io.grpc:grpc-services` and `org.springframework.boot:spring-boot-health` modules are on your classpath.
+
+If you don't health indicators to be exposed, you can set configprop:spring.grpc.server.health.enabled[] to `false`.
+
+
+
+==== Service Specific Health Mappings
+
+By default, health information is provided for the overall server status (`""`) using all available health indicators.
+
+It is also possible to provide fine-grained health information for specific services by including only a sub-set of health indicators.
+Custom mapping and ordering rules can also be defined on a per-service basis.
+
+For example, the following configuration will provide health for `"myservice`" using only the `db` and `redis` indicators.
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    server:
+      health:
+        service:
+          myservice:
+            include:
+            - db
+            - redis
+----
+
+TIP: You can set configprop:spring.grpc.server.health.include-overall-health[] to `false` to disable the overall server status health if you only want to provide service specific health.
+
+
+
+==== Push Configuration
+
+Unlike web-based health checks, gRPC health information is periodically pushed rather than pulled.
+By default, the first health push happens 5 seconds after the application starts and then every subsequent 5 seconds.
+
+To fine-tune this, you can use the following properties:
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    server:
+      health:
+        schedule:
+          period: 5m
+          delay: 2s
+----
+
+You can also set configprop:spring.grpc.server.health.schedule.enabled[] to `false` if want to send health updates some other way.
+
+
+
+=== Securing gRPC Server Applications
+
+==== Netty Based Servers
+
+Spring gRPC includes features that allow you to secure your Netty based server applications declaratively using Spring Security.
+This follows similar patterns to those you would use to secure a regular web application.
+
+Spring Boot provides auto-configuration for both javadoc:org.springframework.grpc.server.security.GrpcSecurity[] and javadoc:org.springframework.grpc.server.security.SecurityGrpcExceptionHandler[] beans.
+Typically gRPC application are then security using javadoc:org.springframework.security.access.prepost.PreAuthorize[format=annotation] annotations on your gRPC service beans, or a javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] bean.
+
+For more details, please see https://docs.spring.io/spring-grpc/reference/server.html#_declarative_security_with_spring_security[the Spring gRPC documentation].
+
+
+
+==== Servlet Container Based Servers
+
+If your gRPC server is running FIXME[within a standard Servlet] Container, you can use typical [web security configuration] to secure your application.
+Spring Boot will auto-configre javadoc:org.springframework.boot.grpc.server.autoconfigure.GrpcServerExecutorProvider[] and javadoc:org.springframework.grpc.server.security.SecurityContextServerInterceptor[] beans to ensure that Spring Security works correctly.
+
+Cross-Site Request Forgery (CSRF) protection is incompatible with the gRPC protocol and will be disabled by default for all gRPC requests.
+If you prefer to configure your own CSRF protection, you can switch this off by setting configprop:spring.grpc.server.security.csrf.enabled[] to `false`.
+
+To help with manual Security configuration, Spring Boot provides request matchers for gRPC services.
+Matches are available for both servlet and reactive stacks.
+For example, the following will include all gRPC services with the exception of "`special`".
+
+FIXME
+
+TIP: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest[format=full].
+
+
+=== OAuth2 Resource Server
+
+
+
+Similar to the way Spring Boot works https://docs.spring.io/spring-boot/reference/web/spring-security.html#web.security.oauth2.server[with normal web applications], if you have the `spring-security-oauth2-resource-server` dependency on the classpath, Spring gRPC will be able to automatically configure an OAuth2 resource server.
+There are 2 choices for the token types, just the same as in Spring Boot, and they are configured with the same application properties and optional custom beans.
+
+For JWT you need to set up either the JWK Set or OIDC Issuer URI.
+The JWK Set URI is set via `spring.security.oauth2.resourceserver.jwt.jwk-set-uri` (it's an endpoint in the authorization server).
+You also need to have the `spring-security-oauth2-jose` dependency on the classpath to handle the JWT decoding.
+
+For opaque tokens, it works exactly the same as with a regular web application, with the same application properties. E.g.
+
+[source,properties]
+----
+spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
+spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
+spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret
+----
+
+
+
+== Writing a gRPC Client Application
+
+
+
+
+Writing the class
+
+Servlet Based
+
+Netty Based
+
+In process
+
+Reflection
+
+Health
+
+Observability
+
+Exception Handling
+
+SSL
+
+Securiry
+
+ImportGrpcClients
+
+Shaded Netty Client
+
+InProcess Channel
+
+Channel Configuration
+
+SSL
+
+Security
+
+OAuth2 Clients
+
+Testing
+
