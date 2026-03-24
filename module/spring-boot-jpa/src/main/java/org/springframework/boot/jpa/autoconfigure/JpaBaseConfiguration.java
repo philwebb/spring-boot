@@ -127,6 +127,10 @@ public abstract class JpaBaseConfiguration {
 		@Nullable AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
 				this::buildJpaProperties, persistenceUnitManager.getIfAvailable(), null, bootstrapExecutor);
+		if (this.properties.isBackgroundBootstrapping()) {
+			builder.requireBootstrapExecutor(
+					new PropertyBasedRequiredBackgroundBootstrapping("spring.jpa.background-bootstrapping", "true"));
+		}
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}

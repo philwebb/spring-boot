@@ -77,6 +77,12 @@ public class JpaProperties {
 	 */
 	private @Nullable Boolean openInView;
 
+	/**
+	 * Whether to enable background bootstrapping using either a single async task
+	 * executor bean or the 'applicationTaskExecutor' bean.
+	 */
+	private boolean backgroundBootstrapping;
+
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
@@ -127,6 +133,14 @@ public class JpaProperties {
 
 	public void setOpenInView(@Nullable Boolean openInView) {
 		this.openInView = openInView;
+	}
+
+	public boolean isBackgroundBootstrapping() {
+		return this.backgroundBootstrapping;
+	}
+
+	public void setBackgroundBootstrapping(boolean backgroundBootstraping) {
+		this.backgroundBootstrapping = backgroundBootstraping;
 	}
 
 }
