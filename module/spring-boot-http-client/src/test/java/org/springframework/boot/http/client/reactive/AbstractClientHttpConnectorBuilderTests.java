@@ -36,6 +36,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.UnmatchedHostException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
@@ -49,12 +51,14 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunctions;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
@@ -186,6 +190,29 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 			if (expectedStatus == HttpStatus.OK) {
 				assertThat(response.bodyToMono(String.class).block()).contains("request to /redirected");
 			}
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	@Test
+	void filteredInetAddress() throws Exception {
+		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		try {
+			webServer.start();
+			int port = webServer.getPort();
+			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
+			ClientHttpConnector connector = this.builder
+				.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
+			ClientRequest request = createRequest("GET", uri);
+			assertThatException().isThrownBy(() -> getResponse(connector, request))
+				.matches((ex) -> ex instanceof UnmatchedHostException
+						|| ex.getCause() instanceof UnmatchedHostException);
+
 		}
 		finally {
 			webServer.stop();
