@@ -51,7 +51,7 @@ class MatchingAddresses<T> {
 
 		R orElseThrow(String host);
 
-		R orElseThrow(String host, HttpClientInetAddressMatcher matcher);
+		R orElseThrow(String host, InetAddressMatcher matcher);
 
 	}
 

@@ -29,14 +29,14 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * HTTP Components {@link DnsResolver} that filters using a
- * {@link HttpClientInetAddressMatcher}.
+ * {@link InetAddressMatcher}.
  *
  * @author Phillip Webb
  * @param delegate the delegate resolver
  * @param matcher the inetAddress matcher
  */
 record HttpComponentsFilteredDnsResolver(DnsResolver delegate,
-		HttpClientInetAddressMatcher matcher) implements DnsResolver {
+		InetAddressMatcher matcher) implements DnsResolver {
 
 	@Override
 	public @Nullable InetAddress[] resolve(String host) throws UnknownHostException {

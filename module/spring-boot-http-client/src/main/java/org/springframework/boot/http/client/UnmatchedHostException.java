@@ -37,12 +37,12 @@ public class UnmatchedHostException extends UncheckedIOException {
 		super("", new UnknownHostException(message));
 	}
 
-	static <T> Collector<T, ?, List<T>> collectingToList(@Nullable String host, HttpClientInetAddressMatcher matcher,
+	static <T> Collector<T, ?, List<T>> collectingToList(@Nullable String host, InetAddressMatcher matcher,
 			Predicate<T> predicate) {
 		return collecting(host, matcher, predicate, Collectors.toList());
 	}
 
-	static <T, A, R> Collector<T, A, R> collecting(@Nullable String host, HttpClientInetAddressMatcher matcher,
+	static <T, A, R> Collector<T, A, R> collecting(@Nullable String host, InetAddressMatcher matcher,
 			Predicate<T> predicate, Collector<T, A, R> collector) {
 		List<T> unmatched = new ArrayList<>();
 		BiConsumer<A, T> accumulator = (a, t) -> {

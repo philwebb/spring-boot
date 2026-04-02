@@ -38,7 +38,7 @@ import org.springframework.boot.ssl.SslBundle;
  */
 public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @Nullable HttpRedirects redirects,
 		@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle,
-		@Nullable HttpClientInetAddressMatcher inetAddressMatcher) {
+		@Nullable InetAddressMatcher inetAddressMatcher) {
 
 	/**
 	 * Create a new {@link HttpClientSettings} instance.
@@ -151,7 +151,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 * @return a new {@link HttpClientSettings} instance
 	 * @since 4.1.0
 	 */
-	public HttpClientSettings withInetAddressMatcher(@Nullable HttpClientInetAddressMatcher inetAddressMatcher) {
+	public HttpClientSettings withInetAddressMatcher(@Nullable InetAddressMatcher inetAddressMatcher) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
 				this.sslBundle, inetAddressMatcher);
 	}
@@ -172,7 +172,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 		Duration connectTimeout = (connectTimeout() != null) ? connectTimeout() : other.connectTimeout();
 		Duration readTimeout = (readTimeout() != null) ? readTimeout() : other.readTimeout();
 		SslBundle sslBundle = (sslBundle() != null) ? sslBundle() : other.sslBundle();
-		HttpClientInetAddressMatcher inetAddressMatcher = (inetAddressMatcher() != null) ? inetAddressMatcher()
+		InetAddressMatcher inetAddressMatcher = (inetAddressMatcher() != null) ? inetAddressMatcher()
 				: other.inetAddressMatcher();
 		return new HttpClientSettings(cookieHandling, redirects, connectTimeout, readTimeout, sslBundle,
 				inetAddressMatcher);

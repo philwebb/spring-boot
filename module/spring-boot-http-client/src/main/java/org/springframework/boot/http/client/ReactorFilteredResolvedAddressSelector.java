@@ -27,7 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Reactor Netty {@link ResolvedAddressSelector} that filters using a
- * {@link HttpClientInetAddressMatcher}.
+ * {@link InetAddressMatcher}.
  *
  * @author Phillip Webb
  * @param <C> the client configuration implementation
@@ -36,10 +36,10 @@ class ReactorFilteredResolvedAddressSelector<C> implements ResolvedAddressSelect
 
 	private final @Nullable ResolvedAddressSelector<C> delegate;
 
-	private final HttpClientInetAddressMatcher matcher;
+	private final InetAddressMatcher matcher;
 
 	ReactorFilteredResolvedAddressSelector(@Nullable ResolvedAddressSelector<C> delegate,
-			HttpClientInetAddressMatcher matcher) {
+			InetAddressMatcher matcher) {
 		this.delegate = delegate;
 		this.matcher = matcher;
 	}
