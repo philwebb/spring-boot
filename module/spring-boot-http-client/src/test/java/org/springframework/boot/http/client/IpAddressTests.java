@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-present the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * Tests for {@link IpInetAddress}.
+ * Tests for {@link IpAddress}.
  *
  * @author Rob Winch
  * @author Phillip Webb
@@ -33,96 +33,96 @@ class IpInetAddressTests {
 
 	@Test
 	void ofWhenAddressIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> IpInetAddress.of(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> IpAddress.of(null))
 			.withMessage("'address' must not be empty");
 	}
 
 	@Test
 	void ofWhenAddressIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> IpInetAddress.of(""))
+		assertThatIllegalArgumentException().isThrownBy(() -> IpAddress.of(""))
 			.withMessage("'address' must not be empty");
 	}
 
 	@Test
 	void ofWithMaskWhenAddressIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> IpInetAddress.of("192.168.1.1/"))
+		assertThatIllegalArgumentException().isThrownBy(() -> IpAddress.of("192.168.1.1/"))
 			.withMessage("'address' subnet mask must be a number");
 	}
 
 	@Test
 	void ofWhenUnmaskedIpAddress() throws Exception {
-		IpInetAddress address = IpInetAddress.of("192.168.1.1");
-		assertThat(address.address()).isEqualTo(InetAddress.getByName("192.168.1.1"));
-		assertThat(address.maskBitSize()).isEqualTo(-1);
+		IpAddress address = IpAddress.of("192.168.1.1");
+		assertThat(address).extracting("address").isEqualTo(InetAddress.getByName("192.168.1.1"));
+		assertThat(address).extracting("maskBitSize").isEqualTo(-1);
 	}
 
 	@Test
 	void ofWhenMaskedIpAddress() throws Exception {
-		IpInetAddress address = IpInetAddress.of("192.168.1.1/24");
-		assertThat(address.address()).isEqualTo(InetAddress.getByName("192.168.1.1"));
-		assertThat(address.maskBitSize()).isEqualTo(24);
+		IpAddress address = IpAddress.of("192.168.1.1/24");
+		assertThat(address).extracting("address").isEqualTo(InetAddress.getByName("192.168.1.1"));
+		assertThat(address).extracting("maskBitSize").isEqualTo(24);
 	}
 
 	@Test
-	void parseIpAddressWhenIpv4() throws Exception {
-		InetAddress parsed = IpInetAddress.parseIpAddress("192.168.1.1");
+	void parseInetAddressWhenIpv4() throws Exception {
+		InetAddress parsed = IpAddress.parseInetAddress("192.168.1.1");
 		assertThat(parsed).isEqualTo(InetAddress.getByName("192.168.1.1"));
 	}
 
 	@Test
-	void parseIpAddressWhenIpv6InUrl() {
-		InetAddress parsed = IpInetAddress.parseIpAddress("[::1]");
+	void parseInetAddressWhenIpv6InUrl() {
+		InetAddress parsed = IpAddress.parseInetAddress("[::1]");
 		assertThat(parsed.isLoopbackAddress()).isTrue();
 	}
 
 	@Test
-	void parseIpAddressWhenIpv6Shortcut() {
-		InetAddress parsed = IpInetAddress.parseIpAddress("::1");
+	void parseInetAddressWhenIpv6Shortcut() {
+		InetAddress parsed = IpAddress.parseInetAddress("::1");
 		assertThat(parsed.isLoopbackAddress()).isTrue();
 	}
 
 	@Test
-	void parseIpAddressWhenLikelyHost() {
+	void parseInetAddressWhenLikelyHost() {
 		String message = "must be an IP address and not a host name";
-		assertThatIllegalArgumentException().isThrownBy(() -> IpInetAddress.parseIpAddress("https://example.com"))
+		assertThatIllegalArgumentException().isThrownBy(() -> IpAddress.parseInetAddress("https://example.com"))
 			.withMessageContaining(message);
-		assertThatIllegalArgumentException().isThrownBy(() -> IpInetAddress.parseIpAddress("192.168.1.2.3"))
+		assertThatIllegalArgumentException().isThrownBy(() -> IpAddress.parseInetAddress("192.168.1.2.3"))
 			.withMessageContaining(message);
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> IpInetAddress.parseIpAddress("G001:0db8:0000:0000:0000:0000:0000:0000"))
+			.isThrownBy(() -> IpAddress.parseInetAddress("G001:0db8:0000:0000:0000:0000:0000:0000"))
 			.withMessageContaining(message);
 	}
 
 	@Test
-	void parseIpAddressWhenCannotBeParsed() {
+	void parseInetAddressWhenCannotBeParsed() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> IpInetAddress.parseIpAddress("2001:0db8:0000:0000:0000:0000:0000:000G"))
+			.isThrownBy(() -> IpAddress.parseInetAddress("2001:0db8:0000:0000:0000:0000:0000:000G"))
 			.withMessageContaining("must be parsable to an InetAddress");
 	}
 
 	@Test
 	void ofWithHostnameThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> IpInetAddress.of("example.com"))
+		assertThatIllegalArgumentException().isThrownBy(() -> IpAddress.of("example.com"))
 			.withMessage("'address' [example.com] must be an IP address and not a host name");
 	}
 
 	@Test
 	void matcherWhenUnmaskedIpv4() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.1");
+		IpAddress address = IpAddress.of("192.168.1.1");
 		assertThatMatcher(address).matches("192.168.1.1");
 		assertThatMatcher(address).doesNotMatch("192.168.1.2");
 	}
 
 	@Test
 	void matcherWhenUnmaskedIpv6() {
-		IpInetAddress address = IpInetAddress.of("fe80::21f:5bff:fe33:bd68");
+		IpAddress address = IpAddress.of("fe80::21f:5bff:fe33:bd68");
 		assertThatMatcher(address).matches("fe80::21f:5bff:fe33:bd68");
 		assertThatMatcher(address).doesNotMatch("fe80::21f:5bff:fe33:bd69");
 	}
 
 	@Test
 	void matcherWhenMaskedIpv4() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.0/24");
+		IpAddress address = IpAddress.of("192.168.1.0/24");
 		// assertThatMatcher(address).matches("192.168.1.1");
 		// assertThatMatcher(address).matches("192.168.1.255");
 		assertThatMatcher(address).doesNotMatch("192.168.2.1");
@@ -131,7 +131,7 @@ class IpInetAddressTests {
 
 	@Test
 	void matcherWhenMaskedWithZero() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.0/0");
+		IpAddress address = IpAddress.of("192.168.1.0/0");
 		assertThatMatcher(address).matches("192.168.1.1");
 		assertThatMatcher(address).matches("192.168.1.255");
 		assertThatMatcher(address).matches("8.8.8.8");
@@ -139,7 +139,7 @@ class IpInetAddressTests {
 
 	@Test
 	void matcherWhenMaskedIpv6() {
-		IpInetAddress address = IpInetAddress.of("2001:db8::/48");
+		IpAddress address = IpAddress.of("2001:db8::/48");
 		assertThatMatcher(address).matches("2001:db8:0:0:0:0:0:0");
 		assertThatMatcher(address).matches("2001:db8:0:ffff:ffff:ffff:ffff:ffff");
 		assertThatMatcher(address).doesNotMatch("2001:db8:1:0:0:0:0:0");
@@ -147,7 +147,7 @@ class IpInetAddressTests {
 
 	@Test
 	void matcherWhenMaskedIpv4OutsideOfByteBoundary() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.0/30");
+		IpAddress address = IpAddress.of("192.168.1.0/30");
 		assertThatMatcher(address).matches("192.168.1.0");
 		assertThatMatcher(address).matches("192.168.1.1");
 		assertThatMatcher(address).matches("192.168.1.2");
@@ -157,47 +157,47 @@ class IpInetAddressTests {
 
 	@Test
 	void matcherWhenIpv4DoesNotMatchIpv6() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.1");
+		IpAddress address = IpAddress.of("192.168.1.1");
 		assertThatMatcher(address).doesNotMatch("fe80::21f:5bff:fe33:bd68");
 	}
 
 	@Test
 	void matcherWhenIpv6DoesNotMatchIpv4() {
-		IpInetAddress address = IpInetAddress.of("fe80::21f:5bff:fe33:bd68");
+		IpAddress address = IpAddress.of("fe80::21f:5bff:fe33:bd68");
 		assertThatMatcher(address).doesNotMatch("192.168.1.1");
 	}
 
 	@Test
 	void matcherWhenCheckingNullDoesNotMatch() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.1");
+		IpAddress address = IpAddress.of("192.168.1.1");
 		assertThatMatcher(address).doesNotMatch((InetAddress) null);
 	}
 
 	@Test
 	void matcherWhenMatchingString() {
-		IpInetAddress address = IpInetAddress.of("192.168.1.1");
+		IpAddress address = IpAddress.of("192.168.1.1");
 		assertThatMatcher(address).matchesString("192.168.1.1");
 		assertThatMatcher(address).doesNotMatchString("192.168.1.2");
 		assertThatMatcher(address).doesNotMatchString(null);
 	}
 
 	@Test
-	public void addressesInIpRangeMatch() {
+	void addressesInIpRangeMatch() {
 		for (int i = 0; i < 255; i++) {
-			assertThatMatcher(IpInetAddress.of("192.168.1.0/24")).matches("192.168.1." + i);
+			assertThatMatcher(IpAddress.of("192.168.1.0/24")).matches("192.168.1." + i);
 		}
-		assertThatMatcher(IpInetAddress.of("192.168.1.0/25")).matches("192.168.1.127").doesNotMatch("192.168.1.128");
-		assertThatMatcher(IpInetAddress.of("192.168.1.128/25")).matches("192.168.1.255");
-		assertThatMatcher(IpInetAddress.of("192.168.1.192/26")).matches("192.168.1.255");
-		assertThatMatcher(IpInetAddress.of("192.168.1.224/27")).matches("192.168.1.255");
-		assertThatMatcher(IpInetAddress.of("192.168.1.240/27")).matches("192.168.1.255");
-		assertThatMatcher(IpInetAddress.of("192.168.1.255/32")).matches("192.168.1.255");
-		assertThatMatcher(IpInetAddress.of("202.24.0.0/14")).matches("202.24.199.127");
-		assertThatMatcher(IpInetAddress.of("202.24.0.0/14")).matches("202.25.179.135");
-		assertThatMatcher(IpInetAddress.of("202.24.0.0/14")).matches("202.26.179.135");
+		assertThatMatcher(IpAddress.of("192.168.1.0/25")).matches("192.168.1.127").doesNotMatch("192.168.1.128");
+		assertThatMatcher(IpAddress.of("192.168.1.128/25")).matches("192.168.1.255");
+		assertThatMatcher(IpAddress.of("192.168.1.192/26")).matches("192.168.1.255");
+		assertThatMatcher(IpAddress.of("192.168.1.224/27")).matches("192.168.1.255");
+		assertThatMatcher(IpAddress.of("192.168.1.240/27")).matches("192.168.1.255");
+		assertThatMatcher(IpAddress.of("192.168.1.255/32")).matches("192.168.1.255");
+		assertThatMatcher(IpAddress.of("202.24.0.0/14")).matches("202.24.199.127");
+		assertThatMatcher(IpAddress.of("202.24.0.0/14")).matches("202.25.179.135");
+		assertThatMatcher(IpAddress.of("202.24.0.0/14")).matches("202.26.179.135");
 	}
 
-	private static InetAddressMatcherAssert assertThatMatcher(IpInetAddress address) {
+	private static InetAddressMatcherAssert assertThatMatcher(IpAddress address) {
 		return new InetAddressMatcherAssert(address.matcher());
 	}
 

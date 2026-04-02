@@ -20,16 +20,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
-import org.jspecify.annotations.Nullable;
-
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * An IP address and optional mask as used in Classless Inter-Domain Routing (CIDR).
  *
- * @param address the IP address
- * @param maskBitSize the mask size in bits
  * @author Luke Taylor
  * @author Steve Riesenberg
  * @author Andrey Litvitski
@@ -37,24 +33,35 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 7.1
  */
-record IpInetAddress(InetAddress address, int maskBitSize) {
+final class IpAddress {
 
 	private static Pattern IPV4 = Pattern.compile("^\\d{1,3}(?:\\.\\d{1,3}){0,3}(?:/\\d{1,2})?$");
 
-	InetAddressMatcher matcher() {
-		return this::matches;
+	private final InetAddress address;
+
+	private int maskBitSize;
+
+	private IpAddress(InetAddress address, int maskBitSize) {
+		Assert.notNull(address, "'address' must not be null");
+		Assert.isTrue(maskBitSize >= -1, "'maskBitSize' must be positive or -1");
+		Assert.isTrue(address.getAddress().length * 8 >= maskBitSize, () -> String
+			.format("IP address %s is too short for bitmask of length %d", address.getHostAddress(), maskBitSize));
+		this.address = address;
+		this.maskBitSize = maskBitSize;
 	}
 
-	private boolean matches(@Nullable InetAddress address) {
-		if (address == null || this.maskBitSize < 0) {
-			return this.address.equals(address);
-		}
-		if (this.maskBitSize == 0) {
-			return true;
-		}
-		byte[] ours = this.address.getAddress();
-		byte[] theirs = address.getAddress();
-		return (ours.length == theirs.length) && matchesMasked(ours, theirs);
+	InetAddressMatcher matcher() {
+		return (address) -> {
+			if (address == null || this.maskBitSize == -1) {
+				return this.address.equals(address);
+			}
+			if (this.maskBitSize == 0) {
+				return true;
+			}
+			byte[] ours = this.address.getAddress();
+			byte[] theirs = address.getAddress();
+			return (ours.length == theirs.length) && matchesMasked(ours, theirs);
+		};
 	}
 
 	private boolean matchesMasked(byte[] ours, byte[] theirs) {
@@ -74,13 +81,22 @@ record IpInetAddress(InetAddress address, int maskBitSize) {
 		return "IpAddress [" + hostAddress + suffix + "]";
 	}
 
-	static IpInetAddress of(String address) {
+	/**
+	 * Factory method to create a new {@link IpAddress} from a string.
+	 * @param address the IP address (plain or in CIDR notation)
+	 * @return a new {@link IpAddress} instance
+	 */
+	static IpAddress of(String address) {
 		Assert.hasText(address, "'address' must not be empty");
 		int slash = address.indexOf('/');
 		if (slash == -1) {
-			return new IpInetAddress(parseIpAddress(address), -1);
+			return new IpAddress(parseInetAddress(address), -1);
 		}
-		return of(address.substring(0, slash), parseMaskBitSize(address.substring(slash + 1)));
+		InetAddress parsedAddress = parseInetAddress(address.substring(0, slash));
+		Assert.state(parsedAddress != null, "'address' [%s] did not parse".formatted(address));
+		int parseMaskBitSize = parseMaskBitSize(address.substring(slash + 1));
+		return new IpAddress(parsedAddress, parseMaskBitSize);
+
 	}
 
 	private static int parseMaskBitSize(String maskBitSize) {
@@ -92,23 +108,7 @@ record IpInetAddress(InetAddress address, int maskBitSize) {
 		}
 	}
 
-	private static IpInetAddress of(String address, int maskBitSize) {
-		InetAddress parsed = parseIpAddress(address);
-		Assert.state(parsed != null, "'address' [%s] did not parse".formatted(address));
-		Assert.isTrue(maskBitSize >= 0, "'maskBitSize' must be positive");
-		Assert.isTrue(parsed.getAddress().length * 8 >= maskBitSize,
-				() -> String.format("'address' [%s] is too short for bitmask of length %d", address, maskBitSize));
-		return new IpInetAddress(parsed, maskBitSize);
-	}
-
-	/**
-	 * Parses the given address string into an {@link InetAddress}.
-	 * @param address the IP address string to parse
-	 * @return the parsed {@link InetAddress}
-	 * @throws IllegalArgumentException if the address cannot be parsed or appears to be a
-	 * hostname
-	 */
-	static InetAddress parseIpAddress(String address) {
+	static InetAddress parseInetAddress(String address) {
 		Assert.isTrue(isLikelyIpAddress(address),
 				() -> "'address' [%s] must be an IP address and not a host name".formatted(address));
 		try {
