@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * An IP address with support of CIDR notation.
+ * An IP address and optional mask as used in Classless Inter-Domain Routing (CIDR).
  *
  * @param address the IP address
  * @param maskBitSize the mask size in bits
@@ -58,13 +58,13 @@ record IpInetAddress(InetAddress address, int maskBitSize) {
 	}
 
 	private boolean matchesMasked(byte[] ours, byte[] theirs) {
+		boolean result = true;
 		for (int i = 0; i < ours.length; i++) {
-			byte mask = (byte) ((i < this.maskBitSize / 8) ? 0xFF : 0xFF << (8 - (this.maskBitSize % 8)));
-			if ((ours[i] & mask) != (theirs[i] & mask)) {
-				return false;
-			}
+			int remain = Math.max(this.maskBitSize - (i * 8), 0);
+			byte mask = (byte) ((remain < 8) ? 0xFF << (8 - remain) : 0xFF);
+			result = result && (ours[i] & mask) == (theirs[i] & mask);
 		}
-		return true;
+		return result;
 	}
 
 	@Override
