@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.security.util.matcher.InetAddressMatchers;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
@@ -46,8 +44,8 @@ class JdkFilteredProxySelectorTests {
 		ProxySelector delegate = mock(ProxySelector.class);
 		Proxy proxy = mock();
 		given(delegate.select(localhost)).willReturn(List.of(proxy));
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchInternal().build()::matches);
-		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate, matcher);
+		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate,
+				InetAddressMatcher.internalAddresses());
 		assertThat(proxySelector.select(localhost)).containsExactly(proxy);
 	}
 
@@ -57,8 +55,8 @@ class JdkFilteredProxySelectorTests {
 		ProxySelector delegate = mock(ProxySelector.class);
 		Proxy proxy = mock();
 		given(delegate.select(localhost)).willReturn(List.of(proxy));
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
-		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate, matcher);
+		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate,
+				InetAddressMatcher.externalAddresses());
 		assertThatExceptionOfType(UnmatchedHostException.class).isThrownBy(() -> proxySelector.select(localhost));
 	}
 
@@ -66,8 +64,8 @@ class JdkFilteredProxySelectorTests {
 	void connectFailDelegates() throws Exception {
 		URI localhost = new URI("http://localhost");
 		ProxySelector delegate = mock(ProxySelector.class);
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
-		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate, matcher);
+		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate,
+				InetAddressMatcher.externalAddresses());
 		SocketAddress address = mock();
 		IOException ex = new IOException();
 		proxySelector.connectFailed(localhost, address, ex);

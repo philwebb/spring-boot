@@ -27,8 +27,6 @@ import org.eclipse.jetty.util.SocketAddressResolver;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.security.util.matcher.InetAddressMatchers;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -44,8 +42,8 @@ class JettyFilteredSocketAddressResolverTests {
 	void resolveWhenMatchedOnlyElement() {
 		InetSocketAddress localhost = inetSocketAddress("localhost", 8080);
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise.succeeded(List.of(localhost));
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchInternal().build()::matches);
-		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate, matcher);
+		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
+				InetAddressMatcher.internalAddresses());
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		then(promise).should().succeeded(List.of(localhost));
@@ -57,8 +55,8 @@ class JettyFilteredSocketAddressResolverTests {
 		InetSocketAddress remote = inetSocketAddress("8.8.8.8", 8080);
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise
 			.succeeded(List.of(localhost, remote));
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchInternal().build()::matches);
-		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate, matcher);
+		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
+				InetAddressMatcher.internalAddresses());
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		then(promise).should().succeeded(List.of(localhost));
@@ -70,9 +68,8 @@ class JettyFilteredSocketAddressResolverTests {
 		InetSocketAddress remote = inetSocketAddress("8.8.8.8", 8080);
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise
 			.succeeded(List.of(localhost, remote));
-		InetAddressMatcher matcher = InetAddressMatcher
-			.of(InetAddressMatchers.matchExternal().excludeAddresses(List.of("8.8.8.8")).build()::matches);
-		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate, matcher);
+		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
+				InetAddressMatcher.externalAddresses().andNot("8.8.8.8"));
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		ArgumentCaptor<Throwable> failure = ArgumentCaptor.captor();
@@ -84,8 +81,8 @@ class JettyFilteredSocketAddressResolverTests {
 	void resolveWhenDelegateFails() {
 		Throwable ex = new RuntimeException();
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise.failed(ex);
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
-		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate, matcher);
+		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
+				InetAddressMatcher.externalAddresses());
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		then(promise).should().failed(ex);

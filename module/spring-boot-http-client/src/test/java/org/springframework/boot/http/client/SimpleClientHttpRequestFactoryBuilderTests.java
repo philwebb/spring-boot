@@ -23,7 +23,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,9 +85,9 @@ class SimpleClientHttpRequestFactoryBuilderTests
 	@Test
 	@Override
 	void filteredInetAddress() throws Exception {
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> getBuilder().build(HttpClientSettings.defaults().withInetAddressMatcher(matcher)))
+			.isThrownBy(() -> getBuilder()
+				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses())))
 			.withMessage("Simple HTTP request factory does not support InetAddressMatcher");
 	}
 
