@@ -27,11 +27,17 @@ import org.eclipse.jetty.util.SocketAddressResolver;
  * Jetty {@link SocketAddressResolver} that filters using a {@link InetAddressMatcher}.
  *
  * @author Phillip Webb
- * @param delegate the delegate resolver
- * @param matcher the inetAddress matcher
  */
-record JettyFilteredSocketAddressResolver(SocketAddressResolver delegate,
-		InetAddressMatcher matcher) implements SocketAddressResolver {
+class JettyFilteredSocketAddressResolver implements SocketAddressResolver {
+
+	private final SocketAddressResolver delegate;
+
+	private final InetAddressMatcher matcher;
+
+	JettyFilteredSocketAddressResolver(SocketAddressResolver delegate, InetAddressMatcher matcher) {
+		this.delegate = delegate;
+		this.matcher = matcher;
+	}
 
 	@Override
 	public void resolve(String host, int port, Map<String, Object> context, Promise<List<InetSocketAddress>> promise) {
@@ -59,4 +65,5 @@ record JettyFilteredSocketAddressResolver(SocketAddressResolver delegate,
 		}
 
 	}
+
 }

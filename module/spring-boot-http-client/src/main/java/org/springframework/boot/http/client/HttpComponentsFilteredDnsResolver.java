@@ -30,10 +30,17 @@ import org.springframework.util.ObjectUtils;
  * HTTP Components {@link DnsResolver} that filters using a {@link InetAddressMatcher}.
  *
  * @author Phillip Webb
- * @param delegate the delegate resolver
- * @param matcher the inetAddress matcher
  */
-record HttpComponentsFilteredDnsResolver(DnsResolver delegate, InetAddressMatcher matcher) implements DnsResolver {
+class HttpComponentsFilteredDnsResolver implements DnsResolver {
+
+	private final DnsResolver delegate;
+
+	private final InetAddressMatcher matcher;
+
+	HttpComponentsFilteredDnsResolver(DnsResolver delegate, InetAddressMatcher matcher) {
+		this.delegate = delegate;
+		this.matcher = matcher;
+	}
 
 	@Override
 	public InetAddress[] resolve(String host) throws UnknownHostException {
