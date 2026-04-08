@@ -28,7 +28,6 @@ import org.springframework.boot.http.client.InetAddressMatcher;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
-import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,10 +84,9 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 	@Test
 	void withProxySelectorWhenHasInetAddressMatcher() {
 		ProxySelector proxySelector = mock();
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		JdkClientHttpConnector connector = ClientHttpConnectorBuilder.jdk()
 			.withProxySelector(proxySelector)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient).isNotNull();
 		assertThat(httpClient.proxy()).isNotNull();

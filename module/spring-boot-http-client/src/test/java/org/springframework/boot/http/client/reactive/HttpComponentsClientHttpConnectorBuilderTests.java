@@ -38,7 +38,6 @@ import org.springframework.boot.http.client.InetAddressMatcher;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
-import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,10 +120,9 @@ class HttpComponentsClientHttpConnectorBuilderTests
 	@Test
 	void withDnsResolverWhenHasInetAddressMatcher() {
 		DnsResolver dnsResolver = mock();
-		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
 			.withDnsResolver(dnsResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
 		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("HttpComponentsFiltered"));
 		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver.delegate")

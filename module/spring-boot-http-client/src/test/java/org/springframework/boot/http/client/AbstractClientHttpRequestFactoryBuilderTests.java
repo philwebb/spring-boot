@@ -50,7 +50,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,9 +198,8 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
-			InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 			ClientHttpRequestFactory requestFactory = this.builder
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
+				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
 			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
 			assertThatException().isThrownBy(request::execute)
 				.matches((ex) -> ex instanceof UnmatchedHostException
