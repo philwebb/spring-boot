@@ -27,6 +27,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,9 +87,10 @@ class JdkClientHttpRequestFactoryBuilderTests
 	@Test
 	void withProxySelectorWhenHasInetAddressMatcher() {
 		ProxySelector proxySelector = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		JdkClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jdk()
 			.withProxySelector(proxySelector)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
 		assertThat(httpClient).isNotNull();
 		ProxySelector actual = httpClient.proxy().get();

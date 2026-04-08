@@ -29,6 +29,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,9 +50,9 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	@Test
 	@Override
 	void filteredInetAddress() throws Exception {
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> getBuilder()
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses())))
+			.isThrownBy(() -> getBuilder().build(HttpClientSettings.defaults().withInetAddressMatcher(matcher)))
 			.withMessage("Unable to set InetAddress matcher using reflection");
 	}
 
