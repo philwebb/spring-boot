@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,9 +93,10 @@ class JettyClientHttpRequestFactoryBuilderTests
 	@Test
 	void withSocketAddressResolverWhenHasInetAddressMatcher() {
 		SocketAddressResolver socketAddressResolver = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		JettyClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jetty()
 			.withSocketAddressResolver(socketAddressResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
 		assertThat(factory).extracting("httpClient.resolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("JettyFiltered"));
 		assertThat(factory).extracting("httpClient.resolver.delegate").isSameAs(socketAddressResolver);

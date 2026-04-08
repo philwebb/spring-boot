@@ -27,6 +27,7 @@ import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.InetAddressMatcher;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,9 +91,10 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 	@Test
 	void withSocketAddressResolverWhenHasInetAddressMatcher() {
 		SocketAddressResolver socketAddressResolver = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		JettyClientHttpConnector connector = ClientHttpConnectorBuilder.jetty()
 			.withSocketAddressResolver(socketAddressResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
 		assertThat(connector).extracting("httpClient.resolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("JettyFiltered"));
 		assertThat(connector).extracting("httpClient.resolver.delegate").isSameAs(socketAddressResolver);

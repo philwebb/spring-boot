@@ -38,6 +38,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,9 +121,10 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 	@Test
 	void withDnsResolverWhenHasInetAddressMatcher() {
 		DnsResolver dnsResolver = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		ClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.httpComponents()
 			.withDnsResolver(dnsResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
 		assertThat(factory).extracting("httpClient.connManager.connectionOperator.dnsResolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("HttpComponentsFiltered"));
 		assertThat(factory).extracting("httpClient.connManager.connectionOperator.dnsResolver.delegate")

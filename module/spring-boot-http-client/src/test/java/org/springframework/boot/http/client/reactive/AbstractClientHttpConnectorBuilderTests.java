@@ -51,6 +51,7 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunctions;
@@ -204,8 +205,9 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 			webServer.start();
 			int port = webServer.getPort();
 			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 			ClientHttpConnector connector = this.builder
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+				.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
 			ClientRequest request = createRequest("GET", uri);
 			assertThatException().isThrownBy(() -> getResponse(connector, request))
 				.matches((ex) -> ex instanceof UnmatchedHostException

@@ -33,6 +33,7 @@ import org.springframework.boot.http.client.InetAddressMatcher;
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.security.util.matcher.InetAddressMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -116,9 +117,10 @@ class ReactorClientHttpConnectorBuilderTests
 	@Test
 	void withResolvedAddressSelectorWhenHasInetAddressFilter() {
 		ResolvedAddressSelector<? super HttpClientConfig> resolvedAddressSelector = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchExternal().build()::matches);
 		ReactorClientHttpConnector connector = ClientHttpConnectorBuilder.reactor()
 			.withResolvedAddressSelector(resolvedAddressSelector)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressMatcher(matcher));
 		assertThat(connector).extracting("httpClient.config.resolvedAddressesSelector")
 			.matches((selector) -> selector.getClass().getName().contains("ReactorFiltered"));
 		assertThat(connector).extracting("httpClient.config.resolvedAddressesSelector.delegate")

@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClientConfig;
 import reactor.netty.transport.ClientTransport.ResolvedAddressSelector;
 
+import org.springframework.security.util.matcher.InetAddressMatchers;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
@@ -41,8 +43,9 @@ class ReactorFilteredResolvedAddressSelectorTests {
 		InetSocketAddress localhost = inetSocketAddress("localhost", 8080);
 		ResolvedAddressSelector<HttpClientConfig> delegate = (config, resolvedAddresses) -> resolvedAddresses;
 		HttpClientConfig config = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchInternal().build()::matches);
 		ReactorFilteredResolvedAddressSelector<HttpClientConfig> addressSelector = new ReactorFilteredResolvedAddressSelector<>(
-				delegate, InetAddressMatcher.internalAddresses());
+				delegate, matcher);
 		assertThat(addressSelector.apply(config, List.of(localhost))).isEqualTo(List.of(localhost));
 	}
 
@@ -52,8 +55,9 @@ class ReactorFilteredResolvedAddressSelectorTests {
 		InetSocketAddress remote = inetSocketAddress("8.8.8.8", 8080);
 		ResolvedAddressSelector<HttpClientConfig> delegate = (config, resolvedAddresses) -> resolvedAddresses;
 		HttpClientConfig config = mock();
+		InetAddressMatcher matcher = InetAddressMatcher.of(InetAddressMatchers.matchInternal().build()::matches);
 		ReactorFilteredResolvedAddressSelector<HttpClientConfig> addressSelector = new ReactorFilteredResolvedAddressSelector<>(
-				delegate, InetAddressMatcher.internalAddresses());
+				delegate, matcher);
 		assertThat(addressSelector.apply(config, List.of(localhost, remote))).isEqualTo(List.of(localhost));
 	}
 
@@ -63,8 +67,10 @@ class ReactorFilteredResolvedAddressSelectorTests {
 		InetSocketAddress remote = inetSocketAddress("8.8.8.8", 8080);
 		ResolvedAddressSelector<HttpClientConfig> delegate = (config, resolvedAddresses) -> resolvedAddresses;
 		HttpClientConfig config = mock();
+		InetAddressMatcher matcher = InetAddressMatcher
+			.of(InetAddressMatchers.matchExternal().excludeAddresses(List.of("8.8.8.8")).build()::matches);
 		ReactorFilteredResolvedAddressSelector<HttpClientConfig> addressSelector = new ReactorFilteredResolvedAddressSelector<>(
-				delegate, InetAddressMatcher.externalAddresses().andNot("8.8.8.8"));
+				delegate, matcher);
 		assertThatExceptionOfType(UnmatchedHostException.class)
 			.isThrownBy(() -> addressSelector.apply(config, List.of(localhost, remote)))
 			.withMessage("Unmatched host '[127.0.0.1, 8.8.8.8]'");
