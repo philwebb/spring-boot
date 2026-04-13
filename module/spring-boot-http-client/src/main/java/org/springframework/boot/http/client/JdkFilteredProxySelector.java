@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * JDK {@link ProxySelector} to check a URL is not filtered by a
- * {@link InetAddressMatcher}.
+ * {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  */
@@ -38,23 +38,23 @@ class JdkFilteredProxySelector extends ProxySelector {
 
 	private final ProxySelector delegate;
 
-	private final InetAddressMatcher matcher;
+	private final InetAddressFilter filter;
 
-	JdkFilteredProxySelector(ProxySelector delegate, InetAddressMatcher matcher) {
+	JdkFilteredProxySelector(ProxySelector delegate, InetAddressFilter filter) {
 		this.delegate = delegate;
-		this.matcher = matcher;
+		this.filter = filter;
 	}
 
 	@Override
 	public List<Proxy> select(URI uri) {
 		String host = uri.getHost();
-		MatchingAddresses.of(Stream.of(host)).get(this::matchesResolvedHost).orElseThrow(host, this.matcher);
+		MatchingAddresses.of(Stream.of(host)).get(this::matchesResolvedHost).orElseThrow(host, this.filter);
 		return this.delegate.select(uri);
 	}
 
 	private boolean matchesResolvedHost(String host) {
 		InetAddress resolved = resolve(host);
-		return (resolved != null) && this.matcher.matches(resolved);
+		return (resolved != null) && this.filter.matches(resolved);
 	}
 
 	private @Nullable InetAddress resolve(String host) {

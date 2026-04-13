@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,9 +66,9 @@ class HttpClientAutoConfigurationTests {
 
 	@Test
 	void injectsInetAddressMatcher() {
-		InetAddressMatcher matcher = mock();
-		this.contextRunner.withBean(InetAddressMatcher.class, () -> matcher)
-			.run((context) -> assertThat(context.getBean(HttpClientSettings.class).inetAddressMatcher())
+		InetAddressFilter matcher = mock();
+		this.contextRunner.withBean(InetAddressFilter.class, () -> matcher)
+			.run((context) -> assertThat(context.getBean(HttpClientSettings.class).inetAddressFilter())
 				.isEqualTo(matcher));
 	}
 

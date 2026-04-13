@@ -172,15 +172,8 @@ class IpAddressTests {
 	@SuppressWarnings("NullAway") // Test null check
 	void matcherWhenCheckingNullThrowsException() {
 		IpAddress address = IpAddress.of("192.168.1.1");
-		assertThatIllegalArgumentException().isThrownBy(() -> address.matcher().matches((InetAddress) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> address.filter().matches((InetAddress) null))
 			.withMessage("'address' must not be null");
-	}
-
-	@Test
-	void matcherWhenMatchingString() {
-		IpAddress address = IpAddress.of("192.168.1.1");
-		assertThatMatcher(address).matchesString("192.168.1.1");
-		assertThatMatcher(address).doesNotMatchString("192.168.1.2");
 	}
 
 	@Test
@@ -200,7 +193,7 @@ class IpAddressTests {
 	}
 
 	private static InetAddressMatcherAssert assertThatMatcher(IpAddress address) {
-		return new InetAddressMatcherAssert(address.matcher());
+		return new InetAddressMatcherAssert(address.filter());
 	}
 
 }

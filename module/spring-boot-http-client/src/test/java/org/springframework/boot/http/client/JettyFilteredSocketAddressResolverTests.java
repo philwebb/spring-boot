@@ -43,7 +43,7 @@ class JettyFilteredSocketAddressResolverTests {
 		InetSocketAddress localhost = inetSocketAddress("localhost", 8080);
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise.succeeded(List.of(localhost));
 		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		then(promise).should().succeeded(List.of(localhost));
@@ -56,7 +56,7 @@ class JettyFilteredSocketAddressResolverTests {
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise
 			.succeeded(List.of(localhost, remote));
 		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		then(promise).should().succeeded(List.of(localhost));
@@ -69,12 +69,12 @@ class JettyFilteredSocketAddressResolverTests {
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise
 			.succeeded(List.of(localhost, remote));
 		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
-				InetAddressMatcher.externalAddresses().andNot("8.8.8.8"));
+				InetAddressFilter.externalAddresses().andNot("8.8.8.8"));
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		ArgumentCaptor<Throwable> failure = ArgumentCaptor.captor();
 		then(promise).should().failed(failure.capture());
-		assertThat(failure.getValue()).isInstanceOf(UnmatchedHostException.class);
+		assertThat(failure.getValue()).isInstanceOf(FilteredHostException.class);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class JettyFilteredSocketAddressResolverTests {
 		Throwable ex = new RuntimeException();
 		SocketAddressResolver delegate = (host, port, context, promise) -> promise.failed(ex);
 		JettyFilteredSocketAddressResolver resolver = new JettyFilteredSocketAddressResolver(delegate,
-				InetAddressMatcher.externalAddresses());
+				InetAddressFilter.externalAddresses());
 		Promise<List<InetSocketAddress>> promise = mock();
 		resolver.resolve("localhost", 8080, Collections.emptyMap(), promise);
 		then(promise).should().failed(ex);

@@ -32,13 +32,13 @@ import org.springframework.boot.ssl.SslBundle;
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
- * @param inetAddressMatcher the inetAddress matcher used to filter outgoing requests
+ * @param inetAddressFilter the inetAddress filter used to filter out matching requests
  * @author Phillip Webb
  * @since 3.5.0
  */
 public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @Nullable HttpRedirects redirects,
 		@Nullable Duration connectTimeout, @Nullable Duration readTimeout, @Nullable SslBundle sslBundle,
-		@Nullable InetAddressMatcher inetAddressMatcher) {
+		@Nullable InetAddressFilter inetAddressFilter) {
 
 	/**
 	 * Create a new {@link HttpClientSettings} instance.
@@ -81,7 +81,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withCookieHandling(@Nullable HttpCookieHandling cookieHandling) {
 		return new HttpClientSettings(cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
-				this.sslBundle, this.inetAddressMatcher);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withConnectTimeout(@Nullable Duration connectTimeout) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, this.readTimeout,
-				this.sslBundle, this.inetAddressMatcher);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withReadTimeout(@Nullable Duration readTimeout) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, readTimeout,
-				this.sslBundle, this.inetAddressMatcher);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withTimeouts(@Nullable Duration connectTimeout, @Nullable Duration readTimeout) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, connectTimeout, readTimeout, this.sslBundle,
-				this.inetAddressMatcher);
+				this.inetAddressFilter);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withSslBundle(@Nullable SslBundle sslBundle) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
-				sslBundle, this.inetAddressMatcher);
+				sslBundle, this.inetAddressFilter);
 	}
 
 	/**
@@ -141,19 +141,19 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 	 */
 	public HttpClientSettings withRedirects(@Nullable HttpRedirects redirects) {
 		return new HttpClientSettings(this.cookieHandling, redirects, this.connectTimeout, this.readTimeout,
-				this.sslBundle, this.inetAddressMatcher);
+				this.sslBundle, this.inetAddressFilter);
 	}
 
 	/**
 	 * Return a new {@link HttpClientSettings} instance with an updated inetAddress
-	 * matcher.
-	 * @param inetAddressMatcher the new inetAddress matcher
+	 * filter.
+	 * @param inetAddressFilter the new inetAddress filter
 	 * @return a new {@link HttpClientSettings} instance
 	 * @since 4.1.0
 	 */
-	public HttpClientSettings withInetAddressMatcher(@Nullable InetAddressMatcher inetAddressMatcher) {
+	public HttpClientSettings withInetAddressFilter(@Nullable InetAddressFilter inetAddressFilter) {
 		return new HttpClientSettings(this.cookieHandling, this.redirects, this.connectTimeout, this.readTimeout,
-				this.sslBundle, inetAddressMatcher);
+				this.sslBundle, inetAddressFilter);
 	}
 
 	/**
@@ -172,10 +172,10 @@ public record HttpClientSettings(@Nullable HttpCookieHandling cookieHandling, @N
 		Duration connectTimeout = (connectTimeout() != null) ? connectTimeout() : other.connectTimeout();
 		Duration readTimeout = (readTimeout() != null) ? readTimeout() : other.readTimeout();
 		SslBundle sslBundle = (sslBundle() != null) ? sslBundle() : other.sslBundle();
-		InetAddressMatcher inetAddressMatcher = (inetAddressMatcher() != null) ? inetAddressMatcher()
-				: other.inetAddressMatcher();
+		InetAddressFilter inetAddressFilter = (inetAddressFilter() != null) ? inetAddressFilter()
+				: other.inetAddressFilter();
 		return new HttpClientSettings(cookieHandling, redirects, connectTimeout, readTimeout, sslBundle,
-				inetAddressMatcher);
+				inetAddressFilter);
 	}
 
 	/**

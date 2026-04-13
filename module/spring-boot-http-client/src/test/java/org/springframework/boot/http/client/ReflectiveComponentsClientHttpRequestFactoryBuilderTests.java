@@ -51,7 +51,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	void filteredInetAddress() throws Exception {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> getBuilder()
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses())))
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses())))
 			.withMessage("Unable to set InetAddress matcher using reflection");
 	}
 

@@ -190,8 +190,8 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 		builder.setDefaultConnectionConfig(createConnectionConfig(settings));
 		map.from(settings::sslBundle).as(this.tlsStrategyFactory::apply).to(builder::setTlsStrategy);
 		DnsResolver dnsResolver = this.dnsResolver;
-		if (settings.inetAddressMatcher() != null) {
-			dnsResolver = new HttpComponentsFilteredDnsResolver(dnsResolver, settings.inetAddressMatcher());
+		if (settings.inetAddressFilter() != null) {
+			dnsResolver = new HttpComponentsFilteredDnsResolver(dnsResolver, settings.inetAddressFilter());
 		}
 		builder.setDnsResolver(dnsResolver);
 		this.connectionManagerCustomizer.accept(builder);

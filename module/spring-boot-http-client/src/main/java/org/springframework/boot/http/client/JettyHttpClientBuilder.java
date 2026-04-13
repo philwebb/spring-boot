@@ -171,7 +171,7 @@ public final class JettyHttpClientBuilder {
 	}
 
 	private HttpClient createHttpClient(HttpClientSettings settings, HttpClientTransport transport) {
-		return (settings.readTimeout() != null || settings.inetAddressMatcher() != null)
+		return (settings.readTimeout() != null || settings.inetAddressFilter() != null)
 				? new CustomizedHttpClient(transport, settings) : new HttpClient(transport);
 	}
 
@@ -238,9 +238,9 @@ public final class JettyHttpClientBuilder {
 
 		@Override
 		public void setSocketAddressResolver(SocketAddressResolver resolver) {
-			if (this.settings.inetAddressMatcher() != null) {
+			if (this.settings.inetAddressFilter() != null) {
 				Assert.notNull(resolver, "'resolver' must not be null when addresses are filtered");
-				resolver = new JettyFilteredSocketAddressResolver(resolver, this.settings.inetAddressMatcher());
+				resolver = new JettyFilteredSocketAddressResolver(resolver, this.settings.inetAddressFilter());
 			}
 			super.setSocketAddressResolver(resolver);
 		}

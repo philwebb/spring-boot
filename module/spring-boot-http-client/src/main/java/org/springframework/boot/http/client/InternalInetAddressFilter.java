@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.springframework.util.Assert;
 
 /**
- * An {@link InetAddressMatcher} that matches internal (private) addresses.
+ * An {@link InetAddressFilter} that matches internal (private) addresses.
  * <p>
  * Internal addresses include loopback addresses (127.0.0.0/8 for IPv4, ::1 for IPv6),
  * private IPv4 address ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), and IPv6
@@ -35,13 +35,13 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @author Phillip Webb
  */
-final class InternalInetAddressMatcher implements InetAddressMatcher {
+final class InternalInetAddressFilter implements InetAddressFilter {
 
 	private static final byte[] NAT64_PREFIX = { (byte) 0x00, (byte) 0x64, (byte) 0xff, (byte) 0x9b };
 
-	static final InternalInetAddressMatcher instance = new InternalInetAddressMatcher();
+	static final InternalInetAddressFilter instance = new InternalInetAddressFilter();
 
-	private InternalInetAddressMatcher() {
+	private InternalInetAddressFilter() {
 	}
 
 	@Override

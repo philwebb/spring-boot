@@ -42,7 +42,7 @@ class HttpComponentsFilteredDnsResolverTests {
 		InetAddress localhost = InetAddress.getLocalHost();
 		given(delegate.resolve("localhost")).willReturn(new InetAddress[] { localhost });
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		assertThat(dnsResolver.resolve("localhost")).containsExactly(localhost);
 	}
 
@@ -53,7 +53,7 @@ class HttpComponentsFilteredDnsResolverTests {
 		InetAddress remote = InetAddress.getByName("8.8.8.8");
 		given(delegate.resolve("localhost")).willReturn(new InetAddress[] { localhost, remote });
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		assertThat(dnsResolver.resolve("localhost")).containsExactly(localhost);
 	}
 
@@ -64,8 +64,8 @@ class HttpComponentsFilteredDnsResolverTests {
 		InetAddress remote = InetAddress.getByName("8.8.8.8");
 		given(delegate.resolve("localhost")).willReturn(new InetAddress[] { localhost, remote });
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.externalAddresses().andNot("8.8.8.8"));
-		assertThatExceptionOfType(UnmatchedHostException.class).isThrownBy(() -> dnsResolver.resolve("localhost"));
+				InetAddressFilter.internalAddresses().andNot("8.8.8.8"));
+		assertThatExceptionOfType(FilteredHostException.class).isThrownBy(() -> dnsResolver.resolve("localhost"));
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class HttpComponentsFilteredDnsResolverTests {
 		InetAddress localhost = InetAddress.getLocalHost();
 		given(delegate.resolve("localhost", 8080)).willReturn(List.of(new InetSocketAddress(localhost, 8080)));
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		assertThat(dnsResolver.resolve("localhost", 8080)).containsExactly(new InetSocketAddress(localhost, 8080));
 	}
 
@@ -86,7 +86,7 @@ class HttpComponentsFilteredDnsResolverTests {
 		given(delegate.resolve("localhost", 8080))
 			.willReturn(List.of(new InetSocketAddress(localhost, 8080), new InetSocketAddress(remote, 8080)));
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		assertThat(dnsResolver.resolve("localhost", 8080)).containsExactly(new InetSocketAddress(localhost, 8080));
 	}
 
@@ -98,9 +98,8 @@ class HttpComponentsFilteredDnsResolverTests {
 		given(delegate.resolve("localhost", 8080))
 			.willReturn(List.of(new InetSocketAddress(localhost, 8080), new InetSocketAddress(remote, 8080)));
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.externalAddresses().andNot("8.8.8.8"));
-		assertThatExceptionOfType(UnmatchedHostException.class)
-			.isThrownBy(() -> dnsResolver.resolve("localhost", 8080));
+				InetAddressFilter.internalAddresses().andNot("8.8.8.8"));
+		assertThatExceptionOfType(FilteredHostException.class).isThrownBy(() -> dnsResolver.resolve("localhost", 8080));
 	}
 
 	@Test
@@ -108,7 +107,7 @@ class HttpComponentsFilteredDnsResolverTests {
 		DnsResolver delegate = mock();
 		given(delegate.resolveCanonicalHostname("spring")).willReturn("boot");
 		HttpComponentsFilteredDnsResolver dnsResolver = new HttpComponentsFilteredDnsResolver(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		assertThat(dnsResolver.resolveCanonicalHostname("spring")).isEqualTo("boot");
 	}
 

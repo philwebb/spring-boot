@@ -17,21 +17,21 @@
 package org.springframework.boot.http.client;
 
 /**
- * Exception thrown when a host was not matched by an {@link InetAddressMatcher}.
+ * Exception thrown when a host was not used due to a {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  * @since 4.1.0
  */
-public class UnmatchedHostException extends RuntimeException {
+public class FilteredHostException extends RuntimeException {
 
 	private final String host;
 
-	private final InetAddressMatcher matcher;
+	private final InetAddressFilter filter;
 
-	UnmatchedHostException(String host, InetAddressMatcher matcher) {
+	FilteredHostException(String host, InetAddressFilter filter) {
 		super("Unmatched host '%s'".formatted(host));
 		this.host = host;
-		this.matcher = matcher;
+		this.filter = filter;
 	}
 
 	/**
@@ -43,11 +43,11 @@ public class UnmatchedHostException extends RuntimeException {
 	}
 
 	/**
-	 * Return the matcher that was used.
-	 * @return the matcher that didn't match
+	 * Return the filter that was used.
+	 * @return the filter that didn't match
 	 */
-	public InetAddressMatcher getMatcher() {
-		return this.matcher;
+	public InetAddressFilter getFilter() {
+		return this.filter;
 	}
 
 }

@@ -104,7 +104,7 @@ public final class ReactorHttpClientBuilder {
 	/**
 	 * Return a new {@link ReactorHttpClientBuilder} that uses the
 	 * {@link ResolvedAddressSelector}. This method should be used in favor of a
-	 * customizer so that {@link HttpClientSettings#inetAddressMatcher()} can be applied.
+	 * customizer so that {@link HttpClientSettings#inetAddressFilter()} can be applied.
 	 * @param resolvedAddressSelector the resolved address selector to use
 	 * @return a new {@link ReactorHttpClientBuilder} instance
 	 * @since 4.1.0
@@ -134,15 +134,15 @@ public final class ReactorHttpClientBuilder {
 			throw new IllegalArgumentException("Reactor Netty HTTP client does not support cookie handling");
 		}
 		httpClient = map.from(settings::sslBundle).to(httpClient, this::secure);
-		httpClient = map.from(resolvedAddressSelector(settings.inetAddressMatcher()))
+		httpClient = map.from(resolvedAddressSelector(settings.inetAddressFilter()))
 			.to(httpClient, HttpClient::resolvedAddressesSelector);
 		return this.customizer.apply(httpClient);
 	}
 
 	private @Nullable ResolvedAddressSelector<? super HttpClientConfig> resolvedAddressSelector(
-			@Nullable InetAddressMatcher inetAddressMatcher) {
-		return (inetAddressMatcher != null)
-				? new ReactorFilteredResolvedAddressSelector<>(this.resolvedAddressSelector, inetAddressMatcher)
+			@Nullable InetAddressFilter inetAddressFilter) {
+		return (inetAddressFilter != null)
+				? new ReactorFilteredResolvedAddressSelector<>(this.resolvedAddressSelector, inetAddressFilter)
 				: this.resolvedAddressSelector;
 	}
 

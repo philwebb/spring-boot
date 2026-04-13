@@ -80,7 +80,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
 		Assert.state(settings.cookieHandling() != HttpCookieHandling.ENABLE,
 				"Simple HTTP request factory does not support HTTP cookie handling");
-		Assert.state(settings.inetAddressMatcher() == null,
+		Assert.state(settings.inetAddressFilter() == null,
 				"Simple HTTP request factory does not support InetAddressMatcher");
 		SslBundle sslBundle = settings.sslBundle();
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);

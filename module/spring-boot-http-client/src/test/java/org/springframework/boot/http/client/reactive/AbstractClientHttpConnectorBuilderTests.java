@@ -36,8 +36,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.http.client.InetAddressMatcher;
-import org.springframework.boot.http.client.UnmatchedHostException;
+import org.springframework.boot.http.client.InetAddressFilter;
+import org.springframework.boot.http.client.FilteredHostException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslOptions;
@@ -205,11 +205,11 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 			int port = webServer.getPort();
 			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
 			ClientHttpConnector connector = this.builder
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 			ClientRequest request = createRequest("GET", uri);
 			assertThatException().isThrownBy(() -> getResponse(connector, request))
-				.matches((ex) -> ex instanceof UnmatchedHostException
-						|| ex.getCause() instanceof UnmatchedHostException);
+				.matches((ex) -> ex instanceof FilteredHostException
+						|| ex.getCause() instanceof FilteredHostException);
 
 		}
 		finally {

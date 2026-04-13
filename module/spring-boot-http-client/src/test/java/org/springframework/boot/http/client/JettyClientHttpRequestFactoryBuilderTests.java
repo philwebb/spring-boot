@@ -94,7 +94,7 @@ class JettyClientHttpRequestFactoryBuilderTests
 		SocketAddressResolver socketAddressResolver = mock();
 		JettyClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jetty()
 			.withSocketAddressResolver(socketAddressResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		assertThat(factory).extracting("httpClient.resolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("JettyFiltered"));
 		assertThat(factory).extracting("httpClient.resolver.delegate").isSameAs(socketAddressResolver);

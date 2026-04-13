@@ -24,7 +24,7 @@ import java.util.concurrent.Executor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
@@ -86,7 +86,7 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 		ProxySelector proxySelector = mock();
 		JdkClientHttpConnector connector = ClientHttpConnectorBuilder.jdk()
 			.withProxySelector(proxySelector)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
 		assertThat(httpClient).isNotNull();
 		assertThat(httpClient.proxy()).isNotNull();

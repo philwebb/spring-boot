@@ -45,7 +45,7 @@ class JdkFilteredProxySelectorTests {
 		Proxy proxy = mock();
 		given(delegate.select(localhost)).willReturn(List.of(proxy));
 		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate,
-				InetAddressMatcher.internalAddresses());
+				InetAddressFilter.internalAddresses());
 		assertThat(proxySelector.select(localhost)).containsExactly(proxy);
 	}
 
@@ -56,8 +56,8 @@ class JdkFilteredProxySelectorTests {
 		Proxy proxy = mock();
 		given(delegate.select(localhost)).willReturn(List.of(proxy));
 		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate,
-				InetAddressMatcher.externalAddresses());
-		assertThatExceptionOfType(UnmatchedHostException.class).isThrownBy(() -> proxySelector.select(localhost));
+				InetAddressFilter.externalAddresses());
+		assertThatExceptionOfType(FilteredHostException.class).isThrownBy(() -> proxySelector.select(localhost));
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class JdkFilteredProxySelectorTests {
 		URI localhost = new URI("http://localhost");
 		ProxySelector delegate = mock(ProxySelector.class);
 		JdkFilteredProxySelector proxySelector = new JdkFilteredProxySelector(delegate,
-				InetAddressMatcher.externalAddresses());
+				InetAddressFilter.externalAddresses());
 		SocketAddress address = mock();
 		IOException ex = new IOException();
 		proxySelector.connectFailed(localhost, address, ex);

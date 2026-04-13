@@ -25,13 +25,13 @@ import org.assertj.core.api.AbstractObjectAssert;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Assertions for an {@link InetAddressMatcher}.
+ * Assertions for an {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  */
-class InetAddressMatcherAssert extends AbstractObjectAssert<InetAddressMatcherAssert, InetAddressMatcher> {
+class InetAddressMatcherAssert extends AbstractObjectAssert<InetAddressMatcherAssert, InetAddressFilter> {
 
-	InetAddressMatcherAssert(InetAddressMatcher actual) {
+	InetAddressMatcherAssert(InetAddressFilter actual) {
 		super(actual, InetAddressMatcherAssert.class);
 	}
 
@@ -51,12 +51,6 @@ class InetAddressMatcherAssert extends AbstractObjectAssert<InetAddressMatcherAs
 		return this;
 	}
 
-	InetAddressMatcherAssert matchesString(String address) {
-		isNotNull();
-		assertThat(this.actual.matches(address)).as("Matches string %s", address).isTrue();
-		return this;
-	}
-
 	InetAddressMatcherAssert doesNotMatch(String address) {
 		return doesNotMatch(asInetAddress(address));
 	}
@@ -70,12 +64,6 @@ class InetAddressMatcherAssert extends AbstractObjectAssert<InetAddressMatcherAs
 	InetAddressMatcherAssert doesNotMatch(InetSocketAddress address) {
 		isNotNull();
 		assertThat(this.actual.matches(address)).as("Does not match socket address %s", address).isFalse();
-		return this;
-	}
-
-	InetAddressMatcherAssert doesNotMatchString(String address) {
-		isNotNull();
-		assertThat(this.actual.matches(address)).as("Does not match string %s", address).isFalse();
 		return this;
 	}
 

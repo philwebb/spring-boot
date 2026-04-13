@@ -88,7 +88,7 @@ class JdkClientHttpRequestFactoryBuilderTests
 		ProxySelector proxySelector = mock();
 		JdkClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jdk()
 			.withProxySelector(proxySelector)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
 		assertThat(httpClient).isNotNull();
 		ProxySelector actual = httpClient.proxy().get();

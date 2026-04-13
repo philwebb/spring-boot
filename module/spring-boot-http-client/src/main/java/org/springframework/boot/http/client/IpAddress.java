@@ -49,19 +49,21 @@ final class IpAddress {
 		this.maskBitSize = maskBitSize;
 	}
 
-	InetAddressMatcher matcher() {
-		return (address) -> {
-			Assert.notNull(address, "'address' must not be null");
-			if (this.maskBitSize == -1) {
-				return this.address.equals(address);
-			}
-			if (this.maskBitSize == 0) {
-				return true;
-			}
-			byte[] ours = this.address.getAddress();
-			byte[] theirs = address.getAddress();
-			return (ours.length == theirs.length) && matchesMasked(ours, theirs);
-		};
+	InetAddressFilter filter() {
+		return this::matches;
+	}
+
+	boolean matches(InetAddress address) {
+		Assert.notNull(address, "'address' must not be null");
+		if (this.maskBitSize == -1) {
+			return this.address.equals(address);
+		}
+		if (this.maskBitSize == 0) {
+			return true;
+		}
+		byte[] ours = this.address.getAddress();
+		byte[] theirs = address.getAddress();
+		return (ours.length == theirs.length) && matchesMasked(ours, theirs);
 	}
 
 	private boolean matchesMasked(byte[] ours, byte[] theirs) {

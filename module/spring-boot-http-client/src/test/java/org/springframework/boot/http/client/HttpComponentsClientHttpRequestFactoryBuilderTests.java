@@ -122,7 +122,7 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 		DnsResolver dnsResolver = mock();
 		ClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.httpComponents()
 			.withDnsResolver(dnsResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		assertThat(factory).extracting("httpClient.connManager.connectionOperator.dnsResolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("HttpComponentsFiltered"));
 		assertThat(factory).extracting("httpClient.connManager.connectionOperator.dnsResolver.delegate")

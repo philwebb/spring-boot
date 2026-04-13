@@ -29,7 +29,7 @@ import reactor.netty.http.client.HttpClientConfig;
 import reactor.netty.transport.ClientTransport.ResolvedAddressSelector;
 
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -118,7 +118,7 @@ class ReactorClientHttpConnectorBuilderTests
 		ResolvedAddressSelector<? super HttpClientConfig> resolvedAddressSelector = mock();
 		ReactorClientHttpConnector connector = ClientHttpConnectorBuilder.reactor()
 			.withResolvedAddressSelector(resolvedAddressSelector)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		assertThat(connector).extracting("httpClient.config.resolvedAddressesSelector")
 			.matches((selector) -> selector.getClass().getName().contains("ReactorFiltered"));
 		assertThat(connector).extracting("httpClient.config.resolvedAddressesSelector.delegate")

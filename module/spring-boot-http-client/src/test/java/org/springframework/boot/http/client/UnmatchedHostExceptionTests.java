@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link UnmatchedHostException}.
+ * Tests for {@link FilteredHostException}.
  *
  * @author Phillip Webb
  */
@@ -29,11 +29,11 @@ class UnmatchedHostExceptionTests {
 
 	@Test
 	void create() {
-		InetAddressMatcher matcher = (address) -> false;
-		UnmatchedHostException exception = new UnmatchedHostException("localhost", matcher);
+		InetAddressFilter matcher = (address) -> false;
+		FilteredHostException exception = new FilteredHostException("localhost", matcher);
 		assertThat(exception).hasMessage("Unmatched host 'localhost'");
 		assertThat(exception.getHost()).isEqualTo("localhost");
-		assertThat(exception.getMatcher()).isSameAs(matcher);
+		assertThat(exception.getFilter()).isSameAs(matcher);
 	}
 
 }

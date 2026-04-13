@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
-import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
@@ -122,7 +122,7 @@ class HttpComponentsClientHttpConnectorBuilderTests
 		DnsResolver dnsResolver = mock();
 		HttpComponentsClientHttpConnector connector = ClientHttpConnectorBuilder.httpComponents()
 			.withDnsResolver(dnsResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("HttpComponentsFiltered"));
 		assertThat(connector).extracting("client.manager.connectionOperator.sessionRequester.dnsResolver.delegate")

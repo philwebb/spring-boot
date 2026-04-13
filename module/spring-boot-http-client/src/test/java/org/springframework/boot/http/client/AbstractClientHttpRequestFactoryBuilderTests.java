@@ -199,11 +199,11 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			int port = webServer.getPort();
 			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
 			ClientHttpRequestFactory requestFactory = this.builder
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
 			assertThatException().isThrownBy(request::execute)
-				.matches((ex) -> ex instanceof UnmatchedHostException
-						|| ex.getCause() instanceof UnmatchedHostException);
+				.matches((ex) -> ex instanceof FilteredHostException
+						|| ex.getCause() instanceof FilteredHostException);
 		}
 		finally {
 			webServer.stop();

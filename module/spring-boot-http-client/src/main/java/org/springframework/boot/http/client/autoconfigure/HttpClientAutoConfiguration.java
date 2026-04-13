@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 
@@ -41,10 +41,10 @@ public final class HttpClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	HttpClientSettings httpClientSettings(HttpClientsProperties properties,
 			ObjectProvider<SslBundles> sslBundlesProvider,
-			ObjectProvider<InetAddressMatcher> inetAddressMatcherProvider) {
-		InetAddressMatcher inetAddressMatcher = inetAddressMatcherProvider.getIfAvailable();
-		HttpClientSettings settings = (inetAddressMatcher != null)
-				? HttpClientSettings.defaults().withInetAddressMatcher(inetAddressMatcher)
+			ObjectProvider<InetAddressFilter> inetAddressFilterProvider) {
+		InetAddressFilter inetAddressFilter = inetAddressFilterProvider.getIfAvailable();
+		HttpClientSettings settings = (inetAddressFilter != null)
+				? HttpClientSettings.defaults().withInetAddressFilter(inetAddressFilter)
 				: HttpClientSettings.defaults();
 		HttpClientSettingsPropertyMapper propertyMapper = new HttpClientSettingsPropertyMapper(
 				sslBundlesProvider.getIfAvailable(), settings);

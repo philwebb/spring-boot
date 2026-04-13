@@ -27,7 +27,7 @@ import org.apache.hc.client5.http.DnsResolver;
 import org.springframework.util.ObjectUtils;
 
 /**
- * HTTP Components {@link DnsResolver} that filters using a {@link InetAddressMatcher}.
+ * HTTP Components {@link DnsResolver} that filters using a {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  */
@@ -35,11 +35,11 @@ class HttpComponentsFilteredDnsResolver implements DnsResolver {
 
 	private final DnsResolver delegate;
 
-	private final InetAddressMatcher matcher;
+	private final InetAddressFilter filter;
 
-	HttpComponentsFilteredDnsResolver(DnsResolver delegate, InetAddressMatcher matcher) {
+	HttpComponentsFilteredDnsResolver(DnsResolver delegate, InetAddressFilter filter) {
 		this.delegate = delegate;
-		this.matcher = matcher;
+		this.filter = filter;
 	}
 
 	@Override
@@ -49,8 +49,8 @@ class HttpComponentsFilteredDnsResolver implements DnsResolver {
 			return resolved;
 		}
 		return MatchingAddresses.of(Arrays.stream(resolved))
-			.toArray(this.matcher::matches, InetAddress[]::new)
-			.orElseThrow(host, this.matcher);
+			.toArray(this.filter::matches, InetAddress[]::new)
+			.orElseThrow(host, this.filter);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ class HttpComponentsFilteredDnsResolver implements DnsResolver {
 		if (resolved.isEmpty()) {
 			return resolved;
 		}
-		return MatchingAddresses.of(resolved.stream()).toList(this.matcher::matches).orElseThrow(host, this.matcher);
+		return MatchingAddresses.of(resolved.stream()).toList(this.filter::matches).orElseThrow(host, this.filter);
 	}
 
 	@Override

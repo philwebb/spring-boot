@@ -87,7 +87,7 @@ class SimpleClientHttpRequestFactoryBuilderTests
 	void filteredInetAddress() throws Exception {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> getBuilder()
-				.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses())))
+				.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses())))
 			.withMessage("Simple HTTP request factory does not support InetAddressMatcher");
 	}
 

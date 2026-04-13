@@ -42,7 +42,7 @@ class ReactorFilteredResolvedAddressSelectorTests {
 		ResolvedAddressSelector<HttpClientConfig> delegate = (config, resolvedAddresses) -> resolvedAddresses;
 		HttpClientConfig config = mock();
 		ReactorFilteredResolvedAddressSelector<HttpClientConfig> addressSelector = new ReactorFilteredResolvedAddressSelector<>(
-				delegate, InetAddressMatcher.internalAddresses());
+				delegate, InetAddressFilter.internalAddresses());
 		assertThat(addressSelector.apply(config, List.of(localhost))).isEqualTo(List.of(localhost));
 	}
 
@@ -53,7 +53,7 @@ class ReactorFilteredResolvedAddressSelectorTests {
 		ResolvedAddressSelector<HttpClientConfig> delegate = (config, resolvedAddresses) -> resolvedAddresses;
 		HttpClientConfig config = mock();
 		ReactorFilteredResolvedAddressSelector<HttpClientConfig> addressSelector = new ReactorFilteredResolvedAddressSelector<>(
-				delegate, InetAddressMatcher.internalAddresses());
+				delegate, InetAddressFilter.internalAddresses());
 		assertThat(addressSelector.apply(config, List.of(localhost, remote))).isEqualTo(List.of(localhost));
 	}
 
@@ -64,8 +64,8 @@ class ReactorFilteredResolvedAddressSelectorTests {
 		ResolvedAddressSelector<HttpClientConfig> delegate = (config, resolvedAddresses) -> resolvedAddresses;
 		HttpClientConfig config = mock();
 		ReactorFilteredResolvedAddressSelector<HttpClientConfig> addressSelector = new ReactorFilteredResolvedAddressSelector<>(
-				delegate, InetAddressMatcher.externalAddresses().andNot("8.8.8.8"));
-		assertThatExceptionOfType(UnmatchedHostException.class)
+				delegate, InetAddressFilter.externalAddresses().andNot("8.8.8.8"));
+		assertThatExceptionOfType(FilteredHostException.class)
 			.isThrownBy(() -> addressSelector.apply(config, List.of(localhost, remote)))
 			.withMessage("Unmatched host '[127.0.0.1, 8.8.8.8]'");
 

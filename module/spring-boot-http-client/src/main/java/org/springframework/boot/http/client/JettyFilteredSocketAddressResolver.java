@@ -24,7 +24,7 @@ import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.SocketAddressResolver;
 
 /**
- * Jetty {@link SocketAddressResolver} that filters using a {@link InetAddressMatcher}.
+ * Jetty {@link SocketAddressResolver} that filters using a {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  */
@@ -32,29 +32,37 @@ class JettyFilteredSocketAddressResolver implements SocketAddressResolver {
 
 	private final SocketAddressResolver delegate;
 
-	private final InetAddressMatcher matcher;
+	private final InetAddressFilter filter;
 
-	JettyFilteredSocketAddressResolver(SocketAddressResolver delegate, InetAddressMatcher matcher) {
+	JettyFilteredSocketAddressResolver(SocketAddressResolver delegate, InetAddressFilter filter) {
 		this.delegate = delegate;
-		this.matcher = matcher;
+		this.filter = filter;
 	}
 
 	@Override
 	public void resolve(String host, int port, Map<String, Object> context, Promise<List<InetSocketAddress>> promise) {
-		this.delegate.resolve(host, port, context, new FilteredPromise(host, promise, this.matcher));
+		this.delegate.resolve(host, port, context, new FilteredPromise(host, promise));
 	}
 
-	record FilteredPromise(String host, Promise<List<InetSocketAddress>> delegate,
-			InetAddressMatcher matcher) implements Promise<List<InetSocketAddress>> {
+	class FilteredPromise implements Promise<List<InetSocketAddress>> {
+
+		private final String host;
+
+		private final Promise<List<InetSocketAddress>> delegate;
+
+		FilteredPromise(String host, Promise<List<InetSocketAddress>> delegate) {
+			this.host = host;
+			this.delegate = delegate;
+		}
 
 		@Override
 		public void succeeded(List<InetSocketAddress> result) {
 			try {
 				this.delegate.succeeded(MatchingAddresses.of(result.stream())
-					.toList(this.matcher::matches)
-					.orElseThrow(this.host, this.matcher));
+					.toList(JettyFilteredSocketAddressResolver.this.filter::matches)
+					.orElseThrow(this.host, JettyFilteredSocketAddressResolver.this.filter));
 			}
-			catch (UnmatchedHostException ex) {
+			catch (FilteredHostException ex) {
 				failed(ex);
 			}
 		}

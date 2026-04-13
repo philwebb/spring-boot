@@ -105,7 +105,7 @@ public final class JdkHttpClientBuilder {
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
 		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
-		map.from(proxySelector(settings.inetAddressMatcher())).to(builder::proxy);
+		map.from(proxySelector(settings.inetAddressFilter())).to(builder::proxy);
 		this.customizer.accept(builder);
 		return builder.build();
 	}
@@ -135,8 +135,8 @@ public final class JdkHttpClientBuilder {
 		};
 	}
 
-	private @Nullable ProxySelector proxySelector(@Nullable InetAddressMatcher matcher) {
-		return (matcher != null) ? new JdkFilteredProxySelector(this.proxySelector, matcher) : this.proxySelector;
+	private @Nullable ProxySelector proxySelector(@Nullable InetAddressFilter filter) {
+		return (filter != null) ? new JdkFilteredProxySelector(this.proxySelector, filter) : this.proxySelector;
 	}
 
 }

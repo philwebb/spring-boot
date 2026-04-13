@@ -217,8 +217,8 @@ public final class HttpComponentsHttpClientBuilder {
 			.as(this.tlsSocketStrategyFactory::getTlsSocketStrategy)
 			.to(builder::setTlsSocketStrategy);
 		DnsResolver dnsResolver = this.dnsResolver;
-		if (settings.inetAddressMatcher() != null) {
-			dnsResolver = new HttpComponentsFilteredDnsResolver(dnsResolver, settings.inetAddressMatcher());
+		if (settings.inetAddressFilter() != null) {
+			dnsResolver = new HttpComponentsFilteredDnsResolver(dnsResolver, settings.inetAddressFilter());
 		}
 		builder.setDnsResolver(dnsResolver);
 		this.connectionManagerCustomizer.accept(builder);

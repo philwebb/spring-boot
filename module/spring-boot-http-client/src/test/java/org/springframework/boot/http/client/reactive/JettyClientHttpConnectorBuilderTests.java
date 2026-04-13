@@ -24,7 +24,7 @@ import org.eclipse.jetty.util.SocketAddressResolver;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.InetAddressMatcher;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -92,7 +92,7 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 		SocketAddressResolver socketAddressResolver = mock();
 		JettyClientHttpConnector connector = ClientHttpConnectorBuilder.jetty()
 			.withSocketAddressResolver(socketAddressResolver)
-			.build(HttpClientSettings.defaults().withInetAddressMatcher(InetAddressMatcher.externalAddresses()));
+			.build(HttpClientSettings.defaults().withInetAddressFilter(InetAddressFilter.externalAddresses()));
 		assertThat(connector).extracting("httpClient.resolver")
 			.matches((resolver) -> resolver.getClass().getName().contains("JettyFiltered"));
 		assertThat(connector).extracting("httpClient.resolver.delegate").isSameAs(socketAddressResolver);

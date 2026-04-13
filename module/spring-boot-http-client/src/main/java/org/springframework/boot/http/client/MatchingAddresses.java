@@ -29,7 +29,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * Internal utility to handle matching addresses or throwing a
- * {@link UnmatchedHostException}.
+ * {@link FilteredHostException}.
  *
  * @param <T> the address type
  * @author Phillip Webb
@@ -69,13 +69,13 @@ final class MatchingAddresses<T> {
 			this.check = check;
 		}
 
-		T orElseThrow(String host, InetAddressMatcher matcher) {
-			return orElseThrow(() -> host, matcher);
+		T orElseThrow(String host, InetAddressFilter filter) {
+			return orElseThrow(() -> host, filter);
 		}
 
-		T orElseThrow(Supplier<String> host, InetAddressMatcher matcher) {
+		T orElseThrow(Supplier<String> host, InetAddressFilter filter) {
 			if (this.result == null || this.check.test(this.result)) {
-				throw new UnmatchedHostException(host.get(), matcher);
+				throw new FilteredHostException(host.get(), filter);
 			}
 			return this.result;
 		}

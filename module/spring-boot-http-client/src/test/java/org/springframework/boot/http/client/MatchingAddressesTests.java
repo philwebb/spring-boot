@@ -40,7 +40,7 @@ class MatchingAddressesTests {
 	@Test
 	void toListOrElseThrowWhenEmptyThrowsException() {
 		MatchingAddresses<String> matching = MatchingAddresses.of(Stream.of("127.0.0.1"));
-		assertThatExceptionOfType(UnmatchedHostException.class)
+		assertThatExceptionOfType(FilteredHostException.class)
 			.isThrownBy(() -> matching.toList((address) -> false).orElseThrow("localhost", mock()))
 			.withMessage("Unmatched host 'localhost'");
 	}
@@ -55,7 +55,7 @@ class MatchingAddressesTests {
 	@Test
 	void toArrayOrElseThrowWhenEmptyThrowsException() {
 		MatchingAddresses<String> matching = MatchingAddresses.of(Stream.of("127.0.0.1"));
-		assertThatExceptionOfType(UnmatchedHostException.class)
+		assertThatExceptionOfType(FilteredHostException.class)
 			.isThrownBy(() -> matching.toArray((address) -> false, String[]::new).orElseThrow("localhost", mock()))
 			.withMessage("Unmatched host 'localhost'");
 	}
@@ -69,7 +69,7 @@ class MatchingAddressesTests {
 	@Test
 	void getOrElseThrowWhenEmptyThrowsException() {
 		MatchingAddresses<String> matching = MatchingAddresses.of(Stream.of("127.0.0.1"));
-		assertThatExceptionOfType(UnmatchedHostException.class)
+		assertThatExceptionOfType(FilteredHostException.class)
 			.isThrownBy(() -> matching.get((address) -> false).orElseThrow("localhost", mock()))
 			.withMessage("Unmatched host 'localhost'");
 	}

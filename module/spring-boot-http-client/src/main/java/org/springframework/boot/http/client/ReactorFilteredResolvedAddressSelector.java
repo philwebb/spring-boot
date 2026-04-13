@@ -28,7 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Reactor Netty {@link ResolvedAddressSelector} that filters using a
- * {@link InetAddressMatcher}.
+ * {@link InetAddressFilter}.
  *
  * @param <C> the client configuration implementation
  * @author Phillip Webb
@@ -37,12 +37,12 @@ class ReactorFilteredResolvedAddressSelector<C> implements ResolvedAddressSelect
 
 	private final @Nullable ResolvedAddressSelector<? super C> delegate;
 
-	private final InetAddressMatcher matcher;
+	private final InetAddressFilter filter;
 
 	ReactorFilteredResolvedAddressSelector(@Nullable ResolvedAddressSelector<? super C> delegate,
-			InetAddressMatcher matcher) {
+			InetAddressFilter filter) {
 		this.delegate = delegate;
-		this.matcher = matcher;
+		this.filter = filter;
 	}
 
 	@Override
@@ -56,11 +56,11 @@ class ReactorFilteredResolvedAddressSelector<C> implements ResolvedAddressSelect
 		}
 		return MatchingAddresses.of(resolvedAddresses.stream())
 			.toList(this::matches)
-			.orElseThrow(() -> hostString(resolvedAddresses), this.matcher);
+			.orElseThrow(() -> hostString(resolvedAddresses), this.filter);
 	}
 
 	private boolean matches(SocketAddress address) {
-		return (address instanceof InetSocketAddress socketAddress) ? this.matcher.matches(socketAddress) : true;
+		return (address instanceof InetSocketAddress socketAddress) ? this.filter.matches(socketAddress) : true;
 	}
 
 	private String hostString(List<? extends SocketAddress> resolvedAddresses) {

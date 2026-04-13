@@ -105,7 +105,7 @@ public final class ReactorClientHttpConnectorBuilder
 	/**
 	 * Return a new {@link ReactorHttpClientBuilder} that uses the
 	 * {@link ResolvedAddressSelector}. This method should be used in favor of a
-	 * customizer so that {@link HttpClientSettings#inetAddressMatcher()} can be applied.
+	 * customizer so that {@link HttpClientSettings#inetAddressFilter()} can be applied.
 	 * @param resolvedAddressSelector the resolved address selector to use
 	 * @return a new {@link ReactorHttpClientBuilder} instance
 	 * @since 4.1.0
