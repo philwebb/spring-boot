@@ -158,14 +158,14 @@ class IpAddressTests {
 
 	@Test
 	void matcherWhenIpv4DoesNotMatchIpv6() {
-		IpAddress address = IpAddress.of("192.168.1.1");
-		assertThatMatcher(address).doesNotMatch("fe80::21f:5bff:fe33:bd68");
+		assertThatMatcher(IpAddress.of("192.168.1.1")).doesNotMatch("fe80::21f:5bff:fe33:bd68");
+		assertThatMatcher(IpAddress.of("8.8.8.8")).doesNotMatch("0808:0808::");
 	}
 
 	@Test
 	void matcherWhenIpv6DoesNotMatchIpv4() {
-		IpAddress address = IpAddress.of("fe80::21f:5bff:fe33:bd68");
-		assertThatMatcher(address).doesNotMatch("192.168.1.1");
+		assertThatMatcher(IpAddress.of("fe80::21f:5bff:fe33:bd68")).doesNotMatch("192.168.1.1");
+		assertThatMatcher(IpAddress.of("0808:0808::/32")).doesNotMatch("8.8.8.8");
 	}
 
 	@Test

@@ -190,7 +190,7 @@ public interface InetAddressFilter {
 	 * @see #internalAddresses()
 	 */
 	static InetAddressFilter externalAddresses() {
-		return not(internalAddresses());
+		return routable().andNot(InternalInetAddressFilter.instance);
 	}
 
 	/**
@@ -204,7 +204,24 @@ public interface InetAddressFilter {
 	 * @see #externalAddresses()
 	 */
 	static InetAddressFilter internalAddresses() {
-		return InternalInetAddressFilter.instance;
+		return routable().and(InternalInetAddressFilter.instance);
+	}
+
+	/**
+	 * Returns a filter that will match all routable addresses (not all zeros).
+	 * @return a filter for routable IP addresses
+	 */
+	static InetAddressFilter routable() {
+		return (address) -> {
+			Assert.notNull(address, "'address' must not be null");
+			byte[] bytes = address.getAddress();
+			for (byte b : bytes) {
+				if (b != 0) {
+					return true;
+				}
+			}
+			return false;
+		};
 	}
 
 	/**

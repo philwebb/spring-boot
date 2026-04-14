@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Rob Winch
  * @author Phillip Webb
  */
-class InetAddressMatcherTests {
+class InetAddressFilterTests {
 
 	private static InetAddressMatcherAssert assertThat(InetAddressFilter matcher) {
 		return new InetAddressMatcherAssert(matcher);
@@ -286,6 +286,7 @@ class InetAddressMatcherTests {
 		void ipv4Loopback() {
 			InetAddressFilter matcher = InetAddressFilter.externalAddresses();
 			assertThat(matcher).doesNotMatch("127.0.0.1");
+			assertThat(matcher).doesNotMatch("127.1.1.1");
 		}
 
 		@Test
@@ -300,6 +301,7 @@ class InetAddressMatcherTests {
 		void ipv6Loopback() {
 			InetAddressFilter matcher = InetAddressFilter.externalAddresses();
 			assertThat(matcher).doesNotMatch("::1");
+			assertThat(matcher).doesNotMatch("0000::1");
 		}
 
 		@Test
@@ -307,6 +309,19 @@ class InetAddressMatcherTests {
 			InetAddressFilter matcher = InetAddressFilter.externalAddresses();
 			assertThat(matcher).doesNotMatch("fc00::1");
 			assertThat(matcher).doesNotMatch("fd00::1");
+		}
+
+		@Test
+		void ipv4NonRoutable() {
+			InetAddressFilter matcher = InetAddressFilter.externalAddresses();
+			assertThat(matcher).doesNotMatch("0.0.0.0");
+		}
+
+		@Test
+		void ipv6NonRoutable() {
+			InetAddressFilter matcher = InetAddressFilter.externalAddresses();
+			assertThat(matcher).doesNotMatch("0000:0000:0000:0000:0000:0000:0000:0000");
+			assertThat(matcher).doesNotMatch("::");
 		}
 
 	}
@@ -326,6 +341,7 @@ class InetAddressMatcherTests {
 		void ipv4Loopback() {
 			InetAddressFilter matcher = InetAddressFilter.internalAddresses();
 			assertThat(matcher).matches("127.0.0.1");
+			assertThat(matcher).matches("127.1.1.1");
 			assertThat(matcher).matches("127.0.0.255");
 		}
 
@@ -333,6 +349,7 @@ class InetAddressMatcherTests {
 		void ipv6Loopback() {
 			InetAddressFilter matcher = InetAddressFilter.internalAddresses();
 			assertThat(matcher).matches("::1");
+			assertThat(matcher).matches("0000::1");
 		}
 
 		@Test
@@ -369,6 +386,7 @@ class InetAddressMatcherTests {
 		@Test
 		void ipv4MappedIpv6Internal() {
 			InetAddressFilter matcher = InetAddressFilter.internalAddresses();
+			assertThat(matcher).matches("::ffff:127.0.0.1");
 			assertThat(matcher).matches("::ffff:192.168.1.1");
 			assertThat(matcher).matches("::ffff:169.254.169.254");
 			assertThat(matcher).matches("::ffff:10.0.0.1");
@@ -462,6 +480,40 @@ class InetAddressMatcherTests {
 		void ipv6Public() {
 			InetAddressFilter matcher = InetAddressFilter.internalAddresses();
 			assertThat(matcher).doesNotMatch("2001:4860:4860::8888");
+		}
+
+		@Test
+		void ipv4NonRoutable() {
+			InetAddressFilter matcher = InetAddressFilter.internalAddresses();
+			assertThat(matcher).doesNotMatch("0.0.0.0");
+		}
+
+		@Test
+		void ipv6NonRoutable() {
+			InetAddressFilter matcher = InetAddressFilter.internalAddresses();
+			assertThat(matcher).doesNotMatch("0000:0000:0000:0000:0000:0000:0000:0000");
+			assertThat(matcher).doesNotMatch("::");
+		}
+
+	}
+
+	@Nested
+	class Routable {
+
+		@Test
+		void nonRoutable() {
+			InetAddressFilter matcher = InetAddressFilter.routable();
+			assertThat(matcher).doesNotMatch("0.0.0.0");
+			assertThat(matcher).doesNotMatch("0000:0000:0000:0000:0000:0000:0000:0000");
+			assertThat(matcher).doesNotMatch("::");
+
+		}
+
+		@Test
+		void routable() {
+			InetAddressFilter matcher = InetAddressFilter.routable();
+			assertThat(matcher).matches("0.0.0.1");
+			assertThat(matcher).matches("0000:0000:0000:0000:0000:0000:0000:0001");
 		}
 
 	}
