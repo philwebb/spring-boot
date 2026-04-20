@@ -171,7 +171,6 @@ Since the Gradle file uses both the `org.springframework.boot` and `com.google.p
 The `.proto` files should be added to `src/main/proto`.
 
 TIP: If you don't use `org.springframework.boot` plugin, or you want to configure the plugin directly, refer to the https://github.com/google/protobuf-gradle-plugin[protobuf-gradle-plugin documentation].
-If you use Spring Boot's dependency management the `protobuf-java.version` and `grpc-java.version` properties will be useful.
 
 
 
@@ -190,19 +189,76 @@ In this example, we're using the javadoc:[format=annotation] annotation and assu
 
 ...
 
-If the application makes used of `spring-boot-starter-grpc-server` then Netty will be used as the server implementation listening on port `9090`.
+If the application makes used of `spring-boot-starter-grpc-server`, then Netty will be used as the server implementation listening on port `9090`.
+
+You can test your application using https://github.com/fullstorydev/grpcurl[grpcurl]:
+
+
+[source,shell]
+----
+$ grpcurl -d '{"name":"Spring"}' -plaintext localhost:9090 HelloWorld.SayHello
+----
+
+[source,json]
+----
+{
+  "message": "Hello ==\u003e Spring"
+}
+----
+
+// FIXME check if this is the output
 
 
 
 === Switching to a Netty Shaded Server
 
-If you find that the version of Netty provided by the `spring-boot-starter-grpc-server` starer POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
+If you find that the version of Netty provided by the `spring-boot-starter-grpc-server` starter POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
 
 To switch, you can excluded `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
 For example:
 
-...
 
+[tabs]
+======
+
+Maven::
++
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-grpc-server</artifactId>
+	<exclusions>
+		<!-- Exclude the gRPC Netty dependency -->
+		<exclusion>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use gRPC Netty Shaded instead -->
+<dependency>
+	<groupId>io.grpc</groupId>
+	<artifactId>grpc-netty-shaded</artifactId>
+</dependency>
+----
++
+
+Gradle::
++
+[source,gradle]
+----
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-grpc-server') {
+		// Exclude the gRPC Netty dependency
+		exclude group: 'io.grpc', module: 'grpc-netty'
+	}
+	// Use gRPC Netty Shaded instead
+	implementation "io.grpc:grpc-netty-shaded"
+}
+----
++
+======
 
 
 === Switching to a Servlet Container
@@ -213,20 +269,64 @@ To do so, your Servlet Container must be configured to support HTTP/2.
 To switch to the Servlet gRPC implements, you can exclude `io.grpc:grpc-netty` and include `io.grpc:grpc-servlet-jakarta`.
 For example:
 
-...
+[tabs]
+======
 
-TIP: Remember to include a Servlet Container dependency, for example with `spring-boot-starter-tomcat`, and to set `server.http2.enabled` to `true`.
+Maven::
++
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-webmvc</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-grpc-server</artifactId>
+	<exclusions>
+		<!-- Exclude the gRPC Netty dependency -->
+		<exclusion>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use gRPC Servlet Jakarta instead -->
+<dependency>
+	<groupId>io.grpc</groupId>
+	<artifactId>grpc-servlet-jakarta</artifactId>
+</dependency>
+----
++
+
+Gradle::
++
+[source,gradle]
+----
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-webmvc') {
+	implementation('org.springframework.boot:spring-boot-starter-grpc-server') {
+		// Exclude the gRPC Netty dependency
+		exclude group: 'io.grpc', module: 'grpc-netty'
+	}
+	// Use gRPC Servlet Jakarta instead
+	implementation "io.grpc:grpc-servlet-jakarta"
+}
+----
++
+======
+
+TIP: Remember to include a Servlet Container dependency, for example using `spring-boot-starter-tomcat`, and to set `server.http2.enabled` to `true`.
 
 NOTE: When using a servlet container, certain gRPC server configuration properties are not relevant and will be ignored.
 For example, configprop:spring.grpc.server.port[]] is ignored since configprop:server.port[] used used to set a web server port.
 
 
+
 === SSL Support
 
 SSL can be configured for both `grpc-netty` and `grpc-netty-shaded` servers using SSL bundles.
-See the SSL core features documentation for details on how to declare an SSL bundle.
-
-FIXME https://docs.spring.io/spring-boot/reference/features/ssl.html#page-title
+See the xref:reference:reatures/ssl.adoc[SSL core features documentation] for details on how to declare an SSL bundle.
 
 One your bundle has been defined, you can use the following properties to use it:
 
@@ -262,14 +362,14 @@ This allows clients to browse the metadata of your services and download their `
 The reflection service resides in the `io.grpc:grpc-services` library which is an optional dependency.
 You will need to add the dependency to your project in order for auto-configuration to apply.
 
-TIP: If you have the `io.grpc:grpc-services` library but prefer that it isn't auto-configured you can set configprop:spring.grpc.server.reflection.enabled[] to `false`.
+TIP: If you have the `io.grpc:grpc-services` library but prefer that reflection isn't auto-configured, you can set configprop:spring.grpc.server.reflection.enabled[] to `false`.
 
 
 
 === Server Health
 
 A gRPC server can use provide health information using a standard service API (https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto[health/v1]).
-This allows clients to check on the health of your server a route traffic appropriately.
+This allows clients to check on the health of your server services a route traffic appropriately.
 
 Spring Boot provides a bridge between its own `spring-boot-health` module and the standard gRPC health service.
 Health information is provided whenever the `io.grpc:grpc-services` and `org.springframework.boot:spring-boot-health` modules are on your classpath.
@@ -300,7 +400,7 @@ spring:
             - redis
 ----
 
-TIP: You can set configprop:spring.grpc.server.health.include-overall-health[] to `false` to disable the overall server status health if you only want to provide service specific health.
+TIP: You can set configprop:spring.grpc.server.health.include-overall-health[] to `false` to disable the overall server status health if you only want to provide service-specific health.
 
 
 
@@ -322,7 +422,7 @@ spring:
           delay: 2s
 ----
 
-You can also set configprop:spring.grpc.server.health.schedule.enabled[] to `false` if want to send health updates some other way.
+You can also set configprop:spring.grpc.server.health.schedule.enabled[] to `false` if want to send health updates in some other way.
 
 
 
@@ -357,66 +457,154 @@ FIXME
 TIP: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest[format=full].
 
 
+
 === OAuth2 Resource Server
 
+https://oauth.net/2/[OAuth2] is a widely used authorization framework.
+Spring Boot's OAuth2 Resource Server support in compatible with gRPC and may be configured in the usual way.
 
-
-Similar to the way Spring Boot works https://docs.spring.io/spring-boot/reference/web/spring-security.html#web.security.oauth2.server[with normal web applications], if you have the `spring-security-oauth2-resource-server` dependency on the classpath, Spring gRPC will be able to automatically configure an OAuth2 resource server.
-There are 2 choices for the token types, just the same as in Spring Boot, and they are configured with the same application properties and optional custom beans.
-
-For JWT you need to set up either the JWK Set or OIDC Issuer URI.
-The JWK Set URI is set via `spring.security.oauth2.resourceserver.jwt.jwk-set-uri` (it's an endpoint in the authorization server).
-You also need to have the `spring-security-oauth2-jose` dependency on the classpath to handle the JWT decoding.
-
-For opaque tokens, it works exactly the same as with a regular web application, with the same application properties. E.g.
-
-[source,properties]
-----
-spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
-spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
-spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret
-----
+For details of how to configure an OAuth2 Resource Server to use with your gRPC server application, see the xref:security/oauth2.adoc#security.oauth2.server["`OAuth2`" section] of under "`Security`".
 
 
 
 == Writing a gRPC Client Application
 
+Spring Boot provides a `spring-boot-grpc-client` module and a `spring-boot-starter-grpc-client` starter POM that you can use for client applications.
+
+Clients can all remote gRPC services by importing one or more of the "`sub`" classes generated from your `.proto` file.
+You can use the javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotation to import the sub classes you want to use.
+
+Each import includes a `target` which can either be a logical channel name or the base URL of the remote server.
+We typically recommend using channel names rather than hard-coding URLs.
+
+Here's a typical example:
+
+NOTE: If you don't specify a `target` then "`default`" is used.
+
+TIP: You can use the `basePackageClasses` or `basePackages` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] to import all stubs in given package.
+
+=== Channel Properties
+
+When the `target` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] uses a logical channel name, you'll need to provide some properties so that Spring Boot can find the actually gRPC server to call.
+
+To do that, you can add an entry using `spring.grpc.channel.<name>.*` properties.
+Typically, you'll configure the actual real `target`, along with any other settings that are unique to the channel.
+
+For example, the following will configure `myservice` to use the real target of `static://grpc.example.com:9090`.
+It also changes the keep-alive timeout and the maximum message size permitting:
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    client:
+      channel:
+        myservice:
+          target: static://grpc.example.com:9090
+          inbound:
+            keepalive:
+              timeout: 40s
+            message:
+              max-size: 8MB
+----
+
+
+=== Using Stub Beans
+
+With your javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotations in place, and your properties written, you can use stubs as you would any other bean.
+
+For example, here's the `HelloWorldStub` being injected into a `ApplicationRunner` bean:
+
+...
 
 
 
-Writing the class
 
-Servlet Based
+=== Switching to Netty Shaded Client Transport
 
-Netty Based
+Under the hood, remote gRPC network calls are made using Netty.
+If you find that the version of Netty provided by the `spring-boot-starter-grpc-client` starter POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
 
-In process
+To switch, you can excluded `io.grpc:grpc-netty` and include `io.grpc:grpc-netty-shaded`.
+For example:
 
-Reflection
 
-Health
+[tabs]
+======
+
+Maven::
++
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-grpc-client</artifactId>
+	<exclusions>
+		<!-- Exclude the gRPC Netty dependency -->
+		<exclusion>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use gRPC Netty Shaded instead -->
+<dependency>
+	<groupId>io.grpc</groupId>
+	<artifactId>grpc-netty-shaded</artifactId>
+</dependency>
+----
++
+
+Gradle::
++
+[source,gradle]
+----
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-grpc-client') {
+		// Exclude the gRPC Netty dependency
+		exclude group: 'io.grpc', module: 'grpc-netty'
+	}
+	// Use gRPC Netty Shaded instead
+	implementation "io.grpc:grpc-netty-shaded"
+}
+----
++
+======
+
+
+
+=== SSL Support
+
+
+
+bypassCertificateValidation
+
+
+
+
+
+
+
+
 
 Observability
 
 Exception Handling
 
-SSL
 
 Securiry
 
-ImportGrpcClients
 
-Shaded Netty Client
 
-InProcess Channel
 
-Channel Configuration
 
-SSL
+
 
 Security
 
 OAuth2 Clients
 
 Testing
+
+
 
