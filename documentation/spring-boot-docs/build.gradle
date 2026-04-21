@@ -150,6 +150,7 @@ dependencies {
 	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.grpc:grpc-stub")
+	implementation("io.grpc:grpc-netty")
 	implementation("io.micrometer:micrometer-jakarta9")
 	implementation("io.micrometer:micrometer-tracing")
 	implementation("io.micrometer:micrometer-registry-graphite")

@@ -2596,7 +2596,7 @@ bom {
 			github("https://github.com/spring-projects/spring-grpc")
 			javadoc(version -> "https://docs.spring.io/spring-grpc/docs/%s/api"
 					.formatted(version.forMajorMinorGeneration()), "org.springframework.grpc")
-			docs(version -> "https://docs.spring.io/spring-grpc/docs/%s/reference"
+			docs(version -> "https://docs.spring.io/spring-grpc/reference/%s"
 					.formatted(version.forMajorMinorGeneration()))
 			releaseNotes("https://github.com/spring-projects/spring-grpc/releases/tag/v{version}")
 		}
