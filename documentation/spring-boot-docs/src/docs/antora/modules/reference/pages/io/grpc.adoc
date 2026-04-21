@@ -16,7 +16,7 @@ A `.proto` file defines the services and messages that your application can cons
 
 Here's an example of a typical `.proto` file that uses https://protobuf.dev/programming-guides/proto3/[the `proto3` revision] of the protocol buffers language:
 
-[,proto]
+[,protobuf]
 ----
 syntax = "proto3";
 
@@ -174,6 +174,7 @@ TIP: If you don't use `org.springframework.boot` plugin, or you want to configur
 
 
 
+[[io.grpc.server]]
 == Writing a gRPC Server Application
 
 Spring Boot provides a `spring-boot-grpc-server` module and a `spring-boot-starter-grpc-server` starter POM that you can use for server applications.
@@ -182,17 +183,18 @@ In order to write the actual server code, you'll need to extended one or more of
 Spring gRPC will automatically expose any bean that implements javadoc:io.grpc.BindableService[] as a gRPC server.
 Since all `.proto` generated classes implement javadoc:io.grpc.BindableService[], adding them as beans is enough to expose them over gRPC.
 
-TIP: For more details see ...
+TIP: For more details see https://docs.spring.io/spring-grpc/reference/server.html#_create_a_grpc_service[the Spring gRPC documentation].
+
+// FIXME replace docs with prop
 
 The following example shows how the `HelloWorld` service from the `.proto` file above could be implemented.
-In this example, we're using the javadoc:[format=annotation] annotation and assuming that the code is in a package that will be picked up by component scanning:
+In this example, we're using the javadoc:org.springframework.grpc.server.service.GrpcService[format=annotation] annotation and assuming that the code is in a package that will be picked up by component scanning:
 
-...
+include-code::MyHelloWorldService[]
 
 If the application makes used of `spring-boot-starter-grpc-server`, then Netty will be used as the server implementation listening on port `9090`.
 
 You can test your application using https://github.com/fullstorydev/grpcurl[grpcurl]:
-
 
 [source,shell]
 ----
@@ -202,14 +204,13 @@ $ grpcurl -d '{"name":"Spring"}' -plaintext localhost:9090 HelloWorld.SayHello
 [source,json]
 ----
 {
-  "message": "Hello ==\u003e Spring"
+  "message": "Hello 'Spring'"
 }
 ----
 
-// FIXME check if this is the output
 
 
-
+[[io.grpc.server.netty-shaded]]
 === Switching to a Netty Shaded Server
 
 If you find that the version of Netty provided by the `spring-boot-starter-grpc-server` starter POM isn't compatible with other libraries you use, you can switch to a "`shaded`" version.
@@ -261,6 +262,8 @@ dependencies {
 ======
 
 
+
+[[io.grpc.server.servlet]]
 === Switching to a Servlet Container
 
 It's possible to expose gRPC services using a regular Servlet Container such as Tomcat rather than using Netty.
@@ -323,12 +326,13 @@ For example, configprop:spring.grpc.server.port[]] is ignored since configprop:s
 
 
 
+[[io.grpc.server.ssl]]
 === SSL Support
 
 SSL can be configured for both `grpc-netty` and `grpc-netty-shaded` servers using SSL bundles.
-See the xref:reference:reatures/ssl.adoc[SSL core features documentation] for details on how to declare an SSL bundle.
+See the xref:reference:features/ssl.adoc[SSL core features documentation] for details on how to declare an SSL bundle.
 
-One your bundle has been defined, you can use the following properties to use it:
+One your bundle has been defined, you can use the following properties in your gRPC server application to use it:
 
 [configprops,yaml]
 ----
@@ -341,10 +345,11 @@ spring:
 
 Client authentication levels are also supported when configprop:spring.grpc.server.ssl.client-auth[] is set to `optional` or `require`.
 
-TIP: To temporarily disable SSL support, for example to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
+TIP: To temporarily disable server SSL support, for example to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
 
 
 
+[[io.grpc.server.in-process]]
 === Using an In-Process Server
 
 You can run an in-process server by including the `io.grpc:grpc-inprocess` dependency on your classpath and specifying the configprop:spring.grpc.server.inprocess.name[] property.
@@ -354,6 +359,7 @@ The name you provide can be used as a client channel target using the form `in-p
 
 
 
+[[io.grpc.server.reflection]]
 === Reflection
 
 When it's available, Spring Boot will auto-configure https://grpc.io/docs/guides/reflection/[gRPC Reflection service].
@@ -366,6 +372,7 @@ TIP: If you have the `io.grpc:grpc-services` library but prefer that reflection 
 
 
 
+[[io.grpc.server.health]]
 === Server Health
 
 A gRPC server can use provide health information using a standard service API (https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto[health/v1]).
@@ -378,6 +385,7 @@ If you don't health indicators to be exposed, you can set configprop:spring.grpc
 
 
 
+[[io.grpc.server.health.service-mappings]]
 ==== Service Specific Health Mappings
 
 By default, health information is provided for the overall server status (`""`) using all available health indicators.
@@ -404,6 +412,7 @@ TIP: You can set configprop:spring.grpc.server.health.include-overall-health[] t
 
 
 
+[[io.grpc.server.health.push]]
 ==== Push Configuration
 
 Unlike web-based health checks, gRPC health information is periodically pushed rather than pulled.
@@ -426,8 +435,12 @@ You can also set configprop:spring.grpc.server.health.schedule.enabled[] to `fal
 
 
 
+[[io.grpc.server.security]]
 === Securing gRPC Server Applications
 
+
+
+[[io.grpc.server.security.netty]]
 ==== Netty Based Servers
 
 Spring gRPC includes features that allow you to secure your Netty based server applications declaratively using Spring Security.
@@ -440,9 +453,10 @@ For more details, please see https://docs.spring.io/spring-grpc/reference/server
 
 
 
+[[io.grpc.server.security.servlet]]
 ==== Servlet Container Based Servers
 
-If your gRPC server is running FIXME[within a standard Servlet] Container, you can use typical [web security configuration] to secure your application.
+If your gRPC server is running FIXME[within a standard Servlet Container], you can use typical [web security configuration] to secure your application.
 Spring Boot will auto-configre javadoc:org.springframework.boot.grpc.server.autoconfigure.GrpcServerExecutorProvider[] and javadoc:org.springframework.grpc.server.security.SecurityContextServerInterceptor[] beans to ensure that Spring Security works correctly.
 
 Cross-Site Request Forgery (CSRF) protection is incompatible with the gRPC protocol and will be disabled by default for all gRPC requests.
@@ -452,13 +466,14 @@ To help with manual Security configuration, Spring Boot provides request matcher
 Matches are available for both servlet and reactive stacks.
 For example, the following will include all gRPC services with the exception of "`special`".
 
-FIXME
+// FIXME sample
 
 TIP: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest[format=full].
 
 
 
-=== OAuth2 Resource Server
+[[io.grpc.server.security.oauth-resource-server]]
+==== OAuth2 Resource Server
 
 https://oauth.net/2/[OAuth2] is a widely used authorization framework.
 Spring Boot's OAuth2 Resource Server support in compatible with gRPC and may be configured in the usual way.
@@ -467,6 +482,7 @@ For details of how to configure an OAuth2 Resource Server to use with your gRPC 
 
 
 
+[[io.grpc.client]]
 == Writing a gRPC Client Application
 
 Spring Boot provides a `spring-boot-grpc-client` module and a `spring-boot-starter-grpc-client` starter POM that you can use for client applications.
@@ -483,6 +499,9 @@ NOTE: If you don't specify a `target` then "`default`" is used.
 
 TIP: You can use the `basePackageClasses` or `basePackages` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] to import all stubs in given package.
 
+
+
+[[io.grpc.client.channel-properties]]
 === Channel Properties
 
 When the `target` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] uses a logical channel name, you'll need to provide some properties so that Spring Boot can find the actually gRPC server to call.
@@ -509,17 +528,18 @@ spring:
 ----
 
 
+[[io.grpc.client.stubs]]
 === Using Stub Beans
 
 With your javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotations in place, and your properties written, you can use stubs as you would any other bean.
 
 For example, here's the `HelloWorldStub` being injected into a `ApplicationRunner` bean:
 
-...
+// FIXME sample
 
 
 
-
+[[io.grpc.client.netty-shaded]]
 === Switching to Netty Shaded Client Transport
 
 Under the hood, remote gRPC network calls are made using Netty.
@@ -572,39 +592,135 @@ dependencies {
 ======
 
 
-
+[[io.grpc.client.ssl]]
 === SSL Support
 
-
-
-bypassCertificateValidation
-
-
+Client gRPC applications can connect to gRPC services using SSL/TSL encrypted connections.
+You can configure gRPC connections to use standard one-way-TLS, or mutual TLS
 
 
 
+[[io.grpc.client.ssl.one-way]]
+==== Standard one-way TLS
+
+To use standard one-way TLS, you can set the `ssl.enabled` property to `true` in your channel properties.
+For example, the following will enabled an SSL/TLS connection for the `myservice` channel:
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    client:
+      channel:
+        myservice:
+          target: static://grpc.example.com:9090
+          ssl:
+            enabled: true
+----
 
 
 
+[[io.grpc.client.ssl.mutual]]
+==== Mutual TLS
 
-Observability
+Mutual TLS (mTLS) is a security protocol that requires both the client and the server to present certificates to each other.
 
-Exception Handling
-
-
-Securiry
-
+To use standard mutual TLS, you can set the `ssl.bundle` property in your channel properties.
 
 
+For example, the following will enabled an SSL/TLS connection for the `myservice` channel:
+See the xref:reference:features/ssl.adoc[SSL core features documentation] for details on how to declare an SSL bundle.
+
+Here is an example the configures the `myservice` channel to use the `mybundle` bundle for mutual TLS:
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    client:
+      channel:
+        myservice:
+          target: static://grpc.example.com:9090
+          ssl:
+            bundle: mybundle
+----
+
+[TIP]
+---
+To temporarily disable client SSL support, for example to aid with testing, you can set `bypass-certificate-validation` to `true` on your channel config:
+
+[configprops,yaml]
+----
+spring:
+  grpc:
+    client:
+      channel:
+        myservice:
+          target: static://grpc.example.com:9090
+          bypass-certificate-validation: true
+----
+---
+
+
+[[io.grpc.client.in-process]]
+=== Using an In-Process Channels
+
+You can communicate with an xref:io/grpc.adoc#io.grpc.server.in-process[in-process server] (i.e. not listening on a network port) by including the io.grpc.grpc-inprocess dependency on your classpath.
+
+In this mode, the in-process channel factory is auto-configured in addition to the regular channel factories (e.g. Netty). However, to prevent users from having to deal with multiple channel factories, a composite channel factory is configured as the primary channel factory bean. The composite consults its composed factories to find the first one that supports the channel target.
+	To use the inprocess server the channel target must be set to in-process:<in-process-name>
+
+To disable the inprocess channel factory, you can set the spring.grpc.client.inprocess.enabled property to false.
 
 
 
+[[io.grpc.client.observability]]
+=== Observability
 
-Security
+Spring Boot provides auto-configuration of the javadoc:io.micrometer.core.instrument.binder.grpc.ObservationGrpcClientInterceptor[] whenever Micrometer is available.
+This interceptor provides observability into your gRPC client applications.
 
-OAuth2 Clients
-
-Testing
-
+If you use Micrometer, but prefer to not to use it for gRPC, you can set configprop:spring.grpc.client.observation.enabled[] to `false`.
 
 
+
+[[io.grpc.testing]]
+== Testing gRPC Applications
+
+To help test your gRPC client and server applications you can use the `spring-boot-grpc-test` module or the `spring-boot-starter-grpc-test` starter POM.
+
+
+[[io.grpc.testing.test-transport]]
+=== Using In-Process Test Transport
+
+The javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] annotation allows you to quickly replace gRPC communication channels with in-process channels specifically designed for testing.
+Unlike regular in-process channels, these test channels to not require any configuration.
+
+Using test gRPC transport means that you don't need to actually listen on a network port to start your application.
+This allows your tests to run quickly, whilst still ensuring that your application works as expected.
+
+Using javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] will be default:
+
+* Configure test javadoc:org.springframework.grpc.server.GrpcServerFactory[] / javadoc:org.springframework.grpc.client.GrpcChannelFactory[] beans
+* Disable any gRPC servelt registration.
+* Disable javadoc:org.springframework.grpc.server.GrpcServerFactory[] bean auto-configuration.
+* Disable javadoc:org.springframework.grpc.client.GrpcChannelFactory[] bean auto-configuration.
+
+The following example shows how you can use  javadoc:org.springframework.boot.grpc.test.autoconfigure.AutoConfigureTestGrpcTransport[format=annotation] to test a gRPC server application:
+
+// FIXME sample
+
+
+
+[[io.grpc.testing.local-server-port]]
+=== Testing With a Running Server
+
+Id you prefer to test your gRPC application by starting the real server and using the actual network connection, we recommend that you use random ports.
+This will ensure that you can run your tests in any environment, and that you won't accidentally call real services.
+
+To start a gRPC server using a random port, set configprop:spring.grpc.server.port[] to `0`.
+You can use the javadoc:org.springframework.boot.grpc.test.autoconfigure.LocalGrpcServerPort[format=annotation] annotation to obtain the actual port that the server started on.
+
+Here's an example test:
+
+// FIXME sample

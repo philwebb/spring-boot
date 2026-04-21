@@ -50,7 +50,7 @@ class GrpcDisableCsrfHttpConfigurer extends AbstractHttpConfigurer<GrpcDisableCs
 	public void init(HttpSecurity http) {
 		ApplicationContext context = http.getSharedObject(ApplicationContext.class);
 		if (context != null && isCsrfConfigurerPresent(http) && hasBean(context, GrpcServiceDiscoverer.class)
-				&& hasBean(context, GrpcServletRegistration.class) && isCsrfEnabled(context)) {
+				&& hasBean(context, GrpcServletRegistration.class) && !isCsrfEnabled(context)) {
 			http.csrf(this::disable);
 		}
 	}
@@ -65,7 +65,7 @@ class GrpcDisableCsrfHttpConfigurer extends AbstractHttpConfigurer<GrpcDisableCs
 	}
 
 	private boolean isCsrfEnabled(ApplicationContext context) {
-		return context.getEnvironment().getProperty("spring.grpc.server.security.csrf.enabled", Boolean.class, true);
+		return context.getEnvironment().getProperty("spring.grpc.server.security.csrf.enabled", Boolean.class, false);
 	}
 
 	private void disable(CsrfConfigurer<HttpSecurity> csrf) {

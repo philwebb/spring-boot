@@ -163,6 +163,7 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
 		attributes.put("version-protobuf-gradle-plugin",
 				(String) this.projectProperties.get("protobufGradlePluginVersion"));
+		addDependencyVersion(attributes, "grpc-api", "io.grpc:grpc-api");
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
 		addDependencyVersion(attributes, "jackson-core", "tools.jackson.core:jackson-core");
 		addDependencyVersion(attributes, "jackson-databind", "tools.jackson.core:jackson-databind");

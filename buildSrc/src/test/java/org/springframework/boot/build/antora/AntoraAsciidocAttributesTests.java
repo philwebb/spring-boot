@@ -286,6 +286,7 @@ class AntoraAsciidocAttributesTests {
 		addMockJacksonCoreVersion(versions, "jackson-core", version);
 		addMockJacksonCoreVersion(versions, "jackson-databind", version);
 		addMockJacksonCoreVersion(versions, "jackson-databind", version);
+		versions.put("io.grpc:grpc-api", version);
 		versions.put("org.apache.pulsar:pulsar-client-api", version);
 		versions.put("tools.jackson.dataformat:jackson-dataformat-xml", version);
 		return versions;
