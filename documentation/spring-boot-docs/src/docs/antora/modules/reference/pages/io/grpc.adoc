@@ -341,7 +341,7 @@ spring:
         bundle: mysslbundle
 ----
 
-Client authentication can also be enforced by setting configprop:spring.grpc.server.ssl.client-auth[] to `optional` or `require`.
+Client authentication can also be configured by setting configprop:spring.grpc.server.ssl.client-auth[] to `optional` or `require`.
 
 TIP: To temporarily disable server SSL support, for example to aid with testing, you can set configprop:spring.grpc.server.ssl.enabled[] to `false`.
 
@@ -466,7 +466,7 @@ For example, the following will include all gRPC services with the exception of 
 
 include-code::MySecurityConfiguration[]
 
-TIP: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest[format=full].
+NOTE: For reactive matches use javadoc:org.springframework.boot.grpc.server.autoconfigure.security.web.servlet.GrpcRequest[format=full].
 
 
 
@@ -485,15 +485,15 @@ For details of how to configure an OAuth2 Resource Server to use with your gRPC 
 
 Spring Boot provides a `spring-boot-grpc-client` module and a `spring-boot-starter-grpc-client` starter POM that you can use for client applications.
 
-Clients can call remote gRPC services by importing one or more of the "`sub`" classes generated from their `.proto` file.
-You can use the javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotation to import the sub classes you want to use.
+Clients can call remote gRPC services by importing one or more of the "`stub`" classes generated from their `.proto` file.
+You can use the javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] annotation to import the stub classes you want to use.
 
 Each import includes a `target` which can either be a logical channel name, or the base URL of the remote server.
-We typically recommend using channel names rather than hard-coding URLs.
+We typically recommend using channel names rather than hard-coding targets.
 
 Here's a typical example:
 
-incode-code::MyApplication[]
+include-code::MyApplication[]
 
 NOTE: If you don't specify a `target` then "`default`" is used.
 
@@ -504,7 +504,7 @@ TIP: You can use the `basePackageClasses` or `basePackages` attribute of javadoc
 [[io.grpc.client.channel-properties]]
 === Channel Properties
 
-When the `target` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] uses a logical channel name, you'll need to provide some properties so that Spring Boot can find the actually gRPC server to call.
+When the `target` attribute of javadoc:org.springframework.grpc.client.ImportGrpcClients[format=annotation] uses a logical channel name, you'll need to provide some properties so that Spring Boot can find the actual gRPC server to call.
 
 To do that, you can add an entry using `spring.grpc.channel.<name>.*` properties.
 Typically, you'll configure the actual real `target`, along with any other settings that are unique to the channel.
@@ -652,7 +652,6 @@ spring:
     client:
       channel:
         myservice:
-          target: static://grpc.example.com:9090
           bypass-certificate-validation: true
 ----
 ====
