@@ -5,7 +5,7 @@ import org.springframework.boot.docs.features.springapplication.MyApplication
 import org.springframework.boot.runApplication
 import org.springframework.grpc.client.ImportGrpcClients
 
-@SpringBootApplication
+@SpringBootApplication(proxyBeanMethods = false)
 @ImportGrpcClients(target = "hello", types = [HelloWorldGrpc.HelloWorldBlockingStub::class])
 class MyApplication
 

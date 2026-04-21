@@ -20,4 +20,16 @@ interface HelloRequest {
 
 	String getName();
 
+	static Builder newBuilder() {
+		throw new IllegalStateException();
+	}
+
+	interface Builder {
+
+		Builder setName(String name);
+
+		HelloRequest build();
+
+	}
+
 }

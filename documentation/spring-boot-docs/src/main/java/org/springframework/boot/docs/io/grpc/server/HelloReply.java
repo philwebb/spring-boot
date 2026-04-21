@@ -18,6 +18,8 @@ package org.springframework.boot.docs.io.grpc.server;
 
 interface HelloReply {
 
+	String getMessage();
+
 	static Builder newBuilder() {
 		throw new IllegalStateException();
 	}
