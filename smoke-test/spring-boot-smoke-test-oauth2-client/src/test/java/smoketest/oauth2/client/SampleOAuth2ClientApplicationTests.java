@@ -19,21 +19,28 @@ package smoketest.oauth2.client;
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
+import smoketest.oauth2.client.SampleOAuth2ClientApplicationTests.TestClientConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.annotation.ClientRegistrationId;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.registry.ImportHttpServices;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
-				"YAHOO-CLIENT-ID=my-yahoo-client-id", "YAHOO-CLIENT-SECRET=my-yahoo-client-secret" })
+				"YAHOO-CLIENT-ID=my-yahoo-client-id", "YAHOO-CLIENT-SECRET=my-yahoo-client-secret",
+				"spring.http.serviceclient.default.base-url=https://example.com", "debug" },
+		classes = TestClientConfig.class)
 @AutoConfigureTestRestTemplate
 class SampleOAuth2ClientApplicationTests {
 
@@ -42,6 +49,9 @@ class SampleOAuth2ClientApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
+	@Autowired
+	Example exa;
 
 	@Test
 	void everythingShouldRedirectToLogin() {
@@ -59,6 +69,25 @@ class SampleOAuth2ClientApplicationTests {
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-1");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-repos");
+	}
+
+	@Test
+	void testName() {
+		this.exa.test();
+	}
+
+	@TestConfiguration
+	@ImportHttpServices(Example.class)
+	static class TestClientConfig {
+
+	}
+
+	@ClientRegistrationId("github-client-1")
+	interface Example {
+
+		@GetExchange("/test")
+		String test();
+
 	}
 
 }
