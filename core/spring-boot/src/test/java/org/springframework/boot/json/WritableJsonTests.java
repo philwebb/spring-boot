@@ -67,6 +67,12 @@ class WritableJsonTests {
 	}
 
 	@Test
+	void toByteArrayUsingCacheReturnsByteArray() {
+		WritableJson writable = (out) -> out.append("{}");
+		assertThat(writable.withCaches().toByteArray()).isEqualTo("{}".getBytes());
+	}
+
+	@Test
 	void toResourceWritesJson() throws Exception {
 		File file = new File(this.temp, "out.json");
 		WritableJson writable = (out) -> out.append("{}");

@@ -151,6 +151,41 @@ public interface WritableJson {
 	}
 
 	/**
+	 * Return a new {@link WritableJson} instance that makes use of caches to improve
+	 * memory pressure.
+	 * @return a new {@link WritableJson} instance that uses caches
+	 * @since 4.1.0
+	 */
+	default WritableJson withCaches() {
+		WritableJson original = this;
+		return new WritableJson() {
+
+			@Override
+			public byte[] toByteArray(Charset charset) {
+				try {
+					AppendableByteArray appendable = AppendableByteArray.get(charset);
+					to(appendable);
+					return appendable.toByteArray();
+				}
+				catch (IOException ex) {
+					throw new UncheckedIOException(ex);
+				}
+			}
+
+			@Override
+			public void to(Appendable out) throws IOException {
+				original.to(out);
+			}
+
+			@Override
+			public String toString() {
+				return toJsonString();
+			}
+
+		};
+	}
+
+	/**
 	 * Factory method used to create a {@link WritableJson} with a sensible
 	 * {@link Object#toString()} that delegate to {@link WritableJson#toJsonString()}.
 	 * @param writableJson the source {@link WritableJson}

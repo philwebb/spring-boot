@@ -75,7 +75,7 @@ public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredL
 
 	@Override
 	public byte[] formatAsBytes(E event, Charset charset) {
-		return this.jsonWriter.write(event).toByteArray(charset);
+		return this.jsonWriter.write(event).withCaches().toByteArray(charset);
 	}
 
 }
