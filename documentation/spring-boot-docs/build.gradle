@@ -402,7 +402,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 		use = true
 		windowTitle = "Spring Boot ${project.version} API"
 	}
-	doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
+	doFirst(new ConfigureJavadocLinks(project, ["Spring Framework", "Spring Security", "Tomcat"]))
 }
 
 project.rootProject.gradle.projectsEvaluated {

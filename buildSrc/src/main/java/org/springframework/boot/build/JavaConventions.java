@@ -240,7 +240,7 @@ class JavaConventions {
 			CoreJavadocOptions options = (CoreJavadocOptions) javadoc.getOptions();
 			options.source("17");
 			options.encoding("UTF-8");
-			addValuelessOption(options, "Xdoclint:none");
+			addValuelessOption(options, "Xdoclint:all,-missing");
 			addValuelessOption(options, "quiet");
 			if (!javadoc.getName().contains("aggregated")) {
 				addValuelessOption(options, "-no-fonts");
