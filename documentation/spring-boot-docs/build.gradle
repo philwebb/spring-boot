@@ -160,17 +160,23 @@ configurations {
 	}
 }
 
-def extractJavadocJars = tasks.register('extractJavadocJars', Sync) {
+def extractJavadocJars = tasks.register('extractJavadocJars') {
     dependsOn configurations.javadocClasspath
-   	from(configurations.javadocClasspath.incoming.artifactView {
-		withVariantReselection()
-		attributes {
-			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+    doLast {
+   		configurations.javadocClasspath.incoming.artifactView {
+			withVariantReselection()
+			attributes {
+				attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+				attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+				attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+			}
+		}.files.each { javadocJar ->
+			copy {
+				from(zipTree(javadocJar).filter { it.name.equals('package-list') || it.name.equals('element-list') })
+				into("${buildDir}/javadocjar/${javadocJar.name}")
+			}
 		}
-	}.files)
-	into "$buildDir/dependencies/unzippedDir"
+    }
 }
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
