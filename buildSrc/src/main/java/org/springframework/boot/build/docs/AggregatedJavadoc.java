@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.CopySpec;
-import org.gradle.api.file.Directory;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -46,9 +46,9 @@ public abstract class AggregatedJavadoc extends Javadoc {
 
 	private static final Set<String> INCLUDED_LIBRARIES = Set.of("Spring Framework", "Spring Security", "Tomcat");
 
-	private static final Set<String> JAVADOC_PACKAGE_LIST_FILES = Set.of("package-list", "element-list");
+	private static final Set<String> SKIPPED_LIBRARIES = Set.of("Spring Boot");
 
-	private static final String JAVADOC_PACKAGE_LIST_DIRECTORY = "docs/javadocpackagelist";
+	private static final Set<String> JAVADOC_PACKAGE_LIST_FILES = Set.of("package-list", "element-list");
 
 	private static final List<String> LINKS;
 	static {
@@ -68,46 +68,65 @@ public abstract class AggregatedJavadoc extends Javadoc {
 
 	@Override
 	protected void generate() {
-		ResolvedBom resolvedBom = ResolvedBom.readFrom(getResolvedBom().getSingleFile());
-		getJavadocClasspath().forEach(this::copyJavadocPackageList);
-		String offlineLinksSource = getProject().getLayout()
-			.getBuildDirectory()
-			.get()
-			.dir(JAVADOC_PACKAGE_LIST_DIRECTORY)
-			.file("@name@")
-			.getAsFile()
-			.getAbsolutePath();
 		StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) getOptions();
 		options.doclet("io.spring.javaformat.doclet.OfflineLinksDoclet");
 		options.addBooleanOption("quiet", true);
 		options.addBooleanOption("Xdoclint:all,-missing", true);
 		options.addBooleanOption("Werror", true);
 		options.links(LINKS.toArray(String[]::new));
-		options.addStringOption("offlinelinks-source", offlineLinksSource);
-		for (ResolvedLibrary library : resolvedBom.libraries()) {
-			for (JavadocLink javadocLink : library.links().javadoc()) {
-				javadocLink.uri().toString();
-				for (Id managedDependency : library.managedDependencies()) {
-					String artifactId = managedDependency.artifactId();
-					String version = managedDependency.version();
-					String directory = "%s-%s-javadoc.jar".formatted(artifactId, version);
-				}
-			}
-		}
+		configureOfflineLinks(options);
 		super.generate();
 	}
 
-	private void copyJavadocPackageList(File javadocJarFile) {
-		Directory destination = getProject().getLayout()
+	private void configureOfflineLinks(StandardJavadocDocletOptions options) {
+		ResolvedBom resolvedBom = ResolvedBom.readFrom(getResolvedBom().getSingleFile());
+		File packageListDirectory = getProject().getLayout()
 			.getBuildDirectory()
 			.get()
-			.dir(JAVADOC_PACKAGE_LIST_DIRECTORY)
-			.dir(javadocJarFile.getName());
-		getProject().copy((copy) -> copyJavadocPackageList(javadocJarFile, destination, copy));
+			.dir("docs/javadocpackagelist")
+			.getAsFile();
+		extractPackageListFiles(packageListDirectory);
+		System.out.println(new File(packageListDirectory, "@name@").getAbsolutePath());
+		options.addStringOption("offlinelinks-source", new File(packageListDirectory, "@name@").getAbsolutePath());
+		for (ResolvedLibrary library : resolvedBom.libraries()) {
+			List<JavadocLink> javadocLinks = library.links().javadoc();
+			Set<Id> allManagedDependencies = library.allManagedDependencies();
+			System.out.println(
+					library.name() + " " + isOfflineJavalinkedLibrary(library, javadocLinks, allManagedDependencies));
+			System.out.println(javadocLinks);
+			System.out.println(allManagedDependencies);
+			if (isOfflineJavalinkedLibrary(library, javadocLinks, allManagedDependencies)) {
+				JavadocLink javadocLink = javadocLinks.get(0);
+				String url = javadocLink.uri().toString();
+				String javadocJars = javadocJarNames(allManagedDependencies);
+				System.out.println(url);
+				System.out.println(javadocJars);
+				options.addStringOption("linkoffline", url + " " + javadocJars);
+			}
+		}
 	}
 
-	private void copyJavadocPackageList(File javadocJarFile, Directory destination, CopySpec copy) {
-		copy.from(getProject().zipTree(javadocJarFile).filter(this::isJavadocPackageListFile)).into(destination);
+	private boolean isOfflineJavalinkedLibrary(ResolvedLibrary library, List<JavadocLink> javadocLinks,
+			Set<Id> allManagedDependencies) {
+		return !SKIPPED_LIBRARIES.contains(library.name()) && javadocLinks.size() == 1
+				&& !allManagedDependencies.isEmpty();
+	}
+
+	private String javadocJarNames(Set<Id> managedDependencies) {
+		return managedDependencies.stream().map(this::javadocJarName).collect(Collectors.joining(","));
+	}
+
+	private String javadocJarName(Id managedDependency) {
+		return "%s-%s-javadoc.jar".formatted(managedDependency.artifactId(), managedDependency.version());
+	}
+
+	private void extractPackageListFiles(File packageListDirectory) {
+		getJavadocClasspath().forEach((javadocJarFile) -> {
+			System.out.println("Extract " + javadocJarFile);
+			FileCollection source = getProject().zipTree(javadocJarFile).filter(this::isJavadocPackageListFile);
+			File destination = new File(packageListDirectory, javadocJarFile.getName());
+			getProject().copy((copy) -> copy.from(source).into(destination));
+		});
 	}
 
 	private boolean isJavadocPackageListFile(File file) {

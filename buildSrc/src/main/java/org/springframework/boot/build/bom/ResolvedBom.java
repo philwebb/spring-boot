@@ -22,7 +22,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.URI;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import tools.jackson.databind.json.JsonMapper;
@@ -59,6 +62,13 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
 			List<Bom> importedBoms, Links links) {
+
+		public Set<Id> allManagedDependencies() {
+			Set<Id> allManagedDependencies = new LinkedHashSet<>();
+			allManagedDependencies.addAll(this.managedDependencies);
+			importedBoms().forEach((bom) -> bom.addAllManagedDependencies(allManagedDependencies));
+			return Collections.unmodifiableSet(allManagedDependencies);
+		}
 
 	}
 
@@ -99,6 +109,14 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public record Bom(Id id, Bom parent, List<Id> managedDependencies, List<Bom> importedBoms) {
+
+		void addAllManagedDependencies(Set<Id> allManagedDependencies) {
+			allManagedDependencies.addAll(managedDependencies());
+			if (this.parent != null) {
+				this.parent.addAllManagedDependencies(allManagedDependencies);
+			}
+			importedBoms().forEach((bom) -> bom.addAllManagedDependencies(allManagedDependencies));
+		}
 
 	}
 

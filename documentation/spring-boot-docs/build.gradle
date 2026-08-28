@@ -146,7 +146,7 @@ configurations {
 		attributes {
 			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 		}
-		extendsFrom configurations.javadoc
+		extendsFrom runtimeClasspath
 	}
 	configureEach {
 		resolutionStrategy {
@@ -180,6 +180,25 @@ def extractJavadocJars = tasks.register('extractJavadocJars') {
 				into("${buildDir}/javadocjar/${javadocJar.name}")
 			}
 		}
+    }
+}
+
+def javadocJars = tasks.register('javadocJars') {
+    dependsOn configurations.javadocClasspath
+    doFirst {
+//    	configurations.runtimeClasspath.incoming.files.each { println ">> ${it}" }
+//    	configurations.javadocClasspath.incoming.files.each { println "<< ${it}" }
+
+        Set<File> javadocJars = configurations.javadocClasspath.incoming.artifactView {
+            withVariantReselection()
+            attributes {
+                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY));
+//                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+//                attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+//                attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+            }
+        }.files.files
+        javadocJars.each { println "@@ ${it}" }
     }
 }
 
@@ -220,6 +239,7 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
 		.each { javadocProject ->
+			println "!! ${javadocProject}"
 			dependencies {
 				implementation(project(javadocProject.path))
 				javadoc(project(javadocProject.path))
