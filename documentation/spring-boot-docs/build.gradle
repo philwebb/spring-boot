@@ -17,6 +17,7 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
+import org.springframework.boot.build.docs.AggregatedJavadoc
 import org.springframework.boot.build.docs.ConfigureJavadocLinks
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
@@ -34,6 +35,7 @@ plugins {
 description = "Spring Boot Docs"
 
 configurations {
+	doclet
 	remoteSpringApplicationExample
 	resolvedBom
 	springApplicationExample
@@ -82,6 +84,8 @@ plugins.withType(EclipsePlugin) {
 
 dependencies {
 	compileOnly("org.hamcrest:hamcrest-core")
+
+	doclet("io.spring.javaformat:spring-javaformat-doclet:${javaFormatVersion}")
 
 	dokka(project(":core:spring-boot"))
 	dokka(project(":module:spring-boot-resttestclient"))
@@ -179,13 +183,22 @@ def extractJavadocJars = tasks.register('extractJavadocJars') {
     }
 }
 
-def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
-	dependsOn configurations.resolvedBom
+def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
+    resolvedBom.from(configurations.resolvedBom)
+    javadocClasspath.from(configurations.javadocClasspath.incoming.artifactView {
+		withVariantReselection()
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+		}
+	}.files)
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
 	source = configurations.javadocSource
 	classpath = configurations.javadocClasspath
 	include("**/*.java")
 	options {
+		docletpath = configurations.doclet.files.toList()
 		author = true
 		docTitle = "Spring Boot ${project.version} API"
 		memberLevel = "protected"
@@ -194,7 +207,6 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 		use = true
 		windowTitle = "Spring Boot ${project.version} API"
 	}
-	doFirst(new ConfigureJavadocLinks(configurations.resolvedBom, ["Spring Framework", "Spring Security", "Tomcat"]))
 }
 
 project.rootProject.gradle.projectsEvaluated {
