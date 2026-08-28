@@ -113,6 +113,34 @@ dependencies {
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
 	testSlices(project(path: ":core:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+
+	components.all { details ->
+		if ("org.springframework".equals(details.id.group)) {
+			println details.id.group
+			details.addVariant("javadocElements") {
+				attributes {
+					attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+					attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+					attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+					attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+				}
+				withFiles {
+					addFile("${details.id.name}-${details.id.version}-javadoc.jar")
+				}
+			}
+			details.addVariant("sourcesElements") {
+				attributes {
+					attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+					attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+					attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+					attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.SOURCES));
+				}
+				withFiles {
+					addFile("${details.id.name}-${details.id.version}-sources.jar")
+				}
+			}
+		}
+	}
 }
 
 dokka {
@@ -196,36 +224,35 @@ def extractJavadocJars = tasks.register('extractJavadocJars') {
 def javadocJars = tasks.register('javadocJars') {
     dependsOn configurations.javadocClasspath
     doFirst {
-    	 configurations.javadocJars.incoming.artifactView {
-    	 	withVariantReselection()
-			attributes {
-                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY));
-            	attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-            	attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-            	attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
-			}
-    	 	componentFilter {
-    	 	  return it.toString().contains("spring-core")
-    	 	}
-    	 }.artifacts.artifacts.each { resolvedArtifact ->
-    	 	println "${resolvedArtifact.file}"
-    	 	println "${resolvedArtifact.variant}"
-    	 }
+//    	 configurations.javadocJars.incoming.artifactView {
+//    	 	withVariantReselection()
+//			attributes {
+//            	attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+//            	attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+//            	attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+//			}
+//    	 	componentFilter {
+//    	 	  return it.toString().contains("spring-core")
+//    	 	}
+//    	 }.artifacts.artifacts.each { resolvedArtifact ->
+//    	 	println "${resolvedArtifact.file}"
+//    	 	println "${resolvedArtifact.variant}"
+//    	 }
 
 
 //    	configurations.runtimeClasspath.incoming.files.each { println ">> ${it}" }
 //    	configurations.javadocClasspath.incoming.files.each { println "<< ${it}" }
 
-//        Set<File> javadocJars = configurations.javadocClasspath.incoming.artifactView {
-//            withVariantReselection()
-//            attributes {
-//                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY));
-//                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-//                attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-//                attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
-//            }
-//        }.files.files
-//        javadocJars.each { println "@@ ${it}" }
+        Set<File> javadocJars = configurations.javadocClasspath.incoming.artifactView {
+            withVariantReselection()
+            attributes {
+                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY));
+                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+                attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+                attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+            }
+        }.files.files
+        javadocJars.each { println "@@ ${it}" }
     }
 }
 
