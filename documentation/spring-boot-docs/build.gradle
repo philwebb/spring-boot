@@ -148,17 +148,6 @@ configurations {
 		}
 		extendsFrom configurations.runtimeClasspath
 	}
-	javadocJars {
-		canBeConsumed = false
-		canBeResolved = true
-		attributes {
-			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
-			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
-			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC))
-		}
-		extendsFrom configurations.runtimeClasspath
-	}
 	configureEach {
 		resolutionStrategy {
 			capabilitiesResolution {
@@ -175,25 +164,9 @@ configurations {
 	}
 }
 
-def javadocJars = tasks.register('javadocJars') {
-    dependsOn configurations.javadocClasspath
-    doFirst {
-        Set<File> javadocJars2 = configurations.javadocClasspath.incoming.artifactView {
-            withVariantReselection()
-            attributes {
-                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY));
-                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-                attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-                attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
-            }
-        }.files.files
-        javadocJars2.each { println "@@ ${it}" }
-    }
-}
-
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     resolvedBom.from(configurations.resolvedBom)
-    it.javadocJars.from(configurations.javadocClasspath.incoming.artifactView {
+    javadocJars.from(configurations.javadocClasspath.incoming.artifactView {
 		withVariantReselection()
 		attributes {
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
@@ -228,7 +201,6 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
 		.each { javadocProject ->
-			println "!! ${javadocProject}"
 			dependencies {
 				implementation(project(javadocProject.path))
 				javadoc(project(javadocProject.path))

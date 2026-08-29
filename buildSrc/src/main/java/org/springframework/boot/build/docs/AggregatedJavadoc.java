@@ -73,23 +73,20 @@ public abstract class AggregatedJavadoc extends Javadoc {
 			.dir("docs/javadocpackagelist")
 			.getAsFile();
 		extractPackageListFiles(packageListDirectory);
-		System.out.println(new File(packageListDirectory, "@name@").getAbsolutePath());
 		options.addStringOption("offlinelinks-source", new File(packageListDirectory, "@name@").getAbsolutePath());
-		options.addBooleanOption("offlinelinks-debug", true);
+		// options.addBooleanOption("offlinelinks-debug", true);
 		for (ResolvedLibrary library : resolvedBom.libraries()) {
+			System.out.println("## " + library.name());
 			List<JavadocLink> javadocLinks = library.links().javadoc();
 			Set<Id> allManagedDependencies = library.allManagedDependencies();
-			System.out.println(
-					library.name() + " " + isOfflineJavalinkedLibrary(library, javadocLinks, allManagedDependencies));
-			System.out.println(javadocLinks);
-			System.out.println(allManagedDependencies);
+			System.out.println("** " + javadocLinks);
+			System.out.println("** " + allManagedDependencies);
 			if (isOfflineJavalinkedLibrary(library, javadocLinks, allManagedDependencies)) {
 				JavadocLink javadocLink = javadocLinks.get(0);
 				String url = javadocLink.uri().toString();
 				String javadocJars = javadocJarNames(allManagedDependencies);
-				System.out.println(url);
-				System.out.println(javadocJars);
-				options.addStringOption("linkoffline", url + " " + javadocJars);
+				System.out.println("  >> " + url + " " + javadocJars);
+				options.linksOffline(url, javadocJars);
 			}
 		}
 	}
@@ -110,7 +107,6 @@ public abstract class AggregatedJavadoc extends Javadoc {
 
 	private void extractPackageListFiles(File packageListDirectory) {
 		getJavadocJars().forEach((javadocJar) -> {
-			System.out.println(":::: " + javadocJar);
 			FileCollection source = getProject().zipTree(javadocJar).filter(this::isJavadocPackageListFile);
 			File destination = new File(packageListDirectory, javadocJar.getName());
 			getProject().copy((copy) -> copy.from(source).into(destination));
