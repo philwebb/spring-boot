@@ -146,17 +146,18 @@ configurations {
 		attributes {
 			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 		}
-		extendsFrom runtimeClasspath
+		extendsFrom configurations.runtimeClasspath
 	}
 	javadocJars {
 		canBeConsumed = false
 		canBeResolved = true
 		attributes {
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
 			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
 			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC))
 		}
-		extendsFrom runtimeClasspath
+		extendsFrom configurations.runtimeClasspath
 	}
 	configureEach {
 		resolutionStrategy {
@@ -174,48 +175,10 @@ configurations {
 	}
 }
 
-def extractJavadocJars = tasks.register('extractJavadocJars') {
-    dependsOn configurations.javadocClasspath
-    doLast {
-   		configurations.javadocClasspath.incoming.artifactView {
-			withVariantReselection()
-			attributes {
-				attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-				attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-				attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
-			}
-		}.files.each { javadocJar ->
-			copy {
-				from(zipTree(javadocJar).filter { it.name.equals('package-list') || it.name.equals('element-list') })
-				into("${buildDir}/javadocjar/${javadocJar.name}")
-			}
-		}
-    }
-}
-
 def javadocJars = tasks.register('javadocJars') {
     dependsOn configurations.javadocClasspath
     doFirst {
-//    	 configurations.javadocJars.incoming.artifactView {
-//    	 	withVariantReselection()
-//			attributes {
-//            	attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-//            	attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-//            	attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
-//			}
-//    	 	componentFilter {
-//    	 	  return it.toString().contains("spring-core")
-//    	 	}
-//    	 }.artifacts.artifacts.each { resolvedArtifact ->
-//    	 	println "${resolvedArtifact.file}"
-//    	 	println "${resolvedArtifact.variant}"
-//    	 }
-
-
-//    	configurations.runtimeClasspath.incoming.files.each { println ">> ${it}" }
-//    	configurations.javadocClasspath.incoming.files.each { println "<< ${it}" }
-
-        Set<File> javadocJars = configurations.javadocClasspath.incoming.artifactView {
+        Set<File> javadocJars2 = configurations.javadocClasspath.incoming.artifactView {
             withVariantReselection()
             attributes {
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY));
@@ -224,13 +187,13 @@ def javadocJars = tasks.register('javadocJars') {
                 attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
             }
         }.files.files
-        javadocJars.each { println "@@ ${it}" }
+        javadocJars2.each { println "@@ ${it}" }
     }
 }
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     resolvedBom.from(configurations.resolvedBom)
-    javadocClasspath.from(configurations.javadocClasspath.incoming.artifactView {
+    it.javadocJars.from(configurations.javadocClasspath.incoming.artifactView {
 		withVariantReselection()
 		attributes {
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));

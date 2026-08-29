@@ -17,9 +17,6 @@
 package org.springframework.boot.build.docs;
 
 import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,19 +41,9 @@ import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
  */
 public abstract class AggregatedJavadoc extends Javadoc {
 
-	private static final Set<String> INCLUDED_LIBRARIES = Set.of("Spring Framework", "Spring Security", "Tomcat");
-
 	private static final Set<String> SKIPPED_LIBRARIES = Set.of("Spring Boot");
 
 	private static final Set<String> JAVADOC_PACKAGE_LIST_FILES = Set.of("package-list", "element-list");
-
-	private static final List<String> LINKS;
-	static {
-		List<String> links = new ArrayList<>();
-		links.add("https://docs.oracle.com/en/java/javase/17/docs/api/");
-		links.add("https://jakarta.ee/specifications/platform/11/apidocs/");
-		LINKS = Collections.unmodifiableList(links);
-	}
 
 	@Classpath
 	@InputFiles
@@ -64,7 +51,7 @@ public abstract class AggregatedJavadoc extends Javadoc {
 
 	@Classpath
 	@InputFiles
-	public abstract ConfigurableFileCollection getJavadocClasspath();
+	public abstract ConfigurableFileCollection getJavadocJars();
 
 	@Override
 	protected void generate() {
@@ -73,7 +60,7 @@ public abstract class AggregatedJavadoc extends Javadoc {
 		options.addBooleanOption("quiet", true);
 		options.addBooleanOption("Xdoclint:all,-missing", true);
 		options.addBooleanOption("Werror", true);
-		options.links(LINKS.toArray(String[]::new));
+		options.links("https://docs.oracle.com/en/java/javase/17/docs/api/");
 		configureOfflineLinks(options);
 		super.generate();
 	}
@@ -88,6 +75,7 @@ public abstract class AggregatedJavadoc extends Javadoc {
 		extractPackageListFiles(packageListDirectory);
 		System.out.println(new File(packageListDirectory, "@name@").getAbsolutePath());
 		options.addStringOption("offlinelinks-source", new File(packageListDirectory, "@name@").getAbsolutePath());
+		options.addBooleanOption("offlinelinks-debug", true);
 		for (ResolvedLibrary library : resolvedBom.libraries()) {
 			List<JavadocLink> javadocLinks = library.links().javadoc();
 			Set<Id> allManagedDependencies = library.allManagedDependencies();
@@ -121,30 +109,16 @@ public abstract class AggregatedJavadoc extends Javadoc {
 	}
 
 	private void extractPackageListFiles(File packageListDirectory) {
-		getJavadocClasspath().forEach((javadocJarFile) -> {
-			System.out.println("Extract " + javadocJarFile);
-			FileCollection source = getProject().zipTree(javadocJarFile).filter(this::isJavadocPackageListFile);
-			File destination = new File(packageListDirectory, javadocJarFile.getName());
+		getJavadocJars().forEach((javadocJar) -> {
+			System.out.println(":::: " + javadocJar);
+			FileCollection source = getProject().zipTree(javadocJar).filter(this::isJavadocPackageListFile);
+			File destination = new File(packageListDirectory, javadocJar.getName());
 			getProject().copy((copy) -> copy.from(source).into(destination));
 		});
 	}
 
 	private boolean isJavadocPackageListFile(File file) {
 		return JAVADOC_PACKAGE_LIST_FILES.contains(file.getName());
-	}
-
-	private List<String> links(ResolvedBom resolvedBom) {
-		List<String> links = new ArrayList<>();
-		links.add("https://docs.oracle.com/en/java/javase/17/docs/api/");
-		links.add("https://jakarta.ee/specifications/platform/11/apidocs/");
-		resolvedBom.libraries()
-			.stream()
-			.filter((candidate) -> INCLUDED_LIBRARIES.contains(candidate.name()))
-			.flatMap((library) -> library.links().javadoc().stream())
-			.map(JavadocLink::uri)
-			.map(URI::toString)
-			.forEach(links::add);
-		return links;
 	}
 
 }

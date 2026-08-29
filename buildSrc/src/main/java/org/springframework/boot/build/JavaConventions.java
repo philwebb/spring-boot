@@ -391,6 +391,7 @@ class JavaConventions {
 		project.getDependencies().getComponents().all((details) -> {
 			// https://github.com/spring-projects/spring-framework/issues/37209
 			if ("org.springframework".equals(details.getId().getGroup())) {
+				System.out.println(">>>>> " + details.getId());
 				addDocumentaionVariant(project, details, "javadocElements", DocsType.JAVADOC, "javadoc");
 				addDocumentaionVariant(project, details, "sourcesElements", DocsType.SOURCES, "sources");
 			}

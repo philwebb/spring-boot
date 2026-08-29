@@ -16,6 +16,9 @@
 
 package smoketest.simple;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import smoketest.simple.service.HelloWorldService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,11 @@ public class SampleSimpleApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
+		Path path = Path.of(".")
+			.resolve(
+					"/Users/pwebb/projects/spring-boot/code/4.0.x/documentation/spring-boot-docs/build/docs/javadocpackagelist/spring-core-7.0.9-javadoc.jar");
+		System.out.println(path);
+		System.out.println(Files.isDirectory(path));
 		SpringApplication.run(SampleSimpleApplication.class, args);
 	}
 
