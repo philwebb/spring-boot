@@ -669,7 +669,7 @@ bom {
 				.formatted(version.major(), version.minor()))
 			releaseNotes(version -> "https://github.com/hibernate/hibernate-orm/releases/tag/%s"
 				.formatted(version.toString().replace(".Final", "")))
-			add("userguide", version -> "https://docs.jboss.org/hibernate/orm/%s.%s/userguide/html_single/Hibernate_User_Guide.html"
+			userguide(version -> "https://docs.jboss.org/hibernate/orm/%s.%s/userguide/html_single/Hibernate_User_Guide.html"
 				.formatted(version.major(), version.minor()))
 		}
 	}
@@ -2441,7 +2441,7 @@ bom {
 			javadoc("https://docs.spring.io/spring-boot/{version}/api/java", "org.springframework.boot")
 			docs("https://docs.spring.io/spring-boot/{version}")
 			releaseNotes("https://github.com/spring-projects/spring-boot/releases/tag/v{version}")
-			add("layers-xsd", version -> "https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
+			layersXsd(version -> "https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
 				.formatted(version.major(), version.minor()))
 		}
 	}
@@ -2556,6 +2556,15 @@ bom {
 			site("https://spring.io/projects/spring-data")
 			github("https://github.com/spring-projects/spring-data-bom")
 			releaseNotes("https://github.com/spring-projects/spring-data-bom/releases/tag/{version}")
+			module("spring-data-cassandra") {
+				site("https://spring.io/projects/spring-data-cassandra")
+				javadoc("https://docs.spring.io/spring-data/cassandra/docs/%s/api"
+					.formatted(version.forMajorMinorGeneration()), "org.springframework.data.cassandra")
+				gitub("https://github.com/spring-projects/spring-data-cassandra")
+				releaseNotes("https://github.com/spring-projects/spring-data-cassandra/releases/tag/{version}")
+				docs(version -> https://docs.spring.io/spring-data/cassandra/reference/%s"
+					.formatted(version.forAntora())
+			}
 		}
 	}
 	library("Spring Framework", "${springFrameworkVersion}") {
@@ -2781,30 +2790,74 @@ bom {
 		}
 		links {
 			docs("https://java.testcontainers.org")
-			javadoc("testcontainers", version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
-			javadoc("testcontainers-activemq", version -> "https://javadoc.io/doc/org.testcontainers/activemq/%s".formatted(version), "org.testcontainers.activemq")
-			javadoc("testcontainers-cassandra", version -> "https://javadoc.io/doc/org.testcontainers/cassandra/%s".formatted(version))
-			javadoc("testcontainers-clickhouse", version -> "https://javadoc.io/doc/org.testcontainers/clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
-			javadoc("testcontainers-couchbase", version -> "https://javadoc.io/doc/org.testcontainers/couchbase/%s".formatted(version), "org.testcontainers.couchbase")
-			javadoc("testcontainers-elasticsearch", version -> "https://javadoc.io/doc/org.testcontainers/elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
-			javadoc("testcontainers-grafana", version -> "https://javadoc.io/doc/org.testcontainers/grafana/%s".formatted(version), "org.testcontainers.grafana")
-			javadoc("testcontainers-jdbc", version -> "https://javadoc.io/doc/org.testcontainers/jdbc/%s".formatted(version))
-			javadoc("testcontainers-junit-jupiter", version -> "https://javadoc.io/doc/org.testcontainers/junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
-			javadoc("testcontainers-kafka", version -> "https://javadoc.io/doc/org.testcontainers/kafka/%s".formatted(version), "org.testcontainers.kafka")
-			javadoc("testcontainers-mariadb", version -> "https://javadoc.io/doc/org.testcontainers/mariadb/%s".formatted(version))
-			javadoc("testcontainers-mongodb", version -> "https://javadoc.io/doc/org.testcontainers/mongodb/%s".formatted(version))
-			javadoc("testcontainers-mssqlserver", version -> "https://javadoc.io/doc/org.testcontainers/mssqlserver/%s".formatted(version))
-			javadoc("testcontainers-mysql", version -> "https://javadoc.io/doc/org.testcontainers/mysql/%s".formatted(version))
-			javadoc("testcontainers-neo4j", version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
-			javadoc("testcontainers-oracle-xe", version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
-			javadoc("testcontainers-oracle-free", version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
-			javadoc("testcontainers-postgresql", version -> "https://javadoc.io/doc/org.testcontainers/postgresql/%s".formatted(version))
-			javadoc("testcontainers-pulsar", version -> "https://javadoc.io/doc/org.testcontainers/pulsar/%s".formatted(version))
-			javadoc("testcontainers-rabbitmq", version -> "https://javadoc.io/doc/org.testcontainers/rabbitmq/%s".formatted(version))
-			javadoc("testcontainers-redpanda", version -> "https://javadoc.io/doc/org.testcontainers/redpanda/%s".formatted(version), "org.testcontainers.redpanda")
-			javadoc("testcontainers-r2dbc", version -> "https://javadoc.io/doc/org.testcontainers/r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 			site("https://java.testcontainers.org")
+			module("testcontainers") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/testcontainers/%s".formatted(version), "org.testcontainers")
+			}
+			module("testcontainers-activemq") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/activemq/%s".formatted(version), "org.testcontainers.activemq")
+			}
+			module("testcontainers-cassandra") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/cassandra/%s".formatted(version))
+			}
+			module("testcontainers-clickhouse") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/clickhouse/%s".formatted(version), "org.testcontainers.clickhouse")
+			}
+			module("testcontainers-couchbase") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/couchbase/%s".formatted(version), "org.testcontainers.couchbase")
+			}
+			module("testcontainers-elasticsearch") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/elasticsearch/%s".formatted(version), "org.testcontainers.elasticsearch")
+			}
+			module("testcontainers-grafana") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/grafana/%s".formatted(version), "org.testcontainers.grafana")
+			}
+			module("testcontainers-jdbc") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/jdbc/%s".formatted(version))
+			}
+			module("testcontainers-junit-jupiter") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/junit-jupiter/%s".formatted(version), "org.testcontainers.junit.jupiter")
+			}
+			module("testcontainers-kafka") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/kafka/%s".formatted(version), "org.testcontainers.kafka")
+			}
+			module("testcontainers-mariadb") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mariadb/%s".formatted(version))
+			}
+			module("testcontainers-mongodb") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mongodb/%s".formatted(version))
+			}
+			module("testcontainers-mssqlserver") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mssqlserver/%s".formatted(version))
+			}
+			module("testcontainers-mysql") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/mysql/%s".formatted(version))
+			}
+			module("testcontainers-neo4j") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
+			}
+			module("testcontainers-oracle-xe) {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
+			}
+			module("testcontainers-oracle-free) {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
+			}
+			module("testcontainers-postgresql") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/postgresql/%s".formatted(version))
+			}
+			module("testcontainers-pulsar") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/pulsar/%s".formatted(version))
+			}
+			module("testcontainers-rabbitmq") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/rabbitmq/%s".formatted(version))
+			}
+			module("testcontainers-redpanda") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/redpanda/%s".formatted(version), "org.testcontainers.redpanda")
+			}
+			module("testcontainers-r2dbc") {
+				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/r2dbc/%s".formatted(version), "org.testcontainers.r2dbc")
+			}
 		}
 	}
 	library("Testcontainers Redis Module", "2.2.4") {

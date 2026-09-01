@@ -34,6 +34,7 @@ import org.gradle.api.Project;
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.ResolvedBom;
 import org.springframework.boot.build.bom.ResolvedBom.Bom;
 import org.springframework.boot.build.bom.ResolvedBom.Id;
@@ -41,6 +42,7 @@ import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.boot.build.properties.BuildType;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Generates Asciidoctor attributes for use with Antora.
@@ -126,7 +128,7 @@ public class AntoraAsciidocAttributes {
 		addVersionAttributes(attributes, internal);
 		addArtifactAttributes(attributes);
 		addUrlJava(attributes);
-		addUrlLibraryLinkAttributes(attributes);
+		addLibraryLinksAttributes(attributes);
 		addPropertyAttributes(attributes, internal);
 		return attributes;
 	}
@@ -229,25 +231,28 @@ public class AntoraAsciidocAttributes {
 		attributes.put("javadoc-location-javax-xml", "{url-javase-javadoc}/java.xml");
 	}
 
-	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
-		Map<String, String> packageAttributes = new LinkedHashMap<>();
+	private void addLibraryLinksAttributes(Map<String, String> attributes) {
 		this.libraries.forEach((library) -> {
-			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
-				String linkRootName = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
-				String linkName = "url-" + linkRootName + "-" + name;
-				attributes.put(linkName, link.url(library));
-				link.packages()
-					.stream()
-					.map(this::packageAttributeName)
-					.forEach((packageAttributeName) -> packageAttributes.put(packageAttributeName,
-							"{" + linkName + "}"));
-			}));
+			addLibraryLinksAttributes(attributes, library, null, library.getLinks());
+			library.getModuleLinks()
+				.forEachLink((module, links) -> addLibraryLinksAttributes(attributes, library, module, links));
 		});
-		attributes.putAll(packageAttributes);
 	}
 
-	private String packageAttributeName(String packageName) {
-		return "javadoc-location-" + packageName.replace('.', '-');
+	private void addLibraryLinksAttributes(Map<String, String> attributes, Library library, String module,
+			Map<String, List<Link>> namedLinks) {
+		Map<String, String> packageAttributes = new LinkedHashMap<>();
+		namedLinks.forEach((name, links) -> links.forEach((link) -> {
+			String root = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
+			root = (!StringUtils.hasText(module)) ? root : root + "-" + module;
+			String urlAttributeName = "url-" + root + "-" + name;
+			attributes.put(urlAttributeName, link.url(library));
+			for (String packageName : link.packages()) {
+				String packageAttributeName = "javadoc-location-" + packageName.replace('.', '-');
+				packageAttributes.put(packageAttributeName, "{" + urlAttributeName + "}");
+			}
+		}));
+		attributes.putAll(packageAttributes);
 	}
 
 	private void addPropertyAttributes(Map<String, String> attributes, Map<String, String> internal) {

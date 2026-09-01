@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -59,6 +60,8 @@ import org.springframework.boot.build.xml.XmlDocument;
  */
 public class Library {
 
+	private static final String ROOT_LINKS = "";
+
 	private final String name;
 
 	private final String calendarName;
@@ -79,9 +82,7 @@ public class Library {
 
 	private final BomAlignment bomAlignment;
 
-	private final String linkRootName;
-
-	private final Map<String, List<Link>> links;
+	private final Map<String, Map<String, List<Link>>> links;
 
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
@@ -97,14 +98,12 @@ public class Library {
 	 * @param firstParty configuration for a first-party library
 	 * @param versionAlignment version alignment, if any, for the library
 	 * @param bomAlignment the bom, if any, that this library should align with
-	 * @param linkRootName the root name to use when generating link variable or
 	 * {@code null} to generate one based on the library {@code name}
-	 * @param links a list of HTTP links relevant to the library
+	 * @param links HTTP links relevant to the library
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
 			UpgradePolicy upgradePolicy, List<ProhibitedVersion> prohibitedVersions, FirstParty firstParty,
-			VersionAlignment versionAlignment, BomAlignment bomAlignment, String linkRootName,
-			Map<String, List<Link>> links) {
+			VersionAlignment versionAlignment, BomAlignment bomAlignment, Map<String, Map<String, List<Link>>> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -116,7 +115,8 @@ public class Library {
 		this.firstParty = firstParty;
 		this.versionAlignment = versionAlignment;
 		this.bomAlignment = bomAlignment;
-		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
+		// FIXME this.linkRootName = (linkRootName != null) ? linkRootName :
+		// generateLinkRootName(name);
 		this.links = (links != null) ? Collections.unmodifiableMap(new TreeMap<>(links)) : Collections.emptyMap();
 	}
 
@@ -164,31 +164,16 @@ public class Library {
 		return this.versionAlignment;
 	}
 
-	public String getLinkRootName() {
-		return this.linkRootName;
-	}
-
 	public BomAlignment getAlignsWithBom() {
 		return this.bomAlignment;
 	}
 
-	public Map<String, List<Link>> getLinks() {
-		return this.links;
+	public Links getLinks() {
+		return null; // FIXME
 	}
 
-	public String getLinkUrl(String name) {
-		List<Link> links = getLinks(name);
-		if (links == null || links.isEmpty()) {
-			return null;
-		}
-		if (links.size() > 1) {
-			throw new IllegalStateException("Expected a single '%s' link for %s".formatted(name, getName()));
-		}
-		return links.get(0).url(this);
-	}
-
-	public List<Link> getLinks(String name) {
-		return this.links.get(name);
+	public ModuleLinks getModuleLinks() {
+		return null;
 	}
 
 	public String getNameAndVersion() {
@@ -197,8 +182,7 @@ public class Library {
 
 	public Library withVersion(LibraryVersion version) {
 		return new Library(this.name, this.calendarName, version, this.groups, this.upgradePolicy,
-				this.prohibitedVersions, this.firstParty, this.versionAlignment, this.bomAlignment, this.linkRootName,
-				this.links);
+				this.prohibitedVersions, this.firstParty, this.versionAlignment, this.bomAlignment, this.links);
 	}
 
 	/**
@@ -716,7 +700,41 @@ public class Library {
 
 	}
 
-	public record Link(String rootName, Function<LibraryVersion, String> factory, List<String> packages) {
+	public enum LinkType {
+
+		GITHUB, DOCS, JAVADOC, SITE, LAYERS_XSD, USER_GUIDE, RELEASE_NOTES;
+
+	}
+
+	public final class Links {
+
+		public void forEachLink(BiConsumer<LinkType, Link> action) {
+			// FIXME
+		}
+
+		public String getLinkUrl(LinkType linkType) {
+			// FIXME
+			return null;
+			// Map<String, List<Link>> rootLinks = this.links.getOrDefault(ROOT_LINKS,
+			// Collections.emptyMap());
+			// List<Link> links = rootLinks.get(name);
+			// if (links == null || links.isEmpty()) {
+			// return null;
+			// }
+			// if (links.size() > 1) {
+			// throw new IllegalStateException("Expected a single '%s' link for
+			// %s".formatted(name, getName()));
+			// }
+			// return links.get(0).url(this);
+		}
+
+	}
+
+	public final class ModuleLinks {
+
+	}
+
+	public record Link(Function<LibraryVersion, String> factory, List<String> packages) {
 
 		private static final Pattern PACKAGE_EXPAND = Pattern.compile("^(.*)\\[(.*)\\]$");
 

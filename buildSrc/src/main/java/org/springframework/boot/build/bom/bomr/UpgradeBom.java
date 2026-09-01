@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.boot.build.properties.BuildProperties;
 
 /**
@@ -80,9 +81,9 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 		System.out.println();
 		for (Upgrade upgrade : upgrades) {
 			Library library = upgrade.toRelease();
-			String releaseNotes = library.getLinkUrl("releaseNotes");
-			if (releaseNotes != null) {
-				System.out.println("* " + releaseNotes + "[" + library.getNameAndVersion() + "]");
+			String releaseNotesLinkUrl = library.getLinks().getLinkUrl(LinkType.RELEASE_NOTES);
+			if (releaseNotesLinkUrl != null) {
+				System.out.println("* " + releaseNotesLinkUrl + "[" + library.getNameAndVersion() + "]");
 			}
 			else {
 				System.out.println("* " + library.getNameAndVersion());

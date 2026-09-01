@@ -28,6 +28,8 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.impldep.org.apache.http.client.config.CookieSpecs;
 
+import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
@@ -52,28 +54,45 @@ public abstract class CheckLinks extends DefaultTask {
 	}
 
 	@TaskAction
-	void releaseNotes() {
-		RequestConfig config = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
-		CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(config).build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		RestClient restClient = RestClient.builder()
-			.requestFactory(requestFactory)
-			.defaultStatusHandler((status) -> true, NOOP_ERROR_HANDLER)
-			.build();
-		for (Library library : this.bom.getLibraries()) {
-			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
-				URI uri;
-				try {
-					uri = new URI(link.url(library));
-					ResponseEntity<String> response = restClient.head().uri(uri).retrieve().toEntity(String.class);
-					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), name,
-							uri);
-				}
-				catch (URISyntaxException ex) {
-					throw new RuntimeException(ex);
-				}
-			}));
+	void check() {
+		Checker checker = new Checker();
+		this.bom.getLibraries().forEach(checker::check);
+	}
+
+	// FIXME check module links
+
+	private static class Checker {
+
+		private final RestClient restClient;
+
+		Checker() {
+			RequestConfig config = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
+			CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(config).build();
+			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+					httpClient);
+			this.restClient = RestClient.builder()
+				.requestFactory(requestFactory)
+				.defaultStatusHandler((status) -> true, NOOP_ERROR_HANDLER)
+				.build();
 		}
+
+		void check(Library library) {
+			library.getLinks().forEachLink((linkType, link) -> check(library, linkType, link));
+		}
+
+		void check(Library library, LinkType linkType, Link link) {
+			try {
+				URI uri;
+				uri = new URI(link.url(library));
+				ResponseEntity<String> response = this.restClient.head().uri(uri).retrieve().toEntity(String.class);
+				System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), linkType,
+						uri);
+			}
+			catch (URISyntaxException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
 	}
 
 }

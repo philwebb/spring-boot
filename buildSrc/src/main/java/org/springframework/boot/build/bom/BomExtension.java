@@ -50,6 +50,7 @@ import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.ImportedBom;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.Link;
+import org.springframework.boot.build.bom.Library.LinkType;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.PermittedDependency;
 import org.springframework.boot.build.bom.Library.PomPropertyVersionAlignment;
@@ -130,8 +131,7 @@ public class BomExtension {
 		}
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
 				libraryHandler.upgradePolicy, libraryHandler.prohibitedVersions, firstParty,
-				versionAlignment(libraryHandler), libraryHandler.alignWith.bomAlignment, libraryHandler.linkRootName,
-				libraryHandler.links));
+				versionAlignment(libraryHandler), libraryHandler.alignWith.bomAlignment, libraryHandler.links));
 	}
 
 	private VersionAlignment versionAlignment(LibraryHandler libraryHandler) {
@@ -228,9 +228,7 @@ public class BomExtension {
 
 		private String calendarName;
 
-		private String linkRootName;
-
-		private final Map<String, List<Link>> links = new HashMap<>();
+		private final Map<String, Map<String, List<Link>>> links = new HashMap<>();
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -280,15 +278,10 @@ public class BomExtension {
 			action.execute(this.alignWith);
 		}
 
-		public void links(Action<LinksHandler> action) {
-			links(null, action);
-		}
-
-		public void links(String linkRootName, Action<LinksHandler> action) {
-			LinksHandler handler = new LinksHandler();
+		public void links(Action<LibraryLinksHandler> action) {
+			LibraryLinksHandler handler = new LibraryLinksHandler();
 			action.execute(handler);
-			this.linkRootName = linkRootName;
-			this.links.putAll(handler.links);
+			// FIXME
 		}
 
 		public static class ProhibitedHandler {
@@ -522,16 +515,20 @@ public class BomExtension {
 
 	}
 
-	public static class LinksHandler {
+	public abstract static class LinksHandler {
 
-		private final Map<String, List<Link>> links = new HashMap<>();
+		private final Map<LinkType, List<Link>> links = new HashMap<>();
+
+		Map<LinkType, List<Link>> links() {
+			return this.links;
+		}
 
 		public void site(String linkTemplate) {
 			site(asFactory(linkTemplate));
 		}
 
 		public void site(Function<LibraryVersion, String> linkFactory) {
-			add("site", linkFactory);
+			add(LinkType.SITE, linkFactory);
 		}
 
 		public void github(String linkTemplate) {
@@ -539,7 +536,7 @@ public class BomExtension {
 		}
 
 		public void github(Function<LibraryVersion, String> linkFactory) {
-			add("github", linkFactory);
+			add(LinkType.GITHUB, linkFactory);
 		}
 
 		public void docs(String linkTemplate) {
@@ -547,7 +544,7 @@ public class BomExtension {
 		}
 
 		public void docs(Function<LibraryVersion, String> linkFactory) {
-			add("docs", linkFactory);
+			add(LinkType.DOCS, linkFactory);
 		}
 
 		public void javadoc(String linkTemplate) {
@@ -559,15 +556,11 @@ public class BomExtension {
 		}
 
 		public void javadoc(Function<LibraryVersion, String> linkFactory) {
-			add("javadoc", linkFactory);
+			add(LinkType.JAVADOC, linkFactory);
 		}
 
 		public void javadoc(Function<LibraryVersion, String> linkFactory, String... packages) {
-			add("javadoc", linkFactory, packages);
-		}
-
-		public void javadoc(String rootName, Function<LibraryVersion, String> linkFactory, String... packages) {
-			add(rootName, "javadoc", linkFactory, packages);
+			add(LinkType.JAVADOC, linkFactory, packages);
 		}
 
 		public void releaseNotes(String linkTemplate) {
@@ -575,25 +568,32 @@ public class BomExtension {
 		}
 
 		public void releaseNotes(Function<LibraryVersion, String> linkFactory) {
-			add("releaseNotes", linkFactory);
+			add(LinkType.RELEASE_NOTES, linkFactory);
 		}
 
-		public void add(String name, String linkTemplate) {
-			add(name, asFactory(linkTemplate));
+		public void userGuide(String linkTemplate) {
+			releaseNotes(asFactory(linkTemplate));
 		}
 
-		public void add(String name, Function<LibraryVersion, String> linkFactory) {
-			add(name, linkFactory, null);
+		public void userGuide(Function<LibraryVersion, String> linkFactory) {
+			add(LinkType.USER_GUIDE, linkFactory);
 		}
 
-		public void add(String name, Function<LibraryVersion, String> linkFactory, String[] packages) {
-			add(null, name, linkFactory, packages);
+		public void layersXsd(String linkTemplate) {
+			releaseNotes(asFactory(linkTemplate));
 		}
 
-		private void add(String rootName, String name, Function<LibraryVersion, String> linkFactory,
-				String[] packages) {
-			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
-			this.links.computeIfAbsent(name, (key) -> new ArrayList<>()).add(link);
+		public void layersXsd(Function<LibraryVersion, String> linkFactory) {
+			add(LinkType.LAYERS_XSD, linkFactory);
+		}
+
+		private void add(LinkType type, Function<LibraryVersion, String> linkFactory) {
+			add(type, linkFactory, null);
+		}
+
+		private void add(LinkType type, Function<LibraryVersion, String> linkFactory, String[] packages) {
+			Link link = new Link(linkFactory, (packages != null) ? List.of(packages) : null);
+			this.links.computeIfAbsent(type, (key) -> new ArrayList<>()).add(link);
 		}
 
 		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
@@ -601,7 +601,28 @@ public class BomExtension {
 				PlaceholderResolver resolver = (name) -> "version".equals(name) ? version.toString() : null;
 				return new PropertyPlaceholderHelper("{", "}").replacePlaceholders(linkTemplate, resolver);
 			};
+
 		}
+
+	}
+
+	public static class LibraryLinksHandler extends LinksHandler {
+
+		private final Map<String, Map<LinkType, List<Link>>> moduleLinks = new HashMap<>();
+
+		Map<String, Map<LinkType, List<Link>>> moduleLinks() {
+			return this.moduleLinks;
+		}
+
+		public void module(String moduleName, Action<ModuleLinksHandler> action) {
+			ModuleLinksHandler handler = new ModuleLinksHandler();
+			action.execute(handler);
+			this.moduleLinks.computeIfAbsent(moduleName, (key) -> new HashMap<>()).putAll(handler.links());
+		}
+
+	}
+
+	private static class ModuleLinksHandler extends LinksHandler {
 
 	}
 

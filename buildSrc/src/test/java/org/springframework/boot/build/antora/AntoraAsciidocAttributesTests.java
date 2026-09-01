@@ -212,6 +212,25 @@ class AntoraAsciidocAttributesTests {
 			.containsEntry("javadoc-location-org-springframework-util", "{url-spring-framework-javadoc}");
 	}
 
+	@Test
+	void urlLinksFromLibraryModule() {
+		Map<String, List<Link>> moduleLinks = new LinkedHashMap<>();
+		moduleLinks.put("site", singleLink((version) -> "https://example.com/site/" + version));
+		moduleLinks.put("docs", singleLink((version) -> "https://example.com/docs/" + version));
+		moduleLinks.put("javadoc",
+				singleLink((version) -> "https://example.com/api/" + version, "org.springframework.data.jpa"));
+		Library library = mockLibrary("Spring Data", Collections.emptyMap(), Map.of("spring-data-jpa", moduleLinks));
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
+				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("url-spring-framework-site", "https://example.com/site/1.2.3")
+			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3")
+			.containsEntry("url-spring-framework-javadoc", "https://example.com/api/1.2.3");
+		assertThat(attributes.get())
+			.containsEntry("javadoc-location-org-springframework-core", "{url-spring-framework-javadoc}")
+			.containsEntry("javadoc-location-org-springframework-util", "{url-spring-framework-javadoc}");
+
+	}
+
 	private List<Link> singleLink(Function<LibraryVersion, String> factory, String... packages) {
 		Link link = new Link(null, factory, List.of(packages));
 		return List.of(link);
@@ -223,14 +242,17 @@ class AntoraAsciidocAttributesTests {
 				null, mockDependencyVersions(), null)
 			.get();
 		assertThat(attributes).containsEntry("include-java", "ROOT:example$java/org/springframework/boot/docs");
-		assertThat(attributes).containsEntry("url-spring-data-cassandra-site",
-				"https://spring.io/projects/spring-data-cassandra");
+		assertThat(attributes).containsEntry("url-ant-docs", "https://ant.apache.org/manual");
 		List<String> keys = new ArrayList<>(attributes.keySet());
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
 
 	private Library mockLibrary(Map<String, List<Link>> links) {
-		String name = "Spring Framework";
+		return mockLibrary("Spring Framework", links, Collections.emptyMap());
+	}
+
+	private Library mockLibrary(String name, Map<String, List<Link>> links,
+			Map<String, Map<String, List<Link>>> moduleLinks) {
 		String calendarName = null;
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
 		List<Group> groups = Collections.emptyList();
@@ -240,7 +262,7 @@ class AntoraAsciidocAttributesTests {
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
-				versionAlignment, alignsWithBom, linkRootName, links);
+				versionAlignment, alignsWithBom, linkRootName, links, moduleLinks);
 		return library;
 	}
 
