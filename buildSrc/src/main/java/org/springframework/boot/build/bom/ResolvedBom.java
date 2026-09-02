@@ -22,10 +22,16 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import tools.jackson.databind.json.JsonMapper;
+
+import org.springframework.util.Assert;
 
 /**
  * A resolved bom.
@@ -44,6 +50,23 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 			.build();
 	}
 
+	public ResolvedLibrary library(Library library) {
+		String name = library.getName();
+		List<ResolvedLibrary> matching = libraries().stream()
+			.filter((candidate) -> candidate.name().equals(name))
+			.toList();
+		Assert.state(!matching.isEmpty(), () -> "No library found with name '%s'".formatted(name));
+		Assert.state(matching.size() == 1, () -> "Multiple libraries found with name '%s'".formatted(name));
+		return matching.get(0);
+	}
+
+	// FIXME not sure
+	public Map<String, String> dependencyVersions() {
+		Map<String, String> dependencyVersions = new HashMap<>();
+		libraries().forEach((library) -> dependencyVersions.putAll(library.dependencyVersions()));
+		return Collections.unmodifiableMap(dependencyVersions);
+	}
+
 	public static ResolvedBom readFrom(File file) {
 		try (FileReader reader = new FileReader(file)) {
 			return jsonMapper.readValue(reader, ResolvedBom.class);
@@ -59,6 +82,47 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
 			List<Bom> importedBoms, Links links) {
+
+		public Map<String, String> dependencyVersions() {
+			Map<String, String> dependencyVersions = new HashMap<>();
+			managedDependencies()
+				.forEach((dependency) -> dependencyVersions.put(dependency.groupAndArtifactId(), dependency.version()));
+			importedBoms().forEach((importedBom) -> dependencyVersions.putAll(importedBom.dependencyVersions()));
+			return Collections.unmodifiableMap(dependencyVersions);
+		}
+
+		public Id module(String name) {
+			List<Id> matching = allDependencies().filter((candidate) -> candidate.artifactId().equals(name)).toList();
+			Assert.state(!matching.isEmpty(), () -> "No module found with name '%s'".formatted(name));
+			Assert.state(matching.size() == 1, () -> "Multiple artifacts found with name '%s'".formatted(name));
+			return matching.get(0);
+		}
+
+		public Stream<Id> allDependencies() {
+			return Stream.concat(managedDependencies().stream(), importedBoms().stream().flatMap(Bom::allDependencies));
+		}
+
+	}
+
+	public record Bom(Id id, Bom parent, List<Id> managedDependencies, List<Bom> importedBoms) {
+
+		public Stream<Id> allDependencies() {
+			Stream<Id> managedAndImportedDependencies = Stream.concat(managedDependencies().stream(),
+					importedBoms().stream().flatMap(Bom::allDependencies));
+			return (parent() != null) ? Stream.concat(parent().allDependencies(), managedAndImportedDependencies)
+					: managedAndImportedDependencies;
+		}
+
+		public Map<String, String> dependencyVersions() {
+			Map<String, String> dependencyVersions = new HashMap<>();
+			this.managedDependencies
+				.forEach((dependency) -> dependencyVersions.put(dependency.groupAndArtifactId(), dependency.version()));
+			this.importedBoms.forEach((importedBom) -> dependencyVersions.putAll(importedBom.dependencyVersions()));
+			if (this.parent != null) {
+				dependencyVersions.putAll(this.parent.dependencyVersions());
+			}
+			return Collections.unmodifiableMap(dependencyVersions);
+		}
 
 	}
 
@@ -96,9 +160,9 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 			return builder.toString();
 		}
 
-	}
-
-	public record Bom(Id id, Bom parent, List<Id> managedDependencies, List<Bom> importedBoms) {
+		public String groupAndArtifactId() {
+			return groupId() + ":" + artifactId();
+		}
 
 	}
 

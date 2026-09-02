@@ -215,7 +215,7 @@ class AntoraAsciidocAttributesTests {
 	}
 
 	private List<Link> singleLink(Function<LinkedVersion, String> factory, String... packages) {
-		Link link = new Link(null, factory, List.of(packages));
+		Link link = new Link(factory, List.of(packages));
 		return List.of(link);
 	}
 
