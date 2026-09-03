@@ -23,8 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.gradle.api.Project;
+import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.BomAlignment;
 import org.springframework.boot.build.bom.Library.FirstParty;
@@ -35,10 +39,15 @@ import org.springframework.boot.build.bom.Library.LinkedVersion;
 import org.springframework.boot.build.bom.Library.Links;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
+import org.springframework.boot.build.bom.ResolvedBom;
+import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.properties.BuildType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AntoraAsciidocAttributes}.
@@ -50,57 +59,57 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void buildTypeWhenOpenSource() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("build-type", "opensource");
 	}
 
 	@Test
 	void buildTypeWhenCommercial() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.COMMERCIAL, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.COMMERCIAL, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("build-type", "commercial");
 	}
 
 	@Test
 	void githubRefWhenReleasedVersionIsTag() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "v1.2.3");
 	}
 
 	@Test
 	void githubRefWhenLatestSnapshotVersionIsMainBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true,
-				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-SNAPSHOT", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "main");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotVersionIsBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", false,
-				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-SNAPSHOT", false, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "1.2.x");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotHotFixVersionIsBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
-				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3.1-SNAPSHOT", false, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "1.2.3.x");
 	}
 
 	@Test
 	void versionReferenceFromLibrary() {
 		Library library = mockLibrary(Collections.emptyMap());
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
-				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3.1-SNAPSHOT", false, BuildType.OPEN_SOURCE,
+				List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("version-spring-framework", "1.2.3");
 	}
 
 	@Test
 	void versionReferenceFromSpringDataDependencyReleaseVersion() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.5"), null);
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.5");
 		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
@@ -111,7 +120,7 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void versionReferenceFromSpringDataDependencySnapshotVersion() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.0-SNAPSHOT"), null);
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.0-SNAPSHOT");
 		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
@@ -122,35 +131,35 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void versionNativeBuildTools() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), Map.of("nativeBuildToolsVersion", "3.4.5"));
 		assertThat(attributes.get()).containsEntry("version-native-build-tools", "3.4.5");
 	}
 
 	@Test
 	void urlArtifactRepositoryWhenRelease() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
 	void urlArtifactRepositoryWhenMilestone() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.OPEN_SOURCE,
-				null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-M1", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
 	void urlArtifactRepositoryWhenSnapshot() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true,
-				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-SNAPSHOT", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/snapshot");
 	}
 
 	@Test
 	void artifactReleaseTypeWhenOpenSourceRelease() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "release");
 		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "opensource-release");
@@ -158,23 +167,23 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void artifactReleaseTypeWhenOpenSourceMilestone() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.OPEN_SOURCE,
-				null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-M1", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "milestone");
 		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "opensource-milestone");
 	}
 
 	@Test
 	void artifactReleaseTypeWhenOpenSourceSnapshot() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true,
-				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-SNAPSHOT", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "snapshot");
 		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "opensource-snapshot");
 	}
 
 	@Test
 	void artifactReleaseTypeWhenCommercialRelease() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.COMMERCIAL, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3", true, BuildType.COMMERCIAL, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "release");
 		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "commercial-release");
@@ -182,7 +191,7 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void artifactReleaseTypeWhenCommercialMilestone() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.COMMERCIAL, null,
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-M1", true, BuildType.COMMERCIAL, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "milestone");
 		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "commercial-milestone");
@@ -190,8 +199,8 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void artifactReleaseTypeWhenCommercialSnapshot() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, BuildType.COMMERCIAL,
-				null, mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3-SNAPSHOT", true, BuildType.COMMERCIAL, null,
+				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "snapshot");
 		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "commercial-snapshot");
 	}
@@ -204,8 +213,8 @@ class AntoraAsciidocAttributesTests {
 		links.put(LinkType.JAVADOC,
 				singleLink((version) -> "https://example.com/api/" + version, "org.springframework.[core|util]"));
 		Library library = mockLibrary(links);
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
-				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = attributes("1.2.3.1-SNAPSHOT", false, BuildType.OPEN_SOURCE,
+				List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-spring-framework-site", "https://example.com/site/1.2.3")
 			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3")
 			.containsEntry("url-spring-framework-javadoc", "https://example.com/api/1.2.3");
@@ -221,14 +230,40 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void linksFromProperties() {
-		Map<String, String> attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, BuildType.OPEN_SOURCE,
-				null, mockDependencyVersions(), null)
+		Map<String, String> attributes = attributes("1.2.3-SNAPSHOT", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null)
 			.get();
 		assertThat(attributes).containsEntry("include-java", "ROOT:example$java/org/springframework/boot/docs");
 		assertThat(attributes).containsEntry("url-spring-data-cassandra-site",
 				"https://spring.io/projects/spring-data-cassandra");
 		List<String> keys = new ArrayList<>(attributes.keySet());
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private AntoraAsciidocAttributes attributes(String version, boolean latestVersion, BuildType buildType,
+			List<Library> libraries, Map<String, String> dependencyVersions, Map<String, ?> projectProperties) {
+		libraries = (libraries != null) ? libraries : Collections.emptyList();
+		projectProperties = (projectProperties != null) ? projectProperties : Collections.emptyMap();
+		Project project = mock();
+		ExtensionContainer extensions = mock();
+		ExtraPropertiesExtension extraPropertiesExtension = mock();
+		given(project.getVersion()).willReturn(version);
+		given(project.findProperty("latestVersion")).willReturn(String.valueOf(latestVersion));
+		given(project.findProperty("spring.build-type"))
+			.willReturn((buildType == BuildType.OPEN_SOURCE) ? "oss" : "commercial");
+		given(project.getProperties()).willReturn((Map) projectProperties);
+		given(project.getExtensions()).willReturn(extensions);
+		given(extensions.getExtraProperties()).willReturn(extraPropertiesExtension);
+		BomExtension dependencyBom = mock();
+		given(dependencyBom.getLibraries()).willReturn(libraries);
+		ResolvedBom resolvedBom = mock();
+		given(resolvedBom.dependencyVersions()).willReturn(dependencyVersions);
+		ResolvedLibrary resolvedLibrary = mock();
+		given(resolvedBom.library(any())).willReturn(resolvedLibrary);
+		given(resolvedLibrary.module(any()))
+			.willAnswer((invocation) -> dependencyVersions.get(invocation.getArgument(0)));
+		return new AntoraAsciidocAttributes(project, dependencyBom, resolvedBom);
 	}
 
 	private Library mockLibrary(Map<LinkType, List<Link>> links) {
@@ -242,7 +277,7 @@ class AntoraAsciidocAttributesTests {
 		BomAlignment alignsWithBom = null;
 		String linkRootName = null;
 		Library library = new Library(name, calendarName, version, groups, null, prohibitedVersion, firstParty,
-				versionAlignment, alignsWithBom, linkRootName, new Links(links));
+				versionAlignment, alignsWithBom, linkRootName, new Links(links), Collections.emptyMap());
 		return library;
 	}
 

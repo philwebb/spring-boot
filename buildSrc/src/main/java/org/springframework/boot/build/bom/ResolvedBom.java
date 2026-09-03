@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -60,11 +59,13 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 		return matching.get(0);
 	}
 
-	// FIXME not sure
 	public Map<String, String> dependencyVersions() {
-		Map<String, String> dependencyVersions = new HashMap<>();
-		libraries().forEach((library) -> dependencyVersions.putAll(library.dependencyVersions()));
-		return Collections.unmodifiableMap(dependencyVersions);
+		return allDependencies()
+			.collect(Collectors.toMap((id) -> id.groupId() + ":" + id.artifactId(), (id) -> id.version()));
+	}
+
+	public Stream<Id> allDependencies() {
+		return libraries().stream().flatMap(ResolvedLibrary::allDependencies);
 	}
 
 	public static ResolvedBom readFrom(File file) {
@@ -82,14 +83,6 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,
 			List<Bom> importedBoms, Links links) {
-
-		public Map<String, String> dependencyVersions() {
-			Map<String, String> dependencyVersions = new HashMap<>();
-			managedDependencies()
-				.forEach((dependency) -> dependencyVersions.put(dependency.groupAndArtifactId(), dependency.version()));
-			importedBoms().forEach((importedBom) -> dependencyVersions.putAll(importedBom.dependencyVersions()));
-			return Collections.unmodifiableMap(dependencyVersions);
-		}
 
 		public Id module(String name) {
 			List<Id> matching = allDependencies().filter((candidate) -> candidate.artifactId().equals(name)).toList();
@@ -111,17 +104,6 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 					importedBoms().stream().flatMap(Bom::allDependencies));
 			return (parent() != null) ? Stream.concat(parent().allDependencies(), managedAndImportedDependencies)
 					: managedAndImportedDependencies;
-		}
-
-		public Map<String, String> dependencyVersions() {
-			Map<String, String> dependencyVersions = new HashMap<>();
-			this.managedDependencies
-				.forEach((dependency) -> dependencyVersions.put(dependency.groupAndArtifactId(), dependency.version()));
-			this.importedBoms.forEach((importedBom) -> dependencyVersions.putAll(importedBom.dependencyVersions()));
-			if (this.parent != null) {
-				dependencyVersions.putAll(this.parent.dependencyVersions());
-			}
-			return Collections.unmodifiableMap(dependencyVersions);
 		}
 
 	}
