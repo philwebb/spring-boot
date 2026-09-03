@@ -60,8 +60,8 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public Map<String, String> dependencyVersions() {
-		return allDependencies()
-			.collect(Collectors.toMap((id) -> id.groupId() + ":" + id.artifactId(), (id) -> id.version()));
+		return allDependencies().collect(Collectors.toMap((id) -> id.groupId() + ":" + id.artifactId(),
+				(id) -> id.version(), (id1, id2) -> id1));
 	}
 
 	public Stream<Id> allDependencies() {

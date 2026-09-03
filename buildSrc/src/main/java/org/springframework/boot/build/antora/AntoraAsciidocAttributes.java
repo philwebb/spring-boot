@@ -249,7 +249,7 @@ public class AntoraAsciidocAttributes {
 			return "javadoc-location-" + packageName.replace('.', '-');
 		}
 
-		public void copyTo(Map<String, String> attributes) {
+		void copyTo(Map<String, String> attributes) {
 			// URL attributes first since package attributes reference them
 			attributes.putAll(this.urlAttributes);
 			attributes.putAll(this.packageAttributes);

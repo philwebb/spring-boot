@@ -1567,7 +1567,7 @@ bom {
 			docs(version -> "https://docs.micrometer.io/micrometer/reference/%s.%s"
 				.formatted(version.major(), version.minor()))
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
-			module("micrometer-core"") {
+			module("micrometer-core") {
 				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-core/%s".formatted(version), "io.micrometer.core")
 			}
 			module("micrometer-observation") {
@@ -2731,10 +2731,10 @@ bom {
 			module("testcontainers-neo4j") {
 				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/neo4j/%s".formatted(version))
 			}
-			module("testcontainers-oracle-xe) {
+			module("testcontainers-oracle-xe") {
 				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-xe/%s".formatted(version))
 			}
-			module("testcontainers-oracle-free) {
+			module("testcontainers-oracle-free") {
 				javadoc(version -> "https://javadoc.io/doc/org.testcontainers/oracle-free/%s".formatted(version), "org.testcontainers.oracle")
 			}
 			module("testcontainers-postgresql") {

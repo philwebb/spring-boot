@@ -276,8 +276,8 @@ public class BomExtension {
 			action.execute(this.alignWith);
 		}
 
-		public void links(Action<LinksHandler> action) {
-			links(action);
+		public void links(Action<LibraryLinksHandler> action) {
+			links(null, action);
 		}
 
 		public void links(String linkRootName, Action<LibraryLinksHandler> action) {

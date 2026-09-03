@@ -25,6 +25,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.impldep.org.apache.http.client.config.CookieSpecs;
 
@@ -51,10 +52,10 @@ public abstract class CheckLinks extends DefaultTask {
 
 	private final BomExtension bom;
 
-	private final ResolvedBom resolvedBom;
+	private final Configuration resolvedBom;
 
 	@Inject
-	public CheckLinks(BomExtension bom, ResolvedBom resolvedBom) {
+	public CheckLinks(BomExtension bom, Configuration resolvedBom) {
 		this.bom = bom;
 		this.resolvedBom = resolvedBom;
 	}
@@ -72,7 +73,8 @@ public abstract class CheckLinks extends DefaultTask {
 	}
 
 	private void check(RestClient restClient, Library library) {
-		ResolvedLibrary resolvedLibrary = this.resolvedBom.library(library);
+		ResolvedBom resolvedBom = ResolvedBom.readFrom(this.resolvedBom.getSingleFile());
+		ResolvedLibrary resolvedLibrary = resolvedBom.library(library);
 		DependencyVersion libraryVersion = library.getVersion();
 		String libraryName = library.getName();
 		library.getLinks().forEachLink((type, link) -> check(restClient, type, link, libraryName, libraryVersion));
