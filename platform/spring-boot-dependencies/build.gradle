@@ -882,11 +882,11 @@ bom {
 			]
 		}
 		links {
-			module("jakarta-websocket-server") {
+			module("jakarta.websocket-api") {
 				javadoc( version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/server"
 					.formatted(version.major(), version.minor()), "jakarta.websocket.server")
 			}
-			module("jakarta-websocket-client") {
+			module("jakarta.websocket-client-api") {
 				javadoc(version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/client"
 					.formatted(version.major(), version.minor()), "jakarta.websocket")
 			}
@@ -1582,7 +1582,7 @@ bom {
 			module("micrometer-registry-jmx") {
 				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-jmx/%s".formatted(version), "io.micrometer.jmx")
 			}
-			module("micrometer-new-relic") {
+			module("micrometer-registry-new-relic") {
 				javadoc(version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-new-relic/%s".formatted(version), "io.micrometer.newrelic")
 			}
 		}
@@ -1856,7 +1856,7 @@ bom {
 		links {
 			site("https://github.com/prometheus/client_java")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
-			module("prometheus-simpleclient-tracer-common") {
+			module("simpleclient_tracer_common") {
 				javadoc((version) -> "https://javadoc.io/doc/io.prometheus/simpleclient_tracer_common/%s".formatted(version), "io.prometheus.client.exemplars.tracer.common")
 			}
 		}

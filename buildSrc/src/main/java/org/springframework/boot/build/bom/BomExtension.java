@@ -286,7 +286,7 @@ public class BomExtension {
 			this.linkRootName = linkRootName;
 			this.links = new Links(handler.links());
 			this.moduleLinks = new HashMap<>();
-			handler.moduleLinks.forEach((module, links) -> this.moduleLinks.put(module, new Links(links)));
+			handler.moduleLinks().forEach((module, links) -> this.moduleLinks.put(module, new Links(links)));
 		}
 
 		public static class ProhibitedHandler {
@@ -608,6 +608,14 @@ public class BomExtension {
 
 		public Map<String, Map<LinkType, List<Link>>> moduleLinks() {
 			return this.moduleLinks;
+		}
+
+		public void module(String moduleName, Closure<ModuleLinksHandler> closure) {
+			ModuleLinksHandler handler = new ModuleLinksHandler();
+			closure.setDelegate(handler);
+			closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+			closure.call(handler);
+			this.moduleLinks.computeIfAbsent(moduleName, (key) -> new HashMap<>()).putAll(handler.links());
 		}
 
 		public void module(String moduleName, Action<ModuleLinksHandler> action) {
