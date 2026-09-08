@@ -17,9 +17,7 @@
 package org.springframework.boot.build.docs;
 
 import java.io.File;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
@@ -27,11 +25,6 @@ import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
-
-import org.springframework.boot.build.bom.ResolvedBom;
-import org.springframework.boot.build.bom.ResolvedBom.Id;
-import org.springframework.boot.build.bom.ResolvedBom.JavadocLink;
-import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
 
 /**
  * Specialized {@link Javadoc} task for aggregated javadoc generation.
@@ -41,7 +34,7 @@ import org.springframework.boot.build.bom.ResolvedBom.ResolvedLibrary;
  */
 public abstract class AggregatedJavadoc extends Javadoc {
 
-	private static final Set<String> SKIPPED_LIBRARIES = Set.of("Spring Boot");
+	// private static final Set<String> SKIPPED_LIBRARIES = Set.of("Spring Boot");
 
 	private static final Set<String> JAVADOC_PACKAGE_LIST_FILES = Set.of("package-list", "element-list");
 
@@ -66,44 +59,49 @@ public abstract class AggregatedJavadoc extends Javadoc {
 	}
 
 	private void configureOfflineLinks(StandardJavadocDocletOptions options) {
-		ResolvedBom resolvedBom = ResolvedBom.readFrom(getResolvedBom().getSingleFile());
-		File packageListDirectory = getProject().getLayout()
-			.getBuildDirectory()
-			.get()
-			.dir("docs/javadocpackagelist")
-			.getAsFile();
-		extractPackageListFiles(packageListDirectory);
-		options.addStringOption("offlinelinks-source", new File(packageListDirectory, "@name@").getAbsolutePath());
+		// ResolvedBom resolvedBom =
+		// ResolvedBom.readFrom(getResolvedBom().getSingleFile());
+		// File packageListDirectory = getProject().getLayout()
+		// .getBuildDirectory()
+		// .get()
+		// .dir("docs/javadocpackagelist")
+		// .getAsFile();
+		// extractPackageListFiles(packageListDirectory);
+		// options.addStringOption("offlinelinks-source", new File(packageListDirectory,
+		// "@name@").getAbsolutePath());
+		// if (getProject().getGradle().getStartParameter().getLogLevel() ==
+		// LogLevel.DEBUG) {
 		// options.addBooleanOption("offlinelinks-debug", true);
-		for (ResolvedLibrary library : resolvedBom.libraries()) {
-			System.out.println("## " + library.name());
-			List<JavadocLink> javadocLinks = library.links().javadoc();
-			Set<Id> allManagedDependencies = library.allManagedDependencies();
-			System.out.println("** " + javadocLinks);
-			System.out.println("** " + allManagedDependencies);
-			if (isOfflineJavalinkedLibrary(library, javadocLinks, allManagedDependencies)) {
-				JavadocLink javadocLink = javadocLinks.get(0);
-				String url = javadocLink.uri().toString();
-				String javadocJars = javadocJarNames(allManagedDependencies);
-				System.out.println("  >> " + url + " " + javadocJars);
-				options.linksOffline(url, javadocJars);
-			}
-		}
+		// }
+		// for (ResolvedLibrary library : resolvedBom.libraries()) {
+		// List<JavadocLink> javadocLinks = library.links().javadoc();
+		// Set<Id> dependencies =
+		// library.allDependencies().collect(Collectors.toCollection(TreeSet::new));
+		// if (isOffline(library, javadocLinks, dependencies)) {
+		// JavadocLink javadocLink = javadocLinks.get(0);
+		// String url = javadocLink.uri().toString();
+		// String javadocJars = javadocJarNames(dependencies);
+		// System.out.println(" >> " + url + " " + javadocJars);
+		// options.linksOffline(url, javadocJars);
+		// }
+		// }
 	}
 
-	private boolean isOfflineJavalinkedLibrary(ResolvedLibrary library, List<JavadocLink> javadocLinks,
-			Set<Id> allManagedDependencies) {
-		return !SKIPPED_LIBRARIES.contains(library.name()) && javadocLinks.size() == 1
-				&& !allManagedDependencies.isEmpty();
-	}
+	// private boolean isOffline(ResolvedLibrary library, List<JavadocLink> javadocLinks,
+	// Set<Id> dependencies) {
+	// return !SKIPPED_LIBRARIES.contains(library.name()) && javadocLinks.size() == 1 &&
+	// !dependencies.isEmpty();
+	// }
 
-	private String javadocJarNames(Set<Id> managedDependencies) {
-		return managedDependencies.stream().map(this::javadocJarName).collect(Collectors.joining(","));
-	}
+	// private String javadocJarNames(Set<Id> managedDependencies) {
+	// return
+	// managedDependencies.stream().map(this::javadocJarName).collect(Collectors.joining(","));
+	// }
 
-	private String javadocJarName(Id managedDependency) {
-		return "%s-%s-javadoc.jar".formatted(managedDependency.artifactId(), managedDependency.version());
-	}
+	// private String javadocJarName(Id managedDependency) {
+	// return "%s-%s-library.jar".formatted(managedDependency.artifactId(),
+	// managedDependency.version());
+	// }
 
 	private void extractPackageListFiles(File packageListDirectory) {
 		getJavadocJars().forEach((javadocJar) -> {
