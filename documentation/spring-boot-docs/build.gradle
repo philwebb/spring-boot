@@ -178,6 +178,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     javadocJars.from(configurations.javadocJars.incoming.artifactView {
 		withVariantReselection()
 		attributes {
+			// FIXME might not need
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
 			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
 			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
