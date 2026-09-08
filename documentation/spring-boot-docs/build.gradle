@@ -147,6 +147,16 @@ configurations {
 		}
 		extendsFrom configurations.runtimeClasspath
 	}
+	javadocJars {
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+		}
+		extendsFrom configurations.runtimeClasspath
+	}
 	configureEach {
 		resolutionStrategy {
 			capabilitiesResolution {
@@ -165,7 +175,7 @@ configurations {
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     resolvedBom.from(configurations.resolvedBom)
-    javadocJars.from(configurations.javadocClasspath.incoming.artifactView {
+    javadocJars.from(configurations.javadocJars.incoming.artifactView {
 		withVariantReselection()
 		attributes {
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));

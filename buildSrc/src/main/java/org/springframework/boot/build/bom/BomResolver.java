@@ -61,6 +61,8 @@ import org.springframework.util.Assert;
  */
 class BomResolver {
 
+	private static final Set<String> SKIPPED_OFFLINE_JAVADOC_LIBRARIES = Set.of("Spring Boot");
+
 	private final ConfigurationContainer configurations;
 
 	private final DependencyHandler dependencies;
@@ -192,20 +194,29 @@ class BomResolver {
 	private Map<URI, List<String>> getOfflineJavadocLinks(BomExtension bom, List<ResolvedLibrary> resolvedLibraries) {
 		Map<URI, List<String>> offlineJavadocLinks = new TreeMap<>();
 		for (Library library : bom.getLibraries()) {
+			if (SKIPPED_OFFLINE_JAVADOC_LIBRARIES.contains(library.getName())) {
+				continue;
+			}
+			System.out.println(">>> " + library.getName());
 			ResolvedLibrary resolvedLibrary = ResolvedLibrary.find(resolvedLibraries, library);
-			Set<Id> managedDependencies = new TreeSet<>(resolvedLibrary.managedDependencies());
+			Set<Id> linkedDependencies = new TreeSet<>(resolvedLibrary.allDependencies().toList());
+			System.out.println(">>>>" + linkedDependencies);
 			library.getModuleLinks().forEach((module, moduleLinks) -> {
+				System.out.println(">>>> " + module);
 				moduleLinks.byType().getOrDefault(LinkType.JAVADOC, Collections.emptyList()).forEach((link) -> {
 					String version = resolvedLibrary.moduleVersion(module);
 					List<String> moduleNames = module.moduleNames();
+					System.out.println(">>>> " + version);
+					System.out.println(">>>> " + moduleNames);
 					addOfflineJavadocLink(offlineJavadocLinks, link, version, moduleNames.stream());
 					module.moduleNames()
-						.forEach((moduleName) -> managedDependencies
+						.forEach((moduleName) -> linkedDependencies
 							.removeIf((candidate) -> candidate.artifactId().equals(moduleName)));
 				});
 			});
 			library.getLinks().byType().getOrDefault(LinkType.JAVADOC, Collections.emptyList()).forEach((link) -> {
-				Stream<String> modulesNames = managedDependencies.stream().map(Id::artifactId);
+				System.out.println(">>>> " + link);
+				Stream<String> modulesNames = linkedDependencies.stream().map(Id::artifactId);
 				addOfflineJavadocLink(offlineJavadocLinks, link, library.getVersion(), modulesNames);
 			});
 		}
@@ -216,6 +227,7 @@ class BomResolver {
 	private void addOfflineJavadocLink(Map<URI, List<String>> offlineJavadocLinks, Link link, Object version,
 			Stream<String> moduleNames) {
 		URI uri = URI.create(link.url(new LinkedVersion(version)));
+		System.out.println(">>>> " + uri);
 		offlineJavadocLinks.computeIfAbsent(uri, (key) -> new ArrayList<>())
 			.addAll(moduleNames.map((name) -> "%s-%s-javadoc.jar".formatted(name, version)).toList());
 	}

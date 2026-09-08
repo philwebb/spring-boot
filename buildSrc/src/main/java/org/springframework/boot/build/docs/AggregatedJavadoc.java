@@ -18,13 +18,17 @@ package org.springframework.boot.build.docs;
 
 import java.io.File;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
+
+import org.springframework.boot.build.bom.ResolvedBom;
 
 /**
  * Specialized {@link Javadoc} task for aggregated javadoc generation.
@@ -33,8 +37,6 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions;
  * @author Phillip Webb
  */
 public abstract class AggregatedJavadoc extends Javadoc {
-
-	// private static final Set<String> SKIPPED_LIBRARIES = Set.of("Spring Boot");
 
 	private static final Set<String> JAVADOC_PACKAGE_LIST_FILES = Set.of("package-list", "element-list");
 
@@ -59,49 +61,24 @@ public abstract class AggregatedJavadoc extends Javadoc {
 	}
 
 	private void configureOfflineLinks(StandardJavadocDocletOptions options) {
-		// ResolvedBom resolvedBom =
-		// ResolvedBom.readFrom(getResolvedBom().getSingleFile());
-		// File packageListDirectory = getProject().getLayout()
-		// .getBuildDirectory()
-		// .get()
-		// .dir("docs/javadocpackagelist")
-		// .getAsFile();
-		// extractPackageListFiles(packageListDirectory);
-		// options.addStringOption("offlinelinks-source", new File(packageListDirectory,
-		// "@name@").getAbsolutePath());
-		// if (getProject().getGradle().getStartParameter().getLogLevel() ==
-		// LogLevel.DEBUG) {
-		// options.addBooleanOption("offlinelinks-debug", true);
-		// }
-		// for (ResolvedLibrary library : resolvedBom.libraries()) {
-		// List<JavadocLink> javadocLinks = library.links().javadoc();
-		// Set<Id> dependencies =
-		// library.allDependencies().collect(Collectors.toCollection(TreeSet::new));
-		// if (isOffline(library, javadocLinks, dependencies)) {
-		// JavadocLink javadocLink = javadocLinks.get(0);
-		// String url = javadocLink.uri().toString();
-		// String javadocJars = javadocJarNames(dependencies);
-		// System.out.println(" >> " + url + " " + javadocJars);
-		// options.linksOffline(url, javadocJars);
-		// }
-		// }
+		ResolvedBom resolvedBom = ResolvedBom.readFrom(getResolvedBom().getSingleFile());
+		File packageListDirectory = getProject().getLayout()
+			.getBuildDirectory()
+			.get()
+			.dir("docs/javadocpackagelist")
+			.getAsFile();
+		extractPackageListFiles(packageListDirectory);
+		if (getProject().getGradle().getStartParameter().getLogLevel() == LogLevel.DEBUG) {
+			options.addBooleanOption("offlinelinks-debug", true);
+		}
+		options.addStringOption("offlinelinks-source", new File(packageListDirectory, "@name@").getAbsolutePath());
+		System.out.println(new File(packageListDirectory, "@name@").getAbsolutePath());
+		resolvedBom.offlineJavadocLinks().forEach((url, jars) -> {
+			String listOfJavadocJars = jars.stream().collect(Collectors.joining(","));
+			System.out.println(listOfJavadocJars);
+			options.linksOffline(url.toString(), listOfJavadocJars);
+		});
 	}
-
-	// private boolean isOffline(ResolvedLibrary library, List<JavadocLink> javadocLinks,
-	// Set<Id> dependencies) {
-	// return !SKIPPED_LIBRARIES.contains(library.name()) && javadocLinks.size() == 1 &&
-	// !dependencies.isEmpty();
-	// }
-
-	// private String javadocJarNames(Set<Id> managedDependencies) {
-	// return
-	// managedDependencies.stream().map(this::javadocJarName).collect(Collectors.joining(","));
-	// }
-
-	// private String javadocJarName(Id managedDependency) {
-	// return "%s-%s-library.jar".formatted(managedDependency.artifactId(),
-	// managedDependency.version());
-	// }
 
 	private void extractPackageListFiles(File packageListDirectory) {
 		getJavadocJars().forEach((javadocJar) -> {
