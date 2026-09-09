@@ -101,6 +101,7 @@ bom {
 		links {
 			site("https://assertj.github.io/doc")
 			releaseNotes("https://github.com/assertj/assertj/releases/tag/assertj-build-{version}")
+			javadoc("https://www.javadoc.io/doc/org.assertj/assertj-core/{version}", "org.assertj")
 		}
 	}
 	library("Awaitility", "4.3.0") {
@@ -253,6 +254,7 @@ bom {
 		links {
 			site("https://commons.apache.org/proper/commons-logging")
 			releaseNotes("https://commons.apache.org/proper/commons-logging/changes-report.html#a{version}")
+			javadoc("https://javadoc.io/doc/commons-logging/commons-logging/{version}", "org.apache.commons.logging")
 		}
 	}
 	library("Commons Pool", "1.6") {
@@ -634,6 +636,7 @@ bom {
 		links {
 			site("https://www.htmlunit.org")
 			releaseNotes("https://github.com/HtmlUnit/htmlunit/releases/tag/{version}")
+			javadoc("https://javadoc.io/doc/org.htmlunit/htmlunit/{version}", "org.htmlunit")
 		}
 	}
 	library("HttpAsyncClient", "4.1.5") {
@@ -2044,6 +2047,9 @@ bom {
 		links {
 			site("https://projectreactor.io")
 			releaseNotes("https://github.com/reactor/reactor/releases/tag/{version}")
+			module("reactor-netty", ["reactor-netty", "reactor-netty", "reactor-netty-core", "reactor-netty-http"]) {
+				javadoc("https://projectreactor.io/docs/netty/{version}/api", "reactor.netty")
+			}
 		}
 	}
 	library("RSocket", "1.1.5") {

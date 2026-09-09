@@ -168,6 +168,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     javadocJars.from(configurations.javadocClasspath.incoming.artifactView {
 		withVariantReselection()
 		attributes {
+			lenient = true
 			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
 			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));

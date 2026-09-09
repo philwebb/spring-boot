@@ -17,6 +17,7 @@
 package org.springframework.boot.build.docs;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 
 import org.springframework.boot.build.bom.ResolvedBom;
+import org.springframework.util.StringUtils;
 
 /**
  * Specialized {@link Javadoc} task for aggregated javadoc generation.
@@ -62,21 +64,19 @@ public abstract class AggregatedJavadoc extends Javadoc {
 
 	private void configureOfflineLinks(StandardJavadocDocletOptions options) {
 		ResolvedBom resolvedBom = ResolvedBom.readFrom(getResolvedBom().getSingleFile());
-		File packageListDirectory = getProject().getLayout()
-			.getBuildDirectory()
-			.get()
-			.dir("docs/javadocpackagelist")
-			.getAsFile();
-		extractPackageListFiles(packageListDirectory);
+		File extractDir = getProject().getLayout().getBuildDirectory().get().dir("docs/javadocpackagelist").getAsFile();
+		extractPackageListFiles(extractDir);
 		if (getProject().getGradle().getStartParameter().getLogLevel() == LogLevel.DEBUG) {
 			options.addBooleanOption("offlinelinks-debug", true);
 		}
-		options.addStringOption("offlinelinks-source", new File(packageListDirectory, "@name@").getAbsolutePath());
-		System.out.println(new File(packageListDirectory, "@name@").getAbsolutePath());
+		options.addStringOption("offlinelinks-source", new File(extractDir, "@name@").getAbsolutePath());
 		resolvedBom.offlineJavadocLinks().forEach((url, jars) -> {
-			String listOfJavadocJars = jars.stream().collect(Collectors.joining(","));
-			System.out.println(listOfJavadocJars);
-			options.linksOffline(url.toString(), listOfJavadocJars);
+			String listOfJavadocJars = jars.stream()
+				.filter((jar) -> Files.isDirectory(extractDir.toPath().resolve(jar)))
+				.collect(Collectors.joining(","));
+			if (StringUtils.hasLength(listOfJavadocJars)) {
+				options.linksOffline(url.toString(), listOfJavadocJars);
+			}
 		});
 	}
 
