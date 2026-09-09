@@ -389,8 +389,11 @@ class JavaConventions {
 
 	private void configureDependencyFixes(Project project) {
 		project.getDependencies().getComponents().all((details) -> {
-			addDocumentaionVariant(project, details, "javadoc", DocsType.JAVADOC, "javadoc");
-			addDocumentaionVariant(project, details, "sources", DocsType.SOURCES, "sources");
+			System.out.println(details.getId().getClass());
+			System.out.println(details.getId());
+			System.out.println(details.getAttributes().getAttributes());
+			addDocumentaionVariant(project, details, "implicitjavadoc", "implicitjavadoc", "javadoc");
+			addDocumentaionVariant(project, details, "implicitsources", "implicitsources", "sources");
 		});
 	}
 

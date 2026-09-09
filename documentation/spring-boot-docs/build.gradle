@@ -147,16 +147,6 @@ configurations {
 		}
 		extendsFrom configurations.runtimeClasspath
 	}
-	javadocJars {
-		canBeConsumed = false
-		canBeResolved = true
-		attributes {
-			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
-			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
-		}
-		extendsFrom configurations.runtimeClasspath
-	}
 	configureEach {
 		resolutionStrategy {
 			capabilitiesResolution {
@@ -175,13 +165,13 @@ configurations {
 
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', AggregatedJavadoc) {
     resolvedBom.from(configurations.resolvedBom)
-    javadocJars.from(configurations.javadocJars.incoming.artifactView {
+    javadocJars.from(configurations.javadocClasspath.incoming.artifactView {
 		withVariantReselection()
 		attributes {
-			// FIXME might not need
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
 			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION));
 			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL));
-			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC));
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "implicitjavadoc"));
 		}
 	}.files)
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
