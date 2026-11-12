@@ -6,6 +6,7 @@ package org.springframework.boot.loader.net.protocol.jar;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -47,7 +49,7 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 	private final boolean hasJarUrls;
 
-	private final Map<URL, JarFile> jarFiles = new ConcurrentHashMap<>();
+	private final AtomicReference<Map<URL, Connection>> connections = new AtomicReference<>(new ConcurrentHashMap<>());
 
 	private final Set<String> undefinablePackages = ConcurrentHashMap.newKeySet();
 
@@ -173,8 +175,8 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		}
 		String classEntryName = className.replace('.', '/') + ".class";
 		for (URL url : urls()) {
-			try {
-				JarFile jarFile = getJarFile(url);
+			try (Connection connection = connect(url)) {
+				JarFile jarFile = connection.jarFile();
 				if (jarFile != null) {
 					if (hasEntry(jarFile, classEntryName) && jarFile.getManifest() != null) {
 						definePackage(packageName, jarFile.getManifest(), url);
@@ -219,25 +221,18 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 				: jarFile.getEntry(name) != null;
 	}
 
-	private JarFile getJarFile(URL url) throws IOException {
-		JarFile jarFile = this.jarFiles.get(url);
-		if (jarFile != null) {
-			return jarFile;
+	private Connection connect(URL url) {
+		Connection connection = this.connections.get().computeIfPresent(url, (key, value) -> value.open());
+		if (connection != null) {
+			return connection;
 		}
-		URLConnection connection = url.openConnection();
-		if (!(connection instanceof JarURLConnection)) {
-			return null;
+		connection = Connection.create(url);
+		Connection previous = this.connections.get().putIfAbsent(url, connection);
+		if (previous != null) {
+			connection.close();
+			connection = previous;
 		}
-		connection.setUseCaches(false);
-		jarFile = ((JarURLConnection) connection).getJarFile();
-		synchronized (this.jarFiles) {
-			JarFile previous = this.jarFiles.putIfAbsent(url, jarFile);
-			if (previous != null) {
-				jarFile.close();
-				jarFile = previous;
-			}
-		}
-		return jarFile;
+		return connection.open();
 	}
 
 	/**
@@ -247,12 +242,7 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 	public void clearCache() {
 		Handler.clearCache();
 		org.springframework.boot.loader.net.protocol.nested.Handler.clearCache();
-		try {
-			clearJarFiles();
-		}
-		catch (IOException ex) {
-			// Ignore
-		}
+		clearJarFiles();
 		for (URL url : urls()) {
 			if (isJarUrl(url)) {
 				clearCache(url);
@@ -297,13 +287,8 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		clearJarFiles();
 	}
 
-	private void clearJarFiles() throws IOException {
-		synchronized (this.jarFiles) {
-			for (JarFile jarFile : this.jarFiles.values()) {
-				jarFile.close();
-			}
-			this.jarFiles.clear();
-		}
+	private void clearJarFiles() {
+		this.connections.getAndSet(new ConcurrentHashMap<>()).values().forEach(Connection::close);
 	}
 
 	final URL[] urls() {
@@ -319,10 +304,13 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		Class<?> findClass(String name) throws ClassNotFoundException {
 			String entryName = name.replace('.', '/').concat(".class");
 			for (URL url : urls()) {
-				NestedJarFile jarFile = getNestedJarFile(url);
-				JarEntry entry = (jarFile != null) ? jarFile.getJarEntry(entryName) : null;
-				if (entry != null) {
-					return defineClass(jarFile, entry, url, name);
+				try (Connection connection = connect(url)) {
+					if (connection.jarFile() instanceof NestedJarFile nestedJarFile) {
+						JarEntry entry = nestedJarFile.getJarEntry(entryName);
+						if (entry != null) {
+							return defineClass(nestedJarFile, entry, url, name);
+						}
+					}
 				}
 			}
 			throw new ClassNotFoundException(name);
@@ -330,10 +318,13 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 
 		URL findResource(String name) {
 			for (URL url : urls()) {
-				NestedJarFile jarFile = getNestedJarFile(url);
-				URL resource = createResource(jarFile, url, name);
-				if (resource != null) {
-					return resource;
+				try (Connection connection = connect(url)) {
+					if (connection.jarFile() instanceof NestedJarFile nestedJarFile) {
+						URL resource = createResource(nestedJarFile, url, name);
+						if (resource != null) {
+							return resource;
+						}
+					}
 				}
 			}
 			return null;
@@ -342,10 +333,13 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 		Enumeration<URL> findResources(String name) {
 			List<URL> resources = new ArrayList<>();
 			for (URL url : urls()) {
-				NestedJarFile jarFile = getNestedJarFile(url);
-				URL resource = createResource(jarFile, url, name);
-				if (resource != null) {
-					resources.add(resource);
+				try (Connection connection = connect(url)) {
+					if (connection.jarFile() instanceof NestedJarFile nestedJarFile) {
+						URL resource = createResource(nestedJarFile, url, name);
+						if (resource != null) {
+							resources.add(resource);
+						}
+					}
 				}
 			}
 			return Collections.enumeration(resources);
@@ -358,18 +352,6 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 				}
 			}
 			catch (MalformedURLException ex) {
-			}
-			return null;
-		}
-
-		private NestedJarFile getNestedJarFile(URL url) {
-			try {
-				JarFile jarFile = getJarFile(url);
-				if (jarFile instanceof NestedJarFile nestedJarFile) {
-					return nestedJarFile;
-				}
-			}
-			catch (IOException ex) {
 			}
 			return null;
 		}
@@ -449,6 +431,68 @@ public abstract class JarUrlClassLoader extends URLClassLoader {
 			finally {
 				Optimizations.disable();
 			}
+		}
+
+	}
+
+	/**
+	 * Reference counted connection to a {@link JarFile}.
+	 */
+	private static final class Connection implements AutoCloseable {
+
+		static final Connection NONE = new Connection(null);
+
+		private final JarFile jarFile;
+
+		private volatile int count;
+
+		private Connection(JarFile jarFile) {
+			this.jarFile = jarFile;
+			this.count = 1;
+		}
+
+		JarFile jarFile() {
+			return this.jarFile;
+		}
+
+		Connection open() {
+			if (this.jarFile != null) {
+				synchronized (this) {
+					this.count++;
+				}
+			}
+			return this;
+		}
+
+		@Override
+		public void close() {
+			if (this.jarFile == null) {
+				return;
+			}
+			synchronized (this) {
+				this.count--;
+				if (this.count <= 0) {
+					try {
+						this.jarFile.close();
+					}
+					catch (IOException ex) {
+						throw new UncheckedIOException(ex);
+					}
+				}
+			}
+		}
+
+		static Connection create(URL url) {
+			try {
+				URLConnection urlConnection = url.openConnection();
+				if (urlConnection instanceof JarURLConnection jarURLConnection) {
+					urlConnection.setUseCaches(false);
+					return new Connection(jarURLConnection.getJarFile());
+				}
+			}
+			catch (IOException ex) {
+			}
+			return NONE;
 		}
 
 	}
